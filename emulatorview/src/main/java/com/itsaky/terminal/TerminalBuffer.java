@@ -11,15 +11,15 @@ import java.util.Arrays;
  */
 public final class TerminalBuffer {
 
+  /** The number of rows kept in history. */
+  private int mActiveTranscriptRows = 0;
+  /** The index in the circular buffer where the visible screen starts. */
+  private int mScreenFirstRow = 0;
   TerminalRow[] mLines;
   /** The length of {@link #mLines}. */
   int mTotalRows;
   /** The number of rows and columns visible on the screen. */
   int mScreenRows, mColumns;
-  /** The number of rows kept in history. */
-  private int mActiveTranscriptRows = 0;
-  /** The index in the circular buffer where the visible screen starts. */
-  private int mScreenFirstRow = 0;
 
   /**
    * Create a transcript screen.
@@ -38,16 +38,89 @@ public final class TerminalBuffer {
     blockSet(0, 0, columns, screenRows, ' ', TextStyle.NORMAL);
   }
 
+  /**
+   * Block set characters. All characters must be within the bounds of the screen, or else and
+   * InvalidParemeterException will be thrown. Typically this is called with a "val" argument of 32
+   * to clear a block of characters.
+   */
+  public void blockSet(int sx, int sy, int w, int h, int val, long style) {
+    if (sx < 0 || sx + w > mColumns || sy < 0 || sy + h > mScreenRows) {
+      throw new IllegalArgumentException(
+          "Illegal arguments! blockSet("
+              + sx
+              + ", "
+              + sy
+              + ", "
+              + w
+              + ", "
+              + h
+              + ", "
+              + val
+              + ", "
+              + mColumns
+              + ", "
+              + mScreenRows
+              + ")");
+    }
+    for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) setChar(sx + x, sy + y, val, style);
+  }
+
+  public void setChar(int column, int row, int codePoint, long style) {
+    if (row >= mScreenRows || column >= mColumns)
+      throw new IllegalArgumentException(
+          "row="
+              + row
+              + ", column="
+              + column
+              + ", mScreenRows="
+              + mScreenRows
+              + ", mColumns="
+              + mColumns);
+    row = externalToInternalRow(row);
+    allocateFullLineIfNecessary(row).setChar(column, codePoint, style);
+  }
+
+  /**
+   * Convert a row value from the public external coordinate system to our internal private
+   * coordinate system.
+   *
+   * <pre>
+   * - External coordinate system: -mActiveTranscriptRows to mScreenRows-1, with the screen being 0..mScreenRows-1.
+   * - Internal coordinate system: the mScreenRows lines starting at mScreenFirstRow comprise the screen, while the
+   *   mActiveTranscriptRows lines ending at mScreenFirstRow-1 form the transcript (as a circular buffer).
+   *
+   * External ↔ Internal:
+   *
+   * [ ...                            ]     [ ...                                     ]
+   * [ -mActiveTranscriptRows         ]     [ mScreenFirstRow - mActiveTranscriptRows ]
+   * [ ...                            ]     [ ...                                     ]
+   * [ 0 (visible screen starts here) ]  ↔  [ mScreenFirstRow                         ]
+   * [ ...                            ]     [ ...                                     ]
+   * [ mScreenRows-1                  ]     [ mScreenFirstRow + mScreenRows-1         ]
+   * </pre>
+   *
+   * @param externalRow a row in the external coordinate system.
+   * @return The row corresponding to the input argument in the private coordinate system.
+   */
+  public int externalToInternalRow(int externalRow) {
+    if (externalRow < -mActiveTranscriptRows || externalRow > mScreenRows)
+      throw new IllegalArgumentException(
+          "extRow="
+              + externalRow
+              + ", mScreenRows="
+              + mScreenRows
+              + ", mActiveTranscriptRows="
+              + mActiveTranscriptRows);
+    final int internalRow = mScreenFirstRow + externalRow;
+    return (internalRow < 0) ? (mTotalRows + internalRow) : (internalRow % mTotalRows);
+  }
+
+  public TerminalRow allocateFullLineIfNecessary(int row) {
+    return (mLines[row] == null) ? (mLines[row] = new TerminalRow(mColumns, 0)) : mLines[row];
+  }
+
   public String getTranscriptText() {
     return getSelectedText(0, -getActiveTranscriptRows(), mColumns, mScreenRows).trim();
-  }
-
-  public String getTranscriptTextWithoutJoinedLines() {
-    return getSelectedText(0, -getActiveTranscriptRows(), mColumns, mScreenRows, false).trim();
-  }
-
-  public String getTranscriptTextWithFullLinesJoined() {
-    return getSelectedText(0, -getActiveTranscriptRows(), mColumns, mScreenRows, true, true).trim();
   }
 
   public String getSelectedText(int selX1, int selY1, int selX2, int selY2) {
@@ -110,51 +183,20 @@ public final class TerminalBuffer {
     return mActiveTranscriptRows;
   }
 
-  public int getActiveRows() {
-    return mActiveTranscriptRows + mScreenRows;
-  }
-
-  /**
-   * Convert a row value from the public external coordinate system to our internal private
-   * coordinate system.
-   *
-   * <pre>
-   * - External coordinate system: -mActiveTranscriptRows to mScreenRows-1, with the screen being 0..mScreenRows-1.
-   * - Internal coordinate system: the mScreenRows lines starting at mScreenFirstRow comprise the screen, while the
-   *   mActiveTranscriptRows lines ending at mScreenFirstRow-1 form the transcript (as a circular buffer).
-   *
-   * External ↔ Internal:
-   *
-   * [ ...                            ]     [ ...                                     ]
-   * [ -mActiveTranscriptRows         ]     [ mScreenFirstRow - mActiveTranscriptRows ]
-   * [ ...                            ]     [ ...                                     ]
-   * [ 0 (visible screen starts here) ]  ↔  [ mScreenFirstRow                         ]
-   * [ ...                            ]     [ ...                                     ]
-   * [ mScreenRows-1                  ]     [ mScreenFirstRow + mScreenRows-1         ]
-   * </pre>
-   *
-   * @param externalRow a row in the external coordinate system.
-   * @return The row corresponding to the input argument in the private coordinate system.
-   */
-  public int externalToInternalRow(int externalRow) {
-    if (externalRow < -mActiveTranscriptRows || externalRow > mScreenRows)
-      throw new IllegalArgumentException(
-          "extRow="
-              + externalRow
-              + ", mScreenRows="
-              + mScreenRows
-              + ", mActiveTranscriptRows="
-              + mActiveTranscriptRows);
-    final int internalRow = mScreenFirstRow + externalRow;
-    return (internalRow < 0) ? (mTotalRows + internalRow) : (internalRow % mTotalRows);
-  }
-
-  public void setLineWrap(int row) {
-    mLines[externalToInternalRow(row)].mLineWrap = true;
-  }
-
   public boolean getLineWrap(int row) {
     return mLines[externalToInternalRow(row)].mLineWrap;
+  }
+
+  public String getTranscriptTextWithoutJoinedLines() {
+    return getSelectedText(0, -getActiveTranscriptRows(), mColumns, mScreenRows, false).trim();
+  }
+
+  public String getTranscriptTextWithFullLinesJoined() {
+    return getSelectedText(0, -getActiveTranscriptRows(), mColumns, mScreenRows, true, true).trim();
+  }
+
+  public int getActiveRows() {
+    return mActiveTranscriptRows + mScreenRows;
   }
 
   public void clearLineWrap(int row) {
@@ -347,25 +389,8 @@ public final class TerminalBuffer {
     if (cursor[0] < 0 || cursor[1] < 0) cursor[0] = cursor[1] = 0;
   }
 
-  /**
-   * Block copy lines and associated metadata from one location to another in the circular buffer,
-   * taking wraparound into account.
-   *
-   * @param srcInternal The first line to be copied.
-   * @param len The number of lines to be copied.
-   */
-  private void blockCopyLinesDown(int srcInternal, int len) {
-    if (len == 0) return;
-    int totalRows = mTotalRows;
-
-    int start = len - 1;
-    // Save away line to be overwritten:
-    TerminalRow lineToBeOverWritten = mLines[(srcInternal + start + 1) % totalRows];
-    // Do the copy from bottom to top.
-    for (int i = start; i >= 0; --i)
-      mLines[(srcInternal + i + 1) % totalRows] = mLines[(srcInternal + i) % totalRows];
-    // Put back overwritten line, now above the block:
-    mLines[(srcInternal) % totalRows] = lineToBeOverWritten;
+  public void setLineWrap(int row) {
+    mLines[externalToInternalRow(row)].mLineWrap = true;
   }
 
   /**
@@ -410,6 +435,27 @@ public final class TerminalBuffer {
   }
 
   /**
+   * Block copy lines and associated metadata from one location to another in the circular buffer,
+   * taking wraparound into account.
+   *
+   * @param srcInternal The first line to be copied.
+   * @param len The number of lines to be copied.
+   */
+  private void blockCopyLinesDown(int srcInternal, int len) {
+    if (len == 0) return;
+    int totalRows = mTotalRows;
+
+    int start = len - 1;
+    // Save away line to be overwritten:
+    TerminalRow lineToBeOverWritten = mLines[(srcInternal + start + 1) % totalRows];
+    // Do the copy from bottom to top.
+    for (int i = start; i >= 0; --i)
+      mLines[(srcInternal + i + 1) % totalRows] = mLines[(srcInternal + i) % totalRows];
+    // Put back overwritten line, now above the block:
+    mLines[(srcInternal) % totalRows] = lineToBeOverWritten;
+  }
+
+  /**
    * Block copy characters from one position in the screen to another. The two positions can
    * overlap. All characters of the source and destination must be within the bounds of the screen,
    * or else an InvalidParameterException will be thrown.
@@ -438,52 +484,6 @@ public final class TerminalBuffer {
       allocateFullLineIfNecessary(externalToInternalRow(dy + y2))
           .copyInterval(sourceRow, sx, sx + w, dx);
     }
-  }
-
-  /**
-   * Block set characters. All characters must be within the bounds of the screen, or else and
-   * InvalidParemeterException will be thrown. Typically this is called with a "val" argument of 32
-   * to clear a block of characters.
-   */
-  public void blockSet(int sx, int sy, int w, int h, int val, long style) {
-    if (sx < 0 || sx + w > mColumns || sy < 0 || sy + h > mScreenRows) {
-      throw new IllegalArgumentException(
-          "Illegal arguments! blockSet("
-              + sx
-              + ", "
-              + sy
-              + ", "
-              + w
-              + ", "
-              + h
-              + ", "
-              + val
-              + ", "
-              + mColumns
-              + ", "
-              + mScreenRows
-              + ")");
-    }
-    for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) setChar(sx + x, sy + y, val, style);
-  }
-
-  public TerminalRow allocateFullLineIfNecessary(int row) {
-    return (mLines[row] == null) ? (mLines[row] = new TerminalRow(mColumns, 0)) : mLines[row];
-  }
-
-  public void setChar(int column, int row, int codePoint, long style) {
-    if (row >= mScreenRows || column >= mColumns)
-      throw new IllegalArgumentException(
-          "row="
-              + row
-              + ", column="
-              + column
-              + ", mScreenRows="
-              + mScreenRows
-              + ", mColumns="
-              + mColumns);
-    row = externalToInternalRow(row);
-    allocateFullLineIfNecessary(row).setChar(column, codePoint, style);
   }
 
   public long getStyleAt(int externalRow, int column) {

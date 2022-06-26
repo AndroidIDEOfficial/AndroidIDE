@@ -21,12 +21,6 @@ import com.itsaky.inflater.InflateException;
 
 public class Preconditions {
 
-  public static void assertNotnull(Object obj, String msg) throws InflateException {
-    if (obj == null) {
-      throw new NullPointerException(msg);
-    }
-  }
-
   public static void assertAllNotNull(String msg, Object... objs) {
     int i = 0;
     for (Object obj : objs) {
@@ -41,6 +35,12 @@ public class Preconditions {
     Preconditions.assertNotnull(str, msg);
     if (str.trim().length() <= 0) {
       throw new InflateException(msg);
+    }
+  }
+
+  public static void assertNotnull(Object obj, String msg) throws InflateException {
+    if (obj == null) {
+      throw new NullPointerException(msg);
     }
   }
 

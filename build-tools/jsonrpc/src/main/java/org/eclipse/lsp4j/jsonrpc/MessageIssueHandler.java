@@ -11,10 +11,10 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc;
 
-import java.util.List;
-
 import org.eclipse.lsp4j.jsonrpc.messages.Message;
 import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
+
+import java.util.List;
 
 public interface MessageIssueHandler {
 

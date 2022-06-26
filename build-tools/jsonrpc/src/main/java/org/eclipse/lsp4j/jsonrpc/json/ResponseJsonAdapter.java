@@ -11,12 +11,12 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json;
 
+import com.google.gson.TypeAdapterFactory;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.google.gson.TypeAdapterFactory;
 
 /**
  * An annotation that indicates the Gson {@link TypeAdapterFactory} to use with a request response.

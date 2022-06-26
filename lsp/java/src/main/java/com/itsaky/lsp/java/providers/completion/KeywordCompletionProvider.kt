@@ -36,113 +36,114 @@ import java.nio.file.Path
  * @author Akash Yadav
  */
 class KeywordCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val level: Tree = findKeywordLevel(path)
-        var keywords = arrayOf<String>()
-        when (level) {
-            is CompilationUnitTree -> keywords = TOP_LEVEL_KEYWORDS
-            is ClassTree -> keywords = CLASS_BODY_KEYWORDS
-            is MethodTree -> keywords = METHOD_BODY_KEYWORDS
-        }
-
-        val list = mutableListOf<CompletionItem>()
-        for (k in keywords) {
-            val matchLevel = matchLevel(k, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            list.add(keyword(k, partial, 100))
-        }
-
-        return CompletionResult(list)
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val level: Tree = findKeywordLevel(path)
+    var keywords = arrayOf<String>()
+    when (level) {
+      is CompilationUnitTree -> keywords = TOP_LEVEL_KEYWORDS
+      is ClassTree -> keywords = CLASS_BODY_KEYWORDS
+      is MethodTree -> keywords = METHOD_BODY_KEYWORDS
     }
 
-    private fun findKeywordLevel(treePath: TreePath): Tree {
-        var path: TreePath? = treePath
-        while (path != null) {
-            if (path.leaf is CompilationUnitTree ||
-                path.leaf is ClassTree ||
-                path.leaf is MethodTree) {
-                return path.leaf
-            }
-            path = path.parentPath
-        }
-        throw RuntimeException("empty path")
+    val list = mutableListOf<CompletionItem>()
+    for (k in keywords) {
+      val matchLevel = matchLevel(k, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      list.add(keyword(k, partial, 100))
     }
 
-    companion object {
-        private val TOP_LEVEL_KEYWORDS =
-            arrayOf(
-                "package",
-                "import",
-                "public",
-                "private",
-                "protected",
-                "abstract",
-                "class",
-                "interface",
-                "@interface",
-                "extends",
-                "implements")
-        private val CLASS_BODY_KEYWORDS =
-            arrayOf(
-                "public",
-                "private",
-                "protected",
-                "static",
-                "final",
-                "native",
-                "synchronized",
-                "abstract",
-                "default",
-                "class",
-                "interface",
-                "void",
-                "boolean",
-                "int",
-                "long",
-                "float",
-                "double")
-        private val METHOD_BODY_KEYWORDS =
-            arrayOf(
-                "new",
-                "assert",
-                "try",
-                "catch",
-                "finally",
-                "throw",
-                "return",
-                "break",
-                "case",
-                "continue",
-                "default",
-                "do",
-                "while",
-                "for",
-                "switch",
-                "if",
-                "else",
-                "instanceof",
-                "var",
-                "final",
-                "class",
-                "void",
-                "boolean",
-                "int",
-                "long",
-                "float",
-                "double")
+    return CompletionResult(list)
+  }
+
+  private fun findKeywordLevel(treePath: TreePath): Tree {
+    var path: TreePath? = treePath
+    while (path != null) {
+      if (path.leaf is CompilationUnitTree || path.leaf is ClassTree || path.leaf is MethodTree) {
+        return path.leaf
+      }
+      path = path.parentPath
     }
+    throw RuntimeException("empty path")
+  }
+
+  companion object {
+    private val TOP_LEVEL_KEYWORDS =
+      arrayOf(
+        "package",
+        "import",
+        "public",
+        "private",
+        "protected",
+        "abstract",
+        "class",
+        "interface",
+        "@interface",
+        "extends",
+        "implements"
+      )
+    private val CLASS_BODY_KEYWORDS =
+      arrayOf(
+        "public",
+        "private",
+        "protected",
+        "static",
+        "final",
+        "native",
+        "synchronized",
+        "abstract",
+        "default",
+        "class",
+        "interface",
+        "void",
+        "boolean",
+        "int",
+        "long",
+        "float",
+        "double"
+      )
+    private val METHOD_BODY_KEYWORDS =
+      arrayOf(
+        "new",
+        "assert",
+        "try",
+        "catch",
+        "finally",
+        "throw",
+        "return",
+        "break",
+        "case",
+        "continue",
+        "default",
+        "do",
+        "while",
+        "for",
+        "switch",
+        "if",
+        "else",
+        "instanceof",
+        "var",
+        "final",
+        "class",
+        "void",
+        "boolean",
+        "int",
+        "long",
+        "float",
+        "double"
+      )
+  }
 }

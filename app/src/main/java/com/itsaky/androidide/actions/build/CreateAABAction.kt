@@ -26,16 +26,16 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class CreateAABAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.create_aab)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_bundle)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.create_aab)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_bundle)
+  }
 
-    override val id: String = "editor_createAAB"
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
+  override val id: String = "editor_createAAB"
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
 
-        context.bundle()
-        return true
-    }
+    context.bundle()
+    return true
+  }
 }

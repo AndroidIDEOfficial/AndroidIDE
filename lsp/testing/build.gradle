@@ -21,16 +21,16 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
     }
-
+    
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     
@@ -47,13 +47,13 @@ android {
 dependencies {
     implementation androidx.ktx
     implementation common.kotlin
-
-    implementation project(':lsp:api')
-    implementation project(':actions')
-    implementation project(':common')
+    
+    implementation project (':lsp:api')
+    implementation project (':actions')
+    implementation project (':common')
     implementation common.editor
     implementation tests.junit
     implementation tests.google_truth
     implementation tests.robolectric
-    implementation project(path: ':actions')
+    implementation project (path: ':actions')
 }

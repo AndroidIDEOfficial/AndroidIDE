@@ -70,6 +70,14 @@ public class DiagnosticsListFragment extends Fragment {
     unsavedAdapter = null;
   }
 
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    unsavedAdapter = null;
+    list = null;
+    emptyView = null;
+  }
+
   public void setAdapter(@NonNull DiagnosticsAdapter adapter) {
     if (list != null) {
       list.setAdapter(adapter);
@@ -83,13 +91,5 @@ public class DiagnosticsListFragment extends Fragment {
       emptyView.setVisibility(error ? View.VISIBLE : View.GONE);
       list.setVisibility(error ? View.GONE : View.VISIBLE);
     }
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    unsavedAdapter = null;
-    list = null;
-    emptyView = null;
   }
 }

@@ -56,117 +56,114 @@ import java.util.concurrent.*
  */
 class GenerateConstructorAction : FieldBasedAction() {
 
-    override fun onGetFields(fields: List<String>, data: ActionData) {
-        showFieldSelector(fields, data) { selected ->
-            CompletableFuture.runAsync { generateConstructor(data, selected) }.whenComplete {
-                _,
-                error ->
-                if (error != null) {
-                    log.error("Unable to generate constructor for the selected fields", error)
-                    BaseApplication.getBaseInstance()
-                        .toast(string.msg_cannot_generate_constructor, ERROR)
-                }
-            }
+  override fun onGetFields(fields: List<String>, data: ActionData) {
+    showFieldSelector(fields, data) { selected ->
+      CompletableFuture.runAsync { generateConstructor(data, selected) }
+        .whenComplete { _, error ->
+          if (error != null) {
+            log.error("Unable to generate constructor for the selected fields", error)
+            BaseApplication.getBaseInstance().toast(string.msg_cannot_generate_constructor, ERROR)
+          }
         }
     }
+  }
 
-    private fun generateConstructor(data: ActionData, selected: MutableSet<String>) {
-        val server = data[JavaLanguageServer::class.java]!!
-        val range = data[Range::class.java]!!
-        val file = requirePath(data)
+  private fun generateConstructor(data: ActionData, selected: MutableSet<String>) {
+    val server = data[JavaLanguageServer::class.java]!!
+    val range = data[Range::class.java]!!
+    val file = requirePath(data)
 
-        server.compiler.compile(file).run { task ->
-            val triple = findFields(task, file, range)
-            val typeFinder = triple.first
-            val type = triple.second
-            val fields = triple.third
+    server.compiler.compile(file).run { task ->
+      val triple = findFields(task, file, range)
+      val typeFinder = triple.first
+      val type = triple.second
+      val fields = triple.third
 
-            fields.removeIf { !selected.contains("${it.name}: ${it.type}") }
+      fields.removeIf { !selected.contains("${it.name}: ${it.type}") }
 
-            log.debug("Creating toString() method with fields: ", fields.map { it.name })
+      log.debug("Creating toString() method with fields: ", fields.map { it.name })
 
-            generateForFields(data, task, type, fields.map { TreePath(typeFinder.path, it) })
-        }
+      generateForFields(data, task, type, fields.map { TreePath(typeFinder.path, it) })
+    }
+  }
+
+  private fun generateForFields(
+    data: ActionData,
+    task: CompileTask,
+    type: ClassTree,
+    paths: List<TreePath>
+  ) {
+    val editor = data[CodeEditor::class.java]!!
+    val trees = JavacTrees.instance(task.task)
+    val sym = TreeInfo.symbolFor(type as JCTree) as ClassSymbol
+    val varTypes = mapTypes(paths)
+    val varNames = paths.map { it.leaf as VariableTree }.map { it.name.toString() }
+
+    if (paths.isEmpty() || trees.findConstructor(sym, varTypes) != null) {
+      log.warn(
+        "A constructor with same parameter types is already available in class ${type.simpleName}"
+      )
+      BaseApplication.getBaseInstance()
+        .toastLong(data[Context::class.java]!!.getString(string.msg_constructor_available), ERROR)
+      return
     }
 
-    private fun generateForFields(
-        data: ActionData,
-        task: CompileTask,
-        type: ClassTree,
-        paths: List<TreePath>
-    ) {
-        val editor = data[CodeEditor::class.java]!!
-        val trees = JavacTrees.instance(task.task)
-        val sym = TreeInfo.symbolFor(type as JCTree) as ClassSymbol
-        val varTypes = mapTypes(paths)
-        val varNames = paths.map { it.leaf as VariableTree }.map { it.name.toString() }
-
-        if (paths.isEmpty() || trees.findConstructor(sym, varTypes) != null) {
-            log.warn(
-                "A constructor with same parameter types is already available in class ${type.simpleName}")
-            BaseApplication.getBaseInstance()
-                .toastLong(
-                    data[Context::class.java]!!.getString(string.msg_constructor_available), ERROR)
-            return
-        }
-
-        val stopWatch = StopWatch("generateConstructorForFields()")
-        val constructor =
-            newConstructor(
-                type.simpleName.toString(), varTypes.toTypedArray(), varNames.toTypedArray())
-        val body = constructor.createBody()
-        for (varName in varNames) {
-            body.addStatement(StaticJavaParser.parseStatement("this.$varName = $varName;"))
-        }
-
-        stopWatch.lap("Constructor generated")
-        log.info("Inserting constructor into editor...")
-
-        val insertAt = EditHelper.insertAfter(task.task, task.root(), paths.last().leaf)
-        val indent = EditHelper.indent(task.task, task.root(), paths.last().leaf)
-        var text = constructor.toString()
-        text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
-        text += "\n"
-
-        ThreadUtils.runOnUiThread {
-            editor.text.insert(insertAt.line, insertAt.column, text)
-            editor.formatCodeAsync()
-            stopWatch.log()
-        }
+    val stopWatch = StopWatch("generateConstructorForFields()")
+    val constructor =
+      newConstructor(type.simpleName.toString(), varTypes.toTypedArray(), varNames.toTypedArray())
+    val body = constructor.createBody()
+    for (varName in varNames) {
+      body.addStatement(StaticJavaParser.parseStatement("this.$varName = $varName;"))
     }
 
-    private fun newConstructor(
-        name: String,
-        paramTypes: Array<Type>,
-        paramNames: Array<String>
-    ): ConstructorDeclaration {
-        val constructor = ConstructorDeclaration()
-        constructor.setName(name)
-        constructor.addModifier(Modifier.Keyword.PUBLIC)
+    stopWatch.lap("Constructor generated")
+    log.info("Inserting constructor into editor...")
 
-        for (i in paramTypes.indices) {
-            val paramType = paramTypes[i]
-            val paramName = paramNames[i]
+    val insertAt = EditHelper.insertAfter(task.task, task.root(), paths.last().leaf)
+    val indent = EditHelper.indent(task.task, task.root(), paths.last().leaf)
+    var text = constructor.toString()
+    text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+    text += "\n"
 
-            constructor.addParameter(paramType.tsym.simpleName.toString(), paramName)
-        }
+    ThreadUtils.runOnUiThread {
+      editor.text.insert(insertAt.line, insertAt.column, text)
+      editor.formatCodeAsync()
+      stopWatch.log()
+    }
+  }
 
-        return constructor
+  private fun newConstructor(
+    name: String,
+    paramTypes: Array<Type>,
+    paramNames: Array<String>
+  ): ConstructorDeclaration {
+    val constructor = ConstructorDeclaration()
+    constructor.setName(name)
+    constructor.addModifier(Modifier.Keyword.PUBLIC)
+
+    for (i in paramTypes.indices) {
+      val paramType = paramTypes[i]
+      val paramName = paramNames[i]
+
+      constructor.addParameter(paramType.tsym.simpleName.toString(), paramName)
     }
 
-    private fun mapTypes(paths: List<TreePath>): com.sun.tools.javac.util.List<Type> {
-        val buffer = ListBuffer<Type>()
-        for (path in paths) {
-            val leaf = path.leaf
-            val sym = TreeInfo.symbolFor(leaf as JCTree) as VarSymbol
-            buffer.add(sym.type)
-        }
+    return constructor
+  }
 
-        return buffer.toList()
+  private fun mapTypes(paths: List<TreePath>): com.sun.tools.javac.util.List<Type> {
+    val buffer = ListBuffer<Type>()
+    for (path in paths) {
+      val leaf = path.leaf
+      val sym = TreeInfo.symbolFor(leaf as JCTree) as VarSymbol
+      buffer.add(sym.type)
     }
 
-    override val titleTextRes: Int = string.action_generate_constructor
-    override val id: String = "lsp_java_generateConstructor"
-    override var label: String = ""
-    private val log = ILogger.newInstance(javaClass.simpleName)
+    return buffer.toList()
+  }
+
+  override val titleTextRes: Int = string.action_generate_constructor
+  override val id: String = "lsp_java_generateConstructor"
+  override var label: String = ""
+  private val log = ILogger.newInstance(javaClass.simpleName)
 }

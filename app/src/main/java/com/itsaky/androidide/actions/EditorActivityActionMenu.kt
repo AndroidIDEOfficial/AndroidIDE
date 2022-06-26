@@ -19,5 +19,5 @@ package com.itsaky.androidide.actions
 
 /** @author Akash Yadav */
 abstract class EditorActivityActionMenu : EditorActivityAction(), ActionMenu {
-    override val children: MutableSet<ActionItem> = mutableSetOf()
+  override val children: MutableSet<ActionItem> = mutableSetOf()
 }

@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".DesignerActivity"
-    >
+    tools:context=".DesignerActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_container"
@@ -34,20 +33,20 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
             android:contentDescription="@string/label_ui_designer_content"
+            android:fillViewport="true"
             android:paddingStart="16dp"
+            android:paddingTop="32dp"
             android:paddingEnd="16dp"
             android:paddingBottom="32dp"
-            android:paddingTop="32dp"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <com.itsaky.androidide.views.DesignerLayoutContainer
                 android:id="@+id/layout_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:background="@drawable/bg_design_container_background" />
+                android:background="@drawable/bg_design_container_background"
+                android:orientation="vertical" />
 
         </androidx.core.widget.NestedScrollView>
 

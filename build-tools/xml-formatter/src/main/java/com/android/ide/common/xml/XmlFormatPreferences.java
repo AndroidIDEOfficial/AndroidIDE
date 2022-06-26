@@ -18,7 +18,6 @@ package com.android.ide.common.xml;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import org.w3c.dom.Attr;
 
 import java.util.Comparator;
@@ -42,19 +41,10 @@ public class XmlFormatPreferences {
 
   /** The sorting order to use when formatting */
   public XmlAttributeSortOrder sortAttributes = XmlAttributeSortOrder.LOGICAL;
-
-  /** Returns the comparator to use when formatting, or null for no sorting */
-  @Nullable
-  public Comparator<Attr> getAttributeComparator() {
-    return sortAttributes.getAttributeComparator();
-  }
-
   /** Should there be a space before the closing > or /> ? */
   public boolean spaceBeforeClose = true;
-
   /** The string to insert for each indentation level */
   protected String mOneIndentUnit = "    "; // $NON-NLS-1$
-
   /** Tab width (number of spaces to display for a tab) */
   protected int mTabWidth = -1; // -1: uninitialized
 
@@ -68,6 +58,12 @@ public class XmlFormatPreferences {
   @NotNull
   public static XmlFormatPreferences defaults() {
     return new XmlFormatPreferences();
+  }
+
+  /** Returns the comparator to use when formatting, or null for no sorting */
+  @Nullable
+  public Comparator<Attr> getAttributeComparator() {
+    return sortAttributes.getAttributeComparator();
   }
 
   public String getOneIndentUnit() {

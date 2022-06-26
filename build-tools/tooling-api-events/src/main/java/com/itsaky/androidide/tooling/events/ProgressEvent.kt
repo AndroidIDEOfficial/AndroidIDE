@@ -23,9 +23,9 @@ package com.itsaky.androidide.tooling.events
  * @author Akash Yadav
  */
 abstract class ProgressEvent {
-    abstract val displayName: String
-    abstract val eventTime: Long
-    abstract val descriptor: OperationDescriptor
+  abstract val displayName: String
+  abstract val eventTime: Long
+  abstract val descriptor: OperationDescriptor
 
-    private val gsonType: String = javaClass.name
+  private val gsonType: String = javaClass.name
 }

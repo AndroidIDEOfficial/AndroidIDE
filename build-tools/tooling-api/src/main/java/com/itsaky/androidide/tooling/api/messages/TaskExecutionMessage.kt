@@ -22,7 +22,7 @@ package com.itsaky.androidide.tooling.api.messages
  * @author Akash Yadav
  */
 data class TaskExecutionMessage(
-    val projectPath: String?,
-    val tasks: List<String>,
-    val gradleInstallation: String = ""
+  val projectPath: String?,
+  val tasks: List<String>,
+  val gradleInstallation: String = ""
 )

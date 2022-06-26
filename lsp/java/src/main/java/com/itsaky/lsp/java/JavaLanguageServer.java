@@ -116,22 +116,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     return settings;
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public JavaCompilerService getCompiler() {
-    if (createCompiler) {
-      LOG.info("Creating new compiler instance...");
-      compiler = createCompiler();
-      createCompiler = false;
-    }
-
-    return compiler;
-  }
-
-  @NonNull
-  private JavaCompilerService createCompiler() {
-    return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
-  }
-
   @Override
   public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
 
@@ -275,6 +259,22 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     return new JavaDiagnosticProvider(getCompiler()).analyze(file);
+  }
+
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public JavaCompilerService getCompiler() {
+    if (createCompiler) {
+      LOG.info("Creating new compiler instance...");
+      compiler = createCompiler();
+      createCompiler = false;
+    }
+
+    return compiler;
+  }
+
+  @NonNull
+  private JavaCompilerService createCompiler() {
+    return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
   }
 
   @NonNull

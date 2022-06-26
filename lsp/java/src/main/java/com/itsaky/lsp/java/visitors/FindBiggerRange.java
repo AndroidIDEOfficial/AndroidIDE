@@ -66,17 +66,8 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
   }
 
   @Override
-  public Range visitTry(TryTree node, Range range) {
-
-    // If this try's body or finally block is selected, then select the entire try
-    final Range methodRange = getRange(node);
-    final Range blockRange = getRange(node.getBlock());
-    final Range finallyRange = getRange(node.getFinallyBlock());
-    if ((range.equals(blockRange) || range.equals(finallyRange)) && methodRange != null) {
-      return methodRange;
-    }
-
-    return super.visitTry(node, range);
+  public Range reduce(Range r1, Range r2) {
+    return r1 == null ? r2 : r1;
   }
 
   @Override
@@ -93,8 +84,17 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
   }
 
   @Override
-  public Range reduce(Range r1, Range r2) {
-    return r1 == null ? r2 : r1;
+  public Range visitTry(TryTree node, Range range) {
+
+    // If this try's body or finally block is selected, then select the entire try
+    final Range methodRange = getRange(node);
+    final Range blockRange = getRange(node.getBlock());
+    final Range finallyRange = getRange(node.getFinallyBlock());
+    if ((range.equals(blockRange) || range.equals(finallyRange)) && methodRange != null) {
+      return methodRange;
+    }
+
+    return super.visitTry(node, range);
   }
 
   @Nullable

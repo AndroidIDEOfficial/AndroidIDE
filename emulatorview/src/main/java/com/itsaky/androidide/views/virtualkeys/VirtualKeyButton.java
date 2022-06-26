@@ -139,6 +139,12 @@ public class VirtualKeyButton {
     }
   }
 
+  /** Replace the alias with its actual key name if found in extraKeyAliasMap. */
+  public static String replaceAlias(
+      @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap, String key) {
+    return extraKeyAliasMap.get(key, key);
+  }
+
   /** Get {@link #key}. */
   public String getKey() {
     return key;
@@ -158,11 +164,5 @@ public class VirtualKeyButton {
   @Nullable
   public VirtualKeyButton getPopup() {
     return popup;
-  }
-
-  /** Replace the alias with its actual key name if found in extraKeyAliasMap. */
-  public static String replaceAlias(
-      @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap, String key) {
-    return extraKeyAliasMap.get(key, key);
   }
 }

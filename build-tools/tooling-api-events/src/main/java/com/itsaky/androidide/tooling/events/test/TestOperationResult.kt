@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
 class TestOperationResult(
-    val success: Boolean,
-    override val startTime: Long,
-    override val endTime: Long
+  val success: Boolean,
+  override val startTime: Long,
+  override val endTime: Long
 ) : OperationResult()

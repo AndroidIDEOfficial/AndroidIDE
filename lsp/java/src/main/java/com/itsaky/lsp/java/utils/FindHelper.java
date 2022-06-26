@@ -123,42 +123,6 @@ public class FindHelper {
     return true;
   }
 
-  private static boolean isSameMethodType(MethodTree candidate, String[] erasedParameterTypes) {
-    if (candidate.getParameters().size() != erasedParameterTypes.length) {
-      return false;
-    }
-    for (int i = 0; i < candidate.getParameters().size(); i++) {
-      if (!typeMatches(candidate.getParameters().get(i).getType(), erasedParameterTypes[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static boolean typeMatches(Tree candidate, String erasedType) {
-    if (candidate instanceof ParameterizedTypeTree) {
-      ParameterizedTypeTree parameterized = (ParameterizedTypeTree) candidate;
-      return typeMatches(parameterized.getType(), erasedType);
-    }
-    if (candidate instanceof PrimitiveTypeTree) {
-      return candidate.toString().equals(erasedType);
-    }
-    if (candidate instanceof IdentifierTree) {
-      String simpleName = candidate.toString();
-      return erasedType.endsWith(simpleName);
-    }
-    if (candidate instanceof MemberSelectTree) {
-      return candidate.toString().equals(erasedType);
-    }
-    if (candidate instanceof ArrayTypeTree) {
-      ArrayTypeTree array = (ArrayTypeTree) candidate;
-      if (!erasedType.endsWith("[]")) return false;
-      String erasedElement = erasedType.substring(0, erasedType.length() - "[]".length());
-      return typeMatches(array.getType(), erasedElement);
-    }
-    return true;
-  }
-
   public static Location location(CompileTask task, TreePath path) {
     return location(task, path, "");
   }
@@ -196,5 +160,41 @@ public class FindHelper {
       return matcher.start();
     }
     return -1;
+  }
+
+  private static boolean isSameMethodType(MethodTree candidate, String[] erasedParameterTypes) {
+    if (candidate.getParameters().size() != erasedParameterTypes.length) {
+      return false;
+    }
+    for (int i = 0; i < candidate.getParameters().size(); i++) {
+      if (!typeMatches(candidate.getParameters().get(i).getType(), erasedParameterTypes[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean typeMatches(Tree candidate, String erasedType) {
+    if (candidate instanceof ParameterizedTypeTree) {
+      ParameterizedTypeTree parameterized = (ParameterizedTypeTree) candidate;
+      return typeMatches(parameterized.getType(), erasedType);
+    }
+    if (candidate instanceof PrimitiveTypeTree) {
+      return candidate.toString().equals(erasedType);
+    }
+    if (candidate instanceof IdentifierTree) {
+      String simpleName = candidate.toString();
+      return erasedType.endsWith(simpleName);
+    }
+    if (candidate instanceof MemberSelectTree) {
+      return candidate.toString().equals(erasedType);
+    }
+    if (candidate instanceof ArrayTypeTree) {
+      ArrayTypeTree array = (ArrayTypeTree) candidate;
+      if (!erasedType.endsWith("[]")) return false;
+      String erasedElement = erasedType.substring(0, erasedType.length() - "[]".length());
+      return typeMatches(array.getType(), erasedElement);
+    }
+    return true;
   }
 }

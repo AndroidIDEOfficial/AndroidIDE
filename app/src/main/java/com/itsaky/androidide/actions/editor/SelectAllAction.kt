@@ -18,26 +18,25 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
 class SelectAllAction() : BaseEditorAction() {
-    
-    constructor(context: Context) : this() {
-        label = context.getString(android.R.string.selectAll)
-        
-        val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeSelectAllDrawable))
-        icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
-        arr.recycle()
-    }
-    
-    override val id: String = "ideEditor_selectAll"
 
-    override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data) ?: return false
-        editor.selectAll()
-        return true
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(android.R.string.selectAll)
+
+    val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeSelectAllDrawable))
+    icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
+    arr.recycle()
+  }
+
+  override val id: String = "ideEditor_selectAll"
+
+  override fun execAction(data: ActionData): Boolean {
+    val editor = getEditor(data) ?: return false
+    editor.selectAll()
+    return true
+  }
 }

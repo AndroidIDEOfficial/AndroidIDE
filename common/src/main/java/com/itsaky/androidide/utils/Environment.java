@@ -41,9 +41,9 @@ public final class Environment {
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
   public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
   public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
+  private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
   private static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
-  private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   private static final ILogger LOG = ILogger.newInstance("Environment");
   private static final List<String> blacklist = new ArrayList<>();
   public static File ROOT;
@@ -169,16 +169,6 @@ public final class Environment {
     return value;
   }
 
-  public static void setExecutable(@NonNull final File file) {
-    if (!file.setExecutable(true)) {
-      LOG.error("Unable to set executable permissions to file", file);
-    }
-  }
-
-  public static void setProjectDir(@NonNull File file) {
-    PROJECTS_DIR = new File(file.getAbsolutePath());
-  }
-
   @NonNull
   private static String createPath() {
     String path = "";
@@ -187,6 +177,16 @@ public final class Environment {
     path += String.format(":%s/bin", PREFIX.getAbsolutePath());
     path += String.format(":%s", System.getenv("PATH"));
     return path;
+  }
+
+  public static void setExecutable(@NonNull final File file) {
+    if (!file.setExecutable(true)) {
+      LOG.error("Unable to set executable permissions to file", file);
+    }
+  }
+
+  public static void setProjectDir(@NonNull File file) {
+    PROJECTS_DIR = new File(file.getAbsolutePath());
   }
 
   public static void setBootClasspath(@NonNull File file) {

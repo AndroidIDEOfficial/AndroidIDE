@@ -87,6 +87,10 @@ public class CharSequenceInputStream extends InputStream {
     this.bBufMark = NO_MARK;
   }
 
+  static Charset toCharset(final Charset charset) {
+    return charset == null ? Charset.defaultCharset() : charset;
+  }
+
   /**
    * Constructs a new instance with a buffer size of 2048.
    *
@@ -111,9 +115,7 @@ public class CharSequenceInputStream extends InputStream {
   public CharSequenceInputStream(
       final CharSequence cs, final String charset, final int bufferSize) {
     this(cs, toCharset(charset), bufferSize);
-  }
-
-  /**
+  }  /**
    * Return an estimate of the number of bytes remaining in the byte stream.
    *
    * @return the count of bytes that can be read without blocking (or returning EOF).
@@ -128,12 +130,21 @@ public class CharSequenceInputStream extends InputStream {
     return this.bBuf.remaining() + this.cBuf.remaining();
   }
 
-  @Override
+  static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
+    return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
+  }  @Override
   public void close() throws IOException {
     // noop
   }
 
   /**
+   * Gets the CharsetEncoder.
+   *
+   * @return the CharsetEncoder.
+   */
+  CharsetEncoder getCharsetEncoder() {
+    return charsetEncoder;
+  }  /**
    * Fills the byte output buffer from the input char buffer.
    *
    * @throws CharacterCodingException an error encoding data.
@@ -147,14 +158,7 @@ public class CharSequenceInputStream extends InputStream {
     this.bBuf.flip();
   }
 
-  /**
-   * Gets the CharsetEncoder.
-   *
-   * @return the CharsetEncoder.
-   */
-  CharsetEncoder getCharsetEncoder() {
-    return charsetEncoder;
-  }
+
 
   /**
    * {@inheritDoc}
@@ -285,11 +289,7 @@ public class CharSequenceInputStream extends InputStream {
     return skipped;
   }
 
-  static Charset toCharset(final Charset charset) {
-    return charset == null ? Charset.defaultCharset() : charset;
-  }
 
-  static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
-    return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
-  }
+
+
 }

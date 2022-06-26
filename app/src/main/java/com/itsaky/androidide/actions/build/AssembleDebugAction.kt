@@ -26,17 +26,17 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class AssembleDebugAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.build_debug)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_run_debug)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.build_debug)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_run_debug)
+  }
 
-    override val id: String = "editor_assembleDebug"
+  override val id: String = "editor_assembleDebug"
 
-    override fun execAction(data: ActionData): Boolean {
-        val activity = getActivity(data) ?: return false
+  override fun execAction(data: ActionData): Boolean {
+    val activity = getActivity(data) ?: return false
 
-        activity.assembleDebug(true)
-        return true
-    }
+    activity.assembleDebug(true)
+    return true
+  }
 }

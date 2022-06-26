@@ -19,8 +19,8 @@ package com.itsaky.androidide.tooling.events.task
 
 /** @author Akash Yadav */
 open class TaskExecutionResult(
-    startTime: Long,
-    endTime: Long,
-    val isIncremental: Boolean,
-    val executionReasons: List<String>
+  startTime: Long,
+  endTime: Long,
+  val isIncremental: Boolean,
+  val executionReasons: List<String>
 ) : TaskOperationResult(startTime, endTime)

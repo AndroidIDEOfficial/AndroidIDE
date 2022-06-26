@@ -50,11 +50,6 @@ class CodeWriter {
 
   private final String indent;
   private final LineWrapper out;
-  private int indentLevel;
-
-  private boolean javadoc = false;
-  private boolean comment = false;
-  private String packageName = NO_PACKAGE;
   private final List<TypeSpec> typeSpecStack = new ArrayList<>();
   private final Set<String> staticImportClassNames;
   private final Set<String> staticImports;
@@ -63,6 +58,10 @@ class CodeWriter {
   private final Map<String, ClassName> importableTypes = new LinkedHashMap<>();
   private final Set<String> referencedNames = new LinkedHashSet<>();
   private final Multiset<String> currentTypeVariables = new Multiset<>();
+  private int indentLevel;
+  private boolean javadoc = false;
+  private boolean comment = false;
+  private String packageName = NO_PACKAGE;
   private boolean trailingNewline;
 
   /**
@@ -97,17 +96,22 @@ class CodeWriter {
     }
   }
 
+  private static String extractMemberName(String part) {
+    checkArgument(Character.isJavaIdentifierStart(part.charAt(0)), "not an identifier: %s", part);
+    for (int i = 1; i <= part.length(); i++) {
+      if (!SourceVersion.isIdentifier(part.substring(0, i))) {
+        return part.substring(0, i - 1);
+      }
+    }
+    return part;
+  }
+
   public Map<String, ClassName> importedTypes() {
     return importedTypes;
   }
 
   public CodeWriter indent() {
     return indent(1);
-  }
-
-  public CodeWriter indent(int levels) {
-    indentLevel += levels;
-    return this;
   }
 
   public CodeWriter unindent() {
@@ -173,6 +177,10 @@ class CodeWriter {
     }
   }
 
+  public void emitModifiers(Set<Modifier> modifiers) throws IOException {
+    emitModifiers(modifiers, Collections.emptySet());
+  }
+
   /**
    * Emits {@code modifiers} in the standard order. Modifiers in {@code implicitModifiers} will not
    * be emitted.
@@ -187,8 +195,58 @@ class CodeWriter {
     }
   }
 
-  public void emitModifiers(Set<Modifier> modifiers) throws IOException {
-    emitModifiers(modifiers, Collections.emptySet());
+  /**
+   * Emits {@code s} with indentation as required. It's important that all code that writes to
+   * {@link #out} does it through here, since we emit indentation lazily in order to avoid
+   * unnecessary trailing whitespace.
+   */
+  CodeWriter emitAndIndent(String s) throws IOException {
+    boolean first = true;
+    for (String line : LINE_BREAKING_PATTERN.split(s, -1)) {
+      // Emit a newline character. Make sure blank lines in Javadoc & comments look good.
+      if (!first) {
+        if ((javadoc || comment) && trailingNewline) {
+          emitIndentation();
+          out.append(javadoc ? " *" : "//");
+        }
+        out.append("\n");
+        trailingNewline = true;
+        if (statementLine != -1) {
+          if (statementLine == 0) {
+            indent(2); // Begin multiple-line statement. Increase the indentation level.
+          }
+          statementLine++;
+        }
+      }
+
+      first = false;
+      if (line.isEmpty()) continue; // Don't indent empty lines.
+
+      // Emit indentation and comment prefix if necessary.
+      if (trailingNewline) {
+        emitIndentation();
+        if (javadoc) {
+          out.append(" * ");
+        } else if (comment) {
+          out.append("// ");
+        }
+      }
+
+      out.append(line);
+      trailingNewline = false;
+    }
+    return this;
+  }
+
+  public CodeWriter indent(int levels) {
+    indentLevel += levels;
+    return this;
+  }
+
+  private void emitIndentation() throws IOException {
+    for (int j = 0; j < indentLevel; j++) {
+      out.append(indent);
+    }
   }
 
   /**
@@ -332,16 +390,6 @@ class CodeWriter {
     return this;
   }
 
-  private static String extractMemberName(String part) {
-    checkArgument(Character.isJavaIdentifierStart(part.charAt(0)), "not an identifier: %s", part);
-    for (int i = 1; i <= part.length(); i++) {
-      if (!SourceVersion.isIdentifier(part.substring(0, i))) {
-        return part.substring(0, i - 1);
-      }
-    }
-    return part;
-  }
-
   private boolean emitStaticImportMember(String canonical, String part) throws IOException {
     String partWithoutLeadingDot = part.substring(1);
     if (partWithoutLeadingDot.isEmpty()) return false;
@@ -468,55 +516,6 @@ class CodeWriter {
       className = className.nestedClass(typeSpecStack.get(i).name);
     }
     return className.nestedClass(simpleName);
-  }
-
-  /**
-   * Emits {@code s} with indentation as required. It's important that all code that writes to
-   * {@link #out} does it through here, since we emit indentation lazily in order to avoid
-   * unnecessary trailing whitespace.
-   */
-  CodeWriter emitAndIndent(String s) throws IOException {
-    boolean first = true;
-    for (String line : LINE_BREAKING_PATTERN.split(s, -1)) {
-      // Emit a newline character. Make sure blank lines in Javadoc & comments look good.
-      if (!first) {
-        if ((javadoc || comment) && trailingNewline) {
-          emitIndentation();
-          out.append(javadoc ? " *" : "//");
-        }
-        out.append("\n");
-        trailingNewline = true;
-        if (statementLine != -1) {
-          if (statementLine == 0) {
-            indent(2); // Begin multiple-line statement. Increase the indentation level.
-          }
-          statementLine++;
-        }
-      }
-
-      first = false;
-      if (line.isEmpty()) continue; // Don't indent empty lines.
-
-      // Emit indentation and comment prefix if necessary.
-      if (trailingNewline) {
-        emitIndentation();
-        if (javadoc) {
-          out.append(" * ");
-        } else if (comment) {
-          out.append("// ");
-        }
-      }
-
-      out.append(line);
-      trailingNewline = false;
-    }
-    return this;
-  }
-
-  private void emitIndentation() throws IOException {
-    for (int j = 0; j < indentLevel; j++) {
-      out.append(indent);
-    }
   }
 
   /**

@@ -21,6 +21,6 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultProjectSyncIssues(override val syncIssues: Collection<DefaultSyncIssue>) :
-    ProjectSyncIssues, Serializable {
-    private val serialVersionUID = 1L
+  ProjectSyncIssues, Serializable {
+  private val serialVersionUID = 1L
 }

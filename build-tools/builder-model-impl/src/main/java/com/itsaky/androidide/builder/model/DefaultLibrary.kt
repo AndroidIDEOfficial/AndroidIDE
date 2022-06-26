@@ -24,12 +24,12 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultLibrary : Library, Serializable {
-    private val serialVersionUID = 1L
-    override var androidLibraryData: DefaultAndroidLibraryData? = null
-    override var artifact: File? = null
-    override var key: String = ""
-    override var libraryInfo: DefaultLibraryInfo? = null
-    override var lintJar: File? = null
-    override var projectInfo: DefaultProjectInfo? = null
-    override var type: LibraryType = ANDROID_LIBRARY
+  private val serialVersionUID = 1L
+  override var androidLibraryData: DefaultAndroidLibraryData? = null
+  override var artifact: File? = null
+  override var key: String = ""
+  override var libraryInfo: DefaultLibraryInfo? = null
+  override var lintJar: File? = null
+  override var projectInfo: DefaultProjectInfo? = null
+  override var type: LibraryType = ANDROID_LIBRARY
 }

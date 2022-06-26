@@ -41,11 +41,11 @@ public class FindReferences extends TreePathScanner<Void, List<TreePath>> {
   }
 
   @Override
-  public Void visitIdentifier(IdentifierTree t, List<TreePath> list) {
+  public Void visitNewClass(NewClassTree t, List<TreePath> list) {
     if (check()) {
       list.add(getCurrentPath());
     }
-    return super.visitIdentifier(t, list);
+    return super.visitNewClass(t, list);
   }
 
   @Override
@@ -57,19 +57,19 @@ public class FindReferences extends TreePathScanner<Void, List<TreePath>> {
   }
 
   @Override
-  public Void visitNewClass(NewClassTree t, List<TreePath> list) {
-    if (check()) {
-      list.add(getCurrentPath());
-    }
-    return super.visitNewClass(t, list);
-  }
-
-  @Override
   public Void visitMemberReference(MemberReferenceTree t, List<TreePath> list) {
     if (check()) {
       list.add(getCurrentPath());
     }
     return super.visitMemberReference(t, list);
+  }
+
+  @Override
+  public Void visitIdentifier(IdentifierTree t, List<TreePath> list) {
+    if (check()) {
+      list.add(getCurrentPath());
+    }
+    return super.visitIdentifier(t, list);
   }
 
   private boolean check() {

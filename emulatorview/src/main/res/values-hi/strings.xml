@@ -1,4 +1,4 @@
 <resources>
-  <string name="paste_text">पेस्ट</string>
-  <string name="copy_text">कॉपी</string>
+    <string name="paste_text">पेस्ट</string>
+    <string name="copy_text">कॉपी</string>
 </resources>

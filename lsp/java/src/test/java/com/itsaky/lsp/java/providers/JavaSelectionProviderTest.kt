@@ -34,69 +34,69 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class JavaSelectionProviderTest : BaseJavaTest() {
 
-    @Before
-    fun init() {
-        LOG.debug("Initializing JavaSelectionProviderTest")
-    }
+  @Before
+  fun init() {
+    LOG.debug("Initializing JavaSelectionProviderTest")
+  }
 
-    @Test
-    fun testSimpleSelectionExpansion() {
-        openFile("SimpleSelectionExpansionTest")
-        cursor = requireCursor()
-        deleteCursorText()
-        mServer.documentHandler.onContentChange(DocumentChangeEvent(file!!, contents.toString(), 1))
+  @Test
+  fun testSimpleSelectionExpansion() {
+    openFile("SimpleSelectionExpansionTest")
+    cursor = requireCursor()
+    deleteCursorText()
+    mServer.documentHandler.onContentChange(DocumentChangeEvent(file!!, contents.toString(), 1))
 
-        val range = findRange()
-        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+    val range = findRange()
+    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
 
-        assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
-    }
+    assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
+  }
 
-    @Test
-    fun testMethodSelection() {
-        openFile("MethodBodySelectionExpansionTest")
+  @Test
+  fun testMethodSelection() {
+    openFile("MethodBodySelectionExpansionTest")
 
-        val start = Position(3, 43)
-        val end = Position(5, 5)
-        val range = Range(start, end)
+    val start = Position(3, 43)
+    val end = Position(5, 5)
+    val range = Range(start, end)
 
-        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-        assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
-    }
+    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
+  }
 
-    @Test
-    fun testTryCatchSelection() {
-        openFile("TrySelectionExpansionTest")
+  @Test
+  fun testTryCatchSelection() {
+    openFile("TrySelectionExpansionTest")
 
-        // Test expand selection if catch block is selected
-        val start = Position(7, 10)
-        val end = Position(8, 9)
-        val range = Range(start, end)
+    // Test expand selection if catch block is selected
+    val start = Position(7, 10)
+    val end = Position(8, 9)
+    val range = Range(start, end)
 
-        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-        assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
-    }
+    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+  }
 
-    @Test
-    fun testTryFinallySelection() {
-        openFile("TrySelectionExpansionTest")
+  @Test
+  fun testTryFinallySelection() {
+    openFile("TrySelectionExpansionTest")
 
-        // Test expand selection if catch block is selected
-        val start = Position(8, 18)
-        val end = Position(10, 9)
-        val range = Range(start, end)
+    // Test expand selection if catch block is selected
+    val start = Position(8, 18)
+    val end = Position(10, 9)
+    val range = Range(start, end)
 
-        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-        assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
-    }
+    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+  }
 
-    private fun findRange(): Range {
-        val pos = Content(contents!!).indexer.getCharPosition(cursor)
-        val position = Position(pos.line, pos.column, pos.index)
-        return Range(position, position)
-    }
+  private fun findRange(): Range {
+    val pos = Content(contents!!).indexer.getCharPosition(cursor)
+    val position = Position(pos.line, pos.column, pos.index)
+    return Range(position, position)
+  }
 
-    override fun openFile(fileName: String) {
-        super.openFile("selection/${fileName}")
-    }
+  override fun openFile(fileName: String) {
+    super.openFile("selection/${fileName}")
+  }
 }

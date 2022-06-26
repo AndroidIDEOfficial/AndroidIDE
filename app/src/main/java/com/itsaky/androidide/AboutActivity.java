@@ -39,12 +39,6 @@ public class AboutActivity extends StudioActivity {
   private ActivityAboutBinding binding;
 
   @Override
-  protected View bindLayout() {
-    binding = ActivityAboutBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
-
-  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
@@ -62,6 +56,12 @@ public class AboutActivity extends StudioActivity {
     items.discuss.setOnClickListener(v -> getApp().openTelegramGroup());
     items.email.setOnClickListener(v -> getApp().emailUs());
     items.website.setOnClickListener(v -> getApp().openWebsite());
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityAboutBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
   }
 
   private void setupTranslations() {

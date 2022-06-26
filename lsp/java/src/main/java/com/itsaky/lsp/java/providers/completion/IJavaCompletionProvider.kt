@@ -67,210 +67,210 @@ import javax.lang.model.element.VariableElement
  * @author Akash Yadav
  */
 abstract class IJavaCompletionProvider(
-    protected val completingFile: Path,
-    protected val cursor: Long,
-    protected val compiler: CompilerProvider,
-    protected val settings: IServerSettings,
+  protected val completingFile: Path,
+  protected val cursor: Long,
+  protected val compiler: CompilerProvider,
+  protected val settings: IServerSettings,
 ) {
-    protected val log: ILogger = ILogger.newInstance(javaClass.name)
-    protected lateinit var filePackage: String
-    protected lateinit var fileImports: Set<String>
+  protected val log: ILogger = ILogger.newInstance(javaClass.name)
+  protected lateinit var filePackage: String
+  protected lateinit var fileImports: Set<String>
 
-    open fun complete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean
-    ): CompletionResult {
-        val root = task.root(completingFile)
-        filePackage = root.`package`.packageName.toString()
-        fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
-        return doComplete(task, path, partial, endsWithParen)
+  open fun complete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean
+  ): CompletionResult {
+    val root = task.root(completingFile)
+    filePackage = root.`package`.packageName.toString()
+    fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
+    return doComplete(task, path, partial, endsWithParen)
+  }
+
+  /**
+   * Provide completions with the given data.
+   *
+   * @param task The compilation task. Subclasses are expected to use this compile task instead of
+   * starting another compilation process.
+   * @param path The [TreePath] defining the [Tree] at the current position.
+   * @param partial The partial identifier.
+   * @param endsWithParen `true` if the statement at cursor ends with a parenthesis. `false`
+   * otherwise.
+   */
+  protected abstract fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult
+
+  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
+    return CompletionItem.matchLevel(candidate.toString(), partial.toString())
+  }
+
+  protected open fun putMethod(
+    method: ExecutableElement,
+    methods: MutableMap<String, MutableList<ExecutableElement>>,
+  ) {
+    val name = method.simpleName.toString()
+    if (!methods.containsKey(name)) {
+      methods[name] = ArrayList()
+    }
+    methods[name]!!.add(method)
+  }
+
+  protected open fun keyword(
+    keyword: String,
+    partialName: CharSequence,
+    matchRatio: Int,
+  ): CompletionItem {
+    val item = CompletionItem()
+    item.setLabel(keyword)
+    item.kind = KEYWORD
+    item.detail = "keyword"
+    item.sortText = keyword
+    item.matchLevel = CompletionItem.matchLevel(keyword, partialName.toString())
+    return item
+  }
+
+  protected open fun method(
+    task: CompileTask,
+    overloads: List<ExecutableElement>,
+    addParens: Boolean,
+    matchLevel: MatchLevel,
+  ): CompletionItem {
+    val first = overloads[0]
+    val item = CompletionItem()
+    item.setLabel(first.simpleName.toString())
+    item.kind = CompletionItemKind.METHOD
+    item.detail = first.returnType.toString() + " " + first
+    item.sortText = item.label.toString()
+    item.matchLevel = matchLevel
+    val data = data(task, first, overloads.size)
+    item.data = data
+    if (addParens) {
+      if (overloads.size == 1 && first.parameters.isEmpty()) {
+        item.insertText = first.simpleName.toString() + "()$0"
+      } else {
+        item.insertText = first.simpleName.toString() + "($0)"
+        item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
+      }
+      item.insertTextFormat = SNIPPET // Snippet
+    }
+    return item
+  }
+
+  protected open fun item(
+    task: CompileTask,
+    element: Element,
+    matchLevel: MatchLevel
+  ): CompletionItem {
+    if (element.kind == METHOD) throw RuntimeException("method")
+    val item = CompletionItem()
+    item.setLabel(element.simpleName.toString())
+    item.kind = kind(element)
+    item.detail = element.toString()
+    item.data = data(task, element, 1)
+    item.sortText = item.label.toString()
+    item.matchLevel = matchLevel
+    return item
+  }
+
+  protected open fun classItem(
+    className: String,
+    partialName: String,
+    matchLevel: MatchLevel
+  ): CompletionItem {
+    return classItem(emptySet(), null, className, partialName, matchLevel)
+  }
+
+  protected open fun classItem(
+    imports: Set<String>,
+    file: Path?,
+    className: String,
+    partialName: String,
+    matchLevel: MatchLevel,
+  ): CompletionItem {
+    val item = CompletionItem()
+    item.setLabel(simpleName(className).toString())
+    item.kind = CompletionItemKind.CLASS
+    item.detail = className
+    item.sortText = item.label.toString()
+    item.matchLevel = matchLevel
+    val data = CompletionData()
+    data.className = className
+    item.data = data
+    item.additionalTextEdits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
+    return item
+  }
+
+  protected open fun simpleName(className: String): CharSequence {
+    val dot = className.lastIndexOf('.')
+    return if (dot == -1) className else className.subSequence(dot + 1, className.length)
+  }
+
+  protected open fun packageItem(
+    name: String,
+    partialName: String,
+    matchLevel: MatchLevel
+  ): CompletionItem =
+    CompletionItem().apply {
+      setLabel(name)
+      this.kind = MODULE
+      this.sortText = name
+      this.matchLevel = matchLevel
     }
 
-    /**
-     * Provide completions with the given data.
-     *
-     * @param task The compilation task. Subclasses are expected to use this compile task instead of
-     * starting another compilation process.
-     * @param path The [TreePath] defining the [Tree] at the current position.
-     * @param partial The partial identifier.
-     * @param endsWithParen `true` if the statement at cursor ends with a parenthesis. `false`
-     * otherwise.
-     */
-    protected abstract fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult
-
-    protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
-        return CompletionItem.matchLevel(candidate.toString(), partial.toString())
+  protected open fun kind(e: Element): CompletionItemKind {
+    return when (e.kind) {
+      ANNOTATION_TYPE -> CompletionItemKind.ANNOTATION_TYPE
+      CLASS -> CompletionItemKind.CLASS
+      CONSTRUCTOR -> CompletionItemKind.CONSTRUCTOR
+      ENUM -> CompletionItemKind.ENUM
+      ENUM_CONSTANT -> ENUM_MEMBER
+      EXCEPTION_PARAMETER,
+      PARAMETER, -> PROPERTY
+      FIELD -> CompletionItemKind.FIELD
+      STATIC_INIT,
+      INSTANCE_INIT, -> FUNCTION
+      INTERFACE -> CompletionItemKind.INTERFACE
+      LOCAL_VARIABLE,
+      RESOURCE_VARIABLE, -> VARIABLE
+      METHOD -> CompletionItemKind.METHOD
+      PACKAGE -> MODULE
+      TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER
+      OTHER -> NONE
+      else -> NONE
     }
+  }
 
-    protected open fun putMethod(
-        method: ExecutableElement,
-        methods: MutableMap<String, MutableList<ExecutableElement>>,
-    ) {
-        val name = method.simpleName.toString()
-        if (!methods.containsKey(name)) {
-            methods[name] = ArrayList()
+  protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
+    val data = CompletionData()
+    when {
+      element is TypeElement -> data.className = element.qualifiedName.toString()
+      element.kind == FIELD -> {
+        val field = element as VariableElement
+        val type = field.enclosingElement as TypeElement
+        data.className = type.qualifiedName.toString()
+        data.memberName = field.simpleName.toString()
+      }
+      element is ExecutableElement -> {
+        val types = task.task.types
+        val type = element.enclosingElement as TypeElement
+        data.className = type.qualifiedName.toString()
+        data.memberName = element.simpleName.toString()
+        data.erasedParameterTypes = Array(element.parameters.size) { "" }
+        for (i in 0 until data.erasedParameterTypes.size) {
+          val p = element.parameters[i].asType()
+          data.erasedParameterTypes[i] = types.erasure(p).toString()
         }
-        methods[name]!!.add(method)
+        data.plusOverloads = overloads - 1
+      }
+      else -> {
+        return null
+      }
     }
-
-    protected open fun keyword(
-        keyword: String,
-        partialName: CharSequence,
-        matchRatio: Int,
-    ): CompletionItem {
-        val item = CompletionItem()
-        item.setLabel(keyword)
-        item.kind = KEYWORD
-        item.detail = "keyword"
-        item.sortText = keyword
-        item.matchLevel = CompletionItem.matchLevel(keyword, partialName.toString())
-        return item
-    }
-
-    protected open fun method(
-        task: CompileTask,
-        overloads: List<ExecutableElement>,
-        addParens: Boolean,
-        matchLevel: MatchLevel,
-    ): CompletionItem {
-        val first = overloads[0]
-        val item = CompletionItem()
-        item.setLabel(first.simpleName.toString())
-        item.kind = CompletionItemKind.METHOD
-        item.detail = first.returnType.toString() + " " + first
-        item.sortText = item.label.toString()
-        item.matchLevel = matchLevel
-        val data = data(task, first, overloads.size)
-        item.data = data
-        if (addParens) {
-            if (overloads.size == 1 && first.parameters.isEmpty()) {
-                item.insertText = first.simpleName.toString() + "()$0"
-            } else {
-                item.insertText = first.simpleName.toString() + "($0)"
-                item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
-            }
-            item.insertTextFormat = SNIPPET // Snippet
-        }
-        return item
-    }
-
-    protected open fun item(
-        task: CompileTask,
-        element: Element,
-        matchLevel: MatchLevel
-    ): CompletionItem {
-        if (element.kind == METHOD) throw RuntimeException("method")
-        val item = CompletionItem()
-        item.setLabel(element.simpleName.toString())
-        item.kind = kind(element)
-        item.detail = element.toString()
-        item.data = data(task, element, 1)
-        item.sortText = item.label.toString()
-        item.matchLevel = matchLevel
-        return item
-    }
-
-    protected open fun classItem(
-        className: String,
-        partialName: String,
-        matchLevel: MatchLevel
-    ): CompletionItem {
-        return classItem(emptySet(), null, className, partialName, matchLevel)
-    }
-
-    protected open fun classItem(
-        imports: Set<String>,
-        file: Path?,
-        className: String,
-        partialName: String,
-        matchLevel: MatchLevel,
-    ): CompletionItem {
-        val item = CompletionItem()
-        item.setLabel(simpleName(className).toString())
-        item.kind = CompletionItemKind.CLASS
-        item.detail = className
-        item.sortText = item.label.toString()
-        item.matchLevel = matchLevel
-        val data = CompletionData()
-        data.className = className
-        item.data = data
-        item.additionalTextEdits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
-        return item
-    }
-
-    protected open fun simpleName(className: String): CharSequence {
-        val dot = className.lastIndexOf('.')
-        return if (dot == -1) className else className.subSequence(dot + 1, className.length)
-    }
-
-    protected open fun packageItem(
-        name: String,
-        partialName: String,
-        matchLevel: MatchLevel
-    ): CompletionItem =
-        CompletionItem().apply {
-            setLabel(name)
-            this.kind = MODULE
-            this.sortText = name
-            this.matchLevel = matchLevel
-        }
-
-    protected open fun kind(e: Element): CompletionItemKind {
-        return when (e.kind) {
-            ANNOTATION_TYPE -> CompletionItemKind.ANNOTATION_TYPE
-            CLASS -> CompletionItemKind.CLASS
-            CONSTRUCTOR -> CompletionItemKind.CONSTRUCTOR
-            ENUM -> CompletionItemKind.ENUM
-            ENUM_CONSTANT -> ENUM_MEMBER
-            EXCEPTION_PARAMETER,
-            PARAMETER, -> PROPERTY
-            FIELD -> CompletionItemKind.FIELD
-            STATIC_INIT,
-            INSTANCE_INIT, -> FUNCTION
-            INTERFACE -> CompletionItemKind.INTERFACE
-            LOCAL_VARIABLE,
-            RESOURCE_VARIABLE, -> VARIABLE
-            METHOD -> CompletionItemKind.METHOD
-            PACKAGE -> MODULE
-            TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER
-            OTHER -> NONE
-            else -> NONE
-        }
-    }
-
-    protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
-        val data = CompletionData()
-        when {
-            element is TypeElement -> data.className = element.qualifiedName.toString()
-            element.kind == FIELD -> {
-                val field = element as VariableElement
-                val type = field.enclosingElement as TypeElement
-                data.className = type.qualifiedName.toString()
-                data.memberName = field.simpleName.toString()
-            }
-            element is ExecutableElement -> {
-                val types = task.task.types
-                val type = element.enclosingElement as TypeElement
-                data.className = type.qualifiedName.toString()
-                data.memberName = element.simpleName.toString()
-                data.erasedParameterTypes = Array(element.parameters.size) { "" }
-                for (i in 0 until data.erasedParameterTypes.size) {
-                    val p = element.parameters[i].asType()
-                    data.erasedParameterTypes[i] = types.erasure(p).toString()
-                }
-                data.plusOverloads = overloads - 1
-            }
-            else -> {
-                return null
-            }
-        }
-        return data
-    }
+    return data
+  }
 }

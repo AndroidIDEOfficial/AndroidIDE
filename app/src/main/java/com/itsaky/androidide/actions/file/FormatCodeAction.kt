@@ -30,17 +30,17 @@ import com.itsaky.androidide.actions.EditorRelatedAction
  * @author Akash Yadav
  */
 class FormatCodeAction() : EditorRelatedAction() {
-    override val id: String = "editor_file_formatCode"
-    override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
+  override val id: String = "editor_file_formatCode"
+  override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.title_format_code)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_format_code)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.title_format_code)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_format_code)
+  }
 
-    override fun execAction(data: ActionData): Any {
-        val editor = getEditor(data)!!
-        editor.formatCodeAsync()
-        return true
-    }
+  override fun execAction(data: ActionData): Any {
+    val editor = getEditor(data)!!
+    editor.formatCodeAsync()
+    return true
+  }
 }

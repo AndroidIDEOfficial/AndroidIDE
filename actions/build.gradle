@@ -4,14 +4,14 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
     }
-
+    
     buildFeatures.viewBinding true
-
+    
     compileOptions {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
@@ -20,7 +20,7 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
+    
     buildTypes {
         release {
             minifyEnabled true
@@ -29,14 +29,14 @@ android {
 }
 
 dependencies {
-    implementation project(':common')
+    implementation project (':common')
     implementation common.editor
     implementation common.utilcode
-
+    
     implementation androidx.ktx
     implementation common.kotlin
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral ()
 }

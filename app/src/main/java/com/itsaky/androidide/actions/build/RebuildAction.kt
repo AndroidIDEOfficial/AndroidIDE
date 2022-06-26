@@ -26,16 +26,16 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class RebuildAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.clean_amp_build)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_rebuild)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.clean_amp_build)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_rebuild)
+  }
 
-    override val id: String = "editor_cleanAndBuild"
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
+  override val id: String = "editor_cleanAndBuild"
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
 
-        context.cleanAndRebuild()
-        return true
-    }
+    context.cleanAndRebuild()
+    return true
+  }
 }

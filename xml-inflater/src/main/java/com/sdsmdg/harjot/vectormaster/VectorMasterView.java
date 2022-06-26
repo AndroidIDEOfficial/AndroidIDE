@@ -25,17 +25,15 @@ import java.util.Stack;
 
 public class VectorMasterView extends View {
 
+  private Matrix scaleMatrix;
+  private float scaleRatio, strokeRatio;
   VectorModel vectorModel;
   Context context;
-
   Resources resources;
   int resID = -1;
   boolean useLegacyParser = true;
-
   XmlPullParser xpp;
-  private Matrix scaleMatrix;
   int width = 0, height = 0;
-  private float scaleRatio, strokeRatio;
 
   public VectorMasterView(Context context) {
     super(context);
@@ -44,12 +42,6 @@ public class VectorMasterView extends View {
 
   public VectorMasterView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    this.context = context;
-    init(attrs);
-  }
-
-  public VectorMasterView(Context context, AttributeSet attrs, int defStyleAttr) {
-    super(context, attrs, defStyleAttr);
     this.context = context;
     init(attrs);
   }
@@ -319,68 +311,18 @@ public class VectorMasterView extends View {
     return -1;
   }
 
+  public VectorMasterView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+    this.context = context;
+    init(attrs);
+  }
+
   public int getResID() {
     return resID;
   }
 
   public void setResID(int resID) {
     this.resID = resID;
-  }
-
-  @Override
-  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-    super.onSizeChanged(w, h, oldw, oldh);
-    if (w != 0 && h != 0) {
-      width = w;
-      height = h;
-
-      buildScaleMatrix();
-      scaleAllPaths();
-      scaleAllStrokes();
-    }
-  }
-
-  @SuppressLint("CanvasSize")
-  @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-
-    width = canvas.getWidth();
-    height = canvas.getHeight();
-
-    if (vectorModel == null) {
-      return;
-    }
-
-    setAlpha(vectorModel.getAlpha());
-
-    vectorModel.drawPaths(canvas);
-  }
-
-  void buildScaleMatrix() {
-
-    scaleMatrix = new Matrix();
-
-    scaleMatrix.postTranslate(
-        width / 2 - vectorModel.getViewportWidth() / 2,
-        height / 2 - vectorModel.getViewportHeight() / 2);
-
-    float widthRatio = width / vectorModel.getViewportWidth();
-    float heightRatio = height / vectorModel.getViewportHeight();
-    float ratio = Math.min(widthRatio, heightRatio);
-
-    scaleRatio = ratio;
-
-    scaleMatrix.postScale(ratio, ratio, width / 2, height / 2);
-  }
-
-  void scaleAllPaths() {
-    vectorModel.scaleAllPaths(scaleMatrix);
-  }
-
-  void scaleAllStrokes() {
-    strokeRatio = Math.min(width / vectorModel.getWidth(), height / vectorModel.getHeight());
-    vectorModel.scaleAllStrokeWidth(strokeRatio);
   }
 
   public Path getFullPath() {
@@ -445,5 +387,61 @@ public class VectorMasterView extends View {
 
   public Matrix getScaleMatrix() {
     return scaleMatrix;
+  }
+
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    super.onSizeChanged(w, h, oldw, oldh);
+    if (w != 0 && h != 0) {
+      width = w;
+      height = h;
+
+      buildScaleMatrix();
+      scaleAllPaths();
+      scaleAllStrokes();
+    }
+  }
+
+  @SuppressLint("CanvasSize")
+  @Override
+  protected void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+
+    width = canvas.getWidth();
+    height = canvas.getHeight();
+
+    if (vectorModel == null) {
+      return;
+    }
+
+    setAlpha(vectorModel.getAlpha());
+
+    vectorModel.drawPaths(canvas);
+  }
+
+  void buildScaleMatrix() {
+
+    scaleMatrix = new Matrix();
+
+    scaleMatrix.postTranslate(
+        width / 2 - vectorModel.getViewportWidth() / 2,
+        height / 2 - vectorModel.getViewportHeight() / 2);
+
+    float widthRatio = width / vectorModel.getViewportWidth();
+    float heightRatio = height / vectorModel.getViewportHeight();
+    float ratio = Math.min(widthRatio, heightRatio);
+
+    scaleRatio = ratio;
+
+    scaleMatrix.postScale(ratio, ratio, width / 2, height / 2);
+  }
+
+  void scaleAllPaths() {
+    vectorModel.scaleAllPaths(scaleMatrix);
+  }
+
+  void scaleAllStrokes() {
+    strokeRatio = Math.min(width / vectorModel.getWidth(), height / vectorModel.getHeight());
+    vectorModel.scaleAllStrokeWidth(strokeRatio);
   }
 }

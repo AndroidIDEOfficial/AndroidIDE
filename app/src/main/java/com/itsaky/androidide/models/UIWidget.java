@@ -32,9 +32,20 @@ import java.util.Objects;
  */
 public class UIWidget implements IconTextListItem, Parcelable {
 
+  public static final Creator<UIWidget> CREATOR =
+      new Creator<UIWidget>() {
+        @Override
+        public UIWidget createFromParcel(Parcel in) {
+          return new UIWidget(in);
+        }
+
+        @Override
+        public UIWidget[] newArray(int size) {
+          return new UIWidget[size];
+        }
+      };
   private final String name;
   private final int icon;
-
   private final String clazz;
 
   private UIWidget(Parcel in) {
@@ -49,25 +60,9 @@ public class UIWidget implements IconTextListItem, Parcelable {
     this.clazz = clazz.getName();
   }
 
-  public static final Creator<UIWidget> CREATOR =
-      new Creator<UIWidget>() {
-        @Override
-        public UIWidget createFromParcel(Parcel in) {
-          return new UIWidget(in);
-        }
-
-        @Override
-        public UIWidget[] newArray(int size) {
-          return new UIWidget[size];
-        }
-      };
-
-  public String getName() {
-    return name;
-  }
-
-  public int getIcon() {
-    return icon;
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getIcon(), clazz);
   }
 
   @Override
@@ -80,9 +75,12 @@ public class UIWidget implements IconTextListItem, Parcelable {
         && clazz.equals(widget.clazz);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getName(), getIcon(), clazz);
+  public String getName() {
+    return name;
+  }
+
+  public int getIcon() {
+    return icon;
   }
 
   /**

@@ -31,64 +31,67 @@ import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class ImplementAbstractMethodsAction : BaseCodeAction() {
-    override val id: String = "lsp_java_implementAbstractMethods"
-    override var label: String = ""
-    private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id: String = "lsp_java_implementAbstractMethods"
+  override var label: String = ""
+  private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_implement_abstract_methods
+  override val titleTextRes: Int = R.string.action_implement_abstract_methods
 
-    @Suppress("UNCHECKED_CAST")
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  @Suppress("UNCHECKED_CAST")
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible) {
-            return
-        }
-
-        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data.get(DiagnosticItem::class.java)!!
-        if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
-            markInvisible()
-            return
-        }
-
-        JavaDiagnosticUtils.asJCDiagnostic(diagnostic.extra as Diagnostic<out JavaFileObject>)
-            ?: run {
-                markInvisible()
-                return
-            }
-
-        visible = true
-        enabled = true
+    if (!visible) {
+      return
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun execAction(data: ActionData): Any {
-        val diagnostic =
-            JavaDiagnosticUtils.asJCDiagnostic(
-                data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>)
-        return ImplementAbstractMethods(diagnostic!!)
+    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is ImplementAbstractMethods) {
-            log.warn("Unable to perform action. Invalid result from execAction(..)")
-            return
-        }
-
-        val server = data.get(JavaLanguageServer::class.java)!!
-        val client = server.client
-        if (client == null) {
-            log.error("No client set to java language server")
-            return
-        }
-
-        client.performCodeAction(
-            data.get(File::class.java)!!, result.asCodeActions(server.compiler, label))
+    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
+      markInvisible()
+      return
     }
+
+    JavaDiagnosticUtils.asJCDiagnostic(diagnostic.extra as Diagnostic<out JavaFileObject>)
+      ?: run {
+        markInvisible()
+        return
+      }
+
+    visible = true
+    enabled = true
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  override fun execAction(data: ActionData): Any {
+    val diagnostic =
+      JavaDiagnosticUtils.asJCDiagnostic(
+        data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
+      )
+    return ImplementAbstractMethods(diagnostic!!)
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is ImplementAbstractMethods) {
+      log.warn("Unable to perform action. Invalid result from execAction(..)")
+      return
+    }
+
+    val server = data.get(JavaLanguageServer::class.java)!!
+    val client = server.client
+    if (client == null) {
+      log.error("No client set to java language server")
+      return
+    }
+
+    client.performCodeAction(
+      data.get(File::class.java)!!,
+      result.asCodeActions(server.compiler, label)
+    )
+  }
 }

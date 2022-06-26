@@ -34,11 +34,15 @@ public final class TerminalSession extends TerminalOutput {
 
   private static final int MSG_NEW_INPUT = 1;
   private static final int MSG_PROCESS_EXITED = 4;
-
+  private static final String LOG_TAG = "TerminalSession";
   public final String mHandle = UUID.randomUUID().toString();
-
-  TerminalEmulator mEmulator;
-
+  /** Buffer to write translate code points into utf8 before writing to mTerminalToProcessIOQueue */
+  private final byte[] mUtf8InputBuffer = new byte[5];
+  private final String mShellPath;
+  private final String mCwd;
+  private final String[] mArgs;
+  private final String[] mEnv;
+  private final Integer mTranscriptRows;
   /**
    * A queue written to from a separate thread when the process outputs, and read by main thread to
    * process by terminal emulator.
@@ -49,36 +53,21 @@ public final class TerminalSession extends TerminalOutput {
    * which forwards by writing to the {@link #mTerminalFileDescriptor}.
    */
   final ByteQueue mTerminalToProcessIOQueue = new ByteQueue(4096);
-  /** Buffer to write translate code points into utf8 before writing to mTerminalToProcessIOQueue */
-  private final byte[] mUtf8InputBuffer = new byte[5];
-
-  /** Callback which gets notified when a session finishes or changes title. */
-  TerminalSessionClient mClient;
-
-  /** The pid of the shell process. 0 if not started and -1 if finished running. */
-  int mShellPid;
-
-  /** The exit status of the shell process. Only valid if ${@link #mShellPid} is -1. */
-  int mShellExitStatus;
-
+  final Handler mMainThreadHandler = new Handler(Looper.getMainLooper(), new MainThreadHandler());
+  /** Set by the application for user identification of session, not by terminal. */
+  public String mSessionName;
   /**
    * The file descriptor referencing the master half of a pseudo-terminal pair, resulting from
    * calling {@link JNI#createSubprocess(String, String, String[], String[], int[], int, int)}.
    */
   private int mTerminalFileDescriptor;
-
-  /** Set by the application for user identification of session, not by terminal. */
-  public String mSessionName;
-
-  final Handler mMainThreadHandler = new Handler(Looper.getMainLooper(), new MainThreadHandler());
-
-  private final String mShellPath;
-  private final String mCwd;
-  private final String[] mArgs;
-  private final String[] mEnv;
-  private final Integer mTranscriptRows;
-
-  private static final String LOG_TAG = "TerminalSession";
+  TerminalEmulator mEmulator;
+  /** Callback which gets notified when a session finishes or changes title. */
+  TerminalSessionClient mClient;
+  /** The pid of the shell process. 0 if not started and -1 if finished running. */
+  int mShellPid;
+  /** The exit status of the shell process. Only valid if ${@link #mShellPid} is -1. */
+  int mShellExitStatus;
 
   public TerminalSession(
       String shellPath,
@@ -113,11 +102,6 @@ public final class TerminalSession extends TerminalOutput {
       JNI.setPtyWindowSize(mTerminalFileDescriptor, rows, columns);
       mEmulator.resize(columns, rows);
     }
-  }
-
-  /** The terminal title as set through escape sequences or null if none set. */
-  public String getTitle() {
-    return (mEmulator == null) ? null : mEmulator.getTitle();
   }
 
   /**
@@ -180,10 +164,31 @@ public final class TerminalSession extends TerminalOutput {
     }.start();
   }
 
-  /** Write data to the shell process. */
-  @Override
-  public void write(byte[] data, int offset, int count) {
-    if (mShellPid > 0) mTerminalToProcessIOQueue.write(data, offset, count);
+  @SuppressLint("DiscouragedPrivateApi")
+  private static FileDescriptor wrapFileDescriptor(
+      int fileDescriptor, TerminalSessionClient client) {
+    FileDescriptor result = new FileDescriptor();
+    try {
+      Field descriptorField;
+      try {
+        descriptorField = FileDescriptor.class.getDeclaredField("descriptor");
+      } catch (NoSuchFieldException e) {
+        // For desktop java:
+        descriptorField = FileDescriptor.class.getDeclaredField("fd");
+      }
+      descriptorField.setAccessible(true);
+      descriptorField.set(result, fileDescriptor);
+    } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+      client.logStackTraceWithMessage(
+          LOG_TAG, "Error accessing FileDescriptor#descriptor private field", e);
+      System.exit(1);
+    }
+    return result;
+  }
+
+  /** The terminal title as set through escape sequences or null if none set. */
+  public String getTitle() {
+    return (mEmulator == null) ? null : mEmulator.getTitle();
   }
 
   /** Write the Unicode code point to the terminal encoded in UTF-8. */
@@ -226,57 +231,15 @@ public final class TerminalSession extends TerminalOutput {
     write(mUtf8InputBuffer, 0, bufferPosition);
   }
 
-  public TerminalEmulator getEmulator() {
-    return mEmulator;
-  }
-
-  /** Notify the {@link #mClient} that the screen has changed. */
-  protected void notifyScreenUpdate() {
-    mClient.onTextChanged(this);
-  }
-
-  /** Reset state for terminal emulator state. */
-  public void reset() {
-    mEmulator.reset();
-    notifyScreenUpdate();
-  }
-
-  /** Finish this terminal session by sending SIGKILL to the shell. */
-  public void finishIfRunning() {
-    if (isRunning()) {
-      try {
-        Os.kill(mShellPid, OsConstants.SIGKILL);
-      } catch (ErrnoException e) {
-        mClient.logWarn(LOG_TAG, "Failed sending SIGKILL: " + e.getMessage());
-      }
-    }
-  }
-
-  /** Cleanup resources when the process exits. */
-  void cleanupResources(int exitStatus) {
-    synchronized (this) {
-      mShellPid = -1;
-      mShellExitStatus = exitStatus;
-    }
-
-    // Stop the reader and writer threads, and close the I/O streams
-    mTerminalToProcessIOQueue.close();
-    mProcessToTerminalIOQueue.close();
-    JNI.close(mTerminalFileDescriptor);
+  /** Write data to the shell process. */
+  @Override
+  public void write(byte[] data, int offset, int count) {
+    if (mShellPid > 0) mTerminalToProcessIOQueue.write(data, offset, count);
   }
 
   @Override
   public void titleChanged(String oldTitle, String newTitle) {
     mClient.onTitleChanged(this);
-  }
-
-  public synchronized boolean isRunning() {
-    return mShellPid != -1;
-  }
-
-  /** Only valid if not {@link #isRunning()}. */
-  public synchronized int getExitStatus() {
-    return mShellExitStatus;
   }
 
   @Override
@@ -297,6 +260,41 @@ public final class TerminalSession extends TerminalOutput {
   @Override
   public void onColorsChanged() {
     mClient.onColorsChanged(this);
+  }
+
+  public TerminalEmulator getEmulator() {
+    return mEmulator;
+  }
+
+  /** Reset state for terminal emulator state. */
+  public void reset() {
+    mEmulator.reset();
+    notifyScreenUpdate();
+  }
+
+  /** Notify the {@link #mClient} that the screen has changed. */
+  protected void notifyScreenUpdate() {
+    mClient.onTextChanged(this);
+  }
+
+  /** Finish this terminal session by sending SIGKILL to the shell. */
+  public void finishIfRunning() {
+    if (isRunning()) {
+      try {
+        Os.kill(mShellPid, OsConstants.SIGKILL);
+      } catch (ErrnoException e) {
+        mClient.logWarn(LOG_TAG, "Failed sending SIGKILL: " + e.getMessage());
+      }
+    }
+  }
+
+  public synchronized boolean isRunning() {
+    return mShellPid != -1;
+  }
+
+  /** Only valid if not {@link #isRunning()}. */
+  public synchronized int getExitStatus() {
+    return mShellExitStatus;
   }
 
   public int getPid() {
@@ -324,26 +322,17 @@ public final class TerminalSession extends TerminalOutput {
     return null;
   }
 
-  @SuppressLint("DiscouragedPrivateApi")
-  private static FileDescriptor wrapFileDescriptor(
-      int fileDescriptor, TerminalSessionClient client) {
-    FileDescriptor result = new FileDescriptor();
-    try {
-      Field descriptorField;
-      try {
-        descriptorField = FileDescriptor.class.getDeclaredField("descriptor");
-      } catch (NoSuchFieldException e) {
-        // For desktop java:
-        descriptorField = FileDescriptor.class.getDeclaredField("fd");
-      }
-      descriptorField.setAccessible(true);
-      descriptorField.set(result, fileDescriptor);
-    } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-      client.logStackTraceWithMessage(
-          LOG_TAG, "Error accessing FileDescriptor#descriptor private field", e);
-      System.exit(1);
+  /** Cleanup resources when the process exits. */
+  void cleanupResources(int exitStatus) {
+    synchronized (this) {
+      mShellPid = -1;
+      mShellExitStatus = exitStatus;
     }
-    return result;
+
+    // Stop the reader and writer threads, and close the I/O streams
+    mTerminalToProcessIOQueue.close();
+    mProcessToTerminalIOQueue.close();
+    JNI.close(mTerminalFileDescriptor);
   }
 
   class MainThreadHandler implements Handler.Callback {

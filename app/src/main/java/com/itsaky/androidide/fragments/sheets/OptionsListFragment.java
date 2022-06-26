@@ -43,13 +43,6 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
   private OnOptionsClickListener listener;
 
   @Override
-  protected void bind(@NonNull LinearLayout container) {
-    mList = new RecyclerView(requireContext());
-    container.removeAllViews();
-    container.addView(mList, new LinearLayout.LayoutParams(-1, -1));
-  }
-
-  @Override
   public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     mList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -62,6 +55,18 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
                 listener.onOptionsClick(__);
               }
             }));
+  }
+
+  @Override
+  protected String getTitle() {
+    return getString(com.itsaky.androidide.R.string.file_options);
+  }
+
+  @Override
+  protected void bind(@NonNull LinearLayout container) {
+    mList = new RecyclerView(requireContext());
+    container.removeAllViews();
+    container.addView(mList, new LinearLayout.LayoutParams(-1, -1));
   }
 
   @Override
@@ -88,11 +93,6 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
   public OptionsListFragment setDismissOnItemClick(boolean dissmiss) {
     this.dismissOnItemClick = dissmiss;
     return this;
-  }
-
-  @Override
-  protected String getTitle() {
-    return getString(com.itsaky.androidide.R.string.file_options);
   }
 
   public static interface OnOptionsClickListener {

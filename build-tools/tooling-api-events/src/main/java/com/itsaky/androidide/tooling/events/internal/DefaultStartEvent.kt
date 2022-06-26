@@ -22,4 +22,4 @@ import com.itsaky.androidide.tooling.events.StartEvent
 
 /** @author Akash Yadav */
 class DefaultStartEvent(displayName: String, eventTime: Long, descriptor: OperationDescriptor) :
-    DefaultProgressEvent(displayName, eventTime, descriptor), StartEvent
+  DefaultProgressEvent(displayName, eventTime, descriptor), StartEvent

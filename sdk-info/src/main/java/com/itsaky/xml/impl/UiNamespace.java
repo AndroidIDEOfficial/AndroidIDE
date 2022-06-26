@@ -96,13 +96,13 @@ public class UiNamespace implements INamespace {
   }
 
   @Override
-  public String getPrefix() {
-    return prefix;
+  public String getPackageName() {
+    return packageName;
   }
 
   @Override
-  public String getPackageName() {
-    return packageName;
+  public String getPrefix() {
+    return prefix;
   }
 
   @Override

@@ -23,5 +23,5 @@ import com.itsaky.androidide.actions.EditorRelatedAction
 
 /** @author Akash Yadav */
 abstract class SearchActionModeAction : EditorRelatedAction() {
-    override var location: Location = ActionItem.Location.EDITOR_SEARCH_ACTION_MODE
+  override var location: Location = ActionItem.Location.EDITOR_SEARCH_ACTION_MODE
 }

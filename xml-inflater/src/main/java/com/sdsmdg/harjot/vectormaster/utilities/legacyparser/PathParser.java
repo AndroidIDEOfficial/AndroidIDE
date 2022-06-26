@@ -30,33 +30,8 @@ public class PathParser {
   private static final ILogger LOG = ILogger.newInstance("PathParser");
 
   // Copy from Arrays.copyOfRange() which is only available from API level 9.
-  /**
-   * Copies elements from {@code original} into a new array, from indexes start (inclusive) to end
-   * (exclusive). The original order of elements is preserved. If {@code end} is greater than {@code
-   * original.length}, the result is padded with the value {@code 0.0f}.
-   *
-   * @param original the original array
-   * @param start the start index, inclusive
-   * @param end the end index, exclusive
-   * @return the new array
-   * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
-   * @throws IllegalArgumentException if {@code start > end}
-   * @throws NullPointerException if {@code original == null}
-   */
-  static float[] copyOfRange(float[] original, int start, int end) {
-    if (start > end) {
-      throw new IllegalArgumentException();
-    }
-    int originalLength = original.length;
-    if (start < 0 || start > originalLength) {
-      throw new ArrayIndexOutOfBoundsException();
-    }
-    int resultLength = end - start;
-    int copyLength = Math.min(resultLength, originalLength - start);
-    float[] result = new float[resultLength];
-    System.arraycopy(original, start, result, 0, copyLength);
-    return result;
-  }
+  private PathParser() {}
+
   /**
    * @param pathData The string representing a path, the same as "d" string in svg file.
    * @return the generated Path object.
@@ -100,57 +75,6 @@ public class PathParser {
     }
     return list.toArray(new PathDataNode[list.size()]);
   }
-  /**
-   * @param source The array of PathDataNode to be duplicated.
-   * @return a deep copy of the <code>source</code>.
-   */
-  public static PathDataNode[] deepCopyNodes(PathDataNode[] source) {
-    if (source == null) {
-      return null;
-    }
-    PathDataNode[] copy = new PathParser.PathDataNode[source.length];
-    for (int i = 0; i < source.length; i++) {
-      copy[i] = new PathDataNode(source[i]);
-    }
-    return copy;
-  }
-  /**
-   * @param nodesFrom The source path represented in an array of PathDataNode
-   * @param nodesTo The target path represented in an array of PathDataNode
-   * @return whether the <code>nodesFrom</code> can morph into <code>nodesTo</code>
-   */
-  public static boolean canMorph(
-      @Nullable PathDataNode[] nodesFrom, @Nullable PathDataNode[] nodesTo) {
-    if (nodesFrom == null || nodesTo == null) {
-      return false;
-    }
-    if (nodesFrom.length != nodesTo.length) {
-      return false;
-    }
-    for (int i = 0; i < nodesFrom.length; i++) {
-      if (nodesFrom[i].mType != nodesTo[i].mType
-          || nodesFrom[i].mParams.length != nodesTo[i].mParams.length) {
-        return false;
-      }
-    }
-    return true;
-  }
-  /**
-   * Update the target's data to match the source. Before calling this, make sure canMorph(target,
-   * source) is true.
-   *
-   * @param target The target path represented in an array of PathDataNode
-   * @param source The source path represented in an array of PathDataNode
-   * @hide
-   */
-  public static void updateNodes(PathDataNode[] target, PathDataNode[] source) {
-    for (int i = 0; i < source.length; i++) {
-      target[i].mType = source[i].mType;
-      for (int j = 0; j < source[i].mParams.length; j++) {
-        target[i].mParams[j] = source[i].mParams[j];
-      }
-    }
-  }
 
   private static int nextStart(String s, int end) {
     char c;
@@ -172,14 +96,6 @@ public class PathParser {
     list.add(new PathDataNode(cmd, val));
   }
 
-  private static class ExtractFloatResult {
-    // We need to return the position of the next separator and whether the
-    // next float starts with a '-' or a '.'.
-    int mEndPosition;
-    boolean mEndWithNegOrDot;
-
-    ExtractFloatResult() {}
-  }
   /**
    * Parse the floats in the string. This is an optimized version of parseFloat(s.split(",|\\s"));
    *
@@ -218,6 +134,35 @@ public class PathParser {
       throw new RuntimeException("error in parsing \"" + s + "\"", e);
     }
   }
+
+  /**
+   * Copies elements from {@code original} into a new array, from indexes start (inclusive) to end
+   * (exclusive). The original order of elements is preserved. If {@code end} is greater than {@code
+   * original.length}, the result is padded with the value {@code 0.0f}.
+   *
+   * @param original the original array
+   * @param start the start index, inclusive
+   * @param end the end index, exclusive
+   * @return the new array
+   * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
+   * @throws IllegalArgumentException if {@code start > end}
+   * @throws NullPointerException if {@code original == null}
+   */
+  static float[] copyOfRange(float[] original, int start, int end) {
+    if (start > end) {
+      throw new IllegalArgumentException();
+    }
+    int originalLength = original.length;
+    if (start < 0 || start > originalLength) {
+      throw new ArrayIndexOutOfBoundsException();
+    }
+    int resultLength = end - start;
+    int copyLength = Math.min(resultLength, originalLength - start);
+    float[] result = new float[resultLength];
+    System.arraycopy(original, start, result, 0, copyLength);
+    return result;
+  }
+
   /**
    * Calculate the position of the next comma or space or negative sign
    *
@@ -271,6 +216,39 @@ public class PathParser {
     // of the string.
     result.mEndPosition = currentIndex;
   }
+
+  /**
+   * @param source The array of PathDataNode to be duplicated.
+   * @return a deep copy of the <code>source</code>.
+   */
+  public static PathDataNode[] deepCopyNodes(PathDataNode[] source) {
+    if (source == null) {
+      return null;
+    }
+    PathDataNode[] copy = new PathParser.PathDataNode[source.length];
+    for (int i = 0; i < source.length; i++) {
+      copy[i] = new PathDataNode(source[i]);
+    }
+    return copy;
+  }
+
+  /**
+   * Update the target's data to match the source. Before calling this, make sure canMorph(target,
+   * source) is true.
+   *
+   * @param target The target path represented in an array of PathDataNode
+   * @param source The source path represented in an array of PathDataNode
+   * @hide
+   */
+  public static void updateNodes(PathDataNode[] target, PathDataNode[] source) {
+    for (int i = 0; i < source.length; i++) {
+      target[i].mType = source[i].mType;
+      for (int j = 0; j < source[i].mParams.length; j++) {
+        target[i].mParams[j] = source[i].mParams[j];
+      }
+    }
+  }
+
   /**
    * Interpolate between two arrays of PathDataNodes with the given fraction, and store the results
    * in the first parameter.
@@ -301,6 +279,29 @@ public class PathParser {
     }
     return true;
   }
+
+  /**
+   * @param nodesFrom The source path represented in an array of PathDataNode
+   * @param nodesTo The target path represented in an array of PathDataNode
+   * @return whether the <code>nodesFrom</code> can morph into <code>nodesTo</code>
+   */
+  public static boolean canMorph(
+      @Nullable PathDataNode[] nodesFrom, @Nullable PathDataNode[] nodesTo) {
+    if (nodesFrom == null || nodesTo == null) {
+      return false;
+    }
+    if (nodesFrom.length != nodesTo.length) {
+      return false;
+    }
+    for (int i = 0; i < nodesFrom.length; i++) {
+      if (nodesFrom[i].mType != nodesTo[i].mType
+          || nodesFrom[i].mParams.length != nodesTo[i].mParams.length) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /**
    * Each PathDataNode represents one command in the "d" attribute of the svg file. An array of
    * PathDataNode can represent the whole "d" attribute.
@@ -332,21 +333,6 @@ public class PathParser {
       for (int i = 0; i < node.length; i++) {
         addCommand(path, current, previousCommand, node[i].mType, node[i].mParams);
         previousCommand = node[i].mType;
-      }
-    }
-    /**
-     * The current PathDataNode will be interpolated between the <code>nodeFrom</code> and <code>
-     * nodeTo</code> according to the <code>fraction</code>.
-     *
-     * @param nodeFrom The start value as a PathDataNode.
-     * @param nodeTo The end value as a PathDataNode
-     * @param fraction The fraction to interpolate.
-     */
-    public void interpolatePathDataNode(
-        PathDataNode nodeFrom, PathDataNode nodeTo, float fraction) {
-      mType = nodeFrom.mType;
-      for (int i = 0; i < nodeFrom.mParams.length; i++) {
-        mParams[i] = nodeFrom.mParams[i] * (1 - fraction) + nodeTo.mParams[i] * fraction;
       }
     }
 
@@ -678,6 +664,7 @@ public class PathParser {
       cy = tcx * sinTheta + cy * cosTheta;
       arcToBezier(p, cx, cy, a, b, x0, y0, thetaD, eta0, sweep);
     }
+
     /**
      * Converts an arc to cubic Bezier segments and records them in p.
      *
@@ -739,7 +726,30 @@ public class PathParser {
         ep1y = ep2y;
       }
     }
+
+    /**
+     * The current PathDataNode will be interpolated between the <code>nodeFrom</code> and <code>
+     * nodeTo</code> according to the <code>fraction</code>.
+     *
+     * @param nodeFrom The start value as a PathDataNode.
+     * @param nodeTo The end value as a PathDataNode
+     * @param fraction The fraction to interpolate.
+     */
+    public void interpolatePathDataNode(
+        PathDataNode nodeFrom, PathDataNode nodeTo, float fraction) {
+      mType = nodeFrom.mType;
+      for (int i = 0; i < nodeFrom.mParams.length; i++) {
+        mParams[i] = nodeFrom.mParams[i] * (1 - fraction) + nodeTo.mParams[i] * fraction;
+      }
+    }
   }
 
-  private PathParser() {}
+  private static class ExtractFloatResult {
+    // We need to return the position of the next separator and whether the
+    // next float starts with a '-' or a '.'.
+    int mEndPosition;
+    boolean mEndWithNegOrDot;
+
+    ExtractFloatResult() {}
+  }
 }

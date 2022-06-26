@@ -22,11 +22,11 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultSyncIssue(
-    override val data: String?,
-    override val message: String,
-    override val multiLineMessage: List<String?>?,
-    override val severity: Int,
-    override val type: Int
+  override val data: String?,
+  override val message: String,
+  override val multiLineMessage: List<String?>?,
+  override val severity: Int,
+  override val type: Int
 ) : SyncIssue, Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

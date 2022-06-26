@@ -29,10 +29,8 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
-import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
-import io.github.rosemoe.sora.text.Content
 
 /**
  * Incremental syntax analyzer for Kotlin.

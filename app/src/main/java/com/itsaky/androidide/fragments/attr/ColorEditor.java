@@ -18,7 +18,6 @@
 package com.itsaky.androidide.fragments.attr;
 
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,28 +76,6 @@ public class ColorEditor extends AbstractReferenceEditor {
     }
   }
 
-  @Override
-  protected List<String> computeReferenceItems() {
-    final var list = new ArrayList<String>();
-    final var tables = ValuesTableFactory.getAllTables();
-    for (var entry : tables.entrySet()) {
-      final var dimens = entry.getValue().getTable("color");
-      if (dimens != null) {
-        list.addAll(dimens.keySet().stream().map("@color/"::concat).collect(Collectors.toSet()));
-      }
-    }
-
-    list.addAll(
-        FrameworkValues.listColors().stream()
-            .map("@android:color/"::concat)
-            .collect(Collectors.toList()));
-
-    final var resTable = StudioApp.getInstance().getResourceTable();
-    list.addAll(resTable.listResourceNames("color"));
-
-    return list;
-  }
-
   private Dialog getColorPickerDialog() {
 
     if (colorPickerDialog == null) {
@@ -121,5 +98,27 @@ public class ColorEditor extends AbstractReferenceEditor {
     }
 
     return colorPickerDialog;
+  }
+
+  @Override
+  protected List<String> computeReferenceItems() {
+    final var list = new ArrayList<String>();
+    final var tables = ValuesTableFactory.getAllTables();
+    for (var entry : tables.entrySet()) {
+      final var dimens = entry.getValue().getTable("color");
+      if (dimens != null) {
+        list.addAll(dimens.keySet().stream().map("@color/"::concat).collect(Collectors.toSet()));
+      }
+    }
+
+    list.addAll(
+        FrameworkValues.listColors().stream()
+            .map("@android:color/"::concat)
+            .collect(Collectors.toList()));
+
+    final var resTable = StudioApp.getInstance().getResourceTable();
+    list.addAll(resTable.listResourceNames("color"));
+
+    return list;
   }
 }

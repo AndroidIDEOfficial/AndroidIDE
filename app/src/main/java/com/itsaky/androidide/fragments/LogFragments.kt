@@ -24,30 +24,30 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class IDELogFragment : LogViewFragment() {
-    private var logListener: ILogger.LogListener? =
-        ILogger.LogListener { priority, tag, message ->
-            if (message.contains("\n")) {
-                val split = message.split("\n").toTypedArray()
-                for (line in split) {
-                    logLine(priority, tag, line)
-                }
-            } else {
-                logLine(priority, tag, message)
-            }
+  private var logListener: ILogger.LogListener? =
+    ILogger.LogListener { priority, tag, message ->
+      if (message.contains("\n")) {
+        val split = message.split("\n").toTypedArray()
+        for (line in split) {
+          logLine(priority, tag, line)
         }
-
-    init {
-        ILogger.addLogListener(this.logListener)
+      } else {
+        logLine(priority, tag, message)
+      }
     }
 
-    override fun isSimpleFormattingEnabled() = true
-    override fun getLogType() = "ide_logs"
+  init {
+    ILogger.addLogListener(this.logListener)
+  }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        ILogger.removeLogListener(logListener)
-        logListener = null
-    }
+  override fun isSimpleFormattingEnabled() = true
+  override fun getLogType() = "ide_logs"
+
+  override fun onDestroy() {
+    super.onDestroy()
+    ILogger.removeLogListener(logListener)
+    logListener = null
+  }
 }
 
 /**
@@ -55,6 +55,6 @@ class IDELogFragment : LogViewFragment() {
  * @author Akash Yadav
  */
 class AppLogFragment : LogViewFragment() {
-    override fun isSimpleFormattingEnabled() = false
-    override fun getLogType() = "app_logs"
+  override fun isSimpleFormattingEnabled() = false
+  override fun getLogType() = "app_logs"
 }

@@ -88,10 +88,6 @@ public class XMLAttributeListAdapter extends RecyclerView.Adapter<XMLAttributeLi
     return attributes.size();
   }
 
-  public interface OnClickListener {
-    void onClick(LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute);
-  }
-
   static class VH extends RecyclerView.ViewHolder {
     LayoutAttrEditorSheetItemBinding binding;
 
@@ -99,5 +95,9 @@ public class XMLAttributeListAdapter extends RecyclerView.Adapter<XMLAttributeLi
       super(binding.getRoot());
       this.binding = binding;
     }
+  }
+
+  public interface OnClickListener {
+    void onClick(LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute);
   }
 }

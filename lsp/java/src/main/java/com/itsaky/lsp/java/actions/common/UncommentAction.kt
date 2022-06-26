@@ -22,28 +22,28 @@ import com.itsaky.lsp.java.actions.BaseCodeAction
 
 /** @author Akash Yadav */
 class UncommentAction : BaseCodeAction() {
-    override val id: String = "lsp_java_uncommentLine"
-    override var label: String = ""
+  override val id: String = "lsp_java_uncommentLine"
+  override var label: String = ""
 
-    override val titleTextRes: Int = R.string.action_uncomment_line
+  override val titleTextRes: Int = R.string.action_uncomment_line
 
-    override fun execAction(data: ActionData): Boolean {
-        val editor = requireEditor(data)
-        val text = editor.text
-        val cursor = editor.cursor
-        var line = cursor.leftLine
+  override fun execAction(data: ActionData): Boolean {
+    val editor = requireEditor(data)
+    val text = editor.text
+    val cursor = editor.cursor
+    var line = cursor.leftLine
 
-        text.beginBatchEdit()
-        while (line >= cursor.leftLine && line <= cursor.rightLine) {
-            val l = text.getLineString(line)
-            if (l.trim { it <= ' ' }.startsWith("//")) {
-                val i = l.indexOf("//")
-                text.delete(line, i, line, i + 2)
-            }
-            line++
-        }
-        text.endBatchEdit()
-
-        return true
+    text.beginBatchEdit()
+    while (line >= cursor.leftLine && line <= cursor.rightLine) {
+      val l = text.getLineString(line)
+      if (l.trim { it <= ' ' }.startsWith("//")) {
+        val i = l.indexOf("//")
+        text.delete(line, i, line, i + 2)
+      }
+      line++
     }
+    text.endBatchEdit()
+
+    return true
+  }
 }

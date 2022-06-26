@@ -1,10 +1,5 @@
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-
-import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
-
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -12,6 +7,11 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+
+import org.eclipse.lsp4j.jsonrpc.messages.Tuple.Two;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 public final class TupleTypeAdapters {
 

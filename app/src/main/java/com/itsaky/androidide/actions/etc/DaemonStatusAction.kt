@@ -25,22 +25,22 @@ import com.itsaky.androidide.actions.EditorActivityAction
 
 /** @author Akash Yadav */
 class DaemonStatusAction() : EditorActivityAction() {
-    override val id: String = "editor_daemonStatus"
-    override var requiresUIThread: Boolean = true
+  override val id: String = "editor_daemonStatus"
+  override var requiresUIThread: Boolean = true
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.gradle_daemon_status)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_info)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.gradle_daemon_status)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_info)
+  }
 
-    override fun prepare(data: ActionData) {
-        visible = true
-        enabled = true
-    }
+  override fun prepare(data: ActionData) {
+    visible = true
+    enabled = true
+  }
 
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
-        context.showDaemonStatus()
-        return true
-    }
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
+    context.showDaemonStatus()
+    return true
+  }
 }

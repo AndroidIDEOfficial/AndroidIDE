@@ -37,13 +37,12 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Integer> {
+  private static final ILogger LOG = ILogger.newInstance("main");
   private final Trees trees;
   private final SourcePositions pos;
   private CompilationUnitTree root;
-
   private boolean isMemberSelect;
   private boolean isStatic;
-
   private String returnType;
   private ClassTree enclosingTree;
   private TreePath enclosingTreePath;
@@ -84,9 +83,33 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
   }
 
   @Override
+  public MethodInvocationTree reduce(MethodInvocationTree r1, MethodInvocationTree r2) {
+    if (r1 != null) return r1;
+    return r2;
+  }
+
+  @Override
   public MethodInvocationTree visitCompilationUnit(CompilationUnitTree t, Integer find) {
     root = t;
     return super.visitCompilationUnit(t, find);
+  }
+
+  /**
+   * Find method invocation while declaring a variable E.g.
+   *
+   * <pre> int x = foo(); </pre>
+   */
+  @Override
+  public MethodInvocationTree visitVariable(VariableTree tree, Integer find) {
+    if (tree != null) {
+      long start = pos.getStartPosition(root, tree);
+      long end = pos.getEndPosition(root, tree);
+      if (start <= find && find <= end && tree.getInitializer() instanceof MethodInvocationTree) {
+        returnType = tree.getType().toString();
+        return visitMethodInvocation((MethodInvocationTree) tree.getInitializer(), find);
+      }
+    }
+    return super.visitVariable(tree, find);
   }
 
   /**
@@ -113,24 +136,6 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
       return t;
     }
     return null;
-  }
-
-  /**
-   * Find method invocation while declaring a variable E.g.
-   *
-   * <pre> int x = foo(); </pre>
-   */
-  @Override
-  public MethodInvocationTree visitVariable(VariableTree tree, Integer find) {
-    if (tree != null) {
-      long start = pos.getStartPosition(root, tree);
-      long end = pos.getEndPosition(root, tree);
-      if (start <= find && find <= end && tree.getInitializer() instanceof MethodInvocationTree) {
-        returnType = tree.getType().toString();
-        return visitMethodInvocation((MethodInvocationTree) tree.getInitializer(), find);
-      }
-    }
-    return super.visitVariable(tree, find);
   }
 
   /**
@@ -163,12 +168,6 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
           && typeMirror.getKind() != TypeKind.ERROR) return typeMirror.toString();
     }
     return null;
-  }
-
-  @Override
-  public MethodInvocationTree reduce(MethodInvocationTree r1, MethodInvocationTree r2) {
-    if (r1 != null) return r1;
-    return r2;
   }
 
   private void checkForQualifiedName(MemberSelectTree tree, Integer find) {
@@ -255,6 +254,4 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
     }
     return null;
   }
-
-  private static final ILogger LOG = ILogger.newInstance("main");
 }

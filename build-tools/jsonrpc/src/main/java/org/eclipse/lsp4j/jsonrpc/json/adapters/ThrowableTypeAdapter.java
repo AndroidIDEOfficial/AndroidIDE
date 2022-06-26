@@ -11,9 +11,6 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
@@ -23,26 +20,38 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+
 /**
  * A type adapter for {@link Throwable}. This is used to report issues to the sender of a request.
  */
 public class ThrowableTypeAdapter extends TypeAdapter<Throwable> {
 
-  public static class Factory implements TypeAdapterFactory {
-
-    @SuppressWarnings({"unchecked"})
-    @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-      if (!Throwable.class.isAssignableFrom(typeToken.getRawType())) return null;
-
-      return (TypeAdapter<T>) new ThrowableTypeAdapter((TypeToken<Throwable>) typeToken);
-    }
-  }
-
   private final TypeToken<Throwable> typeToken;
 
   public ThrowableTypeAdapter(TypeToken<Throwable> typeToken) {
     this.typeToken = typeToken;
+  }
+
+  @Override
+  public void write(JsonWriter out, Throwable throwable) throws IOException {
+    if (throwable == null) {
+      out.nullValue();
+    } else if (throwable.getMessage() == null && throwable.getCause() != null) {
+      write(out, throwable.getCause());
+    } else {
+      out.beginObject();
+      if (throwable.getMessage() != null) {
+        out.name("message");
+        out.value(throwable.getMessage());
+      }
+      if (shouldWriteCause(throwable)) {
+        out.name("cause");
+        write(out, throwable.getCause());
+      }
+      out.endObject();
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -104,31 +113,22 @@ public class ThrowableTypeAdapter extends TypeAdapter<Throwable> {
     }
   }
 
-  @Override
-  public void write(JsonWriter out, Throwable throwable) throws IOException {
-    if (throwable == null) {
-      out.nullValue();
-    } else if (throwable.getMessage() == null && throwable.getCause() != null) {
-      write(out, throwable.getCause());
-    } else {
-      out.beginObject();
-      if (throwable.getMessage() != null) {
-        out.name("message");
-        out.value(throwable.getMessage());
-      }
-      if (shouldWriteCause(throwable)) {
-        out.name("cause");
-        write(out, throwable.getCause());
-      }
-      out.endObject();
-    }
-  }
-
   private boolean shouldWriteCause(Throwable throwable) {
     Throwable cause = throwable.getCause();
     if (cause == null || cause.getMessage() == null || cause == throwable) return false;
     if (throwable.getMessage() != null && throwable.getMessage().contains(cause.getMessage()))
       return false;
     return true;
+  }
+
+  public static class Factory implements TypeAdapterFactory {
+
+    @SuppressWarnings({"unchecked"})
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+      if (!Throwable.class.isAssignableFrom(typeToken.getRawType())) return null;
+
+      return (TypeAdapter<T>) new ThrowableTypeAdapter((TypeToken<Throwable>) typeToken);
+    }
   }
 }

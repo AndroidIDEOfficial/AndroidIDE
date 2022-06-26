@@ -30,79 +30,79 @@ import javax.lang.model.util.Types
 
 /** @author Akash Yadav */
 class JavaPoetUtils {
-    companion object {
-        @JvmStatic
-        fun print(
-            method: MethodSpec,
-            importsOut: MutableSet<String>,
-            qualifiedNames: Boolean = true,
-        ): String {
-            val sb = StringBuilder()
-            val writer = ImportCollectingCodeWriter(sb)
+  companion object {
+    @JvmStatic
+    fun print(
+      method: MethodSpec,
+      importsOut: MutableSet<String>,
+      qualifiedNames: Boolean = true,
+    ): String {
+      val sb = StringBuilder()
+      val writer = ImportCollectingCodeWriter(sb)
 
-            writer.isPrintQualifiedNames = qualifiedNames
-            writer.emit(method)
-            importsOut.addAll(writer.importClasses)
+      writer.isPrintQualifiedNames = qualifiedNames
+      writer.emit(method)
+      importsOut.addAll(writer.importClasses)
 
-            return sb.toString()
-        }
-
-        @JvmStatic
-        fun print(build: MethodSpec, imports: MutableSet<String>): String {
-            return print(build, imports, true)
-        }
-
-        @JvmStatic
-        fun buildMethod(
-            method: ExecutableElement,
-            types: Types,
-            type: DeclaredType
-        ): MethodSpec.Builder {
-            val builder = MethodSpec.overriding(method, type, types)
-            val mirrors = method.annotationMirrors
-            if (mirrors != null && mirrors.isNotEmpty()) {
-                for (mirror in mirrors) {
-                    if (mirror !is NullType && mirror.annotationType.kind != TypeKind.NULL) {
-                        builder.addAnnotation(AnnotationSpec.get(mirror))
-                    }
-                }
-            }
-            var addComment = true
-            // Add super call if the method is not abstract
-            if (!method.modifiers.contains(Modifier.ABSTRACT)) {
-                if (method.returnType is NoType) {
-                    builder.addStatement(createSuperCall(builder))
-                } else {
-                    addComment = false
-                    builder.addComment("TODO: Implement this method")
-                    builder.addStatement("return " + createSuperCall(builder))
-                }
-            }
-            if (addComment) {
-                builder.addComment("TODO: Implement this method")
-            }
-            return builder
-        }
-
-        /**
-         * Create a superclass method invocation statement.
-         *
-         * @param builder The method builder.
-         * @return The super invocation statement string without ending ';'.
-         */
-        private fun createSuperCall(builder: MethodSpec.Builder): String {
-            val sb = java.lang.StringBuilder()
-            sb.append("super.")
-            sb.append(builder.name)
-            sb.append("(")
-            for (i in builder.parameters.indices) {
-                sb.append(builder.parameters[i].name)
-                if (i != builder.parameters.size - 1) {
-                    sb.append(", ")
-                }
-            }
-            sb.append(")")
-            return sb.toString()
-        }
+      return sb.toString()
     }
+
+    @JvmStatic
+    fun print(build: MethodSpec, imports: MutableSet<String>): String {
+      return print(build, imports, true)
+    }
+
+    @JvmStatic
+    fun buildMethod(
+      method: ExecutableElement,
+      types: Types,
+      type: DeclaredType
+    ): MethodSpec.Builder {
+      val builder = MethodSpec.overriding(method, type, types)
+      val mirrors = method.annotationMirrors
+      if (mirrors != null && mirrors.isNotEmpty()) {
+        for (mirror in mirrors) {
+          if (mirror !is NullType && mirror.annotationType.kind != TypeKind.NULL) {
+            builder.addAnnotation(AnnotationSpec.get(mirror))
+          }
+        }
+      }
+      var addComment = true
+      // Add super call if the method is not abstract
+      if (!method.modifiers.contains(Modifier.ABSTRACT)) {
+        if (method.returnType is NoType) {
+          builder.addStatement(createSuperCall(builder))
+        } else {
+          addComment = false
+          builder.addComment("TODO: Implement this method")
+          builder.addStatement("return " + createSuperCall(builder))
+        }
+      }
+      if (addComment) {
+        builder.addComment("TODO: Implement this method")
+      }
+      return builder
+    }
+
+    /**
+     * Create a superclass method invocation statement.
+     *
+     * @param builder The method builder.
+     * @return The super invocation statement string without ending ';'.
+     */
+    private fun createSuperCall(builder: MethodSpec.Builder): String {
+      val sb = java.lang.StringBuilder()
+      sb.append("super.")
+      sb.append(builder.name)
+      sb.append("(")
+      for (i in builder.parameters.indices) {
+        sb.append(builder.parameters[i].name)
+        if (i != builder.parameters.size - 1) {
+          sb.append(", ")
+        }
+      }
+      sb.append(")")
+      return sb.toString()
+    }
+  }
 }

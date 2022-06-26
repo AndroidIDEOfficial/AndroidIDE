@@ -25,6 +25,8 @@ public class ResponseMessage extends IdentifiableMessage {
    * on the method of the corresponding request.
    */
   private Object result;
+  /** The error object in case a request fails. */
+  private ResponseError error;
 
   public Object getResult() {
     return this.result;
@@ -33,9 +35,6 @@ public class ResponseMessage extends IdentifiableMessage {
   public void setResult(Object result) {
     this.result = result;
   }
-
-  /** The error object in case a request fails. */
-  private ResponseError error;
 
   public ResponseError getError() {
     return this.error;

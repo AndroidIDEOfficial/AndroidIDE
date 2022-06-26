@@ -21,10 +21,10 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
+import java.util.concurrent.*
 
 /**
  * A client consumes services provided by [IToolingApiServer].
@@ -34,58 +34,58 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 @JsonSegment("client")
 interface IToolingApiClient {
 
-    /**
-     * Log the given log message.
-     *
-     * @param line The [LogLine] to log.
-     */
-    @JsonNotification fun logMessage(line: LogLine)
+  /**
+   * Log the given log message.
+   *
+   * @param line The [LogLine] to log.
+   */
+  @JsonNotification fun logMessage(line: LogLine)
 
-    /**
-     * Log the build output received from Gradle.
-     *
-     * @param line The line of the build output to log.
-     */
-    @JsonNotification fun logOutput(line: String)
+  /**
+   * Log the build output received from Gradle.
+   *
+   * @param line The line of the build output to log.
+   */
+  @JsonNotification fun logOutput(line: String)
 
-    /** Called just before a build is started. */
-    @JsonNotification fun prepareBuild()
+  /** Called just before a build is started. */
+  @JsonNotification fun prepareBuild()
 
-    /**
-     * Called when a build is successful.
-     *
-     * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
-     * were specified or if the build was not related to any tasks.
-     */
-    @JsonNotification fun onBuildSuccessful(result: BuildResult)
+  /**
+   * Called when a build is successful.
+   *
+   * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
+   * were specified or if the build was not related to any tasks.
+   */
+  @JsonNotification fun onBuildSuccessful(result: BuildResult)
 
-    /**
-     * Called when a build fails.
-     *
-     * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
-     * were specified or if the build was not related to any tasks.
-     */
-    @JsonNotification fun onBuildFailed(result: BuildResult)
+  /**
+   * Called when a build fails.
+   *
+   * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
+   * were specified or if the build was not related to any tasks.
+   */
+  @JsonNotification fun onBuildFailed(result: BuildResult)
 
-    /**
-     * Called when a [ProgressEvent] is received from Gradle build.
-     *
-     * @param event The [ProgressEvent] model describing the event.
-     */
-    @JsonNotification fun onProgressEvent(event: ProgressEvent)
+  /**
+   * Called when a [ProgressEvent] is received from Gradle build.
+   *
+   * @param event The [ProgressEvent] model describing the event.
+   */
+  @JsonNotification fun onProgressEvent(event: ProgressEvent)
 
-    /**
-     * Get the extra build arguments that will be used for every build.
-     *
-     * @return The extra build arguments.
-     */
-    @JsonRequest fun getBuildArguments(): CompletableFuture<List<String>>
+  /**
+   * Get the extra build arguments that will be used for every build.
+   *
+   * @return The extra build arguments.
+   */
+  @JsonRequest fun getBuildArguments(): CompletableFuture<List<String>>
 
-    /**
-     * Tells the client to check if the Gradle wrapper files are available.
-     *
-     * @return A [CompletableFuture] which completes when the client is done checking the wrapper
-     * availability. The future provides a result which tells if the wrapper is available or not.
-     */
-    @JsonRequest fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult>
+  /**
+   * Tells the client to check if the Gradle wrapper files are available.
+   *
+   * @return A [CompletableFuture] which completes when the client is done checking the wrapper
+   * availability. The future provides a result which tells if the wrapper is available or not.
+   */
+  @JsonRequest fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult>
 }

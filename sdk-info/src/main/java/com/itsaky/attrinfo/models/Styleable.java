@@ -42,6 +42,11 @@ public class Styleable {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(name, attributes);
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -51,11 +56,6 @@ public class Styleable {
     }
     Styleable styleable = (Styleable) o;
     return Objects.equals(name, styleable.name) && Objects.equals(attributes, styleable.attributes);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, attributes);
   }
 
   @NonNull

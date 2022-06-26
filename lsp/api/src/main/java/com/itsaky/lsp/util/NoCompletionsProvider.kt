@@ -20,11 +20,8 @@ package com.itsaky.lsp.util
 import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
-import com.itsaky.lsp.models.CompletionResult.Companion
 
-/**
- * @author Akash Yadav
- */
-class NoCompletionsProvider: ICompletionProvider {
-    override fun complete(params: CompletionParams?): CompletionResult = CompletionResult.EMPTY
+/** @author Akash Yadav */
+class NoCompletionsProvider : ICompletionProvider {
+  override fun complete(params: CompletionParams?): CompletionResult = CompletionResult.EMPTY
 }

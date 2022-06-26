@@ -21,6 +21,8 @@ public class RequestMessage extends IdentifiableMessage {
 
   /** The method to be invoked. */
   @NonNull private String method;
+  /** The method's parameters. The object type depends on the chosen method. */
+  private Object params;
 
   @NonNull
   public String getMethod() {
@@ -30,9 +32,6 @@ public class RequestMessage extends IdentifiableMessage {
   public void setMethod(@NonNull String method) {
     this.method = method;
   }
-
-  /** The method's parameters. The object type depends on the chosen method. */
-  private Object params;
 
   public Object getParams() {
     return this.params;

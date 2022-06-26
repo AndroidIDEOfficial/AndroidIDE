@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.events.StartEvent
 
 /** @author Akash Yadav */
 class WorkItemStartEvent(
-    displayName: String,
-    eventTime: Long,
-    descriptor: WorkItemOperationDescriptor
+  displayName: String,
+  eventTime: Long,
+  descriptor: WorkItemOperationDescriptor
 ) : WorkItemProgressEvent(displayName, eventTime, descriptor), StartEvent

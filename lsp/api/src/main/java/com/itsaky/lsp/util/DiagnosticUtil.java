@@ -86,37 +86,6 @@ public class DiagnosticUtil {
   }
 
   /**
-   * Find the rightmost diagnostic element containing the given position.
-   *
-   * @param diagnostics The list of diagnostics.
-   * @param position The position to search for.
-   * @return The index of the diagnostic item.
-   */
-  private static int findRightBound(List<DiagnosticItem> diagnostics, @NonNull Position position) {
-    final var index =
-        binarySearchDiagnosticPosition(diagnostics, position.getLine(), position.getColumn());
-    if (index == -1) {
-      return -1;
-    }
-
-    if (index == diagnostics.size() - 1) {
-      return index;
-    }
-
-    var right = index + 1;
-    var i = right;
-
-    do {
-      right = i;
-      i =
-          binarySearchDiagnosticPositionInRange(
-              diagnostics, position, right, diagnostics.size() - 1);
-    } while (i != -1);
-
-    return right;
-  }
-
-  /**
    * Binary search the position of the diagnostic item within the given list bounds containing the
    * given position.
    *
@@ -145,39 +114,6 @@ public class DiagnosticUtil {
     }
 
     return -1;
-  }
-
-  /**
-   * Binary search the diagnostic item which contains the given line and column.
-   *
-   * @param diagnostics The list of diagnostics.
-   * @param position The position to search for.
-   * @return The diagnostic item.
-   */
-  public static DiagnosticItem binarySearchDiagnostic(
-      List<DiagnosticItem> diagnostics, Position position) {
-    return binarySearchDiagnostic(diagnostics, position.getLine(), position.getColumn());
-  }
-
-  /**
-   * Binary search the diagnostic item which contains the given line and column.
-   *
-   * @param diagnostics The list of diagnostics.
-   * @param line The line to search for.
-   * @param column The column to search for.
-   * @return The diagnostic item.
-   */
-  public static DiagnosticItem binarySearchDiagnostic(
-      List<DiagnosticItem> diagnostics, int line, int column) {
-    if (diagnostics == null) {
-      return null;
-    }
-    final var index = binarySearchDiagnosticPosition(diagnostics, line, column);
-    if (index == -1) {
-      return null;
-    }
-
-    return diagnostics.get(index);
   }
 
   /**
@@ -213,5 +149,69 @@ public class DiagnosticUtil {
     }
 
     return -1;
+  }
+
+  /**
+   * Find the rightmost diagnostic element containing the given position.
+   *
+   * @param diagnostics The list of diagnostics.
+   * @param position The position to search for.
+   * @return The index of the diagnostic item.
+   */
+  private static int findRightBound(List<DiagnosticItem> diagnostics, @NonNull Position position) {
+    final var index =
+        binarySearchDiagnosticPosition(diagnostics, position.getLine(), position.getColumn());
+    if (index == -1) {
+      return -1;
+    }
+
+    if (index == diagnostics.size() - 1) {
+      return index;
+    }
+
+    var right = index + 1;
+    var i = right;
+
+    do {
+      right = i;
+      i =
+          binarySearchDiagnosticPositionInRange(
+              diagnostics, position, right, diagnostics.size() - 1);
+    } while (i != -1);
+
+    return right;
+  }
+
+  /**
+   * Binary search the diagnostic item which contains the given line and column.
+   *
+   * @param diagnostics The list of diagnostics.
+   * @param position The position to search for.
+   * @return The diagnostic item.
+   */
+  public static DiagnosticItem binarySearchDiagnostic(
+      List<DiagnosticItem> diagnostics, Position position) {
+    return binarySearchDiagnostic(diagnostics, position.getLine(), position.getColumn());
+  }
+
+  /**
+   * Binary search the diagnostic item which contains the given line and column.
+   *
+   * @param diagnostics The list of diagnostics.
+   * @param line The line to search for.
+   * @param column The column to search for.
+   * @return The diagnostic item.
+   */
+  public static DiagnosticItem binarySearchDiagnostic(
+      List<DiagnosticItem> diagnostics, int line, int column) {
+    if (diagnostics == null) {
+      return null;
+    }
+    final var index = binarySearchDiagnosticPosition(diagnostics, line, column);
+    if (index == -1) {
+      return null;
+    }
+
+    return diagnostics.get(index);
   }
 }

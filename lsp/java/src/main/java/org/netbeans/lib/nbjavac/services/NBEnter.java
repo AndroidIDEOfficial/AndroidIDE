@@ -18,7 +18,6 @@
  */
 package org.netbeans.lib.nbjavac.services;
 
-import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.TypeSymbol;
 import com.sun.tools.javac.code.Symtab;
 import com.sun.tools.javac.comp.AttrContext;
@@ -35,13 +34,13 @@ import com.sun.tools.javac.util.Context;
  */
 public class NBEnter extends Enter {
 
-  public static void preRegister(Context context) {
-    context.put(enterKey, (Context.Factory<Enter>) NBEnter::new);
-  }
-
   private final CancelService cancelService;
   private final Symtab syms;
   private final NBJavaCompiler compiler;
+
+  public static void preRegister(Context context) {
+    context.put(enterKey, (Context.Factory<Enter>) NBEnter::new);
+  }
 
   public NBEnter(Context context) {
     super(context);
@@ -52,9 +51,12 @@ public class NBEnter extends Enter {
   }
 
   @Override
-  public void visitClassDef(JCClassDecl tree) {
-    cancelService.abortIfCanceled();
-    super.visitClassDef(tree);
+  public Env<AttrContext> getEnv(TypeSymbol sym) {
+    Env<AttrContext> env = super.getEnv(sym);
+    if (compiler != null) {
+      compiler.maybeInvokeDesugarCallback(env);
+    }
+    return env;
   }
 
   @Override
@@ -67,11 +69,8 @@ public class NBEnter extends Enter {
   }
 
   @Override
-  public Env<AttrContext> getEnv(TypeSymbol sym) {
-    Env<AttrContext> env = super.getEnv(sym);
-    if (compiler != null) {
-      compiler.maybeInvokeDesugarCallback(env);
-    }
-    return env;
+  public void visitClassDef(JCClassDecl tree) {
+    cancelService.abortIfCanceled();
+    super.visitClassDef(tree);
   }
 }

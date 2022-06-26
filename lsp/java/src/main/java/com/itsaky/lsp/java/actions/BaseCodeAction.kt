@@ -33,49 +33,48 @@ import java.nio.file.Path
  * @author Akash Yadav
  */
 abstract class BaseCodeAction : ActionItem {
-    override var visible: Boolean = true
-    override var enabled: Boolean = true
-    override var icon: Drawable? = null
-    override var requiresUIThread: Boolean = false
-    override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
+  override var visible: Boolean = true
+  override var enabled: Boolean = true
+  override var icon: Drawable? = null
+  override var requiresUIThread: Boolean = false
+  override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
 
-    protected abstract val titleTextRes: Int
+  protected abstract val titleTextRes: Int
 
-    override fun prepare(data: ActionData) {
+  override fun prepare(data: ActionData) {
 
-        if (!hasRequiredData(
-            data, Context::class.java, JavaLanguageServer::class.java, File::class.java)) {
-            markInvisible()
-            return
-        }
-
-        if (titleTextRes != -1) {
-            label = data[Context::class.java]!!.getString(titleTextRes)
-        }
-
-        val file = requireFile(data)
-        visible = FileStore.isJavaFile(file.toPath())
-        enabled = visible
+    if (
+      !hasRequiredData(data, Context::class.java, JavaLanguageServer::class.java, File::class.java)
+    ) {
+      markInvisible()
+      return
     }
 
-    fun requireFile(data: ActionData): File {
-        return data.get(File::class.java)
-            ?: throw IllegalArgumentException("No file instance provided")
+    if (titleTextRes != -1) {
+      label = data[Context::class.java]!!.getString(titleTextRes)
     }
 
-    fun requirePath(data: ActionData): Path {
-        return requireFile(data).toPath()
-    }
+    val file = requireFile(data)
+    visible = FileStore.isJavaFile(file.toPath())
+    enabled = visible
+  }
 
-    fun requireEditor(data: ActionData): CodeEditor {
-        return data.get(CodeEditor::class.java)
-            ?: throw IllegalArgumentException(
-                "An editor instance is required but none was provided")
-    }
+  fun requireFile(data: ActionData): File {
+    return data.get(File::class.java) ?: throw IllegalArgumentException("No file instance provided")
+  }
 
-    fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
-        val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
-        val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
-        return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
-    }
+  fun requirePath(data: ActionData): Path {
+    return requireFile(data).toPath()
+  }
+
+  fun requireEditor(data: ActionData): CodeEditor {
+    return data.get(CodeEditor::class.java)
+      ?: throw IllegalArgumentException("An editor instance is required but none was provided")
+  }
+
+  fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
+    val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
+    val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
+    return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
+  }
 }

@@ -55,6 +55,15 @@ public class PrettyPrintingVisitor extends DefaultPrettyPrinterVisitor {
   }
 
   @Override
+  public void visit(SimpleName n, Void arg) {
+    printOrphanCommentsBeforeThisChildNode(n);
+    printComment(n.getComment(), arg);
+
+    String identifier = n.getIdentifier();
+    printer.print(getSimpleName(identifier));
+  }
+
+  @Override
   public void visit(ClassOrInterfaceType n, Void arg) {
     printOrphanCommentsBeforeThisChildNode(n);
     printComment(n.getComment(), arg);
@@ -68,15 +77,6 @@ public class PrettyPrintingVisitor extends DefaultPrettyPrinterVisitor {
     } else {
       printTypeArgs(n, arg);
     }
-  }
-
-  @Override
-  public void visit(SimpleName n, Void arg) {
-    printOrphanCommentsBeforeThisChildNode(n);
-    printComment(n.getComment(), arg);
-
-    String identifier = n.getIdentifier();
-    printer.print(getSimpleName(identifier));
   }
 
   protected void printOrphanCommentsBeforeThisChildNode(final Node node) {
@@ -116,6 +116,11 @@ public class PrettyPrintingVisitor extends DefaultPrettyPrinterVisitor {
     }
   }
 
+  private Optional<ConfigurationOption> getOption(
+      DefaultPrinterConfiguration.ConfigOption cOption) {
+    return configuration.get(new DefaultConfigurationOption(cOption));
+  }
+
   protected void printOrphanCommentsEnding(final Node node) {
     if (!getOption(DefaultPrinterConfiguration.ConfigOption.PRINT_COMMENTS).isPresent()) return;
 
@@ -137,10 +142,5 @@ public class PrettyPrintingVisitor extends DefaultPrettyPrinterVisitor {
     for (int i = 0; i < commentsAtEnd; i++) {
       everything.get(everything.size() - commentsAtEnd + i).accept(this, null);
     }
-  }
-
-  private Optional<ConfigurationOption> getOption(
-      DefaultPrinterConfiguration.ConfigOption cOption) {
-    return configuration.get(new DefaultConfigurationOption(cOption));
   }
 }

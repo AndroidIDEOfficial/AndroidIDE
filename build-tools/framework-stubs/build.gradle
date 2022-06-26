@@ -25,5 +25,5 @@ java {
 }
 
 dependencies {
-    compileOnlyApi files('libs/android.jar')
+    compileOnlyApi files ('libs/android.jar')
 }

@@ -41,6 +41,12 @@ public class FindAnonymousTypeDeclaration extends TreePathScanner<ClassTree, Lon
   }
 
   @Override
+  public ClassTree reduce(ClassTree a, ClassTree b) {
+    if (a != null) return a;
+    return b;
+  }
+
+  @Override
   public ClassTree visitNewClass(NewClassTree t, Long find) {
 
     if (pos == null) {
@@ -59,12 +65,6 @@ public class FindAnonymousTypeDeclaration extends TreePathScanner<ClassTree, Lon
     }
 
     return null;
-  }
-
-  @Override
-  public ClassTree reduce(ClassTree a, ClassTree b) {
-    if (a != null) return a;
-    return b;
   }
 
   public TreePath getStoredPath() {

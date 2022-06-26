@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.compiler;
 import androidx.annotation.NonNull;
 
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.nio.file.Path;

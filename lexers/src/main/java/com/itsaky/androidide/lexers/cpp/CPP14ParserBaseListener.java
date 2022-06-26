@@ -2699,21 +2699,8 @@ public class CPP14ParserBaseListener implements CPP14ParserListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
-  public void exitEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
   public void visitTerminal(TerminalNode node) {}
+
   /**
    * {@inheritDoc}
    *
@@ -2721,4 +2708,20 @@ public class CPP14ParserBaseListener implements CPP14ParserListener {
    */
   @Override
   public void visitErrorNode(ErrorNode node) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitEveryRule(ParserRuleContext ctx) {}
 }

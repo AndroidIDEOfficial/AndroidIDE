@@ -34,6 +34,12 @@ public class FindMethodDeclarationAt extends TreeScanner<MethodTree, Long> {
   }
 
   @Override
+  public MethodTree reduce(MethodTree r1, MethodTree r2) {
+    if (r1 != null) return r1;
+    return r2;
+  }
+
+  @Override
   public MethodTree visitCompilationUnit(CompilationUnitTree t, Long find) {
     root = t;
     return super.visitCompilationUnit(t, find);
@@ -49,11 +55,5 @@ public class FindMethodDeclarationAt extends TreeScanner<MethodTree, Long> {
       return t;
     }
     return null;
-  }
-
-  @Override
-  public MethodTree reduce(MethodTree r1, MethodTree r2) {
-    if (r1 != null) return r1;
-    return r2;
   }
 }

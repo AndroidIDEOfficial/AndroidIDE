@@ -38,27 +38,6 @@ import java.util.Objects;
  */
 public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
-  /** Name of this group. */
-  private final String name;
-
-  /** Children of this group. */
-  private final List<UIWidget> children;
-
-  /** Is this group currently selected in the group list? */
-  private boolean selected;
-
-  public UIWidgetGroup(String name) {
-    this.name = name;
-    this.selected = false;
-    this.children = new ArrayList<>();
-  }
-
-  protected UIWidgetGroup(@NonNull Parcel in) {
-    this.name = in.readString();
-    this.children = in.createTypedArrayList(UIWidget.CREATOR);
-    this.selected = in.readByte() != 0;
-  }
-
   public static final Creator<UIWidgetGroup> CREATOR =
       new Creator<UIWidgetGroup>() {
 
@@ -76,32 +55,23 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
           return new UIWidgetGroup[size];
         }
       };
+  /** Name of this group. */
+  private final String name;
+  /** Children of this group. */
+  private final List<UIWidget> children;
+  /** Is this group currently selected in the group list? */
+  private boolean selected;
 
-  /**
-   * Get the name of this group.
-   *
-   * @return The name of this group.
-   */
-  public String getName() {
-    return name;
+  public UIWidgetGroup(String name) {
+    this.name = name;
+    this.selected = false;
+    this.children = new ArrayList<>();
   }
 
-  /**
-   * Get the children of this group.
-   *
-   * @return The children.
-   */
-  @NonNull
-  public List<UIWidget> getChildren() {
-    return children;
-  }
-
-  public void setSelected(boolean selected) {
-    this.selected = selected;
-  }
-
-  public boolean isSelected() {
-    return selected;
+  protected UIWidgetGroup(@NonNull Parcel in) {
+    this.name = in.readString();
+    this.children = in.createTypedArrayList(UIWidget.CREATOR);
+    this.selected = in.readByte() != 0;
   }
 
   /**
@@ -130,6 +100,11 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getChildren(), isSelected());
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
@@ -139,9 +114,31 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
         && getChildren().equals(group.getChildren());
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getName(), getChildren(), isSelected());
+  /**
+   * Get the name of this group.
+   *
+   * @return The name of this group.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Get the children of this group.
+   *
+   * @return The children.
+   */
+  @NonNull
+  public List<UIWidget> getChildren() {
+    return children;
+  }
+
+  public boolean isSelected() {
+    return selected;
+  }
+
+  public void setSelected(boolean selected) {
+    this.selected = selected;
   }
 
   @Override

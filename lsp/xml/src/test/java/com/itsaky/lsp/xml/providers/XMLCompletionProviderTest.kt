@@ -17,7 +17,6 @@
 
 package com.itsaky.lsp.xml.providers
 
-import android.text.TextUtils
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.xml.BaseXMLTest
@@ -31,63 +30,63 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class XMLCompletionProviderTest : BaseXMLTest() {
 
-    @Test
-    fun testTagCompletion() {
-        openFile("TagCompletion")
+  @Test
+  fun testTagCompletion() {
+    openFile("TagCompletion")
 
-        val (isIncomplete, items) = complete()
+    val (isIncomplete, items) = complete()
 
-        assertThat(isIncomplete).isFalse()
-        assertThat(items).isNotEmpty()
+    assertThat(isIncomplete).isFalse()
+    assertThat(items).isNotEmpty()
 
-        assertThat(items).containsAtLeast("ImageView", "ImageButton")
-    }
+    assertThat(items).containsAtLeast("ImageView", "ImageButton")
+  }
 
-    @Test
-    fun testAttrValueCompletion() {
-        openFile("AttributeValueCompletion")
+  @Test
+  fun testAttrValueCompletion() {
+    openFile("AttributeValueCompletion")
 
-        val (isIncomplete, items) = complete()
+    val (isIncomplete, items) = complete()
 
-        assertThat(isIncomplete).isFalse()
-        assertThat(items).isNotEmpty()
+    assertThat(isIncomplete).isFalse()
+    assertThat(items).isNotEmpty()
 
-        assertThat(items).containsAtLeast("center", "fitCenter", "fitXY", "matrix")
-    }
+    assertThat(items).containsAtLeast("center", "fitCenter", "fitXY", "matrix")
+  }
 
-    @Test
-    fun testAttrCompletion() {
-        openFile("AttributeCompletion")
+  @Test
+  fun testAttrCompletion() {
+    openFile("AttributeCompletion")
 
-        val (isIncomplete, items) = complete()
+    val (isIncomplete, items) = complete()
 
-        assertThat(isIncomplete).isTrue()
-        assertThat(items).isNotEmpty()
-        
-        assertThat(items).containsAtLeast("text", "textColor", "textAlignment", "textAllCaps")
-    }
+    assertThat(isIncomplete).isTrue()
+    assertThat(items).isNotEmpty()
 
-    override fun openFile(fileName: String) {
-        super.openFile("completion/${fileName}")
-    }
+    assertThat(items).containsAtLeast("text", "textColor", "textAlignment", "textAllCaps")
+  }
 
-    private fun complete(): Pair<Boolean, List<String>> {
-        val createCompletionParams = createCompletionParams()
-        val result = mServer.completionProvider.complete(createCompletionParams)
-        return result.isIncomplete to
-            result.items
-                .filter { it.label != null }
-                .map { it.label.toString() }
-                .filter { it.isNotBlank() }
-                .toList()
-    }
+  override fun openFile(fileName: String) {
+    super.openFile("completion/${fileName}")
+  }
 
-    private fun createCompletionParams(): CompletionParams {
-        val cursor = cursorPosition(true)
-        val completionParams = CompletionParams(cursor, file!!)
-        completionParams.module = mockModuleProject()
-        completionParams.position.index = this.cursor
-        completionParams.content = contents
-        return completionParams
-    }
+  private fun complete(): Pair<Boolean, List<String>> {
+    val createCompletionParams = createCompletionParams()
+    val result = mServer.completionProvider.complete(createCompletionParams)
+    return result.isIncomplete to
+      result.items
+        .filter { it.label != null }
+        .map { it.label.toString() }
+        .filter { it.isNotBlank() }
+        .toList()
+  }
+
+  private fun createCompletionParams(): CompletionParams {
+    val cursor = cursorPosition(true)
+    val completionParams = CompletionParams(cursor, file!!)
+    completionParams.module = mockModuleProject()
+    completionParams.position.index = this.cursor
+    completionParams.content = contents
+    return completionParams
+  }
 }

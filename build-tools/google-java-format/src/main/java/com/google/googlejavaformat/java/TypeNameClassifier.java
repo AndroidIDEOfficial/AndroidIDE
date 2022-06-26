@@ -24,6 +24,33 @@ public final class TypeNameClassifier {
 
   private TypeNameClassifier() {}
 
+  /**
+   * Returns the end index (inclusive) of the longest prefix that matches the naming conventions of
+   * a type or static field access, or -1 if no such prefix was found.
+   *
+   * <p>Examples:
+   *
+   * <ul>
+   *   <li>ClassName
+   *   <li>ClassName.staticMemberName
+   *   <li>com.google.ClassName.InnerClass.staticMemberName
+   * </ul>
+   */
+  static Optional<Integer> typePrefixLength(List<String> nameParts) {
+    TyParseState state = TyParseState.START;
+    Optional<Integer> typeLength = Optional.empty();
+    for (int i = 0; i < nameParts.size(); i++) {
+      state = state.next(JavaCaseFormat.from(nameParts.get(i)));
+      if (state == TyParseState.REJECT) {
+        break;
+      }
+      if (state.isSingleUnit()) {
+        typeLength = Optional.of(i);
+      }
+    }
+    return typeLength;
+  }
+
   /** A state machine for classifying qualified names. */
   private enum TyParseState {
 
@@ -109,33 +136,6 @@ public final class TypeNameClassifier {
 
     /** Transition function. */
     public abstract TyParseState next(JavaCaseFormat n);
-  }
-
-  /**
-   * Returns the end index (inclusive) of the longest prefix that matches the naming conventions of
-   * a type or static field access, or -1 if no such prefix was found.
-   *
-   * <p>Examples:
-   *
-   * <ul>
-   *   <li>ClassName
-   *   <li>ClassName.staticMemberName
-   *   <li>com.google.ClassName.InnerClass.staticMemberName
-   * </ul>
-   */
-  static Optional<Integer> typePrefixLength(List<String> nameParts) {
-    TyParseState state = TyParseState.START;
-    Optional<Integer> typeLength = Optional.empty();
-    for (int i = 0; i < nameParts.size(); i++) {
-      state = state.next(JavaCaseFormat.from(nameParts.get(i)));
-      if (state == TyParseState.REJECT) {
-        break;
-      }
-      if (state.isSingleUnit()) {
-        typeLength = Optional.of(i);
-      }
-    }
-    return typeLength;
   }
 
   /** Case formats used in Java identifiers. */

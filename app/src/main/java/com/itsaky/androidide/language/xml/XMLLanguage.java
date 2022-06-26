@@ -57,38 +57,6 @@ public class XMLLanguage extends IDELanguage {
     this.newlineHandlers = new NewlineHandler[0];
   }
 
-  @Override
-  public int getIndentAdvance(@NonNull String content) {
-    try {
-      XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(content)));
-      Token token;
-      int advance = 0;
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        switch (token.getType()) {
-          case XMLLexer.OPEN:
-            advance++;
-            break;
-          case XMLLexer.CLOSE:
-          case XMLLexer.SLASH_CLOSE:
-            advance--;
-            break;
-          default:
-            break;
-        }
-      }
-      advance = Math.max(0, advance);
-      return advance * getTabSize();
-    } catch (Throwable e) {
-      LOG.error("Failed to compute indent advance", e);
-    }
-    return 0;
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new SymbolPairMatch.DefaultSymbolPairs();
-  }
-
   @NonNull
   @Override
   public AnalyzeManager getAnalyzeManager() {
@@ -126,8 +94,40 @@ public class XMLLanguage extends IDELanguage {
   }
 
   @Override
+  public int getIndentAdvance(@NonNull String content) {
+    try {
+      XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(content)));
+      Token token;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case XMLLexer.OPEN:
+            advance++;
+            break;
+          case XMLLexer.CLOSE:
+          case XMLLexer.SLASH_CLOSE:
+            advance--;
+            break;
+          default:
+            break;
+        }
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Failed to compute indent advance", e);
+    }
+    return 0;
+  }
+
+  @Override
   protected ILanguageServer getLanguageServer() {
     return StudioApp.getInstance().getXMLLanguageServer();
+  }
+
+  @Override
+  public SymbolPairMatch getSymbolPairs() {
+    return new SymbolPairMatch.DefaultSymbolPairs();
   }
 
   @Override

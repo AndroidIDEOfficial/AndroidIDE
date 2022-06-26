@@ -19,8 +19,7 @@ package com.itsaky.lsp.models
 
 import java.nio.file.Path
 
-/**
- * @author Akash Yadav
- */
-data class ReferenceParams (var file: Path, var position: Position, var includeDeclaration: Boolean)
-data class ReferenceResult (var locations: List<Location>)
+/** @author Akash Yadav */
+data class ReferenceParams(var file: Path, var position: Position, var includeDeclaration: Boolean)
+
+data class ReferenceResult(var locations: List<Location>)

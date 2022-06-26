@@ -37,171 +37,171 @@ import java.util.concurrent.*
  */
 @Suppress("MemberVisibilityCanBePrivate")
 object ProjectManager {
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    var rootProject: IProject? = null
-        set(value) {
-            field = if (value == null) null else CachingProject(value)
+  var rootProject: IProject? = null
+    set(value) {
+      field = if (value == null) null else CachingProject(value)
 
-            // Cache the module data in advance for future use
-            if (field != null) {
-                field!!.listModules()
-            }
-        }
-    var projectPath: String? = null
+      // Cache the module data in advance for future use
+      if (field != null) {
+        field!!.listModules()
+      }
+    }
+  var projectPath: String? = null
 
-    fun isInitialized() = this.rootProject != null && this.rootProject!!.isProjectInitialized.get()
+  fun isInitialized() = this.rootProject != null && this.rootProject!!.isProjectInitialized.get()
 
-    fun checkInit(): Boolean {
-        if (isInitialized()) {
-            return true
-        }
-
-        log.warn("Project is not initialized yet!")
-        return false
+  fun checkInit(): Boolean {
+    if (isInitialized()) {
+      return true
     }
 
-    fun getProjectDir(): File? = if (!checkInit()) null else File(getProjectDirPath()!!)
+    log.warn("Project is not initialized yet!")
+    return false
+  }
 
-    fun getProjectDirPath(): String? {
-        return projectPath
+  fun getProjectDir(): File? = if (!checkInit()) null else File(getProjectDirPath()!!)
+
+  fun getProjectDirPath(): String? {
+    return projectPath
+  }
+
+  fun generateSources(builder: BuildService?) {
+    if (builder == null) {
+      log.warn("Cannot generate sources. BuildService is null.")
+      return
     }
 
-    fun generateSources(builder: BuildService?) {
-        if (builder == null) {
-            log.warn("Cannot generate sources. BuildService is null.")
-            return
-        }
+    getApplicationModule().whenCompleteAsync { app, _ ->
+      if (app == null) {
+        log.warn("Cannot run resource and source generation task. No application module found.")
+        return@whenCompleteAsync
+      }
 
-        getApplicationModule().whenCompleteAsync { app, _ ->
-            if (app == null) {
-                log.warn(
-                    "Cannot run resource and source generation task. No application module found.")
-                return@whenCompleteAsync
-            }
+      val debug = app.simpleVariants.firstOrNull { it.name == "debug" }
+      if (debug == null) {
+        log.warn("No debug variant found in application project ${app.name}")
+        return@whenCompleteAsync
+      }
 
-            val debug = app.simpleVariants.firstOrNull { it.name == "debug" }
-            if (debug == null) {
-                log.warn("No debug variant found in application project ${app.name}")
-                return@whenCompleteAsync
-            }
+      val mainArtifact = app.simpleVariants.first { it.name == "debug" }.mainArtifact
+      val genResourcesTask = mainArtifact.resGenTaskName
+      val genSourcesTask = mainArtifact.sourceGenTaskName
+      builder
+        .executeProjectTasks(
+          app.projectPath,
+          genResourcesTask ?: "",
+          genSourcesTask,
 
-            val mainArtifact = app.simpleVariants.first { it.name == "debug" }.mainArtifact
-            val genResourcesTask = mainArtifact.resGenTaskName
-            val genSourcesTask = mainArtifact.sourceGenTaskName
-            builder
-                .executeProjectTasks(
-                    app.projectPath,
-                    genResourcesTask ?: "",
-                    genSourcesTask,
-
-                    // If view binding is enabled, generate the view binding classes too
-                    if (app.viewBindingOptions != null && app.viewBindingOptions!!.isEnabled)
-                        "dataBindingGenBaseClassesDebug"
-                    else "")
-                .whenComplete { result, taskErr ->
-                    if (!result.isSuccessful || taskErr != null) {
-                        log.warn(
-                            "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
-                            taskErr ?: "")
-                    } else {
-                        notifyProjectUpdate()
-                    }
-                }
+          // If view binding is enabled, generate the view binding classes too
+          if (app.viewBindingOptions != null && app.viewBindingOptions!!.isEnabled)
+            "dataBindingGenBaseClassesDebug"
+          else ""
+        )
+        .whenComplete { result, taskErr ->
+          if (!result.isSuccessful || taskErr != null) {
+            log.warn(
+              "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
+              taskErr ?: ""
+            )
+          } else {
+            notifyProjectUpdate()
+          }
         }
     }
+  }
 
-    fun getApplicationModule(): CompletableFuture<IdeAndroidModule?> {
-        if (rootProject == null) {
-            log.error(
-                "No root project instance is set. Is the project initialization process finished?")
-            return CompletableFuture.completedFuture(null)
-        }
-
-        return rootProject!!.findFirstAndroidAppModule().whenComplete { app, err ->
-            if (app == null || err != null) {
-                log.debug("An error occurred while fetching model for application module.")
-                return@whenComplete
-            }
-        }
+  fun getApplicationModule(): CompletableFuture<IdeAndroidModule?> {
+    if (rootProject == null) {
+      log.error("No root project instance is set. Is the project initialization process finished?")
+      return CompletableFuture.completedFuture(null)
     }
 
-    fun getApplicationResDirectories(): CompletableFuture<List<File>?> {
-        return getApplicationModule().thenApplyAsync {
-            if (it == null) null else collectResDirectories(it)
-        }
+    return rootProject!!.findFirstAndroidAppModule().whenComplete { app, err ->
+      if (app == null || err != null) {
+        log.debug("An error occurred while fetching model for application module.")
+        return@whenComplete
+      }
+    }
+  }
+
+  fun getApplicationResDirectories(): CompletableFuture<List<File>?> {
+    return getApplicationModule().thenApplyAsync {
+      if (it == null) null else collectResDirectories(it)
+    }
+  }
+
+  fun notifyProjectUpdate() {
+    log.debug("Updating class paths in language servers...")
+    getApplicationModule().whenCompleteAsync { it, _ ->
+      if (it == null) {
+        log.debug("Cannot find application module. Unable to update class paths to LSP.")
+        return@whenCompleteAsync
+      }
+
+      val server = StudioApp.getInstance().javaLanguageServer
+      val classPaths = collectClassPaths(it)
+      val sourceDirs = collectSourceDirs(it)
+      val configuration = JavaServerConfiguration(classPaths, sourceDirs)
+      server.configurationChanged(configuration)
+    }
+  }
+
+  fun collectResDirectories(android: IdeAndroidModule) =
+    ProjectDataCollector.collectResDirectories(this.rootProject!!, android)
+
+  fun collectClassPaths(app: IdeAndroidModule) =
+    ProjectDataCollector.collectClassPaths(this.rootProject!!, app)
+
+  fun collectSourceDirs(app: IdeAndroidModule): Set<Path> =
+    ProjectDataCollector.collectSourceDirs(this.rootProject!!, app)
+
+  @Suppress("unused")
+  fun collectProjectDependencies(project: IProject, app: IdeAndroidModule) =
+    ProjectDataCollector.collectProjectDependencies(project, app)
+
+  @Suppress("unused")
+  fun collectSourceDirs(projects: List<IdeModule>) =
+    ProjectDataCollector.collectSourceDirs(projects)
+
+  @Suppress("unused")
+  fun collectSources(java: IdeJavaModule) = ProjectDataCollector.collectSources(java)
+
+  @Suppress("unused")
+  fun collectSources(android: IdeAndroidModule) = ProjectDataCollector.collectSources(android)
+
+  fun findModuleForFile(file: File): CompletableFuture<IdeGradleProject?> {
+    if (!checkInit()) {
+      return CompletableFuture.completedFuture(null)
     }
 
-    fun notifyProjectUpdate() {
-        log.debug("Updating class paths in language servers...")
-        getApplicationModule().whenCompleteAsync { it, _ ->
-            if (it == null) {
-                log.debug("Cannot find application module. Unable to update class paths to LSP.")
-                return@whenCompleteAsync
+    val notAvailable = ":::::"
+    return rootProject!!
+      .listModules()
+      .thenApplyAsync { modules ->
+        val path = file.canonicalPath
+
+        var longestPath = ""
+        for (module in modules) {
+          val modulePath = module.projectDir.canonicalPath
+          if (path.startsWith(modulePath)) {
+            if (longestPath.length < modulePath.length) {
+              longestPath = modulePath
             }
-
-            val server = StudioApp.getInstance().javaLanguageServer
-            val classPaths = collectClassPaths(it)
-            val sourceDirs = collectSourceDirs(it)
-            val configuration = JavaServerConfiguration(classPaths, sourceDirs)
-            server.configurationChanged(configuration)
-        }
-    }
-
-    fun collectResDirectories(android: IdeAndroidModule) =
-        ProjectDataCollector.collectResDirectories(this.rootProject!!, android)
-
-    fun collectClassPaths(app: IdeAndroidModule) =
-        ProjectDataCollector.collectClassPaths(this.rootProject!!, app)
-
-    fun collectSourceDirs(app: IdeAndroidModule): Set<Path> =
-        ProjectDataCollector.collectSourceDirs(this.rootProject!!, app)
-
-    @Suppress("unused")
-    fun collectProjectDependencies(project: IProject, app: IdeAndroidModule) =
-        ProjectDataCollector.collectProjectDependencies(project, app)
-
-    @Suppress("unused")
-    fun collectSourceDirs(projects: List<IdeModule>) =
-        ProjectDataCollector.collectSourceDirs(projects)
-
-    @Suppress("unused")
-    fun collectSources(java: IdeJavaModule) = ProjectDataCollector.collectSources(java)
-
-    @Suppress("unused")
-    fun collectSources(android: IdeAndroidModule) = ProjectDataCollector.collectSources(android)
-
-    fun findModuleForFile(file: File): CompletableFuture<IdeGradleProject?> {
-        if (!checkInit()) {
-            return CompletableFuture.completedFuture(null)
+          }
         }
 
-        val notAvailable = ":::::"
-        return rootProject!!
-            .listModules()
-            .thenApplyAsync { modules ->
-                val path = file.canonicalPath
+        if (longestPath.isEmpty()) {
+          return@thenApplyAsync notAvailable
+        }
 
-                var longestPath = ""
-                for (module in modules) {
-                    val modulePath = module.projectDir.canonicalPath
-                    if (path.startsWith(modulePath)) {
-                        if (longestPath.length < modulePath.length) {
-                            longestPath = modulePath
-                        }
-                    }
-                }
-
-                if (longestPath.isEmpty()) {
-                    return@thenApplyAsync notAvailable
-                }
-
-                return@thenApplyAsync longestPath
-            }
-            .thenApplyAsync {
-                if (it == notAvailable) {
-                    return@thenApplyAsync null
-                } else return@thenApplyAsync rootProject!!.findByPath(it).get()
-            }
-    }
+        return@thenApplyAsync longestPath
+      }
+      .thenApplyAsync {
+        if (it == notAvailable) {
+          return@thenApplyAsync null
+        } else return@thenApplyAsync rootProject!!.findByPath(it).get()
+      }
+  }
 }

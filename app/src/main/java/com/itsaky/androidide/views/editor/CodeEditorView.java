@@ -134,6 +134,11 @@ public class CodeEditorView extends FrameLayout {
     return bundle;
   }
 
+  @Nullable
+  public File getFile() {
+    return file;
+  }
+
   private void handleContentChange(@NonNull ContentChangeEvent event) {
     isModified = true;
 
@@ -157,94 +162,52 @@ public class CodeEditorView extends FrameLayout {
     }
   }
 
-  public boolean save() {
-    final var file = getFile();
-    if (file == null) {
-      LOG.error("Cannot save file. File instance is null.");
-      return false;
-    }
-
-    if (!isModified() && file.exists()) {
-      LOG.info(file.getName());
-      LOG.info("File was not modified. Skipping save operation.");
-      return false;
-    }
-
-    final var text = getEditor().getText().toString();
-
+  private void closeCurrentTag(String text, int line, int col) {
     try {
-      FileUtil.writeFile(file, text);
-      notifySaved();
-      isModified = false;
-      return true;
-    } catch (IOException io) {
-      LOG.error("Failed to save file", file, io);
-      return false;
+      XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(text)));
+      Token token;
+      boolean wasSlash = false, wasOpen = false;
+      ArrayList<String> currentNames = new ArrayList<>();
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        final int type = token.getType();
+        if (type == XMLLexer.OPEN) {
+          wasOpen = true;
+        } else if (type == XMLLexer.Name) {
+          if (wasOpen && wasSlash && currentNames.size() > 0) {
+            currentNames.remove(0);
+          } else if (wasOpen) {
+            currentNames.add(0, token.getText());
+            wasOpen = false;
+          }
+        } else if (type == XMLLexer.OPEN_SLASH) {
+          int l = token.getLine() - 1;
+          int c = token.getCharPositionInLine();
+          if (l == line && c == col) {
+            break;
+          } else if (currentNames.size() > 0) {
+            currentNames.remove(0);
+          }
+        } else if (type == XMLLexer.SLASH_CLOSE || type == XMLLexer.SPECIAL_CLOSE) {
+          if (currentNames.size() > 0 && token.getText().trim().endsWith("/>")) {
+            currentNames.remove(0);
+          }
+        } else if (type == XMLLexer.SLASH) {
+          wasSlash = true;
+        } else {
+          wasOpen = wasSlash = false;
+        }
+      }
+
+      if (currentNames.size() > 0) {
+        binding.editor.getText().insert(line, col + 2, currentNames.get(0));
+      }
+    } catch (Throwable th) {
+      LOG.error("Unable to close current tag", th);
     }
-  }
-
-  @NonNull
-  private List<CharSequence> getLines(Content text) {
-    final var count = text.getLineCount();
-    final var result = new ArrayList<CharSequence>();
-
-    for (int i = 0; i < count; i++) {
-      result.add(text.getLine(i));
-    }
-
-    return result;
   }
 
   public IDEEditor getEditor() {
     return binding.editor;
-  }
-
-  public LayoutCodeEditorBinding getBinding() {
-    return binding;
-  }
-
-  @Nullable
-  public File getFile() {
-    return file;
-  }
-
-  public String getText() {
-    return binding.editor.getText().toString();
-  }
-
-  public boolean isModified() {
-    return isModified;
-  }
-
-  public void onPause() {
-    // unimplemented
-  }
-
-  public void onResume() {
-    configureEditorIfNeeded();
-  }
-
-  public void onEditorSelected() {
-    final var editor = getEditor();
-    if (editor != null) {
-      editor.onEditorSelected();
-    }
-  }
-
-  public void undo() {
-    if (binding.editor.canUndo()) {
-      binding.editor.undo();
-    }
-  }
-
-  public void redo() {
-    if (binding.editor.canRedo()) {
-      binding.editor.redo();
-    }
-  }
-
-  public void beginSearch() {
-    binding.editor.beginSearchMode();
   }
 
   protected void postRead() {
@@ -381,48 +344,34 @@ public class CodeEditorView extends FrameLayout {
     isFirstCreate = false;
   }
 
-  private void closeCurrentTag(String text, int line, int col) {
-    try {
-      XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(text)));
-      Token token;
-      boolean wasSlash = false, wasOpen = false;
-      ArrayList<String> currentNames = new ArrayList<>();
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        final int type = token.getType();
-        if (type == XMLLexer.OPEN) {
-          wasOpen = true;
-        } else if (type == XMLLexer.Name) {
-          if (wasOpen && wasSlash && currentNames.size() > 0) {
-            currentNames.remove(0);
-          } else if (wasOpen) {
-            currentNames.add(0, token.getText());
-            wasOpen = false;
-          }
-        } else if (type == XMLLexer.OPEN_SLASH) {
-          int l = token.getLine() - 1;
-          int c = token.getCharPositionInLine();
-          if (l == line && c == col) {
-            break;
-          } else if (currentNames.size() > 0) {
-            currentNames.remove(0);
-          }
-        } else if (type == XMLLexer.SLASH_CLOSE || type == XMLLexer.SPECIAL_CLOSE) {
-          if (currentNames.size() > 0 && token.getText().trim().endsWith("/>")) {
-            currentNames.remove(0);
-          }
-        } else if (type == XMLLexer.SLASH) {
-          wasSlash = true;
-        } else {
-          wasOpen = wasSlash = false;
-        }
-      }
-
-      if (currentNames.size() > 0) {
-        binding.editor.getText().insert(line, col + 2, currentNames.get(0));
-      }
-    } catch (Throwable th) {
-      LOG.error("Unable to close current tag", th);
+  public boolean save() {
+    final var file = getFile();
+    if (file == null) {
+      LOG.error("Cannot save file. File instance is null.");
+      return false;
     }
+
+    if (!isModified() && file.exists()) {
+      LOG.info(file.getName());
+      LOG.info("File was not modified. Skipping save operation.");
+      return false;
+    }
+
+    final var text = getEditor().getText().toString();
+
+    try {
+      FileUtil.writeFile(file, text);
+      notifySaved();
+      isModified = false;
+      return true;
+    } catch (IOException io) {
+      LOG.error("Failed to save file", file, io);
+      return false;
+    }
+  }
+
+  public boolean isModified() {
+    return isModified;
   }
 
   private void notifySaved() {
@@ -433,9 +382,60 @@ public class CodeEditorView extends FrameLayout {
     }
   }
 
+  public LayoutCodeEditorBinding getBinding() {
+    return binding;
+  }
+
+  public String getText() {
+    return binding.editor.getText().toString();
+  }
+
+  public void onPause() {
+    // unimplemented
+  }
+
+  public void onResume() {
+    configureEditorIfNeeded();
+  }
+
+  public void onEditorSelected() {
+    final var editor = getEditor();
+    if (editor != null) {
+      editor.onEditorSelected();
+    }
+  }
+
+  public void undo() {
+    if (binding.editor.canUndo()) {
+      binding.editor.undo();
+    }
+  }
+
+  public void redo() {
+    if (binding.editor.canRedo()) {
+      binding.editor.redo();
+    }
+  }
+
+  public void beginSearch() {
+    binding.editor.beginSearchMode();
+  }
+
   /** Mark this files as saved. Even if it not saved. */
   public void markAsSaved() {
     isModified = false;
     notifySaved();
+  }
+
+  @NonNull
+  private List<CharSequence> getLines(Content text) {
+    final var count = text.getLineCount();
+    final var result = new ArrayList<CharSequence>();
+
+    for (int i = 0; i < count; i++) {
+      result.add(text.getLine(i));
+    }
+
+    return result;
   }
 }

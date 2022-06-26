@@ -48,20 +48,10 @@ import java.util.Objects;
  */
 public abstract class ILogger {
 
-  /** Logging priority. */
-  public enum Priority {
-    DEBUG,
-    WARNING,
-    ERROR,
-    INFO,
-    VERBOSE
-  }
-
   private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
   private static final List<LogListener> logListeners = new ArrayList<>();
   private static ILogger instance;
   protected final String TAG;
-
   protected ILogger(String tag) {
     TAG = tag;
   }
@@ -90,14 +80,6 @@ public abstract class ILogger {
     return createInstance(tag);
   }
 
-  public static String priorityText(Priority priority) {
-    return priority.name();
-  }
-
-  public static char priorityChar(Priority priority) {
-    return Character.toUpperCase(priorityText(priority).charAt(0));
-  }
-
   public static Priority priority(char priorityChar) {
     for (var priority : Priority.values()) {
       if (priorityChar(priority) == priorityChar) {
@@ -105,6 +87,14 @@ public abstract class ILogger {
       }
     }
     throw new IllegalArgumentException("Invalid priority character: " + priorityChar);
+  }
+
+  public static char priorityChar(Priority priority) {
+    return Character.toUpperCase(priorityText(priority).charAt(0));
+  }
+
+  public static String priorityText(Priority priority) {
+    return priority.name();
   }
 
   /**
@@ -136,6 +126,19 @@ public abstract class ILogger {
     }
   }
 
+  /**
+   * Log the message to an appropriate stream where the user can see the log messages.
+   *
+   * @param priority The priority for this log message.
+   * @param message The full generated message for this log. Might contain new lines.
+   * @see ILogger.Priority#DEBUG
+   * @see ILogger.Priority#ERROR
+   * @see ILogger.Priority#WARNING
+   * @see ILogger.Priority#VERBOSE
+   * @see ILogger.Priority#INFO
+   */
+  protected abstract void doLog(Priority priority, String message);
+
   protected String generateMessage(Object... messages) {
     StringBuilder sb = new StringBuilder();
     if (messages == null) {
@@ -150,19 +153,6 @@ public abstract class ILogger {
 
     return sb.toString();
   }
-
-  /**
-   * Log the message to an appropriate stream where the user can see the log messages.
-   *
-   * @param priority The priority for this log message.
-   * @param message The full generated message for this log. Might contain new lines.
-   * @see ILogger.Priority#DEBUG
-   * @see ILogger.Priority#ERROR
-   * @see ILogger.Priority#WARNING
-   * @see ILogger.Priority#VERBOSE
-   * @see ILogger.Priority#INFO
-   */
-  protected abstract void doLog(Priority priority, String message);
 
   /**
    * Log warning messages.
@@ -223,6 +213,15 @@ public abstract class ILogger {
     }
 
     return "<Logger> <Cannot get caller information>";
+  }
+
+  /** Logging priority. */
+  public enum Priority {
+    DEBUG,
+    WARNING,
+    ERROR,
+    INFO,
+    VERBOSE
   }
 
   /** A listener which can be used to listen to log events. */

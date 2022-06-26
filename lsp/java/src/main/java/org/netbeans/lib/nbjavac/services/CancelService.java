@@ -31,6 +31,8 @@ public class CancelService {
   /** The context key for the parameter name resolver. */
   protected static final Context.Key<CancelService> cancelServiceKey = new Context.Key<>();
 
+  protected CancelService() {}
+
   @NonNull
   public static CancelService instance(@NonNull Context context) {
     CancelService instance = context.get(cancelServiceKey);
@@ -45,15 +47,13 @@ public class CancelService {
     context.put(CancelService.cancelServiceKey, impl);
   }
 
-  protected CancelService() {}
-
-  public boolean isCanceled() {
-    return false;
-  }
-
   public final void abortIfCanceled() {
     if (isCanceled()) {
       throw new CancelAbort();
     }
+  }
+
+  public boolean isCanceled() {
+    return false;
   }
 }

@@ -33,382 +33,381 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
 data class CompletionParams(var position: Position, var file: Path) {
-    var content: CharSequence? = null
-    var prefix: String? = null
-    var module: IdeGradleProject? = null
+  var content: CharSequence? = null
+  var prefix: String? = null
+  var module: IdeGradleProject? = null
 
-    fun requirePrefix(): String {
-        if (prefix == null) {
-            throw IllegalArgumentException("Prefix is required but none was provided")
-        }
-
-        return prefix as String
+  fun requirePrefix(): String {
+    if (prefix == null) {
+      throw IllegalArgumentException("Prefix is required but none was provided")
     }
 
-    fun requireContents(): CharSequence {
-        if (content == null) {
-            throw IllegalArgumentException("Content is required but no content was provided!")
-        }
-        return content as CharSequence
+    return prefix as String
+  }
+
+  fun requireContents(): CharSequence {
+    if (content == null) {
+      throw IllegalArgumentException("Content is required but no content was provided!")
     }
+    return content as CharSequence
+  }
 }
 
 open class CompletionResult(items: List<CompletionItem>) {
-    val items: List<CompletionItem> = run {
-        var temp = items.toMutableList()
-        temp.sort()
+  val items: List<CompletionItem> = run {
+    var temp = items.toMutableList()
+    temp.sort()
 
-        if (TRIM_TO_MAX && temp.size > MAX_ITEMS) {
-            temp = temp.subList(0, MAX_ITEMS)
-        }
-        return@run temp
+    if (TRIM_TO_MAX && temp.size > MAX_ITEMS) {
+      temp = temp.subList(0, MAX_ITEMS)
+    }
+    return@run temp
+  }
+
+  var isIncomplete = this.items.size < items.size
+  var isCached = false
+
+  companion object {
+    const val MAX_ITEMS = 50
+    @JvmField val EMPTY = CompletionResult(listOf())
+
+    var TRIM_TO_MAX = true
+
+    @JvmStatic
+    fun filter(src: CompletionResult, partial: String): CompletionResult {
+      val newItems = src.items.toMutableList()
+      newItems.removeIf { !it.label.startsWith(partial) }
+      return CompletionResult(newItems)
+    }
+  }
+
+  constructor() : this(listOf())
+
+  fun add(item: CompletionItem) {
+    if (isIncomplete) {
+      // Max limit has been reached
+      return
     }
 
-    var isIncomplete = this.items.size < items.size
-    var isCached = false
-
-    companion object {
-        const val MAX_ITEMS = 50
-        @JvmField val EMPTY = CompletionResult(listOf())
-
-        var TRIM_TO_MAX = true
-
-        @JvmStatic
-        fun filter(src: CompletionResult, partial: String): CompletionResult {
-            val newItems = src.items.toMutableList()
-            newItems.removeIf { !it.label.startsWith(partial) }
-            return CompletionResult(newItems)
-        }
+    if (items is MutableList) {
+      this.items.add(item)
     }
+    this.isIncomplete = this.items.size >= MAX_ITEMS
+  }
 
-    constructor() : this(listOf())
+  fun markCached() {
+    this.isCached = true
+  }
 
-    fun add(item: CompletionItem) {
-        if (isIncomplete) {
-            // Max limit has been reached
-            return
-        }
-
-        if (items is MutableList) {
-            this.items.add(item)
-        }
-        this.isIncomplete = this.items.size >= MAX_ITEMS
-    }
-
-    fun markCached() {
-        this.isCached = true
-    }
-
-    override fun toString(): String {
-        return android.text.TextUtils.join("\n", items)
-    }
+  override fun toString(): String {
+    return android.text.TextUtils.join("\n", items)
+  }
 }
 
 open class CompletionItem(
-    @JvmField var label: String,
-    var detail: String,
-    insertText: String?,
-    insertTextFormat: InsertTextFormat?,
-    sortText: String?,
-    var command: Command?,
-    var kind: CompletionItemKind,
-    var matchLevel: MatchLevel,
-    var additionalTextEdits: List<TextEdit>?,
-    var data: CompletionData?
+  @JvmField var label: String,
+  var detail: String,
+  insertText: String?,
+  insertTextFormat: InsertTextFormat?,
+  sortText: String?,
+  var command: Command?,
+  var kind: CompletionItemKind,
+  var matchLevel: MatchLevel,
+  var additionalTextEdits: List<TextEdit>?,
+  var data: CompletionData?
 ) :
-    io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail),
-    Comparable<CompletionItem> {
+  io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
 
-    var sortText: String? = sortText
-        get() {
-            if (field == null) {
-                return label.toString()
-            }
+  var sortText: String? = sortText
+    get() {
+      if (field == null) {
+        return label.toString()
+      }
 
-            return field
-        }
-
-    var insertText: String = insertText ?: ""
-        get() {
-            if (field.isEmpty()) {
-                return this.label.toString()
-            }
-
-            return field
-        }
-
-    var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
-
-    constructor() :
-        this(
-            "", // label
-            "", // detail
-            null, // insertText
-            null, // insertTextFormat
-            null, // sortText
-            null, // command
-            CompletionItemKind.NONE, // kind
-            NO_MATCH, // match level
-            ArrayList(), // additionalEdits
-            null // data
-            )
-
-    companion object {
-        private val LOG = ILogger.newInstance("CompletionItem")
-
-        @JvmStatic
-        fun matchLevel(candidate: String, partial: String): MatchLevel {
-            if (candidate.startsWith(partial)) {
-                return if (candidate.length == partial.length) {
-                    CASE_SENSITIVE_EQUAL
-                } else {
-                    CASE_SENSITIVE_PREFIX
-                }
-            }
-
-            val lowerCandidate = candidate.lowercase()
-            val lowerPartial = partial.lowercase()
-            if (lowerCandidate.startsWith(lowerPartial)) {
-                return if (lowerCandidate.length == lowerPartial.length) {
-                    CASE_INSENSITIVE_EQUAL
-                } else {
-                    CASE_INSENSITIVE_PREFIX
-                }
-            }
-
-            val ratio = FuzzySearch.ratio(candidate, partial)
-            if (ratio > ICompletionProvider.MIN_MATCH_RATIO) {
-                return PARTIAL_MATCH
-            }
-            
-            return NO_MATCH
-        }
+      return field
     }
 
-    fun setLabel(label: String) {
-        this.label = label
+  var insertText: String = insertText ?: ""
+    get() {
+      if (field.isEmpty()) {
+        return this.label.toString()
+      }
+
+      return field
     }
 
-    fun getLabel(): String = this.label as String
+  var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
 
-    override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
-        val start = getIdentifierStart(text.getLine(line), column)
-        val shift = insertText.contains("$0")
+  constructor() :
+    this(
+      "", // label
+      "", // detail
+      null, // insertText
+      null, // insertTextFormat
+      null, // sortText
+      null, // command
+      CompletionItemKind.NONE, // kind
+      NO_MATCH, // match level
+      ArrayList(), // additionalEdits
+      null // data
+    )
 
-        text.delete(line, start, line, column)
+  companion object {
+    private val LOG = ILogger.newInstance("CompletionItem")
 
-        if (text.contains("\n")) {
-            val lines = insertText.split("\\\n")
-            var i = 0
-            lines.forEach {
-                var commit = it
-                if (i != 0) {
-                    commit = "\n" + commit
-                }
-
-                editor.commitText(commit)
-                i++
-            }
+    @JvmStatic
+    fun matchLevel(candidate: String, partial: String): MatchLevel {
+      if (candidate.startsWith(partial)) {
+        return if (candidate.length == partial.length) {
+          CASE_SENSITIVE_EQUAL
         } else {
-            editor.commitText(text)
+          CASE_SENSITIVE_PREFIX
+        }
+      }
+
+      val lowerCandidate = candidate.lowercase()
+      val lowerPartial = partial.lowercase()
+      if (lowerCandidate.startsWith(lowerPartial)) {
+        return if (lowerCandidate.length == lowerPartial.length) {
+          CASE_INSENSITIVE_EQUAL
+        } else {
+          CASE_INSENSITIVE_PREFIX
+        }
+      }
+
+      val ratio = FuzzySearch.ratio(candidate, partial)
+      if (ratio > ICompletionProvider.MIN_MATCH_RATIO) {
+        return PARTIAL_MATCH
+      }
+
+      return NO_MATCH
+    }
+  }
+
+  fun setLabel(label: String) {
+    this.label = label
+  }
+
+  fun getLabel(): String = this.label as String
+
+  override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
+    val start = getIdentifierStart(text.getLine(line), column)
+    val shift = insertText.contains("$0")
+
+    text.delete(line, start, line, column)
+
+    if (text.contains("\n")) {
+      val lines = insertText.split("\\\n")
+      var i = 0
+      lines.forEach {
+        var commit = it
+        if (i != 0) {
+          commit = "\n" + commit
         }
 
-        if (shift) {
-            val l = editor.cursor.leftLine
-            val t = editor.text.getLineString(l)
-            val c = t.lastIndexOf("$0")
+        editor.commitText(commit)
+        i++
+      }
+    } else {
+      editor.commitText(text)
+    }
 
-            if (c != -1) {
-                editor.setSelection(l, c)
-                editor.text.delete(l, c, l, c + 2)
-            }
+    if (shift) {
+      val l = editor.cursor.leftLine
+      val t = editor.text.getLineString(l)
+      val c = t.lastIndexOf("$0")
+
+      if (c != -1) {
+        editor.setSelection(l, c)
+        editor.text.delete(l, c, l, c + 2)
+      }
+    }
+
+    if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
+      additionalTextEdits!!.forEach {
+        val s = it.range.start
+        val e = it.range.end
+        if (s == e) {
+          editor.text.insert(s.line, s.column, it.newText)
+        } else {
+          editor.text.replace(s.line, s.column, e.line, e.column, it.newText)
         }
-
-        if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
-            additionalTextEdits!!.forEach {
-                val s = it.range.start
-                val e = it.range.end
-                if (s == e) {
-                    editor.text.insert(s.line, s.column, it.newText)
-                } else {
-                    editor.text.replace(s.line, s.column, e.line, e.column, it.newText)
-                }
-            }
-        }
-
-        executeCommand(editor)
+      }
     }
 
-    private fun executeCommand(editor: CodeEditor) {
-        try {
-            val klass = editor::class.java
-            val method = klass.getMethod("executeCommand", Command::class.java)
-            method.isAccessible = true
-            method.invoke(editor, command)
-        } catch (th: Throwable) {
-            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
-        }
+    executeCommand(editor)
+  }
+
+  private fun executeCommand(editor: CodeEditor) {
+    try {
+      val klass = editor::class.java
+      val method = klass.getMethod("executeCommand", Command::class.java)
+      method.isAccessible = true
+      method.invoke(editor, command)
+    } catch (th: Throwable) {
+      LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
+    }
+  }
+
+  private fun getIdentifierStart(text: CharSequence, end: Int): Int {
+
+    var start = end
+    while (start > 0) {
+      if (Character.isJavaIdentifierPart(text[start - 1])) {
+        start--
+        continue
+      }
+
+      break
     }
 
-    private fun getIdentifierStart(text: CharSequence, end: Int): Int {
+    return start
+  }
 
-        var start = end
-        while (start > 0) {
-            if (Character.isJavaIdentifierPart(text[start - 1])) {
-                start--
-                continue
-            }
+  override fun compareTo(other: CompletionItem): Int {
+    return CompletionItemComparator.compare(this, other)
+  }
 
-            break
-        }
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is CompletionItem) return false
 
-        return start
-    }
+    if (label != other.label) return false
+    if (detail != other.detail) return false
+    if (command != other.command) return false
+    if (kind != other.kind) return false
+    if (matchLevel != other.matchLevel) return false
+    if (additionalTextEdits != other.additionalTextEdits) return false
+    if (data != other.data) return false
+    if (sortText != other.sortText) return false
+    if (insertText != other.insertText) return false
+    if (insertTextFormat != other.insertTextFormat) return false
 
-    override fun compareTo(other: CompletionItem): Int {
-        return CompletionItemComparator.compare(this, other)
-    }
+    return true
+  }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is CompletionItem) return false
+  override fun hashCode(): Int {
+    var result = label.hashCode()
+    result = 31 * result + detail.hashCode()
+    result = 31 * result + (command?.hashCode() ?: 0)
+    result = 31 * result + kind.hashCode()
+    result = 31 * result + matchLevel.hashCode()
+    result = 31 * result + (additionalTextEdits?.hashCode() ?: 0)
+    result = 31 * result + (data?.hashCode() ?: 0)
+    result = 31 * result + (sortText?.hashCode() ?: 0)
+    result = 31 * result + insertText.hashCode()
+    result = 31 * result + insertTextFormat.hashCode()
+    return result
+  }
 
-        if (label != other.label) return false
-        if (detail != other.detail) return false
-        if (command != other.command) return false
-        if (kind != other.kind) return false
-        if (matchLevel != other.matchLevel) return false
-        if (additionalTextEdits != other.additionalTextEdits) return false
-        if (data != other.data) return false
-        if (sortText != other.sortText) return false
-        if (insertText != other.insertText) return false
-        if (insertTextFormat != other.insertTextFormat) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = label.hashCode()
-        result = 31 * result + detail.hashCode()
-        result = 31 * result + (command?.hashCode() ?: 0)
-        result = 31 * result + kind.hashCode()
-        result = 31 * result + matchLevel.hashCode()
-        result = 31 * result + (additionalTextEdits?.hashCode() ?: 0)
-        result = 31 * result + (data?.hashCode() ?: 0)
-        result = 31 * result + (sortText?.hashCode() ?: 0)
-        result = 31 * result + insertText.hashCode()
-        result = 31 * result + insertTextFormat.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "CompletionItem(" +
-            "label='$label', " +
-            "detail='$detail', " +
-            "command=$command, " +
-            "kind=$kind, " +
-            "matchLevel=$matchLevel, " +
-            "additionalTextEdits=$additionalTextEdits, " +
-            "data=$data, " +
-            "sortText=$sortText, " +
-            "insertText='$insertText', " +
-            "insertTextFormat=$insertTextFormat" +
-            ")"
-    }
+  override fun toString(): String {
+    return "CompletionItem(" +
+      "label='$label', " +
+      "detail='$detail', " +
+      "command=$command, " +
+      "kind=$kind, " +
+      "matchLevel=$matchLevel, " +
+      "additionalTextEdits=$additionalTextEdits, " +
+      "data=$data, " +
+      "sortText=$sortText, " +
+      "insertText='$insertText', " +
+      "insertTextFormat=$insertTextFormat" +
+      ")"
+  }
 }
 
 data class CompletionData(
-    var className: String,
-    var memberName: String,
-    var erasedParameterTypes: Array<String>,
-    var plusOverloads: Int
+  var className: String,
+  var memberName: String,
+  var erasedParameterTypes: Array<String>,
+  var plusOverloads: Int
 ) {
 
-    constructor() : this("", "", arrayOf(), -1)
+  constructor() : this("", "", arrayOf(), -1)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-
-        if (javaClass != other?.javaClass) {
-            return false
-        }
-
-        other as CompletionData
-
-        if (className != other.className) {
-            return false
-        }
-
-        if (memberName != other.memberName) {
-            return false
-        }
-
-        if (!erasedParameterTypes.contentEquals(other.erasedParameterTypes)) {
-            return false
-        }
-
-        if (plusOverloads != other.plusOverloads) {
-            return false
-        }
-
-        return true
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
+      return true
     }
 
-    override fun hashCode(): Int {
-        var result = className.hashCode()
-        result = 31 * result + memberName.hashCode()
-        result = 31 * result + erasedParameterTypes.contentHashCode()
-        result = 31 * result + plusOverloads
-        return result
+    if (javaClass != other?.javaClass) {
+      return false
     }
+
+    other as CompletionData
+
+    if (className != other.className) {
+      return false
+    }
+
+    if (memberName != other.memberName) {
+      return false
+    }
+
+    if (!erasedParameterTypes.contentEquals(other.erasedParameterTypes)) {
+      return false
+    }
+
+    if (plusOverloads != other.plusOverloads) {
+      return false
+    }
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = className.hashCode()
+    result = 31 * result + memberName.hashCode()
+    result = 31 * result + erasedParameterTypes.contentHashCode()
+    result = 31 * result + plusOverloads
+    return result
+  }
 }
 
 data class Command(var title: String, var command: String) {
-    companion object {
+  companion object {
 
-        /** Action for triggering a signature help request to the language server. */
-        const val TRIGGER_PARAMETER_HINTS = "editor.action.triggerParameterHints"
+    /** Action for triggering a signature help request to the language server. */
+    const val TRIGGER_PARAMETER_HINTS = "editor.action.triggerParameterHints"
 
-        /** Action for triggering a completion request to the language server. */
-        const val TRIGGER_COMPLETION = "editor.action.triggerCompletionRequest"
+    /** Action for triggering a completion request to the language server. */
+    const val TRIGGER_COMPLETION = "editor.action.triggerCompletionRequest"
 
-        /** Action for triggering code format action automatically. */
-        const val FORMAT_CODE = "editor.action.formatCode"
-    }
+    /** Action for triggering code format action automatically. */
+    const val FORMAT_CODE = "editor.action.formatCode"
+  }
 }
 
 enum class CompletionItemKind {
-    KEYWORD,
-    VARIABLE,
-    PROPERTY,
-    FIELD,
-    ENUM_MEMBER,
-    CONSTRUCTOR,
-    METHOD,
-    FUNCTION,
-    TYPE_PARAMETER,
-    CLASS,
-    INTERFACE,
-    ENUM,
-    ANNOTATION_TYPE,
-    MODULE,
-    SNIPPET,
-    VALUE,
-    NONE
+  KEYWORD,
+  VARIABLE,
+  PROPERTY,
+  FIELD,
+  ENUM_MEMBER,
+  CONSTRUCTOR,
+  METHOD,
+  FUNCTION,
+  TYPE_PARAMETER,
+  CLASS,
+  INTERFACE,
+  ENUM,
+  ANNOTATION_TYPE,
+  MODULE,
+  SNIPPET,
+  VALUE,
+  NONE
 }
 
 enum class MatchLevel {
-    CASE_SENSITIVE_EQUAL,
-    CASE_INSENSITIVE_EQUAL,
-    CASE_SENSITIVE_PREFIX,
-    CASE_INSENSITIVE_PREFIX,
-    PARTIAL_MATCH,
-    NO_MATCH
+  CASE_SENSITIVE_EQUAL,
+  CASE_INSENSITIVE_EQUAL,
+  CASE_SENSITIVE_PREFIX,
+  CASE_INSENSITIVE_PREFIX,
+  PARTIAL_MATCH,
+  NO_MATCH
 }
 
 enum class InsertTextFormat {
-    PLAIN_TEXT,
-    SNIPPET
+  PLAIN_TEXT,
+  SNIPPET
 }

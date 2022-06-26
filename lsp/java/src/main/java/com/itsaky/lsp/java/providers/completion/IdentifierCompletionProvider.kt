@@ -27,47 +27,57 @@ import java.nio.file.Path
 
 /** @author Akash Yadav */
 class IdentifierCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val list = mutableListOf<CompletionItem>()
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val list = mutableListOf<CompletionItem>()
 
-        val scopeMembers =
-            ScopeCompletionProvider(completingFile, cursor, compiler, settings)
-                .complete(task, path, partial, endsWithParen)
-        list.addAll(scopeMembers.items)
+    val scopeMembers =
+      ScopeCompletionProvider(completingFile, cursor, compiler, settings)
+        .complete(task, path, partial, endsWithParen)
+    list.addAll(scopeMembers.items)
 
-        val staticImports =
-            StaticImportCompletionProvider(
-                    completingFile, cursor, compiler, settings, path.compilationUnit)
-                .complete(task, path, partial, endsWithParen)
-        list.addAll(staticImports.items)
+    val staticImports =
+      StaticImportCompletionProvider(
+          completingFile,
+          cursor,
+          compiler,
+          settings,
+          path.compilationUnit
+        )
+        .complete(task, path, partial, endsWithParen)
+    list.addAll(staticImports.items)
 
-        if (CompletionResult.TRIM_TO_MAX && list.size < CompletionResult.MAX_ITEMS) {
-            val allLower: Boolean = settings.shouldMatchAllLowerCase()
-            if (allLower || partial.isNotEmpty() && Character.isUpperCase(partial[0])) {
-                val classNames =
-                    ClassNamesCompletionProvider(
-                            completingFile, cursor, compiler, settings, path.compilationUnit)
-                        .complete(task, path, partial, endsWithParen)
-                list.addAll(classNames.items)
-            }
-        }
-
-        val keywords =
-            KeywordCompletionProvider(completingFile, cursor, compiler, settings)
-                .complete(task, path, partial, endsWithParen)
-        list.addAll(keywords.items)
-
-        return CompletionResult(list)
+    if (CompletionResult.TRIM_TO_MAX && list.size < CompletionResult.MAX_ITEMS) {
+      val allLower: Boolean = settings.shouldMatchAllLowerCase()
+      if (allLower || partial.isNotEmpty() && Character.isUpperCase(partial[0])) {
+        val classNames =
+          ClassNamesCompletionProvider(
+              completingFile,
+              cursor,
+              compiler,
+              settings,
+              path.compilationUnit
+            )
+            .complete(task, path, partial, endsWithParen)
+        list.addAll(classNames.items)
+      }
     }
+
+    val keywords =
+      KeywordCompletionProvider(completingFile, cursor, compiler, settings)
+        .complete(task, path, partial, endsWithParen)
+    list.addAll(keywords.items)
+
+    return CompletionResult(list)
+  }
 }

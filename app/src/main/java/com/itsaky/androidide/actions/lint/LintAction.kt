@@ -26,16 +26,16 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class LintAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.lint)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_lint)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.lint)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_lint)
+  }
 
-    override val id: String = "editor_lint"
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
+  override val id: String = "editor_lint"
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
 
-        context.lint()
-        return true
-    }
+    context.lint()
+    return true
+  }
 }

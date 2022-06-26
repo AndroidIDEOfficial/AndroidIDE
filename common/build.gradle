@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-	
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
@@ -15,7 +15,7 @@ android {
     compileOptions {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
-	}
+    }
     
     kotlinOptions {
         jvmTarget = "11"
@@ -29,15 +29,15 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree (dir: 'libs', include: ['*.jar'])
     implementation common.utilcode
-    implementation common.lang3 
+    implementation common.lang3
     implementation google.material
     
     implementation androidx.appcompat
     implementation androidx.preference
     implementation androidx.vectors
-	implementation androidx.animated_vectors
+    implementation androidx.animated_vectors
     
     implementation androidx.ktx
     implementation common.kotlin

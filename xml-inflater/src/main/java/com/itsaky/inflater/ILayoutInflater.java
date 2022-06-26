@@ -55,16 +55,6 @@ public abstract class ILayoutInflater {
   }
 
   /**
-   * Acatual implementation of the layout inflation
-   *
-   * @param layout The layout to inflate
-   * @return The inflated view
-   * @throws InflateException when there was an error inflating the layout
-   */
-  @NonNull
-  protected abstract IView doInflate(String layout, ViewGroup parent) throws InflateException;
-
-  /**
    * Reset the {@link ContextProvider} of this inflater
    *
    * @param provider The new {@link ContextProvider}
@@ -86,14 +76,6 @@ public abstract class ILayoutInflater {
    * @param listener The listener to unregister
    */
   public abstract void unregisterListener(IInflateListener listener);
-
-  /**
-   * Get the resource finder attached to this layout inflater.
-   *
-   * @return The attached resource finder.
-   */
-  @NonNull
-  protected abstract IResourceTable requireResourceTable();
 
   /**
    * Inflate the layout from the given file path
@@ -140,6 +122,14 @@ public abstract class ILayoutInflater {
   }
 
   /**
+   * Get the resource finder attached to this layout inflater.
+   *
+   * @return The attached resource finder.
+   */
+  @NonNull
+  protected abstract IResourceTable requireResourceTable();
+
+  /**
    * Inflate the layout from the provided XML layout code
    *
    * @param layout The XML layout code
@@ -161,6 +151,16 @@ public abstract class ILayoutInflater {
 
     return doInflate(layout, parent);
   }
+
+  /**
+   * Acatual implementation of the layout inflation
+   *
+   * @param layout The layout to inflate
+   * @return The inflated view
+   * @throws InflateException when there was an error inflating the layout
+   */
+  @NonNull
+  protected abstract IView doInflate(String layout, ViewGroup parent) throws InflateException;
 
   /**
    * Get the currently inflating file.

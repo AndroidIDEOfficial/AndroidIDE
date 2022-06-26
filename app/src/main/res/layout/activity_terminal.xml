@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <com.itsaky.androidide.views.virtualkeys.VirtualKeysView
-        tools:ignore="MissingClass"
         android:id="@+id/virtual_key_table"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="@android:color/black"/>
-    
+        android:background="@android:color/black"
+        tools:ignore="MissingClass" />
+
 </LinearLayout>

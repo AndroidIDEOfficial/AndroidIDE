@@ -27,19 +27,19 @@ import com.itsaky.androidide.actions.ActionData
  * @author Akash Yadav
  */
 class GoToNextAction() : SearchActionModeAction() {
-    override val id: String = "editor.find.next"
+  override val id: String = "editor.find.next"
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.next)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_search_next)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.next)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_search_next)
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val editor = getEditor(data)!!
+    if (!editor.searcher.hasQuery()) {
+      return false
     }
 
-    override fun execAction(data: ActionData): Any {
-        val editor = getEditor(data)!!
-        if (!editor.searcher.hasQuery()) {
-            return false
-        }
-        
-        return editor.searcher.gotoNext()
-    }
+    return editor.searcher.gotoNext()
+  }
 }

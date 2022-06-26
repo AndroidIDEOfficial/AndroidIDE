@@ -79,6 +79,25 @@ public class ValuesTableFactory {
             (System.currentTimeMillis() - start)));
   }
 
+  private static ValuesTable createTable(File res) {
+    try {
+      final var values = new File(res, "values");
+      if (!values.exists()) {
+        return null;
+      }
+
+      var table = ValuesTable.forDirectory(values);
+      if (table == null) {
+        throw new ParseException();
+      }
+
+      return table;
+    } catch (Throwable e) {
+      LOG.error("Failed to create values table", e);
+      return null;
+    }
+  }
+
   /**
    * Notify that the given file's contents were changed and the corresponding table must be updated
    * with new values.
@@ -112,25 +131,6 @@ public class ValuesTableFactory {
       table.syncWithFile(file);
     } catch (Throwable e) {
       LOG.error("Failed to sync values table", e);
-    }
-  }
-
-  private static ValuesTable createTable(File res) {
-    try {
-      final var values = new File(res, "values");
-      if (!values.exists()) {
-        return null;
-      }
-
-      var table = ValuesTable.forDirectory(values);
-      if (table == null) {
-        throw new ParseException();
-      }
-
-      return table;
-    } catch (Throwable e) {
-      LOG.error("Failed to create values table", e);
-      return null;
     }
   }
 

@@ -46,12 +46,12 @@ import com.itsaky.sdk.SDKInfo
 import com.itsaky.widgets.models.Widget
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import java.io.IOException
-import java.io.Reader
-import kotlin.math.max
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import java.io.IOException
+import java.io.Reader
+import kotlin.math.max
 
 /**
  * Completion provider for XMl files.
@@ -59,187 +59,187 @@ import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
  * @author Akash Yadav
  */
 class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSettings) :
-    AbstractServiceProvider(), ICompletionProvider {
+  AbstractServiceProvider(), ICompletionProvider {
 
-    init {
-        super.applySettings(settings)
+  init {
+    super.applySettings(settings)
+  }
+
+  private val log = ILogger.newInstance(javaClass.simpleName)
+
+  override fun complete(params: CompletionParams): CompletionResult {
+    return try {
+      // TODO When the completion will be namespace-aware, we will then need to use
+      //   'params.module'
+
+      // val namespace =
+      // INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
+
+      val namespace = INamespace.ANDROID
+      val contents = toString(params.requireContents())
+      val document =
+        DOMParser.getInstance().parse(contents, namespace.uri, URIResolverExtensionManager())
+      val type = XmlUtils.getNodeType(document, params.position.requireIndex())
+
+      if (type == UNKNOWN) {
+        log.warn("Unknown node type. CompletionParams:", params)
+        return EMPTY
+      }
+
+      val prefix =
+        XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
+
+      completeImpl(params, document, prefix, type)
+    } catch (error: Throwable) {
+      log.error("An error occurred while computing XML completions", error)
+      EMPTY
+    }
+  }
+
+  private fun toString(contents: CharSequence): String {
+    val reader = getReader(contents)
+    val text = reader.readText()
+    try {
+      reader.close()
+    } catch (e: IOException) {
+      log.warn("Unable to close char sequence reader", e)
+    }
+    return text
+  }
+
+  private fun getReader(contents: CharSequence): Reader =
+    if (contents is ContentReference) {
+      contents.createReader()
+    } else {
+      CharSequenceReader(contents)
     }
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private fun completeImpl(
+    params: CompletionParams,
+    document: DOMDocument,
+    prefix: String,
+    type: NodeType,
+  ): CompletionResult {
+    return when (type) {
+      TAG ->
+        completeTags(
+          if (prefix.startsWith("<")) {
+            prefix.substring(1)
+          } else {
+            prefix
+          }
+        )
+      ATTRIBUTE -> completeAttributes(document, params.position)
+      ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix, params.position)
+      else -> EMPTY
+    }
+  }
 
-    override fun complete(params: CompletionParams): CompletionResult {
-        return try {
-            // TODO When the completion will be namespace-aware, we will then need to use
-            //   'params.module'
+  private fun completeTags(prefix: String): CompletionResult {
+    val widgets = sdkInfo.widgetInfo.widgets
+    val result = mutableListOf<CompletionItem>()
 
-            // val namespace =
-            // INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
+    for (widget in widgets) {
+      val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
+      val nameMatchLevel = matchLevel(widget.name, prefix)
+      if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
+        continue
+      }
 
-            val namespace = INamespace.ANDROID
-            val contents = toString(params.requireContents())
-            val document =
-                DOMParser.getInstance()
-                    .parse(contents, namespace.uri, URIResolverExtensionManager())
-            val type = XmlUtils.getNodeType(document, params.position.requireIndex())
+      val matchLevel =
+        MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
 
-            if (type == UNKNOWN) {
-                log.warn("Unknown node type. CompletionParams:", params)
-                return EMPTY
-            }
-
-            val prefix =
-                XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
-
-            completeImpl(params, document, prefix, type)
-        } catch (error: Throwable) {
-            log.error("An error occurred while computing XML completions", error)
-            EMPTY
-        }
+      result.add(createTagCompletionItem(widget, matchLevel))
     }
 
-    private fun toString(contents: CharSequence): String {
-        val reader = getReader(contents)
-        val text = reader.readText()
-        try {
-            reader.close()
-        } catch (e: IOException) {
-            log.warn("Unable to close char sequence reader", e)
-        }
-        return text
+    return CompletionResult(result)
+  }
+
+  private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
+    // TODO Provide attributes based on current node and it's direct parent node
+    //   For example, if the current node is a 'TextView', provide attributes applicable to
+    //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
+    //   attributes related to LinearLayout LayoutParams.
+
+    // TODO Provided attributes from declared namespaces only
+    val attr = document.findAttrAt(position.requireIndex())
+    val list = mutableListOf<CompletionItem>()
+    for (attribute in sdkInfo.attrInfo.attributes.values) {
+      val matchLevel = matchLevel(attribute.name, attr.name)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      list.add(createAttrCompletionItem(attribute, matchLevel))
     }
 
-    private fun getReader(contents: CharSequence): Reader =
-        if (contents is ContentReference) {
-            contents.createReader()
-        } else {
-            CharSequenceReader(contents)
-        }
+    return CompletionResult(list)
+  }
 
-    private fun completeImpl(
-        params: CompletionParams,
-        document: DOMDocument,
-        prefix: String,
-        type: NodeType,
-    ): CompletionResult {
-        return when (type) {
-            TAG ->
-                completeTags(
-                    if (prefix.startsWith("<")) {
-                        prefix.substring(1)
-                    } else {
-                        prefix
-                    })
-            ATTRIBUTE -> completeAttributes(document, params.position)
-            ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix, params.position)
-            else -> EMPTY
-        }
+  private fun completeAttributeValue(
+    document: DOMDocument,
+    prefix: String,
+    position: Position
+  ): CompletionResult {
+    val attr = document.findAttrAt(position.requireIndex())
+
+    // TODO Provide attribute values based on namespace URI
+    //   For example, if the package name of the namespace of this attribute refers to a library
+    //   dependency/module, check for values in the respective dependency
+    //   Currently, only the attributes from the 'android' package name are suggested
+
+    val name = attr.localName ?: return EMPTY
+    val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
+    val items = mutableListOf<CompletionItem>()
+    for (value in attribute.possibleValues) {
+      val matchLevel = matchLevel(value, prefix)
+
+      // It might happen that the completion request is triggered but the prefix is empty
+      // For example, a completion request is triggered when the user selects an attribute
+      // completion item.
+      // In such cases, 'prefix' is an empty string.
+      // So, we still have to provide completions
+      if (prefix.isEmpty() || matchLevel != NO_MATCH) {
+        items.add(createAttrValueCompletionItem(attr.name, value, matchLevel))
+      }
     }
 
-    private fun completeTags(prefix: String): CompletionResult {
-        val widgets = sdkInfo.widgetInfo.widgets
-        val result = mutableListOf<CompletionItem>()
+    return CompletionResult(items)
+  }
 
-        for (widget in widgets) {
-            val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
-            val nameMatchLevel = matchLevel(widget.name, prefix)
-            if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
-                continue
-            }
-
-            val matchLevel =
-                MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
-
-            result.add(createTagCompletionItem(widget, matchLevel))
-        }
-
-        return CompletionResult(result)
+  private fun createTagCompletionItem(widget: Widget, matchLevel: MatchLevel): CompletionItem =
+    CompletionItem().apply {
+      this.label = widget.simpleName
+      this.detail = widget.name
+      this.sortText = label.toString()
+      this.matchLevel = matchLevel
+      this.kind = CLASS
+      this.data = CompletionData().apply { className = widget.name }
     }
 
-    private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
-        // TODO Provide attributes based on current node and it's direct parent node
-        //   For example, if the current node is a 'TextView', provide attributes applicable to
-        //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
-        //   attributes related to LinearLayout LayoutParams.
-
-        // TODO Provided attributes from declared namespaces only
-        val attr = document.findAttrAt(position.requireIndex())
-        val list = mutableListOf<CompletionItem>()
-        for (attribute in sdkInfo.attrInfo.attributes.values) {
-            val matchLevel = matchLevel(attribute.name, attr.name)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-            
-            list.add(createAttrCompletionItem(attribute, matchLevel))
-        }
-
-        return CompletionResult(list)
+  private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
+    CompletionItem().apply {
+      this.label = attr.name
+      this.kind = FIELD
+      this.detail = "From package '${attr.namespace.packageName}'"
+      this.insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
+      this.insertTextFormat = SNIPPET
+      this.sortText = label.toString()
+      this.matchLevel = matchLevel
+      this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
     }
 
-    private fun completeAttributeValue(
-        document: DOMDocument,
-        prefix: String,
-        position: Position
-    ): CompletionResult {
-        val attr = document.findAttrAt(position.requireIndex())
-
-        // TODO Provide attribute values based on namespace URI
-        //   For example, if the package name of the namespace of this attribute refers to a library
-        //   dependency/module, check for values in the respective dependency
-        //   Currently, only the attributes from the 'android' package name are suggested
-
-        val name = attr.localName ?: return EMPTY
-        val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
-        val items = mutableListOf<CompletionItem>()
-        for (value in attribute.possibleValues) {
-            val matchLevel = matchLevel(value, prefix)
-
-            // It might happen that the completion request is triggered but the prefix is empty
-            // For example, a completion request is triggered when the user selects an attribute
-            // completion item.
-            // In such cases, 'prefix' is an empty string.
-            // So, we still have to provide completions
-            if (prefix.isEmpty() || matchLevel != NO_MATCH) {
-                items.add(createAttrValueCompletionItem(attr.name, value, matchLevel))
-            }
-        }
-
-        return CompletionResult(items)
+  private fun createAttrValueCompletionItem(
+    attrName: String,
+    value: String,
+    matchLevel: MatchLevel
+  ): CompletionItem {
+    return CompletionItem().apply {
+      this.label = value
+      this.detail = "Value for '$attrName'"
+      this.kind = VALUE
+      this.sortText = label.toString()
+      this.matchLevel = matchLevel
     }
-
-    private fun createTagCompletionItem(widget: Widget, matchLevel: MatchLevel): CompletionItem =
-        CompletionItem().apply {
-            this.label = widget.simpleName
-            this.detail = widget.name
-            this.sortText = label.toString()
-            this.matchLevel = matchLevel
-            this.kind = CLASS
-            this.data = CompletionData().apply { className = widget.name }
-        }
-
-    private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
-        CompletionItem().apply {
-            this.label = attr.name
-            this.kind = FIELD
-            this.detail = "From package '${attr.namespace.packageName}'"
-            this.insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
-            this.insertTextFormat = SNIPPET
-            this.sortText = label.toString()
-            this.matchLevel = matchLevel
-            this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
-        }
-
-    private fun createAttrValueCompletionItem(
-        attrName: String,
-        value: String,
-        matchLevel: MatchLevel
-    ): CompletionItem {
-        return CompletionItem().apply {
-            this.label = value
-            this.detail = "Value for '$attrName'"
-            this.kind = VALUE
-            this.sortText = label.toString()
-            this.matchLevel = matchLevel
-        }
-    }
+  }
 }

@@ -26,19 +26,14 @@ public class MessageIssue {
     this(text, 0, null);
   }
 
-  public MessageIssue(@NonNull String text, int code) {
-    this(text, code, null);
-  }
-
   public MessageIssue(@NonNull String text, int code, Exception cause) {
     this.text = text;
     this.code = code;
     this.cause = cause;
   }
 
-  @NonNull
-  public String getText() {
-    return text;
+  public MessageIssue(@NonNull String text, int code) {
+    this(text, code, null);
   }
 
   public int getIssueCode() {
@@ -52,5 +47,10 @@ public class MessageIssue {
   @Override
   public String toString() {
     return getText();
+  }
+
+  @NonNull
+  public String getText() {
+    return text;
   }
 }

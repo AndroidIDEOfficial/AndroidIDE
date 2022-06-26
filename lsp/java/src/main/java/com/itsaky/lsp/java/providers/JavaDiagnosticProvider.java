@@ -41,10 +41,6 @@ public class JavaDiagnosticProvider {
     this.compiler = compiler;
   }
 
-  private static boolean isTaskValid(CompileTask task) {
-    return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
-  }
-
   @NonNull
   public List<DiagnosticItem> analyze(@NonNull Path file) {
     final SynchronizedTask synchronizedTask = compiler.compile(file);
@@ -57,5 +53,9 @@ public class JavaDiagnosticProvider {
 
           return DiagnosticsProvider.findDiagnostics(task, file);
         });
+  }
+
+  private static boolean isTaskValid(CompileTask task) {
+    return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
   }
 }

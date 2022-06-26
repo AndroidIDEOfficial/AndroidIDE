@@ -31,44 +31,44 @@ import java.nio.file.Paths
 
 /** @author Akash Yadav */
 class TopLevelSnippetsProvider {
-    fun complete(task: ParseTask, result: CompletionResult) {
-        val file = Paths.get(task.root.sourceFile.toUri())
-        if (!hasTypeDeclaration(task.root)) {
-            result.add(classSnippet(file))
-            if (task.root.getPackage() == null) {
-                result.add(packageSnippet(file))
-            }
-        }
+  fun complete(task: ParseTask, result: CompletionResult) {
+    val file = Paths.get(task.root.sourceFile.toUri())
+    if (!hasTypeDeclaration(task.root)) {
+      result.add(classSnippet(file))
+      if (task.root.getPackage() == null) {
+        result.add(packageSnippet(file))
+      }
     }
+  }
 
-    private fun hasTypeDeclaration(root: CompilationUnitTree): Boolean {
-        for (tree in root.typeDecls) {
-            if (tree.kind != ERRONEOUS) {
-                return true
-            }
-        }
-        return false
+  private fun hasTypeDeclaration(root: CompilationUnitTree): Boolean {
+    for (tree in root.typeDecls) {
+      if (tree.kind != ERRONEOUS) {
+        return true
+      }
     }
+    return false
+  }
 
-    private fun classSnippet(file: Path): CompletionItem {
-        var name = file.fileName.toString()
-        name = name.substring(0, name.length - ".java".length)
-        return snippetItem("class $name", "class $name {\n    $0\n}")
-    }
+  private fun classSnippet(file: Path): CompletionItem {
+    var name = file.fileName.toString()
+    name = name.substring(0, name.length - ".java".length)
+    return snippetItem("class $name", "class $name {\n    $0\n}")
+  }
 
-    private fun packageSnippet(file: Path): CompletionItem {
-        val name = FileStore.suggestedPackageName(file)
-        return snippetItem("package $name", "package $name;\n\n")
-    }
+  private fun packageSnippet(file: Path): CompletionItem {
+    val name = FileStore.suggestedPackageName(file)
+    return snippetItem("package $name", "package $name;\n\n")
+  }
 
-    private fun snippetItem(label: String, snippet: String): CompletionItem {
-        val item = CompletionItem()
-        item.setLabel(label)
-        item.kind = SNIPPET
-        item.insertText = snippet
-        item.insertTextFormat = InsertTextFormat.SNIPPET
-        item.sortText = label
-        item.matchLevel = CASE_INSENSITIVE_EQUAL
-        return item
-    }
+  private fun snippetItem(label: String, snippet: String): CompletionItem {
+    val item = CompletionItem()
+    item.setLabel(label)
+    item.kind = SNIPPET
+    item.insertText = snippet
+    item.insertTextFormat = InsertTextFormat.SNIPPET
+    item.sortText = label
+    item.matchLevel = CASE_INSENSITIVE_EQUAL
+    return item
+  }
 }

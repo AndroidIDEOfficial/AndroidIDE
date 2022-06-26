@@ -19,5 +19,5 @@ package com.itsaky.androidide.tooling.api.model
 
 /** @author Akash Yadav */
 interface HasDependencies {
-    fun getDependencies(): List<JavaModuleDependency>
+  fun getDependencies(): List<JavaModuleDependency>
 }

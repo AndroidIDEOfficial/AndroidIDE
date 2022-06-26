@@ -25,18 +25,18 @@ import com.itsaky.androidide.actions.BaseEditorAction
 /** @author Akash Yadav */
 class CopyAction() : BaseEditorAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.copy)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.copy)
 
-        val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCopyDrawable))
-        icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
-        arr.recycle()
-    }
+    val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCopyDrawable))
+    icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
+    arr.recycle()
+  }
 
-    override val id: String = "ideEditor_copy"
-    override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data) ?: return false
-        editor.copyText()
-        return true
-    }
+  override val id: String = "ideEditor_copy"
+  override fun execAction(data: ActionData): Boolean {
+    val editor = getEditor(data) ?: return false
+    editor.copyText()
+    return true
+  }
 }

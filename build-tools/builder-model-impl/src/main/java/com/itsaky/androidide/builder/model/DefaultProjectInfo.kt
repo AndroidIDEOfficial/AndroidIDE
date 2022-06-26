@@ -22,13 +22,13 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultProjectInfo(
-    override val attributes: Map<String, String>,
-    override val buildType: String?,
-    override val capabilities: List<String>,
-    override val isTestFixtures: Boolean,
-    override val productFlavors: Map<String, String>,
-    override val buildId: String,
-    override val projectPath: String
+  override val attributes: Map<String, String>,
+  override val buildType: String?,
+  override val capabilities: List<String>,
+  override val isTestFixtures: Boolean,
+  override val productFlavors: Map<String, String>,
+  override val buildId: String,
+  override val projectPath: String
 ) : ProjectInfo, Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

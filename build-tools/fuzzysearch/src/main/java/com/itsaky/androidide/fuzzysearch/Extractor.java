@@ -44,6 +44,20 @@ public class Extractor {
   }
 
   /**
+   * Find the single best match above a score in a list of choices.
+   *
+   * @param query A string to match against
+   * @param choices A list of choices
+   * @param func Scoring function
+   * @return An object containing the best match and it's score
+   */
+  public ExtractedResult extractOne(String query, Collection<String> choices, Applicable func) {
+    List<ExtractedResult> extracted = extractWithoutOrder(query, choices, func);
+
+    return Collections.max(extracted);
+  }
+
+  /**
    * Returns the list of choices with their associated scores of similarity in a list of {@link
    * ExtractedResult}
    *
@@ -68,6 +82,24 @@ public class Extractor {
     }
 
     return yields;
+  }
+
+  /**
+   * Find the single best match above a score in a list of choices.
+   *
+   * @param query A string to match against
+   * @param choices A list of choices
+   * @param toStringFunction The ToStringFunction to be applied to all choices.
+   * @param func Scoring function
+   * @return An object containing the best match and it's score
+   */
+  public <T> BoundExtractedResult<T> extractOne(
+      String query, Collection<T> choices, ToStringFunction<T> toStringFunction, Applicable func) {
+
+    List<BoundExtractedResult<T>> extracted =
+        extractWithoutOrder(query, choices, toStringFunction, func);
+
+    return Collections.max(extracted);
   }
 
   /**
@@ -98,38 +130,6 @@ public class Extractor {
     }
 
     return yields;
-  }
-
-  /**
-   * Find the single best match above a score in a list of choices.
-   *
-   * @param query A string to match against
-   * @param choices A list of choices
-   * @param func Scoring function
-   * @return An object containing the best match and it's score
-   */
-  public ExtractedResult extractOne(String query, Collection<String> choices, Applicable func) {
-    List<ExtractedResult> extracted = extractWithoutOrder(query, choices, func);
-
-    return Collections.max(extracted);
-  }
-
-  /**
-   * Find the single best match above a score in a list of choices.
-   *
-   * @param query A string to match against
-   * @param choices A list of choices
-   * @param toStringFunction The ToStringFunction to be applied to all choices.
-   * @param func Scoring function
-   * @return An object containing the best match and it's score
-   */
-  public <T> BoundExtractedResult<T> extractOne(
-      String query, Collection<T> choices, ToStringFunction<T> toStringFunction, Applicable func) {
-
-    List<BoundExtractedResult<T>> extracted =
-        extractWithoutOrder(query, choices, toStringFunction, func);
-
-    return Collections.max(extracted);
   }
 
   /**

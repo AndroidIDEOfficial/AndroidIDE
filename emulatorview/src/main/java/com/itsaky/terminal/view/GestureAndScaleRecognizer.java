@@ -8,29 +8,10 @@ import android.view.ScaleGestureDetector;
 /** A combination of {@link GestureDetector} and {@link ScaleGestureDetector}. */
 final class GestureAndScaleRecognizer {
 
-  public interface Listener {
-    boolean onSingleTapUp(MotionEvent e);
-
-    boolean onDoubleTap(MotionEvent e);
-
-    boolean onScroll(MotionEvent e2, float dx, float dy);
-
-    boolean onFling(MotionEvent e, float velocityX, float velocityY);
-
-    boolean onScale(float focusX, float focusY, float scale);
-
-    boolean onDown(float x, float y);
-
-    boolean onUp(MotionEvent e);
-
-    void onLongPress(MotionEvent e);
-  }
-
   private final GestureDetector mGestureDetector;
   private final ScaleGestureDetector mScaleDetector;
   final Listener mListener;
   boolean isAfterLongPress;
-
   public GestureAndScaleRecognizer(Context context, Listener listener) {
     mListener = listener;
 
@@ -38,6 +19,12 @@ final class GestureAndScaleRecognizer {
         new GestureDetector(
             context,
             new GestureDetector.SimpleOnGestureListener() {
+              @Override
+              public void onLongPress(MotionEvent e) {
+                mListener.onLongPress(e);
+                isAfterLongPress = true;
+              }
+
               @Override
               public boolean onScroll(MotionEvent e1, MotionEvent e2, float dx, float dy) {
                 return mListener.onScroll(e2, dx, dy);
@@ -52,12 +39,6 @@ final class GestureAndScaleRecognizer {
               @Override
               public boolean onDown(MotionEvent e) {
                 return mListener.onDown(e.getX(), e.getY());
-              }
-
-              @Override
-              public void onLongPress(MotionEvent e) {
-                mListener.onLongPress(e);
-                isAfterLongPress = true;
               }
             },
             null,
@@ -86,14 +67,14 @@ final class GestureAndScaleRecognizer {
             context,
             new ScaleGestureDetector.SimpleOnScaleGestureListener() {
               @Override
-              public boolean onScaleBegin(ScaleGestureDetector detector) {
-                return true;
-              }
-
-              @Override
               public boolean onScale(ScaleGestureDetector detector) {
                 return mListener.onScale(
                     detector.getFocusX(), detector.getFocusY(), detector.getScaleFactor());
+              }
+
+              @Override
+              public boolean onScaleBegin(ScaleGestureDetector detector) {
+                return true;
               }
             });
     mScaleDetector.setQuickScaleEnabled(false);
@@ -118,5 +99,23 @@ final class GestureAndScaleRecognizer {
 
   public boolean isInProgress() {
     return mScaleDetector.isInProgress();
+  }
+
+  public interface Listener {
+    boolean onSingleTapUp(MotionEvent e);
+
+    boolean onDoubleTap(MotionEvent e);
+
+    boolean onScroll(MotionEvent e2, float dx, float dy);
+
+    boolean onFling(MotionEvent e, float velocityX, float velocityY);
+
+    boolean onScale(float focusX, float focusY, float scale);
+
+    boolean onDown(float x, float y);
+
+    boolean onUp(MotionEvent e);
+
+    void onLongPress(MotionEvent e);
   }
 }

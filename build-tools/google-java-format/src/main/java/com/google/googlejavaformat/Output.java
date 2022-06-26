@@ -22,25 +22,6 @@ import java.util.Optional;
 
 /** An output from the formatter. */
 public abstract class Output extends InputOutput {
-  /** Unique identifier for a break. */
-  public static final class BreakTag {
-
-    Optional<Boolean> taken = Optional.empty();
-
-    public void recordBroken(boolean broken) {
-      // TODO(cushon): enforce invariants.
-      // Currently we rely on setting Breaks multiple times, e.g. when deciding
-      // whether a Level should be flowed. Using separate data structures
-      // instead of mutation or adding an explicit 'reset' step would allow
-      // a useful invariant to be enforced here.
-      taken = Optional.of(broken);
-    }
-
-    public boolean wasBreakTaken() {
-      return taken.orElse(false);
-    }
-  }
-
   /**
    * Indent by outputting {@code indent} spaces.
    *
@@ -77,5 +58,24 @@ public abstract class Output extends InputOutput {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("super", super.toString()).toString();
+  }
+
+  /** Unique identifier for a break. */
+  public static final class BreakTag {
+
+    Optional<Boolean> taken = Optional.empty();
+
+    public void recordBroken(boolean broken) {
+      // TODO(cushon): enforce invariants.
+      // Currently we rely on setting Breaks multiple times, e.g. when deciding
+      // whether a Level should be flowed. Using separate data structures
+      // instead of mutation or adding an explicit 'reset' step would allow
+      // a useful invariant to be enforced here.
+      taken = Optional.of(broken);
+    }
+
+    public boolean wasBreakTaken() {
+      return taken.orElse(false);
+    }
   }
 }

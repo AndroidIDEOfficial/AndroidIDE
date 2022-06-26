@@ -81,56 +81,6 @@ public class ProjectResourceTable implements IResourceTable {
   }
 
   @Override
-  public String findBoolean(@NonNull String name) {
-    final var table = ValuesTableFactory.getTable(resDir);
-
-    if (table == null) {
-      return name;
-    }
-
-    final var resource = table.findBoolean(name);
-    if (resource == null) {
-      return name;
-    }
-
-    final var val = resource.getValue();
-    if (val.startsWith("@bool/")) {
-      final var ref = val.substring("@bool/".length());
-      if (ref.equals(name)) {
-        // recursive reference
-        return name;
-      }
-    }
-
-    return val;
-  }
-
-  @Override
-  public String findInteger(@NonNull String name) {
-    final var table = ValuesTableFactory.getTable(resDir);
-
-    if (table == null) {
-      return name;
-    }
-
-    final var resource = table.findInteger(name);
-    if (resource == null) {
-      return name;
-    }
-
-    final var val = resource.getValue();
-    if (val.startsWith("@integer/")) {
-      final var ref = val.substring("@integer/".length());
-      if (ref.equals(name)) {
-        // recursive reference
-        return name;
-      }
-    }
-
-    return val;
-  }
-
-  @Override
   public String findColor(@NonNull String name) {
     final var table = ValuesTableFactory.getTable(resDir);
 
@@ -193,6 +143,68 @@ public class ProjectResourceTable implements IResourceTable {
     return value;
   }
 
+  @Override
+  public String findBoolean(@NonNull String name) {
+    final var table = ValuesTableFactory.getTable(resDir);
+
+    if (table == null) {
+      return name;
+    }
+
+    final var resource = table.findBoolean(name);
+    if (resource == null) {
+      return name;
+    }
+
+    final var val = resource.getValue();
+    if (val.startsWith("@bool/")) {
+      final var ref = val.substring("@bool/".length());
+      if (ref.equals(name)) {
+        // recursive reference
+        return name;
+      }
+    }
+
+    return val;
+  }
+
+  @Override
+  public String findInteger(@NonNull String name) {
+    final var table = ValuesTableFactory.getTable(resDir);
+
+    if (table == null) {
+      return name;
+    }
+
+    final var resource = table.findInteger(name);
+    if (resource == null) {
+      return name;
+    }
+
+    final var val = resource.getValue();
+    if (val.startsWith("@integer/")) {
+      final var ref = val.substring("@integer/".length());
+      if (ref.equals(name)) {
+        // recursive reference
+        return name;
+      }
+    }
+
+    return val;
+  }
+
+  @Override
+  public void setInflatingFile(@NonNull File file) {
+    if (file.getParentFile() == null) {
+      throw new IllegalArgumentException("Invalid inflating file");
+    }
+
+    setupDirectories(
+        file // layout file
+            .getParentFile() // layout dir
+            .getParentFile()); // res dir
+  }
+
   @NonNull
   @Override
   public Collection<String> listResourceNames(@Nullable String type) {
@@ -221,45 +233,6 @@ public class ProjectResourceTable implements IResourceTable {
 
       return set;
     }
-  }
-
-  private void listAndAddTo(HashSet<String> set, @NonNull File dir, String type) {
-    final var files = dir.listFiles();
-    if (files == null) {
-      return;
-    }
-
-    for (var file : files) {
-      var name = file.getName();
-      if (!name.contains(".")) {
-        continue;
-      }
-
-      name = name.substring(0, name.lastIndexOf('.'));
-      name = String.format(Locale.ROOT, "@%s/%s", type, name);
-      set.add(name);
-    }
-  }
-
-  @NonNull
-  private Collection<String> listAllResourceNames() {
-    final var set = new HashSet<>(listResourceNames("color"));
-    set.addAll(listResourceNames("drawable"));
-    set.addAll(listResourceNames("mipmap"));
-    set.addAll(listResourceNames("layout"));
-    return set;
-  }
-
-  @Override
-  public void setInflatingFile(@NonNull File file) {
-    if (file.getParentFile() == null) {
-      throw new IllegalArgumentException("Invalid inflating file");
-    }
-
-    setupDirectories(
-        file // layout file
-            .getParentFile() // layout dir
-            .getParentFile()); // res dir
   }
 
   private void setupDirectories(File resDir) {
@@ -294,6 +267,33 @@ public class ProjectResourceTable implements IResourceTable {
     }
 
     return null;
+  }
+
+  private void listAndAddTo(HashSet<String> set, @NonNull File dir, String type) {
+    final var files = dir.listFiles();
+    if (files == null) {
+      return;
+    }
+
+    for (var file : files) {
+      var name = file.getName();
+      if (!name.contains(".")) {
+        continue;
+      }
+
+      name = name.substring(0, name.lastIndexOf('.'));
+      name = String.format(Locale.ROOT, "@%s/%s", type, name);
+      set.add(name);
+    }
+  }
+
+  @NonNull
+  private Collection<String> listAllResourceNames() {
+    final var set = new HashSet<>(listResourceNames("color"));
+    set.addAll(listResourceNames("drawable"));
+    set.addAll(listResourceNames("mipmap"));
+    set.addAll(listResourceNames("layout"));
+    return set;
   }
 
   private static class NameStartsWith implements FileFilter {

@@ -50,15 +50,31 @@ import java.util.regex.Pattern;
 public class CommonParseUtils {
 
   private static final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
-
-  protected IResourceTable resourceFinder;
-  protected final DisplayMetrics displayMetrics;
-
   private static final ILogger LOG = ILogger.newInstance("CommonParseUtils");
+  protected final DisplayMetrics displayMetrics;
+  protected IResourceTable resourceFinder;
 
   public CommonParseUtils(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
     this.resourceFinder = resourceFinder;
     this.displayMetrics = displayMetrics;
+  }
+
+  public int parseColor(String color, final Context ctx) {
+    if (HEX_COLOR.matcher(color).matches()) {
+      try {
+        return Color.parseColor(color);
+      } catch (Throwable th) {
+        // Ignored
+      }
+    } else if (color.startsWith("@color/")) {
+
+      return parseColor(resourceFinder.findColor(color.substring("@color/".length())), ctx);
+    } else if (color.startsWith("@android:color/")) {
+      final int id = findFrameworkResourceId("color", color.substring("@android:color/".length()));
+      return ContextCompat.getColor(ctx, id);
+    }
+
+    return Color.TRANSPARENT;
   }
 
   protected String[] parseArray(final String value) {
@@ -86,6 +102,22 @@ public class CommonParseUtils {
     }
   }
 
+  private int findFrameworkResourceId(String type, String name) {
+    try {
+      final Class<?> typeClass =
+          Objects.requireNonNull(
+                  android.R.class.getClassLoader(),
+                  "Unable to get class loader for loading system resources")
+              .loadClass("android.R$" + type);
+      final Field typeField = typeClass.getDeclaredField(name);
+      typeField.setAccessible(true);
+      return typeField.getInt(null);
+    } catch (Throwable th) {
+      LOG.error("Unable to find framework resource.", "type=" + type, "name=" + name);
+      return -1;
+    }
+  }
+
   protected String parseString(@NonNull String value) {
     if (value.startsWith("@string/")) {
       return parseString(resourceFinder.findString(value.substring("@string/".length())));
@@ -93,19 +125,6 @@ public class CommonParseUtils {
       return frameworkStringValue(value.substring("@android:string/".length()));
     } else {
       return value;
-    }
-  }
-
-  private String frameworkStringValue(String name) {
-    try {
-      final var id = findFrameworkResourceId("string", name);
-      if (id == -1) {
-        return "";
-      }
-
-      return BaseApplication.getBaseInstance().getString(id);
-    } catch (Throwable th) {
-      return "";
     }
   }
 
@@ -125,19 +144,6 @@ public class CommonParseUtils {
     return false;
   }
 
-  private boolean frameworkBooleanValue(String name) {
-    try {
-      final var id = findFrameworkResourceId("boolean", name);
-      if (id == -1) {
-        return false;
-      }
-
-      return BaseApplication.getBaseInstance().getResources().getBoolean(id);
-    } catch (Throwable th) {
-      return false;
-    }
-  }
-
   protected int parseInteger(@NonNull String value, int defaultVal) {
     if (value.startsWith("@integer/")) {
       return parseInteger(
@@ -151,19 +157,6 @@ public class CommonParseUtils {
       } catch (Throwable th) {
         return defaultVal;
       }
-    }
-  }
-
-  private int frameworkIntegerResource(String name, int defaultVal) {
-    try {
-      final var id = findFrameworkResourceId("integer", name);
-      if (id == -1) {
-        return defaultVal;
-      }
-
-      return BaseApplication.getBaseInstance().getResources().getInteger(id);
-    } catch (Throwable th) {
-      return defaultVal;
     }
   }
 
@@ -212,19 +205,6 @@ public class CommonParseUtils {
     return defaultValue;
   }
 
-  private int frameworkDimensionValue(String name, int defValue) {
-    try {
-      final var id = findFrameworkResourceId("dimen", name);
-      if (id == -1) {
-        return defValue;
-      }
-
-      return (int) BaseApplication.getBaseInstance().getResources().getDimension(id);
-    } catch (Throwable th) {
-      return defValue;
-    }
-  }
-
   protected int getUnitForDimensionType(@NonNull String dimensionType) {
 
     switch (dimensionType) {
@@ -243,24 +223,6 @@ public class CommonParseUtils {
     }
 
     return TypedValue.COMPLEX_UNIT_DIP;
-  }
-
-  public int parseColor(String color, final Context ctx) {
-    if (HEX_COLOR.matcher(color).matches()) {
-      try {
-        return Color.parseColor(color);
-      } catch (Throwable th) {
-        // Ignored
-      }
-    } else if (color.startsWith("@color/")) {
-
-      return parseColor(resourceFinder.findColor(color.substring("@color/".length())), ctx);
-    } else if (color.startsWith("@android:color/")) {
-      final int id = findFrameworkResourceId("color", color.substring("@android:color/".length()));
-      return ContextCompat.getColor(ctx, id);
-    }
-
-    return Color.TRANSPARENT;
   }
 
   protected ColorStateList parseColorStateList(@NonNull String value, Context context) {
@@ -348,22 +310,6 @@ public class CommonParseUtils {
     return newTransparentDrawable();
   }
 
-  private int findFrameworkResourceId(String type, String name) {
-    try {
-      final Class<?> typeClass =
-          Objects.requireNonNull(
-                  android.R.class.getClassLoader(),
-                  "Unable to get class loader for loading system resources")
-              .loadClass("android.R$" + type);
-      final Field typeField = typeClass.getDeclaredField(name);
-      typeField.setAccessible(true);
-      return typeField.getInt(null);
-    } catch (Throwable th) {
-      LOG.error("Unable to find framework resource.", "type=" + type, "name=" + name);
-      return -1;
-    }
-  }
-
   protected Drawable drawableForColor(String color) {
     try {
       return drawableForColor(Color.parseColor(color));
@@ -416,6 +362,58 @@ public class CommonParseUtils {
         return GravityCompat.END;
       default:
         return Gravity.TOP | Gravity.START;
+    }
+  }
+
+  private String frameworkStringValue(String name) {
+    try {
+      final var id = findFrameworkResourceId("string", name);
+      if (id == -1) {
+        return "";
+      }
+
+      return BaseApplication.getBaseInstance().getString(id);
+    } catch (Throwable th) {
+      return "";
+    }
+  }
+
+  private boolean frameworkBooleanValue(String name) {
+    try {
+      final var id = findFrameworkResourceId("boolean", name);
+      if (id == -1) {
+        return false;
+      }
+
+      return BaseApplication.getBaseInstance().getResources().getBoolean(id);
+    } catch (Throwable th) {
+      return false;
+    }
+  }
+
+  private int frameworkIntegerResource(String name, int defaultVal) {
+    try {
+      final var id = findFrameworkResourceId("integer", name);
+      if (id == -1) {
+        return defaultVal;
+      }
+
+      return BaseApplication.getBaseInstance().getResources().getInteger(id);
+    } catch (Throwable th) {
+      return defaultVal;
+    }
+  }
+
+  private int frameworkDimensionValue(String name, int defValue) {
+    try {
+      final var id = findFrameworkResourceId("dimen", name);
+      if (id == -1) {
+        return defValue;
+      }
+
+      return (int) BaseApplication.getBaseInstance().getResources().getDimension(id);
+    } catch (Throwable th) {
+      return defValue;
     }
   }
 }

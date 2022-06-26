@@ -21,6 +21,7 @@ import com.android.builder.model.v2.models.ModelBuilderParameter
 import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultModelBuilderParameter(override var variantName: String) : ModelBuilderParameter, Serializable {
-    private val serialVersionUID = 1L
+class DefaultModelBuilderParameter(override var variantName: String) :
+  ModelBuilderParameter, Serializable {
+  private val serialVersionUID = 1L
 }

@@ -83,8 +83,13 @@ public abstract class BaseEditorWindow extends EditorPopupWindow {
     return text;
   }
 
-  protected View getRootView() {
-    return this.text;
+  protected Drawable createBackground() {
+    GradientDrawable background = new GradientDrawable();
+    background.setShape(GradientDrawable.RECTANGLE);
+    background.setColor(0xff212121);
+    background.setStroke(1, 0xffffffff);
+    background.setCornerRadius(8);
+    return background;
   }
 
   public void displayWindow() {
@@ -99,13 +104,8 @@ public abstract class BaseEditorWindow extends EditorPopupWindow {
     show();
   }
 
-  protected Drawable createBackground() {
-    GradientDrawable background = new GradientDrawable();
-    background.setShape(GradientDrawable.RECTANGLE);
-    background.setColor(0xff212121);
-    background.setStroke(1, 0xffffffff);
-    background.setCornerRadius(8);
-    return background;
+  protected View getRootView() {
+    return this.text;
   }
 
   @NonNull

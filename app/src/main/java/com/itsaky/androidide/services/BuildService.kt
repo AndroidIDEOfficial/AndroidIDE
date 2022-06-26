@@ -30,42 +30,42 @@ import java.util.concurrent.*
  */
 interface BuildService {
 
-    /**
-     * Initialize the project.
-     *
-     * @param rootDir The root directory of the project to initialize.
-     * @return A [CompletableFuture] which returns an [InitializeResult] when the project
-     * initialization process finishes.
-     */
-    fun initializeProject(rootDir: String): CompletableFuture<InitializeResult>
+  /**
+   * Initialize the project.
+   *
+   * @param rootDir The root directory of the project to initialize.
+   * @return A [CompletableFuture] which returns an [InitializeResult] when the project
+   * initialization process finishes.
+   */
+  fun initializeProject(rootDir: String): CompletableFuture<InitializeResult>
 
-    /**
-     * Execute the given tasks.
-     *
-     * @param tasks The tasks to execute. If the fully qualified path of the task is not specified,
-     * then it will be executed in the root project directory.
-     * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
-     * contains a list of tasks that were executed and the result of the whole execution.
-     * @see BuildService.executeProjectTasks
-     */
-    fun executeTasks(vararg tasks: String): CompletableFuture<TaskExecutionResult>
+  /**
+   * Execute the given tasks.
+   *
+   * @param tasks The tasks to execute. If the fully qualified path of the task is not specified,
+   * then it will be executed in the root project directory.
+   * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
+   * contains a list of tasks that were executed and the result of the whole execution.
+   * @see BuildService.executeProjectTasks
+   */
+  fun executeTasks(vararg tasks: String): CompletableFuture<TaskExecutionResult>
 
-    /**
-     * Execute the given tasks of the given project.
-     *
-     * @param projectPath The path of the project. All the tasks will be executed in this project.
-     * @param tasks The tasks to execute. These may or may not be fully qualified names of the
-     * project. If the task name is not fully qualified, then it will be executed in the given
-     * project path. For example, if the project path is ':app' and the task is 'assembleDebug',
-     * then, ':app:assembleDebug' task will be executed.
-     * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
-     * contains a list of tasks that were executed and the result of the whole execution.
-     */
-    fun executeProjectTasks(
-        projectPath: String,
-        vararg tasks: String
-    ): CompletableFuture<TaskExecutionResult>
+  /**
+   * Execute the given tasks of the given project.
+   *
+   * @param projectPath The path of the project. All the tasks will be executed in this project.
+   * @param tasks The tasks to execute. These may or may not be fully qualified names of the
+   * project. If the task name is not fully qualified, then it will be executed in the given project
+   * path. For example, if the project path is ':app' and the task is 'assembleDebug', then,
+   * ':app:assembleDebug' task will be executed.
+   * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
+   * contains a list of tasks that were executed and the result of the whole execution.
+   */
+  fun executeProjectTasks(
+    projectPath: String,
+    vararg tasks: String
+  ): CompletableFuture<TaskExecutionResult>
 
-    /** Cancel any running build. */
-    fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
+  /** Cancel any running build. */
+  fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
 }

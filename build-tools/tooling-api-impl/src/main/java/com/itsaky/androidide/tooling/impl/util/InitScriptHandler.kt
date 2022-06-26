@@ -27,39 +27,41 @@ import java.io.File
  */
 object InitScriptHandler {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    private const val initScript = ".androidide/init/androidide.init.gradle"
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  private const val initScript = ".androidide/init/androidide.init.gradle"
 
-    fun getInitScript(): File {
-        val file = File(getHome(), initScript)
-        return if (file.exists()) {
-            file
-        } else {
-            writeInitScript()
-            file
-        }
+  fun getInitScript(): File {
+    val file = File(getHome(), initScript)
+    return if (file.exists()) {
+      file
+    } else {
+      writeInitScript()
+      file
     }
+  }
 
-    private fun writeInitScript() {
-        val script = File(getHome(), initScript)
-        script.writeBytes("project.rootProject.afterEvaluate { subprojects { apply plugin: 'idea' } }".toByteArray())
-    }
+  private fun writeInitScript() {
+    val script = File(getHome(), initScript)
+    script.writeBytes(
+      "project.rootProject.afterEvaluate { subprojects { apply plugin: 'idea' } }".toByteArray()
+    )
+  }
 
-    private fun getHome(): String {
-        return if (isJvm()) {
-            // Probably running a test
-            "./src/test/test-home"
-        } else {
-            System.getenv("HOME")
-        }
+  private fun getHome(): String {
+    return if (isJvm()) {
+      // Probably running a test
+      "./src/test/test-home"
+    } else {
+      System.getenv("HOME")
     }
+  }
 
-    private fun isJvm(): Boolean {
-        return try {
-            Class.forName("android.content.Context")
-            false
-        } catch (e: ClassNotFoundException) {
-            true
-        }
+  private fun isJvm(): Boolean {
+    return try {
+      Class.forName("android.content.Context")
+      false
+    } catch (e: ClassNotFoundException) {
+      true
     }
+  }
 }

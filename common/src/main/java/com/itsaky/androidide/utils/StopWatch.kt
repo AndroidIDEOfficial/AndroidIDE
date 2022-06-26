@@ -25,13 +25,13 @@ package com.itsaky.androidide.utils
  * @author Akash Yadav
  */
 class StopWatch(val label: String, val start: Long = System.currentTimeMillis()) {
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    fun log() {
-        log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
-    }
+  fun log() {
+    log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
+  }
 
-    fun lap(message: String) {
-        log.debug("$message in ${System.currentTimeMillis() - start}ms")
-    }
+  fun lap(message: String) {
+    log.debug("$message in ${System.currentTimeMillis() - start}ms")
+  }
 }

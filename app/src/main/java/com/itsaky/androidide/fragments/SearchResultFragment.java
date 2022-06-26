@@ -68,6 +68,14 @@ public class SearchResultFragment extends Fragment {
     unsavedAdapter = null;
   }
 
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    unsavedAdapter = null;
+    list = null;
+    emptyView = null;
+  }
+
   public void setAdapter(@NonNull final SearchListAdapter adapter) {
     if (list == null) {
       unsavedAdapter = adapter;
@@ -81,13 +89,5 @@ public class SearchResultFragment extends Fragment {
       emptyView.setVisibility(error ? View.VISIBLE : View.GONE);
       list.setVisibility(error ? View.GONE : View.VISIBLE);
     }
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    unsavedAdapter = null;
-    list = null;
-    emptyView = null;
   }
 }

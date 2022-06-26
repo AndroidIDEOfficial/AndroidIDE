@@ -46,6 +46,20 @@ public class AttrListAdapter extends IconTextAdapter<Attr> {
     this.attrs = attrs;
   }
 
+  @Override
+  public int getItemCount() {
+    return attrs.size();
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull VH holder, int position) {
+    super.onBindViewHolder(holder, position);
+
+    if (clickConsumer != null) {
+      holder.binding.getRoot().setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
+    }
+  }
+
   @NonNull
   @Override
   public Attr getItemAt(int index) {
@@ -61,19 +75,5 @@ public class AttrListAdapter extends IconTextAdapter<Attr> {
   @Override
   public String getItemText(int index) {
     return getItemAt(index).name;
-  }
-
-  @Override
-  public int getItemCount() {
-    return attrs.size();
-  }
-
-  @Override
-  public void onBindViewHolder(@NonNull VH holder, int position) {
-    super.onBindViewHolder(holder, position);
-
-    if (clickConsumer != null) {
-      holder.binding.getRoot().setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
-    }
   }
 }

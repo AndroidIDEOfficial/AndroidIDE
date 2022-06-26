@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.events.FinishEvent
 
 /** @author Akash Yadav */
 class TransformFinishEvent(
-    displayName: String,
-    eventTime: Long,
-    operationDescriptor: TransformOperationDescriptor,
-    override val result: TransformOperationResult
+  displayName: String,
+  eventTime: Long,
+  operationDescriptor: TransformOperationDescriptor,
+  override val result: TransformOperationResult
 ) : TransformProgressEvent(displayName, eventTime, operationDescriptor), FinishEvent

@@ -208,18 +208,6 @@ public class CreateMissingMethod extends Rewrite {
     return join.toString();
   }
 
-  private String extractMethodName(ExpressionTree method) {
-    if (method instanceof IdentifierTree) {
-      IdentifierTree id = (IdentifierTree) method;
-      return id.getName().toString();
-    } else if (method instanceof MemberSelectTree) {
-      MemberSelectTree select = (MemberSelectTree) method;
-      return select.getIdentifier().toString();
-    } else {
-      return "extractedMethod";
-    }
-  }
-
   private String guessParameterName(Tree argument, TypeMirror type) {
     String fromTree = guessParameterNameFromTree(argument);
     if (!fromTree.isEmpty()) {
@@ -257,6 +245,18 @@ public class CreateMissingMethod extends Rewrite {
       return "" + Character.toLowerCase(name.charAt(0)) + name.subSequence(1, name.length());
     } else {
       return "";
+    }
+  }
+
+  private String extractMethodName(ExpressionTree method) {
+    if (method instanceof IdentifierTree) {
+      IdentifierTree id = (IdentifierTree) method;
+      return id.getName().toString();
+    } else if (method instanceof MemberSelectTree) {
+      MemberSelectTree select = (MemberSelectTree) method;
+      return select.getIdentifier().toString();
+    } else {
+      return "extractedMethod";
     }
   }
 }

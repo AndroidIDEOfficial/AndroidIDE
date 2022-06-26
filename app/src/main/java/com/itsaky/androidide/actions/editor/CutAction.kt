@@ -18,36 +18,35 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
 class CutAction() : BaseEditorAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(android.R.string.cut)
+  constructor(context: Context) : this() {
+    label = context.getString(android.R.string.cut)
 
-        val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCutDrawable))
-        icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
-        arr.recycle()
+    val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCutDrawable))
+    icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
+    arr.recycle()
+  }
+
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+
+    if (!visible) {
+      return
     }
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+    visible = getEditor(data)?.isEditable ?: false
+    enabled = visible
+  }
 
-        if (!visible) {
-            return
-        }
-
-        visible = getEditor(data)?.isEditable ?: false
-        enabled = visible
-    }
-
-    override val id: String = "ideEditor_cut"
-    override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data) ?: return false
-        editor.cutText()
-        return true
-    }
+  override val id: String = "ideEditor_cut"
+  override fun execAction(data: ActionData): Boolean {
+    val editor = getEditor(data) ?: return false
+    editor.cutText()
+    return true
+  }
 }

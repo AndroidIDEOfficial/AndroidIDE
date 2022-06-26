@@ -34,14 +34,13 @@ import com.sun.source.util.Trees;
 
 public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
 
+  private static final ILogger LOG = ILogger.newInstance("FindCompletionsAt");
   private final JavacTask task;
   private CompilationUnitTree root;
 
   public FindCompletionsAt(JavacTask task) {
     this.task = task;
-  }
-
-  @Override
+  }  @Override
   public TreePath visitCompilationUnit(CompilationUnitTree t, Long find) {
     root = t;
     return reduce(super.visitCompilationUnit(t, find), getCurrentPath());
@@ -139,5 +138,5 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
     return b;
   }
 
-  private static final ILogger LOG = ILogger.newInstance("FindCompletionsAt");
+
 }

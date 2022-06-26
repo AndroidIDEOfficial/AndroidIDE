@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingStart="8dp"
-	android:paddingEnd="8dp"
-	android:paddingTop="8dp"
-	android:paddingBottom="8dp">
-    
-	<HorizontalScrollView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:id="@+id/filetree_horizontalScrollView"
-		android:paddingTop="8dp"
-		android:paddingBottom="8dp"
-		android:fillViewport="true"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="8dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="8dp">
 
-	<ProgressBar
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerInParent="true"
-		android:id="@+id/fileTree_loadingProgress"/>
+    <HorizontalScrollView
+        android:id="@+id/filetree_horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+
+    <ProgressBar
+        android:id="@+id/fileTree_loadingProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
 

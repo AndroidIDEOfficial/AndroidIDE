@@ -22,25 +22,25 @@ import java.net.URI
 
 /** @author Akash Yadav */
 class FileDownloadOperationDescriptor(
-    val uri: URI,
-    override val name: String,
-    override val displayName: String
+  val uri: URI,
+  override val name: String,
+  override val displayName: String
 ) : OperationDescriptor() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is FileDownloadOperationDescriptor) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is FileDownloadOperationDescriptor) return false
 
-        if (uri != other.uri) return false
-        if (name != other.name) return false
-        if (displayName != other.displayName) return false
-        
-        return true
-    }
+    if (uri != other.uri) return false
+    if (name != other.name) return false
+    if (displayName != other.displayName) return false
 
-    override fun hashCode(): Int {
-        var result = uri.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + displayName.hashCode()
-        return result
-    }
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = uri.hashCode()
+    result = 31 * result + name.hashCode()
+    result = 31 * result + displayName.hashCode()
+    return result
+  }
 }

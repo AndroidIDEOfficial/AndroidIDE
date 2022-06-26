@@ -43,118 +43,126 @@ import javax.lang.model.type.TypeVariable
  * @author Akash Yadav
  */
 class MemberReferenceCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings,
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val trees = Trees.instance(task.task)
-        val select = path.leaf as MemberReferenceTree
-        log.info("...complete methods of " + select.qualifierExpression)
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val trees = Trees.instance(task.task)
+    val select = path.leaf as MemberReferenceTree
+    log.info("...complete methods of " + select.qualifierExpression)
 
-        val exprPath = TreePath(path, select.qualifierExpression)
-        val element = trees.getElement(exprPath)
-        val isStatic = element is TypeElement
-        val scope = trees.getScope(exprPath)
-        return when (val type = trees.getTypeMirror(exprPath)) {
-            is ArrayType -> completeArrayMemberReference(isStatic, partial)
-            is TypeVariable ->
-                completeTypeVariableMemberReference(task, scope, type, isStatic, partial)
-            is DeclaredType ->
-                completeDeclaredTypeMemberReference(task, scope, type, isStatic, partial)
-            else -> CompletionResult.EMPTY
-        }
+    val exprPath = TreePath(path, select.qualifierExpression)
+    val element = trees.getElement(exprPath)
+    val isStatic = element is TypeElement
+    val scope = trees.getScope(exprPath)
+    return when (val type = trees.getTypeMirror(exprPath)) {
+      is ArrayType -> completeArrayMemberReference(isStatic, partial)
+      is TypeVariable -> completeTypeVariableMemberReference(task, scope, type, isStatic, partial)
+      is DeclaredType -> completeDeclaredTypeMemberReference(task, scope, type, isStatic, partial)
+      else -> CompletionResult.EMPTY
+    }
+  }
+
+  private fun completeArrayMemberReference(
+    isStatic: Boolean,
+    partialName: CharSequence,
+  ): CompletionResult {
+    return if (isStatic) {
+      val list = mutableListOf<CompletionItem>()
+      list.add(keyword("new", partialName, 100))
+      CompletionResult(list)
+    } else {
+      CompletionResult.EMPTY
+    }
+  }
+
+  private fun completeTypeVariableMemberReference(
+    task: CompileTask,
+    scope: Scope,
+    type: TypeVariable,
+    isStatic: Boolean,
+    partial: String,
+  ): CompletionResult {
+    return when (type.upperBound) {
+      is DeclaredType ->
+        completeDeclaredTypeMemberReference(
+          task,
+          scope,
+          type.upperBound as DeclaredType,
+          isStatic,
+          partial
+        )
+      is TypeVariable ->
+        completeTypeVariableMemberReference(
+          task,
+          scope,
+          type.upperBound as TypeVariable,
+          isStatic,
+          partial
+        )
+      else -> CompletionResult.EMPTY
+    }
+  }
+
+  private fun completeDeclaredTypeMemberReference(
+    task: CompileTask,
+    scope: Scope,
+    type: DeclaredType,
+    isStatic: Boolean,
+    partial: String,
+  ): CompletionResult {
+    val trees = Trees.instance(task.task)
+    val typeElement = type.asElement() as TypeElement
+    val list: MutableList<CompletionItem> = ArrayList()
+    val methods: MutableMap<String, MutableList<ExecutableElement>> = mutableMapOf()
+    val matchLevels: MutableMap<String, MatchLevel> = HashMap()
+    for (member in task.task.elements.getAllMembers(typeElement)) {
+      val matchLevel = matchLevel(member.simpleName, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      if (member.kind != METHOD) {
+        continue
+      }
+
+      if (!trees.isAccessible(scope, member, type)) {
+        continue
+      }
+
+      if (!isStatic && member.modifiers.contains(STATIC)) {
+        continue
+      }
+
+      if (member.kind == METHOD) {
+        putMethod((member as ExecutableElement), methods)
+        matchLevels.putIfAbsent(member.getSimpleName().toString(), matchLevel)
+      } else {
+        list.add(item(task, member, matchLevel))
+      }
     }
 
-    private fun completeArrayMemberReference(
-        isStatic: Boolean,
-        partialName: CharSequence,
-    ): CompletionResult {
-        return if (isStatic) {
-            val list = mutableListOf<CompletionItem>()
-            list.add(keyword("new", partialName, 100))
-            CompletionResult(list)
-        } else {
-            CompletionResult.EMPTY
-        }
+    for ((key, value) in methods) {
+      val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      list.add(method(task, value, false, matchLevel))
     }
 
-    private fun completeTypeVariableMemberReference(
-        task: CompileTask,
-        scope: Scope,
-        type: TypeVariable,
-        isStatic: Boolean,
-        partial: String,
-    ): CompletionResult {
-        return when (type.upperBound) {
-            is DeclaredType ->
-                completeDeclaredTypeMemberReference(
-                    task, scope, type.upperBound as DeclaredType, isStatic, partial)
-            is TypeVariable ->
-                completeTypeVariableMemberReference(
-                    task, scope, type.upperBound as TypeVariable, isStatic, partial)
-            else -> CompletionResult.EMPTY
-        }
+    if (isStatic) {
+      list.add(keyword("new", partial, 100))
     }
 
-    private fun completeDeclaredTypeMemberReference(
-        task: CompileTask,
-        scope: Scope,
-        type: DeclaredType,
-        isStatic: Boolean,
-        partial: String,
-    ): CompletionResult {
-        val trees = Trees.instance(task.task)
-        val typeElement = type.asElement() as TypeElement
-        val list: MutableList<CompletionItem> = ArrayList()
-        val methods: MutableMap<String, MutableList<ExecutableElement>> = mutableMapOf()
-        val matchLevels: MutableMap<String, MatchLevel> = HashMap()
-        for (member in task.task.elements.getAllMembers(typeElement)) {
-            val matchLevel = matchLevel(member.simpleName, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            if (member.kind != METHOD) {
-                continue
-            }
-
-            if (!trees.isAccessible(scope, member, type)) {
-                continue
-            }
-
-            if (!isStatic && member.modifiers.contains(STATIC)) {
-                continue
-            }
-
-            if (member.kind == METHOD) {
-                putMethod((member as ExecutableElement), methods)
-                matchLevels.putIfAbsent(member.getSimpleName().toString(), matchLevel)
-            } else {
-                list.add(item(task, member, matchLevel))
-            }
-        }
-
-        for ((key, value) in methods) {
-            val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-            
-            list.add(method(task, value, false, matchLevel))
-        }
-
-        if (isStatic) {
-            list.add(keyword("new", partial, 100))
-        }
-
-        return CompletionResult(list)
-    }
+    return CompletionResult(list)
+  }
 }

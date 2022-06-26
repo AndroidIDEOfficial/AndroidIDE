@@ -104,15 +104,15 @@ public class MaterialBanner extends CoordinatorLayout {
     Animation anim =
         new Animation() {
           @Override
+          public boolean willChangeBounds() {
+            return true;
+          }
+
+          @Override
           public void applyTransformation(float time, Transformation t) {
             p.height = time == 1f ? -2 : (int) (height * time);
             root.setLayoutParams(p);
             root.requestLayout();
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-            return true;
           }
         };
 
@@ -127,6 +127,11 @@ public class MaterialBanner extends CoordinatorLayout {
     Animation animation =
         new Animation() {
           @Override
+          public boolean willChangeBounds() {
+            return true;
+          }
+
+          @Override
           public void applyTransformation(float interpolatedTime, Transformation t) {
             if (interpolatedTime == 1f) {
               root.setVisibility(GONE);
@@ -135,11 +140,6 @@ public class MaterialBanner extends CoordinatorLayout {
               p.height = (int) (initialHeight - (initialHeight * interpolatedTime));
               root.requestLayout();
             }
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-            return true;
           }
         };
     animation.setDuration((long) (initialHeight / getResources().getDisplayMetrics().density));
@@ -150,26 +150,13 @@ public class MaterialBanner extends CoordinatorLayout {
     return setIcon(ContextCompat.getDrawable(getContext(), icon));
   }
 
-  public MaterialBanner setPositive(@StringRes int text, OnPositiveClickListener listener) {
-    return setPositive(getContext().getString(text), listener);
-  }
-
-  public MaterialBanner setNegative(@StringRes int text, OnNegativeClickListener listener) {
-    return setNegative(getContext().getString(text), listener);
-  }
-
-  public MaterialBanner setContentText(@StringRes int text) {
-    return setContentText(getContext().getString(text));
-  }
-
-  public MaterialBanner setContentText(String contentText) {
-    this.contentText = contentText;
-    return this;
-  }
-
   public MaterialBanner setIcon(Drawable icon) {
     this.iconDrawable = icon;
     return this;
+  }
+
+  public MaterialBanner setPositive(@StringRes int text, OnPositiveClickListener listener) {
+    return setPositive(getContext().getString(text), listener);
   }
 
   public MaterialBanner setPositive(String text, OnPositiveClickListener listener) {
@@ -178,9 +165,22 @@ public class MaterialBanner extends CoordinatorLayout {
     return this;
   }
 
+  public MaterialBanner setNegative(@StringRes int text, OnNegativeClickListener listener) {
+    return setNegative(getContext().getString(text), listener);
+  }
+
   public MaterialBanner setNegative(String text, OnNegativeClickListener listener) {
     this.leftButtonText = text;
     this.negativeListener = listener;
+    return this;
+  }
+
+  public MaterialBanner setContentText(@StringRes int text) {
+    return setContentText(getContext().getString(text));
+  }
+
+  public MaterialBanner setContentText(String contentText) {
+    this.contentText = contentText;
     return this;
   }
 

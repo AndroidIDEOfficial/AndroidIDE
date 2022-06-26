@@ -27,47 +27,47 @@ import com.itsaky.androidide.actions.ActionMenu
 /** @author Akash Yadav */
 open class CodeActionsMenu : ActionMenu {
 
-    companion object {
-        const val ID = "editor_text_codeActions"
+  companion object {
+    const val ID = "editor_text_codeActions"
+  }
+
+  override val children: MutableSet<ActionItem> = mutableSetOf()
+  override val id: String = ID
+
+  override var label: String = "Code actions"
+  override var visible = true
+  override var enabled: Boolean = true
+  override var icon: Drawable? = null
+
+  private fun tryGetIcon(context: Context): Drawable? {
+    return try {
+      val klass = Class.forName("com.itsaky.androidide.R\$drawable")
+      val field = klass.getDeclaredField("ic_code")
+      ContextCompat.getDrawable(context, field.get(null) as Int)
+    } catch (error: Throwable) {
+      null
+    }
+  }
+
+  override var requiresUIThread: Boolean = false
+  override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
+
+  override fun prepare(data: ActionData) {
+    if (icon == null) {
+      icon = tryGetIcon(data[Context::class.java]!!)
+    }
+    visible = children.size > 0 && atLeastOneChildVisible(data)
+    enabled = true
+  }
+
+  private fun atLeastOneChildVisible(data: ActionData): Boolean {
+    for (child in children) {
+      child.prepare(data)
+      if (child.visible) {
+        return true
+      }
     }
 
-    override val children: MutableSet<ActionItem> = mutableSetOf()
-    override val id: String = ID
-
-    override var label: String = "Code actions"
-    override var visible = true
-    override var enabled: Boolean = true
-    override var icon: Drawable? = null
-
-    private fun tryGetIcon(context: Context): Drawable? {
-        return try {
-            val klass = Class.forName("com.itsaky.androidide.R\$drawable")
-            val field = klass.getDeclaredField("ic_code")
-            ContextCompat.getDrawable(context, field.get(null) as Int)
-        } catch (error: Throwable) {
-            null
-        }
-    }
-
-    override var requiresUIThread: Boolean = false
-    override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
-
-    override fun prepare(data: ActionData) {
-        if (icon == null) {
-            icon = tryGetIcon(data[Context::class.java]!!)
-        }
-        visible = children.size > 0 && atLeastOneChildVisible(data)
-        enabled = true
-    }
-
-    private fun atLeastOneChildVisible(data: ActionData): Boolean {
-        for (child in children) {
-            child.prepare(data)
-            if (child.visible) {
-                return true
-            }
-        }
-
-        return false
-    }
+    return false
+  }
 }

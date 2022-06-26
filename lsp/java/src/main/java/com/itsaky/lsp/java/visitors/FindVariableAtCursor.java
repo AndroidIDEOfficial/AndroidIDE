@@ -33,6 +33,12 @@ public class FindVariableAtCursor extends TreeScanner<VariableTree, Integer> {
   }
 
   @Override
+  public VariableTree reduce(VariableTree r1, VariableTree r2) {
+    if (r1 != null) return r1;
+    return r2;
+  }
+
+  @Override
   public VariableTree visitCompilationUnit(CompilationUnitTree t, Integer find) {
     root = t;
     return super.visitCompilationUnit(t, find);
@@ -48,11 +54,5 @@ public class FindVariableAtCursor extends TreeScanner<VariableTree, Integer> {
       return t;
     }
     return null;
-  }
-
-  @Override
-  public VariableTree reduce(VariableTree r1, VariableTree r2) {
-    if (r1 != null) return r1;
-    return r2;
   }
 }

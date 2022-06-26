@@ -43,82 +43,82 @@ import javax.lang.model.element.TypeElement
  * @author Akash Yadav
  */
 class StaticImportCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings,
-    val root: CompilationUnitTree,
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings,
+  val root: CompilationUnitTree,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val list = mutableListOf<CompletionItem>()
-        val trees = Trees.instance(task.task)
-        val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-        val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
-        val previousSize: Int = list.size
-        outer@ for (i in root.imports) {
-            if (!i.isStatic) {
-                continue
-            }
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val list = mutableListOf<CompletionItem>()
+    val trees = Trees.instance(task.task)
+    val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
+    val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
+    val previousSize: Int = list.size
+    outer@ for (i in root.imports) {
+      if (!i.isStatic) {
+        continue
+      }
 
-            val id = i.qualifiedIdentifier as MemberSelectTree
-            if (!importMatchesPartial(id.identifier, partial)) {
-                continue
-            }
+      val id = i.qualifiedIdentifier as MemberSelectTree
+      if (!importMatchesPartial(id.identifier, partial)) {
+        continue
+      }
 
-            val exprPath = trees.getPath(root, id.expression)
-            val type = trees.getElement(exprPath) as TypeElement
+      val exprPath = trees.getPath(root, id.expression)
+      val type = trees.getElement(exprPath) as TypeElement
 
-            for (member in type.enclosedElements) {
-                if (!member.modifiers.contains(STATIC)) {
-                    continue
-                }
-
-                if (!memberMatchesImport(id.identifier, member)) {
-                    continue
-                }
-
-                val matchLevel = matchLevel(member.simpleName, partial)
-                if (matchLevel == NO_MATCH) {
-                    continue
-                }
-
-                if (member.kind == METHOD) {
-                    putMethod(member as ExecutableElement, methods)
-                    matchRatios.putIfAbsent(member.simpleName.toString(), matchLevel)
-                } else {
-                    list.add(item(task, member, matchLevel))
-                }
-                if (list.size + methods.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
-                    break@outer
-                }
-            }
+      for (member in type.enclosedElements) {
+        if (!member.modifiers.contains(STATIC)) {
+          continue
         }
 
-        for ((key, value) in methods) {
-            val matchLevel = matchRatios.getOrDefault(key, NO_MATCH)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            list.add(method(task, value, !endsWithParen, matchLevel))
+        if (!memberMatchesImport(id.identifier, member)) {
+          continue
         }
 
-        log.info("...found " + (list.size - previousSize) + " static imports")
+        val matchLevel = matchLevel(member.simpleName, partial)
+        if (matchLevel == NO_MATCH) {
+          continue
+        }
 
-        return CompletionResult(list)
+        if (member.kind == METHOD) {
+          putMethod(member as ExecutableElement, methods)
+          matchRatios.putIfAbsent(member.simpleName.toString(), matchLevel)
+        } else {
+          list.add(item(task, member, matchLevel))
+        }
+        if (list.size + methods.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
+          break@outer
+        }
+      }
     }
 
-    private fun importMatchesPartial(staticImport: Name, partial: String): Boolean {
-        return (staticImport.contentEquals("*") || matchLevel(staticImport, partial) != NO_MATCH)
+    for ((key, value) in methods) {
+      val matchLevel = matchRatios.getOrDefault(key, NO_MATCH)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      list.add(method(task, value, !endsWithParen, matchLevel))
     }
 
-    private fun memberMatchesImport(staticImport: Name, member: Element): Boolean {
-        return staticImport.contentEquals("*") || staticImport.contentEquals(member.simpleName)
-    }
+    log.info("...found " + (list.size - previousSize) + " static imports")
+
+    return CompletionResult(list)
+  }
+
+  private fun importMatchesPartial(staticImport: Name, partial: String): Boolean {
+    return (staticImport.contentEquals("*") || matchLevel(staticImport, partial) != NO_MATCH)
+  }
+
+  private fun memberMatchesImport(staticImport: Name, member: Element): Boolean {
+    return staticImport.contentEquals("*") || staticImport.contentEquals(member.simpleName)
+  }
 }

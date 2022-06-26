@@ -30,16 +30,16 @@ import com.itsaky.androidide.actions.BaseBuildAction
  */
 class QuickRunAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.quick_run_debug)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.quick_run_debug)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
+  }
 
-    override val id: String = "editor_quick_run"
+  override val id: String = "editor_quick_run"
 
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
-        context.assembleDebug(true)
-        return true
-    }
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
+    context.assembleDebug(true)
+    return true
+  }
 }

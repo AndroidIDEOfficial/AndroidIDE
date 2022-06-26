@@ -11,15 +11,15 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc;
 
+import org.eclipse.lsp4j.jsonrpc.messages.Message;
+import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.eclipse.lsp4j.jsonrpc.messages.Message;
-import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
 
 /**
  * An exception thrown to notify the caller of a {@link MessageConsumer} that one or more issues

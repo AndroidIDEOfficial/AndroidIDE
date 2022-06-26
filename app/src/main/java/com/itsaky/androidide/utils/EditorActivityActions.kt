@@ -46,39 +46,39 @@ import com.itsaky.androidide.actions.text.UndoAction
  * @author Akash Yadav
  */
 class EditorActivityActions {
-    companion object {
-        @JvmStatic
-        fun register(context: Context) {
-            val registry = ActionsRegistry.getInstance()
+  companion object {
+    @JvmStatic
+    fun register(context: Context) {
+      val registry = ActionsRegistry.getInstance()
 
-            // Toolbar actions
-            registry.registerAction(UndoAction(context))
-            registry.registerAction(RedoAction(context))
-            registry.registerAction(QuickRunAction(context))
-            registry.registerAction(RunActionMenu(context))
-            registry.registerAction(SaveFileAction(context))
-            registry.registerAction(PreviewLayoutAction(context))
-            registry.registerAction(FindActionMenu(context))
-            registry.registerAction(FileTreeAction(context))
-            registry.registerAction(DaemonStatusAction(context))
-            registry.registerAction(CancelBuildAction(context))
-            registry.registerAction(ProjectSyncAction(context))
+      // Toolbar actions
+      registry.registerAction(UndoAction(context))
+      registry.registerAction(RedoAction(context))
+      registry.registerAction(QuickRunAction(context))
+      registry.registerAction(RunActionMenu(context))
+      registry.registerAction(SaveFileAction(context))
+      registry.registerAction(PreviewLayoutAction(context))
+      registry.registerAction(FindActionMenu(context))
+      registry.registerAction(FileTreeAction(context))
+      registry.registerAction(DaemonStatusAction(context))
+      registry.registerAction(CancelBuildAction(context))
+      registry.registerAction(ProjectSyncAction(context))
 
-            // editor text actions
-            registry.registerAction(ExpandSelectionAction(context))
-            registry.registerAction(SelectAllAction(context))
-            registry.registerAction(CutAction(context))
-            registry.registerAction(CopyAction(context))
-            registry.registerAction(PasteAction(context))
-            registry.registerAction(FormatCodeAction(context))
+      // editor text actions
+      registry.registerAction(ExpandSelectionAction(context))
+      registry.registerAction(SelectAllAction(context))
+      registry.registerAction(CutAction(context))
+      registry.registerAction(CopyAction(context))
+      registry.registerAction(PasteAction(context))
+      registry.registerAction(FormatCodeAction(context))
 
-            // editor search actions
-            registry.registerAction(GoToNextAction(context))
-            registry.registerAction(GoToPreviousAction(context))
-            registry.registerAction(ReplaceAction(context))
-        }
-
-        @JvmStatic
-        fun clear() = ActionsRegistry.getInstance().clearActions(ActionItem.Location.EDITOR_TOOLBAR)
+      // editor search actions
+      registry.registerAction(GoToNextAction(context))
+      registry.registerAction(GoToPreviousAction(context))
+      registry.registerAction(ReplaceAction(context))
     }
+
+    @JvmStatic
+    fun clear() = ActionsRegistry.getInstance().clearActions(ActionItem.Location.EDITOR_TOOLBAR)
+  }
 }

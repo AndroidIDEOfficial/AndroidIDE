@@ -28,49 +28,52 @@ import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
 class SuppressUncheckedWarningAction : BaseCodeAction() {
-    override val id = "lsp_java_suppressUncheckedWarning"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNCHECKED.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id = "lsp_java_suppressUncheckedWarning"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.UNCHECKED.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_suppress_unchecked_warning
+  override val titleTextRes: Int = R.string.action_suppress_unchecked_warning
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
+    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val warnedMethod = CodeActionUtils.findMethod(task, diagnostic.range)
-            return@get AddSuppressWarningAnnotation(
-                warnedMethod.className, warnedMethod.methodName, warnedMethod.erasedParameterTypes)
-        }
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
+    }
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
+    return server.compiler.compile(file).get { task ->
+      val warnedMethod = CodeActionUtils.findMethod(task, diagnostic.range)
+      return@get AddSuppressWarningAnnotation(
+        warnedMethod.className,
+        warnedMethod.methodName,
+        warnedMethod.erasedParameterTypes
+      )
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is AddSuppressWarningAnnotation) {
+      log.warn("Unable to suppress 'unchecked' warning")
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is AddSuppressWarningAnnotation) {
-            log.warn("Unable to suppress 'unchecked' warning")
-            return
-        }
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    val file = requireFile(data)
 
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        val file = requireFile(data)
-
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
-    }
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

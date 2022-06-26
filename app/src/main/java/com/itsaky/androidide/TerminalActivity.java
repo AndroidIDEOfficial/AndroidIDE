@@ -70,21 +70,196 @@ public class TerminalActivity extends StudioActivity
   private static final ILogger LOG = ILogger.newInstance("TerminalActivity");
   private static final byte[] SOURCES_LIST_CONTENT =
       "deb https://androidide.com/packages/apt/termux-main/ stable main".getBytes();
+  private static final String KEY_FONT_SIZE = "terminal_fontSize";
   private ActivityTerminalBinding binding;
   private TerminalView terminal;
   private TerminalSession session;
   private boolean isVisible = false;
   private KeyListener listener;
-
   private int MIN_FONT_SIZE;
   private int MAX_FONT_SIZE;
   private int DEFAULT_FONT_SIZE;
-  private static final String KEY_FONT_SIZE = "terminal_fontSize";
+
+  public boolean isVisible() {
+    return isVisible;
+  }
 
   @Override
-  protected View bindLayout() {
-    binding = ActivityTerminalBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
+  public boolean onKeyUp(int keyCode, KeyEvent e) {
+    return false;
+  }
+
+  @Override
+  public void onTextChanged(TerminalSession changedSession) {
+    terminal.onScreenUpdated();
+  }
+
+  @Override
+  public void onTitleChanged(TerminalSession changedSession) {}
+
+  @Override
+  public void onSessionFinished(TerminalSession finishedSession) {
+    finish();
+  }
+
+  @Override
+  public void onCopyTextToClipboard(TerminalSession session, String text) {
+    ClipboardUtils.copyText("AndroidIDE Terminal", text);
+  }
+
+  @Override
+  public void onPasteTextFromClipboard(TerminalSession session) {
+    String clip = ClipboardUtils.getText().toString();
+    if (clip.trim().length() > 0 && terminal != null && terminal.mEmulator != null) {
+      terminal.mEmulator.paste(clip);
+    }
+  }
+
+  @Override
+  public void onBell(TerminalSession session) {}
+
+  @Override
+  public void onColorsChanged(TerminalSession session) {}
+
+  @Override
+  public void onTerminalCursorStateChange(boolean state) {}
+
+  @Override
+  public Integer getTerminalCursorStyle() {
+    return TerminalEmulator.DEFAULT_TERMINAL_CURSOR_STYLE;
+  }
+
+  @Override
+  public float onScale(float scale) {
+    if (scale < 0.9f || scale > 1.1f) {
+      boolean increase = scale > 1.f;
+      changeFontSize(increase);
+      return 1.0f;
+    }
+    return scale;
+  }
+
+  private void changeFontSize(final boolean increase) {
+    int fontSize = getFontSize();
+    fontSize += (increase ? 1 : -1) * 2;
+    fontSize = Math.max(MIN_FONT_SIZE, Math.min(fontSize, MAX_FONT_SIZE));
+    setFontSize(fontSize, true);
+  }
+
+  @Override
+  public void onSingleTapUp(MotionEvent e) {
+    KeyboardUtils.showSoftInput(terminal);
+  }
+
+  @Override
+  public boolean shouldBackButtonBeMappedToEscape() {
+    return false;
+  }
+
+  @Override
+  public boolean shouldEnforceCharBasedInput() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldUseCtrlSpaceWorkaround() {
+    return false;
+  }
+
+  @Override
+  public boolean isTerminalViewSelected() {
+    return true;
+  }
+
+  @Override
+  public void copyModeChanged(boolean copyMode) {}
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent e, TerminalSession session) {
+    if (keyCode == KeyEvent.KEYCODE_ENTER && !session.isRunning()) {
+      finish();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean onLongPress(MotionEvent event) {
+    return false;
+  }
+
+  @Override
+  public boolean readControlKey() {
+    Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.CTRL, true);
+    return state != null && state;
+  }
+
+  @Override
+  public boolean readAltKey() {
+    Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.ALT, true);
+    return state != null && state;
+  }
+
+  @Override
+  public boolean readShiftKey() {
+    return false;
+  }
+
+  @Override
+  public boolean readFnKey() {
+    return false;
+  }
+
+  @Override
+  public boolean onCodePoint(int codePoint, boolean ctrlDown, TerminalSession session) {
+    return false;
+  }
+
+  @Override
+  public void onEmulatorSet() {
+    setTerminalCursorBlinkingState(true);
+
+    if (session != null) {
+      binding
+          .getRoot()
+          .setBackgroundColor(
+              session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+    }
+  }
+
+  @Override
+  public void logError(String tag, String message) {
+    LOG.error(tag + ":", message);
+  }
+
+  @Override
+  public void logWarn(String tag, String message) {
+    LOG.warn(tag + ":", message);
+  }
+
+  @Override
+  public void logInfo(String tag, String message) {
+    LOG.info(tag + ":", message);
+  }
+
+  @Override
+  public void logDebug(String tag, String message) {
+    LOG.debug(tag + ":", message);
+  }
+
+  @Override
+  public void logVerbose(String tag, String message) {
+    LOG.verbose(tag + ":", message);
+  }
+
+  @Override
+  public void logStackTraceWithMessage(String tag, String message, Exception e) {
+    LOG.error(tag + ":", message, e);
+  }
+
+  @Override
+  public void logStackTrace(String tag, Exception e) {
+    LOG.error(tag + ":", e);
   }
 
   @Override
@@ -138,6 +313,12 @@ public class TerminalActivity extends StudioActivity
                 });
           });
     }
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityTerminalBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
   }
 
   private void showInstallationError(Throwable throwable) {
@@ -196,41 +377,6 @@ public class TerminalActivity extends StudioActivity
 
   private KeyListener getKeyListener() {
     return listener == null ? listener = new KeyListener(terminal) : listener;
-  }
-
-  @Override
-  protected void onResume() {
-    super.onResume();
-    setTerminalCursorBlinkingState(true);
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-    isVisible = true;
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    isVisible = false;
-    setTerminalCursorBlinkingState(false);
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    binding = null;
-  }
-
-  public boolean isVisible() {
-    return isVisible;
-  }
-
-  private void setTerminalCursorBlinkingState(boolean start) {
-    if (terminal != null && terminal.mEmulator != null) {
-      terminal.setTerminalCursorBlinkerState(start, true);
-    }
   }
 
   private TerminalSession createSession(final String workingDirectory) {
@@ -322,6 +468,60 @@ public class TerminalActivity extends StudioActivity
     return sizes;
   }
 
+  public void setFontSize(int value, boolean apply) {
+    getApp().getPrefManager().putString(KEY_FONT_SIZE, String.valueOf(value));
+
+    if (apply) {
+      terminal.setTextSize(getFontSize());
+    }
+  }
+
+  public int getFontSize() {
+    int fontSize;
+    try {
+      fontSize =
+          Integer.parseInt(
+              getApp()
+                  .getPrefManager()
+                  .getString(KEY_FONT_SIZE, String.valueOf(DEFAULT_FONT_SIZE)));
+    } catch (NumberFormatException | ClassCastException e) {
+      fontSize = DEFAULT_FONT_SIZE;
+    }
+
+    return Math.min(Math.max(fontSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    setTerminalCursorBlinkingState(true);
+  }
+
+  private void setTerminalCursorBlinkingState(boolean start) {
+    if (terminal != null && terminal.mEmulator != null) {
+      terminal.setTerminalCursorBlinkerState(start, true);
+    }
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    isVisible = true;
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    isVisible = false;
+    setTerminalCursorBlinkingState(false);
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
+
   private static final class KeyListener implements VirtualKeysView.IVirtualKeysView {
 
     private final TerminalView terminal;
@@ -403,206 +603,5 @@ public class TerminalActivity extends StudioActivity
       // VirtualKeysView will take care of performing haptic feedback
       return false;
     }
-  }
-
-  @Override
-  public boolean onKeyUp(int keyCode, KeyEvent e) {
-    return false;
-  }
-
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent e, TerminalSession session) {
-    if (keyCode == KeyEvent.KEYCODE_ENTER && !session.isRunning()) {
-      finish();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public boolean onCodePoint(int codePoint, boolean ctrlDown, TerminalSession session) {
-    return false;
-  }
-
-  @Override
-  public void onTextChanged(TerminalSession changedSession) {
-    terminal.onScreenUpdated();
-  }
-
-  @Override
-  public void onTitleChanged(TerminalSession changedSession) {}
-
-  @Override
-  public void onSessionFinished(TerminalSession finishedSession) {
-    finish();
-  }
-
-  @Override
-  public void onCopyTextToClipboard(TerminalSession session, String text) {
-    ClipboardUtils.copyText("AndroidIDE Terminal", text);
-  }
-
-  @Override
-  public void onPasteTextFromClipboard(TerminalSession session) {
-    String clip = ClipboardUtils.getText().toString();
-    if (clip.trim().length() > 0 && terminal != null && terminal.mEmulator != null) {
-      terminal.mEmulator.paste(clip);
-    }
-  }
-
-  @Override
-  public void onBell(TerminalSession session) {}
-
-  @Override
-  public void onColorsChanged(TerminalSession session) {}
-
-  @Override
-  public void onTerminalCursorStateChange(boolean state) {}
-
-  @Override
-  public Integer getTerminalCursorStyle() {
-    return TerminalEmulator.DEFAULT_TERMINAL_CURSOR_STYLE;
-  }
-
-  @Override
-  public float onScale(float scale) {
-    if (scale < 0.9f || scale > 1.1f) {
-      boolean increase = scale > 1.f;
-      changeFontSize(increase);
-      return 1.0f;
-    }
-    return scale;
-  }
-
-  private void changeFontSize(final boolean increase) {
-    int fontSize = getFontSize();
-    fontSize += (increase ? 1 : -1) * 2;
-    fontSize = Math.max(MIN_FONT_SIZE, Math.min(fontSize, MAX_FONT_SIZE));
-    setFontSize(fontSize, true);
-  }
-
-  public int getFontSize() {
-    int fontSize;
-    try {
-      fontSize =
-          Integer.parseInt(
-              getApp()
-                  .getPrefManager()
-                  .getString(KEY_FONT_SIZE, String.valueOf(DEFAULT_FONT_SIZE)));
-    } catch (NumberFormatException | ClassCastException e) {
-      fontSize = DEFAULT_FONT_SIZE;
-    }
-
-    return Math.min(Math.max(fontSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
-  }
-
-  public void setFontSize(int value, boolean apply) {
-    getApp().getPrefManager().putString(KEY_FONT_SIZE, String.valueOf(value));
-
-    if (apply) {
-      terminal.setTextSize(getFontSize());
-    }
-  }
-
-  @Override
-  public void onSingleTapUp(MotionEvent e) {
-    KeyboardUtils.showSoftInput(terminal);
-  }
-
-  @Override
-  public boolean shouldBackButtonBeMappedToEscape() {
-    return false;
-  }
-
-  @Override
-  public boolean shouldEnforceCharBasedInput() {
-    return true;
-  }
-
-  @Override
-  public boolean shouldUseCtrlSpaceWorkaround() {
-    return false;
-  }
-
-  @Override
-  public boolean isTerminalViewSelected() {
-    return true;
-  }
-
-  @Override
-  public void copyModeChanged(boolean copyMode) {}
-
-  @Override
-  public boolean onLongPress(MotionEvent event) {
-    return false;
-  }
-
-  @Override
-  public boolean readControlKey() {
-    Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.CTRL, true);
-    return state != null && state;
-  }
-
-  @Override
-  public boolean readAltKey() {
-    Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.ALT, true);
-    return state != null && state;
-  }
-
-  @Override
-  public boolean readFnKey() {
-    return false;
-  }
-
-  @Override
-  public boolean readShiftKey() {
-    return false;
-  }
-
-  @Override
-  public void onEmulatorSet() {
-    setTerminalCursorBlinkingState(true);
-
-    if (session != null) {
-      binding
-          .getRoot()
-          .setBackgroundColor(
-              session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
-    }
-  }
-
-  @Override
-  public void logError(String tag, String message) {
-    LOG.error(tag + ":", message);
-  }
-
-  @Override
-  public void logWarn(String tag, String message) {
-    LOG.warn(tag + ":", message);
-  }
-
-  @Override
-  public void logInfo(String tag, String message) {
-    LOG.info(tag + ":", message);
-  }
-
-  @Override
-  public void logDebug(String tag, String message) {
-    LOG.debug(tag + ":", message);
-  }
-
-  @Override
-  public void logVerbose(String tag, String message) {
-    LOG.verbose(tag + ":", message);
-  }
-
-  @Override
-  public void logStackTraceWithMessage(String tag, String message, Exception e) {
-    LOG.error(tag + ":", message, e);
-  }
-
-  @Override
-  public void logStackTrace(String tag, Exception e) {
-    LOG.error(tag + ":", e);
   }
 }

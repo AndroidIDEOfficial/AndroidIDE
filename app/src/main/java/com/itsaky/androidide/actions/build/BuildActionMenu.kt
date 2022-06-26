@@ -27,18 +27,18 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class BuildActionMenu() : BaseBuildAction(), ActionMenu {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.build_tasks)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_run)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.build_tasks)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_run)
 
-        addAction(BuildAction(context))
-        addAction(AssembleDebugAction(context))
-        addAction(AssembleReleaseAction(context))
-        addAction(CreateAABAction(context))
-        addAction(CleanAction(context))
-        addAction(RebuildAction(context))
-    }
+    addAction(BuildAction(context))
+    addAction(AssembleDebugAction(context))
+    addAction(AssembleReleaseAction(context))
+    addAction(CreateAABAction(context))
+    addAction(CleanAction(context))
+    addAction(RebuildAction(context))
+  }
 
-    override val children: MutableSet<ActionItem> = mutableSetOf()
-    override val id: String = "editor_buildTasks"
+  override val children: MutableSet<ActionItem> = mutableSetOf()
+  override val id: String = "editor_buildTasks"
 }

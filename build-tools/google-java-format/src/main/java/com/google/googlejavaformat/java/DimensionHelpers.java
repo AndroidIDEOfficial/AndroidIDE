@@ -37,35 +37,6 @@ import java.util.List;
  */
 class DimensionHelpers {
 
-  /** The array dimension specifiers (including any type annotations) associated with a type. */
-  static class TypeWithDims {
-    final Tree node;
-    final ImmutableList<List<AnnotationTree>> dims;
-
-    public TypeWithDims(Tree node, ImmutableList<List<AnnotationTree>> dims) {
-      this.node = node;
-      this.dims = dims;
-    }
-  }
-
-  enum SortedDims {
-    YES,
-    NO
-  }
-
-  /** Returns a (possibly re-ordered) {@link TypeWithDims} for the given type. */
-  static TypeWithDims extractDims(Tree node, SortedDims sorted) {
-    Deque<List<AnnotationTree>> builder = new ArrayDeque<>();
-    node = extractDims(builder, node);
-    Iterable<List<AnnotationTree>> dims;
-    if (sorted == SortedDims.YES) {
-      dims = reorderBySourcePosition(builder);
-    } else {
-      dims = builder;
-    }
-    return new TypeWithDims(node, ImmutableList.copyOf(dims));
-  }
-
   /**
    * Rotate the list of dimension specifiers until all dimensions with type annotations appear in
    * source order.
@@ -120,6 +91,35 @@ class DimensionHelpers {
         return node;
       default:
         return node;
+    }
+  }
+
+  /** Returns a (possibly re-ordered) {@link TypeWithDims} for the given type. */
+  static TypeWithDims extractDims(Tree node, SortedDims sorted) {
+    Deque<List<AnnotationTree>> builder = new ArrayDeque<>();
+    node = extractDims(builder, node);
+    Iterable<List<AnnotationTree>> dims;
+    if (sorted == SortedDims.YES) {
+      dims = reorderBySourcePosition(builder);
+    } else {
+      dims = builder;
+    }
+    return new TypeWithDims(node, ImmutableList.copyOf(dims));
+  }
+
+  enum SortedDims {
+    YES,
+    NO
+  }
+
+  /** The array dimension specifiers (including any type annotations) associated with a type. */
+  static class TypeWithDims {
+    final Tree node;
+    final ImmutableList<List<AnnotationTree>> dims;
+
+    public TypeWithDims(Tree node, ImmutableList<List<AnnotationTree>> dims) {
+      this.node = node;
+      this.dims = dims;
     }
   }
 }

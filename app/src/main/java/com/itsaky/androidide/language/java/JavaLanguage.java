@@ -63,36 +63,6 @@ public class JavaLanguage extends IDELanguage {
     this.newlineHandlers[0] = new BraceHandler();
   }
 
-  @Override
-  public int getIndentAdvance(@NonNull String line) {
-    try {
-      JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(line)));
-      Token token;
-      int advance = 0;
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        switch (token.getType()) {
-          case JavaLexer.LBRACE:
-            advance++;
-            break;
-          case JavaParser.RBRACE:
-            advance--;
-            break;
-        }
-      }
-      advance = Math.max(0, advance);
-      return advance * getTabSize();
-    } catch (Throwable e) {
-      LOG.error("Error calculating indent advance", e);
-    }
-
-    return 0;
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new JavaSymbolPairs();
-  }
-
   @NonNull
   @Override
   public AnalyzeManager getAnalyzeManager() {
@@ -128,8 +98,38 @@ public class JavaLanguage extends IDELanguage {
   }
 
   @Override
+  public int getIndentAdvance(@NonNull String line) {
+    try {
+      JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(line)));
+      Token token;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case JavaLexer.LBRACE:
+            advance++;
+            break;
+          case JavaParser.RBRACE:
+            advance--;
+            break;
+        }
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Error calculating indent advance", e);
+    }
+
+    return 0;
+  }
+
+  @Override
   protected ILanguageServer getLanguageServer() {
     return StudioApp.getInstance().getJavaLanguageServer();
+  }
+
+  @Override
+  public SymbolPairMatch getSymbolPairs() {
+    return new JavaSymbolPairs();
   }
 
   @Override

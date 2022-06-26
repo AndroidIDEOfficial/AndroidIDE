@@ -12,12 +12,35 @@ public class ClassBuilder {
     return toJavaFile(packageName, newClassSpec(className)).toString();
   }
 
+  // TODO: Allow user to choose number of spaces to indent
+  // Most probably, get this from preferences
+  public static JavaFile toJavaFile(String packageName, TypeSpec type) {
+    return JavaFile.builder(packageName, type)
+        .indent("    ") // Indent 4 spaces
+        .build();
+  }
+
+  public static TypeSpec newClassSpec(String className) {
+    return TypeSpec.classBuilder(className).addModifiers(Modifier.PUBLIC).build();
+  }
+
   public static String createInterface(String packageName, String className) {
     return toJavaFile(packageName, newInterfaceSpec(className)).toString();
   }
 
+  public static TypeSpec newInterfaceSpec(String className) {
+    return TypeSpec.interfaceBuilder(className).addModifiers(Modifier.PUBLIC).build();
+  }
+
   public static String createEnum(String packageName, String className) {
     return toJavaFile(packageName, newEnumSpec(className)).toString();
+  }
+
+  public static TypeSpec newEnumSpec(String className) {
+    return TypeSpec.enumBuilder(className)
+        .addModifiers(Modifier.PUBLIC)
+        .addEnumConstant("ENUM_DECLARED")
+        .build();
   }
 
   public static String createActivity(String packageName, String className) {
@@ -35,28 +58,5 @@ public class ClassBuilder {
             .addMethod(onCreate);
 
     return JavaFile.builder(packageName, activity.build()).build().toString();
-  }
-
-  // TODO: Allow user to choose number of spaces to indent
-  // Most probably, get this from preferences
-  public static JavaFile toJavaFile(String packageName, TypeSpec type) {
-    return JavaFile.builder(packageName, type)
-        .indent("    ") // Indent 4 spaces
-        .build();
-  }
-
-  public static TypeSpec newClassSpec(String className) {
-    return TypeSpec.classBuilder(className).addModifiers(Modifier.PUBLIC).build();
-  }
-
-  public static TypeSpec newInterfaceSpec(String className) {
-    return TypeSpec.interfaceBuilder(className).addModifiers(Modifier.PUBLIC).build();
-  }
-
-  public static TypeSpec newEnumSpec(String className) {
-    return TypeSpec.enumBuilder(className)
-        .addModifiers(Modifier.PUBLIC)
-        .addEnumConstant("ENUM_DECLARED")
-        .build();
   }
 }

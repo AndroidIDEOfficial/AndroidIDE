@@ -26,16 +26,9 @@ import com.itsaky.androidide.fragments.CrashReportFragment;
 
 public class CrashHandlerActivity extends StudioActivity {
 
-  private ActivityCrashHandlerBinding binding;
-
   public static final String REPORT_ACTION = "com.itsaky.androidide.REPORT_CRASH";
   public static final String TRACE_KEY = "crash_trace";
-
-  @Override
-  protected View bindLayout() {
-    binding = ActivityCrashHandlerBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
+  private ActivityCrashHandlerBinding binding;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +48,12 @@ public class CrashHandlerActivity extends StudioActivity {
         .replace(binding.getRoot().getId(), fragment, "crash_report_fragment")
         .addToBackStack(null)
         .commit();
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityCrashHandlerBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
   }
 
   @Override

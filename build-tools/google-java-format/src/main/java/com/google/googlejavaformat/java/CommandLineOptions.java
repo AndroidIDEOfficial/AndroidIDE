@@ -82,6 +82,10 @@ final class CommandLineOptions {
     this.formatJavadoc = formatJavadoc;
   }
 
+  static Builder builder() {
+    return new Builder();
+  }
+
   /** The files to format. */
   ImmutableList<String> files() {
     return files;
@@ -90,21 +94,6 @@ final class CommandLineOptions {
   /** Format files in place. */
   boolean inPlace() {
     return inPlace;
-  }
-
-  /** Line ranges to format. */
-  ImmutableRangeSet<Integer> lines() {
-    return lines;
-  }
-
-  /** Character offsets for partial formatting, paired with {@code lengths}. */
-  ImmutableList<Integer> offsets() {
-    return offsets;
-  }
-
-  /** Partial formatting region lengths, paired with {@code offsets}. */
-  ImmutableList<Integer> lengths() {
-    return lengths;
   }
 
   /** Use AOSP style instead of Google Style (4-space indentation). */
@@ -168,12 +157,23 @@ final class CommandLineOptions {
     return !lines().isEmpty() || !offsets().isEmpty() || !lengths().isEmpty();
   }
 
-  boolean formatJavadoc() {
-    return formatJavadoc;
+  /** Line ranges to format. */
+  ImmutableRangeSet<Integer> lines() {
+    return lines;
   }
 
-  static Builder builder() {
-    return new Builder();
+  /** Character offsets for partial formatting, paired with {@code lengths}. */
+  ImmutableList<Integer> offsets() {
+    return offsets;
+  }
+
+  /** Partial formatting region lengths, paired with {@code offsets}. */
+  ImmutableList<Integer> lengths() {
+    return lengths;
+  }
+
+  boolean formatJavadoc() {
+    return formatJavadoc;
   }
 
   static class Builder {

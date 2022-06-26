@@ -19,23 +19,16 @@ package com.itsaky.lsp.models
 
 import java.nio.file.Path
 
-data class InitializeParams (var workspaceRoots: Set<Path>)
+data class InitializeParams(var workspaceRoots: Set<Path>)
 
-data class ServerCapabilities
-(
-    var completionsAvailable: Boolean,
-    var codeActionsAvailable: Boolean,
-    var definitionsAvailable: Boolean,
-    var referencesAvailable: Boolean,
-    var signatureHelpAvailable: Boolean,
-    var codeAnalysisAvailable: Boolean,
-    var smartSelectionsEnabled: Boolean
+data class ServerCapabilities(
+  var completionsAvailable: Boolean,
+  var codeActionsAvailable: Boolean,
+  var definitionsAvailable: Boolean,
+  var referencesAvailable: Boolean,
+  var signatureHelpAvailable: Boolean,
+  var codeAnalysisAvailable: Boolean,
+  var smartSelectionsEnabled: Boolean
 ) {
-    constructor() : this(false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false)
+  constructor() : this(false, false, false, false, false, false, false)
 }

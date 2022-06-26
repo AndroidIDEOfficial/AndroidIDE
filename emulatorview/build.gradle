@@ -14,7 +14,7 @@ android {
             minifyEnabled true
         }
     }
-
+    
     compileOptions {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion

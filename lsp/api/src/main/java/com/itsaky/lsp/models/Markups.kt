@@ -17,11 +17,11 @@
 
 package com.itsaky.lsp.models
 
-data class MarkupContent (var value: String, var kind: MarkupKind) {
-    constructor () : this ("", MarkupKind.PLAIN)
+data class MarkupContent(var value: String, var kind: MarkupKind) {
+  constructor() : this("", MarkupKind.PLAIN)
 }
 
 enum class MarkupKind {
-    PLAIN,
-    MARKDOWN
+  PLAIN,
+  MARKDOWN
 }

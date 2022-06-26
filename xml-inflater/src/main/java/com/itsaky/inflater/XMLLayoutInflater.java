@@ -65,15 +65,13 @@ import java.util.regex.Pattern;
 
 class XMLLayoutInflater extends BaseLayoutInflater {
 
+  public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
+  private static final ILogger LOG = ILogger.newInstance("XMLLayoutInflater");
   private final Set<File> resDirs;
   private final AttrInfo attrInfo;
   private final WidgetInfo widgetInfo;
   private final IResourceTable resFinder;
-
   private ContextProvider contextProvider;
-
-  private static final ILogger LOG = ILogger.newInstance("XMLLayoutInflater");
-  public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
 
   XMLLayoutInflater(@NonNull LayoutInflaterConfiguration config) {
     this.resDirs = config.resDirs;
@@ -84,6 +82,17 @@ class XMLLayoutInflater extends BaseLayoutInflater {
 
     Preconditions.assertAllNotNull(
         "LayoutInflater parameters cannot be null", resDirs, attrInfo, widgetInfo, resFinder);
+  }
+
+  @Override
+  public void resetContextProvider(ILayoutInflater.ContextProvider provider) {
+    this.contextProvider = provider;
+  }
+
+  @NonNull
+  @Override
+  protected IResourceTable requireResourceTable() {
+    return this.resFinder;
   }
 
   @Override
@@ -121,17 +130,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     } catch (Throwable th) {
       throw new InflateException("Unable to inflate layout", th);
     }
-  }
-
-  @Override
-  public void resetContextProvider(ILayoutInflater.ContextProvider provider) {
-    this.contextProvider = provider;
-  }
-
-  @NonNull
-  @Override
-  protected IResourceTable requireResourceTable() {
-    return this.resFinder;
   }
 
   protected IView onCreateView(Element tag, ViewGroup parentGroup, IViewGroup parent)
@@ -193,11 +191,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
       LOG.error("Unable to parse framework style", th);
       return -1;
     }
-  }
-
-  @NonNull
-  private String underscorize(@NonNull String substring) {
-    return substring.replace(".", "_");
   }
 
   protected void registerAttributeAdaptersTo(@NonNull IView root) {
@@ -304,29 +297,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     return inflateLocalIncludeLayout(attrs, parent, name, file);
   }
 
-  @NonNull
-  private IncludeLayout inflateLocalIncludeLayout(
-      Attributes attrs, IViewGroup parent, String name, File file) {
-
-    // DesignerActivity applies drag listeners in 'onInflateView()' call
-    // But, <include> layouts must not be edited here
-    // So, we avoid notifying the listeners
-    super.notify = false;
-
-    final var view = this.inflate(file, (ViewGroup) parent.asView());
-    Preconditions.assertNotnull(view, "Failed to inflate '" + name + "'");
-
-    final var includeLayout = new IncludeLayout(view);
-
-    applyLayoutParams(includeLayout, (ViewGroup) parent.asView());
-    addAttributesTo(includeLayout, attrs, parent);
-
-    // Enable notifications
-    super.notify = true;
-
-    return includeLayout;
-  }
-
   protected IView inflateAndroidLayout(String name, Attributes attrs, @NonNull IViewGroup parent) {
     final var id = (int) ReflectUtils.reflect(android.R.layout.class).field(name).get();
     final var view = LayoutInflater.from(contextProvider.getContext()).inflate(id, null);
@@ -410,11 +380,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     return applyLayoutParams(view, parent);
   }
 
-  private String getString(@StringRes int id, Object... format) throws InflateException {
-    assertNotnull(contextProvider.getContext(), "Context is null!");
-    return contextProvider.getContext().getString(id, format);
-  }
-
   @NonNull
   protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup parent) {
     try {
@@ -446,5 +411,38 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     } catch (Throwable th) {
       throw new InflateException("Unable to create layout params for parent: " + parent, th);
     }
+  }
+
+  @NonNull
+  private String underscorize(@NonNull String substring) {
+    return substring.replace(".", "_");
+  }
+
+  @NonNull
+  private IncludeLayout inflateLocalIncludeLayout(
+      Attributes attrs, IViewGroup parent, String name, File file) {
+
+    // DesignerActivity applies drag listeners in 'onInflateView()' call
+    // But, <include> layouts must not be edited here
+    // So, we avoid notifying the listeners
+    super.notify = false;
+
+    final var view = this.inflate(file, (ViewGroup) parent.asView());
+    Preconditions.assertNotnull(view, "Failed to inflate '" + name + "'");
+
+    final var includeLayout = new IncludeLayout(view);
+
+    applyLayoutParams(includeLayout, (ViewGroup) parent.asView());
+    addAttributesTo(includeLayout, attrs, parent);
+
+    // Enable notifications
+    super.notify = true;
+
+    return includeLayout;
+  }
+
+  private String getString(@StringRes int id, Object... format) throws InflateException {
+    assertNotnull(contextProvider.getContext(), "Context is null!");
+    return contextProvider.getContext().getString(id, format);
   }
 }

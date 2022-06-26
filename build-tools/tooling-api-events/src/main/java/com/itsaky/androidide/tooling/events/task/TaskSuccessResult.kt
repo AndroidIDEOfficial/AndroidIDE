@@ -19,10 +19,10 @@ package com.itsaky.androidide.tooling.events.task
 
 /** @author Akash Yadav */
 class TaskSuccessResult(
-    val isUpToDate: Boolean,
-    val isFromCache: Boolean,
-    startTime: Long,
-    endTime: Long,
-    isIncremental: Boolean,
-    executionReasons: List<String>
+  val isUpToDate: Boolean,
+  val isFromCache: Boolean,
+  startTime: Long,
+  endTime: Long,
+  isIncremental: Boolean,
+  executionReasons: List<String>
 ) : TaskExecutionResult(startTime, endTime, isIncremental, executionReasons)

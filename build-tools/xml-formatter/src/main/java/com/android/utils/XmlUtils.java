@@ -31,10 +31,10 @@ import static com.google.common.base.Charsets.UTF_16LE;
 import static com.google.common.base.Charsets.UTF_8;
 
 import com.android.SdkConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.google.common.io.Files;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,24 +83,6 @@ public class XmlUtils {
   public static String lookupNamespacePrefix(@NotNull Node node, @NotNull String nsUri) {
     String defaultPrefix = ANDROID_URI.equals(nsUri) ? ANDROID_NS_NAME : APP_PREFIX;
     return lookupNamespacePrefix(node, nsUri, defaultPrefix, true /*create*/);
-  }
-
-  /**
-   * Returns the namespace prefix matching the requested namespace URI. If no such declaration is
-   * found, returns the default "android" prefix for the Android URI, and "app" for other URI's.
-   *
-   * @param node The current node. Must not be null.
-   * @param nsUri The namespace URI of which the prefix is to be found, e.g. {@link
-   *     SdkConstants#ANDROID_URI}
-   * @param create whether the namespace declaration should be created, if necessary
-   * @return The first prefix declared or the default "android" prefix (or "app" for non-Android
-   *     URIs)
-   */
-  @NotNull
-  public static String lookupNamespacePrefix(
-      @NotNull Node node, @NotNull String nsUri, boolean create) {
-    String defaultPrefix = ANDROID_URI.equals(nsUri) ? ANDROID_NS_NAME : APP_PREFIX;
-    return lookupNamespacePrefix(node, nsUri, defaultPrefix, create);
   }
 
   /**
@@ -204,6 +186,24 @@ public class XmlUtils {
     }
 
     return prefix;
+  }
+
+  /**
+   * Returns the namespace prefix matching the requested namespace URI. If no such declaration is
+   * found, returns the default "android" prefix for the Android URI, and "app" for other URI's.
+   *
+   * @param node The current node. Must not be null.
+   * @param nsUri The namespace URI of which the prefix is to be found, e.g. {@link
+   *     SdkConstants#ANDROID_URI}
+   * @param create whether the namespace declaration should be created, if necessary
+   * @return The first prefix declared or the default "android" prefix (or "app" for non-Android
+   *     URIs)
+   */
+  @NotNull
+  public static String lookupNamespacePrefix(
+      @NotNull Node node, @NotNull String nsUri, boolean create) {
+    String defaultPrefix = ANDROID_URI.equals(nsUri) ? ANDROID_NS_NAME : APP_PREFIX;
+    return lookupNamespacePrefix(node, nsUri, defaultPrefix, create);
   }
 
   /**
@@ -330,6 +330,30 @@ public class XmlUtils {
   }
 
   /**
+   * Parses the given UTF file as a DOM document, using the JDK parser. The parser does not
+   * validate, and is optionally namespace aware.
+   *
+   * @param file the UTF encoded file to parse
+   * @param namespaceAware whether the parser is namespace aware
+   * @return the DOM document
+   */
+  @NotNull
+  public static Document parseUtfXmlFile(@NotNull File file, boolean namespaceAware)
+      throws ParserConfigurationException, IOException, SAXException {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    Reader reader = getUtfReader(file);
+    try {
+      InputSource is = new InputSource(reader);
+      factory.setNamespaceAware(namespaceAware);
+      factory.setValidating(false);
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      return builder.parse(is);
+    } finally {
+      reader.close();
+    }
+  }
+
+  /**
    * Returns a character reader for the given file, which must be a UTF encoded file.
    *
    * <p>The reader does not need to be closed by the caller (because the file is read in full in one
@@ -395,59 +419,6 @@ public class XmlUtils {
 
   /**
    * Parses the given XML string as a DOM document, using the JDK parser. The parser does not
-   * validate, and is optionally namespace aware.
-   *
-   * @param xml the XML content to be parsed (must be well formed)
-   * @param namespaceAware whether the parser is namespace aware
-   * @return the DOM document
-   */
-  @NotNull
-  public static Document parseDocument(@NotNull String xml, boolean namespaceAware)
-      throws ParserConfigurationException, IOException, SAXException {
-    xml = stripBom(xml);
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    InputSource is = new InputSource(new StringReader(xml));
-    factory.setNamespaceAware(namespaceAware);
-    factory.setValidating(false);
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    return builder.parse(is);
-  }
-
-  /**
-   * Parses the given UTF file as a DOM document, using the JDK parser. The parser does not
-   * validate, and is optionally namespace aware.
-   *
-   * @param file the UTF encoded file to parse
-   * @param namespaceAware whether the parser is namespace aware
-   * @return the DOM document
-   */
-  @NotNull
-  public static Document parseUtfXmlFile(@NotNull File file, boolean namespaceAware)
-      throws ParserConfigurationException, IOException, SAXException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    Reader reader = getUtfReader(file);
-    try {
-      InputSource is = new InputSource(reader);
-      factory.setNamespaceAware(namespaceAware);
-      factory.setValidating(false);
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      return builder.parse(is);
-    } finally {
-      reader.close();
-    }
-  }
-
-  /** Strips out a leading UTF byte order mark, if present */
-  @NotNull
-  public static String stripBom(@NotNull String xml) {
-    if (!xml.isEmpty() && xml.charAt(0) == '\uFEFF') {
-      return xml.substring(1);
-    }
-    return xml;
-  }
-
-  /**
-   * Parses the given XML string as a DOM document, using the JDK parser. The parser does not
    * validate, and is optionally namespace aware. Any parsing errors are silently ignored.
    *
    * @param xml the XML content to be parsed (must be well formed)
@@ -467,6 +438,35 @@ public class XmlUtils {
   }
 
   /**
+   * Parses the given XML string as a DOM document, using the JDK parser. The parser does not
+   * validate, and is optionally namespace aware.
+   *
+   * @param xml the XML content to be parsed (must be well formed)
+   * @param namespaceAware whether the parser is namespace aware
+   * @return the DOM document
+   */
+  @NotNull
+  public static Document parseDocument(@NotNull String xml, boolean namespaceAware)
+      throws ParserConfigurationException, IOException, SAXException {
+    xml = stripBom(xml);
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    InputSource is = new InputSource(new StringReader(xml));
+    factory.setNamespaceAware(namespaceAware);
+    factory.setValidating(false);
+    DocumentBuilder builder = factory.newDocumentBuilder();
+    return builder.parse(is);
+  }
+
+  /** Strips out a leading UTF byte order mark, if present */
+  @NotNull
+  public static String stripBom(@NotNull String xml) {
+    if (!xml.isEmpty() && xml.charAt(0) == '\uFEFF') {
+      return xml.substring(1);
+    }
+    return xml;
+  }
+
+  /**
    * Dump an XML tree to string. This does not perform any pretty printing. To perform pretty
    * printing, use {@code XmlPrettyPrinter.prettyPrint(node)} in {@code sdk-common}.
    */
@@ -474,6 +474,22 @@ public class XmlUtils {
     StringBuilder sb = new StringBuilder(1000);
     append(sb, node, 0);
     return sb.toString();
+  }
+
+  /**
+   * Format the given floating value into an XML string, omitting decimals if 0
+   *
+   * @param value the value to be formatted
+   * @return the corresponding XML string for the value
+   */
+  public static String formatFloatAttribute(double value) {
+    if (value != (int) value) {
+      // Run String.format without a locale, because we don't want locale-specific
+      // conversions here like separating the decimal part with a comma instead of a dot!
+      return String.format((Locale) null, "%.2f", value); // $NON-NLS-1$
+    } else {
+      return Integer.toString((int) value);
+    }
   }
 
   /** Dump node to string without indentation adjustments */
@@ -548,22 +564,6 @@ public class XmlUtils {
       default:
         throw new UnsupportedOperationException(
             "Unsupported node type " + nodeType + ": not yet implemented");
-    }
-  }
-
-  /**
-   * Format the given floating value into an XML string, omitting decimals if 0
-   *
-   * @param value the value to be formatted
-   * @return the corresponding XML string for the value
-   */
-  public static String formatFloatAttribute(double value) {
-    if (value != (int) value) {
-      // Run String.format without a locale, because we don't want locale-specific
-      // conversions here like separating the decimal part with a comma instead of a dot!
-      return String.format((Locale) null, "%.2f", value); // $NON-NLS-1$
-    } else {
-      return Integer.toString((int) value);
     }
   }
 }

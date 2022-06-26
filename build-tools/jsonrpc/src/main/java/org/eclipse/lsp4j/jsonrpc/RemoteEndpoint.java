@@ -147,6 +147,14 @@ public class RemoteEndpoint
     }
   }
 
+  protected NotificationMessage createNotificationMessage(String method, Object parameter) {
+    NotificationMessage notificationMessage = new NotificationMessage();
+    notificationMessage.setJsonrpc(MessageConstants.JSONRPC_VERSION);
+    notificationMessage.setMethod(method);
+    notificationMessage.setParams(parameter);
+    return notificationMessage;
+  }
+
   protected RequestMessage createRequestMessage(String method, Object parameter) {
     RequestMessage requestMessage = new RequestMessage();
     requestMessage.setId(String.valueOf(nextRequestId.incrementAndGet()));
@@ -159,14 +167,6 @@ public class RemoteEndpoint
     CancelParams cancelParams = new CancelParams();
     cancelParams.setRawId(id);
     notify(MessageJsonHandler.CANCEL_METHOD.getMethodName(), cancelParams);
-  }
-
-  protected NotificationMessage createNotificationMessage(String method, Object parameter) {
-    NotificationMessage notificationMessage = new NotificationMessage();
-    notificationMessage.setJsonrpc(MessageConstants.JSONRPC_VERSION);
-    notificationMessage.setMethod(method);
-    notificationMessage.setParams(parameter);
-    return notificationMessage;
   }
 
   @Override
@@ -220,6 +220,20 @@ public class RemoteEndpoint
     out.consume(createErrorResponseMessage(requestMessage, errorObject));
   }
 
+  protected ResponseMessage createErrorResponseMessage(
+      RequestMessage requestMessage, ResponseError errorObject) {
+    ResponseMessage responseMessage = createResponseMessage(requestMessage);
+    responseMessage.setError(errorObject);
+    return responseMessage;
+  }
+
+  protected ResponseMessage createResponseMessage(RequestMessage requestMessage) {
+    ResponseMessage responseMessage = new ResponseMessage();
+    responseMessage.setRawId(requestMessage.getRawId());
+    responseMessage.setJsonrpc(MessageConstants.JSONRPC_VERSION);
+    return responseMessage;
+  }
+
   protected void handleResponseIssues(ResponseMessage responseMessage, List<MessageIssue> issues) {
     PendingRequestInfo requestInfo;
     synchronized (sentRequestMap) {
@@ -240,20 +254,6 @@ public class RemoteEndpoint
           "Issue found in " + message.getClass().getSimpleName() + ": " + issue.getText();
       LOG.warn(logMessage, issue.getCause());
     }
-  }
-
-  protected ResponseMessage createErrorResponseMessage(
-      RequestMessage requestMessage, ResponseError errorObject) {
-    ResponseMessage responseMessage = createResponseMessage(requestMessage);
-    responseMessage.setError(errorObject);
-    return responseMessage;
-  }
-
-  protected ResponseMessage createResponseMessage(RequestMessage requestMessage) {
-    ResponseMessage responseMessage = new ResponseMessage();
-    responseMessage.setRawId(requestMessage.getRawId());
-    responseMessage.setJsonrpc(MessageConstants.JSONRPC_VERSION);
-    return responseMessage;
   }
 
   @Override

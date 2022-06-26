@@ -11,10 +11,10 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 
 /**
  * @deprecated Use {@link EitherTypeAdapter.Factory} instead.

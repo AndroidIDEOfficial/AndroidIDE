@@ -27,36 +27,35 @@ import com.itsaky.androidide.handlers.FileOptionsHandler
 /** @author Akash Yadav */
 class PreviewLayoutAction() : EditorRelatedAction() {
 
-    override val id: String = "editor_previewLayout"
+  override val id: String = "editor_previewLayout"
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.title_preview_layout)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_preview_layout)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.title_preview_layout)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_preview_layout)
+  }
+
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+
+    if (!visible) {
+      return
     }
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+    val editor = getEditor(data)!!
+    val file = editor.file!!
 
-        if (!visible) {
-            return
-        }
+    val isXml = file.name.endsWith(".xml")
 
-        val editor = getEditor(data)!!
-        val file = editor.file!!
+    visible =
+      isXml &&
+        file.parentFile != null &&
+        Regex(FileOptionsHandler.LAYOUT_RES_PATH_REGEX).matches(file.parentFile!!.absolutePath)
+    enabled = visible
+  }
 
-        val isXml = file.name.endsWith(".xml")
-
-        visible =
-            isXml &&
-                file.parentFile != null &&
-                Regex(FileOptionsHandler.LAYOUT_RES_PATH_REGEX)
-                    .matches(file.parentFile!!.absolutePath)
-        enabled = visible
-    }
-
-    override fun execAction(data: ActionData): Any {
-        val activity = getActivity(data)!!
-        activity.previewLayout()
-        return true
-    }
+  override fun execAction(data: ActionData): Any {
+    val activity = getActivity(data)!!
+    activity.previewLayout()
+    return true
+  }
 }

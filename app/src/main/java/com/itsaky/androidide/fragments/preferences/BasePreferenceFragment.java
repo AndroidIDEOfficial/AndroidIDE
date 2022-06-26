@@ -32,6 +32,11 @@ import com.itsaky.androidide.managers.PreferenceManager;
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
 
   @Override
+  public void onCreatePreferences(Bundle p1, String p2) {
+    setPreferencesFromResource(com.itsaky.androidide.R.xml.ide_prefs, p2);
+  }
+
+  @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View v = super.onCreateView(inflater, container, savedInstanceState);
@@ -41,11 +46,6 @@ public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
               StudioApp.getInstance(), com.itsaky.androidide.R.color.content_background));
     }
     return v;
-  }
-
-  @Override
-  public void onCreatePreferences(Bundle p1, String p2) {
-    setPreferencesFromResource(com.itsaky.androidide.R.xml.ide_prefs, p2);
   }
 
   protected PreferenceManager getPrefManager() {

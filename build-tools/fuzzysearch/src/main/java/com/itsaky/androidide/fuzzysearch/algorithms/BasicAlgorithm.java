@@ -15,12 +15,12 @@ public abstract class BasicAlgorithm implements Applicable {
     this.stringFunction = stringFunction;
   }
 
-  public abstract int apply(String s1, String s2, ToStringFunction<String> stringProcessor);
-
   public int apply(String s1, String s2) {
 
     return apply(s1, s2, this.stringFunction);
   }
+
+  public abstract int apply(String s1, String s2, ToStringFunction<String> stringProcessor);
 
   public BasicAlgorithm with(ToStringFunction<String> stringFunction) {
     setStringFunction(stringFunction);
@@ -32,11 +32,11 @@ public abstract class BasicAlgorithm implements Applicable {
     return this;
   }
 
-  void setStringFunction(ToStringFunction<String> stringFunction) {
-    this.stringFunction = stringFunction;
-  }
-
   public ToStringFunction<String> getStringFunction() {
     return stringFunction;
+  }
+
+  void setStringFunction(ToStringFunction<String> stringFunction) {
+    this.stringFunction = stringFunction;
   }
 }

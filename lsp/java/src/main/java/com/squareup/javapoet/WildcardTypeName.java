@@ -54,38 +54,8 @@ public final class WildcardTypeName extends TypeName {
     }
   }
 
-  @Override
-  public WildcardTypeName annotated(List<AnnotationSpec> annotations) {
-    return new WildcardTypeName(upperBounds, lowerBounds, concatAnnotations(annotations));
-  }
-
-  @Override
-  public TypeName withoutAnnotations() {
-    return new WildcardTypeName(upperBounds, lowerBounds);
-  }
-
-  @Override
-  CodeWriter emit(CodeWriter out) throws IOException {
-    if (lowerBounds.size() == 1) {
-      return out.emit("? super $T", lowerBounds.get(0));
-    }
-    return upperBounds.get(0).equals(TypeName.OBJECT)
-        ? out.emit("?")
-        : out.emit("? extends $T", upperBounds.get(0));
-  }
-
-  /**
-   * Returns a type that represents an unknown type that extends {@code bound}. For example, if
-   * {@code bound} is {@code CharSequence.class}, this returns {@code ? extends CharSequence}. If
-   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code ?
-   * extends Object}.
-   */
-  public static WildcardTypeName subtypeOf(TypeName upperBound) {
-    return new WildcardTypeName(Collections.singletonList(upperBound), Collections.emptyList());
-  }
-
-  public static WildcardTypeName subtypeOf(Type upperBound) {
-    return subtypeOf(TypeName.get(upperBound));
+  public static WildcardTypeName supertypeOf(Type lowerBound) {
+    return supertypeOf(TypeName.get(lowerBound));
   }
 
   /**
@@ -95,10 +65,6 @@ public final class WildcardTypeName extends TypeName {
   public static WildcardTypeName supertypeOf(TypeName lowerBound) {
     return new WildcardTypeName(
         Collections.singletonList(OBJECT), Collections.singletonList(lowerBound));
-  }
-
-  public static WildcardTypeName supertypeOf(Type lowerBound) {
-    return supertypeOf(TypeName.get(lowerBound));
   }
 
   public static TypeName get(javax.lang.model.type.WildcardType mirror) {
@@ -121,6 +87,20 @@ public final class WildcardTypeName extends TypeName {
     }
   }
 
+  public static WildcardTypeName subtypeOf(Type upperBound) {
+    return subtypeOf(TypeName.get(upperBound));
+  }
+
+  /**
+   * Returns a type that represents an unknown type that extends {@code bound}. For example, if
+   * {@code bound} is {@code CharSequence.class}, this returns {@code ? extends CharSequence}. If
+   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code ?
+   * extends Object}.
+   */
+  public static WildcardTypeName subtypeOf(TypeName upperBound) {
+    return new WildcardTypeName(Collections.singletonList(upperBound), Collections.emptyList());
+  }
+
   public static TypeName get(WildcardType wildcardName) {
     return get(wildcardName, new LinkedHashMap<>());
   }
@@ -128,5 +108,25 @@ public final class WildcardTypeName extends TypeName {
   static TypeName get(WildcardType wildcardName, Map<Type, TypeVariableName> map) {
     return new WildcardTypeName(
         list(wildcardName.getUpperBounds(), map), list(wildcardName.getLowerBounds(), map));
+  }
+
+  @Override
+  public WildcardTypeName annotated(List<AnnotationSpec> annotations) {
+    return new WildcardTypeName(upperBounds, lowerBounds, concatAnnotations(annotations));
+  }
+
+  @Override
+  public TypeName withoutAnnotations() {
+    return new WildcardTypeName(upperBounds, lowerBounds);
+  }
+
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
+    if (lowerBounds.size() == 1) {
+      return out.emit("? super $T", lowerBounds.get(0));
+    }
+    return upperBounds.get(0).equals(TypeName.OBJECT)
+        ? out.emit("?")
+        : out.emit("? extends $T", upperBounds.get(0));
   }
 }

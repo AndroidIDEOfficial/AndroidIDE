@@ -33,52 +33,52 @@ import java.nio.file.Path
  * @author Akash Yadav
  */
 class ImportCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings,
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    lateinit var importPath: String
+  lateinit var importPath: String
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        log.info("...complete import")
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    log.info("...complete import")
 
-        val names: MutableSet<String> = HashSet()
-        val list = mutableListOf<CompletionItem>()
-        for (className in compiler.publicTopLevelTypes()) {
-            val matchLevel = matchLevel(className, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
+    val names: MutableSet<String> = HashSet()
+    val list = mutableListOf<CompletionItem>()
+    for (className in compiler.publicTopLevelTypes()) {
+      val matchLevel = matchLevel(className, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
 
-            val start = importPath.lastIndexOf('.')
-            var end = className.indexOf('.', importPath.length)
-            if (end == -1) {
-                end = className.length
-            }
-            val segment = className.substring(start + 1, end)
-            if (names.contains(segment)) {
-                continue
-            }
-            names.add(segment)
-            val isClass = end == importPath.length
-            if (isClass) {
-                list.add(classItem(className, importPath, matchLevel))
-            } else {
-                list.add(packageItem(segment, importPath, matchLevel))
-            }
+      val start = importPath.lastIndexOf('.')
+      var end = className.indexOf('.', importPath.length)
+      if (end == -1) {
+        end = className.length
+      }
+      val segment = className.substring(start + 1, end)
+      if (names.contains(segment)) {
+        continue
+      }
+      names.add(segment)
+      val isClass = end == importPath.length
+      if (isClass) {
+        list.add(classItem(className, importPath, matchLevel))
+      } else {
+        list.add(packageItem(segment, importPath, matchLevel))
+      }
 
-            if (list.size > MAX_COMPLETION_ITEMS) {
-                break
-            }
-        }
-
-        return CompletionResult(list)
+      if (list.size > MAX_COMPLETION_ITEMS) {
+        break
+      }
     }
+
+    return CompletionResult(list)
+  }
 }

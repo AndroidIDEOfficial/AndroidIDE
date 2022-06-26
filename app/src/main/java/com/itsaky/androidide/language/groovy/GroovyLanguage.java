@@ -53,35 +53,6 @@ public class GroovyLanguage extends IDELanguage {
     completer = new GroovyAutoComplete();
   }
 
-  @Override
-  public int getIndentAdvance(@NonNull String p1) {
-    try {
-      GroovyLexer lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(p1)));
-      Token token = null;
-      int advance = 0;
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        switch (token.getType()) {
-          case GroovyLexer.LBRACE:
-            advance++;
-            break;
-          case GroovyLexer.RBRACE:
-            advance--;
-            break;
-        }
-      }
-      advance = Math.max(0, advance);
-      return advance * getTabSize();
-    } catch (Throwable e) {
-      LOG.error("Failed to calculate indent advance", e);
-    }
-    return 0;
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new SymbolPairMatch.DefaultSymbolPairs();
-  }
-
   @NonNull
   @Override
   public AnalyzeManager getAnalyzeManager() {
@@ -129,8 +100,8 @@ public class GroovyLanguage extends IDELanguage {
   }
 
   @Override
-  public CharSequence format(CharSequence content) {
-    return content;
+  public SymbolPairMatch getSymbolPairs() {
+    return new SymbolPairMatch.DefaultSymbolPairs();
   }
 
   @Override
@@ -140,6 +111,35 @@ public class GroovyLanguage extends IDELanguage {
 
   @Override
   public void destroy() {}
+
+  @Override
+  public CharSequence format(CharSequence content) {
+    return content;
+  }
+
+  @Override
+  public int getIndentAdvance(@NonNull String p1) {
+    try {
+      GroovyLexer lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(p1)));
+      Token token = null;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case GroovyLexer.LBRACE:
+            advance++;
+            break;
+          case GroovyLexer.RBRACE:
+            advance--;
+            break;
+        }
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Failed to calculate indent advance", e);
+    }
+    return 0;
+  }
 
   class BraceHandler implements NewlineHandler {
 

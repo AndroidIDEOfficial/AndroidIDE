@@ -18,37 +18,36 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
 class PasteAction() : BaseEditorAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(android.R.string.paste)
+  constructor(context: Context) : this() {
+    label = context.getString(android.R.string.paste)
 
-        val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModePasteDrawable))
-        icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
-        arr.recycle()
+    val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModePasteDrawable))
+    icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }
+    arr.recycle()
+  }
+
+  override val id: String = "ideEditor_paste"
+
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+
+    if (!visible) {
+      return
     }
 
-    override val id: String = "ideEditor_paste"
-    
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
-        
-        if (!visible) {
-            return
-        }
-        
-        visible = getEditor(data)?.isEditable ?: false
-        enabled = visible
-    }
-    
-    override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data) ?: return false
-        editor.pasteText()
-        return true
-    }
+    visible = getEditor(data)?.isEditable ?: false
+    enabled = visible
+  }
+
+  override fun execAction(data: ActionData): Boolean {
+    val editor = getEditor(data) ?: return false
+    editor.pasteText()
+    return true
+  }
 }

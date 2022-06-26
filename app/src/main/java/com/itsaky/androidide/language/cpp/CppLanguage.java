@@ -43,40 +43,11 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 public class CppLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("CppLanguage");
-  private CppAnalyzer analyzer;
   private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private CppAnalyzer analyzer;
 
   public CppLanguage() {
     analyzer = new CppAnalyzer();
-  }
-
-  @Override
-  public int getIndentAdvance(@NonNull String line) {
-    try {
-      CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromReader(new StringReader(line)));
-      Token token;
-      int advance = 0;
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        switch (token.getType()) {
-          case CPP14Lexer.LeftBrace:
-            advance++;
-            break;
-          case CPP14Lexer.RightBrace:
-            advance--;
-            break;
-        }
-      }
-      advance = Math.max(0, advance);
-      return advance * getTabSize();
-    } catch (Throwable e) {
-      LOG.error("Error calculating indent advance", e);
-    }
-    return 0;
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new CppSymbolPairs();
   }
 
   @NonNull
@@ -107,8 +78,8 @@ public class CppLanguage extends IDELanguage {
   }
 
   @Override
-  public CharSequence format(CharSequence content) {
-    return content;
+  public SymbolPairMatch getSymbolPairs() {
+    return new CppSymbolPairs();
   }
 
   @Override
@@ -119,6 +90,35 @@ public class CppLanguage extends IDELanguage {
   @Override
   public void destroy() {
     analyzer = null;
+  }
+
+  @Override
+  public CharSequence format(CharSequence content) {
+    return content;
+  }
+
+  @Override
+  public int getIndentAdvance(@NonNull String line) {
+    try {
+      CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromReader(new StringReader(line)));
+      Token token;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case CPP14Lexer.LeftBrace:
+            advance++;
+            break;
+          case CPP14Lexer.RightBrace:
+            advance--;
+            break;
+        }
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Error calculating indent advance", e);
+    }
+    return 0;
   }
 
   private static class CppSymbolPairs extends SymbolPairMatch {

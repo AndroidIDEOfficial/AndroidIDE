@@ -18,7 +18,6 @@
  */
 package org.netbeans.lib.nbjavac.services;
 
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.comp.Attr;
 import com.sun.tools.javac.comp.AttrContext;
@@ -32,8 +31,8 @@ import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticPosition;
 import com.sun.tools.javac.util.List;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
@@ -42,12 +41,14 @@ import java.lang.invoke.MethodType;
  */
 public class NBAttr extends Attr {
 
+  private final CancelService cancelService;
+  private final TreeMaker tm;
+  private boolean fullyAttribute;
+  private Env<AttrContext> fullyAttributeResult;
+
   public static void preRegister(Context context) {
     context.put(attrKey, (Context.Factory<Attr>) NBAttr::new);
   }
-
-  private final CancelService cancelService;
-  private final TreeMaker tm;
 
   public NBAttr(Context context) {
     super(context);
@@ -56,43 +57,24 @@ public class NBAttr extends Attr {
   }
 
   @Override
-  public void visitClassDef(JCClassDecl tree) {
-    cancelService.abortIfCanceled();
-    super.visitClassDef(tree);
-  }
-
-  @Override
-  public void visitMethodDef(JCMethodDecl tree) {
-    cancelService.abortIfCanceled();
-    super.visitMethodDef(tree);
-  }
-
-  @Override
-  public void visitBlock(JCBlock tree) {
-    cancelService.abortIfCanceled();
-    super.visitBlock(tree);
-  }
-
-  @Override
-  public void visitVarDef(JCVariableDecl tree) {
-    // for erroneous "var", make sure the synthetic make.Error() has an invalid/synthetic position:
-    tm.at(-1);
-    super.visitVarDef(tree);
-  }
-
-  @Override
-  public Type attribType(JCTree tree, Env<AttrContext> env) {
-    cancelService.abortIfCanceled();
-    return super.attribType(tree, env);
-  }
-
-  @Override
   public void visitCatch(JCCatch that) {
     super.visitBlock(tm.Block(0, List.of(that.param, that.body)));
   }
 
-  private boolean fullyAttribute;
-  private Env<AttrContext> fullyAttributeResult;
+  public Env<AttrContext> attributeAndCapture(JCTree tree, Env<AttrContext> env, JCTree to) {
+    try {
+      fullyAttribute = true;
+
+      Env<AttrContext> result =
+          tree instanceof JCExpression
+              ? attribExprToTree((JCExpression) tree, env, to)
+              : attribStatToTree(tree, env, to);
+
+      return fullyAttributeResult != null ? fullyAttributeResult : result;
+    } finally {
+      fullyAttribute = false;
+    }
+  }
 
   protected void breakTreeFound(Env<AttrContext> env) {
     if (fullyAttribute) {
@@ -110,6 +92,10 @@ public class NBAttr extends Attr {
         sneakyThrows(ex);
       }
     }
+  }
+
+  private <T extends Throwable> void sneakyThrows(Throwable t) throws T {
+    throw (T) t;
   }
 
   protected void breakTreeFound(Env<AttrContext> env, Type result) {
@@ -130,22 +116,34 @@ public class NBAttr extends Attr {
     }
   }
 
-  private <T extends Throwable> void sneakyThrows(Throwable t) throws T {
-    throw (T) t;
+  @Override
+  public Type attribType(JCTree tree, Env<AttrContext> env) {
+    cancelService.abortIfCanceled();
+    return super.attribType(tree, env);
   }
 
-  public Env<AttrContext> attributeAndCapture(JCTree tree, Env<AttrContext> env, JCTree to) {
-    try {
-      fullyAttribute = true;
+  @Override
+  public void visitClassDef(JCClassDecl tree) {
+    cancelService.abortIfCanceled();
+    super.visitClassDef(tree);
+  }
 
-      Env<AttrContext> result =
-          tree instanceof JCExpression
-              ? attribExprToTree((JCExpression) tree, env, to)
-              : attribStatToTree(tree, env, to);
+  @Override
+  public void visitMethodDef(JCMethodDecl tree) {
+    cancelService.abortIfCanceled();
+    super.visitMethodDef(tree);
+  }
 
-      return fullyAttributeResult != null ? fullyAttributeResult : result;
-    } finally {
-      fullyAttribute = false;
-    }
+  @Override
+  public void visitVarDef(JCVariableDecl tree) {
+    // for erroneous "var", make sure the synthetic make.Error() has an invalid/synthetic position:
+    tm.at(-1);
+    super.visitVarDef(tree);
+  }
+
+  @Override
+  public void visitBlock(JCBlock tree) {
+    cancelService.abortIfCanceled();
+    super.visitBlock(tree);
   }
 }

@@ -25,14 +25,14 @@ package com.itsaky.androidide.tooling.api.messages.result
  * @author Akash Yadav
  */
 data class BuildCancellationRequestResult(
-    val wasEnqueued: Boolean,
-    val failureReason: Reason? = null
+  val wasEnqueued: Boolean,
+  val failureReason: Reason? = null
 ) {
 
-    /** Reason for build cancellation request failure. */
-    enum class Reason private constructor(var message: String) {
-        NO_RUNNING_BUILD("No running builds"),
-        CANCELLATION_ERROR("An error occurred performing the cancellation request"),
-        UNKNOWN("Unknown error")
-    }
+  /** Reason for build cancellation request failure. */
+  enum class Reason private constructor(var message: String) {
+    NO_RUNNING_BUILD("No running builds"),
+    CANCELLATION_ERROR("An error occurred performing the cancellation request"),
+    UNKNOWN("Unknown error")
+  }
 }

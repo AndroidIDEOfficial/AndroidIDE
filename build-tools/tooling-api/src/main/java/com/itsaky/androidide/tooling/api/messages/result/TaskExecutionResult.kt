@@ -26,18 +26,15 @@ package com.itsaky.androidide.tooling.api.messages.result
  * @author Akash Yadav
  */
 data class TaskExecutionResult(val isSuccessful: Boolean, val failure: Failure?) {
-    enum class Failure {
-        PROJECT_NOT_FOUND,
-        UNKNOWN,
-        
-        UNSUPPORTED_GRADLE_VERSION,
-        UNSUPPORTED_CONFIGURATION,
-        UNSUPPORTED_BUILD_ARGUMENT,
-        
-        BUILD_FAILED,
-        BUILD_CANCELLED,
-        
-        CONNECTION_ERROR,
-        CONNECTION_CLOSED
-    }
+  enum class Failure {
+    PROJECT_NOT_FOUND,
+    UNKNOWN,
+    UNSUPPORTED_GRADLE_VERSION,
+    UNSUPPORTED_CONFIGURATION,
+    UNSUPPORTED_BUILD_ARGUMENT,
+    BUILD_FAILED,
+    BUILD_CANCELLED,
+    CONNECTION_ERROR,
+    CONNECTION_CLOSED
+  }
 }

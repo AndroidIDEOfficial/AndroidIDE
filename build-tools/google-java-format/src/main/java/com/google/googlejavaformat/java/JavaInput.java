@@ -57,200 +57,10 @@ import javax.tools.SimpleJavaFileObject;
 
 /** {@code JavaInput} extends {@link Input} to represent a Java input document. */
 public final class JavaInput extends Input {
-  /**
-   * A {@code JavaInput} is a sequence of {@link Tok}s that cover the Java input. A {@link Tok} is
-   * either a token (if {@code isToken()}), or a non-token, which is a comment (if {@code
-   * isComment()}) or a newline (if {@code isNewline()}) or a maximal sequence of other whitespace
-   * characters (if {@code isSpaces()}). Each {@link Tok} contains a sequence of characters, an
-   * index (sequential starting at {@code 0} for tokens and comments, else {@code -1}), and a
-   * ({@code 0}-origin) position in the input. The concatenation of the texts of all the {@link
-   * Tok}s equals the input. Each Input ends with a token EOF {@link Tok}, with empty text.
-   *
-   * <p>A {@code /*} comment possibly contains newlines; a {@code //} comment does not contain the
-   * terminating newline character, but is followed by a newline {@link Tok}.
-   */
-  static final class Tok implements Input.Tok {
-    private final int index;
-    private final String originalText;
-    private final String text;
-    private final int position;
-    private final int columnI;
-    private final boolean isToken;
-    private final TokenKind kind;
-
-    /**
-     * The {@code Tok} constructor.
-     *
-     * @param index its index
-     * @param originalText its original text, before removing Unicode escapes
-     * @param text its text after removing Unicode escapes
-     * @param position its {@code 0}-origin position in the input
-     * @param columnI its {@code 0}-origin column number in the input
-     * @param isToken whether the {@code Tok} is a token
-     * @param kind the token kind
-     */
-    Tok(
-        int index,
-        String originalText,
-        String text,
-        int position,
-        int columnI,
-        boolean isToken,
-        TokenKind kind) {
-      this.index = index;
-      this.originalText = originalText;
-      this.text = text;
-      this.position = position;
-      this.columnI = columnI;
-      this.isToken = isToken;
-      this.kind = kind;
-    }
-
-    @Override
-    public int getIndex() {
-      return index;
-    }
-
-    @Override
-    public String getText() {
-      return text;
-    }
-
-    @Override
-    public String getOriginalText() {
-      return originalText;
-    }
-
-    @Override
-    public int length() {
-      return originalText.length();
-    }
-
-    @Override
-    public int getPosition() {
-      return position;
-    }
-
-    @Override
-    public int getColumn() {
-      return columnI;
-    }
-
-    boolean isToken() {
-      return isToken;
-    }
-
-    @Override
-    public boolean isNewline() {
-      return Newlines.isNewline(text);
-    }
-
-    @Override
-    public boolean isSlashSlashComment() {
-      return text.startsWith("//");
-    }
-
-    @Override
-    public boolean isSlashStarComment() {
-      return text.startsWith("/*");
-    }
-
-    @Override
-    public boolean isJavadocComment() {
-      // comments like `/***` are also javadoc, but their formatting probably won't be
-      // improved
-      // by the javadoc formatter
-      return text.startsWith("/**") && text.charAt("/**".length()) != '*' && text.length() > 4;
-    }
-
-    @Override
-    public boolean isComment() {
-      return isSlashSlashComment() || isSlashStarComment();
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("index", index)
-          .add("text", text)
-          .add("position", position)
-          .add("columnI", columnI)
-          .add("isToken", isToken)
-          .toString();
-    }
-
-    public TokenKind kind() {
-      return kind;
-    }
-  }
-
-  /**
-   * A {@link Token} contains a token {@link Tok} and its associated non-tokens; each non-token
-   * {@link Tok} belongs to one {@link Token}. Each {@link Token} has an immutable list of its
-   * non-tokens that appear before it, and another list of its non-tokens that appear after it. The
-   * concatenation of the texts of all the {@link Token}s' {@link Tok}s, each preceded by the texts
-   * of its {@code toksBefore} and followed by the texts of its {@code toksAfter}, equals the input.
-   */
-  static final class Token implements Input.Token {
-    private final Tok tok;
-    private final ImmutableList<Tok> toksBefore;
-    private final ImmutableList<Tok> toksAfter;
-
-    /**
-     * Token constructor.
-     *
-     * @param toksBefore the earlier non-token {link Tok}s assigned to this {@code Token}
-     * @param tok this token {@link Tok}
-     * @param toksAfter the later non-token {link Tok}s assigned to this {@code Token}
-     */
-    Token(List<Tok> toksBefore, Tok tok, List<Tok> toksAfter) {
-      this.toksBefore = ImmutableList.copyOf(toksBefore);
-      this.tok = tok;
-      this.toksAfter = ImmutableList.copyOf(toksAfter);
-    }
-
-    /**
-     * Get the token's {@link Tok}.
-     *
-     * @return the token's {@link Tok}
-     */
-    @Override
-    public Tok getTok() {
-      return tok;
-    }
-
-    /**
-     * Get the earlier {@link Tok}s assigned to this {@code Token}.
-     *
-     * @return the earlier {@link Tok}s assigned to this {@code Token}
-     */
-    @Override
-    public ImmutableList<? extends Input.Tok> getToksBefore() {
-      return toksBefore;
-    }
-
-    /**
-     * Get the later {@link Tok}s assigned to this {@code Token}.
-     *
-     * @return the later {@link Tok}s assigned to this {@code Token}
-     */
-    @Override
-    public ImmutableList<? extends Input.Tok> getToksAfter() {
-      return toksAfter;
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("tok", tok)
-          .add("toksBefore", toksBefore)
-          .add("toksAfter", toksAfter)
-          .toString();
-    }
-  }
-
   private final String text; // The input.
-  private int kN; // The number of numbered toks (tokens or comments), excluding the EOF.
+  private final ImmutableMap<Integer, Integer> positionToColumnMap; // Map Tok position to column.
+  private final ImmutableList<Token> tokens; // The Tokens for this input.
+  private final ImmutableRangeMap<Integer, Token> positionTokenMap; // Map position to Token.
 
   /*
    * The following lists record the sequential indices of the {@code Tok}s on each input line. (Only
@@ -259,13 +69,10 @@ public final class JavaInput extends Input {
    * equivalent ones for the formatted output) let us compute correspondences between the input and
    * output.
    */
-
-  private final ImmutableMap<Integer, Integer> positionToColumnMap; // Map Tok position to column.
-  private final ImmutableList<Token> tokens; // The Tokens for this input.
-  private final ImmutableRangeMap<Integer, Token> positionTokenMap; // Map position to Token.
-
   /** Map from Tok index to the associated Token. */
   private final Token[] kToToken;
+  private int kN; // The number of numbered toks (tokens or comments), excluding the EOF.
+  private JCCompilationUnit unit;
 
   /**
    * Input constructor.
@@ -315,21 +122,6 @@ public final class JavaInput extends Input {
       builder.put(tok.getPosition(), tok.getColumn());
     }
     return builder.buildOrThrow();
-  }
-
-  /**
-   * Get the input text.
-   *
-   * @return the input text
-   */
-  @Override
-  public String getText() {
-    return text;
-  }
-
-  @Override
-  public ImmutableMap<Integer, Integer> getPositionToColumnMap() {
-    return positionToColumnMap;
   }
 
   /** Lex the input and build the list of toks. */
@@ -564,6 +356,99 @@ public final class JavaInput extends Input {
   }
 
   /**
+   * Get the input tokens.
+   *
+   * @return the input tokens
+   */
+  @Override
+  public ImmutableList<? extends Input.Token> getTokens() {
+    return tokens;
+  }
+
+  /**
+   * Get the navigable map from position to {@link Token}. Used to look for tokens following a given
+   * one, and to implement the --offset and --length flags to reformat a character range in the
+   * input file.
+   *
+   * @return the navigable map from position to {@link Token}
+   */
+  @Override
+  public ImmutableRangeMap<Integer, Token> getPositionTokenMap() {
+    return positionTokenMap;
+  }
+
+  @Override
+  public ImmutableMap<Integer, Integer> getPositionToColumnMap() {
+    return positionToColumnMap;
+  }
+
+  /**
+   * Get the input text.
+   *
+   * @return the input text
+   */
+  @Override
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * Get the number of toks.
+   *
+   * @return the number of toks, excluding the EOF tok
+   */
+  @Override
+  public int getkN() {
+    return kN;
+  }
+
+  /**
+   * Get the Token by index.
+   *
+   * @param k the Tok index
+   */
+  @Override
+  public Token getToken(int k) {
+    return kToToken[k];
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("tokens", tokens)
+        .add("super", super.toString())
+        .toString();
+  }
+
+  @Override
+  public int getLineNumber(int inputPosition) {
+    Verify.verifyNotNull(unit, "Expected compilation unit to be set.");
+    return unit.getLineMap().getLineNumber(inputPosition);
+  }
+
+  @Override
+  public int getColumnNumber(int inputPosition) {
+    Verify.verifyNotNull(unit, "Expected compilation unit to be set.");
+    return unit.getLineMap().getColumnNumber(inputPosition);
+  }
+
+  // TODO(cushon): refactor JavaInput so the CompilationUnit can be passed into
+  // the constructor.
+  public void setCompilationUnit(JCCompilationUnit unit) {
+    this.unit = unit;
+  }
+
+  public RangeSet<Integer> characterRangesToTokenRanges(Collection<Range<Integer>> characterRanges)
+      throws FormatterException {
+    RangeSet<Integer> tokenRangeSet = TreeRangeSet.create();
+    for (Range<Integer> characterRange : characterRanges) {
+      tokenRangeSet.add(
+          characterRangeToTokenRange(characterRange.canonical(DiscreteDomain.integers())));
+    }
+    return tokenRangeSet;
+  }
+
+  /**
    * Convert from a character range to a token range.
    *
    * @param characterRange the {@code 0}-based {@link Range} of characters
@@ -594,82 +479,194 @@ public final class JavaInput extends Input {
   }
 
   /**
-   * Get the number of toks.
+   * A {@code JavaInput} is a sequence of {@link Tok}s that cover the Java input. A {@link Tok} is
+   * either a token (if {@code isToken()}), or a non-token, which is a comment (if {@code
+   * isComment()}) or a newline (if {@code isNewline()}) or a maximal sequence of other whitespace
+   * characters (if {@code isSpaces()}). Each {@link Tok} contains a sequence of characters, an
+   * index (sequential starting at {@code 0} for tokens and comments, else {@code -1}), and a
+   * ({@code 0}-origin) position in the input. The concatenation of the texts of all the {@link
+   * Tok}s equals the input. Each Input ends with a token EOF {@link Tok}, with empty text.
    *
-   * @return the number of toks, excluding the EOF tok
+   * <p>A {@code /*} comment possibly contains newlines; a {@code //} comment does not contain the
+   * terminating newline character, but is followed by a newline {@link Tok}.
    */
-  @Override
-  public int getkN() {
-    return kN;
-  }
+  static final class Tok implements Input.Tok {
+    private final int index;
+    private final String originalText;
+    private final String text;
+    private final int position;
+    private final int columnI;
+    private final boolean isToken;
+    private final TokenKind kind;
 
-  /**
-   * Get the Token by index.
-   *
-   * @param k the Tok index
-   */
-  @Override
-  public Token getToken(int k) {
-    return kToToken[k];
-  }
-
-  /**
-   * Get the input tokens.
-   *
-   * @return the input tokens
-   */
-  @Override
-  public ImmutableList<? extends Input.Token> getTokens() {
-    return tokens;
-  }
-
-  /**
-   * Get the navigable map from position to {@link Token}. Used to look for tokens following a given
-   * one, and to implement the --offset and --length flags to reformat a character range in the
-   * input file.
-   *
-   * @return the navigable map from position to {@link Token}
-   */
-  @Override
-  public ImmutableRangeMap<Integer, Token> getPositionTokenMap() {
-    return positionTokenMap;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("tokens", tokens)
-        .add("super", super.toString())
-        .toString();
-  }
-
-  private JCCompilationUnit unit;
-
-  @Override
-  public int getLineNumber(int inputPosition) {
-    Verify.verifyNotNull(unit, "Expected compilation unit to be set.");
-    return unit.getLineMap().getLineNumber(inputPosition);
-  }
-
-  @Override
-  public int getColumnNumber(int inputPosition) {
-    Verify.verifyNotNull(unit, "Expected compilation unit to be set.");
-    return unit.getLineMap().getColumnNumber(inputPosition);
-  }
-
-  // TODO(cushon): refactor JavaInput so the CompilationUnit can be passed into
-  // the constructor.
-  public void setCompilationUnit(JCCompilationUnit unit) {
-    this.unit = unit;
-  }
-
-  public RangeSet<Integer> characterRangesToTokenRanges(Collection<Range<Integer>> characterRanges)
-      throws FormatterException {
-    RangeSet<Integer> tokenRangeSet = TreeRangeSet.create();
-    for (Range<Integer> characterRange : characterRanges) {
-      tokenRangeSet.add(
-          characterRangeToTokenRange(characterRange.canonical(DiscreteDomain.integers())));
+    /**
+     * The {@code Tok} constructor.
+     *
+     * @param index its index
+     * @param originalText its original text, before removing Unicode escapes
+     * @param text its text after removing Unicode escapes
+     * @param position its {@code 0}-origin position in the input
+     * @param columnI its {@code 0}-origin column number in the input
+     * @param isToken whether the {@code Tok} is a token
+     * @param kind the token kind
+     */
+    Tok(
+        int index,
+        String originalText,
+        String text,
+        int position,
+        int columnI,
+        boolean isToken,
+        TokenKind kind) {
+      this.index = index;
+      this.originalText = originalText;
+      this.text = text;
+      this.position = position;
+      this.columnI = columnI;
+      this.isToken = isToken;
+      this.kind = kind;
     }
-    return tokenRangeSet;
+
+    @Override
+    public int getIndex() {
+      return index;
+    }
+
+    @Override
+    public int getPosition() {
+      return position;
+    }
+
+    @Override
+    public int getColumn() {
+      return columnI;
+    }
+
+    @Override
+    public String getText() {
+      return text;
+    }
+
+    @Override
+    public String getOriginalText() {
+      return originalText;
+    }
+
+    @Override
+    public int length() {
+      return originalText.length();
+    }
+
+    @Override
+    public boolean isNewline() {
+      return Newlines.isNewline(text);
+    }
+
+    @Override
+    public boolean isSlashSlashComment() {
+      return text.startsWith("//");
+    }
+
+    @Override
+    public boolean isSlashStarComment() {
+      return text.startsWith("/*");
+    }
+
+    @Override
+    public boolean isJavadocComment() {
+      // comments like `/***` are also javadoc, but their formatting probably won't be
+      // improved
+      // by the javadoc formatter
+      return text.startsWith("/**") && text.charAt("/**".length()) != '*' && text.length() > 4;
+    }
+
+    @Override
+    public boolean isComment() {
+      return isSlashSlashComment() || isSlashStarComment();
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("index", index)
+          .add("text", text)
+          .add("position", position)
+          .add("columnI", columnI)
+          .add("isToken", isToken)
+          .toString();
+    }
+
+    public TokenKind kind() {
+      return kind;
+    }
+
+    boolean isToken() {
+      return isToken;
+    }
+  }
+
+  /**
+   * A {@link Token} contains a token {@link Tok} and its associated non-tokens; each non-token
+   * {@link Tok} belongs to one {@link Token}. Each {@link Token} has an immutable list of its
+   * non-tokens that appear before it, and another list of its non-tokens that appear after it. The
+   * concatenation of the texts of all the {@link Token}s' {@link Tok}s, each preceded by the texts
+   * of its {@code toksBefore} and followed by the texts of its {@code toksAfter}, equals the input.
+   */
+  static final class Token implements Input.Token {
+    private final Tok tok;
+    private final ImmutableList<Tok> toksBefore;
+    private final ImmutableList<Tok> toksAfter;
+
+    /**
+     * Token constructor.
+     *
+     * @param toksBefore the earlier non-token {link Tok}s assigned to this {@code Token}
+     * @param tok this token {@link Tok}
+     * @param toksAfter the later non-token {link Tok}s assigned to this {@code Token}
+     */
+    Token(List<Tok> toksBefore, Tok tok, List<Tok> toksAfter) {
+      this.toksBefore = ImmutableList.copyOf(toksBefore);
+      this.tok = tok;
+      this.toksAfter = ImmutableList.copyOf(toksAfter);
+    }
+
+    /**
+     * Get the token's {@link Tok}.
+     *
+     * @return the token's {@link Tok}
+     */
+    @Override
+    public Tok getTok() {
+      return tok;
+    }
+
+    /**
+     * Get the earlier {@link Tok}s assigned to this {@code Token}.
+     *
+     * @return the earlier {@link Tok}s assigned to this {@code Token}
+     */
+    @Override
+    public ImmutableList<? extends Input.Tok> getToksBefore() {
+      return toksBefore;
+    }
+
+    /**
+     * Get the later {@link Tok}s assigned to this {@code Token}.
+     *
+     * @return the later {@link Tok}s assigned to this {@code Token}
+     */
+    @Override
+    public ImmutableList<? extends Input.Tok> getToksAfter() {
+      return toksAfter;
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("tok", tok)
+          .add("toksBefore", toksBefore)
+          .add("toksAfter", toksAfter)
+          .toString();
+    }
   }
 }

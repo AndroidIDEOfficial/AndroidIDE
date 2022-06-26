@@ -45,27 +45,6 @@ public class ConvertVariableToStatement extends Rewrite {
     this.position = position;
   }
 
-  static VariableTree findVariable(ParseTask task, int position) {
-    return new FindVariableAtCursor(task.task).scan(task.root, position);
-  }
-
-  /** https://docs.oracle.com/javase/specs/jls/se13/html/jls-14.html#jls-14.8 */
-  static boolean isExpressionStatement(Tree t) {
-    if (t == null) return false;
-    switch (t.getKind()) {
-      case ASSIGNMENT:
-      case PREFIX_INCREMENT:
-      case PREFIX_DECREMENT:
-      case POSTFIX_INCREMENT:
-      case POSTFIX_DECREMENT:
-      case METHOD_INVOCATION:
-      case NEW_CLASS:
-        return true;
-      default:
-        return false;
-    }
-  }
-
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final ParseTask task = compiler.parse(file);
@@ -95,5 +74,26 @@ public class ConvertVariableToStatement extends Rewrite {
     TextEdit edit = new TextEdit(delete, "");
     TextEdit[] edits = {edit};
     return Collections.singletonMap(file, edits);
+  }
+
+  static VariableTree findVariable(ParseTask task, int position) {
+    return new FindVariableAtCursor(task.task).scan(task.root, position);
+  }
+
+  /** https://docs.oracle.com/javase/specs/jls/se13/html/jls-14.html#jls-14.8 */
+  static boolean isExpressionStatement(Tree t) {
+    if (t == null) return false;
+    switch (t.getKind()) {
+      case ASSIGNMENT:
+      case PREFIX_INCREMENT:
+      case PREFIX_DECREMENT:
+      case POSTFIX_INCREMENT:
+      case POSTFIX_DECREMENT:
+      case METHOD_INVOCATION:
+      case NEW_CLASS:
+        return true;
+      default:
+        return false;
+    }
   }
 }

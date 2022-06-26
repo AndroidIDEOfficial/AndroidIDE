@@ -63,6 +63,13 @@ public class FlagEditor extends FixedValueEditor {
     // Does noting...
   }
 
+  @Override
+  protected Chip newChip(String title, boolean checked) {
+    final var chip = super.newChip(title, checked);
+    chip.setOnCheckedChangeListener(this::onCheckChangedMultiple);
+    return chip;
+  }
+
   protected void onCheckChangedMultiple(CompoundButton compoundButton, boolean b) {
     final var items = new ArrayList<String>();
     for (var id : this.chipGroup.getCheckedChipIds()) {
@@ -77,12 +84,5 @@ public class FlagEditor extends FixedValueEditor {
     }
 
     notifyValueChanged(TextUtils.join("|", items));
-  }
-
-  @Override
-  protected Chip newChip(String title, boolean checked) {
-    final var chip = super.newChip(title, checked);
-    chip.setOnCheckedChangeListener(this::onCheckChangedMultiple);
-    return chip;
   }
 }

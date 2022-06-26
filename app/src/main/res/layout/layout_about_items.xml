@@ -1,157 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingTop="16dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="16dp">
 
-	<HorizontalScrollView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:fillViewport="true"
-		android:layout_marginBottom="24dp"
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:fillViewport="true"
         tools:ignore="ScrollViewSize">
 
-		<LinearLayout
-			android:orientation="horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:gravity="center">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-			<ImageView
-				android:id="@+id/github"
-				android:layout_height="30dp"
-				android:layout_width="30dp"
-				android:scaleType="fitCenter"
-				app:srcCompat="@drawable/ic_github"
-				android:layout_marginStart="16dp"
-				android:layout_marginEnd="16dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="8dp"
-				android:clickable="true"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless"/>
+            <ImageView
+                android:id="@+id/github"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_github" />
 
-			<ImageView
-				android:id="@+id/discuss"
-				android:layout_height="30dp"
-				android:layout_width="30dp"
-				android:scaleType="fitCenter"
-				android:layout_marginStart="16dp"
-				android:layout_marginEnd="16dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="8dp"
-				android:clickable="true"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				app:srcCompat="@drawable/ic_telegram"/>
+            <ImageView
+                android:id="@+id/discuss"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_telegram" />
 
-			<ImageView
-				android:id="@+id/email"
-				android:layout_height="30dp"
-				android:layout_width="30dp"
-				android:scaleType="fitCenter"
-				android:layout_marginStart="16dp"
-				android:layout_marginEnd="16dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="8dp"
-				android:clickable="true"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				app:srcCompat="@drawable/ic_email"/>
+            <ImageView
+                android:id="@+id/email"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_email" />
 
-			<ImageView
-				android:id="@+id/website"
-				android:layout_height="30dp"
-				android:layout_width="30dp"
-				android:scaleType="fitCenter"
-				android:layout_marginStart="16dp"
-				android:layout_marginEnd="16dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginBottom="8dp"
-				android:clickable="true"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				app:srcCompat="@drawable/ic_website"/>
+            <ImageView
+                android:id="@+id/website"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_website" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</HorizontalScrollView>
+    </HorizontalScrollView>
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/title_translations"
-		android:layout_marginStart="16dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginBottom="4dp"
-		android:textStyle="bold"
-		android:textSize="18sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/title_translations"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-	<View
-		android:background="?android:attr/dividerVertical"
-		android:layout_width="match_parent"
-		android:layout_height="1dp"
-		android:layout_marginStart="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginBottom="8dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/dividerVertical" />
 
-	<TextView
-		android:id="@+id/translations"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="24dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginBottom="16dp"
-		android:textSize="15sp"/>
+    <TextView
+        android:id="@+id/translations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="15sp" />
 
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/title_open_source_licenses"
-		android:layout_marginStart="16dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginBottom="4dp"
-		android:textStyle="bold"
-		android:textSize="18sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/title_open_source_licenses"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-	<View
-		android:background="?android:attr/dividerVertical"
-		android:layout_width="match_parent"
-		android:layout_height="1dp"
-		android:layout_marginStart="8dp"
-		android:layout_marginEnd="8dp"
-		android:layout_marginBottom="8dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/dividerVertical" />
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="24dp"
-		android:layout_marginEnd="16dp"
-		android:text="@string/msg_open_source_licenses"
-		android:layout_marginBottom="4dp"
-		android:textSize="15sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="@string/msg_open_source_licenses"
+        android:textSize="15sp" />
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="24dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginBottom="16dp"
-		android:id="@+id/licenses"
-		android:textSize="15sp"/>
+    <TextView
+        android:id="@+id/licenses"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="15sp" />
 
-	<TextView
-		android:id="@+id/footer_text"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:layout_marginBottom="16dp"
-		android:textColor="@color/secondaryTextColor"/>
+    <TextView
+        android:id="@+id/footer_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:textColor="@color/secondaryTextColor" />
 
 </LinearLayout>
 

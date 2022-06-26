@@ -11,6 +11,12 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.services;
 
+import com.google.gson.TypeAdapterFactory;
+
+import org.eclipse.lsp4j.jsonrpc.Endpoint;
+import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
+import org.eclipse.lsp4j.jsonrpc.json.ResponseJsonAdapter;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -19,12 +25,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.eclipse.lsp4j.jsonrpc.Endpoint;
-import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
-import org.eclipse.lsp4j.jsonrpc.json.ResponseJsonAdapter;
-
-import com.google.gson.TypeAdapterFactory;
 
 public final class ServiceEndpoints {
   private ServiceEndpoints() {}

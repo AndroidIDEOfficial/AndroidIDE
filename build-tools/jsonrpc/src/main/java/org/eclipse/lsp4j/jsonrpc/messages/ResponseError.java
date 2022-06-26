@@ -11,16 +11,36 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.messages;
 
+import com.google.gson.annotations.JsonAdapter;
+
 import org.eclipse.lsp4j.jsonrpc.json.MessageJsonHandler;
 import org.eclipse.lsp4j.jsonrpc.json.adapters.JsonElementTypeAdapter;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
-
-import com.google.gson.annotations.JsonAdapter;
 
 public class ResponseError {
 
   /** A number indicating the error type that occurred. */
   @NonNull private int code;
+  /** A string providing a short description of the error. */
+  @NonNull private String message;
+  /**
+   * A Primitive or Structured value that contains additional information about the error. Can be
+   * omitted.
+   */
+  @JsonAdapter(JsonElementTypeAdapter.Factory.class)
+  private Object data;
+
+  public ResponseError() {}
+
+  public ResponseError(ResponseErrorCode code, String message, Object data) {
+    this(code.getValue(), message, data);
+  }
+
+  public ResponseError(int code, String message, Object data) {
+    this.code = code;
+    this.message = message;
+    this.data = data;
+  }
 
   @NonNull
   public int getCode() {
@@ -35,9 +55,6 @@ public class ResponseError {
     this.setCode(code.getValue());
   }
 
-  /** A string providing a short description of the error. */
-  @NonNull private String message;
-
   @NonNull
   public String getMessage() {
     return this.message;
@@ -47,13 +64,6 @@ public class ResponseError {
     this.message = message;
   }
 
-  /**
-   * A Primitive or Structured value that contains additional information about the error. Can be
-   * omitted.
-   */
-  @JsonAdapter(JsonElementTypeAdapter.Factory.class)
-  private Object data;
-
   public Object getData() {
     return this.data;
   }
@@ -62,21 +72,14 @@ public class ResponseError {
     this.data = data;
   }
 
-  public ResponseError() {}
-
-  public ResponseError(ResponseErrorCode code, String message, Object data) {
-    this(code.getValue(), message, data);
-  }
-
-  public ResponseError(int code, String message, Object data) {
-    this.code = code;
-    this.message = message;
-    this.data = data;
-  }
-
   @Override
-  public String toString() {
-    return MessageJsonHandler.toString(this);
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + this.code;
+    result = prime * result + ((this.message == null) ? 0 : this.message.hashCode());
+    result = prime * result + ((this.data == null) ? 0 : this.data.hashCode());
+    return result;
   }
 
   @Override
@@ -96,12 +99,7 @@ public class ResponseError {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + this.code;
-    result = prime * result + ((this.message == null) ? 0 : this.message.hashCode());
-    result = prime * result + ((this.data == null) ? 0 : this.data.hashCode());
-    return result;
+  public String toString() {
+    return MessageJsonHandler.toString(this);
   }
 }

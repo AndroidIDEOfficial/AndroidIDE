@@ -28,54 +28,55 @@ import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
 class RemoveUnusedThrowsAction : BaseCodeAction() {
-    override val id: String = "lsp_java_removeUnusedThrows"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNUSED_THROWS.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id: String = "lsp_java_removeUnusedThrows"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.UNUSED_THROWS.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_remove_unused_throws
+  override val titleTextRes: Int = R.string.action_remove_unused_throws
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
+    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val d = data[DiagnosticItem::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val notThrown = CodeActionUtils.extractNotThrownExceptionName(d.message)
-            val methodWithExtraThrow = CodeActionUtils.findMethod(task, d.range)
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
+    }
+  }
 
-            return@get RemoveException(
-                methodWithExtraThrow.className,
-                methodWithExtraThrow.methodName,
-                methodWithExtraThrow.erasedParameterTypes,
-                notThrown)
-        }
+  override fun execAction(data: ActionData): Any {
+    val d = data[DiagnosticItem::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
+    return server.compiler.compile(file).get { task ->
+      val notThrown = CodeActionUtils.extractNotThrownExceptionName(d.message)
+      val methodWithExtraThrow = CodeActionUtils.findMethod(task, d.range)
+
+      return@get RemoveException(
+        methodWithExtraThrow.className,
+        methodWithExtraThrow.methodName,
+        methodWithExtraThrow.erasedParameterTypes,
+        notThrown
+      )
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is RemoveException) {
+      log.warn("Unable to remove unused throws")
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is RemoveException) {
-            log.warn("Unable to remove unused throws")
-            return
-        }
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    val file = requireFile(data)
 
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        val file = requireFile(data)
-
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
-    }
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

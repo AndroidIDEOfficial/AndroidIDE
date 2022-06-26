@@ -21,4 +21,4 @@ import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
 class DefaultOperationResult(override val startTime: Long, override val endTime: Long) :
-    OperationResult()
+  OperationResult()

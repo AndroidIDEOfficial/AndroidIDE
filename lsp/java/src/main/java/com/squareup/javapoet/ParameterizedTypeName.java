@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 
 public final class ParameterizedTypeName extends TypeName {
-  private final ParameterizedTypeName enclosingType;
   public final ClassName rawType;
   public final List<TypeName> typeArguments;
+  private final ParameterizedTypeName enclosingType;
 
   ParameterizedTypeName(
       ParameterizedTypeName enclosingType, ClassName rawType, List<TypeName> typeArguments) {
@@ -56,6 +56,35 @@ public final class ParameterizedTypeName extends TypeName {
           "invalid type parameter: %s",
           typeArgument);
     }
+  }
+
+  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
+  public static ParameterizedTypeName get(ClassName rawType, TypeName... typeArguments) {
+    return new ParameterizedTypeName(null, rawType, Arrays.asList(typeArguments));
+  }
+
+  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
+  public static ParameterizedTypeName get(Class<?> rawType, Type... typeArguments) {
+    return new ParameterizedTypeName(null, ClassName.get(rawType), list(typeArguments));
+  }
+
+  /** Returns a parameterized type equivalent to {@code type}. */
+  public static ParameterizedTypeName get(ParameterizedType type) {
+    return get(type, new LinkedHashMap<>());
+  }
+
+  /** Returns a parameterized type equivalent to {@code type}. */
+  static ParameterizedTypeName get(ParameterizedType type, Map<Type, TypeVariableName> map) {
+    ClassName rawType = ClassName.get((Class<?>) type.getRawType());
+    ParameterizedType ownerType =
+        (type.getOwnerType() instanceof ParameterizedType)
+                && !Modifier.isStatic(((Class<?>) type.getRawType()).getModifiers())
+            ? (ParameterizedType) type.getOwnerType()
+            : null;
+    List<TypeName> typeArguments = TypeName.list(type.getActualTypeArguments(), map);
+    return (ownerType != null)
+        ? get(ownerType, map).nestedClass(rawType.simpleName(), typeArguments)
+        : new ParameterizedTypeName(null, rawType, typeArguments);
   }
 
   @Override
@@ -114,34 +143,5 @@ public final class ParameterizedTypeName extends TypeName {
     checkNotNull(name, "name == null");
     return new ParameterizedTypeName(
         this, rawType.nestedClass(name), typeArguments, new ArrayList<>());
-  }
-
-  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
-  public static ParameterizedTypeName get(ClassName rawType, TypeName... typeArguments) {
-    return new ParameterizedTypeName(null, rawType, Arrays.asList(typeArguments));
-  }
-
-  /** Returns a parameterized type, applying {@code typeArguments} to {@code rawType}. */
-  public static ParameterizedTypeName get(Class<?> rawType, Type... typeArguments) {
-    return new ParameterizedTypeName(null, ClassName.get(rawType), list(typeArguments));
-  }
-
-  /** Returns a parameterized type equivalent to {@code type}. */
-  public static ParameterizedTypeName get(ParameterizedType type) {
-    return get(type, new LinkedHashMap<>());
-  }
-
-  /** Returns a parameterized type equivalent to {@code type}. */
-  static ParameterizedTypeName get(ParameterizedType type, Map<Type, TypeVariableName> map) {
-    ClassName rawType = ClassName.get((Class<?>) type.getRawType());
-    ParameterizedType ownerType =
-        (type.getOwnerType() instanceof ParameterizedType)
-                && !Modifier.isStatic(((Class<?>) type.getRawType()).getModifiers())
-            ? (ParameterizedType) type.getOwnerType()
-            : null;
-    List<TypeName> typeArguments = TypeName.list(type.getActualTypeArguments(), map);
-    return (ownerType != null)
-        ? get(ownerType, map).nestedClass(rawType.simpleName(), typeArguments)
-        : new ParameterizedTypeName(null, rawType, typeArguments);
   }
 }

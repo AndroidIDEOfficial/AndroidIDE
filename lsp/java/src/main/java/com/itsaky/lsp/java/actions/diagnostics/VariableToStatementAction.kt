@@ -29,56 +29,56 @@ import java.io.File
 
 /** @author Akash Yadav */
 class VariableToStatementAction : BaseCodeAction() {
-    override val id: String = "lsp_java_variableToStatement"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNUSED_LOCAL.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id: String = "lsp_java_variableToStatement"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.UNUSED_LOCAL.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_convert_to_statement
+  override val titleTextRes: Int = R.string.action_convert_to_statement
 
-    @Suppress("UNCHECKED_CAST")
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  @Suppress("UNCHECKED_CAST")
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible) {
-            return
-        }
-
-        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data.get(DiagnosticItem::class.java)!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
-
-        visible = true
-        enabled = true
+    if (!visible) {
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val compiler = server.compiler!!
-        val path = requirePath(data)
-
-        return compiler.compile(path).get {
-            ConvertVariableToStatement(path, findPosition(it, diagnostic.range.start))
-        }
+    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is ConvertVariableToStatement) {
-            log.warn("Unable to convert variable to statement")
-            return
-        }
-
-        val file = data[File::class.java]
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
     }
+
+    visible = true
+    enabled = true
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val compiler = server.compiler!!
+    val path = requirePath(data)
+
+    return compiler.compile(path).get {
+      ConvertVariableToStatement(path, findPosition(it, diagnostic.range.start))
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is ConvertVariableToStatement) {
+      log.warn("Unable to convert variable to statement")
+      return
+    }
+
+    val file = data[File::class.java]
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

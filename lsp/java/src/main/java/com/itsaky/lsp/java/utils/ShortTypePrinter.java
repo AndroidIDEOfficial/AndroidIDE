@@ -32,13 +32,13 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
     this.packageContext = packageContext;
   }
 
-  public String print(TypeMirror type) {
-    return type.accept(new ShortTypePrinter(packageContext), null);
-  }
-
   @Override
   public String visitIntersection(IntersectionType t, Void aVoid) {
     return t.getBounds().stream().map(this::print).collect(Collectors.joining(" & "));
+  }
+
+  public String print(TypeMirror type) {
+    return type.accept(new ShortTypePrinter(packageContext), null);
   }
 
   @Override
@@ -116,25 +116,6 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
     return t.toString();
   }
 
-  public static boolean missingParamNames(ExecutableElement e) {
-    return e.getParameters().stream()
-        .allMatch(p -> p.getSimpleName().toString().matches("arg\\d+"));
-  }
-
-  private String printArguments(ExecutableElement e) {
-    StringJoiner result = new StringJoiner(", ");
-    boolean missingParamNames = missingParamNames(e);
-    for (VariableElement p : e.getParameters()) {
-      StringBuilder s = new StringBuilder();
-      s.append(print(p.asType()));
-      if (!missingParamNames) {
-        s.append(" ").append(p.getSimpleName());
-      }
-      result.add(s);
-    }
-    return result.toString();
-  }
-
   String printMethod(ExecutableElement m) {
     if (m.getSimpleName().contentEquals("<init>")) {
       return m.getEnclosingElement().getSimpleName() + "(" + printArguments(m) + ")";
@@ -157,5 +138,24 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
       }
       return result.toString();
     }
+  }
+
+  private String printArguments(ExecutableElement e) {
+    StringJoiner result = new StringJoiner(", ");
+    boolean missingParamNames = missingParamNames(e);
+    for (VariableElement p : e.getParameters()) {
+      StringBuilder s = new StringBuilder();
+      s.append(print(p.asType()));
+      if (!missingParamNames) {
+        s.append(" ").append(p.getSimpleName());
+      }
+      result.add(s);
+    }
+    return result.toString();
+  }
+
+  public static boolean missingParamNames(ExecutableElement e) {
+    return e.getParameters().stream()
+        .allMatch(p -> p.getSimpleName().toString().matches("arg\\d+"));
   }
 }

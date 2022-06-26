@@ -30,6 +30,8 @@ import com.sun.tools.javac.util.Context;
  * @author lahvac
  */
 public class NBResolve extends Resolve {
+  private boolean accessibleOverride;
+
   public static NBResolve instance(Context context) {
     Resolve instance = context.get(resolveKey);
     if (instance == null) instance = new NBResolve(context);
@@ -44,7 +46,9 @@ public class NBResolve extends Resolve {
     super(ctx);
   }
 
-  private boolean accessibleOverride;
+  public static boolean isStatic(Env<AttrContext> env) {
+    return Resolve.isStatic(env);
+  }
 
   public void disableAccessibilityChecks() {
     accessibleOverride = true;
@@ -55,18 +59,14 @@ public class NBResolve extends Resolve {
   }
 
   @Override
-  public boolean isAccessible(Env<AttrContext> env, Type site, Symbol sym, boolean checkInner) {
-    if (accessibleOverride) return true;
-    return super.isAccessible(env, site, sym, checkInner);
-  }
-
-  @Override
   public boolean isAccessible(Env<AttrContext> env, TypeSymbol c, boolean checkInner) {
     if (accessibleOverride) return true;
     return super.isAccessible(env, c, checkInner);
   }
 
-  public static boolean isStatic(Env<AttrContext> env) {
-    return Resolve.isStatic(env);
+  @Override
+  public boolean isAccessible(Env<AttrContext> env, Type site, Symbol sym, boolean checkInner) {
+    if (accessibleOverride) return true;
+    return super.isAccessible(env, site, sym, checkInner);
   }
 }

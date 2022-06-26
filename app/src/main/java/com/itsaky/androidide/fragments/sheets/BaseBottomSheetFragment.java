@@ -47,6 +47,8 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     return mDialog;
   }
 
+  protected void onShow() {}
+
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,10 +99,6 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     }
   }
 
-  public boolean isShowing() {
-    return mDialog != null && mDialog.isShowing();
-  }
-
   protected boolean shouldHideTitle() {
     return !titleEnabled;
   }
@@ -123,6 +121,12 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     return this;
   }
 
+  protected abstract void bind(LinearLayout container);
+
+  public boolean isShowing() {
+    return mDialog != null && mDialog.isShowing();
+  }
+
   public void setShowShadow(boolean enabled) {
     this.shadowEnabled = enabled;
   }
@@ -130,10 +134,6 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
   public void setShowTitle(boolean enabled) {
     this.titleEnabled = enabled;
   }
-
-  protected void onShow() {}
-
-  protected abstract void bind(LinearLayout container);
 
   @Override
   public void onSaveInstanceState(@NonNull Bundle outState) {

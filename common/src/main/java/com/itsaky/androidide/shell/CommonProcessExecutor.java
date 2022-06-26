@@ -28,6 +28,10 @@ public class CommonProcessExecutor implements IProcessExecutor {
 
   final File HOME = getHome();
 
+  private static File getHome() {
+    return Environment.HOME;
+  }
+
   @Override
   public int exec(ProcessStreamsHolder holder, String... args)
       throws IOException, InterruptedException {
@@ -88,10 +92,6 @@ public class CommonProcessExecutor implements IProcessExecutor {
     holder.out = proc.getOutputStream();
 
     return proc;
-  }
-
-  private static File getHome() {
-    return Environment.HOME;
   }
 
   private static Map<String, String> getEnv() {

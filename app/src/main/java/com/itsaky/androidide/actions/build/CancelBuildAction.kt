@@ -27,40 +27,41 @@ import com.itsaky.androidide.utils.ILogger
 /** @author Akash Yadav */
 class CancelBuildAction() : EditorActivityAction() {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.title_cancel_build)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_stop_daemons)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.title_cancel_build)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_stop_daemons)
+  }
+
+  override val id: String = "editor_stopGradleDaemons"
+
+  override fun prepare(data: ActionData) {
+    visible = true
+    enabled = true
+  }
+
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
+
+    log.info("Sending build cancellation request...")
+    context.buildService.cancelCurrentBuild().whenComplete { result, error ->
+      if (error != null) {
+        log.error("Failed to send build cancellation request", error)
+        return@whenComplete
+      }
+
+      if (!result.wasEnqueued) {
+        log.warn(
+          "Unable to enqueue cancellation request",
+          result.failureReason,
+          result.failureReason!!.message
+        )
+        return@whenComplete
+      }
+
+      log.info("Build cancellation request was successfully enqueued...")
     }
-
-    override val id: String = "editor_stopGradleDaemons"
-
-    override fun prepare(data: ActionData) {
-        visible = true
-        enabled = true
-    }
-
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
-
-        log.info("Sending build cancellation request...")
-        context.buildService.cancelCurrentBuild().whenComplete { result, error ->
-            if (error != null) {
-                log.error("Failed to send build cancellation request", error)
-                return@whenComplete
-            }
-
-            if (!result.wasEnqueued) {
-                log.warn(
-                    "Unable to enqueue cancellation request",
-                    result.failureReason,
-                    result.failureReason!!.message)
-                return@whenComplete
-            }
-
-            log.info("Build cancellation request was successfully enqueued...")
-        }
-        return true
-    }
+    return true
+  }
 }

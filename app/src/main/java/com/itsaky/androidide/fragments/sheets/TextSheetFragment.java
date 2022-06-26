@@ -40,34 +40,6 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
     return this;
   }
 
-  @Override
-  protected void bind(@NonNull LinearLayout container) {
-    final IDEEditor e = getEditor();
-    container.setPadding(0, 0, 0, 0);
-    container.setPaddingRelative(0, 0, 0, 0);
-    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, 0);
-    p.weight = 1.0f;
-    if (e.getParent() != null && e.getParent() instanceof ViewGroup) {
-      ((ViewGroup) e.getParent()).removeView(e);
-    }
-    container.addView(getEditor(), p);
-  }
-
-  @Override
-  protected String getTitle() {
-    return getString(R.string.build_output);
-  }
-
-  @Override
-  protected void onShow() {
-    super.onShow();
-    editor.setText(getOutputBuilder());
-  }
-
-  private void scrollToBottom() {
-    if (getActivity() != null) getActivity().runOnUiThread(() -> editor.goToEnd());
-  }
-
   public TextSheetFragment setTitleText(int res) {
     super.setTitle(res);
     return this;
@@ -109,6 +81,34 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
                 editor.append(line);
                 scrollToBottom();
               });
+  }
+
+  private void scrollToBottom() {
+    if (getActivity() != null) getActivity().runOnUiThread(() -> editor.goToEnd());
+  }
+
+  @Override
+  protected String getTitle() {
+    return getString(R.string.build_output);
+  }
+
+  @Override
+  protected void onShow() {
+    super.onShow();
+    editor.setText(getOutputBuilder());
+  }
+
+  @Override
+  protected void bind(@NonNull LinearLayout container) {
+    final IDEEditor e = getEditor();
+    container.setPadding(0, 0, 0, 0);
+    container.setPaddingRelative(0, 0, 0, 0);
+    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, 0);
+    p.weight = 1.0f;
+    if (e.getParent() != null && e.getParent() instanceof ViewGroup) {
+      ((ViewGroup) e.getParent()).removeView(e);
+    }
+    container.addView(getEditor(), p);
   }
 
   private IDEEditor getEditor() {

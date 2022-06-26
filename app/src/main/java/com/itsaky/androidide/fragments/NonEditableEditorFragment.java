@@ -64,17 +64,17 @@ public abstract class NonEditableEditorFragment extends Fragment {
     editor.setColorScheme(new SchemeAndroidIDE());
   }
 
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    binding = null;
+  }
+
   @Nullable
   public IDEEditor getEditor() {
     if (binding == null) {
       return null;
     }
     return binding.editor;
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    binding = null;
   }
 }

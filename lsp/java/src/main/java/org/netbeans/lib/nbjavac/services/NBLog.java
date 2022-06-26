@@ -22,6 +22,7 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.JCDiagnostic;
 import com.sun.tools.javac.util.Log;
+
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
@@ -69,6 +71,34 @@ public class NBLog extends Log {
     context.put(logKey, (Context.Factory<Log>) c -> new NBLog(c, output));
   }
 
+  public void startPartialReparse(JavaFileObject inFile) {
+    partialReparseFile = inFile;
+  }
+
+  public void endPartialReparse(JavaFileObject inFile) {
+    partialReparseFile = null;
+    seenPartialReparsePositions.clear(); // TODO: not tested
+  }
+
+  @Override
+  protected int getDefaultMaxErrors() {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override
+  protected int getDefaultMaxWarnings() {
+    return Integer.MAX_VALUE;
+  }
+
+  @Override
+  protected boolean shouldReport(JavaFileObject file, int pos) {
+    if (partialReparseFile != null) {
+      return file == partialReparseFile && seenPartialReparsePositions.add(pos);
+    } else {
+      return super.shouldReport(file, pos);
+    }
+  }
+
   @Override
   public void report(JCDiagnostic diagnostic) {
     // XXX: needs testing!
@@ -89,35 +119,7 @@ public class NBLog extends Log {
     super.report(diagnostic);
   }
 
-  @Override
-  protected boolean shouldReport(JavaFileObject file, int pos) {
-    if (partialReparseFile != null) {
-      return file == partialReparseFile && seenPartialReparsePositions.add(pos);
-    } else {
-      return super.shouldReport(file, pos);
-    }
-  }
-
   Collection<? extends Symbol.ClassSymbol> removeNotInProfile(final URI uri) {
     return uri == null ? null : notInProfiles.remove(uri);
-  }
-
-  @Override
-  protected int getDefaultMaxWarnings() {
-    return Integer.MAX_VALUE;
-  }
-
-  @Override
-  protected int getDefaultMaxErrors() {
-    return Integer.MAX_VALUE;
-  }
-
-  public void startPartialReparse(JavaFileObject inFile) {
-    partialReparseFile = inFile;
-  }
-
-  public void endPartialReparse(JavaFileObject inFile) {
-    partialReparseFile = null;
-    seenPartialReparsePositions.clear(); // TODO: not tested
   }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Button xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/symbol"
+    style="@style/Widget.MaterialComponents.Button.TextButton"
     android:layout_width="32dp"
     android:layout_height="40dp"
-    android:singleLine="true"
-    android:gravity="center"
-    android:textColor="@color/symbolInput_text"
     android:background="@color/symbolInput_background"
-    style="@style/Widget.MaterialComponents.Button.TextButton" />
+    android:gravity="center"
+    android:singleLine="true"
+    android:textColor="@color/symbolInput_text" />

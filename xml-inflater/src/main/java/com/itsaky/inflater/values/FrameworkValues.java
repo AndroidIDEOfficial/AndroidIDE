@@ -40,21 +40,6 @@ public class FrameworkValues {
   }
 
   @NonNull
-  public static List<String> listBools() {
-    return listFields(android.R.bool.class);
-  }
-
-  @NonNull
-  public static List<String> listStrings() {
-    return listFields(android.R.string.class);
-  }
-
-  @NonNull
-  public static List<String> listColors() {
-    return listFields(android.R.color.class);
-  }
-
-  @NonNull
   private static List<String> listFields(final Class<?> klass) {
     Objects.requireNonNull(klass);
 
@@ -70,6 +55,21 @@ public class FrameworkValues {
     }
 
     return list;
+  }
+
+  @NonNull
+  public static List<String> listBools() {
+    return listFields(android.R.bool.class);
+  }
+
+  @NonNull
+  public static List<String> listStrings() {
+    return listFields(android.R.string.class);
+  }
+
+  @NonNull
+  public static List<String> listColors() {
+    return listFields(android.R.color.class);
   }
 
   @NonNull

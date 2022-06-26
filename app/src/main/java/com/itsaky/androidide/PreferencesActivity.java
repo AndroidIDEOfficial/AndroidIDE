@@ -35,12 +35,6 @@ public class PreferencesActivity extends StudioActivity {
   private IDEPreferences mPref;
 
   @Override
-  protected View bindLayout() {
-    binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
-
-  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
@@ -51,6 +45,12 @@ public class PreferencesActivity extends StudioActivity {
     binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
     loadFragment(getPrefsFragment());
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
   }
 
   private IDEPreferences getPrefsFragment() {

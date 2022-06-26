@@ -16,13 +16,6 @@
 
 package com.android.ide.common.xml;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import org.w3c.dom.Attr;
-
-import java.util.Comparator;
-
 import static com.android.SdkConstants.ATTR_COLOR;
 import static com.android.SdkConstants.ATTR_ID;
 import static com.android.SdkConstants.ATTR_LAYOUT_HEIGHT;
@@ -33,33 +26,17 @@ import static com.android.SdkConstants.ATTR_STYLE;
 import static com.android.SdkConstants.XMLNS;
 import static com.google.common.base.Strings.nullToEmpty;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Attr;
+
+import java.util.Comparator;
+
 /** Order to use when sorting attributes */
 public enum XmlAttributeSortOrder {
   NO_SORTING("none"), // $NON-NLS-1$
   ALPHABETICAL("alpha"), // $NON-NLS-1$
   LOGICAL("logical"); // $NON-NLS-1$
-
-  XmlAttributeSortOrder(String key) {
-    this.key = key;
-  }
-
-  public final String key;
-
-  /**
-   * @return a comparator for use by this attribute sort order
-   */
-  @Nullable
-  public Comparator<Attr> getAttributeComparator() {
-    switch (this) {
-      case NO_SORTING:
-        return null;
-      case ALPHABETICAL:
-        return ALPHABETICAL_COMPARATOR;
-      case LOGICAL:
-      default:
-        return SORTED_ORDER_COMPARATOR;
-    }
-  }
 
   /** Comparator which can be used to sort attributes in the coding style priority order */
   private static final Comparator<Attr> SORTED_ORDER_COMPARATOR =
@@ -84,7 +61,6 @@ public enum XmlAttributeSortOrder {
           return compareAttributes(prefix1, name1, prefix2, name2);
         }
       };
-
   /**
    * Comparator which can be used to sort attributes into alphabetical order (but xmlns is always
    * first)
@@ -108,6 +84,11 @@ public enum XmlAttributeSortOrder {
           return attr1.getName().compareTo(attr2.getName());
         }
       };
+  public final String key;
+
+  XmlAttributeSortOrder(String key) {
+    this.key = key;
+  }
 
   /**
    * Returns {@link Comparator} values for ordering attributes in the following order:
@@ -130,44 +111,6 @@ public enum XmlAttributeSortOrder {
     int priority2 = getAttributePriority(name2);
     if (priority1 != priority2) {
       return priority1 - priority2;
-    }
-
-    // Sort remaining attributes alphabetically
-    return name1.compareTo(name2);
-  }
-
-  /**
-   * Returns {@link Comparator} values for ordering attributes in the following order:
-   *
-   * <ul>
-   *   <li>id
-   *   <li>style
-   *   <li>layout_width
-   *   <li>layout_height
-   *   <li>other layout params, sorted alphabetically
-   *   <li>other attributes, sorted alphabetically, first by namespace, then by name
-   * </ul>
-   *
-   * @param prefix1 the namespace prefix, if any, of {@code name1}
-   * @param name1 the first attribute name to compare
-   * @param prefix2 the namespace prefix, if any, of {@code name2}
-   * @param name2 the second attribute name to compare
-   * @return a negative number if name1 should be ordered before name2
-   */
-  public static int compareAttributes(
-      @Nullable String prefix1,
-      @NotNull String name1,
-      @Nullable String prefix2,
-      @NotNull String name2) {
-    int priority1 = getAttributePriority(name1);
-    int priority2 = getAttributePriority(name2);
-    if (priority1 != priority2) {
-      return priority1 - priority2;
-    }
-
-    int namespaceDelta = nullToEmpty(prefix1).compareTo(nullToEmpty(prefix2));
-    if (namespaceDelta != 0) {
-      return namespaceDelta;
     }
 
     // Sort remaining attributes alphabetically
@@ -208,5 +151,59 @@ public enum XmlAttributeSortOrder {
     }
 
     return 60;
+  }
+
+  /**
+   * Returns {@link Comparator} values for ordering attributes in the following order:
+   *
+   * <ul>
+   *   <li>id
+   *   <li>style
+   *   <li>layout_width
+   *   <li>layout_height
+   *   <li>other layout params, sorted alphabetically
+   *   <li>other attributes, sorted alphabetically, first by namespace, then by name
+   * </ul>
+   *
+   * @param prefix1 the namespace prefix, if any, of {@code name1}
+   * @param name1 the first attribute name to compare
+   * @param prefix2 the namespace prefix, if any, of {@code name2}
+   * @param name2 the second attribute name to compare
+   * @return a negative number if name1 should be ordered before name2
+   */
+  public static int compareAttributes(
+      @Nullable String prefix1,
+      @NotNull String name1,
+      @Nullable String prefix2,
+      @NotNull String name2) {
+    int priority1 = getAttributePriority(name1);
+    int priority2 = getAttributePriority(name2);
+    if (priority1 != priority2) {
+      return priority1 - priority2;
+    }
+
+    int namespaceDelta = nullToEmpty(prefix1).compareTo(nullToEmpty(prefix2));
+    if (namespaceDelta != 0) {
+      return namespaceDelta;
+    }
+
+    // Sort remaining attributes alphabetically
+    return name1.compareTo(name2);
+  }
+
+  /**
+   * @return a comparator for use by this attribute sort order
+   */
+  @Nullable
+  public Comparator<Attr> getAttributeComparator() {
+    switch (this) {
+      case NO_SORTING:
+        return null;
+      case ALPHABETICAL:
+        return ALPHABETICAL_COMPARATOR;
+      case LOGICAL:
+      default:
+        return SORTED_ORDER_COMPARATOR;
+    }
   }
 }

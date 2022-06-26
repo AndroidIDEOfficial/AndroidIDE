@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.events.FinishEvent
 
 /** @author Akash Yadav */
 class ProjectConfigurationFinishEvent(
-    override val result: ProjectConfigurationOperationResult,
-    displayName: String,
-    eventTime: Long,
-    descriptor: ProjectConfigurationOperationDescriptor
+  override val result: ProjectConfigurationOperationResult,
+  displayName: String,
+  eventTime: Long,
+  descriptor: ProjectConfigurationOperationDescriptor
 ) : ProjectConfigurationProgressEvent(displayName, eventTime, descriptor), FinishEvent

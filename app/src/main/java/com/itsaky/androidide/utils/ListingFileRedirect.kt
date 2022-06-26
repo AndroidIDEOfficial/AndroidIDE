@@ -23,21 +23,21 @@ import java.util.*
 
 class ListingFileRedirect {
 
-    companion object {
-        /** Redirect file will have this marker as the first line as comment. */
-        private const val REDIRECT_MARKER = "#- File Locator -"
+  companion object {
+    /** Redirect file will have this marker as the first line as comment. */
+    private const val REDIRECT_MARKER = "#- File Locator -"
 
-        /** Property name in a [Properties] for the metadata file location. */
-        private const val REDIRECT_PROPERTY_NAME = "listingFile"
+    /** Property name in a [Properties] for the metadata file location. */
+    private const val REDIRECT_PROPERTY_NAME = "listingFile"
 
-        @JvmStatic
-        fun maybeExtractRedirectedFile(redirectFile: File): File? {
-            val fileContent = redirectFile.readText()
-            return if (fileContent.startsWith(REDIRECT_MARKER)) {
-                val fileLocator = Properties().also { it.load(StringReader(fileContent)) }
-                val file = File(fileLocator.getProperty(REDIRECT_PROPERTY_NAME))
-                if (!file.isAbsolute) redirectFile.parentFile!!.resolve(file) else file
-            } else null
-        }
+    @JvmStatic
+    fun maybeExtractRedirectedFile(redirectFile: File): File? {
+      val fileContent = redirectFile.readText()
+      return if (fileContent.startsWith(REDIRECT_MARKER)) {
+        val fileLocator = Properties().also { it.load(StringReader(fileContent)) }
+        val file = File(fileLocator.getProperty(REDIRECT_PROPERTY_NAME))
+        if (!file.isAbsolute) redirectFile.parentFile!!.resolve(file) else file
+      } else null
     }
+  }
 }

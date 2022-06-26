@@ -11,27 +11,6 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
-import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
-import org.eclipse.lsp4j.jsonrpc.json.MessageConstants;
-import org.eclipse.lsp4j.jsonrpc.json.MessageJsonHandler;
-import org.eclipse.lsp4j.jsonrpc.json.MethodProvider;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.jsonrpc.messages.Message;
-import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
-import org.eclipse.lsp4j.jsonrpc.messages.NotificationMessage;
-import org.eclipse.lsp4j.jsonrpc.messages.RequestMessage;
-import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
-import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
-import org.eclipse.lsp4j.jsonrpc.messages.ResponseMessage;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -48,36 +27,82 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
 
+import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
+import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
+import org.eclipse.lsp4j.jsonrpc.json.MessageConstants;
+import org.eclipse.lsp4j.jsonrpc.json.MessageJsonHandler;
+import org.eclipse.lsp4j.jsonrpc.json.MethodProvider;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.jsonrpc.messages.Message;
+import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
+import org.eclipse.lsp4j.jsonrpc.messages.NotificationMessage;
+import org.eclipse.lsp4j.jsonrpc.messages.RequestMessage;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseMessage;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * The type adapter for messages dispatches between the different message types: {@link
  * RequestMessage}, {@link ResponseMessage}, and {@link NotificationMessage}.
  */
 public class MessageTypeAdapter extends TypeAdapter<Message> {
 
-  public static class Factory implements TypeAdapterFactory {
-
-    private final MessageJsonHandler handler;
-
-    public Factory(MessageJsonHandler handler) {
-      this.handler = handler;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-      if (!Message.class.isAssignableFrom(typeToken.getRawType())) return null;
-      return (TypeAdapter<T>) new MessageTypeAdapter(handler, gson);
-    }
-  }
-
   private static Type[] EMPTY_TYPE_ARRAY = {};
-
   private final MessageJsonHandler handler;
   private final Gson gson;
-
   public MessageTypeAdapter(MessageJsonHandler handler, Gson gson) {
     this.handler = handler;
     this.gson = gson;
+  }
+
+  @Override
+  public void write(JsonWriter out, Message message) throws IOException {
+    out.beginObject();
+    out.name("jsonrpc");
+    out.value(
+        message.getJsonrpc() == null ? MessageConstants.JSONRPC_VERSION : message.getJsonrpc());
+
+    if (message instanceof RequestMessage) {
+      RequestMessage requestMessage = (RequestMessage) message;
+      out.name("id");
+      writeId(out, requestMessage.getRawId());
+      out.name("method");
+      out.value(requestMessage.getMethod());
+      out.name("params");
+      Object params = requestMessage.getParams();
+      if (params == null) writeNullValue(out);
+      else gson.toJson(params, params.getClass(), out);
+    } else if (message instanceof ResponseMessage) {
+      ResponseMessage responseMessage = (ResponseMessage) message;
+      out.name("id");
+      writeId(out, responseMessage.getRawId());
+      if (responseMessage.getError() != null) {
+        out.name("error");
+        gson.toJson(responseMessage.getError(), ResponseError.class, out);
+      } else {
+        out.name("result");
+        Object result = responseMessage.getResult();
+        if (result == null) writeNullValue(out);
+        else gson.toJson(result, result.getClass(), out);
+      }
+    } else if (message instanceof NotificationMessage) {
+      NotificationMessage notificationMessage = (NotificationMessage) message;
+      out.name("method");
+      out.value(notificationMessage.getMethod());
+      out.name("params");
+      Object params = notificationMessage.getParams();
+      if (params == null) writeNullValue(out);
+      else gson.toJson(params, params.getClass(), out);
+    }
+
+    out.endObject();
   }
 
   @Override
@@ -152,6 +177,23 @@ public class MessageTypeAdapter extends TypeAdapter<Message> {
         throw exception;
       }
     }
+  }
+
+  protected void writeId(JsonWriter out, Either<String, Number> id) throws IOException {
+    if (id == null) writeNullValue(out);
+    else if (id.isLeft()) out.value(id.getLeft());
+    else if (id.isRight()) out.value(id.getRight());
+  }
+
+  /**
+   * Use this method to write a {@code null} value even if the JSON writer is set to not serialize
+   * {@code null}.
+   */
+  protected void writeNullValue(JsonWriter out) throws IOException {
+    boolean previousSerializeNulls = out.getSerializeNulls();
+    out.setSerializeNulls(true);
+    out.nullValue();
+    out.setSerializeNulls(previousSerializeNulls);
   }
 
   /**
@@ -389,63 +431,19 @@ public class MessageTypeAdapter extends TypeAdapter<Message> {
     }
   }
 
-  @Override
-  public void write(JsonWriter out, Message message) throws IOException {
-    out.beginObject();
-    out.name("jsonrpc");
-    out.value(
-        message.getJsonrpc() == null ? MessageConstants.JSONRPC_VERSION : message.getJsonrpc());
+  public static class Factory implements TypeAdapterFactory {
 
-    if (message instanceof RequestMessage) {
-      RequestMessage requestMessage = (RequestMessage) message;
-      out.name("id");
-      writeId(out, requestMessage.getRawId());
-      out.name("method");
-      out.value(requestMessage.getMethod());
-      out.name("params");
-      Object params = requestMessage.getParams();
-      if (params == null) writeNullValue(out);
-      else gson.toJson(params, params.getClass(), out);
-    } else if (message instanceof ResponseMessage) {
-      ResponseMessage responseMessage = (ResponseMessage) message;
-      out.name("id");
-      writeId(out, responseMessage.getRawId());
-      if (responseMessage.getError() != null) {
-        out.name("error");
-        gson.toJson(responseMessage.getError(), ResponseError.class, out);
-      } else {
-        out.name("result");
-        Object result = responseMessage.getResult();
-        if (result == null) writeNullValue(out);
-        else gson.toJson(result, result.getClass(), out);
-      }
-    } else if (message instanceof NotificationMessage) {
-      NotificationMessage notificationMessage = (NotificationMessage) message;
-      out.name("method");
-      out.value(notificationMessage.getMethod());
-      out.name("params");
-      Object params = notificationMessage.getParams();
-      if (params == null) writeNullValue(out);
-      else gson.toJson(params, params.getClass(), out);
+    private final MessageJsonHandler handler;
+
+    public Factory(MessageJsonHandler handler) {
+      this.handler = handler;
     }
 
-    out.endObject();
-  }
-
-  protected void writeId(JsonWriter out, Either<String, Number> id) throws IOException {
-    if (id == null) writeNullValue(out);
-    else if (id.isLeft()) out.value(id.getLeft());
-    else if (id.isRight()) out.value(id.getRight());
-  }
-
-  /**
-   * Use this method to write a {@code null} value even if the JSON writer is set to not serialize
-   * {@code null}.
-   */
-  protected void writeNullValue(JsonWriter out) throws IOException {
-    boolean previousSerializeNulls = out.getSerializeNulls();
-    out.setSerializeNulls(true);
-    out.nullValue();
-    out.setSerializeNulls(previousSerializeNulls);
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+      if (!Message.class.isAssignableFrom(typeToken.getRawType())) return null;
+      return (TypeAdapter<T>) new MessageTypeAdapter(handler, gson);
+    }
   }
 }

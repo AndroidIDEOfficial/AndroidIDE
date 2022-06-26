@@ -21,6 +21,8 @@ public class NotificationMessage extends Message {
 
   /** The method to be invoked. */
   @NonNull private String method;
+  /** The method's params. */
+  private Object params;
 
   @NonNull
   public String getMethod() {
@@ -31,15 +33,21 @@ public class NotificationMessage extends Message {
     this.method = method;
   }
 
-  /** The method's params. */
-  private Object params;
-
   public Object getParams() {
     return this.params;
   }
 
   public void setParams(Object params) {
     this.params = params;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((this.method == null) ? 0 : this.method.hashCode());
+    result = prime * result + ((this.params == null) ? 0 : this.params.hashCode());
+    return result;
   }
 
   @Override
@@ -56,14 +64,5 @@ public class NotificationMessage extends Message {
       if (other.params != null) return false;
     } else if (!this.params.equals(other.params)) return false;
     return true;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((this.method == null) ? 0 : this.method.hashCode());
-    result = prime * result + ((this.params == null) ? 0 : this.params.hashCode());
-    return result;
   }
 }

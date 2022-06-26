@@ -25,38 +25,38 @@ import com.itsaky.androidide.views.editor.IDEEditor
 /** @author Akash Yadav */
 abstract class BaseEditorAction : ActionItem {
 
-    override var label: String = ""
-    override var visible: Boolean = true
-    override var enabled: Boolean = true
-    override var icon: Drawable? = null
-    override var requiresUIThread: Boolean =
-        true // all editor actions must be executed on UI thread
-    override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
+  override var label: String = ""
+  override var visible: Boolean = true
+  override var enabled: Boolean = true
+  override var icon: Drawable? = null
+  override var requiresUIThread: Boolean = true // all editor actions must be executed on UI thread
+  override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
-    override fun prepare(data: ActionData) {
-        getEditor(data)
-            ?: kotlin.run {
-                visible = false
-                enabled = false
-                return
-            }
+  override fun prepare(data: ActionData) {
+    getEditor(data)
+      ?: kotlin.run {
+        visible = false
+        enabled = false
+        return
+      }
 
-        visible = true
-        enabled = true
-    }
+    visible = true
+    enabled = true
+  }
 
-    fun getEditor(data: ActionData): IDEEditor? {
-        return data.get(IDEEditor::class.java)
-    }
+  fun getEditor(data: ActionData): IDEEditor? {
+    return data.get(IDEEditor::class.java)
+  }
 
-    fun getContext(data: ActionData): Context? {
-        val editor = getEditor(data) ?: return null
-        return editor.context
-    }
+  fun getContext(data: ActionData): Context? {
+    val editor = getEditor(data) ?: return null
+    return editor.context
+  }
 
-    fun tintDrawable(context: Context, drawable: Drawable): Drawable {
-        drawable.setTint(
-            ContextCompat.getColor(context, com.itsaky.androidide.R.color.primaryIconColor))
-        return drawable
-    }
+  fun tintDrawable(context: Context, drawable: Drawable): Drawable {
+    drawable.setTint(
+      ContextCompat.getColor(context, com.itsaky.androidide.R.color.primaryIconColor)
+    )
+    return drawable
+  }
 }

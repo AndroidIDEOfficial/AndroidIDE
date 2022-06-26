@@ -24,6 +24,6 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) : Serializable {
-    protected val gsonType: String = javaClass.name
-    private val serialVersionUID = 1L
+  protected val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
 }

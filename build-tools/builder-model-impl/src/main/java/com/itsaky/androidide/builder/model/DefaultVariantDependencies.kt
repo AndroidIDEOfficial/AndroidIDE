@@ -21,11 +21,11 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultVariantDependencies : VariantDependencies, Serializable {
-    private val serialVersionUID = 1L
-    override var androidTestArtifact: DefaultArtifactDependencies? = null
-    override var libraries: Map<String, DefaultLibrary> = emptyMap()
-    override var mainArtifact: DefaultArtifactDependencies = DefaultArtifactDependencies()
-    override var name: String = ""
-    override var testFixturesArtifact: DefaultArtifactDependencies? = null
-    override var unitTestArtifact: DefaultArtifactDependencies? = null
+  private val serialVersionUID = 1L
+  override var androidTestArtifact: DefaultArtifactDependencies? = null
+  override var libraries: Map<String, DefaultLibrary> = emptyMap()
+  override var mainArtifact: DefaultArtifactDependencies = DefaultArtifactDependencies()
+  override var name: String = ""
+  override var testFixturesArtifact: DefaultArtifactDependencies? = null
+  override var unitTestArtifact: DefaultArtifactDependencies? = null
 }

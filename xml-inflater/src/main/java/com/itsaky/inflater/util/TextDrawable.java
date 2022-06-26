@@ -39,6 +39,16 @@ public class TextDrawable extends Drawable {
   }
 
   @Override
+  public void setAlpha(int alpha) {
+    mPaint.setAlpha(alpha);
+  }
+
+  @Override
+  public void setColorFilter(ColorFilter filter) {
+    mPaint.setColorFilter(filter);
+  }
+
+  @Override
   public int getOpacity() {
     return mPaint.getAlpha();
   }
@@ -51,15 +61,5 @@ public class TextDrawable extends Drawable {
   @Override
   public int getIntrinsicHeight() {
     return mIntrinsicHeight;
-  }
-
-  @Override
-  public void setAlpha(int alpha) {
-    mPaint.setAlpha(alpha);
-  }
-
-  @Override
-  public void setColorFilter(ColorFilter filter) {
-    mPaint.setColorFilter(filter);
   }
 }

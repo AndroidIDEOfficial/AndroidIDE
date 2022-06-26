@@ -57,6 +57,58 @@ public class CubicBezierArc {
     calculateControlPoints(angle, start, end);
   }
 
+  private void calculateControlPoints(float angle, Point start, Point end) {
+    double angleRadians = Math.toRadians(angle);
+
+    float deltaX = start.x - end.x;
+    float deltaY = start.y - end.y;
+    float halfChordLength = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 2;
+    float radius = halfChordLength / (float) Math.sin(angleRadians / 2.0f);
+    // The length of the line from the start or end point to the control point
+    float controlLength = (float) ((4f / 3f) * Math.tan(angleRadians / 4)) * radius;
+
+    float angleToControl = (float) Math.toDegrees(Math.atan(controlLength / radius));
+
+    // The mid point of the line from start to end
+    Point midPointChord = new Point((start.x + end.x) / 2, (start.y + end.y) / 2);
+
+    // Angle between line from circle centre to control point, and line between control points
+    float chordRadiusAngle = 180 - 90 - (angle / 2);
+
+    Point center = getTrianglePoint(chordRadiusAngle, midPointChord, end);
+    controlPoint2 = getTrianglePoint(angleToControl, end, center);
+    controlPoint1 = getReflectedPointAboutLine(center, midPointChord, controlPoint2);
+
+    // Get reflected control points
+    reflectedControlPoint1 = getReflectedPointAboutLine(start, end, controlPoint1);
+    reflectedControlPoint2 = getReflectedPointAboutLine(start, end, controlPoint2);
+  }
+
+  private Point getTrianglePoint(float angle, Point a, Point b) {
+    double angleRadians = Math.toRadians(angle);
+    Point thirdPoint = new Point();
+    thirdPoint.x = (float) Math.tan(angleRadians) * (b.y - a.y) * -1;
+    thirdPoint.y = (float) Math.tan(angleRadians) * (b.x - a.x);
+    thirdPoint.x = thirdPoint.x + a.x;
+    thirdPoint.y = thirdPoint.y + a.y;
+    return thirdPoint;
+  }
+
+  private Point getReflectedPointAboutLine(Point start, Point end, Point reflect) {
+    Point reflectedPoint = new Point();
+    if (start.x != end.x) {
+      float m = (start.y - end.y) / (start.x - end.x);
+      float c = end.y - (m * end.x);
+      float d = (reflect.x + (reflect.y - c) * m) / (1 + (m * m));
+      reflectedPoint.x = (2 * d) - reflect.x;
+      reflectedPoint.y = (2 * d * m) - reflect.y + (2 * c);
+    } else {
+      reflectedPoint.y = reflect.y;
+      reflectedPoint.x = start.x - (reflect.x - start.x);
+    }
+    return reflectedPoint;
+  }
+
   /**
    * Returns the start point
    *
@@ -121,57 +173,5 @@ public class CubicBezierArc {
       this.x = x;
       this.y = y;
     }
-  }
-
-  private Point getTrianglePoint(float angle, Point a, Point b) {
-    double angleRadians = Math.toRadians(angle);
-    Point thirdPoint = new Point();
-    thirdPoint.x = (float) Math.tan(angleRadians) * (b.y - a.y) * -1;
-    thirdPoint.y = (float) Math.tan(angleRadians) * (b.x - a.x);
-    thirdPoint.x = thirdPoint.x + a.x;
-    thirdPoint.y = thirdPoint.y + a.y;
-    return thirdPoint;
-  }
-
-  private Point getReflectedPointAboutLine(Point start, Point end, Point reflect) {
-    Point reflectedPoint = new Point();
-    if (start.x != end.x) {
-      float m = (start.y - end.y) / (start.x - end.x);
-      float c = end.y - (m * end.x);
-      float d = (reflect.x + (reflect.y - c) * m) / (1 + (m * m));
-      reflectedPoint.x = (2 * d) - reflect.x;
-      reflectedPoint.y = (2 * d * m) - reflect.y + (2 * c);
-    } else {
-      reflectedPoint.y = reflect.y;
-      reflectedPoint.x = start.x - (reflect.x - start.x);
-    }
-    return reflectedPoint;
-  }
-
-  private void calculateControlPoints(float angle, Point start, Point end) {
-    double angleRadians = Math.toRadians(angle);
-
-    float deltaX = start.x - end.x;
-    float deltaY = start.y - end.y;
-    float halfChordLength = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY) / 2;
-    float radius = halfChordLength / (float) Math.sin(angleRadians / 2.0f);
-    // The length of the line from the start or end point to the control point
-    float controlLength = (float) ((4f / 3f) * Math.tan(angleRadians / 4)) * radius;
-
-    float angleToControl = (float) Math.toDegrees(Math.atan(controlLength / radius));
-
-    // The mid point of the line from start to end
-    Point midPointChord = new Point((start.x + end.x) / 2, (start.y + end.y) / 2);
-
-    // Angle between line from circle centre to control point, and line between control points
-    float chordRadiusAngle = 180 - 90 - (angle / 2);
-
-    Point center = getTrianglePoint(chordRadiusAngle, midPointChord, end);
-    controlPoint2 = getTrianglePoint(angleToControl, end, center);
-    controlPoint1 = getReflectedPointAboutLine(center, midPointChord, controlPoint2);
-
-    // Get reflected control points
-    reflectedControlPoint1 = getReflectedPointAboutLine(start, end, controlPoint1);
-    reflectedControlPoint2 = getReflectedPointAboutLine(start, end, controlPoint2);
   }
 }

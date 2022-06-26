@@ -30,10 +30,8 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
-import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
-import io.github.rosemoe.sora.text.Content
 
 /** @author Akash Yadav */
 class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer::class.java) {

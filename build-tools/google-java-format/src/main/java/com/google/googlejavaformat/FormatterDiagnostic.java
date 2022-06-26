@@ -23,6 +23,12 @@ public class FormatterDiagnostic {
   private final String message;
   private final int column;
 
+  private FormatterDiagnostic(int lineNumber, int column, String message) {
+    this.lineNumber = lineNumber;
+    this.column = column;
+    this.message = message;
+  }
+
   public static FormatterDiagnostic create(String message) {
     return new FormatterDiagnostic(-1, -1, message);
   }
@@ -32,12 +38,6 @@ public class FormatterDiagnostic {
     checkArgument(column >= 0);
     checkNotNull(message);
     return new FormatterDiagnostic(lineNumber, column, message);
-  }
-
-  private FormatterDiagnostic(int lineNumber, int column, String message) {
-    this.lineNumber = lineNumber;
-    this.column = column;
-    this.message = message;
   }
 
   /**

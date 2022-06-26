@@ -36,64 +36,74 @@ import java.io.File
  * @author Akash Yadav
  */
 class ProjectBuilder {
-    var name: String = ""
-    var description: String? = null
-    var path: String = ":"
-    var projectDir: File = File(".")
-    var buildDir: File = File(".")
-    var buildScript: File = File(".")
-    var parent: IdeGradleProject? = null
-    var modules: List<IdeGradleProject> = mutableListOf()
-    var tasks: List<IdeGradleTask> = mutableListOf()
-    var dynamicFeatures: Collection<String>? = mutableListOf()
-    var flags: DefaultAndroidGradlePluginProjectFlags =
-        DefaultAndroidGradlePluginProjectFlags(emptyMap())
-    var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
-    var resourcePrefix: String? = ""
-    var viewBindingOptions: DefaultViewBindingOptions? = null
-    var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
-    var lintChecksJars: List<File> = mutableListOf()
-    var contentRoots: List<JavaContentRoot> = mutableListOf()
-    var javaDependencies: List<JavaModuleDependency> = mutableListOf()
-    var projectType: ProjectType? = null
-    var simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
+  var name: String = ""
+  var description: String? = null
+  var path: String = ":"
+  var projectDir: File = File(".")
+  var buildDir: File = File(".")
+  var buildScript: File = File(".")
+  var parent: IdeGradleProject? = null
+  var modules: List<IdeGradleProject> = mutableListOf()
+  var tasks: List<IdeGradleTask> = mutableListOf()
+  var dynamicFeatures: Collection<String>? = mutableListOf()
+  var flags: DefaultAndroidGradlePluginProjectFlags =
+    DefaultAndroidGradlePluginProjectFlags(emptyMap())
+  var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
+  var resourcePrefix: String? = ""
+  var viewBindingOptions: DefaultViewBindingOptions? = null
+  var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
+  var lintChecksJars: List<File> = mutableListOf()
+  var contentRoots: List<JavaContentRoot> = mutableListOf()
+  var javaDependencies: List<JavaModuleDependency> = mutableListOf()
+  var projectType: ProjectType? = null
+  var simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
 
-    fun buildGradleProject(): IdeGradleProject {
-        return IdeGradleProject(
-            name, description, path, projectDir, buildDir, buildScript, parent, tasks)
-    }
+  fun buildGradleProject(): IdeGradleProject {
+    return IdeGradleProject(
+      name,
+      description,
+      path,
+      projectDir,
+      buildDir,
+      buildScript,
+      parent,
+      tasks
+    )
+  }
 
-    fun buildJavaModule(): IdeJavaModule {
-        return IdeJavaModule(
-            name,
-            path,
-            description,
-            projectDir,
-            buildDir,
-            buildScript,
-            parent,
-            tasks,
-            contentRoots,
-            javaDependencies)
-    }
+  fun buildJavaModule(): IdeJavaModule {
+    return IdeJavaModule(
+      name,
+      path,
+      description,
+      projectDir,
+      buildDir,
+      buildScript,
+      parent,
+      tasks,
+      contentRoots,
+      javaDependencies
+    )
+  }
 
-    fun buildAndroidModule(): IdeAndroidModule =
-        IdeAndroidModule(
-            name = name,
-            path = path,
-            description = description,
-            projectDir = projectDir,
-            buildDir = buildDir,
-            buildScript = buildScript,
-            parent = parent,
-            tasks = tasks,
-            projectType = projectType,
-            dynamicFeatures = dynamicFeatures,
-            flags = flags,
-            javaCompileOptions = javaCompileOptions,
-            resourcePrefix = resourcePrefix,
-            viewBindingOptions = viewBindingOptions,
-            lintChecksJars = lintChecksJars,
-            modelSyncFiles = modelSyncFiles,
-            simpleVariants = simpleVariants)
+  fun buildAndroidModule(): IdeAndroidModule =
+    IdeAndroidModule(
+      name = name,
+      path = path,
+      description = description,
+      projectDir = projectDir,
+      buildDir = buildDir,
+      buildScript = buildScript,
+      parent = parent,
+      tasks = tasks,
+      projectType = projectType,
+      dynamicFeatures = dynamicFeatures,
+      flags = flags,
+      javaCompileOptions = javaCompileOptions,
+      resourcePrefix = resourcePrefix,
+      viewBindingOptions = viewBindingOptions,
+      lintChecksJars = lintChecksJars,
+      modelSyncFiles = modelSyncFiles,
+      simpleVariants = simpleVariants
+    )
 }

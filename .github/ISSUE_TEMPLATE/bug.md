@@ -1,9 +1,6 @@
 ---
-name: Bug
-about: Report a bug in the IDE.
-title: ""
-labels: bug
-assignees: ''
+name: Bug about: Report a bug in the IDE. title: ""
+labels: bug assignees: ''
 ---
 
 **Describe the bug**
@@ -20,9 +17,10 @@ Steps to reproduce the behavior:
 <!-- If applicable, add screenshots to help explain your problem. -->
 
 **Details (please complete the following information):**
- - Device: [e.g. realme 3 Pro]
- - OS: [e.g. Android 11]
- - AndroidIDE Version [e.g. v1.0.3-alpha]
+
+- Device: [e.g. realme 3 Pro]
+- OS: [e.g. Android 11]
+- AndroidIDE Version [e.g. v1.0.3-alpha]
 
 **Additional context**
 <!-- Add any other context about the problem here. -->

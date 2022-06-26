@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.events.FinishEvent
 
 /** @author Akash Yadav */
 class TaskFinishEvent(
-    displayName: String,
-    eventTime: Long,
-    descriptor: TaskOperationDescriptor,
-    override val result: TaskOperationResult
+  displayName: String,
+  eventTime: Long,
+  descriptor: TaskOperationDescriptor,
+  override val result: TaskOperationResult
 ) : TaskProgressEvent(displayName, eventTime, descriptor), FinishEvent

@@ -19,5 +19,5 @@ package com.itsaky.androidide.tooling.events
 
 /** @author Akash Yadav */
 interface FinishEvent {
-    val result: OperationResult
+  val result: OperationResult
 }

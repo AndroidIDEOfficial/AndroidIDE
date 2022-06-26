@@ -101,6 +101,12 @@ public class ToolsManager {
     }
   }
 
+  @NonNull
+  @Contract(pure = true)
+  public static String getArchSpecificAsset(String name) {
+    return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
+  }
+
   private static void extractLogsenderIfNeeded() {
     try {
       final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
@@ -116,6 +122,12 @@ public class ToolsManager {
     }
   }
 
+  @NonNull
+  @Contract(pure = true)
+  public static String getCommonAsset(String name) {
+    return COMMON_ASSET_DATA_DIR + "/" + name;
+  }
+
   private static void extractAapt2() {
     if (!Environment.AAPT2.exists()) {
       ResourceUtils.copyFileFromAssets(
@@ -124,13 +136,6 @@ public class ToolsManager {
 
     if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {
       LOG.error("Cannot set executable permissions to AAPT2 binary");
-    }
-  }
-
-  public static void extractLibHooks() {
-    if (!Environment.LIB_HOOK.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
     }
   }
 
@@ -168,19 +173,14 @@ public class ToolsManager {
   }
 
   @NonNull
-  @Contract(pure = true)
-  public static String getArchSpecificAsset(String name) {
-    return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
-  }
-
-  @NonNull
-  @Contract(pure = true)
-  public static String getCommonAsset(String name) {
-    return COMMON_ASSET_DATA_DIR + "/" + name;
-  }
-
-  @NonNull
   private static String readInitScript() {
     return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
+  }
+
+  public static void extractLibHooks() {
+    if (!Environment.LIB_HOOK.exists()) {
+      ResourceUtils.copyFileFromAssets(
+          getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
+    }
   }
 }

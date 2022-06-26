@@ -299,6 +299,10 @@ public class ShapeDrawableParser extends IDrawableParser {
     return GradientDrawable.Orientation.LEFT_RIGHT;
   }
 
+  protected Context appContext() {
+    return BaseApplication.getBaseInstance();
+  }
+
   private void parseCorners(@NonNull GradientDrawable drawable) {
     int index;
     index = attrIndex("radius");
@@ -350,9 +354,5 @@ public class ShapeDrawableParser extends IDrawableParser {
       default:
         return GradientDrawable.RECTANGLE;
     }
-  }
-
-  protected Context appContext() {
-    return BaseApplication.getBaseInstance();
   }
 }

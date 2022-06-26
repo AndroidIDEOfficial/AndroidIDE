@@ -33,6 +33,18 @@ import java.util.List;
 
 public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.VH> {
 
+  private static final List<Character> pairs;
+
+  static {
+    pairs = new ArrayList<>();
+    pairs.add('}');
+    pairs.add(')');
+    pairs.add(']');
+    pairs.add('"');
+    pairs.add('\'');
+    pairs.add('>');
+  }
+
   private final IDEEditor editor;
   private Symbol[] symbols;
 
@@ -73,15 +85,6 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     return symbols == null ? 0 : symbols.length;
   }
 
-  public static class VH extends RecyclerView.ViewHolder {
-    LayoutSymbolItemBinding binding;
-
-    public VH(LayoutSymbolItemBinding binding) {
-      super(binding.getRoot());
-      this.binding = binding;
-    }
-  }
-
   void insertSymbol(String text, int selectionOffset) {
     if (selectionOffset < 0 || selectionOffset > text.length()) {
       return;
@@ -108,15 +111,12 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     }
   }
 
-  private static final List<Character> pairs;
+  public static class VH extends RecyclerView.ViewHolder {
+    LayoutSymbolItemBinding binding;
 
-  static {
-    pairs = new ArrayList<>();
-    pairs.add('}');
-    pairs.add(')');
-    pairs.add(']');
-    pairs.add('"');
-    pairs.add('\'');
-    pairs.add('>');
+    public VH(LayoutSymbolItemBinding binding) {
+      super(binding.getRoot());
+      this.binding = binding;
+    }
   }
 }

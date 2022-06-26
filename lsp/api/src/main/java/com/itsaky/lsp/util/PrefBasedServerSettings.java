@@ -33,6 +33,16 @@ public abstract class PrefBasedServerSettings extends DefaultServerSettings {
 
   private PreferenceManager prefs;
 
+  @Override
+  public boolean shouldMatchAllLowerCase() {
+    final var prefs = getPrefs();
+    if (prefs != null) {
+      return prefs.getBoolean(KEY_COMPLETIONS_MATCH_LOWER, true);
+    }
+
+    return false;
+  }
+
   @Nullable
   public PreferenceManager getPrefs() {
     if (prefs == null) {
@@ -42,15 +52,5 @@ public abstract class PrefBasedServerSettings extends DefaultServerSettings {
       }
     }
     return prefs;
-  }
-
-  @Override
-  public boolean shouldMatchAllLowerCase() {
-    final var prefs = getPrefs();
-    if (prefs != null) {
-      return prefs.getBoolean(KEY_COMPLETIONS_MATCH_LOWER, true);
-    }
-
-    return false;
   }
 }

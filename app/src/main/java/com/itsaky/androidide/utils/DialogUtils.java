@@ -35,18 +35,6 @@ import org.jetbrains.annotations.Contract;
 public class DialogUtils {
 
   /**
-   * Creates a new MaterialAlertDialogBuilder with the app's default style.
-   *
-   * @param context The context for the dialog builder.
-   * @return The new MaterialAlertDialogBuilder instance.
-   */
-  @NonNull
-  @Contract("_ -> new")
-  public static MaterialAlertDialogBuilder newMaterialDialogBuilder(Context context) {
-    return new MaterialAlertDialogBuilder(context, R.style.AppTheme_MaterialAlertDialog);
-  }
-
-  /**
    * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>. This method
    * simply calls {@link #newYesNoDialog(Context, String, String, DialogInterface.OnClickListener,
    * DialogInterface.OnClickListener)} with default values for title and message.
@@ -97,5 +85,17 @@ public class DialogUtils {
     builder.setNegativeButton(R.string.no, negativeClickListener);
 
     return builder;
+  }
+
+  /**
+   * Creates a new MaterialAlertDialogBuilder with the app's default style.
+   *
+   * @param context The context for the dialog builder.
+   * @return The new MaterialAlertDialogBuilder instance.
+   */
+  @NonNull
+  @Contract("_ -> new")
+  public static MaterialAlertDialogBuilder newMaterialDialogBuilder(Context context) {
+    return new MaterialAlertDialogBuilder(context, R.style.AppTheme_MaterialAlertDialog);
   }
 }

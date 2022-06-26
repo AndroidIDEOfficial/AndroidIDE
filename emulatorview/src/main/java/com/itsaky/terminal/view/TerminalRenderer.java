@@ -18,10 +18,14 @@ import com.itsaky.terminal.WcWidth;
  */
 public final class TerminalRenderer {
 
+  private final Paint mTextPaint = new Paint();
+  /**
+   * The {@link Paint#ascent()}. See http://www.fampennings.nl/maarten/android/08numgrid/font.png
+   */
+  private final int mFontAscent;
+  private final float[] asciiMeasures = new float[127];
   final int mTextSize;
   final Typeface mTypeface;
-  private final Paint mTextPaint = new Paint();
-
   /**
    * The width of a single mono spaced character obtained by {@link Paint#measureText(String)} on a
    * single 'X'.
@@ -32,14 +36,8 @@ public final class TerminalRenderer {
    * http://www.fampennings.nl/maarten/android/08numgrid/font.png
    */
   final int mFontLineSpacing;
-  /**
-   * The {@link Paint#ascent()}. See http://www.fampennings.nl/maarten/android/08numgrid/font.png
-   */
-  private final int mFontAscent;
   /** The {@link #mFontLineSpacing} + {@link #mFontAscent}. */
   final int mFontLineSpacingAndAscent;
-
-  private final float[] asciiMeasures = new float[127];
 
   public TerminalRenderer(int textSize, Typeface typeface) {
     mTextSize = textSize;

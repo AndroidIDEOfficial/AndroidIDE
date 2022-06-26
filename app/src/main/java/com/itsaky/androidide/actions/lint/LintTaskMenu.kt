@@ -27,15 +27,15 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class LintTaskMenu() : BaseBuildAction(), ActionMenu {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.lint_tasks)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_lint)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.lint_tasks)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_lint)
 
-        addAction(LintAction(context))
-        addAction(LintDebugAction(context))
-        addAction(LintReleaseAction(context))
-    }
+    addAction(LintAction(context))
+    addAction(LintDebugAction(context))
+    addAction(LintReleaseAction(context))
+  }
 
-    override val children: MutableSet<ActionItem> = mutableSetOf()
-    override val id: String = "editor_lintTasks"
+  override val children: MutableSet<ActionItem> = mutableSetOf()
+  override val id: String = "editor_lintTasks"
 }

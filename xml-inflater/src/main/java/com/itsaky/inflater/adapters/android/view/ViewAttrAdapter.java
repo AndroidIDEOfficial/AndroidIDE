@@ -348,15 +348,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
     return handled;
   }
 
-  private void setRelativeRuleIfTrue(
-      boolean condition, int rule, RelativeLayout.LayoutParams params) {
-    if (condition) {
-      params.addRule(rule);
-    } else {
-      params.removeRule(rule);
-    }
-  }
-
   protected boolean handleLinearLayoutParams(
       LinearLayout.LayoutParams params, @NonNull String name, String value, DisplayMetrics dm) {
     boolean handled = true;
@@ -591,5 +582,14 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
   @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
   protected boolean isApi30() {
     return Build.VERSION.SDK_INT >= 30;
+  }
+
+  private void setRelativeRuleIfTrue(
+      boolean condition, int rule, RelativeLayout.LayoutParams params) {
+    if (condition) {
+      params.addRule(rule);
+    } else {
+      params.removeRule(rule);
+    }
   }
 }

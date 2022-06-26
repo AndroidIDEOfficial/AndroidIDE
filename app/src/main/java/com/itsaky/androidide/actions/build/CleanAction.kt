@@ -26,16 +26,16 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class CleanAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.clean_project)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_clean)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.clean_project)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_clean)
+  }
 
-    override val id: String = "editor_clean"
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
+  override val id: String = "editor_clean"
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
 
-        context.clean()
-        return true
-    }
+    context.clean()
+    return true
+  }
 }

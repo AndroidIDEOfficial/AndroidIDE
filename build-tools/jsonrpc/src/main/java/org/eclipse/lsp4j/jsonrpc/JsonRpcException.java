@@ -19,6 +19,12 @@ import java.nio.channels.ClosedChannelException;
 /** An exception thrown when accessing the JSON-RPC communication channel fails. */
 public class JsonRpcException extends RuntimeException {
 
+  private static final long serialVersionUID = -7952794305289314670L;
+
+  public JsonRpcException(Throwable cause) {
+    super(cause);
+  }
+
   /** Whether the given exception indicates that the currently accessed stream has been closed. */
   public static boolean indicatesStreamClosed(Throwable thr) {
     return thr instanceof InterruptedIOException
@@ -29,11 +35,5 @@ public class JsonRpcException extends RuntimeException {
                 || "Socket closed".equals(thr.getMessage())
                 || "Broken pipe (Write failed)".equals(thr.getMessage()))
         || thr instanceof JsonRpcException && indicatesStreamClosed(thr.getCause());
-  }
-
-  private static final long serialVersionUID = -7952794305289314670L;
-
-  public JsonRpcException(Throwable cause) {
-    super(cause);
   }
 }

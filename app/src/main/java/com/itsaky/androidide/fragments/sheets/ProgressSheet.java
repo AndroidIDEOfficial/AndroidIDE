@@ -42,12 +42,6 @@ public class ProgressSheet extends BaseBottomSheetFragment {
   private boolean welcomeTextEnabled = false;
 
   @Override
-  protected void bind(LinearLayout container) {
-    binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
-    container.addView(binding.getRoot());
-  }
-
-  @Override
   public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
@@ -83,6 +77,12 @@ public class ProgressSheet extends BaseBottomSheetFragment {
   @Override
   protected boolean shouldHideTitle() {
     return true;
+  }
+
+  @Override
+  protected void bind(LinearLayout container) {
+    binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
+    container.addView(binding.getRoot());
   }
 
   public ProgressSheet setWelcomeTextEnabled(boolean enabled) {

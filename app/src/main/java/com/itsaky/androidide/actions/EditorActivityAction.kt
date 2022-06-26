@@ -24,22 +24,22 @@ import com.itsaky.androidide.EditorActivity
 /** @author Akash Yadav */
 abstract class EditorActivityAction : ActionItem {
 
-    override var enabled: Boolean = true
-    override var visible: Boolean = true
-    override var icon: Drawable? = null
-    override var label: String = ""
-    override var location: ActionItem.Location = ActionItem.Location.EDITOR_TOOLBAR
+  override var enabled: Boolean = true
+  override var visible: Boolean = true
+  override var icon: Drawable? = null
+  override var label: String = ""
+  override var location: ActionItem.Location = ActionItem.Location.EDITOR_TOOLBAR
 
-    override var requiresUIThread: Boolean = false
+  override var requiresUIThread: Boolean = false
 
-    override fun prepare(data: ActionData) {
-        if (!hasRequiredData(data, Context::class.java)) {
-            markInvisible()
-        }
+  override fun prepare(data: ActionData) {
+    if (!hasRequiredData(data, Context::class.java)) {
+      markInvisible()
     }
+  }
 
-    fun getActivity(data: ActionData): EditorActivity? {
-        val context = data.get(Context::class.java) ?: return null
-        return context as EditorActivity
-    }
+  fun getActivity(data: ActionData): EditorActivity? {
+    val context = data.get(Context::class.java) ?: return null
+    return context as EditorActivity
+  }
 }

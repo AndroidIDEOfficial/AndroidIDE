@@ -31,17 +31,14 @@ import java.util.Map;
 /** Holds information about a class */
 public class ClassInfo extends Info {
 
-  /** Superclass of this class */
-  public String superClass;
-
   /** Interfaces that this class implements */
   public final List<String> interfaces = new ArrayList<>();
-
   /** Fields of this class */
   public final Map<String, FieldInfo> fields = new HashMap<>();
-
   /** Methods of this class */
   public final Map<String, MethodInfo> methods = new HashMap<>();
+  /** Superclass of this class */
+  public String superClass;
 
   /**
    * Get the field by its simple name

@@ -19,7 +19,6 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.WizardTemplateAdapter;
 import com.itsaky.androidide.app.StudioApp;
@@ -68,9 +67,6 @@ public class WizardFragment extends BaseFragment {
   private OnProjectCreatedListener mListener;
 
   private boolean mLast;
-  private int minSdkIndex;
-  private int targetSdkIndex;
-
   private final OnBackPressedCallback onBackPressedCallback =
       new OnBackPressedCallback(true) {
         @Override
@@ -78,6 +74,8 @@ public class WizardFragment extends BaseFragment {
           onNavigateBack();
         }
       };
+  private int minSdkIndex;
+  private int targetSdkIndex;
 
   @Nullable
   @Override
@@ -172,12 +170,6 @@ public class WizardFragment extends BaseFragment {
   }
 
   @Override
-  public void onDestroy() {
-    super.onDestroy();
-    onBackPressedCallback.setEnabled(false);
-  }
-
-  @Override
   public void onDestroyView() {
     super.onDestroyView();
     mViewModel = null;
@@ -188,6 +180,28 @@ public class WizardFragment extends BaseFragment {
     footerBinding = null;
     mAdapter = null;
     mProgressSheet = null;
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    onBackPressedCallback.setEnabled(false);
+  }
+
+  public void onSuccess(File root) {
+    if (mProgressSheet != null && mProgressSheet.isShowing()) {
+      mProgressSheet.dismiss();
+    }
+    StudioApp.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
+
+    if (mListener != null) {
+      getParentFragmentManager().popBackStack();
+      mListener.openProject(root);
+    }
+  }
+
+  public void setOnProjectCreatedListener(OnProjectCreatedListener listener) {
+    mListener = listener;
   }
 
   private String getSelectedItem(int pos, AutoCompleteTextView view) {
@@ -516,18 +530,6 @@ public class WizardFragment extends BaseFragment {
     setSaveLocation();
   }
 
-  public void onSuccess(File root) {
-    if (mProgressSheet != null && mProgressSheet.isShowing()) {
-      mProgressSheet.dismiss();
-    }
-    StudioApp.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
-
-    if (mListener != null) {
-      getParentFragmentManager().popBackStack();
-      mListener.openProject(root);
-    }
-  }
-
   private void createProgressSheet() {
     mProgressSheet = new ProgressSheet();
     mProgressSheet.setShowShadow(false);
@@ -553,9 +555,5 @@ public class WizardFragment extends BaseFragment {
 
   public interface OnProjectCreatedListener {
     void openProject(File project);
-  }
-
-  public void setOnProjectCreatedListener(OnProjectCreatedListener listener) {
-    mListener = listener;
   }
 }

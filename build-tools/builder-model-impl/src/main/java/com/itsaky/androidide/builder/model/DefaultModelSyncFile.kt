@@ -25,8 +25,8 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultModelSyncFile : ModelSyncFile, Serializable {
-    private val serialVersionUID = 1L
-    override var modelSyncType: ModelSyncType = BASIC
-    override var syncFile: File = File(".")
-    override var taskName: String = ""
+  private val serialVersionUID = 1L
+  override var modelSyncType: ModelSyncType = BASIC
+  override var syncFile: File = File(".")
+  override var taskName: String = ""
 }

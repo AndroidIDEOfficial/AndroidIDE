@@ -123,20 +123,6 @@ public class IDEPreferences extends BasePreferenceFragment
         : mBuildPreferences;
   }
 
-  private void showChangelog() {
-    final var intent = new Intent(Intent.ACTION_VIEW);
-    intent.setData(
-        Uri.parse(
-            BaseApplication.GITHUB_URL.concat("/releases/tag/v").concat(BuildConfig.VERSION_NAME)));
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    try {
-      startActivity(intent);
-    } catch (Throwable th) {
-      LOG.error("Unable to start activity to show changelog", th);
-      StudioApp.getInstance().toast("Unable to start activity", Toaster.Type.ERROR);
-    }
-  }
-
   @Override
   public boolean onPreferenceClick(@NonNull Preference preference) {
     final String key = preference.getKey();
@@ -155,5 +141,19 @@ public class IDEPreferences extends BasePreferenceFragment
         break;
     }
     return true;
+  }
+
+  private void showChangelog() {
+    final var intent = new Intent(Intent.ACTION_VIEW);
+    intent.setData(
+        Uri.parse(
+            BaseApplication.GITHUB_URL.concat("/releases/tag/v").concat(BuildConfig.VERSION_NAME)));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    try {
+      startActivity(intent);
+    } catch (Throwable th) {
+      LOG.error("Unable to start activity to show changelog", th);
+      StudioApp.getInstance().toast("Unable to start activity", Toaster.Type.ERROR);
+    }
   }
 }

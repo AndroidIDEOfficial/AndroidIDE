@@ -42,72 +42,69 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 class InternalForwardingProject(
-    var project: IProject?,
-    var projectPath: String = IProject.FILE_PATH_NOT_AVAILABLE
+  var project: IProject?,
+  var projectPath: String = IProject.FILE_PATH_NOT_AVAILABLE
 ) : IProject {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun isProjectInitialized(): CompletableFuture<Boolean> {
-        return CompletableFuture.completedFuture(this.project != null)
-    }
+  override fun isProjectInitialized(): CompletableFuture<Boolean> {
+    return CompletableFuture.completedFuture(this.project != null)
+  }
 
-    override fun getName(): CompletableFuture<String> =
-        if (this.project != null) this.project!!.name else CompletableFuture.completedFuture("")
+  override fun getName(): CompletableFuture<String> =
+    if (this.project != null) this.project!!.name else CompletableFuture.completedFuture("")
 
-    override fun getDescription(): CompletableFuture<String> =
-        if (this.project != null) this.project!!.description
-        else CompletableFuture.completedFuture("")
+  override fun getDescription(): CompletableFuture<String> =
+    if (this.project != null) this.project!!.description else CompletableFuture.completedFuture("")
 
-    override fun getProjectPath(): CompletableFuture<String> =
-        if (this.project != null) this.project!!.projectPath
-        else CompletableFuture.completedFuture("")
+  override fun getProjectPath(): CompletableFuture<String> =
+    if (this.project != null) this.project!!.projectPath else CompletableFuture.completedFuture("")
 
-    override fun getProjectDir(): CompletableFuture<File> =
-        if (this.project != null) this.project!!.projectDir
-        else CompletableFuture.completedFuture(File(projectPath))
+  override fun getProjectDir(): CompletableFuture<File> =
+    if (this.project != null) this.project!!.projectDir
+    else CompletableFuture.completedFuture(File(projectPath))
 
-    override fun getType(): CompletableFuture<Type> =
-        if (this.project != null) this.project!!.type
-        else CompletableFuture.completedFuture(Unknown)
+  override fun getType(): CompletableFuture<Type> =
+    if (this.project != null) this.project!!.type else CompletableFuture.completedFuture(Unknown)
 
-    override fun getBuildDir(): CompletableFuture<File> =
-        if (this.project != null) this.project!!.buildDir
-        else CompletableFuture.completedFuture(File(projectPath))
+  override fun getBuildDir(): CompletableFuture<File> =
+    if (this.project != null) this.project!!.buildDir
+    else CompletableFuture.completedFuture(File(projectPath))
 
-    override fun getBuildScript(): CompletableFuture<File> =
-        if (this.project != null) this.project!!.buildScript
-        else CompletableFuture.completedFuture(File(projectPath))
+  override fun getBuildScript(): CompletableFuture<File> =
+    if (this.project != null) this.project!!.buildScript
+    else CompletableFuture.completedFuture(File(projectPath))
 
-    override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> =
-        if (this.project != null) this.project!!.tasks
-        else CompletableFuture.completedFuture(mutableListOf())
+  override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> =
+    if (this.project != null) this.project!!.tasks
+    else CompletableFuture.completedFuture(mutableListOf())
 
-    override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> =
-        if (this.project != null) this.project!!.modules
-        else CompletableFuture.completedFuture(mutableListOf())
+  override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> =
+    if (this.project != null) this.project!!.modules
+    else CompletableFuture.completedFuture(mutableListOf())
 
-    override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> =
-        if (this.project != null) project!!.listModules()
-        else CompletableFuture.completedFuture(mutableListOf())
+  override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> =
+    if (this.project != null) project!!.listModules()
+    else CompletableFuture.completedFuture(mutableListOf())
 
-    override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> =
-        if (this.project != null) this.project!!.findByPath(path)
-        else CompletableFuture.completedFuture(null)
+  override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> =
+    if (this.project != null) this.project!!.findByPath(path)
+    else CompletableFuture.completedFuture(null)
 
-    override fun findAndroidModules(): CompletableFuture<MutableList<IdeAndroidModule>> =
-        if (this.project != null) this.project!!.findAndroidModules()
-        else CompletableFuture.completedFuture(mutableListOf())
+  override fun findAndroidModules(): CompletableFuture<MutableList<IdeAndroidModule>> =
+    if (this.project != null) this.project!!.findAndroidModules()
+    else CompletableFuture.completedFuture(mutableListOf())
 
-    override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> =
-        if (this.project != null) this.project!!.findFirstAndroidModule()
-        else CompletableFuture.completedFuture(null)
+  override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> =
+    if (this.project != null) this.project!!.findFirstAndroidModule()
+    else CompletableFuture.completedFuture(null)
 
-    override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> =
-        if (this.project != null) this.project!!.findFirstAndroidAppModule()
-        else CompletableFuture.completedFuture(null)
+  override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> =
+    if (this.project != null) this.project!!.findFirstAndroidAppModule()
+    else CompletableFuture.completedFuture(null)
 
-    override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> =
-        if (this.project != null) this.project!!.getVariantData(request)
-        else CompletableFuture.completedFuture(null)
+  override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> =
+    if (this.project != null) this.project!!.getVariantData(request)
+    else CompletableFuture.completedFuture(null)
 }

@@ -28,37 +28,37 @@ import io.github.rosemoe.sora.text.Content
  * @author Akash Yadav
  */
 abstract class CursorDependentTest : LoggingTest() {
-    
-    protected var cursor: Int = -1
-    private val cursorText = "@@cursor@@"
-    
-    fun requireCursor(): Int {
-        this.cursor = super.contents!!.indexOf(cursorText)
-        assertThat(cursor).isGreaterThan(-1)
-        return cursor
+
+  protected var cursor: Int = -1
+  private val cursorText = "@@cursor@@"
+
+  fun requireCursor(): Int {
+    this.cursor = super.contents!!.indexOf(cursorText)
+    assertThat(cursor).isGreaterThan(-1)
+    return cursor
+  }
+
+  fun deleteCursorText() {
+    contents!!.delete(this.cursor, this.cursor + cursorText.length)
+    assertThat(contents!!.indexOf(cursorText)).isEqualTo(-1)
+
+    // As the content has been changed, we have to
+    // Update the content in language server
+    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!, 1))
+  }
+
+  fun cursorPosition(): Position {
+    return cursorPosition(true)
+  }
+
+  fun cursorPosition(deleteCursorText: Boolean): Position {
+    requireCursor()
+
+    if (deleteCursorText) {
+      deleteCursorText()
     }
-    
-    fun deleteCursorText() {
-        contents!!.delete(this.cursor, this.cursor + cursorText.length)
-        assertThat(contents!!.indexOf(cursorText)).isEqualTo(-1)
-        
-        // As the content has been changed, we have to
-        // Update the content in language server
-        getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!, 1))
-    }
-    
-    fun cursorPosition(): Position {
-        return cursorPosition(true)
-    }
-    
-    fun cursorPosition(deleteCursorText: Boolean): Position {
-        requireCursor()
-        
-        if (deleteCursorText) {
-            deleteCursorText()
-        }
-        
-        val pos = Content(contents!!).indexer.getCharPosition(cursor)
-        return Position(pos.line, pos.column, pos.index)
-    }
+
+    val pos = Content(contents!!).indexer.getCharPosition(cursor)
+    return Position(pos.line, pos.column, pos.index)
+  }
 }

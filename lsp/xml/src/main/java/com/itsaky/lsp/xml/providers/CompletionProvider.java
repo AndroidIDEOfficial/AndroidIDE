@@ -166,33 +166,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return result;
   }
 
-  private String getFileType(Path path) {
-    final var file = path.toFile();
-    if (file.getName().equals("AndroidManifest.xml")) {
-      return "manifest";
-    }
-
-    final var resPattern = Pattern.compile(".*/src/.*/res");
-    //noinspection ConstantConditions
-    if (!resPattern.matcher(file.getParentFile().getParentFile().getAbsolutePath()).matches()) {
-      return null;
-    }
-
-    final var parent = file.getParentFile().getName();
-
-    if (parent.startsWith("drawable")
-        || parent.startsWith("mipmap")
-        || parent.startsWith("color")) {
-      return "drawable";
-    } else if (parent.startsWith("values")) {
-      return "values";
-    } else if (parent.startsWith("layout")) {
-      return "layout";
-    }
-
-    return null;
-  }
-
   private void addLayoutXmlTags(CompletionResult result, String prefix, boolean slash) {
     prefix = prefix.toLowerCase(Locale.ROOT);
     for (var widget : this.sdkInfo.getWidgetInfo().getWidgets()) {
@@ -221,6 +194,43 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   @NonNull
+  private CompletionItem widgetNameAsCompletion(@NonNull Widget view, boolean slash) {
+    CompletionItem item = new CompletionItem();
+    item.setLabel(view.simpleName);
+    item.setDetail(view.name);
+    item.setInsertText(createTagInsertText(view, slash));
+    item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
+    item.setSortText("2" + view.simpleName);
+    item.setKind(CompletionItemKind.CLASS);
+
+    // Required to show API information in completion list
+    final var data = new CompletionData();
+    data.setClassName(view.name);
+
+    item.setData(data);
+
+    return item;
+  }
+
+  @NonNull
+  private String createTagInsertText(@NonNull Widget view, boolean closing) {
+    StringBuilder sb = new StringBuilder();
+
+    // Don't append leading '<' and trailing '>'
+    // They may have been already inserted by editor upon typing '<'
+
+    sb.append(view.simpleName);
+
+    if (!closing) {
+      sb.append("$0/");
+    } else {
+      sb.append(">$0");
+    }
+
+    return sb.toString();
+  }
+
+  @NonNull
   private CompletionItem valueAsCompletion(String value) {
     CompletionItem item = new CompletionItem();
     item.setLabel(value);
@@ -246,40 +256,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   @NonNull
-  @Contract(pure = true)
-  private static CompletionItem createNamespaceCompletion(String name, String value) {
-    final var item = new CompletionItem();
-    item.setLabel(name + "Ns");
-    item.setDetail(
-        BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
-    item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
-    item.setKind(CompletionItemKind.SNIPPET);
-    item.setSortText("1000" + item.getLabel());
-    // This item is expected to be at the last of the
-    // completion list
-    return item;
-  }
-
-  @NonNull
-  private CompletionItem widgetNameAsCompletion(@NonNull Widget view, boolean slash) {
-    CompletionItem item = new CompletionItem();
-    item.setLabel(view.simpleName);
-    item.setDetail(view.name);
-    item.setInsertText(createTagInsertText(view, slash));
-    item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
-    item.setSortText("2" + view.simpleName);
-    item.setKind(CompletionItemKind.CLASS);
-
-    // Required to show API information in completion list
-    final var data = new CompletionData();
-    data.setClassName(view.name);
-
-    item.setData(data);
-
-    return item;
-  }
-
-  @NonNull
   private String createAttributeInsertText(@NonNull Attr attr) {
     StringBuilder xml = new StringBuilder();
     xml.append(attr.namespace.getPrefix());
@@ -299,21 +275,45 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   @NonNull
-  private String createTagInsertText(@NonNull Widget view, boolean closing) {
-    StringBuilder sb = new StringBuilder();
+  @Contract(pure = true)
+  private static CompletionItem createNamespaceCompletion(String name, String value) {
+    final var item = new CompletionItem();
+    item.setLabel(name + "Ns");
+    item.setDetail(
+        BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
+    item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
+    item.setKind(CompletionItemKind.SNIPPET);
+    item.setSortText("1000" + item.getLabel());
+    // This item is expected to be at the last of the
+    // completion list
+    return item;
+  }
 
-    // Don't append leading '<' and trailing '>'
-    // They may have been already inserted by editor upon typing '<'
-
-    sb.append(view.simpleName);
-
-    if (!closing) {
-      sb.append("$0/");
-    } else {
-      sb.append(">$0");
+  private String getFileType(Path path) {
+    final var file = path.toFile();
+    if (file.getName().equals("AndroidManifest.xml")) {
+      return "manifest";
     }
 
-    return sb.toString();
+    final var resPattern = Pattern.compile(".*/src/.*/res");
+    //noinspection ConstantConditions
+    if (!resPattern.matcher(file.getParentFile().getParentFile().getAbsolutePath()).matches()) {
+      return null;
+    }
+
+    final var parent = file.getParentFile().getName();
+
+    if (parent.startsWith("drawable")
+        || parent.startsWith("mipmap")
+        || parent.startsWith("color")) {
+      return "drawable";
+    } else if (parent.startsWith("values")) {
+      return "values";
+    } else if (parent.startsWith("layout")) {
+      return "layout";
+    }
+
+    return null;
   }
 
   private static class IsInValueScanner {

@@ -11,11 +11,11 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
 import org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor;
 import org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 public class StandardLauncher<T> implements Launcher<T> {
   private final ExecutorService execService;

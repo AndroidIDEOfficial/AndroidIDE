@@ -1,13 +1,5 @@
 package org.eclipse.lsp4j.jsonrpc.messages;
 
-import java.io.IOException;
-
-import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
-
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
 /** Representation of tuple types. */
 @SuppressWarnings("all")
 public interface Tuple {
@@ -36,6 +28,14 @@ public interface Tuple {
     }
 
     @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((this.first == null) ? 0 : this.first.hashCode());
+      return prime * result + ((this.second == null) ? 0 : this.second.hashCode());
+    }
+
+    @Override
     public boolean equals(final Object obj) {
       if (this == obj) return true;
       if (obj == null) return false;
@@ -48,14 +48,6 @@ public interface Tuple {
         if (other.second != null) return false;
       } else if (!this.second.equals(other.second)) return false;
       return true;
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((this.first == null) ? 0 : this.first.hashCode());
-      return prime * result + ((this.second == null) ? 0 : this.second.hashCode());
     }
 
     @Override

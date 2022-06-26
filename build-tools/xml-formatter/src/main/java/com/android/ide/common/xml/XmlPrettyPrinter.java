@@ -16,9 +16,18 @@
 
 package com.android.ide.common.xml;
 
+import static com.android.SdkConstants.DOT_XML;
+import static com.android.SdkConstants.TAG_COLOR;
+import static com.android.SdkConstants.TAG_DIMEN;
+import static com.android.SdkConstants.TAG_ITEM;
+import static com.android.SdkConstants.TAG_STRING;
+import static com.android.SdkConstants.TAG_STYLE;
+import static com.android.SdkConstants.XMLNS;
+import static com.android.utils.XmlUtils.XML_COMMENT_BEGIN;
+import static com.android.utils.XmlUtils.XML_COMMENT_END;
+import static com.android.utils.XmlUtils.XML_PROLOG;
+
 import com.android.SdkConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.android.resources.ResourceFolderType;
 import com.android.utils.SdkUtils;
 import com.android.utils.XmlUtils;
@@ -26,6 +35,8 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,17 +50,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import static com.android.SdkConstants.DOT_XML;
-import static com.android.SdkConstants.TAG_COLOR;
-import static com.android.SdkConstants.TAG_DIMEN;
-import static com.android.SdkConstants.TAG_ITEM;
-import static com.android.SdkConstants.TAG_STRING;
-import static com.android.SdkConstants.TAG_STYLE;
-import static com.android.SdkConstants.XMLNS;
-import static com.android.utils.XmlUtils.XML_COMMENT_BEGIN;
-import static com.android.utils.XmlUtils.XML_COMMENT_END;
-import static com.android.utils.XmlUtils.XML_PROLOG;
 
 /**
  * Visitor which walks over the subtree of the DOM to be formatted and pretty prints the DOM into
@@ -97,31 +97,6 @@ public class XmlPrettyPrinter {
       lineSeparator = SdkUtils.getLineSeparator();
     }
     mLineSeparator = lineSeparator;
-  }
-
-  /**
-   * Sets whether the document should end with a newline/ line separator
-   *
-   * @param endWithNewline if true, ensure that the document ends with a newline
-   * @return this, for constructor chaining
-   */
-  public XmlPrettyPrinter setEndWithNewline(boolean endWithNewline) {
-    mEndWithNewline = endWithNewline;
-    return this;
-  }
-
-  /**
-   * Sets the indentation levels to use (indentation string to use for each depth, indexed by depth
-   *
-   * @param indentationLevels an array of strings to use for the various indentation levels
-   */
-  public void setIndentationLevels(String[] indentationLevels) {
-    mIndentationLevels = indentationLevels;
-  }
-
-  @NotNull
-  private String getLineSeparator() {
-    return mLineSeparator;
   }
 
   /**
@@ -234,6 +209,137 @@ public class XmlPrettyPrinter {
         endWithNewline);
   }
 
+  /** Command line driver */
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      printUsage();
+    }
+
+    List<File> files = Lists.newArrayList();
+
+    XmlFormatPreferences prefs = XmlFormatPreferences.defaults();
+    boolean stdout = false;
+
+    for (String arg : args) {
+      if (arg.startsWith("--")) {
+        if ("--stdout".equals(arg)) {
+          stdout = true;
+        } else if ("--removeEmptyLines".equals(arg)) {
+          prefs.removeEmptyLines = true;
+        } else if ("--noAttributeOnFirstLine".equals(arg)) {
+          prefs.oneAttributeOnFirstLine = false;
+        } else if ("--noSpaceBeforeClose".equals(arg)) {
+          prefs.spaceBeforeClose = false;
+        } else {
+          System.err.println("Unknown flag " + arg);
+          printUsage();
+        }
+      } else {
+        File file = new File(arg).getAbsoluteFile();
+        if (!file.exists()) {
+          System.err.println("Can't find file " + file);
+          System.exit(1);
+        } else {
+          files.add(file);
+        }
+      }
+    }
+
+    for (File file : files) {
+      formatFile(prefs, file, stdout);
+    }
+
+    System.exit(0);
+  }
+
+  private static void printUsage() {
+    System.out.println(
+        "Usage: "
+            + XmlPrettyPrinter.class.getSimpleName()
+            + " <options>... <files or directories...>");
+    System.out.println("OPTIONS:");
+    System.out.println("--stdout");
+    System.out.println("--removeEmptyLines");
+    System.out.println("--noAttributeOnFirstLine");
+    System.out.println("--noSpaceBeforeClose");
+    System.exit(1);
+  }
+
+  private static void formatFile(@NotNull XmlFormatPreferences prefs, File file, boolean stdout) {
+    if (file.isDirectory()) {
+      File[] files = file.listFiles();
+      if (files != null) {
+        for (File child : files) {
+          formatFile(prefs, child, stdout);
+        }
+      }
+    } else if (file.isFile() && SdkUtils.endsWithIgnoreCase(file.getName(), DOT_XML)) {
+      XmlFormatStyle style = null;
+      if (file.getName().equals(SdkConstants.ANDROID_MANIFEST_XML)) {
+        style = XmlFormatStyle.MANIFEST;
+      } else {
+        File parent = file.getParentFile();
+        if (parent != null) {
+          String parentName = parent.getName();
+          ResourceFolderType folderType = ResourceFolderType.getFolderType(parentName);
+          if (folderType == ResourceFolderType.LAYOUT) {
+            style = XmlFormatStyle.LAYOUT;
+          } else if (folderType == ResourceFolderType.VALUES) {
+            style = XmlFormatStyle.RESOURCE;
+          }
+        }
+      }
+
+      try {
+        String xml = Files.toString(file, Charsets.UTF_8);
+        Document document = XmlUtils.parseDocumentSilently(xml, true);
+        if (document == null) {
+          System.err.println("Could not parse " + file);
+          System.exit(1);
+          return;
+        }
+
+        if (style == null) {
+          style = XmlFormatStyle.get(document);
+        }
+        boolean endWithNewline = xml.endsWith("\n");
+        int firstNewLine = xml.indexOf('\n');
+        String lineSeparator =
+            firstNewLine > 0 && xml.charAt(firstNewLine - 1) == '\r' ? "\r\n" : "\n";
+        String formatted =
+            XmlPrettyPrinter.prettyPrint(document, prefs, style, lineSeparator, endWithNewline);
+        if (stdout) {
+          System.out.println(formatted);
+        } else {
+          Files.write(formatted, file, Charsets.UTF_8);
+        }
+      } catch (IOException e) {
+        System.err.println("Could not read " + file);
+        System.exit(1);
+      }
+    }
+  }
+
+  /**
+   * Sets whether the document should end with a newline/ line separator
+   *
+   * @param endWithNewline if true, ensure that the document ends with a newline
+   * @return this, for constructor chaining
+   */
+  public XmlPrettyPrinter setEndWithNewline(boolean endWithNewline) {
+    mEndWithNewline = endWithNewline;
+    return this;
+  }
+
+  /**
+   * Sets the indentation levels to use (indentation string to use for each depth, indexed by depth
+   *
+   * @param indentationLevels an array of strings to use for the various indentation levels
+   */
+  public void setIndentationLevels(String[] indentationLevels) {
+    mIndentationLevels = indentationLevels;
+  }
+
   /**
    * Start pretty-printing at the given node, which must either be the startNode or contain it as a
    * descendant.
@@ -273,6 +379,37 @@ public class XmlPrettyPrinter {
     if (mEndWithNewline && !endsWithLineSeparator()) {
       mOut.append(mLineSeparator);
     }
+  }
+
+  @Nullable
+  @SuppressWarnings("MethodMayBeStatic") // Intentionally instance method so it can be overridden
+  protected String getSource(@NotNull Node node) {
+    return null;
+  }
+
+  /**
+   * Returns true if the given element should be an empty tag
+   *
+   * @param element the element to test
+   * @return true if this element should be an empty tag
+   */
+  @SuppressWarnings("MethodMayBeStatic") // Intentionally instance method so it can be overridden
+  protected boolean isEmptyTag(Element element) {
+    if (element.getFirstChild() != null) {
+      return false;
+    }
+
+    String tag = element.getTagName();
+    if (TAG_STRING.equals(tag)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @NotNull
+  private String getLineSeparator() {
+    return mLineSeparator;
   }
 
   /** Visit the given node at the given depth */
@@ -373,12 +510,6 @@ public class XmlPrettyPrinter {
     mOut.append("<?xml "); // $NON-NLS-1$
     mOut.append(node.getNodeValue().trim());
     mOut.append('?').append('>').append(mLineSeparator);
-  }
-
-  @Nullable
-  @SuppressWarnings("MethodMayBeStatic") // Intentionally instance method so it can be overridden
-  protected String getSource(@NotNull Node node) {
-    return null;
   }
 
   private void printDocType(Node node) {
@@ -1132,137 +1263,6 @@ public class XmlPrettyPrinter {
 
     for (; i < depth; i++) {
       mOut.append(mIndentString);
-    }
-  }
-
-  /**
-   * Returns true if the given element should be an empty tag
-   *
-   * @param element the element to test
-   * @return true if this element should be an empty tag
-   */
-  @SuppressWarnings("MethodMayBeStatic") // Intentionally instance method so it can be overridden
-  protected boolean isEmptyTag(Element element) {
-    if (element.getFirstChild() != null) {
-      return false;
-    }
-
-    String tag = element.getTagName();
-    if (TAG_STRING.equals(tag)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private static void printUsage() {
-    System.out.println(
-        "Usage: "
-            + XmlPrettyPrinter.class.getSimpleName()
-            + " <options>... <files or directories...>");
-    System.out.println("OPTIONS:");
-    System.out.println("--stdout");
-    System.out.println("--removeEmptyLines");
-    System.out.println("--noAttributeOnFirstLine");
-    System.out.println("--noSpaceBeforeClose");
-    System.exit(1);
-  }
-
-  /** Command line driver */
-  public static void main(String[] args) {
-    if (args.length == 0) {
-      printUsage();
-    }
-
-    List<File> files = Lists.newArrayList();
-
-    XmlFormatPreferences prefs = XmlFormatPreferences.defaults();
-    boolean stdout = false;
-
-    for (String arg : args) {
-      if (arg.startsWith("--")) {
-        if ("--stdout".equals(arg)) {
-          stdout = true;
-        } else if ("--removeEmptyLines".equals(arg)) {
-          prefs.removeEmptyLines = true;
-        } else if ("--noAttributeOnFirstLine".equals(arg)) {
-          prefs.oneAttributeOnFirstLine = false;
-        } else if ("--noSpaceBeforeClose".equals(arg)) {
-          prefs.spaceBeforeClose = false;
-        } else {
-          System.err.println("Unknown flag " + arg);
-          printUsage();
-        }
-      } else {
-        File file = new File(arg).getAbsoluteFile();
-        if (!file.exists()) {
-          System.err.println("Can't find file " + file);
-          System.exit(1);
-        } else {
-          files.add(file);
-        }
-      }
-    }
-
-    for (File file : files) {
-      formatFile(prefs, file, stdout);
-    }
-
-    System.exit(0);
-  }
-
-  private static void formatFile(@NotNull XmlFormatPreferences prefs, File file, boolean stdout) {
-    if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      if (files != null) {
-        for (File child : files) {
-          formatFile(prefs, child, stdout);
-        }
-      }
-    } else if (file.isFile() && SdkUtils.endsWithIgnoreCase(file.getName(), DOT_XML)) {
-      XmlFormatStyle style = null;
-      if (file.getName().equals(SdkConstants.ANDROID_MANIFEST_XML)) {
-        style = XmlFormatStyle.MANIFEST;
-      } else {
-        File parent = file.getParentFile();
-        if (parent != null) {
-          String parentName = parent.getName();
-          ResourceFolderType folderType = ResourceFolderType.getFolderType(parentName);
-          if (folderType == ResourceFolderType.LAYOUT) {
-            style = XmlFormatStyle.LAYOUT;
-          } else if (folderType == ResourceFolderType.VALUES) {
-            style = XmlFormatStyle.RESOURCE;
-          }
-        }
-      }
-
-      try {
-        String xml = Files.toString(file, Charsets.UTF_8);
-        Document document = XmlUtils.parseDocumentSilently(xml, true);
-        if (document == null) {
-          System.err.println("Could not parse " + file);
-          System.exit(1);
-          return;
-        }
-
-        if (style == null) {
-          style = XmlFormatStyle.get(document);
-        }
-        boolean endWithNewline = xml.endsWith("\n");
-        int firstNewLine = xml.indexOf('\n');
-        String lineSeparator =
-            firstNewLine > 0 && xml.charAt(firstNewLine - 1) == '\r' ? "\r\n" : "\n";
-        String formatted =
-            XmlPrettyPrinter.prettyPrint(document, prefs, style, lineSeparator, endWithNewline);
-        if (stdout) {
-          System.out.println(formatted);
-        } else {
-          Files.write(formatted, file, Charsets.UTF_8);
-        }
-      } catch (IOException e) {
-        System.err.println("Could not read " + file);
-        System.exit(1);
-      }
     }
   }
 }

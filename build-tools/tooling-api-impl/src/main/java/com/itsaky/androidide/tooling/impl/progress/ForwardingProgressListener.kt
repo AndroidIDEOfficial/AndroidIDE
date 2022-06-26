@@ -48,59 +48,57 @@ import org.gradle.tooling.events.work.WorkItemStartEvent
 @Suppress("UnstableApiUsage")
 class ForwardingProgressListener : ProgressListener {
 
-    override fun statusChanged(event: ProgressEvent?) {
-        if (event == null || Main.client == null) {
-            return
-        }
-
-        // File download progress event must not be sent
-        if (event.descriptor is FileDownloadOperationDescriptor) {
-            return
-        }
-
-        val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent =
-            when (event) {
-                is ProjectConfigurationProgressEvent ->
-                    when (event) {
-                        is ProjectConfigurationStartEvent ->
-                            EventTransformer.projectConfigurationStart(event)
-                        is ProjectConfigurationFinishEvent ->
-                            EventTransformer.projectConfigurationFinish(event)
-                        else -> EventTransformer.projectConfigurationProgress(event)
-                    }
-                is TaskProgressEvent ->
-                    when (event) {
-                        is TaskStartEvent -> EventTransformer.taskStart(event)
-                        is TaskFinishEvent -> EventTransformer.taskFinish(event)
-                        else -> EventTransformer.taskProgress(event)
-                    }
-                is TestProgressEvent ->
-                    when (event) {
-                        is TestStartEvent -> EventTransformer.testStart(event)
-                        is TestFinishEvent -> EventTransformer.testFinish(event)
-                        else -> EventTransformer.testProgress(event)
-                    }
-                is TransformProgressEvent ->
-                    when (event) {
-                        is TransformStartEvent -> EventTransformer.transformStart(event)
-                        is TransformFinishEvent -> EventTransformer.transformFinish(event)
-                        else -> EventTransformer.transformProgress(event)
-                    }
-                is WorkItemProgressEvent ->
-                    when (event) {
-                        is WorkItemStartEvent -> EventTransformer.workStart(event)
-                        is WorkItemFinishEvent -> EventTransformer.workFinish(event)
-                        else -> EventTransformer.workProgress(event)
-                    }
-                is StatusEvent -> EventTransformer.statusEvent(event)
-                else ->
-                    when (event) {
-                        is StartEvent -> EventTransformer.start(event)
-                        is FinishEvent -> EventTransformer.finish(event)
-                        else -> EventTransformer.progress(event)
-                    }
-            }
-
-        Main.client.onProgressEvent(ideEvent)
+  override fun statusChanged(event: ProgressEvent?) {
+    if (event == null || Main.client == null) {
+      return
     }
+
+    // File download progress event must not be sent
+    if (event.descriptor is FileDownloadOperationDescriptor) {
+      return
+    }
+
+    val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent =
+      when (event) {
+        is ProjectConfigurationProgressEvent ->
+          when (event) {
+            is ProjectConfigurationStartEvent -> EventTransformer.projectConfigurationStart(event)
+            is ProjectConfigurationFinishEvent -> EventTransformer.projectConfigurationFinish(event)
+            else -> EventTransformer.projectConfigurationProgress(event)
+          }
+        is TaskProgressEvent ->
+          when (event) {
+            is TaskStartEvent -> EventTransformer.taskStart(event)
+            is TaskFinishEvent -> EventTransformer.taskFinish(event)
+            else -> EventTransformer.taskProgress(event)
+          }
+        is TestProgressEvent ->
+          when (event) {
+            is TestStartEvent -> EventTransformer.testStart(event)
+            is TestFinishEvent -> EventTransformer.testFinish(event)
+            else -> EventTransformer.testProgress(event)
+          }
+        is TransformProgressEvent ->
+          when (event) {
+            is TransformStartEvent -> EventTransformer.transformStart(event)
+            is TransformFinishEvent -> EventTransformer.transformFinish(event)
+            else -> EventTransformer.transformProgress(event)
+          }
+        is WorkItemProgressEvent ->
+          when (event) {
+            is WorkItemStartEvent -> EventTransformer.workStart(event)
+            is WorkItemFinishEvent -> EventTransformer.workFinish(event)
+            else -> EventTransformer.workProgress(event)
+          }
+        is StatusEvent -> EventTransformer.statusEvent(event)
+        else ->
+          when (event) {
+            is StartEvent -> EventTransformer.start(event)
+            is FinishEvent -> EventTransformer.finish(event)
+            else -> EventTransformer.progress(event)
+          }
+      }
+
+    Main.client.onProgressEvent(ideEvent)
+  }
 }

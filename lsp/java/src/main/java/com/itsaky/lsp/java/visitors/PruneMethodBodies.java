@@ -36,6 +36,11 @@ public class PruneMethodBodies extends TreeScanner<StringBuilder, Long> {
   }
 
   @Override
+  public StringBuilder reduce(StringBuilder a, StringBuilder b) {
+    return buf;
+  }
+
+  @Override
   public StringBuilder visitCompilationUnit(CompilationUnitTree t, Long find) {
     root = t;
     try {
@@ -66,11 +71,6 @@ public class PruneMethodBodies extends TreeScanner<StringBuilder, Long> {
       return buf;
     }
     super.visitMethod(t, find);
-    return buf;
-  }
-
-  @Override
-  public StringBuilder reduce(StringBuilder a, StringBuilder b) {
     return buf;
   }
 }

@@ -25,6 +25,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Pair;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Queue;
@@ -35,12 +36,13 @@ import java.util.function.Consumer;
  */
 public class NBJavaCompiler extends JavaCompiler {
 
+  private final CancelService cancelService;
+  private Consumer<Env<AttrContext>> desugarCallback;
+  private boolean desugaring;
+
   public static void preRegister(Context context) {
     context.put(compilerKey, (Context.Factory<JavaCompiler>) NBJavaCompiler::new);
   }
-
-  private final CancelService cancelService;
-  private Consumer<Env<AttrContext>> desugarCallback;
 
   public NBJavaCompiler(Context context) {
     super(context);
@@ -66,12 +68,6 @@ public class NBJavaCompiler extends JavaCompiler {
     fileManager.handleOption("apt-origin", Collections.singletonList(origin).iterator());
   }
 
-  public void setDesugarCallback(Consumer<Env<AttrContext>> callback) {
-    this.desugarCallback = callback;
-  }
-
-  private boolean desugaring;
-
   @Override
   protected void desugar(
       Env<AttrContext> env, Queue<Pair<Env<AttrContext>, JCTree.JCClassDecl>> results) {
@@ -82,6 +78,10 @@ public class NBJavaCompiler extends JavaCompiler {
     } finally {
       desugaring = prevDesugaring;
     }
+  }
+
+  public void setDesugarCallback(Consumer<Env<AttrContext>> callback) {
+    this.desugarCallback = callback;
   }
 
   void maybeInvokeDesugarCallback(Env<AttrContext> env) {

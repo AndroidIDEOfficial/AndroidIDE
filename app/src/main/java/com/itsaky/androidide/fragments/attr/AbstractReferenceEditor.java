@@ -41,15 +41,6 @@ public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
   private static final ILogger LOG = ILogger.newInstance("ReferenceEditor");
   public TextWatcherAdapter resInputWatcher;
 
-  @Override
-  protected void notifyValueChanged(@NonNull String newValue) {
-    try {
-      super.notifyValueChanged(newValue);
-    } catch (Throwable e) {
-      LOG.error("Unable to update resource value to '" + newValue + "'", e);
-    }
-  }
-
   protected void setupReferenceInput(MaterialAutoCompleteTextView referenceInput) {
     Objects.requireNonNull(referenceInput);
 
@@ -76,6 +67,15 @@ public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
 
     CompletableFuture.supplyAsync(this::computeReferenceItems)
         .whenComplete((list, error) -> handleAutoCompleteResult(list, error, referenceInput));
+  }
+
+  @Override
+  protected void notifyValueChanged(@NonNull String newValue) {
+    try {
+      super.notifyValueChanged(newValue);
+    } catch (Throwable e) {
+      LOG.error("Unable to update resource value to '" + newValue + "'", e);
+    }
   }
 
   protected void handleAutoCompleteResult(

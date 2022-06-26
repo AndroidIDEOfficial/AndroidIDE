@@ -68,14 +68,14 @@ public class SymbolInputView extends RecyclerView {
       this(both, both, offset);
     }
 
-    public Symbol(String label, String commit) {
-      this(label, commit, 1);
-    }
-
     public Symbol(String label, String commit, int offset) {
       this.label = label;
       this.commit = commit;
       this.offset = offset;
+    }
+
+    public Symbol(String label, String commit) {
+      this(label, commit, 1);
     }
   }
 }

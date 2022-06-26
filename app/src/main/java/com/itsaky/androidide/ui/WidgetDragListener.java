@@ -48,16 +48,13 @@ import org.jetbrains.annotations.Contract;
  */
 public class WidgetDragListener implements View.OnDragListener {
 
+  public static final String ANDROID_NS = "android";
+  private static final ILogger LOG = ILogger.newInstance("WidgetDragListener");
   private final IView placeholder;
   private final IViewGroup viewGroup;
   private final OnViewAddedListener addedListener;
-
   private final int PLACEHOLDER_HEIGHT = 20; // in dp
   private final int PLACEHOLDER_WIDTH = 40; // in dp
-
-  public static final String ANDROID_NS = "android";
-
-  private static final ILogger LOG = ILogger.newInstance("WidgetDragListener");
 
   public WidgetDragListener(
       @NonNull Context context, IViewGroup viewGroup, OnViewAddedListener addedListener) {
@@ -127,6 +124,18 @@ public class WidgetDragListener implements View.OnDragListener {
     view.addAttribute(layoutHeightAttr());
   }
 
+  @NonNull
+  @Contract(" -> new")
+  private IAttribute layoutHeightAttr() {
+    return new UiAttribute(INamespace.ANDROID, "layout_height", "wrap_content");
+  }
+
+  @NonNull
+  @Contract(" -> new")
+  private IAttribute layoutWidthAttr() {
+    return new UiAttribute(INamespace.ANDROID, "layout_width", "wrap_content");
+  }
+
   /**
    * Finds the index at which the placeholder will be added in the current view group.
    *
@@ -180,30 +189,6 @@ public class WidgetDragListener implements View.OnDragListener {
     return src;
   }
 
-  private RectF leftHalf(RectF src) {
-    final RectF result = new RectF(src);
-    result.right -= result.width() / 2;
-    return src;
-  }
-
-  private RectF rightHalf(RectF src) {
-    final RectF result = new RectF(src);
-    result.left += result.width() / 2;
-    return src;
-  }
-
-  @NonNull
-  @Contract(" -> new")
-  private IAttribute layoutHeightAttr() {
-    return new UiAttribute(INamespace.ANDROID, "layout_height", "wrap_content");
-  }
-
-  @NonNull
-  @Contract(" -> new")
-  private IAttribute layoutWidthAttr() {
-    return new UiAttribute(INamespace.ANDROID, "layout_width", "wrap_content");
-  }
-
   @NonNull
   private IView createView(@NonNull UIWidget widget) {
     try {
@@ -221,6 +206,18 @@ public class WidgetDragListener implements View.OnDragListener {
       LOG.error("Unable to add widget", e);
       throw new RuntimeException("Unable to add widget", e);
     }
+  }
+
+  private RectF leftHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.right -= result.width() / 2;
+    return src;
+  }
+
+  private RectF rightHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.left += result.width() / 2;
+    return src;
   }
 
   public static interface OnViewAddedListener {

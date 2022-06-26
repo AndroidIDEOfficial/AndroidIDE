@@ -27,26 +27,26 @@ import com.itsaky.androidide.actions.EditorActivityAction
 /** @author Akash Yadav */
 class FileTreeAction() : EditorActivityAction() {
 
-    override val id: String = "editor_fileTree"
+  override val id: String = "editor_fileTree"
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.msg_file_tree)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_folder)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.msg_file_tree)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_folder)
+  }
+
+  override fun prepare(data: ActionData) {
+    visible = true
+    enabled = true
+  }
+
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
+
+    if (!context.binding.root.isDrawerOpen(GravityCompat.END)) {
+      context.binding.root.openDrawer(GravityCompat.END)
+      return true
     }
 
-    override fun prepare(data: ActionData) {
-        visible = true
-        enabled = true
-    }
-
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
-
-        if (!context.binding.root.isDrawerOpen(GravityCompat.END)) {
-            context.binding.root.openDrawer(GravityCompat.END)
-            return true
-        }
-
-        return false
-    }
+    return false
+  }
 }

@@ -30,23 +30,30 @@ import java.util.Stack;
  */
 public final class TerminalEmulator {
 
-  /** Log unknown or unimplemented escape sequences received from the shell process. */
-  private static final boolean LOG_ESCAPE_SEQUENCES = false;
-
   public static final int MOUSE_LEFT_BUTTON = 0;
-
   /** Mouse moving while having left mouse button pressed. */
   public static final int MOUSE_LEFT_BUTTON_MOVED = 32;
-
   public static final int MOUSE_WHEELUP_BUTTON = 64;
   public static final int MOUSE_WHEELDOWN_BUTTON = 65;
-
   /**
    * Used for invalid data -
    * http://en.wikipedia.org/wiki/Replacement_character#Replacement_character
    */
   public static final int UNICODE_REPLACEMENT_CHAR = 0xFFFD;
-
+  /** The number of terminal transcript rows that can be scrolled back to. */
+  public static final int TERMINAL_TRANSCRIPT_ROWS_MIN = 100;
+  public static final int TERMINAL_TRANSCRIPT_ROWS_MAX = 50000;
+  public static final int DEFAULT_TERMINAL_TRANSCRIPT_ROWS = 2000;
+  public static final int TERMINAL_CURSOR_STYLE_BLOCK = 0;
+  public static final int TERMINAL_CURSOR_STYLE_UNDERLINE = 1;
+  public static final int TERMINAL_CURSOR_STYLE_BAR = 2;
+  public static final int DEFAULT_TERMINAL_CURSOR_STYLE = TERMINAL_CURSOR_STYLE_BLOCK;
+  public static final Integer[] TERMINAL_CURSOR_STYLES_LIST =
+      new Integer[] {
+        TERMINAL_CURSOR_STYLE_BLOCK, TERMINAL_CURSOR_STYLE_UNDERLINE, TERMINAL_CURSOR_STYLE_BAR
+      };
+  /** Log unknown or unimplemented escape sequences received from the shell process. */
+  private static final boolean LOG_ESCAPE_SEQUENCES = false;
   /** Escape processing: Not currently in an escape sequence. */
   private static final int ESC_NONE = 0;
   /** Escape processing: Have seen an ESC character - proceed to {@link #doEsc(int)} */
@@ -85,19 +92,15 @@ public final class TerminalEmulator {
   private static final int ESC_CSI_SINGLE_QUOTE = 18;
   /** Escape processing: CSI ! */
   private static final int ESC_CSI_EXCLAMATION = 19;
-
   /**
    * The number of parameter arguments. This name comes from the ANSI standard for terminal escape
    * codes.
    */
   private static final int MAX_ESCAPE_PARAMETERS = 16;
-
   /** Needs to be large enough to contain reasonable OSC 52 pastes. */
   private static final int MAX_OSC_STRING_LENGTH = 8192;
-
   /** DECSET 1 - application cursor keys. */
   private static final int DECSET_BIT_APPLICATION_CURSOR_KEYS = 1;
-
   private static final int DECSET_BIT_REVERSE_VIDEO = 1 << 1;
   /**
    * http://www.vt100.net/docs/vt510-rm/DECOM: "When DECOM is set, the home cursor position is at
@@ -118,7 +121,6 @@ public final class TerminalEmulator {
   private static final int DECSET_BIT_AUTOWRAP = 1 << 3;
   /** DECSET 25 - if the cursor should be enabled, {@link #isCursorEnabled()}. */
   private static final int DECSET_BIT_CURSOR_ENABLED = 1 << 4;
-
   private static final int DECSET_BIT_APPLICATION_KEYPAD = 1 << 5;
   /** DECSET 1000 - if to report mouse press&release events. */
   private static final int DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE = 1 << 6;
@@ -132,43 +134,27 @@ public final class TerminalEmulator {
   private static final int DECSET_BIT_BRACKETED_PASTE_MODE = 1 << 10;
   /** Toggled with DECLRMM - http://www.vt100.net/docs/vt510-rm/DECLRMM */
   private static final int DECSET_BIT_LEFTRIGHT_MARGIN_MODE = 1 << 11;
-  /** Not really DECSET bit... - http://www.vt100.net/docs/vt510-rm/DECSACE */
-  private static final int DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE = 1 << 12;
-
-  private String mTitle;
-  private final Stack<String> mTitleStack = new Stack<>();
-
-  /** The cursor position. Between (0,0) and (mRows-1, mColumns-1). */
-  private int mCursorRow, mCursorCol;
-
-  /** The number of character rows and columns in the terminal screen. */
-  public int mRows, mColumns;
-
-  /** The number of terminal transcript rows that can be scrolled back to. */
-  public static final int TERMINAL_TRANSCRIPT_ROWS_MIN = 100;
-
-  public static final int TERMINAL_TRANSCRIPT_ROWS_MAX = 50000;
-  public static final int DEFAULT_TERMINAL_TRANSCRIPT_ROWS = 2000;
 
   /* The supported terminal cursor styles. */
-
-  public static final int TERMINAL_CURSOR_STYLE_BLOCK = 0;
-  public static final int TERMINAL_CURSOR_STYLE_UNDERLINE = 1;
-  public static final int TERMINAL_CURSOR_STYLE_BAR = 2;
-  public static final int DEFAULT_TERMINAL_CURSOR_STYLE = TERMINAL_CURSOR_STYLE_BLOCK;
-  public static final Integer[] TERMINAL_CURSOR_STYLES_LIST =
-      new Integer[] {
-        TERMINAL_CURSOR_STYLE_BLOCK, TERMINAL_CURSOR_STYLE_UNDERLINE, TERMINAL_CURSOR_STYLE_BAR
-      };
-
-  /** The terminal cursor styles. */
-  private int mCursorStyle = DEFAULT_TERMINAL_CURSOR_STYLE;
-
+  /** Not really DECSET bit... - http://www.vt100.net/docs/vt510-rm/DECSACE */
+  private static final int DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE = 1 << 12;
+  private static final String LOG_TAG = "TerminalEmulator";
+  public final TerminalColors mColors = new TerminalColors();
+  private final Stack<String> mTitleStack = new Stack<>();
   /**
    * The normal screen buffer. Stores the characters that appear on the screen of the emulated
    * terminal.
    */
   private final TerminalBuffer mMainBuffer;
+  /** The terminal session this emulator is bound to. */
+  private final TerminalOutput mSession;
+  /** Holds the arguments of the current escape sequence. */
+  private final int[] mArgs = new int[MAX_ESCAPE_PARAMETERS];
+  /** Holds OSC and device control arguments, which can be strings. */
+  private final StringBuilder mOSCOrDeviceControlArgs = new StringBuilder();
+  private final SavedScreenState mSavedStateMain = new SavedScreenState();
+  private final SavedScreenState mSavedStateAlt = new SavedScreenState();
+  private final byte[] mUtf8InputBuffer = new byte[4];
   /**
    * The alternate screen buffer, exactly as large as the display and contains no additional saved
    * lines (so that when the alternate screen buffer is active, you cannot scroll back to view saved
@@ -177,61 +163,46 @@ public final class TerminalEmulator {
    * <p>See http://www.xfree86.org/current/ctlseqs.html#The%20Alternate%20Screen%20Buffer
    */
   final TerminalBuffer mAltBuffer;
+  /** The number of character rows and columns in the terminal screen. */
+  public int mRows, mColumns;
+  private String mTitle;
+  /** The cursor position. Between (0,0) and (mRows-1, mColumns-1). */
+  private int mCursorRow, mCursorCol;
+  /** The terminal cursor styles. */
+  private int mCursorStyle = DEFAULT_TERMINAL_CURSOR_STYLE;
   /** The current screen buffer, pointing at either {@link #mMainBuffer} or {@link #mAltBuffer}. */
   private TerminalBuffer mScreen;
-
-  /** The terminal session this emulator is bound to. */
-  private final TerminalOutput mSession;
-
-  TerminalSessionClient mClient;
-
   /**
    * Keeps track of the current argument of the current escape sequence. Ranges from 0 to
    * MAX_ESCAPE_PARAMETERS-1.
    */
   private int mArgIndex;
-  /** Holds the arguments of the current escape sequence. */
-  private final int[] mArgs = new int[MAX_ESCAPE_PARAMETERS];
-
-  /** Holds OSC and device control arguments, which can be strings. */
-  private final StringBuilder mOSCOrDeviceControlArgs = new StringBuilder();
-
   /**
    * True if the current escape sequence should continue, false if the current escape sequence
    * should be terminated. Used when parsing a single character.
    */
   private boolean mContinueSequence;
-
   /** The current state of the escape sequence state machine. One of the ESC_* constants. */
   private int mEscapeState;
-
-  private final SavedScreenState mSavedStateMain = new SavedScreenState();
-  private final SavedScreenState mSavedStateAlt = new SavedScreenState();
-
   /** http://www.vt100.net/docs/vt102-ug/table5-15.html */
   private boolean mUseLineDrawingG0, mUseLineDrawingG1, mUseLineDrawingUsesG0 = true;
-
   /**
    * @see TerminalEmulator#mapDecSetBitToInternalBit(int)
    */
   private int mCurrentDecSetFlags, mSavedDecSetFlags;
-
   /**
    * If insert mode (as opposed to replace mode) is active. In insert mode new characters are
    * inserted, pushing existing text to the right. Characters moved past the right margin are lost.
    */
   private boolean mInsertMode;
-
   /** An array of tab stops. mTabStop[i] is true if there is a tab stop set for column i. */
   private boolean[] mTabStop;
-
   /**
    * Top margin of screen for scrolling ranges from 0 to mRows-2. Bottom margin ranges from
    * mTopMargin + 2 to mRows (Defines the first row after the scrolling region). Left/right margin
    * in [0, mColumns].
    */
   private int mTopMargin, mBottomMargin, mLeftMargin, mRightMargin;
-
   /**
    * If the next character to be emitted will be automatically wrapped to the next line. Used to
    * disambiguate the case where the cursor is positioned on the last column (mColumns-1). When
@@ -239,19 +210,26 @@ public final class TerminalEmulator {
    * but this flag will be set. When outputting another character this will move to the next line.
    */
   private boolean mAboutToAutoWrap;
-
   /**
    * If the cursor blinking is enabled. It requires cursor itself to be enabled, which is controlled
    * byt whether {@link #DECSET_BIT_CURSOR_ENABLED} bit is set or not.
    */
   private boolean mCursorBlinkingEnabled;
-
   /**
    * If currently cursor should be in a visible state or not if {@link #mCursorBlinkingEnabled} is
    * {@code true}.
    */
   private boolean mCursorBlinkState;
-
+  /** Current {@link TextStyle} effect. */
+  private int mEffect;
+  /**
+   * The number of scrolled lines since last calling {@link #clearScrollCounter()}. Used for moving
+   * selection up along with the scrolling text.
+   */
+  private int mScrollCounter = 0;
+  private byte mUtf8ToFollow, mUtf8Index;
+  private int mLastEmittedCodePoint = -1;
+  TerminalSessionClient mClient;
   /**
    * Current foreground and background colors. Can either be a color index in [0,259] or a truecolor
    * (24-bit) value. For a 24-bit value the top byte (0xff000000) is set.
@@ -260,41 +238,21 @@ public final class TerminalEmulator {
    */
   int mForeColor, mBackColor;
 
-  /** Current {@link TextStyle} effect. */
-  private int mEffect;
-
-  /**
-   * The number of scrolled lines since last calling {@link #clearScrollCounter()}. Used for moving
-   * selection up along with the scrolling text.
-   */
-  private int mScrollCounter = 0;
-
-  private byte mUtf8ToFollow, mUtf8Index;
-  private final byte[] mUtf8InputBuffer = new byte[4];
-  private int mLastEmittedCodePoint = -1;
-
-  public final TerminalColors mColors = new TerminalColors();
-
-  private static final String LOG_TAG = "TerminalEmulator";
-
-  private boolean isDecsetInternalBitSet(int bit) {
-    return (mCurrentDecSetFlags & bit) != 0;
-  }
-
-  private void setDecsetinternalBit(int internalBit, boolean set) {
-    if (set) {
-      // The mouse modes are mutually exclusive.
-      if (internalBit == DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE) {
-        setDecsetinternalBit(DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT, false);
-      } else if (internalBit == DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT) {
-        setDecsetinternalBit(DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE, false);
-      }
-    }
-    if (set) {
-      mCurrentDecSetFlags |= internalBit;
-    } else {
-      mCurrentDecSetFlags &= ~internalBit;
-    }
+  public TerminalEmulator(
+      TerminalOutput session,
+      int columns,
+      int rows,
+      Integer transcriptRows,
+      TerminalSessionClient client) {
+    mSession = session;
+    mScreen =
+        mMainBuffer = new TerminalBuffer(columns, getTerminalTranscriptRows(transcriptRows), rows);
+    mAltBuffer = new TerminalBuffer(columns, rows, rows);
+    mClient = client;
+    mRows = rows;
+    mColumns = columns;
+    mTabStop = new boolean[mColumns];
+    reset();
   }
 
   static int mapDecSetBitToInternalBit(int decsetBit) {
@@ -329,42 +287,29 @@ public final class TerminalEmulator {
     }
   }
 
-  public TerminalEmulator(
-      TerminalOutput session,
-      int columns,
-      int rows,
-      Integer transcriptRows,
-      TerminalSessionClient client) {
-    mSession = session;
-    mScreen =
-        mMainBuffer = new TerminalBuffer(columns, getTerminalTranscriptRows(transcriptRows), rows);
-    mAltBuffer = new TerminalBuffer(columns, rows, rows);
-    mClient = client;
-    mRows = rows;
-    mColumns = columns;
-    mTabStop = new boolean[mColumns];
-    reset();
-  }
-
   public void updateTerminalSessionClient(TerminalSessionClient client) {
     mClient = client;
     setCursorStyle();
     setCursorBlinkState(true);
   }
 
+  /** Set the terminal cursor style. */
+  public void setCursorStyle() {
+    Integer cursorStyle = null;
+
+    if (mClient != null) cursorStyle = mClient.getTerminalCursorStyle();
+
+    if (cursorStyle == null || !Arrays.asList(TERMINAL_CURSOR_STYLES_LIST).contains(cursorStyle))
+      mCursorStyle = DEFAULT_TERMINAL_CURSOR_STYLE;
+    else mCursorStyle = cursorStyle;
+  }
+
+  public void setCursorBlinkState(boolean cursorBlinkState) {
+    this.mCursorBlinkState = cursorBlinkState;
+  }
+
   public TerminalBuffer getScreen() {
     return mScreen;
-  }
-
-  public boolean isAlternateBufferActive() {
-    return mScreen == mAltBuffer;
-  }
-
-  private int getTerminalTranscriptRows(Integer transcriptRows) {
-    if (transcriptRows == null
-        || transcriptRows < TERMINAL_TRANSCRIPT_ROWS_MIN
-        || transcriptRows > TERMINAL_TRANSCRIPT_ROWS_MAX) return DEFAULT_TERMINAL_TRANSCRIPT_ROWS;
-    else return transcriptRows;
   }
 
   /**
@@ -393,6 +338,10 @@ public final class TerminalEmulator {
         mSession.write(data, 0, data.length);
       }
     }
+  }
+
+  private boolean isDecsetInternalBitSet(int bit) {
+    return (mCurrentDecSetFlags & bit) != 0;
   }
 
   public void resize(int columns, int rows) {
@@ -430,12 +379,34 @@ public final class TerminalEmulator {
     mCursorRow = cursor[1];
   }
 
+  public boolean isAlternateBufferActive() {
+    return mScreen == mAltBuffer;
+  }
+
+  private long getStyle() {
+    return TextStyle.encode(mForeColor, mBackColor, mEffect);
+  }
+
+  private void setDefaultTabStops() {
+    for (int i = 0; i < mColumns; i++) mTabStop[i] = (i & 7) == 0 && i != 0;
+  }
+
   public int getCursorRow() {
     return mCursorRow;
   }
 
+  private void setCursorRow(int row) {
+    mCursorRow = row;
+    mAboutToAutoWrap = false;
+  }
+
   public int getCursorCol() {
     return mCursorCol;
+  }
+
+  private void setCursorCol(int col) {
+    mCursorCol = col;
+    mAboutToAutoWrap = false;
   }
 
   /** Get the terminal cursor style. It will be one of {@link #TERMINAL_CURSOR_STYLES_LIST} */
@@ -443,23 +414,8 @@ public final class TerminalEmulator {
     return mCursorStyle;
   }
 
-  /** Set the terminal cursor style. */
-  public void setCursorStyle() {
-    Integer cursorStyle = null;
-
-    if (mClient != null) cursorStyle = mClient.getTerminalCursorStyle();
-
-    if (cursorStyle == null || !Arrays.asList(TERMINAL_CURSOR_STYLES_LIST).contains(cursorStyle))
-      mCursorStyle = DEFAULT_TERMINAL_CURSOR_STYLE;
-    else mCursorStyle = cursorStyle;
-  }
-
   public boolean isReverseVideo() {
     return isDecsetInternalBitSet(DECSET_BIT_REVERSE_VIDEO);
-  }
-
-  public boolean isCursorEnabled() {
-    return isDecsetInternalBitSet(DECSET_BIT_CURSOR_ENABLED);
   }
 
   public boolean shouldCursorBeVisible() {
@@ -467,12 +423,12 @@ public final class TerminalEmulator {
     else return mCursorBlinkingEnabled ? mCursorBlinkState : true;
   }
 
-  public void setCursorBlinkingEnabled(boolean cursorBlinkingEnabled) {
-    this.mCursorBlinkingEnabled = cursorBlinkingEnabled;
+  public boolean isCursorEnabled() {
+    return isDecsetInternalBitSet(DECSET_BIT_CURSOR_ENABLED);
   }
 
-  public void setCursorBlinkState(boolean cursorBlinkState) {
-    this.mCursorBlinkState = cursorBlinkState;
+  public void setCursorBlinkingEnabled(boolean cursorBlinkingEnabled) {
+    this.mCursorBlinkingEnabled = cursorBlinkingEnabled;
   }
 
   public boolean isKeypadApplicationMode() {
@@ -489,10 +445,6 @@ public final class TerminalEmulator {
         || isDecsetInternalBitSet(DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT);
   }
 
-  private void setDefaultTabStops() {
-    for (int i = 0; i < mColumns; i++) mTabStop[i] = (i & 7) == 0 && i != 0;
-  }
-
   /**
    * Accept bytes (typically from the pseudo-teletype) and process them.
    *
@@ -501,81 +453,6 @@ public final class TerminalEmulator {
    */
   public void append(byte[] buffer, int length) {
     for (int i = 0; i < length; i++) processByte(buffer[i]);
-  }
-
-  private void processByte(byte byteToProcess) {
-    if (mUtf8ToFollow > 0) {
-      if ((byteToProcess & 0b11000000) == 0b10000000) {
-        // 10xxxxxx, a continuation byte.
-        mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
-        if (--mUtf8ToFollow == 0) {
-          byte firstByteMask =
-              (byte) (mUtf8Index == 2 ? 0b00011111 : (mUtf8Index == 3 ? 0b00001111 : 0b00000111));
-          int codePoint = (mUtf8InputBuffer[0] & firstByteMask);
-          for (int i = 1; i < mUtf8Index; i++)
-            codePoint = ((codePoint << 6) | (mUtf8InputBuffer[i] & 0b00111111));
-          if (((codePoint <= 0b1111111) && mUtf8Index > 1)
-              || (codePoint < 0b11111111111 && mUtf8Index > 2)
-              || (codePoint < 0b1111111111111111 && mUtf8Index > 3)) {
-            // Overlong encoding.
-            codePoint = UNICODE_REPLACEMENT_CHAR;
-          }
-
-          mUtf8Index = mUtf8ToFollow = 0;
-
-          if (codePoint >= 0x80 && codePoint <= 0x9F) {
-            // Sequence decoded to a C1 control character which we ignore. They are
-            // not used nowadays and increases the risk of messing up the terminal state
-            // on binary input. XTerm does not allow them in utf-8:
-            // "It is not possible to use a C1 control obtained from decoding the
-            // UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
-          } else {
-            switch (Character.getType(codePoint)) {
-              case Character.UNASSIGNED:
-              case Character.SURROGATE:
-                codePoint = UNICODE_REPLACEMENT_CHAR;
-            }
-            processCodePoint(codePoint);
-          }
-        }
-      } else {
-        // Not a UTF-8 continuation byte so replace the entire sequence up to now with the
-        // replacement char:
-        mUtf8Index = mUtf8ToFollow = 0;
-        emitCodePoint(UNICODE_REPLACEMENT_CHAR);
-        // The Unicode Standard Version 6.2 – Core Specification
-        // (http://www.unicode.org/versions/Unicode6.2.0/ch03.pdf):
-        // "If the converter encounters an ill-formed UTF-8 code unit sequence which starts
-        // with a
-        // valid first
-        // byte, but which does not continue with valid successor bytes (see Table 3-7), it
-        // must not
-        // consume the
-        // successor bytes as part of the ill-formed subsequence
-        // whenever those successor bytes themselves constitute part of a well-formed UTF-8
-        // code
-        // unit
-        // subsequence."
-        processByte(byteToProcess);
-      }
-    } else {
-      if ((byteToProcess & 0b10000000)
-          == 0) { // The leading bit is not set so it is a 7-bit ASCII character.
-        processCodePoint(byteToProcess);
-        return;
-      } else if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
-        mUtf8ToFollow = 1;
-      } else if ((byteToProcess & 0b11110000) == 0b11100000) { // 1110xxxx, a three-byte sequence.
-        mUtf8ToFollow = 2;
-      } else if ((byteToProcess & 0b11111000) == 0b11110000) { // 11110xxx, a four-byte sequence.
-        mUtf8ToFollow = 3;
-      } else {
-        // Not a valid UTF-8 sequence start, signal invalid data:
-        processCodePoint(UNICODE_REPLACEMENT_CHAR);
-        return;
-      }
-      mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
-    }
   }
 
   public void processCodePoint(int b) {
@@ -999,6 +876,309 @@ public final class TerminalEmulator {
     }
   }
 
+  public void doDecSetOrReset(boolean setting, int externalBit) {
+    int internalBit = mapDecSetBitToInternalBit(externalBit);
+    if (internalBit != -1) {
+      setDecsetinternalBit(internalBit, setting);
+    }
+    switch (externalBit) {
+      case 1: // Application Cursor Keys (DECCKM).
+        break;
+      case 3: // Set: 132 column mode (. Reset: 80 column mode. ANSI name: DECCOLM.
+        // We don't actually set/reset 132 cols, but we do want the side effects
+        // (FIXME: Should only do this if the 95 DECSET bit (DECNCSM) is set, and if
+        // changing
+        // value?):
+        // Sets the left, right, top and bottom scrolling margins to their default
+        // positions, which
+        // is important for
+        // the "reset" utility to really reset the terminal:
+        mLeftMargin = mTopMargin = 0;
+        mBottomMargin = mRows;
+        mRightMargin = mColumns;
+        // "DECCOLM resets vertical split screen mode (DECLRMM) to unavailable":
+        setDecsetinternalBit(DECSET_BIT_LEFTRIGHT_MARGIN_MODE, false);
+        // "Erases all data in page memory":
+        blockClear(0, 0, mColumns, mRows);
+        setCursorRowCol(0, 0);
+        break;
+      case 4: // DECSCLM-Scrolling Mode. Ignore.
+        break;
+      case 5: // Reverse video. No action.
+        break;
+      case 6: // Set: Origin Mode. Reset: Normal Cursor Mode. Ansi name: DECOM.
+        if (setting) setCursorPosition(0, 0);
+        break;
+      case 7: // Wrap-around bit, not specific action.
+      case 8: // Auto-repeat Keys (DECARM). Do not implement.
+      case 9: // X10 mouse reporting - outdated. Do not implement.
+      case 12: // Control cursor blinking - ignore.
+      case 25: // Hide/show cursor - no action needed, renderer will check with
+        // shouldCursorBeVisible().
+        if (mClient != null) mClient.onTerminalCursorStateChange(setting);
+        break;
+      case 40: // Allow 80 => 132 Mode, ignore.
+      case 45: // TODO: Reverse wrap-around. Implement???
+      case 66: // Application keypad (DECNKM).
+        break;
+      case 69: // Left and right margin mode (DECLRMM).
+        if (!setting) {
+          mLeftMargin = 0;
+          mRightMargin = mColumns;
+        }
+        break;
+      case 1000:
+      case 1001:
+      case 1002:
+      case 1003:
+      case 1004:
+      case 1005: // UTF-8 mouse mode, ignore.
+      case 1006: // SGR Mouse Mode
+      case 1015:
+      case 1034: // Interpret "meta" key, sets eighth bit.
+        break;
+      case 1048: // Set: Save cursor as in DECSC. Reset: Restore cursor as in DECRC.
+        if (setting) saveCursor();
+        else restoreCursor();
+        break;
+      case 47:
+      case 1047:
+      case 1049:
+        {
+          // Set: Save cursor as in DECSC and use Alternate Screen Buffer, clearing it
+          // first.
+          // Reset: Use Normal Screen Buffer and restore cursor as in DECRC.
+          TerminalBuffer newScreen = setting ? mAltBuffer : mMainBuffer;
+          if (newScreen != mScreen) {
+            boolean resized = !(newScreen.mColumns == mColumns && newScreen.mScreenRows == mRows);
+            if (setting) saveCursor();
+            mScreen = newScreen;
+            if (!setting) {
+              int col = mSavedStateMain.mSavedCursorCol;
+              int row = mSavedStateMain.mSavedCursorRow;
+              restoreCursor();
+              if (resized) {
+                // Restore cursor position _not_ clipped to current screen (let
+                // resizeScreen()
+                // handle that):
+                mCursorCol = col;
+                mCursorRow = row;
+              }
+            }
+            // Check if buffer size needs to be updated:
+            if (resized) resizeScreen();
+            // Clear new screen if alt buffer:
+            if (newScreen == mAltBuffer) newScreen.blockSet(0, 0, mColumns, mRows, ' ', getStyle());
+          }
+          break;
+        }
+      case 2004:
+        // Bracketed paste mode - setting bit is enough.
+        break;
+      default:
+        unknownParameter(externalBit);
+        break;
+    }
+  }
+
+  public int getScrollCounter() {
+    return mScrollCounter;
+  }
+
+  public void clearScrollCounter() {
+    mScrollCounter = 0;
+  }
+
+  /** Reset terminal state so user can interact with it regardless of present state. */
+  public void reset() {
+    setCursorStyle();
+    mArgIndex = 0;
+    mContinueSequence = false;
+    mEscapeState = ESC_NONE;
+    mInsertMode = false;
+    mTopMargin = mLeftMargin = 0;
+    mBottomMargin = mRows;
+    mRightMargin = mColumns;
+    mAboutToAutoWrap = false;
+    mForeColor =
+        mSavedStateMain.mSavedForeColor =
+            mSavedStateAlt.mSavedForeColor = TextStyle.COLOR_INDEX_FOREGROUND;
+    mBackColor =
+        mSavedStateMain.mSavedBackColor =
+            mSavedStateAlt.mSavedBackColor = TextStyle.COLOR_INDEX_BACKGROUND;
+    setDefaultTabStops();
+
+    mUseLineDrawingG0 = mUseLineDrawingG1 = false;
+    mUseLineDrawingUsesG0 = true;
+
+    mSavedStateMain.mSavedCursorRow =
+        mSavedStateMain.mSavedCursorCol =
+            mSavedStateMain.mSavedEffect = mSavedStateMain.mSavedDecFlags = 0;
+    mSavedStateAlt.mSavedCursorRow =
+        mSavedStateAlt.mSavedCursorCol =
+            mSavedStateAlt.mSavedEffect = mSavedStateAlt.mSavedDecFlags = 0;
+    mCurrentDecSetFlags = 0;
+    // Initial wrap-around is not accurate but makes terminal more useful, especially on a small
+    // screen:
+    setDecsetinternalBit(DECSET_BIT_AUTOWRAP, true);
+    setDecsetinternalBit(DECSET_BIT_CURSOR_ENABLED, true);
+    mSavedDecSetFlags =
+        mSavedStateMain.mSavedDecFlags = mSavedStateAlt.mSavedDecFlags = mCurrentDecSetFlags;
+
+    // XXX: Should we set terminal driver back to IUTF8 with termios?
+    mUtf8Index = mUtf8ToFollow = 0;
+
+    mColors.reset();
+    mSession.onColorsChanged();
+  }
+
+  public String getSelectedText(int x1, int y1, int x2, int y2) {
+    return mScreen.getSelectedText(x1, y1, x2, y2);
+  }
+
+  /** Get the terminal session's title (null if not set). */
+  public String getTitle() {
+    return mTitle;
+  }
+
+  /** Change the terminal session's title. */
+  private void setTitle(String newTitle) {
+    String oldTitle = mTitle;
+    mTitle = newTitle;
+    if (!Objects.equals(oldTitle, newTitle)) {
+      mSession.titleChanged(oldTitle, newTitle);
+    }
+  }
+
+  /** If DECSET 2004 is set, prefix paste with "\033[200~" and suffix with "\033[201~". */
+  public void paste(String text) {
+    // First: Always remove escape key and C1 control characters [0x80,0x9F]:
+    text = text.replaceAll("(\u001B|[\u0080-\u009F])", "");
+    // Second: Replace all newlines (\n) or CRLF (\r\n) with carriage returns (\r).
+    text = text.replaceAll("\r?\n", "\r");
+
+    // Then: Implement bracketed paste mode if enabled:
+    boolean bracketed = isDecsetInternalBitSet(DECSET_BIT_BRACKETED_PASTE_MODE);
+    if (bracketed) mSession.write("\033[200~");
+    mSession.write(text);
+    if (bracketed) mSession.write("\033[201~");
+  }
+
+  @Override
+  public String toString() {
+    return "TerminalEmulator[size="
+        + mScreen.mColumns
+        + "x"
+        + mScreen.mScreenRows
+        + ", margins={"
+        + mTopMargin
+        + ","
+        + mRightMargin
+        + ","
+        + mBottomMargin
+        + ","
+        + mLeftMargin
+        + "}]";
+  }
+
+  private void setDecsetinternalBit(int internalBit, boolean set) {
+    if (set) {
+      // The mouse modes are mutually exclusive.
+      if (internalBit == DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE) {
+        setDecsetinternalBit(DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT, false);
+      } else if (internalBit == DECSET_BIT_MOUSE_TRACKING_BUTTON_EVENT) {
+        setDecsetinternalBit(DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE, false);
+      }
+    }
+    if (set) {
+      mCurrentDecSetFlags |= internalBit;
+    } else {
+      mCurrentDecSetFlags &= ~internalBit;
+    }
+  }
+
+  private int getTerminalTranscriptRows(Integer transcriptRows) {
+    if (transcriptRows == null
+        || transcriptRows < TERMINAL_TRANSCRIPT_ROWS_MIN
+        || transcriptRows > TERMINAL_TRANSCRIPT_ROWS_MAX) return DEFAULT_TERMINAL_TRANSCRIPT_ROWS;
+    else return transcriptRows;
+  }
+
+  private void processByte(byte byteToProcess) {
+    if (mUtf8ToFollow > 0) {
+      if ((byteToProcess & 0b11000000) == 0b10000000) {
+        // 10xxxxxx, a continuation byte.
+        mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
+        if (--mUtf8ToFollow == 0) {
+          byte firstByteMask =
+              (byte) (mUtf8Index == 2 ? 0b00011111 : (mUtf8Index == 3 ? 0b00001111 : 0b00000111));
+          int codePoint = (mUtf8InputBuffer[0] & firstByteMask);
+          for (int i = 1; i < mUtf8Index; i++)
+            codePoint = ((codePoint << 6) | (mUtf8InputBuffer[i] & 0b00111111));
+          if (((codePoint <= 0b1111111) && mUtf8Index > 1)
+              || (codePoint < 0b11111111111 && mUtf8Index > 2)
+              || (codePoint < 0b1111111111111111 && mUtf8Index > 3)) {
+            // Overlong encoding.
+            codePoint = UNICODE_REPLACEMENT_CHAR;
+          }
+
+          mUtf8Index = mUtf8ToFollow = 0;
+
+          if (codePoint >= 0x80 && codePoint <= 0x9F) {
+            // Sequence decoded to a C1 control character which we ignore. They are
+            // not used nowadays and increases the risk of messing up the terminal state
+            // on binary input. XTerm does not allow them in utf-8:
+            // "It is not possible to use a C1 control obtained from decoding the
+            // UTF-8 text" - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+          } else {
+            switch (Character.getType(codePoint)) {
+              case Character.UNASSIGNED:
+              case Character.SURROGATE:
+                codePoint = UNICODE_REPLACEMENT_CHAR;
+            }
+            processCodePoint(codePoint);
+          }
+        }
+      } else {
+        // Not a UTF-8 continuation byte so replace the entire sequence up to now with the
+        // replacement char:
+        mUtf8Index = mUtf8ToFollow = 0;
+        emitCodePoint(UNICODE_REPLACEMENT_CHAR);
+        // The Unicode Standard Version 6.2 – Core Specification
+        // (http://www.unicode.org/versions/Unicode6.2.0/ch03.pdf):
+        // "If the converter encounters an ill-formed UTF-8 code unit sequence which starts
+        // with a
+        // valid first
+        // byte, but which does not continue with valid successor bytes (see Table 3-7), it
+        // must not
+        // consume the
+        // successor bytes as part of the ill-formed subsequence
+        // whenever those successor bytes themselves constitute part of a well-formed UTF-8
+        // code
+        // unit
+        // subsequence."
+        processByte(byteToProcess);
+      }
+    } else {
+      if ((byteToProcess & 0b10000000)
+          == 0) { // The leading bit is not set so it is a 7-bit ASCII character.
+        processCodePoint(byteToProcess);
+        return;
+      } else if ((byteToProcess & 0b11100000) == 0b11000000) { // 110xxxxx, a two-byte sequence.
+        mUtf8ToFollow = 1;
+      } else if ((byteToProcess & 0b11110000) == 0b11100000) { // 1110xxxx, a three-byte sequence.
+        mUtf8ToFollow = 2;
+      } else if ((byteToProcess & 0b11111000) == 0b11110000) { // 11110xxx, a four-byte sequence.
+        mUtf8ToFollow = 3;
+      } else {
+        // Not a valid UTF-8 sequence start, signal invalid data:
+        processCodePoint(UNICODE_REPLACEMENT_CHAR);
+        return;
+      }
+      mUtf8InputBuffer[mUtf8Index++] = byteToProcess;
+    }
+  }
+
   /** When in {@link #ESC_P} ("device control") sequence. */
   private void doDeviceControl(int b) {
     switch (b) {
@@ -1233,111 +1413,6 @@ public final class TerminalEmulator {
         return;
       default:
         parseArg(b);
-    }
-  }
-
-  public void doDecSetOrReset(boolean setting, int externalBit) {
-    int internalBit = mapDecSetBitToInternalBit(externalBit);
-    if (internalBit != -1) {
-      setDecsetinternalBit(internalBit, setting);
-    }
-    switch (externalBit) {
-      case 1: // Application Cursor Keys (DECCKM).
-        break;
-      case 3: // Set: 132 column mode (. Reset: 80 column mode. ANSI name: DECCOLM.
-        // We don't actually set/reset 132 cols, but we do want the side effects
-        // (FIXME: Should only do this if the 95 DECSET bit (DECNCSM) is set, and if
-        // changing
-        // value?):
-        // Sets the left, right, top and bottom scrolling margins to their default
-        // positions, which
-        // is important for
-        // the "reset" utility to really reset the terminal:
-        mLeftMargin = mTopMargin = 0;
-        mBottomMargin = mRows;
-        mRightMargin = mColumns;
-        // "DECCOLM resets vertical split screen mode (DECLRMM) to unavailable":
-        setDecsetinternalBit(DECSET_BIT_LEFTRIGHT_MARGIN_MODE, false);
-        // "Erases all data in page memory":
-        blockClear(0, 0, mColumns, mRows);
-        setCursorRowCol(0, 0);
-        break;
-      case 4: // DECSCLM-Scrolling Mode. Ignore.
-        break;
-      case 5: // Reverse video. No action.
-        break;
-      case 6: // Set: Origin Mode. Reset: Normal Cursor Mode. Ansi name: DECOM.
-        if (setting) setCursorPosition(0, 0);
-        break;
-      case 7: // Wrap-around bit, not specific action.
-      case 8: // Auto-repeat Keys (DECARM). Do not implement.
-      case 9: // X10 mouse reporting - outdated. Do not implement.
-      case 12: // Control cursor blinking - ignore.
-      case 25: // Hide/show cursor - no action needed, renderer will check with
-        // shouldCursorBeVisible().
-        if (mClient != null) mClient.onTerminalCursorStateChange(setting);
-        break;
-      case 40: // Allow 80 => 132 Mode, ignore.
-      case 45: // TODO: Reverse wrap-around. Implement???
-      case 66: // Application keypad (DECNKM).
-        break;
-      case 69: // Left and right margin mode (DECLRMM).
-        if (!setting) {
-          mLeftMargin = 0;
-          mRightMargin = mColumns;
-        }
-        break;
-      case 1000:
-      case 1001:
-      case 1002:
-      case 1003:
-      case 1004:
-      case 1005: // UTF-8 mouse mode, ignore.
-      case 1006: // SGR Mouse Mode
-      case 1015:
-      case 1034: // Interpret "meta" key, sets eighth bit.
-        break;
-      case 1048: // Set: Save cursor as in DECSC. Reset: Restore cursor as in DECRC.
-        if (setting) saveCursor();
-        else restoreCursor();
-        break;
-      case 47:
-      case 1047:
-      case 1049:
-        {
-          // Set: Save cursor as in DECSC and use Alternate Screen Buffer, clearing it
-          // first.
-          // Reset: Use Normal Screen Buffer and restore cursor as in DECRC.
-          TerminalBuffer newScreen = setting ? mAltBuffer : mMainBuffer;
-          if (newScreen != mScreen) {
-            boolean resized = !(newScreen.mColumns == mColumns && newScreen.mScreenRows == mRows);
-            if (setting) saveCursor();
-            mScreen = newScreen;
-            if (!setting) {
-              int col = mSavedStateMain.mSavedCursorCol;
-              int row = mSavedStateMain.mSavedCursorRow;
-              restoreCursor();
-              if (resized) {
-                // Restore cursor position _not_ clipped to current screen (let
-                // resizeScreen()
-                // handle that):
-                mCursorCol = col;
-                mCursorRow = row;
-              }
-            }
-            // Check if buffer size needs to be updated:
-            if (resized) resizeScreen();
-            // Clear new screen if alt buffer:
-            if (newScreen == mAltBuffer) newScreen.blockSet(0, 0, mColumns, mRows, ' ', getStyle());
-          }
-          break;
-        }
-      case 2004:
-        // Bracketed paste mode - setting bit is enough.
-        break;
-      default:
-        unknownParameter(externalBit);
-        break;
     }
   }
 
@@ -2356,10 +2431,6 @@ public final class TerminalEmulator {
     mScreen.blockSet(sx, sy, w, h, ' ', getStyle());
   }
 
-  private long getStyle() {
-    return TextStyle.encode(mForeColor, mBackColor, mEffect);
-  }
-
   /** "CSI P_m h" for set or "CSI P_m l" for reset ANSI mode. */
   private void doSetMode(boolean newValue) {
     int modeBit = getArg0(0);
@@ -2666,16 +2737,6 @@ public final class TerminalEmulator {
     mCursorCol = Math.min(mCursorCol + displayWidth, mRightMargin - 1);
   }
 
-  private void setCursorRow(int row) {
-    mCursorRow = row;
-    mAboutToAutoWrap = false;
-  }
-
-  private void setCursorCol(int col) {
-    mCursorCol = col;
-    mAboutToAutoWrap = false;
-  }
-
   /** Set the cursor mode, but limit it to margins if {@link #DECSET_BIT_ORIGIN_MODE} is enabled. */
   private void setCursorColRespectingOriginMode(int col) {
     setCursorPosition(col, mCursorRow);
@@ -2691,89 +2752,6 @@ public final class TerminalEmulator {
     mAboutToAutoWrap = false;
   }
 
-  public int getScrollCounter() {
-    return mScrollCounter;
-  }
-
-  public void clearScrollCounter() {
-    mScrollCounter = 0;
-  }
-
-  /** Reset terminal state so user can interact with it regardless of present state. */
-  public void reset() {
-    setCursorStyle();
-    mArgIndex = 0;
-    mContinueSequence = false;
-    mEscapeState = ESC_NONE;
-    mInsertMode = false;
-    mTopMargin = mLeftMargin = 0;
-    mBottomMargin = mRows;
-    mRightMargin = mColumns;
-    mAboutToAutoWrap = false;
-    mForeColor =
-        mSavedStateMain.mSavedForeColor =
-            mSavedStateAlt.mSavedForeColor = TextStyle.COLOR_INDEX_FOREGROUND;
-    mBackColor =
-        mSavedStateMain.mSavedBackColor =
-            mSavedStateAlt.mSavedBackColor = TextStyle.COLOR_INDEX_BACKGROUND;
-    setDefaultTabStops();
-
-    mUseLineDrawingG0 = mUseLineDrawingG1 = false;
-    mUseLineDrawingUsesG0 = true;
-
-    mSavedStateMain.mSavedCursorRow =
-        mSavedStateMain.mSavedCursorCol =
-            mSavedStateMain.mSavedEffect = mSavedStateMain.mSavedDecFlags = 0;
-    mSavedStateAlt.mSavedCursorRow =
-        mSavedStateAlt.mSavedCursorCol =
-            mSavedStateAlt.mSavedEffect = mSavedStateAlt.mSavedDecFlags = 0;
-    mCurrentDecSetFlags = 0;
-    // Initial wrap-around is not accurate but makes terminal more useful, especially on a small
-    // screen:
-    setDecsetinternalBit(DECSET_BIT_AUTOWRAP, true);
-    setDecsetinternalBit(DECSET_BIT_CURSOR_ENABLED, true);
-    mSavedDecSetFlags =
-        mSavedStateMain.mSavedDecFlags = mSavedStateAlt.mSavedDecFlags = mCurrentDecSetFlags;
-
-    // XXX: Should we set terminal driver back to IUTF8 with termios?
-    mUtf8Index = mUtf8ToFollow = 0;
-
-    mColors.reset();
-    mSession.onColorsChanged();
-  }
-
-  public String getSelectedText(int x1, int y1, int x2, int y2) {
-    return mScreen.getSelectedText(x1, y1, x2, y2);
-  }
-
-  /** Get the terminal session's title (null if not set). */
-  public String getTitle() {
-    return mTitle;
-  }
-
-  /** Change the terminal session's title. */
-  private void setTitle(String newTitle) {
-    String oldTitle = mTitle;
-    mTitle = newTitle;
-    if (!Objects.equals(oldTitle, newTitle)) {
-      mSession.titleChanged(oldTitle, newTitle);
-    }
-  }
-
-  /** If DECSET 2004 is set, prefix paste with "\033[200~" and suffix with "\033[201~". */
-  public void paste(String text) {
-    // First: Always remove escape key and C1 control characters [0x80,0x9F]:
-    text = text.replaceAll("(\u001B|[\u0080-\u009F])", "");
-    // Second: Replace all newlines (\n) or CRLF (\r\n) with carriage returns (\r).
-    text = text.replaceAll("\r?\n", "\r");
-
-    // Then: Implement bracketed paste mode if enabled:
-    boolean bracketed = isDecsetInternalBitSet(DECSET_BIT_BRACKETED_PASTE_MODE);
-    if (bracketed) mSession.write("\033[200~");
-    mSession.write(text);
-    if (bracketed) mSession.write("\033[201~");
-  }
-
   /** http://www.vt100.net/docs/vt510-rm/DECSC */
   static final class SavedScreenState {
     /**
@@ -2785,22 +2763,5 @@ public final class TerminalEmulator {
     int mSavedEffect, mSavedForeColor, mSavedBackColor;
     int mSavedDecFlags;
     boolean mUseLineDrawingG0, mUseLineDrawingG1, mUseLineDrawingUsesG0 = true;
-  }
-
-  @Override
-  public String toString() {
-    return "TerminalEmulator[size="
-        + mScreen.mColumns
-        + "x"
-        + mScreen.mScreenRows
-        + ", margins={"
-        + mTopMargin
-        + ","
-        + mRightMargin
-        + ","
-        + mBottomMargin
-        + ","
-        + mLeftMargin
-        + "}]";
   }
 }

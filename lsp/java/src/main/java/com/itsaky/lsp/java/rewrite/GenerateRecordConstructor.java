@@ -113,14 +113,6 @@ public class GenerateRecordConstructor extends Rewrite {
     return join.toString();
   }
 
-  private String generateInitializers(List<VariableTree> fields) {
-    StringJoiner join = new StringJoiner("\n    ");
-    for (VariableTree f : fields) {
-      join.add("this." + f.getName() + " = " + f.getName() + ";");
-    }
-    return join.toString();
-  }
-
   private CharSequence extract(CompileTask task, Tree typeTree) {
     try {
       CharSequence contents = task.root().getSourceFile().getCharContent(true);
@@ -131,6 +123,14 @@ public class GenerateRecordConstructor extends Rewrite {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private String generateInitializers(List<VariableTree> fields) {
+    StringJoiner join = new StringJoiner("\n    ");
+    for (VariableTree f : fields) {
+      join.add("this." + f.getName() + " = " + f.getName() + ";");
+    }
+    return join.toString();
   }
 
   private String simpleName(String className) {

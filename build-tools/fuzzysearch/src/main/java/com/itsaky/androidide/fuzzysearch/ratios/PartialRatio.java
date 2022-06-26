@@ -3,11 +3,11 @@ package com.itsaky.androidide.fuzzysearch.ratios;
 import com.itsaky.androidide.diffutils.DiffUtils;
 import com.itsaky.androidide.diffutils.structs.MatchingBlock;
 import com.itsaky.androidide.fuzzysearch.Ratio;
+import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 /** Partial ratio of similarity */
 public class PartialRatio implements Ratio {

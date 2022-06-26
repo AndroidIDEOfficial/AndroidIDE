@@ -32,41 +32,42 @@ import java.util.List;
  */
 public class IdeProjectModelBuilder implements ToolingModelBuilder {
 
-    @Override
-    public boolean canBuild(String s) {
-        return IdeProject.class.getName().equals(s);
-    }
+  @Override
+  public boolean canBuild(String s) {
+    return IdeProject.class.getName().equals(s);
+  }
 
-    @Override
-    public Object buildAll(String s, Project project) {
-        final var ideProject = new DefaultIdeProject();
-        fillProjectDetails(project, ideProject);
-        return ideProject;
-    }
+  @Override
+  public Object buildAll(String s, Project project) {
+    final var ideProject = new DefaultIdeProject();
+    fillProjectDetails(project, ideProject);
+    return ideProject;
+  }
 
-    private void fillProjectDetails(Project project, DefaultIdeProject ideProject) {
-        ideProject.setPath(project.getPath());
-        ideProject.setDisplayName(project.getDisplayName());
-        ideProject.setProjectDir(project.getProjectDir());
-        ideProject.setBuildDir(project.getBuildDir());
-        ideProject.setBuildFile(project.getBuildFile());
-        ideProject.setDependencies(getDependencies(project));
-        ideProject.setSubProjects(getSubProjects(project));
-    }
+  private void fillProjectDetails(Project project, DefaultIdeProject ideProject) {
+    ideProject.setPath(project.getPath());
+    ideProject.setDisplayName(project.getDisplayName());
+    ideProject.setProjectDir(project.getProjectDir());
+    ideProject.setBuildDir(project.getBuildDir());
+    ideProject.setBuildFile(project.getBuildFile());
+    ideProject.setDependencies(getDependencies(project));
+    ideProject.setSubProjects(getSubProjects(project));
+  }
 
-    private List<ProjectDependency> getDependencies(Project project) {
-        return null;
-    }
+  private List<ProjectDependency> getDependencies(Project project) {
+    return null;
+  }
 
-    private List<IdeProject> getSubProjects(Project project) {
-        final var projects = new ArrayList<IdeProject>();
-        project.getSubprojects()
-                .forEach(
-                        sub -> {
-                            final var subProject = new DefaultIdeProject();
-                            fillProjectDetails(sub, subProject);
-                            projects.add(subProject);
-                        });
-        return projects;
-    }
+  private List<IdeProject> getSubProjects(Project project) {
+    final var projects = new ArrayList<IdeProject>();
+    project
+        .getSubprojects()
+        .forEach(
+            sub -> {
+              final var subProject = new DefaultIdeProject();
+              fillProjectDetails(sub, subProject);
+              projects.add(subProject);
+            });
+    return projects;
+  }
 }

@@ -28,11 +28,6 @@ public class CancelParams {
     return null;
   }
 
-  @NonNull
-  public Either<String, Number> getRawId() {
-    return id;
-  }
-
   public void setId(@NonNull String id) {
     this.id = Either.forLeft(id);
   }
@@ -41,13 +36,21 @@ public class CancelParams {
     this.id = Either.forRight(id);
   }
 
+  @NonNull
+  public Either<String, Number> getRawId() {
+    return id;
+  }
+
   public void setRawId(@NonNull Either<String, Number> id) {
     this.id = id;
   }
 
   @Override
-  public String toString() {
-    return MessageJsonHandler.toString(this);
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+    return result;
   }
 
   @Override
@@ -63,10 +66,7 @@ public class CancelParams {
   }
 
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-    return result;
+  public String toString() {
+    return MessageJsonHandler.toString(this);
   }
 }

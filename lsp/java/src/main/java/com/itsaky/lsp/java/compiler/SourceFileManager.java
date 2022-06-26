@@ -40,6 +40,8 @@ import javax.tools.StandardLocation;
 
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
+  private static final Logger LOG = Logger.getLogger("main");
+
   public SourceFileManager() {
     super(createDelegateFileManager());
   }
@@ -139,6 +141,4 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
       throws IOException {
     fileManager.setLocationFromPaths(location, searchpath);
   }
-
-  private static final Logger LOG = Logger.getLogger("main");
 }

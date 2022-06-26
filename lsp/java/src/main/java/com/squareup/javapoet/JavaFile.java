@@ -81,29 +81,10 @@ public final class JavaFile {
     this.alwaysQualify = Util.immutableSet(alwaysQualifiedNames);
   }
 
-  private void fillAlwaysQualifiedNames(TypeSpec spec, Set<String> alwaysQualifiedNames) {
-    alwaysQualifiedNames.addAll(spec.alwaysQualifiedNames);
-    for (TypeSpec nested : spec.typeSpecs) {
-      fillAlwaysQualifiedNames(nested, alwaysQualifiedNames);
-    }
-  }
-
-  public void writeTo(Appendable out) throws IOException {
-    // First pass: emit the entire class, just to collect the types we'll need to import.
-    CodeWriter importsCollector =
-        new CodeWriter(NULL_APPENDABLE, indent, staticImports, alwaysQualify);
-    emit(importsCollector);
-    Map<String, ClassName> suggestedImports = importsCollector.suggestedImports();
-
-    // Second pass: write the code, taking advantage of the imports.
-    CodeWriter codeWriter =
-        new CodeWriter(out, indent, suggestedImports, staticImports, alwaysQualify);
-    emit(codeWriter);
-  }
-
-  /** Writes this to {@code directory} as UTF-8 using the standard directory structure. */
-  public void writeTo(Path directory) throws IOException {
-    writeToPath(directory);
+  public static Builder builder(String packageName, TypeSpec typeSpec) {
+    checkNotNull(packageName, "packageName == null");
+    checkNotNull(typeSpec, "typeSpec == null");
+    return new Builder(packageName, typeSpec);
   }
 
   /**
@@ -112,14 +93,6 @@ public final class JavaFile {
    */
   public void writeTo(Path directory, Charset charset) throws IOException {
     writeToPath(directory, charset);
-  }
-
-  /**
-   * Writes this to {@code directory} as UTF-8 using the standard directory structure. Returns the
-   * {@link Path} instance to which source is actually written.
-   */
-  public Path writeToPath(Path directory) throws IOException {
-    return writeToPath(directory, UTF_8);
   }
 
   /**
@@ -147,18 +120,17 @@ public final class JavaFile {
     return outputPath;
   }
 
-  /** Writes this to {@code directory} as UTF-8 using the standard directory structure. */
-  public void writeTo(File directory) throws IOException {
-    writeTo(directory.toPath());
-  }
+  public void writeTo(Appendable out) throws IOException {
+    // First pass: emit the entire class, just to collect the types we'll need to import.
+    CodeWriter importsCollector =
+        new CodeWriter(NULL_APPENDABLE, indent, staticImports, alwaysQualify);
+    emit(importsCollector);
+    Map<String, ClassName> suggestedImports = importsCollector.suggestedImports();
 
-  /**
-   * Writes this to {@code directory} as UTF-8 using the standard directory structure. Returns the
-   * {@link File} instance to which source is actually written.
-   */
-  public File writeToFile(File directory) throws IOException {
-    final Path outputPath = writeToPath(directory.toPath());
-    return outputPath.toFile();
+    // Second pass: write the code, taking advantage of the imports.
+    CodeWriter codeWriter =
+        new CodeWriter(out, indent, suggestedImports, staticImports, alwaysQualify);
+    emit(codeWriter);
   }
 
   private void emit(CodeWriter codeWriter) throws IOException {
@@ -201,17 +173,44 @@ public final class JavaFile {
     codeWriter.popPackage();
   }
 
+  /** Writes this to {@code directory} as UTF-8 using the standard directory structure. */
+  public void writeTo(File directory) throws IOException {
+    writeTo(directory.toPath());
+  }
+
+  /** Writes this to {@code directory} as UTF-8 using the standard directory structure. */
+  public void writeTo(Path directory) throws IOException {
+    writeToPath(directory);
+  }
+
+  /**
+   * Writes this to {@code directory} as UTF-8 using the standard directory structure. Returns the
+   * {@link Path} instance to which source is actually written.
+   */
+  public Path writeToPath(Path directory) throws IOException {
+    return writeToPath(directory, UTF_8);
+  }
+
+  /**
+   * Writes this to {@code directory} as UTF-8 using the standard directory structure. Returns the
+   * {@link File} instance to which source is actually written.
+   */
+  public File writeToFile(File directory) throws IOException {
+    final Path outputPath = writeToPath(directory.toPath());
+    return outputPath.toFile();
+  }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return toString().hashCode();
   }
 
   @Override
@@ -236,13 +235,13 @@ public final class JavaFile {
       private final long lastModified = System.currentTimeMillis();
 
       @Override
-      public String getCharContent(boolean ignoreEncodingErrors) {
-        return JavaFile.this.toString();
+      public InputStream openInputStream() throws IOException {
+        return new ByteArrayInputStream(getCharContent(true).getBytes(UTF_8));
       }
 
       @Override
-      public InputStream openInputStream() throws IOException {
-        return new ByteArrayInputStream(getCharContent(true).getBytes(UTF_8));
+      public String getCharContent(boolean ignoreEncodingErrors) {
+        return JavaFile.this.toString();
       }
 
       @Override
@@ -250,12 +249,6 @@ public final class JavaFile {
         return lastModified;
       }
     };
-  }
-
-  public static Builder builder(String packageName, TypeSpec typeSpec) {
-    checkNotNull(packageName, "packageName == null");
-    checkNotNull(typeSpec, "typeSpec == null");
-    return new Builder(packageName, typeSpec);
   }
 
   public Builder toBuilder() {
@@ -266,14 +259,20 @@ public final class JavaFile {
     return builder;
   }
 
+  private void fillAlwaysQualifiedNames(TypeSpec spec, Set<String> alwaysQualifiedNames) {
+    alwaysQualifiedNames.addAll(spec.alwaysQualifiedNames);
+    for (TypeSpec nested : spec.typeSpecs) {
+      fillAlwaysQualifiedNames(nested, alwaysQualifiedNames);
+    }
+  }
+
   public static final class Builder {
+    public final Set<String> staticImports = new TreeSet<>();
     private final String packageName;
     private final TypeSpec typeSpec;
     private final CodeBlock.Builder fileComment = CodeBlock.builder();
     private boolean skipJavaLangImports;
     private String indent = "  ";
-
-    public final Set<String> staticImports = new TreeSet<>();
 
     private Builder(String packageName, TypeSpec typeSpec) {
       this.packageName = packageName;
@@ -289,10 +288,6 @@ public final class JavaFile {
       return addStaticImport(ClassName.get(constant.getDeclaringClass()), constant.name());
     }
 
-    public Builder addStaticImport(Class<?> clazz, String... names) {
-      return addStaticImport(ClassName.get(clazz), names);
-    }
-
     public Builder addStaticImport(ClassName className, String... names) {
       checkArgument(className != null, "className == null");
       checkArgument(names != null, "names == null");
@@ -302,6 +297,10 @@ public final class JavaFile {
         staticImports.add(className.canonicalName + "." + name);
       }
       return this;
+    }
+
+    public Builder addStaticImport(Class<?> clazz, String... names) {
+      return addStaticImport(ClassName.get(clazz), names);
     }
 
     /**

@@ -29,30 +29,21 @@ import com.google.errorprone.annotations.Immutable;
 @Immutable
 public class JavaFormatterOptions {
 
-  public enum Style {
-    /** The default Google Java Style configuration. */
-    GOOGLE(1),
-
-    /** The AOSP-compliant configuration. */
-    AOSP(2);
-
-    private final int indentationMultiplier;
-
-    Style(int indentationMultiplier) {
-      this.indentationMultiplier = indentationMultiplier;
-    }
-
-    int indentationMultiplier() {
-      return indentationMultiplier;
-    }
-  }
-
   private final Style style;
   private final boolean formatJavadoc;
-
   private JavaFormatterOptions(Style style, boolean formatJavadoc) {
     this.style = style;
     this.formatJavadoc = formatJavadoc;
+  }
+
+  /** Returns the default formatting options. */
+  public static JavaFormatterOptions defaultOptions() {
+    return builder().build();
+  }
+
+  /** Returns a builder for {@link JavaFormatterOptions}. */
+  public static Builder builder() {
+    return new Builder();
   }
 
   /** Returns the multiplier for the unit of indent. */
@@ -69,14 +60,22 @@ public class JavaFormatterOptions {
     return style;
   }
 
-  /** Returns the default formatting options. */
-  public static JavaFormatterOptions defaultOptions() {
-    return builder().build();
-  }
+  public enum Style {
+    /** The default Google Java Style configuration. */
+    GOOGLE(1),
 
-  /** Returns a builder for {@link JavaFormatterOptions}. */
-  public static Builder builder() {
-    return new Builder();
+    /** The AOSP-compliant configuration. */
+    AOSP(2);
+
+    private final int indentationMultiplier;
+
+    Style(int indentationMultiplier) {
+      this.indentationMultiplier = indentationMultiplier;
+    }
+
+    int indentationMultiplier() {
+      return indentationMultiplier;
+    }
   }
 
   /** A builder for {@link JavaFormatterOptions}. */

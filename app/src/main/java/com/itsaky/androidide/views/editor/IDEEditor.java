@@ -121,49 +121,6 @@ public class IDEEditor extends CodeEditor {
     getDiagnosticWindow().showDiagnostic(mLanguageClient.getDiagnosticAt(getFile(), line, column));
   }
 
-  /**
-   * Notify the language server that the content of this file has been changed.
-   *
-   * @param event The content change event.
-   */
-  private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (getFile() == null || mLanguageServer == null) {
-      return;
-    }
-
-    CompletableFuture.runAsync(
-        () -> {
-          final var documentHandler = mLanguageServer.getDocumentHandler();
-          final var file = getFile().toPath();
-          if (documentHandler.accepts(file)) {
-            documentHandler.onContentChange(
-                new DocumentChangeEvent(file, getText(), mFileVersion + 1));
-          }
-
-          checkForSignatureHelp(event);
-        });
-  }
-
-  public static int createInputFlags() {
-    var flags =
-        EditorInfo.TYPE_CLASS_TEXT
-            | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-            | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-    if (StudioApp.getInstance()
-        .getPrefManager()
-        .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
-      flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-    }
-
-    return flags;
-  }
-
-  @Nullable
-  private DiagnosticItem binarySearchDiagnostic(
-      @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
-    return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
-  }
-
   private DiagnosticWindow getDiagnosticWindow() {
     if (mDiagnosticWindow == null) {
       mDiagnosticWindow = new DiagnosticWindow(this);
@@ -221,6 +178,29 @@ public class IDEEditor extends CodeEditor {
                 }
               });
     }
+  }
+
+  /**
+   * Notify the language server that the content of this file has been changed.
+   *
+   * @param event The content change event.
+   */
+  private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
+    if (getFile() == null || mLanguageServer == null) {
+      return;
+    }
+
+    CompletableFuture.runAsync(
+        () -> {
+          final var documentHandler = mLanguageServer.getDocumentHandler();
+          final var file = getFile().toPath();
+          if (documentHandler.accepts(file)) {
+            documentHandler.onContentChange(
+                new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+          }
+
+          checkForSignatureHelp(event);
+        });
   }
 
   /**
@@ -290,6 +270,20 @@ public class IDEEditor extends CodeEditor {
     }
 
     return mSignatureHelpWindow;
+  }
+
+  public static int createInputFlags() {
+    var flags =
+        EditorInfo.TYPE_CLASS_TEXT
+            | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+            | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    if (StudioApp.getInstance()
+        .getPrefManager()
+        .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
+      flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    }
+
+    return flags;
   }
 
   /**
@@ -507,15 +501,6 @@ public class IDEEditor extends CodeEditor {
   }
 
   /**
-   * Dismisses the given dialog on the UI thread.
-   *
-   * @param dialog The dialog to dismiss.
-   */
-  private void dismissOnUiThread(@NonNull final Dialog dialog) {
-    ThreadUtils.runOnUiThread(dialog::dismiss);
-  }
-
-  /**
    * Checks if the given range is valid for this editor's text.
    *
    * @param range The range to check.
@@ -568,6 +553,15 @@ public class IDEEditor extends CodeEditor {
    */
   public boolean isValidColumn(int line, int column) {
     return column >= 0 && column < getText().getColumnCount(line);
+  }
+
+  /**
+   * Dismisses the given dialog on the UI thread.
+   *
+   * @param dialog The dialog to dismiss.
+   */
+  private void dismissOnUiThread(@NonNull final Dialog dialog) {
+    ThreadUtils.runOnUiThread(dialog::dismiss);
   }
 
   /**
@@ -849,5 +843,11 @@ public class IDEEditor extends CodeEditor {
     } else {
       LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
     }
+  }
+
+  @Nullable
+  private DiagnosticItem binarySearchDiagnostic(
+      @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
+    return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
   }
 }

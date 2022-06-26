@@ -27,23 +27,21 @@ import java.util.*
  * @author Akash Yadav
  */
 abstract class LoggingTest : BaseLanguageServerTest() {
-    companion object {
-        private var logListener: ReflectiveLogListener? = null
+  companion object {
+    private var logListener: ReflectiveLogListener? = null
 
-        init {
-            logListener = ReflectiveLogListener(LoggingTest::class.java)
-            ILogger.addLogListener(logListener)
-        }
-
-        @Suppress("unused")
-        @JvmStatic
-        fun log(priority: Priority, tag: String, message: String) {
-            System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", priority, tag, message)
-            println()
-        }
+    init {
+      logListener = ReflectiveLogListener(LoggingTest::class.java)
+      ILogger.addLogListener(logListener)
     }
 
-    @Suppress("PropertyName")
-    @JvmField
-    protected val LOG = ILogger.newInstance(javaClass.simpleName)
+    @Suppress("unused")
+    @JvmStatic
+    fun log(priority: Priority, tag: String, message: String) {
+      System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", priority, tag, message)
+      println()
+    }
+  }
+
+  @Suppress("PropertyName") @JvmField protected val LOG = ILogger.newInstance(javaClass.simpleName)
 }

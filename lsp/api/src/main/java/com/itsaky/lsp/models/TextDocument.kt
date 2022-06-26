@@ -20,27 +20,23 @@ package com.itsaky.lsp.models
 import java.net.URI
 import java.nio.file.Path
 
-/**
- * Base class for files that accept files as parameters.
- */
-open class DocumentEvent (var file: Path) {
-    fun asUri () : URI {
-        return file.toUri()
-    }
+/** Base class for files that accept files as parameters. */
+open class DocumentEvent(var file: Path) {
+  fun asUri(): URI {
+    return file.toUri()
+  }
 }
 
-data class DocumentOpenEvent (var openedFile: Path,
-                              var text: String,
-                              var version: Int) : DocumentEvent (openedFile)
+data class DocumentOpenEvent(var openedFile: Path, var text: String, var version: Int) :
+  DocumentEvent(openedFile)
 
-data class DocumentCloseEvent (var closedFile: Path) : DocumentEvent (closedFile)
+data class DocumentCloseEvent(var closedFile: Path) : DocumentEvent(closedFile)
 
-data class DocumentChangeEvent (var changedFile: Path,
-                                var newText: CharSequence,
-                                var version: Int) : DocumentEvent (changedFile)
+data class DocumentChangeEvent(var changedFile: Path, var newText: CharSequence, var version: Int) :
+  DocumentEvent(changedFile)
 
-data class DocumentSaveEvent (var savedFile: Path) : DocumentEvent (savedFile)
+data class DocumentSaveEvent(var savedFile: Path) : DocumentEvent(savedFile)
 
-data class ShowDocumentParams (var file: Path, var selection: Range)
+data class ShowDocumentParams(var file: Path, var selection: Range)
 
-data class ShowDocumentResult (var success: Boolean)
+data class ShowDocumentResult(var success: Boolean)

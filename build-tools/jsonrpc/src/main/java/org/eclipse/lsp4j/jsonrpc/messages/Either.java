@@ -11,24 +11,16 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.messages;
 
+import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 
-import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
-
 /** An either type maps union types in protocol specifications. */
 public class Either<L, R> {
-
-  public static <L, R> Either<L, R> forLeft(@NonNull L left) {
-    return new Either<>(left, null);
-  }
-
-  public static <L, R> Either<L, R> forRight(@NonNull R right) {
-    return new Either<>(null, right);
-  }
 
   private final L left;
   private final R right;
@@ -39,63 +31,12 @@ public class Either<L, R> {
     this.right = right;
   }
 
-  public L getLeft() {
-    return left;
+  public static <L, R> Either<L, R> forLeft(@NonNull L left) {
+    return new Either<>(left, null);
   }
 
-  public R getRight() {
-    return right;
-  }
-
-  public Object get() {
-    if (left != null) return left;
-    if (right != null) return right;
-    return null;
-  }
-
-  public boolean isLeft() {
-    return left != null;
-  }
-
-  public boolean isRight() {
-    return right != null;
-  }
-
-  public <T> T map(
-      @NonNull Function<? super L, ? extends T> mapLeft,
-      @NonNull Function<? super R, ? extends T> mapRight) {
-    if (isLeft()) {
-      return mapLeft.apply(getLeft());
-    }
-    if (isRight()) {
-      return mapRight.apply(getRight());
-    }
-    return null;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof Either<?, ?>) {
-      Either<?, ?> other = (Either<?, ?>) obj;
-      return (this.left == other.left && this.right == other.right)
-          || (this.left != null && other.left != null && this.left.equals(other.left))
-          || (this.right != null && other.right != null && this.right.equals(other.right));
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    if (this.left != null) return this.left.hashCode();
-    if (this.right != null) return this.right.hashCode();
-    return 0;
-  }
-
-  public String toString() {
-    StringBuilder builder = new StringBuilder("Either [").append(System.lineSeparator());
-    builder.append("  left = ").append(left).append(System.lineSeparator());
-    builder.append("  right = ").append(right).append(System.lineSeparator());
-    return builder.append("]").toString();
+  public static <L, R> Either<L, R> forRight(@NonNull R right) {
+    return new Either<>(null, right);
   }
 
   /**
@@ -151,37 +92,6 @@ public class Either<L, R> {
     return collectDisjoinTypes(type, new ArrayList<>());
   }
 
-  @Deprecated
-  protected static Collection<Type> collectDisjoinTypes(Type type, Collection<Type> types) {
-    if (isEither(type)) {
-      if (type instanceof ParameterizedType) {
-        return collectDisjoinTypes((ParameterizedType) type, types);
-      }
-      if (type instanceof Class) {
-        return collectDisjoinTypes((Class<?>) type, types);
-      }
-    }
-    types.add(type);
-    return types;
-  }
-
-  @Deprecated
-  protected static Collection<Type> collectDisjoinTypes(
-      ParameterizedType type, Collection<Type> types) {
-    for (Type typeArgument : type.getActualTypeArguments()) {
-      collectDisjoinTypes(typeArgument, types);
-    }
-    return types;
-  }
-
-  @Deprecated
-  protected static Collection<Type> collectDisjoinTypes(Class<?> type, Collection<Type> types) {
-    for (Type typeParameter : type.getTypeParameters()) {
-      collectDisjoinTypes(typeParameter, types);
-    }
-    return types;
-  }
-
   /**
    * Test whether the given type is Either.
    *
@@ -219,5 +129,95 @@ public class Either<L, R> {
   @Deprecated
   public static boolean isEither(Class<?> cls) {
     return Either.class.isAssignableFrom(cls);
+  }
+
+  @Deprecated
+  protected static Collection<Type> collectDisjoinTypes(Type type, Collection<Type> types) {
+    if (isEither(type)) {
+      if (type instanceof ParameterizedType) {
+        return collectDisjoinTypes((ParameterizedType) type, types);
+      }
+      if (type instanceof Class) {
+        return collectDisjoinTypes((Class<?>) type, types);
+      }
+    }
+    types.add(type);
+    return types;
+  }
+
+  @Deprecated
+  protected static Collection<Type> collectDisjoinTypes(
+      ParameterizedType type, Collection<Type> types) {
+    for (Type typeArgument : type.getActualTypeArguments()) {
+      collectDisjoinTypes(typeArgument, types);
+    }
+    return types;
+  }
+
+  @Deprecated
+  protected static Collection<Type> collectDisjoinTypes(Class<?> type, Collection<Type> types) {
+    for (Type typeParameter : type.getTypeParameters()) {
+      collectDisjoinTypes(typeParameter, types);
+    }
+    return types;
+  }
+
+  public Object get() {
+    if (left != null) return left;
+    if (right != null) return right;
+    return null;
+  }
+
+  public <T> T map(
+      @NonNull Function<? super L, ? extends T> mapLeft,
+      @NonNull Function<? super R, ? extends T> mapRight) {
+    if (isLeft()) {
+      return mapLeft.apply(getLeft());
+    }
+    if (isRight()) {
+      return mapRight.apply(getRight());
+    }
+    return null;
+  }
+
+  public L getLeft() {
+    return left;
+  }
+
+  public R getRight() {
+    return right;
+  }
+
+  public boolean isLeft() {
+    return left != null;
+  }
+
+  public boolean isRight() {
+    return right != null;
+  }
+
+  @Override
+  public int hashCode() {
+    if (this.left != null) return this.left.hashCode();
+    if (this.right != null) return this.right.hashCode();
+    return 0;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof Either<?, ?>) {
+      Either<?, ?> other = (Either<?, ?>) obj;
+      return (this.left == other.left && this.right == other.right)
+          || (this.left != null && other.left != null && this.left.equals(other.left))
+          || (this.right != null && other.right != null && this.right.equals(other.right));
+    }
+    return false;
+  }
+
+  public String toString() {
+    StringBuilder builder = new StringBuilder("Either [").append(System.lineSeparator());
+    builder.append("  left = ").append(left).append(System.lineSeparator());
+    builder.append("  right = ").append(right).append(System.lineSeparator());
+    return builder.append("]").toString();
   }
 }

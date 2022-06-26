@@ -1,21 +1,9 @@
 package com.itsaky.androidide.utils;
 
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public class StringUtil {
-
-  @Contract(pure = true)
-  public static boolean isJavaIdentifierStart(char c) {
-    return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || Character.isJavaIdentifierStart(c);
-  }
-
-  @Contract(pure = true)
-  public static boolean isJavaIdentifierPart(char c) {
-    return c >= '0' && c <= '9'
-        || c >= 'a' && c <= 'z'
-        || c >= 'A' && c <= 'Z'
-        || Character.isJavaIdentifierPart(c);
-  }
 
   @Contract(pure = true)
   public static boolean isJavaIdentifier(@NotNull String text) {
@@ -28,5 +16,18 @@ public class StringUtil {
       if (!isJavaIdentifierPart(text.charAt(i))) return false;
     }
     return true;
+  }
+
+  @Contract(pure = true)
+  public static boolean isJavaIdentifierStart(char c) {
+    return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || Character.isJavaIdentifierStart(c);
+  }
+
+  @Contract(pure = true)
+  public static boolean isJavaIdentifierPart(char c) {
+    return c >= '0' && c <= '9'
+        || c >= 'a' && c <= 'z'
+        || c >= 'A' && c <= 'Z'
+        || Character.isJavaIdentifierPart(c);
   }
 }

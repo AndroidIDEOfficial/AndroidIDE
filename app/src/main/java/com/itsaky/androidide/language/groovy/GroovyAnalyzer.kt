@@ -23,10 +23,8 @@ import com.itsaky.androidide.language.incremental.LineState
 import com.itsaky.androidide.lexers.groovy.GroovyLexer
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
-import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle
-import io.github.rosemoe.sora.text.Content
 
 /** @author Akash Yadav */
 class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {

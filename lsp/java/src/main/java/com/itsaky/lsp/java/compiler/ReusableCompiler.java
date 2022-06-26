@@ -97,13 +97,11 @@ public class ReusableCompiler {
 
   private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
   private static final JavacTool systemProvider = JavacTool.create();
-
+  // TODO This is not used currently
+  private static final CancelService cancelService = new CancelServiceImpl();
   private final List<String> currentOptions = new ArrayList<>();
   private ReusableContext currentContext;
   private boolean checkedOut;
-
-  // TODO This is not used currently
-  private static final CancelService cancelService = new CancelServiceImpl();
 
   /**
    * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided

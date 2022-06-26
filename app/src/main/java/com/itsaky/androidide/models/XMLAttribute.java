@@ -114,14 +114,6 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     return new XMLAttribute(INamespace.ANDROID, name, "", false);
   }
 
-  public int getFormat() {
-    return format;
-  }
-
-  public void setFormat(int format) {
-    this.format = format;
-  }
-
   public int findFormat() {
 
     if (getFormat() > 0) {
@@ -137,18 +129,16 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     return getFormat();
   }
 
+  public int getFormat() {
+    return format;
+  }
+
+  public void setFormat(int format) {
+    this.format = format;
+  }
+
   public boolean hasFormat(int format) {
     return (this.format & format) != 0;
-  }
-
-  public Attr getAttr() {
-    return attr;
-  }
-
-  public void setAttr(Attr attr) {
-    Objects.requireNonNull(attr);
-    this.attr = attr;
-    setFormat(attr.format);
   }
 
   @Override
@@ -174,5 +164,15 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     dest.writeByte((byte) (isApplied ? 1 : 0));
     dest.writeParcelable(getAttr(), flags);
     dest.writeInt(this.format);
+  }
+
+  public Attr getAttr() {
+    return attr;
+  }
+
+  public void setAttr(Attr attr) {
+    Objects.requireNonNull(attr);
+    this.attr = attr;
+    setFormat(attr.format);
   }
 }

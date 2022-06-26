@@ -51,8 +51,8 @@ final class AutoOneOf_JavaInputAstVisitor_AnnotationOrModifier {
     }
 
     @Override
-    public String toString() {
-      return "AnnotationOrModifier{annotation=" + this.annotation + "}";
+    public int hashCode() {
+      return annotation.hashCode();
     }
 
     @Override
@@ -67,8 +67,8 @@ final class AutoOneOf_JavaInputAstVisitor_AnnotationOrModifier {
     }
 
     @Override
-    public int hashCode() {
-      return annotation.hashCode();
+    public String toString() {
+      return "AnnotationOrModifier{annotation=" + this.annotation + "}";
     }
 
     @Override
@@ -91,8 +91,8 @@ final class AutoOneOf_JavaInputAstVisitor_AnnotationOrModifier {
     }
 
     @Override
-    public String toString() {
-      return "AnnotationOrModifier{modifier=" + this.modifier + "}";
+    public int hashCode() {
+      return modifier.hashCode();
     }
 
     @Override
@@ -107,8 +107,8 @@ final class AutoOneOf_JavaInputAstVisitor_AnnotationOrModifier {
     }
 
     @Override
-    public int hashCode() {
-      return modifier.hashCode();
+    public String toString() {
+      return "AnnotationOrModifier{modifier=" + this.modifier + "}";
     }
 
     @Override

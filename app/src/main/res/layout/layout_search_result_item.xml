@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	tools:ignore="UnusedAttribute"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:paddingStart="16dp"
-	android:paddingEnd="16dp"
-	android:paddingTop="8dp"
-	android:paddingBottom="8dp"
-	android:gravity="top|start"
-	android:clickable="true"
-	android:focusable="true"
-	android:descendantFocusability="blocksDescendants"
-	android:background="@color/content_background"
-	android:foreground="?attr/selectableItemBackground">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/content_background"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="top|start"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    tools:ignore="UnusedAttribute">
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/text"
-        android:textSize="16sp"
-        android:textColor="@color/primaryTextColor"/>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="16sp" />
 
 </RelativeLayout>

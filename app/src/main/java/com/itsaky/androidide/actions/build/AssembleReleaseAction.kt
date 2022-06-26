@@ -26,17 +26,17 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class AssembleReleaseAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.build_release)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_run_release)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.build_release)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_run_release)
+  }
 
-    override val id: String = "editor_assembleRelease"
+  override val id: String = "editor_assembleRelease"
 
-    override fun execAction(data: ActionData): Boolean {
-        val activity = getActivity(data) ?: return false
+  override fun execAction(data: ActionData): Boolean {
+    val activity = getActivity(data) ?: return false
 
-        activity.assembleRelease()
-        return true
-    }
+    activity.assembleRelease()
+    return true
+  }
 }

@@ -30,55 +30,55 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
 class JavaCompletionProviderTest : BaseJavaTest() {
 
-    @Test
-    fun testLocals() {
-        openFile("LocalsCompletionTest")
+  @Test
+  fun testLocals() {
+    openFile("LocalsCompletionTest")
 
-        val pos = cursorPosition()
-        val items = completionTitles(pos)
-        assertThat(items).containsAtLeast("aaString", "aaInt", "aaFloat", "aaDouble", "args")
-    }
+    val pos = cursorPosition()
+    val items = completionTitles(pos)
+    assertThat(items).containsAtLeast("aaString", "aaInt", "aaFloat", "aaDouble", "args")
+  }
 
-    @Test
-    fun testMembers() {
-        // Complete members of String
-        openFile("MembersCompletionTest")
+  @Test
+  fun testMembers() {
+    // Complete members of String
+    openFile("MembersCompletionTest")
 
-        val pos = cursorPosition()
-        val items = completionTitles(pos)
-        assertThat(items)
-            .containsAtLeast("getClass", "toLowerCase", "toUpperCase", "substring", "charAt")
-    }
+    val pos = cursorPosition()
+    val items = completionTitles(pos)
+    assertThat(items)
+      .containsAtLeast("getClass", "toLowerCase", "toUpperCase", "substring", "charAt")
+  }
 
-    @Test
-    fun testLambdaVariableMemberAccess() {
-        // Complete members of Throwable
-        openFile("LambdaMembersCompletionTest")
+  @Test
+  fun testLambdaVariableMemberAccess() {
+    // Complete members of Throwable
+    openFile("LambdaMembersCompletionTest")
 
-        val pos = cursorPosition()
-        val items = completionTitles(pos)
-        assertThat(items)
-            .containsAtLeast("getMessage", "getCause", "getStackTrace", "printStackTrace")
-    }
+    val pos = cursorPosition()
+    val items = completionTitles(pos)
+    assertThat(items).containsAtLeast("getMessage", "getCause", "getStackTrace", "printStackTrace")
+  }
 
-    @Test
-    fun testStaticAccess() {
-        // Complete static members of String
-        openFile("StaticMembersCompletionTest")
+  @Test
+  fun testStaticAccess() {
+    // Complete static members of String
+    openFile("StaticMembersCompletionTest")
 
-        val pos = cursorPosition()
-        val items = completionTitles(pos)
-        assertThat(items)
-            .containsAtLeast("format", "join", "valueOf", "CASE_INSENSITIVE_ORDER", "class")
-    }
+    val pos = cursorPosition()
+    val items = completionTitles(pos)
+    assertThat(items)
+      .containsAtLeast("format", "join", "valueOf", "CASE_INSENSITIVE_ORDER", "class")
+  }
 
-    override fun openFile(fileName: String) {
-        super.openFile("completion/${fileName}")
-    }
+  override fun openFile(fileName: String) {
+    super.openFile("completion/${fileName}")
+  }
 
-    private fun completionTitles(pos: Position): List<CharSequence> {
-        return mServer.completionProvider.complete(CompletionParams(pos, file!!).apply { prefix = "" }).items.map {
-            it.label
-        }
-    }
+  private fun completionTitles(pos: Position): List<CharSequence> {
+    return mServer.completionProvider
+      .complete(CompletionParams(pos, file!!).apply { prefix = "" })
+      .items
+      .map { it.label }
+  }
 }

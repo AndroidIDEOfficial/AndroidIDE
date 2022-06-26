@@ -1,10 +1,10 @@
 package com.itsaky.androidide.fuzzysearch.algorithms;
 
 import com.itsaky.androidide.fuzzysearch.Ratio;
+import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 import java.util.Arrays;
 import java.util.List;
-import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 public class TokenSort extends RatioAlgorithm {
 

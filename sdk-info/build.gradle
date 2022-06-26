@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-	
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
@@ -12,7 +12,7 @@ android {
     compileOptions {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
-	}
+    }
     
     buildTypes {
         release {
@@ -22,13 +22,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree (dir: 'libs', include: ['*.jar'])
     implementation common.utilcode
     implementation common.jsoup
-
+    
     implementation androidx.annotation
     implementation androidx.appcompat
     implementation google.material
-
-    compileOnly project(":common")
+    
+    compileOnly project (":common")
 }

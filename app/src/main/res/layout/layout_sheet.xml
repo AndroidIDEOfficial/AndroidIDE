@@ -1,46 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/title"
-        android:layout_height="56dp"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="match_parent"
-        android:gravity="center_vertical"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:text="@string/build_output"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:textColor="@color/primaryTextColor"
-        android:elevation="0dp"
+        android:layout_height="56dp"
         android:background="@color/primaryDarkColor"
-        app:rippleColor="@color/rippleHighlightColor"
+        android:elevation="0dp"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="@string/build_output"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:icon="@drawable/ic_chevron_down"
         app:iconPadding="8dp"
         app:iconTint="@color/primaryTextColor"
-        style="@style/Widget.MaterialComponents.Button.Icon"/>
+        app:rippleColor="@color/rippleHighlightColor" />
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@drawable/bg_shadow"
-        android:id="@+id/shadow"/>
+        android:orientation="horizontal" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="-6dp"
-        android:paddingTop="-2dp"
+        android:orientation="vertical"
         android:paddingStart="16dp"
+        android:paddingTop="-2dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:id="@+id/container"/>
+        android:paddingBottom="8dp" />
 
 </LinearLayout>

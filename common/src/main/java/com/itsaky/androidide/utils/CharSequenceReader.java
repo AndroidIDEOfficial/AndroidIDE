@@ -34,9 +34,6 @@ public class CharSequenceReader extends Reader implements Serializable {
 
   private static final long serialVersionUID = 3724187752191401220L;
   private final CharSequence charSequence;
-  private int idx;
-  private int mark;
-
   /**
    * The start index in the character sequence, inclusive.
    *
@@ -48,7 +45,6 @@ public class CharSequenceReader extends Reader implements Serializable {
    * @since 2.7
    */
   private final int start;
-
   /**
    * The end index in the character sequence, exclusive.
    *
@@ -62,6 +58,8 @@ public class CharSequenceReader extends Reader implements Serializable {
    * @since 2.7
    */
   private final Integer end;
+  private int idx;
+  private int mark;
 
   /**
    * Constructs a new instance with the specified character sequence.
@@ -124,7 +122,17 @@ public class CharSequenceReader extends Reader implements Serializable {
     this.mark = start;
   }
 
-  /** Close resets the file back to the start and removes any marked position. */
+  /**
+   * Return a String representation of the underlying character sequence.
+   *
+   * @return The contents of the character sequence
+   */
+  @NonNull
+  @Override
+  public String toString() {
+    final CharSequence subSequence = charSequence.subSequence(start(), end());
+    return subSequence.toString();
+  }  /** Close resets the file back to the start and removes any marked position. */
   @Override
   public void close() {
     idx = start;
@@ -132,6 +140,14 @@ public class CharSequenceReader extends Reader implements Serializable {
   }
 
   /**
+   * Returns the index in the character sequence to start reading from, taking into account its
+   * length.
+   *
+   * @return The start index in the character sequence (inclusive).
+   */
+  private int start() {
+    return Math.min(charSequence.length(), start);
+  }  /**
    * Returns the index in the character sequence to end reading at, taking into account its length.
    *
    * @return The end index in the character sequence (exclusive).
@@ -266,25 +282,7 @@ public class CharSequenceReader extends Reader implements Serializable {
     return count;
   }
 
-  /**
-   * Returns the index in the character sequence to start reading from, taking into account its
-   * length.
-   *
-   * @return The start index in the character sequence (inclusive).
-   */
-  private int start() {
-    return Math.min(charSequence.length(), start);
-  }
 
-  /**
-   * Return a String representation of the underlying character sequence.
-   *
-   * @return The contents of the character sequence
-   */
-  @NonNull
-  @Override
-  public String toString() {
-    final CharSequence subSequence = charSequence.subSequence(start(), end());
-    return subSequence.toString();
-  }
+
+
 }

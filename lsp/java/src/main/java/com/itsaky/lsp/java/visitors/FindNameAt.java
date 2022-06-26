@@ -47,6 +47,12 @@ public class FindNameAt extends TreePathScanner<TreePath, Long> {
   }
 
   @Override
+  public TreePath reduce(TreePath r1, TreePath r2) {
+    if (r1 != null) return r1;
+    return r2;
+  }
+
+  @Override
   public TreePath visitCompilationUnit(CompilationUnitTree t, Long find) {
     root = t;
     return super.visitCompilationUnit(t, find);
@@ -78,11 +84,21 @@ public class FindNameAt extends TreePathScanner<TreePath, Long> {
   }
 
   @Override
-  public TreePath visitIdentifier(IdentifierTree t, Long find) {
+  public TreePath visitVariable(VariableTree t, Long find) {
     if (contains(t, t.getName(), find)) {
       return getCurrentPath();
     }
-    return super.visitIdentifier(t, find);
+    return super.visitVariable(t, find);
+  }
+
+  @Override
+  public TreePath visitNewClass(NewClassTree t, Long find) {
+    long start = Trees.instance(task).getSourcePositions().getStartPosition(root, t);
+    long end = start + "new".length();
+    if (start <= find && find < end) {
+      return getCurrentPath();
+    }
+    return super.visitNewClass(t, find);
   }
 
   @Override
@@ -102,27 +118,11 @@ public class FindNameAt extends TreePathScanner<TreePath, Long> {
   }
 
   @Override
-  public TreePath visitVariable(VariableTree t, Long find) {
+  public TreePath visitIdentifier(IdentifierTree t, Long find) {
     if (contains(t, t.getName(), find)) {
       return getCurrentPath();
     }
-    return super.visitVariable(t, find);
-  }
-
-  @Override
-  public TreePath visitNewClass(NewClassTree t, Long find) {
-    long start = Trees.instance(task).getSourcePositions().getStartPosition(root, t);
-    long end = start + "new".length();
-    if (start <= find && find < end) {
-      return getCurrentPath();
-    }
-    return super.visitNewClass(t, find);
-  }
-
-  @Override
-  public TreePath reduce(TreePath r1, TreePath r2) {
-    if (r1 != null) return r1;
-    return r2;
+    return super.visitIdentifier(t, find);
   }
 
   private boolean contains(Tree t, CharSequence name, long find) {

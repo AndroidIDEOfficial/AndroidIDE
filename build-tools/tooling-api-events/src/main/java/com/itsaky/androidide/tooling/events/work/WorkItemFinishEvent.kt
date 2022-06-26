@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.events.FinishEvent
 
 /** @author Akash Yadav */
 class WorkItemFinishEvent(
-    displayName: String,
-    eventTime: Long,
-    operationDescriptor: WorkItemOperationDescriptor,
-    override val result: WorkItemOperationResult
+  displayName: String,
+  eventTime: Long,
+  operationDescriptor: WorkItemOperationDescriptor,
+  override val result: WorkItemOperationResult
 ) : WorkItemProgressEvent(displayName, eventTime, operationDescriptor), FinishEvent

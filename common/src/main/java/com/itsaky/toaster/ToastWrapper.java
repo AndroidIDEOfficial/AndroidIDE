@@ -45,6 +45,10 @@ public class ToastWrapper extends LinearLayout {
     super(context, attrs, style);
   }
 
+  public void setToasterInstance(Toaster toaster) {
+    this.mToaster = toaster;
+  }
+
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
@@ -71,10 +75,6 @@ public class ToastWrapper extends LinearLayout {
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     setBackgroundColor(Color.TRANSPARENT);
-  }
-
-  public void setToasterInstance(Toaster toaster) {
-    this.mToaster = toaster;
   }
 
   protected void startRevealAnimation() {

@@ -23,8 +23,8 @@ package com.itsaky.androidide.tooling.events
  * @author Akash Yadav
  */
 abstract class OperationDescriptor {
-    abstract val name: String
-    abstract val displayName: String
+  abstract val name: String
+  abstract val displayName: String
 
-    private val gsonType = javaClass.name
+  private val gsonType = javaClass.name
 }

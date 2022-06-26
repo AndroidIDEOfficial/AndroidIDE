@@ -27,7 +27,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
@@ -42,18 +41,11 @@ import java.io.File;
 public class MainActivity extends StudioActivity {
   private ActivityMainBinding binding;
 
-  public void openProject(@NonNull File root) {
-    ProjectManager.INSTANCE.setProjectPath(root.getAbsolutePath());
-    startActivity(new Intent(this, EditorActivity.class));
-  }
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     openLastProject();
   }
-
-  private void showMoveRequired() {}
 
   private void openLastProject() {
     binding
@@ -90,12 +82,6 @@ public class MainActivity extends StudioActivity {
         .commit();
   }
 
-  @Override
-  protected View bindLayout() {
-    binding = ActivityMainBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
-
   private void askProjectOpenPermission(File root) {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
     builder.setTitle(R.string.title_confirm_open_project);
@@ -104,6 +90,11 @@ public class MainActivity extends StudioActivity {
     builder.setPositiveButton(R.string.yes, (d, w) -> openProject(root));
     builder.setNegativeButton(R.string.no, null);
     builder.show();
+  }
+
+  public void openProject(@NonNull File root) {
+    ProjectManager.INSTANCE.setProjectPath(root.getAbsolutePath());
+    startActivity(new Intent(this, EditorActivity.class));
   }
 
   @Override
@@ -116,8 +107,16 @@ public class MainActivity extends StudioActivity {
   }
 
   @Override
+  protected View bindLayout() {
+    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
+
+  @Override
   protected void onDestroy() {
     super.onDestroy();
     binding = null;
   }
+
+  private void showMoveRequired() {}
 }

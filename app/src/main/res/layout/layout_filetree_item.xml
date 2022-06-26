@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:padding="8dp"
-	android:gravity="center_vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="8dp">
 
-	<ImageView
-		android:src="@drawable/ic_chevron_right"
-		android:layout_width="20dp"
-		android:layout_height="20dp"
-		android:layout_marginEnd="8dp"
-		android:id="@+id/filetree_chevron"/>
+    <ImageView
+        android:id="@+id/filetree_chevron"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_chevron_right" />
 
-	<ImageView
-		android:layout_width="25dp"
-		android:layout_height="25dp"
-		android:layout_marginEnd="8dp"
-		android:id="@+id/filetree_icon"/>
+    <ImageView
+        android:id="@+id/filetree_icon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="8dp" />
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:textColor="@color/primaryTextColor"
-		android:id="@+id/filetree_name"/>
+    <TextView
+        android:id="@+id/filetree_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/primaryTextColor" />
 
 </LinearLayout>
 

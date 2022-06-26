@@ -1,5 +1,4 @@
-<animated-vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector
@@ -10,22 +9,22 @@
             android:viewportHeight="24">
             <path
                 android:name="path"
-                android:pathData="M 5 13 L 9 17 L 19 7"
                 android:fillColor="#00FFFFFF"
-                android:strokeColor="#000000"
+                android:pathData="M 5 13 L 9 17 L 19 7"
                 android:strokeWidth="1.6800001"
-                android:strokeLineCap="square"/>
+                android:strokeColor="#000000"
+                android:strokeLineCap="square" />
         </vector>
     </aapt:attr>
     <target android:name="path">
         <aapt:attr name="android:animation">
             <objectAnimator
-                android:propertyName="trimPathEnd"
                 android:duration="800"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathEnd"
                 android:valueFrom="0"
                 android:valueTo="1"
-                android:valueType="floatType"
-                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                android:valueType="floatType" />
         </aapt:attr>
     </target>
 </animated-vector>

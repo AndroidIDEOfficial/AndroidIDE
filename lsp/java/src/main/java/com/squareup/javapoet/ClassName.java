@@ -144,6 +144,16 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
         .accept(
             new SimpleElementVisitor8<ClassName, Void>() {
               @Override
+              public ClassName visitUnknown(Element unknown, Void p) {
+                return get("", simpleName);
+              }
+
+              @Override
+              public ClassName defaultAction(Element enclosingElement, Void p) {
+                throw new IllegalArgumentException("Unexpected type nesting: " + element);
+              }
+
+              @Override
               public ClassName visitPackage(PackageElement packageElement, Void p) {
                 return new ClassName(
                     packageElement.getQualifiedName().toString(), null, simpleName);
@@ -152,16 +162,6 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
               @Override
               public ClassName visitType(TypeElement enclosingClass, Void p) {
                 return ClassName.get(enclosingClass).nestedClass(simpleName);
-              }
-
-              @Override
-              public ClassName visitUnknown(Element unknown, Void p) {
-                return get("", simpleName);
-              }
-
-              @Override
-              public ClassName defaultAction(Element enclosingElement, Void p) {
-                throw new IllegalArgumentException("Unexpected type nesting: " + element);
               }
             },
             null);
@@ -179,6 +179,57 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     ClassName resultEnclosingClassName =
         enclosingClassName != null ? enclosingClassName.withoutAnnotations() : null;
     return new ClassName(packageName, resultEnclosingClassName, simpleName);
+  }
+
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
+    boolean charsEmitted = false;
+    for (ClassName className : enclosingClasses()) {
+      String simpleName;
+      if (charsEmitted) {
+        // We've already emitted an enclosing class. Emit as we go.
+        out.emit(".");
+        simpleName = className.simpleName;
+
+      } else if (className.isAnnotated() || className == this) {
+        // We encountered the first enclosing class that must be emitted.
+        String qualifiedName = out.lookupName(className);
+
+        boolean printQualifiedNames = true;
+        if (out instanceof ImportCollectingCodeWriter) {
+          final ImportCollectingCodeWriter importCollectingCodeWriter =
+              (ImportCollectingCodeWriter) out;
+          importCollectingCodeWriter.addImport(qualifiedName);
+          printQualifiedNames = importCollectingCodeWriter.isPrintQualifiedNames();
+        }
+
+        int dot = qualifiedName.lastIndexOf('.');
+        if (dot != -1) {
+          final String packageName = qualifiedName.substring(0, dot + 1);
+          if (printQualifiedNames && !"java.lang.".equals(packageName)) {
+            out.emitAndIndent(packageName);
+          }
+          simpleName = qualifiedName.substring(dot + 1);
+          charsEmitted = true;
+        } else {
+          simpleName = qualifiedName;
+        }
+
+      } else {
+        // Don't emit this enclosing type. Keep going so we can be more precise.
+        continue;
+      }
+
+      if (className.isAnnotated()) {
+        if (charsEmitted) out.emit(" ");
+        className.emitAnnotations(out);
+      }
+
+      out.emit(simpleName);
+      charsEmitted = true;
+    }
+
+    return out;
   }
 
   @Override
@@ -266,57 +317,6 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
   @Override
   public int compareTo(ClassName o) {
     return canonicalName.compareTo(o.canonicalName);
-  }
-
-  @Override
-  CodeWriter emit(CodeWriter out) throws IOException {
-    boolean charsEmitted = false;
-    for (ClassName className : enclosingClasses()) {
-      String simpleName;
-      if (charsEmitted) {
-        // We've already emitted an enclosing class. Emit as we go.
-        out.emit(".");
-        simpleName = className.simpleName;
-
-      } else if (className.isAnnotated() || className == this) {
-        // We encountered the first enclosing class that must be emitted.
-        String qualifiedName = out.lookupName(className);
-
-        boolean printQualifiedNames = true;
-        if (out instanceof ImportCollectingCodeWriter) {
-          final ImportCollectingCodeWriter importCollectingCodeWriter =
-              (ImportCollectingCodeWriter) out;
-          importCollectingCodeWriter.addImport(qualifiedName);
-          printQualifiedNames = importCollectingCodeWriter.isPrintQualifiedNames();
-        }
-
-        int dot = qualifiedName.lastIndexOf('.');
-        if (dot != -1) {
-          final String packageName = qualifiedName.substring(0, dot + 1);
-          if (printQualifiedNames && !"java.lang.".equals(packageName)) {
-            out.emitAndIndent(packageName);
-          }
-          simpleName = qualifiedName.substring(dot + 1);
-          charsEmitted = true;
-        } else {
-          simpleName = qualifiedName;
-        }
-
-      } else {
-        // Don't emit this enclosing type. Keep going so we can be more precise.
-        continue;
-      }
-
-      if (className.isAnnotated()) {
-        if (charsEmitted) out.emit(" ");
-        className.emitAnnotations(out);
-      }
-
-      out.emit(simpleName);
-      charsEmitted = true;
-    }
-
-    return out;
   }
 
   /** Returns all enclosing classes in this, outermost first. */

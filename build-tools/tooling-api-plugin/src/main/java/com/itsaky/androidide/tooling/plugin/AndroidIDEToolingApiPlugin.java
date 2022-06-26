@@ -25,19 +25,19 @@ import javax.inject.Inject;
 
 public class AndroidIDEToolingApiPlugin implements Plugin<Project> {
 
-    private final ToolingModelBuilderRegistry registry;
+  private final ToolingModelBuilderRegistry registry;
 
-    @Inject
-    public AndroidIDEToolingApiPlugin(ToolingModelBuilderRegistry registry) {
-        this.registry = registry;
+  @Inject
+  public AndroidIDEToolingApiPlugin(ToolingModelBuilderRegistry registry) {
+    this.registry = registry;
+  }
+
+  @Override
+  public void apply(Project project) {
+    if (project != project.getRootProject()) {
+      return;
     }
 
-    @Override
-    public void apply(Project project) {
-        if (project != project.getRootProject()) {
-            return;
-        }
-
-        registry.register(new IdeProjectModelBuilder());
-    }
+    registry.register(new IdeProjectModelBuilder());
+  }
 }

@@ -102,19 +102,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     setupViewData();
   }
 
-  @Override
-  public void onAttach(@NonNull Context context) {
-    super.onAttach(context);
-    mDeletionFailedListener = (OnViewDeletionFailedListener) context;
-  }
-
-  public AttrEditorSheet setLayout(File layout) {
-    Objects.requireNonNull(layout);
-
-    this.layout = layout;
-    return this;
-  }
-
   private void setupViewData() {
     binding.actionsList.setAdapter(new SimpleIconTextAdapter(VIEW_ACTIONS).setOnBindListener(this));
 
@@ -130,10 +117,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                 .map(XMLAttribute::new)
                 .collect(Collectors.toList()),
             this::onAttrClick));
-  }
-
-  public void setSelectedView(IView view) {
-    this.selectedView = view;
   }
 
   private void onAttrClick(
@@ -156,6 +139,42 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
   private void showValueEditorSheet(@NonNull XMLAttribute attribute) {
     getValueEditorSheet(attribute).show(getChildFragmentManager(), "attr_value_editor_sheet");
+  }
+
+  @NonNull
+  public AttrValueEditorSheet getValueEditorSheet(@NonNull XMLAttribute attribute) {
+
+    if (mValueEditorSheet == null) {
+      mValueEditorSheet = AttrValueEditorSheet.newInstance(attribute);
+    }
+
+    mValueEditorSheet.setAttribute(attribute);
+    return mValueEditorSheet;
+  }
+
+  private boolean dismissIfSelectedNull() {
+    if (selectedView == null) {
+      dismiss();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    mDeletionFailedListener = (OnViewDeletionFailedListener) context;
+  }
+
+  public AttrEditorSheet setLayout(File layout) {
+    Objects.requireNonNull(layout);
+
+    this.layout = layout;
+    return this;
+  }
+
+  public void setSelectedView(IView view) {
+    this.selectedView = view;
   }
 
   @Override
@@ -276,11 +295,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     return new ArrayList<>(attributes);
   }
 
-  @Override
-  public void accept(Attr attr) {
-    addNewAttribute(attr);
-  }
-
   @NonNull
   private AttributeListSheet getAttrListSheet() {
     if (mAttrListSheet == null) {
@@ -291,15 +305,15 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     return mAttrListSheet;
   }
 
-  @NonNull
-  public AttrValueEditorSheet getValueEditorSheet(@NonNull XMLAttribute attribute) {
+  @Override
+  public void accept(Attr attr) {
+    addNewAttribute(attr);
+  }
 
-    if (mValueEditorSheet == null) {
-      mValueEditorSheet = AttrValueEditorSheet.newInstance(attribute);
-    }
-
-    mValueEditorSheet.setAttribute(attribute);
-    return mValueEditorSheet;
+  private void addNewAttribute(@NonNull Attr attr) {
+    final XMLAttribute attribute = new XMLAttribute(attr.namespace, attr.name, "", false);
+    attribute.setAttr(attr);
+    showValueEditorSheet(attribute);
   }
 
   @Override
@@ -318,20 +332,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
       final var attr = new UiAttribute(namespace, attributeName, newValue);
       this.selectedView.addAttribute(attr);
     }
-  }
-
-  private void addNewAttribute(@NonNull Attr attr) {
-    final XMLAttribute attribute = new XMLAttribute(attr.namespace, attr.name, "", false);
-    attribute.setAttr(attr);
-    showValueEditorSheet(attribute);
-  }
-
-  private boolean dismissIfSelectedNull() {
-    if (selectedView == null) {
-      dismiss();
-      return true;
-    }
-    return false;
   }
 
   /**

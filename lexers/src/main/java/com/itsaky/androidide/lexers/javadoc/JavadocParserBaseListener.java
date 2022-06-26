@@ -326,21 +326,8 @@ public class JavadocParserBaseListener implements JavadocParserListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
-  public void exitEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
   public void visitTerminal(TerminalNode node) {}
+
   /**
    * {@inheritDoc}
    *
@@ -348,4 +335,20 @@ public class JavadocParserBaseListener implements JavadocParserListener {
    */
   @Override
   public void visitErrorNode(ErrorNode node) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitEveryRule(ParserRuleContext ctx) {}
 }

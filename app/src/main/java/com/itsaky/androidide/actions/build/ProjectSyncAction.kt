@@ -23,7 +23,6 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
-import com.itsaky.androidide.actions.EditorActivityAction
 
 /**
  * Triggers a project sync request.
@@ -32,15 +31,15 @@ import com.itsaky.androidide.actions.EditorActivityAction
  */
 class ProjectSyncAction() : BaseBuildAction() {
 
-    override val id: String = "action_editor_syncProject"
-    override var requiresUIThread = true
+  override val id: String = "action_editor_syncProject"
+  override var requiresUIThread = true
 
-    constructor(context: Context) : this() {
-        label = context.getString(string.title_sync_project)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_sync)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(string.title_sync_project)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_sync)
+  }
 
-    override fun execAction(data: ActionData): Any {
-        return getActivity(data)!!.initializeProject()
-    }
+  override fun execAction(data: ActionData): Any {
+    return getActivity(data)!!.initializeProject()
+  }
 }

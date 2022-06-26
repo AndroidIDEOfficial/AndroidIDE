@@ -29,35 +29,35 @@ import com.itsaky.androidide.actions.EditorRelatedAction
 /** @author Akash Yadav */
 class RedoAction() : EditorRelatedAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.redo)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_redo)
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.redo)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_redo)
+  }
+
+  override val id: String = "editor_redo"
+
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+
+    if (!visible) {
+      return
     }
 
-    override val id: String = "editor_redo"
+    val editor = getEditor(data)!!
+    enabled = editor.canRedo()
+  }
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun execAction(data: ActionData): Boolean {
+    val editor = getEditor(data)!!
+    editor.redo()
+    return true
+  }
 
-        if (!visible) {
-            return
-        }
-
-        val editor = getEditor(data)!!
-        enabled = editor.canRedo()
+  override fun getShowAsActionFlags(data: ActionData): Int {
+    return if (KeyboardUtils.isSoftInputVisible(data.get(Context::class.java) as Activity)) {
+      MenuItem.SHOW_AS_ACTION_IF_ROOM
+    } else {
+      MenuItem.SHOW_AS_ACTION_NEVER
     }
-
-    override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data)!!
-        editor.redo()
-        return true
-    }
-
-    override fun getShowAsActionFlags(data: ActionData): Int {
-        return if (KeyboardUtils.isSoftInputVisible(data.get(Context::class.java) as Activity)) {
-            MenuItem.SHOW_AS_ACTION_IF_ROOM
-        } else {
-            MenuItem.SHOW_AS_ACTION_NEVER
-        }
-    }
+  }
 }

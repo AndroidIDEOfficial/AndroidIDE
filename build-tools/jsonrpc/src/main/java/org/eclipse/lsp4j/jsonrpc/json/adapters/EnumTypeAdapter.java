@@ -11,11 +11,6 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -24,31 +19,18 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 /** A custom type adapter for enums that uses integer values. */
 public class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
 
-  public static class Factory implements TypeAdapterFactory {
-
-    @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-      Class<?> rawType = typeToken.getRawType();
-      if (!Enum.class.isAssignableFrom(rawType) || rawType == Enum.class) return null;
-      if (!rawType.isEnum()) rawType = rawType.getSuperclass();
-      try {
-        return new EnumTypeAdapter(rawType);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
-
   private static String VALUE_FIELD_NAME = "value";
-
   private final Map<String, T> nameToConstant = new HashMap<>();
   private final Map<Integer, T> valueToConstant = new HashMap<>();
   private final Map<T, Integer> constantToValue = new HashMap<>();
-
   EnumTypeAdapter(Class<T> classOfT) throws IllegalAccessException {
     try {
       Field valueField = classOfT.getDeclaredField(VALUE_FIELD_NAME);
@@ -72,6 +54,12 @@ public class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
   }
 
   @Override
+  public void write(JsonWriter out, T value) throws IOException {
+    if (value != null) out.value(constantToValue.get(value));
+    else out.value((String) null);
+  }
+
+  @Override
   public T read(JsonReader in) throws IOException {
     JsonToken peek = in.peek();
     if (peek == JsonToken.NULL) {
@@ -89,9 +77,19 @@ public class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
     }
   }
 
-  @Override
-  public void write(JsonWriter out, T value) throws IOException {
-    if (value != null) out.value(constantToValue.get(value));
-    else out.value((String) null);
+  public static class Factory implements TypeAdapterFactory {
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+      Class<?> rawType = typeToken.getRawType();
+      if (!Enum.class.isAssignableFrom(rawType) || rawType == Enum.class) return null;
+      if (!rawType.isEnum()) rawType = rawType.getSuperclass();
+      try {
+        return new EnumTypeAdapter(rawType);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

@@ -72,10 +72,6 @@ public class PreferenceManager {
     return prefs.getInt(key, 0);
   }
 
-  public int getInt(String key, int def) {
-    return prefs.getInt(key, def);
-  }
-
   public PreferenceManager putFloat(String key, float val) {
     prefs.edit().putFloat(key, val).apply();
     return this;
@@ -89,9 +85,33 @@ public class PreferenceManager {
     return prefs.getFloat(key, def);
   }
 
-  public PreferenceManager putBoolean(String key, boolean value) {
-    prefs.edit().putBoolean(key, value).apply();
+  public String getString(String key) {
+    return prefs.getString(key, null);
+  }
+
+  public boolean wasProjectOpened() {
+    return !getOpenedProject().equals(NO_OPENED_PROJECT);
+  }
+
+  public String getOpenedProject() {
+    return getString(KEY_LAST_OPENED_PROJECT, NO_OPENED_PROJECT);
+  }
+
+  public String getString(String key, String defaultValue) {
+    return prefs.getString(key, defaultValue);
+  }
+
+  public PreferenceManager setOpenedProject(String root) {
+    return putString(KEY_LAST_OPENED_PROJECT, root);
+  }
+
+  public PreferenceManager putString(String key, String value) {
+    prefs.edit().putString(key, value).apply();
     return this;
+  }
+
+  public boolean isStackTraceEnabled() {
+    return getBoolean(KEY_GRADLE_CMD_STACK_TRACE);
   }
 
   public boolean getBoolean(String key) {
@@ -102,41 +122,17 @@ public class PreferenceManager {
     return prefs.getBoolean(key, defaultValue);
   }
 
-  public PreferenceManager putString(String key, String value) {
-    prefs.edit().putString(key, value).apply();
-    return this;
-  }
-
-  public String getString(String key) {
-    return prefs.getString(key, null);
-  }
-
-  public String getString(String key, String defaultValue) {
-    return prefs.getString(key, defaultValue);
-  }
-
-  public String getOpenedProject() {
-    return getString(KEY_LAST_OPENED_PROJECT, NO_OPENED_PROJECT);
-  }
-
-  public PreferenceManager setOpenedProject(String root) {
-    return putString(KEY_LAST_OPENED_PROJECT, root);
-  }
-
-  public boolean wasProjectOpened() {
-    return !getOpenedProject().equals(NO_OPENED_PROJECT);
-  }
-
-  public boolean isStackTraceEnabled() {
-    return getBoolean(KEY_GRADLE_CMD_STACK_TRACE);
-  }
-
   public boolean isGradleInfoEnabled() {
     return getBoolean(KEY_GRADLE_CMD_INFO, true);
   }
 
   public PreferenceManager setGradleInfoEnabled(boolean enabled) {
     return putBoolean(KEY_GRADLE_CMD_INFO, enabled);
+  }
+
+  public PreferenceManager putBoolean(String key, boolean value) {
+    prefs.edit().putBoolean(key, value).apply();
+    return this;
   }
 
   public boolean isGradleDebugEnabled() {
@@ -159,32 +155,36 @@ public class PreferenceManager {
     return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
   }
 
-  public boolean isGradleBuildCacheEnabled() {
-    return getBoolean(KEY_GRADLE_CMD_BUILD_CACHE);
-  }
-
-  public boolean isGradleOfflineModeEnabled() {
-    return getBoolean(KEY_GRADLE_CMD_OFFLINE_MODE);
-  }
-
   public PreferenceManager setGradleWarningEnabled(boolean enabled) {
     return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
   }
 
-  public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
+  public boolean isGradleBuildCacheEnabled() {
+    return getBoolean(KEY_GRADLE_CMD_BUILD_CACHE);
   }
 
   public PreferenceManager setGradleBuildCacheEnabled(boolean enabled) {
     return putBoolean(KEY_GRADLE_CMD_BUILD_CACHE, enabled);
   }
 
+  public boolean isGradleOfflineModeEnabled() {
+    return getBoolean(KEY_GRADLE_CMD_OFFLINE_MODE);
+  }
+
   public PreferenceManager setGradleOfflineModeEnabled(boolean enabled) {
     return putBoolean(KEY_GRADLE_CMD_OFFLINE_MODE, enabled);
   }
 
+  public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
+    return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
+  }
+
   public int getEditorTabSize() {
     return getInt(KEY_EDITOR_TAB_SIZE, 4);
+  }
+
+  public int getInt(String key, int def) {
+    return prefs.getInt(key, def);
   }
 
   public boolean autoOpenProject() {

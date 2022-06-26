@@ -11,13 +11,13 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
 import org.eclipse.lsp4j.jsonrpc.JsonRpcException;
 import org.eclipse.lsp4j.jsonrpc.MessageConsumer;
 import org.eclipse.lsp4j.jsonrpc.messages.Message;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /** A message consumer that serializes messages to JSON and sends them to an output stream. */
 public class StreamMessageConsumer implements MessageConsumer, MessageConstants {
@@ -33,15 +33,15 @@ public class StreamMessageConsumer implements MessageConsumer, MessageConstants 
     this(null, StandardCharsets.UTF_8.name(), jsonHandler);
   }
 
-  public StreamMessageConsumer(OutputStream output, MessageJsonHandler jsonHandler) {
-    this(output, StandardCharsets.UTF_8.name(), jsonHandler);
-  }
-
   public StreamMessageConsumer(
       OutputStream output, String encoding, MessageJsonHandler jsonHandler) {
     this.output = output;
     this.encoding = encoding;
     this.jsonHandler = jsonHandler;
+  }
+
+  public StreamMessageConsumer(OutputStream output, MessageJsonHandler jsonHandler) {
+    this(output, StandardCharsets.UTF_8.name(), jsonHandler);
   }
 
   public OutputStream getOutput() {

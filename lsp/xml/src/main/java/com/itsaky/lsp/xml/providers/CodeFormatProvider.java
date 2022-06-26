@@ -4,7 +4,6 @@ import com.android.ide.common.xml.XmlFormatPreferences;
 import com.android.ide.common.xml.XmlFormatStyle;
 import com.android.ide.common.xml.XmlPrettyPrinter;
 import com.android.utils.XmlUtils;
-
 import com.itsaky.androidide.utils.ILogger;
 
 import org.w3c.dom.Document;

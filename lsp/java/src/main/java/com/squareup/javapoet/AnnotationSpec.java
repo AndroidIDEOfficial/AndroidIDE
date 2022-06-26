@@ -51,62 +51,6 @@ public final class AnnotationSpec {
     this.members = Util.immutableMultimap(builder.members);
   }
 
-  void emit(CodeWriter codeWriter, boolean inline) throws IOException {
-    String whitespace = inline ? "" : "\n";
-    String memberSeparator = inline ? ", " : ",\n";
-    if (members.isEmpty()) {
-      // @Singleton
-      codeWriter.emit("@$T", type);
-    } else if (members.size() == 1 && members.containsKey("value")) {
-      // @Named("foo")
-      codeWriter.emit("@$T(", type);
-      emitAnnotationValues(codeWriter, whitespace, memberSeparator, members.get("value"));
-      codeWriter.emit(")");
-    } else {
-      // Inline:
-      //   @Column(name = "updated_at", nullable = false)
-      //
-      // Not inline:
-      //   @Column(
-      //       name = "updated_at",
-      //       nullable = false
-      //   )
-      codeWriter.emit("@$T(" + whitespace, type);
-      codeWriter.indent(2);
-      for (Iterator<Map.Entry<String, List<CodeBlock>>> i = members.entrySet().iterator();
-          i.hasNext(); ) {
-        Map.Entry<String, List<CodeBlock>> entry = i.next();
-        codeWriter.emit("$L = ", entry.getKey());
-        emitAnnotationValues(codeWriter, whitespace, memberSeparator, entry.getValue());
-        if (i.hasNext()) codeWriter.emit(memberSeparator);
-      }
-      codeWriter.unindent(2);
-      codeWriter.emit(whitespace + ")");
-    }
-  }
-
-  private void emitAnnotationValues(
-      CodeWriter codeWriter, String whitespace, String memberSeparator, List<CodeBlock> values)
-      throws IOException {
-    if (values.size() == 1) {
-      codeWriter.indent(2);
-      codeWriter.emit(values.get(0));
-      codeWriter.unindent(2);
-      return;
-    }
-
-    codeWriter.emit("{" + whitespace);
-    codeWriter.indent(2);
-    boolean first = true;
-    for (CodeBlock codeBlock : values) {
-      if (!first) codeWriter.emit(memberSeparator);
-      codeWriter.emit(codeBlock);
-      first = false;
-    }
-    codeWriter.unindent(2);
-    codeWriter.emit(whitespace + "}");
-  }
-
   public static AnnotationSpec get(Annotation annotation) {
     return get(annotation, false);
   }
@@ -171,16 +115,16 @@ public final class AnnotationSpec {
   }
 
   @Override
+  public int hashCode() {
+    return toString().hashCode();
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return toString().hashCode();
   }
 
   @Override
@@ -195,23 +139,76 @@ public final class AnnotationSpec {
     }
   }
 
-  public static final class Builder {
-    private final TypeName type;
+  void emit(CodeWriter codeWriter, boolean inline) throws IOException {
+    String whitespace = inline ? "" : "\n";
+    String memberSeparator = inline ? ", " : ",\n";
+    if (members.isEmpty()) {
+      // @Singleton
+      codeWriter.emit("@$T", type);
+    } else if (members.size() == 1 && members.containsKey("value")) {
+      // @Named("foo")
+      codeWriter.emit("@$T(", type);
+      emitAnnotationValues(codeWriter, whitespace, memberSeparator, members.get("value"));
+      codeWriter.emit(")");
+    } else {
+      // Inline:
+      //   @Column(name = "updated_at", nullable = false)
+      //
+      // Not inline:
+      //   @Column(
+      //       name = "updated_at",
+      //       nullable = false
+      //   )
+      codeWriter.emit("@$T(" + whitespace, type);
+      codeWriter.indent(2);
+      for (Iterator<Map.Entry<String, List<CodeBlock>>> i = members.entrySet().iterator();
+          i.hasNext(); ) {
+        Map.Entry<String, List<CodeBlock>> entry = i.next();
+        codeWriter.emit("$L = ", entry.getKey());
+        emitAnnotationValues(codeWriter, whitespace, memberSeparator, entry.getValue());
+        if (i.hasNext()) codeWriter.emit(memberSeparator);
+      }
+      codeWriter.unindent(2);
+      codeWriter.emit(whitespace + ")");
+    }
+  }
 
+  private void emitAnnotationValues(
+      CodeWriter codeWriter, String whitespace, String memberSeparator, List<CodeBlock> values)
+      throws IOException {
+    if (values.size() == 1) {
+      codeWriter.indent(2);
+      codeWriter.emit(values.get(0));
+      codeWriter.unindent(2);
+      return;
+    }
+
+    codeWriter.emit("{" + whitespace);
+    codeWriter.indent(2);
+    boolean first = true;
+    for (CodeBlock codeBlock : values) {
+      if (!first) codeWriter.emit(memberSeparator);
+      codeWriter.emit(codeBlock);
+      first = false;
+    }
+    codeWriter.unindent(2);
+    codeWriter.emit(whitespace + "}");
+  }
+
+  public static final class Builder {
     public final Map<String, List<CodeBlock>> members = new LinkedHashMap<>();
+    private final TypeName type;
 
     private Builder(TypeName type) {
       this.type = type;
     }
 
-    public Builder addMember(String name, String format, Object... args) {
-      return addMember(name, CodeBlock.of(format, args));
-    }
-
-    public Builder addMember(String name, CodeBlock codeBlock) {
-      List<CodeBlock> values = members.computeIfAbsent(name, k -> new ArrayList<>());
-      values.add(codeBlock);
-      return this;
+    public AnnotationSpec build() {
+      for (String name : members.keySet()) {
+        checkNotNull(name, "name == null");
+        checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
+      }
+      return new AnnotationSpec(this);
     }
 
     /**
@@ -241,12 +238,14 @@ public final class AnnotationSpec {
       return addMember(memberName, "$L", value);
     }
 
-    public AnnotationSpec build() {
-      for (String name : members.keySet()) {
-        checkNotNull(name, "name == null");
-        checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
-      }
-      return new AnnotationSpec(this);
+    public Builder addMember(String name, String format, Object... args) {
+      return addMember(name, CodeBlock.of(format, args));
+    }
+
+    public Builder addMember(String name, CodeBlock codeBlock) {
+      List<CodeBlock> values = members.computeIfAbsent(name, k -> new ArrayList<>());
+      values.add(codeBlock);
+      return this;
     }
   }
 
@@ -265,8 +264,8 @@ public final class AnnotationSpec {
     }
 
     @Override
-    public Builder visitAnnotation(AnnotationMirror a, String name) {
-      return builder.addMember(name, "$L", get(a));
+    public Builder visitType(TypeMirror t, String name) {
+      return builder.addMember(name, "$T.class", t);
     }
 
     @Override
@@ -275,8 +274,8 @@ public final class AnnotationSpec {
     }
 
     @Override
-    public Builder visitType(TypeMirror t, String name) {
-      return builder.addMember(name, "$T.class", t);
+    public Builder visitAnnotation(AnnotationMirror a, String name) {
+      return builder.addMember(name, "$L", get(a));
     }
 
     @Override

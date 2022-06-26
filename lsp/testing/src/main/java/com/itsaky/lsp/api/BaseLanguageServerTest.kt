@@ -19,35 +19,35 @@ package com.itsaky.lsp.api
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.lsp.models.DocumentOpenEvent
-import java.nio.file.Path
 import org.robolectric.RuntimeEnvironment
+import java.nio.file.Path
 
 /** @author Akash Yadav */
 abstract class BaseLanguageServerTest {
-    protected var file: Path? = null
-    protected var contents: StringBuilder? = null
+  protected var file: Path? = null
+  protected var contents: StringBuilder? = null
 
-    open fun openFile(fileName: String) {
-        file = FileProvider.sourceFile(fileName)
-        contents = FileProvider.contents(file!!)
+  open fun openFile(fileName: String) {
+    file = FileProvider.sourceFile(fileName)
+    contents = FileProvider.contents(file!!)
 
-        getServer().documentHandler.onFileOpened(DocumentOpenEvent(file!!, contents.toString(), 0))
+    getServer().documentHandler.onFileOpened(DocumentOpenEvent(file!!, contents.toString(), 0))
+  }
+
+  protected open fun createActionData(vararg values: Any): ActionData {
+    val data = ActionData()
+
+    data.put(Context::class.java, RuntimeEnvironment.getApplication())
+    for (value in values) {
+      if (value is Path) {
+        data.put(Path::class.java, value)
+      } else {
+        data.put(value::javaClass.get(), value)
+      }
     }
 
-    protected open fun createActionData(vararg values: Any): ActionData {
-        val data = ActionData()
+    return data
+  }
 
-        data.put(Context::class.java, RuntimeEnvironment.getApplication())
-        for (value in values) {
-            if (value is Path) {
-                data.put(Path::class.java, value)
-            } else {
-                data.put(value::javaClass.get(), value)
-            }
-        }
-
-        return data
-    }
-
-    protected abstract fun getServer(): ILanguageServer
+  protected abstract fun getServer(): ILanguageServer
 }

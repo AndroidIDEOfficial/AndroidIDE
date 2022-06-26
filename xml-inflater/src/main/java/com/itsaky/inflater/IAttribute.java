@@ -33,23 +33,11 @@ import java.util.Comparator;
  */
 public interface IAttribute {
 
-  @Nullable
-  INamespace getNamespace();
-
-  @NonNull
-  String getAttributeName();
-
-  @NonNull
-  String getValue();
-
   /**
-   * Set the given string as a value to this attribute. This will set {@link #isApplied()} to return
-   * {@code true}.
-   *
-   * @param value The value to set.
+   * Returned by {@link #compareNull(Object, Object)} to indicate that the comparison must be done
+   * further.
    */
-  void apply(String value);
-
+  int DO_COMPARE = 2;
   Comparator<IAttribute> COMPARATOR =
       (first, second) -> {
         var result = compareNull(first, second);
@@ -86,12 +74,6 @@ public interface IAttribute {
         return 0;
       };
 
-  /**
-   * Returned by {@link #compareNull(Object, Object)} to indicate that the comparison must be done
-   * further.
-   */
-  int DO_COMPARE = 2;
-
   private static int compareNull(Object first, Object second) {
     if (first == null && second == null) {
       return 0;
@@ -107,4 +89,21 @@ public interface IAttribute {
 
     return DO_COMPARE;
   }
+
+  @Nullable
+  INamespace getNamespace();
+
+  @NonNull
+  String getAttributeName();
+
+  @NonNull
+  String getValue();
+
+  /**
+   * Set the given string as a value to this attribute. This will set {@link #isApplied()} to return
+   * {@code true}.
+   *
+   * @param value The value to set.
+   */
+  void apply(String value);
 }

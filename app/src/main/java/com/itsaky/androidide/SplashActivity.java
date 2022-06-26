@@ -49,14 +49,14 @@ public class SplashActivity extends StudioActivity {
   }
 
   @Override
-  protected void onStorageAlreadyGranted() {
-    super.onStorageAlreadyGranted();
+  protected void onStorageGranted() {
+    super.onStorageGranted();
     proceed();
   }
 
   @Override
-  protected void onStorageGranted() {
-    super.onStorageGranted();
+  protected void onStorageAlreadyGranted() {
+    super.onStorageAlreadyGranted();
     proceed();
   }
 

@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.events.StartEvent
 
 /** @author Akash Yadav */
 class TestStartEvent(
-    displayName: String,
-    eventTime: Long,
-    operationDescriptor: TestOperationDescriptor
+  displayName: String,
+  eventTime: Long,
+  operationDescriptor: TestOperationDescriptor
 ) : TestProgressEvent(displayName, eventTime, operationDescriptor), StartEvent

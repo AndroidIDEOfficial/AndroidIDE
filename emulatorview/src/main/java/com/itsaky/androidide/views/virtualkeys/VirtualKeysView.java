@@ -69,39 +69,6 @@ import java.util.stream.Collectors;
  */
 public final class VirtualKeysView extends GridLayout {
 
-  /** The client for the {@link VirtualKeysView}. */
-  public interface IVirtualKeysView {
-
-    /**
-     * This is called by {@link VirtualKeysView} when a button is clicked. This is also called for
-     * {@link #mRepetitiveKeys} and {@link VirtualKeyButton} that have a popup set. However, this is
-     * not called for {@link #mSpecialButtons}, whose state can instead be read via a call to {@link
-     * #readSpecialButton(SpecialButton, boolean)}.
-     *
-     * @param view The view that was clicked.
-     * @param buttonInfo The {@link VirtualKeyButton} for the button that was clicked. The button
-     *     may be a {@link VirtualKeyButton#KEY_MACRO} set which can be checked with a call to
-     *     {@link VirtualKeyButton#isMacro()}.
-     * @param button The {@link Button} that was clicked.
-     */
-    void onVirtualKeyButtonClick(View view, VirtualKeyButton buttonInfo, Button button);
-
-    /**
-     * This is called by {@link VirtualKeysView} when a button is clicked so that the client can
-     * perform any hepatic feedback. This is only called in the {@link Button.OnClickListener} and
-     * not for every repeat. Its also called for {@link #mSpecialButtons}.
-     *
-     * @param view The view that was clicked.
-     * @param buttonInfo The {@link VirtualKeyButton} for the button that was clicked.
-     * @param button The {@link Button} that was clicked.
-     * @return Return {@code true} if the client handled the feedback, otherwise {@code false} so
-     *     that {@link VirtualKeysView#performVirtualKeyButtonHapticFeedback(View, VirtualKeyButton,
-     *     Button)} can handle it depending on system settings.
-     */
-    boolean performVirtualKeyButtonHapticFeedback(
-        View view, VirtualKeyButton buttonInfo, Button button);
-  }
-
   /** Defines the default value for {@link #mButtonTextColor}. */
   public static final int DEFAULT_BUTTON_TEXT_COLOR = 0xFFFFFFFF;
   /** Defines the default value for {@link #mButtonActiveTextColor}. */
@@ -110,39 +77,33 @@ public final class VirtualKeysView extends GridLayout {
   public static final int DEFAULT_BUTTON_BACKGROUND_COLOR = 0x00000000;
   /** Defines the default value for {@link #mButtonActiveBackgroundColor}. */
   public static final int DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR = 0xFF7F7F7F;
-
   /** Defines the minimum allowed duration in milliseconds for {@link #mLongPressTimeout}. */
   public static final int MIN_LONG_PRESS_DURATION = 200;
   /** Defines the maximum allowed duration in milliseconds for {@link #mLongPressTimeout}. */
   public static final int MAX_LONG_PRESS_DURATION = 3000;
   /** Defines the fallback duration in milliseconds for {@link #mLongPressTimeout}. */
   public static final int FALLBACK_LONG_PRESS_DURATION = 400;
-
   /** Defines the minimum allowed duration in milliseconds for {@link #mLongPressRepeatDelay}. */
   public static final int MIN_LONG_PRESS__REPEAT_DELAY = 5;
   /** Defines the maximum allowed duration in milliseconds for {@link #mLongPressRepeatDelay}. */
   public static final int MAX_LONG_PRESS__REPEAT_DELAY = 2000;
   /** Defines the default duration in milliseconds for {@link #mLongPressRepeatDelay}. */
   public static final int DEFAULT_LONG_PRESS_REPEAT_DELAY = 80;
-
   /**
    * The implementation of the {@link IVirtualKeysView} that acts as a client for the {@link
    * VirtualKeysView}.
    */
   private IVirtualKeysView mVirtualKeysViewClient;
-
   /**
    * The map for the {@link SpecialButton} and their {@link SpecialButtonState}. Defaults to the one
    * returned by {@link #getDefaultSpecialButtons(VirtualKeysView)}.
    */
   private Map<SpecialButton, SpecialButtonState> mSpecialButtons;
-
   /**
    * The keys for the {@link SpecialButton} added to {@link #mSpecialButtons}. This is automatically
    * set when the call to {@link #setSpecialButtons(Map)} is made.
    */
   private Set<String> mSpecialButtonsKeys;
-
   /**
    * The list of keys for which auto repeat of key should be triggered if its extra keys button is
    * long pressed. This is done by calling {@link IVirtualKeysView#onVirtualKeyButtonClick(View,
@@ -151,7 +112,6 @@ public final class VirtualKeysView extends GridLayout {
    * VirtualKeysConstants#PRIMARY_REPETITIVE_KEYS}.
    */
   private List<String> mRepetitiveKeys;
-
   /** The text color for the extra keys button. Defaults to {@link #DEFAULT_BUTTON_TEXT_COLOR}. */
   private int mButtonTextColor;
   /**
@@ -169,10 +129,8 @@ public final class VirtualKeysView extends GridLayout {
    * #DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR}.
    */
   private int mButtonActiveBackgroundColor;
-
   /** Defines whether text for the extra keys button should be all capitalized automatically. */
   private boolean mButtonTextAllCaps = true;
-
   /**
    * Defines the duration in milliseconds before a press turns into a long press. The default
    * duration used is the one returned by a call to {@link ViewConfiguration#getLongPressTimeout()}
@@ -181,7 +139,6 @@ public final class VirtualKeysView extends GridLayout {
    * #MAX_LONG_PRESS_DURATION}, otherwise {@link #FALLBACK_LONG_PRESS_DURATION} is used.
    */
   private int mLongPressTimeout;
-
   /**
    * Defines the duration in milliseconds for the delay between trigger of each repeat of {@link
    * #mRepetitiveKeys}. The default value is defined by {@link #DEFAULT_LONG_PRESS_REPEAT_DELAY}.
@@ -189,18 +146,15 @@ public final class VirtualKeysView extends GridLayout {
    * #MAX_LONG_PRESS__REPEAT_DELAY}, otherwise {@link #DEFAULT_LONG_PRESS_REPEAT_DELAY} is used.
    */
   private int mLongPressRepeatDelay;
-
   /**
    * The popup window shown if {@link VirtualKeyButton#getPopup()} returns a {@code non-null} value
    * and a swipe up action is done on an extra key.
    */
   private PopupWindow mPopupWindow;
-
   private ScheduledExecutorService mScheduledExecutor;
   private Handler mHandler;
   private SpecialButtonsLongHoldRunnable mSpecialButtonsLongHoldRunnable;
   private int mLongPressCount;
-
   public VirtualKeysView(Context context, AttributeSet attrs) {
     super(context, attrs);
 
@@ -213,6 +167,39 @@ public final class VirtualKeysView extends GridLayout {
         DEFAULT_BUTTON_ACTIVE_BACKGROUND_COLOR);
     setLongPressTimeout(ViewConfiguration.getLongPressTimeout());
     setLongPressRepeatDelay(DEFAULT_LONG_PRESS_REPEAT_DELAY);
+  }
+
+  /**
+   * Set the {@link VirtualKeysView} button colors.
+   *
+   * @param buttonTextColor The value for {@link #mButtonTextColor}.
+   * @param buttonActiveTextColor The value for {@link #mButtonActiveTextColor}.
+   * @param buttonBackgroundColor The value for {@link #mButtonBackgroundColor}.
+   * @param buttonActiveBackgroundColor The value for {@link #mButtonActiveBackgroundColor}.
+   */
+  public void setButtonColors(
+      int buttonTextColor,
+      int buttonActiveTextColor,
+      int buttonBackgroundColor,
+      int buttonActiveBackgroundColor) {
+    mButtonTextColor = buttonTextColor;
+    mButtonActiveTextColor = buttonActiveTextColor;
+    mButtonBackgroundColor = buttonBackgroundColor;
+    mButtonActiveBackgroundColor = buttonActiveBackgroundColor;
+  }
+
+  /** Get the default map that can be used for {@link #mSpecialButtons}. */
+  @NonNull
+  public Map<SpecialButton, SpecialButtonState> getDefaultSpecialButtons(
+      VirtualKeysView extraKeysView) {
+    return new HashMap<SpecialButton, SpecialButtonState>() {
+      {
+        put(SpecialButton.CTRL, new SpecialButtonState(extraKeysView));
+        put(SpecialButton.ALT, new SpecialButtonState(extraKeysView));
+        put(SpecialButton.SHIFT, new SpecialButtonState(extraKeysView));
+        put(SpecialButton.FN, new SpecialButtonState(extraKeysView));
+      }
+    };
   }
 
   /** Get {@link #mVirtualKeysViewClient}. */
@@ -243,12 +230,6 @@ public final class VirtualKeysView extends GridLayout {
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
-  /** Get {@link #mSpecialButtonsKeys}. */
-  public Set<String> getSpecialButtonsKeys() {
-    if (mSpecialButtonsKeys == null) return null;
-    return mSpecialButtonsKeys.stream().map(String::new).collect(Collectors.toSet());
-  }
-
   /** Set {@link #mSpecialButtonsKeys}. Must not be {@code null}. */
   public void setSpecialButtons(@NonNull Map<SpecialButton, SpecialButtonState> specialButtons) {
     mSpecialButtons = specialButtons;
@@ -258,23 +239,10 @@ public final class VirtualKeysView extends GridLayout {
             .collect(Collectors.toSet());
   }
 
-  /**
-   * Set the {@link VirtualKeysView} button colors.
-   *
-   * @param buttonTextColor The value for {@link #mButtonTextColor}.
-   * @param buttonActiveTextColor The value for {@link #mButtonActiveTextColor}.
-   * @param buttonBackgroundColor The value for {@link #mButtonBackgroundColor}.
-   * @param buttonActiveBackgroundColor The value for {@link #mButtonActiveBackgroundColor}.
-   */
-  public void setButtonColors(
-      int buttonTextColor,
-      int buttonActiveTextColor,
-      int buttonBackgroundColor,
-      int buttonActiveBackgroundColor) {
-    mButtonTextColor = buttonTextColor;
-    mButtonActiveTextColor = buttonActiveTextColor;
-    mButtonBackgroundColor = buttonBackgroundColor;
-    mButtonActiveBackgroundColor = buttonActiveBackgroundColor;
+  /** Get {@link #mSpecialButtonsKeys}. */
+  public Set<String> getSpecialButtonsKeys() {
+    if (mSpecialButtonsKeys == null) return null;
+    return mSpecialButtonsKeys.stream().map(String::new).collect(Collectors.toSet());
   }
 
   /** Get {@link #mButtonTextColor}. */
@@ -350,20 +318,6 @@ public final class VirtualKeysView extends GridLayout {
     } else {
       mLongPressRepeatDelay = DEFAULT_LONG_PRESS_REPEAT_DELAY;
     }
-  }
-
-  /** Get the default map that can be used for {@link #mSpecialButtons}. */
-  @NonNull
-  public Map<SpecialButton, SpecialButtonState> getDefaultSpecialButtons(
-      VirtualKeysView extraKeysView) {
-    return new HashMap<SpecialButton, SpecialButtonState>() {
-      {
-        put(SpecialButton.CTRL, new SpecialButtonState(extraKeysView));
-        put(SpecialButton.ALT, new SpecialButtonState(extraKeysView));
-        put(SpecialButton.SHIFT, new SpecialButtonState(extraKeysView));
-        put(SpecialButton.FN, new SpecialButtonState(extraKeysView));
-      }
-    };
   }
 
   /**
@@ -475,11 +429,6 @@ public final class VirtualKeysView extends GridLayout {
     }
   }
 
-  private void onVirtualKeyButtonClick(View view, VirtualKeyButton buttonInfo, Button button) {
-    if (mVirtualKeysViewClient != null)
-      mVirtualKeysViewClient.onVirtualKeyButtonClick(view, buttonInfo, button);
-  }
-
   private void performVirtualKeyButtonHapticFeedback(
       View view, VirtualKeyButton buttonInfo, Button button) {
     if (mVirtualKeysViewClient != null) {
@@ -516,6 +465,11 @@ public final class VirtualKeysView extends GridLayout {
     } else {
       onVirtualKeyButtonClick(view, buttonInfo, button);
     }
+  }
+
+  private void onVirtualKeyButtonClick(View view, VirtualKeyButton buttonInfo, Button button) {
+    if (mVirtualKeysViewClient != null)
+      mVirtualKeysViewClient.onVirtualKeyButtonClick(view, buttonInfo, button);
   }
 
   private void startScheduledExecutors(View view, VirtualKeyButton buttonInfo, Button button) {
@@ -556,21 +510,6 @@ public final class VirtualKeysView extends GridLayout {
     if (mSpecialButtonsLongHoldRunnable != null && mHandler != null) {
       mHandler.removeCallbacks(mSpecialButtonsLongHoldRunnable);
       mSpecialButtonsLongHoldRunnable = null;
-    }
-  }
-
-  private class SpecialButtonsLongHoldRunnable implements Runnable {
-    private final SpecialButtonState mState;
-
-    public SpecialButtonsLongHoldRunnable(SpecialButtonState state) {
-      mState = state;
-    }
-
-    public void run() {
-      // Toggle active and lock state
-      mState.setIsLocked(!mState.isActive);
-      mState.setIsActive(!mState.isActive);
-      mLongPressCount++;
     }
   }
 
@@ -615,6 +554,25 @@ public final class VirtualKeysView extends GridLayout {
     return mSpecialButtonsKeys.contains(button.getKey());
   }
 
+  private Button createSpecialButton(String buttonKey, boolean needUpdate) {
+    SpecialButtonState state = mSpecialButtons.get(SpecialButton.valueOf(buttonKey));
+    if (state == null) return null;
+    state.setIsCreated(true);
+    Button button = new Button(getContext(), null, android.R.attr.buttonBarButtonStyle);
+    button.setTextColor(state.isActive ? mButtonActiveTextColor : mButtonTextColor);
+    if (needUpdate) {
+      state.buttons.add(button);
+    }
+    return button;
+  }
+
+  /** General util function to compute the longest column length in a matrix. */
+  static int maximumLength(Object[][] matrix) {
+    int m = 0;
+    for (Object[] row : matrix) m = Math.max(m, row.length);
+    return m;
+  }
+
   /**
    * Read whether {@link SpecialButton} registered in {@link #mSpecialButtons} is active or not.
    *
@@ -638,22 +596,51 @@ public final class VirtualKeysView extends GridLayout {
     return true;
   }
 
-  private Button createSpecialButton(String buttonKey, boolean needUpdate) {
-    SpecialButtonState state = mSpecialButtons.get(SpecialButton.valueOf(buttonKey));
-    if (state == null) return null;
-    state.setIsCreated(true);
-    Button button = new Button(getContext(), null, android.R.attr.buttonBarButtonStyle);
-    button.setTextColor(state.isActive ? mButtonActiveTextColor : mButtonTextColor);
-    if (needUpdate) {
-      state.buttons.add(button);
+  private class SpecialButtonsLongHoldRunnable implements Runnable {
+    private final SpecialButtonState mState;
+
+    public SpecialButtonsLongHoldRunnable(SpecialButtonState state) {
+      mState = state;
     }
-    return button;
+
+    public void run() {
+      // Toggle active and lock state
+      mState.setIsLocked(!mState.isActive);
+      mState.setIsActive(!mState.isActive);
+      mLongPressCount++;
+    }
   }
 
-  /** General util function to compute the longest column length in a matrix. */
-  static int maximumLength(Object[][] matrix) {
-    int m = 0;
-    for (Object[] row : matrix) m = Math.max(m, row.length);
-    return m;
+  /** The client for the {@link VirtualKeysView}. */
+  public interface IVirtualKeysView {
+
+    /**
+     * This is called by {@link VirtualKeysView} when a button is clicked. This is also called for
+     * {@link #mRepetitiveKeys} and {@link VirtualKeyButton} that have a popup set. However, this is
+     * not called for {@link #mSpecialButtons}, whose state can instead be read via a call to {@link
+     * #readSpecialButton(SpecialButton, boolean)}.
+     *
+     * @param view The view that was clicked.
+     * @param buttonInfo The {@link VirtualKeyButton} for the button that was clicked. The button
+     *     may be a {@link VirtualKeyButton#KEY_MACRO} set which can be checked with a call to
+     *     {@link VirtualKeyButton#isMacro()}.
+     * @param button The {@link Button} that was clicked.
+     */
+    void onVirtualKeyButtonClick(View view, VirtualKeyButton buttonInfo, Button button);
+
+    /**
+     * This is called by {@link VirtualKeysView} when a button is clicked so that the client can
+     * perform any hepatic feedback. This is only called in the {@link Button.OnClickListener} and
+     * not for every repeat. Its also called for {@link #mSpecialButtons}.
+     *
+     * @param view The view that was clicked.
+     * @param buttonInfo The {@link VirtualKeyButton} for the button that was clicked.
+     * @param button The {@link Button} that was clicked.
+     * @return Return {@code true} if the client handled the feedback, otherwise {@code false} so
+     *     that {@link VirtualKeysView#performVirtualKeyButtonHapticFeedback(View, VirtualKeyButton,
+     *     Button)} can handle it depending on system settings.
+     */
+    boolean performVirtualKeyButtonHapticFeedback(
+        View view, VirtualKeyButton buttonInfo, Button button);
   }
 }

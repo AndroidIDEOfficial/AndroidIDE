@@ -49,11 +49,10 @@ public abstract class BaseView implements IView {
 
   protected final String qualifiedName;
   protected final View view;
+  protected final ILogger LOG = ILogger.newInstance(getClass().getSimpleName());
   protected IViewGroup parent;
   protected Object stored;
   private boolean isPlaceholder;
-
-  protected final ILogger LOG = ILogger.newInstance(getClass().getSimpleName());
 
   public BaseView(String qualifiedName, View view) {
     this(qualifiedName, view, false);
@@ -66,15 +65,37 @@ public abstract class BaseView implements IView {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hash(
+        attributes, attrAdapters, qualifiedName, view, getParent(), stored, isPlaceholder());
+  }  @Override
   public void setParent(IViewGroup parent) {
     this.parent = parent;
   }
 
-  public void setPlaceholder(boolean placeholder) {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    BaseView baseView = (BaseView) o;
+    return isPlaceholder() == baseView.isPlaceholder()
+        && Objects.equals(attributes, baseView.attributes)
+        && Objects.equals(attrAdapters, baseView.attrAdapters)
+        && Objects.equals(qualifiedName, baseView.qualifiedName)
+        && Objects.equals(view, baseView.view)
+        && Objects.equals(getParent(), baseView.getParent())
+        && Objects.equals(stored, baseView.stored);
+  }  public void setPlaceholder(boolean placeholder) {
     this.isPlaceholder = placeholder;
   }
 
-  @Override
+  protected Set<IAttributeAdapter> getAttributeAdapters() {
+    return attrAdapters;
+  }  @Override
   public boolean isPlaceholder() {
     return isPlaceholder;
   }
@@ -195,9 +216,7 @@ public abstract class BaseView implements IView {
     this.attrAdapters.add(adapter);
   }
 
-  protected Set<IAttributeAdapter> getAttributeAdapters() {
-    return attrAdapters;
-  }
+
 
   @Override
   public void setExtraData(Object data) {
@@ -311,29 +330,9 @@ public abstract class BaseView implements IView {
     return sb.toString();
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BaseView baseView = (BaseView) o;
-    return isPlaceholder() == baseView.isPlaceholder()
-        && Objects.equals(attributes, baseView.attributes)
-        && Objects.equals(attrAdapters, baseView.attrAdapters)
-        && Objects.equals(qualifiedName, baseView.qualifiedName)
-        && Objects.equals(view, baseView.view)
-        && Objects.equals(getParent(), baseView.getParent())
-        && Objects.equals(stored, baseView.stored);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(
-        attributes, attrAdapters, qualifiedName, view, getParent(), stored, isPlaceholder());
-  }
+
+
 
   protected void newLine(@NonNull StringBuilder stringBuilder, int indentCount) {
     stringBuilder.append("\n");

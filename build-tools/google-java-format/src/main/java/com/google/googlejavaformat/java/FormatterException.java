@@ -43,10 +43,6 @@ public final class FormatterException extends Exception {
     this.diagnostics = ImmutableList.copyOf(diagnostics);
   }
 
-  public List<FormatterDiagnostic> diagnostics() {
-    return diagnostics;
-  }
-
   public static FormatterException fromJavacDiagnostics(
       Iterable<Diagnostic<? extends JavaFileObject>> diagnostics) {
     return new FormatterException(
@@ -56,5 +52,9 @@ public final class FormatterException extends Exception {
   private static FormatterDiagnostic toFormatterDiagnostic(Diagnostic<?> input) {
     return FormatterDiagnostic.create(
         (int) input.getLineNumber(), (int) input.getColumnNumber(), input.getMessage(ENGLISH));
+  }
+
+  public List<FormatterDiagnostic> diagnostics() {
+    return diagnostics;
   }
 }

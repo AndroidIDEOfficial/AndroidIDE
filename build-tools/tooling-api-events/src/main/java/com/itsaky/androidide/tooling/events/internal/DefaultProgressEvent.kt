@@ -22,7 +22,7 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 
 /** @author Akash Yadav */
 open class DefaultProgressEvent(
-    override val displayName: String,
-    override val eventTime: Long,
-    override val descriptor: OperationDescriptor
+  override val displayName: String,
+  override val eventTime: Long,
+  override val descriptor: OperationDescriptor
 ) : ProgressEvent()

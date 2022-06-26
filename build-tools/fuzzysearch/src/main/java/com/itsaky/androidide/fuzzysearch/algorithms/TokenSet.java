@@ -1,12 +1,12 @@
 package com.itsaky.androidide.fuzzysearch.algorithms;
 
 import com.itsaky.androidide.fuzzysearch.Ratio;
+import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 public class TokenSet extends RatioAlgorithm {
 

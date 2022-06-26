@@ -59,8 +59,6 @@ public enum AttrType {
   /** An unknown value. The layout inflater does not consider this */
   UNKNOWN("");
 
-  private final String format;
-
   public static final String FORMAT_REF = REFERENCE.getFormat();
   public static final String FORMAT_COLOR = COLOR.getFormat();
   public static final String FORMAT_BOOL = BOOLEAN.getFormat();
@@ -71,17 +69,10 @@ public enum AttrType {
   public static final String FORMAT_FRACTION = FRACTION.getFormat();
   public static final String FORMAT_ENUM = ENUM.getFormat();
   public static final String FORMAT_FLAG = FLAG.getFormat();
+  private final String format;
 
   private AttrType(String format) {
     this.format = format;
-  }
-
-  public String getFormat() {
-    return this.format;
-  }
-
-  public boolean hasFixedValues() {
-    return this == AttrType.ENUM || this == AttrType.FLAG;
   }
 
   /**
@@ -114,5 +105,13 @@ public enum AttrType {
     }
 
     return AttrType.UNKNOWN;
+  }
+
+  public String getFormat() {
+    return this.format;
+  }
+
+  public boolean hasFixedValues() {
+    return this == AttrType.ENUM || this == AttrType.FLAG;
   }
 }

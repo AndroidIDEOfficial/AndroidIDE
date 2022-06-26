@@ -5,16 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String string;
-    private int integer;
-    private boolean condition;
-    private float imFloating;
-    private double profit;
+  private String string;
+  private int integer;
+  private boolean condition;
+  private float imFloating;
+  private double profit;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 }
-
-

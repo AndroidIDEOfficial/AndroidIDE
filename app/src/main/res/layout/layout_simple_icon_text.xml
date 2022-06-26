@@ -14,8 +14,7 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -34,11 +33,11 @@
         android:id="@+id/icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_android"
-        android:scaleType="fitCenter"
-        android:padding="4dp"
+        android:layout_gravity="center_vertical"
         android:layout_marginEnd="8dp"
-        android:layout_gravity="center_vertical"/>
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_android" />
 
     <TextView
         android:id="@+id/text"

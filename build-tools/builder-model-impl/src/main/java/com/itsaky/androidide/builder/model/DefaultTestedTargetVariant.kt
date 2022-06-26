@@ -22,7 +22,7 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultTestedTargetVariant : TestedTargetVariant, Serializable {
-    private val serialVersionUID = 1L
-    override var targetProjectPath: String = ""
-    override var targetVariant: String = ""
+  private val serialVersionUID = 1L
+  override var targetProjectPath: String = ""
+  override var targetVariant: String = ""
 }

@@ -24,9 +24,16 @@ import java.util.NoSuchElementException;
 /** Platform-independent newline handling. */
 public class Newlines {
 
+  private static final ImmutableSet<String> BREAKS = ImmutableSet.of("\r\n", "\n", "\r");
+
   /** Returns the number of line breaks in the input. */
   public static int count(String input) {
     return Iterators.size(lineOffsetIterator(input)) - 1;
+  }
+
+  /** Returns an iterator over the start offsets of lines in the input. */
+  public static Iterator<Integer> lineOffsetIterator(String input) {
+    return new LineOffsetIterator(input);
   }
 
   /** Returns the index of the first break in the input, or {@code -1}. */
@@ -35,8 +42,6 @@ public class Newlines {
     it.next();
     return it.hasNext() ? it.next() : -1;
   }
-
-  private static final ImmutableSet<String> BREAKS = ImmutableSet.of("\r\n", "\n", "\r");
 
   /** Returns true if the entire input string is a recognized line break. */
   public static boolean isNewline(String input) {
@@ -93,11 +98,6 @@ public class Newlines {
     return CharMatcher.anyOf("\n\r").matchesAnyOf(text);
   }
 
-  /** Returns an iterator over the start offsets of lines in the input. */
-  public static Iterator<Integer> lineOffsetIterator(String input) {
-    return new LineOffsetIterator(input);
-  }
-
   /** Returns an iterator over lines in the input, including trailing whitespace. */
   public static Iterator<String> lineIterator(String input) {
     return new LineIterator(input);
@@ -105,9 +105,9 @@ public class Newlines {
 
   private static class LineOffsetIterator implements Iterator<Integer> {
 
+    private final String input;
     private int curr = 0;
     private int idx = 0;
-    private final String input;
 
     private LineOffsetIterator(String input) {
       this.input = input;
@@ -156,11 +156,10 @@ public class Newlines {
 
   private static class LineIterator implements Iterator<String> {
 
-    int idx;
-    String curr;
-
     private final String input;
     private final Iterator<Integer> indices;
+    int idx;
+    String curr;
 
     private LineIterator(String input) {
       this.input = input;

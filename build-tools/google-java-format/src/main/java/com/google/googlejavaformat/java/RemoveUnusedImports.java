@@ -77,146 +77,6 @@ import javax.tools.StandardLocation;
  */
 public class RemoveUnusedImports {
 
-  // Visits an AST, recording all simple names that could refer to imported
-  // types and also any javadoc references that could refer to imported
-  // types (`@link`, `@see`, `@throws`, etc.)
-  //
-  // No attempt is made to determine whether simple names occur in contexts
-  // where they are type names, so there will be false positives. For example,
-  // `List` is not identified as unused import below:
-  //
-  // ```
-  // import java.util.List;
-  // class List {}
-  // ```
-  //
-  // This is still reasonably effective in practice because type names differ
-  // from other kinds of names in casing convention, and simple name
-  // clashes between imported and declared types are rare.
-  private static class UnusedImportScanner extends TreePathScanner<Void, Void> {
-
-    private final Set<String> usedNames = new LinkedHashSet<>();
-    private final Multimap<String, Range<Integer>> usedInJavadoc = HashMultimap.create();
-    final JavacTrees trees;
-    final DocTreeScanner docTreeSymbolScanner;
-
-    private UnusedImportScanner(JavacTrees trees) {
-      this.trees = trees;
-      docTreeSymbolScanner = new DocTreeScanner();
-    }
-
-    /** Skip the imports themselves when checking for usage. */
-    @Override
-    public Void visitImport(ImportTree importTree, Void usedSymbols) {
-      return null;
-    }
-
-    @Override
-    public Void visitIdentifier(IdentifierTree tree, Void unused) {
-      if (tree == null) {
-        return null;
-      }
-      usedNames.add(tree.getName().toString());
-      return null;
-    }
-
-    // TODO(cushon): remove this override when pattern matching in switch is no longer a preview
-    // feature, and TreePathScanner visits CaseTree#getLabels instead of CaseTree#getExpressions
-    @SuppressWarnings("unchecked") // reflection
-    @Override
-    public Void visitCase(CaseTree tree, Void unused) {
-      if (CASE_TREE_GET_LABELS != null) {
-        try {
-          scan((List<? extends Tree>) CASE_TREE_GET_LABELS.invoke(tree), null);
-        } catch (ReflectiveOperationException e) {
-          throw new LinkageError(e.getMessage(), e);
-        }
-      }
-      return super.visitCase(tree, null);
-    }
-
-    private static final Method CASE_TREE_GET_LABELS = caseTreeGetLabels();
-
-    private static Method caseTreeGetLabels() {
-      try {
-        return CaseTree.class.getMethod("getLabels");
-      } catch (NoSuchMethodException e) {
-        return null;
-      }
-    }
-
-    @Override
-    public Void scan(Tree tree, Void unused) {
-      if (tree == null) {
-        return null;
-      }
-      scanJavadoc();
-      return super.scan(tree, unused);
-    }
-
-    private void scanJavadoc() {
-      if (getCurrentPath() == null) {
-        return;
-      }
-      DocCommentTree commentTree = trees.getDocCommentTree(getCurrentPath());
-      if (commentTree == null) {
-        return;
-      }
-      docTreeSymbolScanner.scan(new DocTreePath(getCurrentPath(), commentTree), null);
-    }
-
-    // scan javadoc comments, checking for references to imported types
-    class DocTreeScanner extends DocTreePathScanner<Void, Void> {
-      @Override
-      public Void visitIdentifier(com.sun.source.doctree.IdentifierTree node, Void aVoid) {
-        return null;
-      }
-
-      @Override
-      public Void visitReference(ReferenceTree referenceTree, Void unused) {
-        DCReference reference = (DCReference) referenceTree;
-        long basePos =
-            reference
-                .pos((DCTree.DCDocComment) getCurrentPath().getDocComment())
-                .getStartPosition();
-        // the position of trees inside the reference node aren't stored, but the
-        // qualifier's
-        // start position is the beginning of the reference node
-        if (reference.qualifierExpression != null) {
-          new ReferenceScanner(basePos).scan(reference.qualifierExpression, null);
-        }
-        // Record uses inside method parameters. The javadoc tool doesn't use these, but
-        // IntelliJ does.
-        if (reference.paramTypes != null) {
-          for (JCTree param : reference.paramTypes) {
-            // TODO(cushon): get start positions for the parameters
-            new ReferenceScanner(-1).scan(param, null);
-          }
-        }
-        return null;
-      }
-
-      // scans the qualifier and parameters of a javadoc reference for possible type names
-      private class ReferenceScanner extends TreeScanner<Void, Void> {
-        private final long basePos;
-
-        public ReferenceScanner(long basePos) {
-          this.basePos = basePos;
-        }
-
-        @Override
-        public Void visitIdentifier(IdentifierTree node, Void aVoid) {
-          usedInJavadoc.put(
-              node.getName().toString(),
-              basePos != -1
-                  ? Range.closedOpen((int) basePos, (int) basePos + node.getName().length())
-                  : null);
-          return super.visitIdentifier(node, aVoid);
-        }
-      }
-    }
-  }
-
   public static String removeUnusedImports(final String contents) throws FormatterException {
     Context context = new Context();
     JCCompilationUnit unit = parse(context, contents);
@@ -351,5 +211,144 @@ public class RemoveUnusedImports {
       offset += replaceWith.length() - (range.upperEndpoint() - range.lowerEndpoint());
     }
     return sb.toString();
+  }
+
+  // Visits an AST, recording all simple names that could refer to imported
+  // types and also any javadoc references that could refer to imported
+  // types (`@link`, `@see`, `@throws`, etc.)
+  //
+  // No attempt is made to determine whether simple names occur in contexts
+  // where they are type names, so there will be false positives. For example,
+  // `List` is not identified as unused import below:
+  //
+  // ```
+  // import java.util.List;
+  // class List {}
+  // ```
+  //
+  // This is still reasonably effective in practice because type names differ
+  // from other kinds of names in casing convention, and simple name
+  // clashes between imported and declared types are rare.
+  private static class UnusedImportScanner extends TreePathScanner<Void, Void> {
+
+    private static final Method CASE_TREE_GET_LABELS = caseTreeGetLabels();
+    private final Set<String> usedNames = new LinkedHashSet<>();
+    private final Multimap<String, Range<Integer>> usedInJavadoc = HashMultimap.create();
+    final JavacTrees trees;
+    final DocTreeScanner docTreeSymbolScanner;
+
+    private UnusedImportScanner(JavacTrees trees) {
+      this.trees = trees;
+      docTreeSymbolScanner = new DocTreeScanner();
+    }
+
+    private static Method caseTreeGetLabels() {
+      try {
+        return CaseTree.class.getMethod("getLabels");
+      } catch (NoSuchMethodException e) {
+        return null;
+      }
+    }
+
+    /** Skip the imports themselves when checking for usage. */
+    @Override
+    public Void visitImport(ImportTree importTree, Void usedSymbols) {
+      return null;
+    }
+
+    // TODO(cushon): remove this override when pattern matching in switch is no longer a preview
+    // feature, and TreePathScanner visits CaseTree#getLabels instead of CaseTree#getExpressions
+    @SuppressWarnings("unchecked") // reflection
+    @Override
+    public Void visitCase(CaseTree tree, Void unused) {
+      if (CASE_TREE_GET_LABELS != null) {
+        try {
+          scan((List<? extends Tree>) CASE_TREE_GET_LABELS.invoke(tree), null);
+        } catch (ReflectiveOperationException e) {
+          throw new LinkageError(e.getMessage(), e);
+        }
+      }
+      return super.visitCase(tree, null);
+    }
+
+    @Override
+    public Void visitIdentifier(IdentifierTree tree, Void unused) {
+      if (tree == null) {
+        return null;
+      }
+      usedNames.add(tree.getName().toString());
+      return null;
+    }
+
+    @Override
+    public Void scan(Tree tree, Void unused) {
+      if (tree == null) {
+        return null;
+      }
+      scanJavadoc();
+      return super.scan(tree, unused);
+    }
+
+    private void scanJavadoc() {
+      if (getCurrentPath() == null) {
+        return;
+      }
+      DocCommentTree commentTree = trees.getDocCommentTree(getCurrentPath());
+      if (commentTree == null) {
+        return;
+      }
+      docTreeSymbolScanner.scan(new DocTreePath(getCurrentPath(), commentTree), null);
+    }
+
+    // scan javadoc comments, checking for references to imported types
+    class DocTreeScanner extends DocTreePathScanner<Void, Void> {
+      @Override
+      public Void visitIdentifier(com.sun.source.doctree.IdentifierTree node, Void aVoid) {
+        return null;
+      }
+
+      @Override
+      public Void visitReference(ReferenceTree referenceTree, Void unused) {
+        DCReference reference = (DCReference) referenceTree;
+        long basePos =
+            reference
+                .pos((DCTree.DCDocComment) getCurrentPath().getDocComment())
+                .getStartPosition();
+        // the position of trees inside the reference node aren't stored, but the
+        // qualifier's
+        // start position is the beginning of the reference node
+        if (reference.qualifierExpression != null) {
+          new ReferenceScanner(basePos).scan(reference.qualifierExpression, null);
+        }
+        // Record uses inside method parameters. The javadoc tool doesn't use these, but
+        // IntelliJ does.
+        if (reference.paramTypes != null) {
+          for (JCTree param : reference.paramTypes) {
+            // TODO(cushon): get start positions for the parameters
+            new ReferenceScanner(-1).scan(param, null);
+          }
+        }
+        return null;
+      }
+
+      // scans the qualifier and parameters of a javadoc reference for possible type names
+      private class ReferenceScanner extends TreeScanner<Void, Void> {
+        private final long basePos;
+
+        public ReferenceScanner(long basePos) {
+          this.basePos = basePos;
+        }
+
+        @Override
+        public Void visitIdentifier(IdentifierTree node, Void aVoid) {
+          usedInJavadoc.put(
+              node.getName().toString(),
+              basePos != -1
+                  ? Range.closedOpen((int) basePos, (int) basePos + node.getName().length())
+                  : null);
+          return super.visitIdentifier(node, aVoid);
+        }
+      }
+    }
   }
 }

@@ -26,7 +26,6 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 class JavaModuleProjectDependency(
-    /** The name of the module project. */
-    val moduleName: String
-) : JavaModuleDependency(null), Serializable {
-}
+  /** The name of the module project. */
+  val moduleName: String
+) : JavaModuleDependency(null), Serializable {}

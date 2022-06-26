@@ -26,17 +26,17 @@ import java.io.File
  */
 interface IdeModule {
 
-    /**
-     * Get the generated JAR file for this module.
-     *
-     * @param variant The build variant name. NOT application for [IdeJavaModule].
-     */
-    @Deprecated("Use getClasspath() instead.") fun getGeneratedJar(variant: String): File
+  /**
+   * Get the generated JAR file for this module.
+   *
+   * @param variant The build variant name. NOT application for [IdeJavaModule].
+   */
+  @Deprecated("Use getClasspath() instead.") fun getGeneratedJar(variant: String): File
 
-    /**
-     * Get the classpath of this module. For example, the generated JAR file.
-     *
-     * @return The class paths.
-     */
-    fun getClassPaths(): Set<File>
+  /**
+   * Get the classpath of this module. For example, the generated JAR file.
+   *
+   * @return The class paths.
+   */
+  fun getClassPaths(): Set<File>
 }

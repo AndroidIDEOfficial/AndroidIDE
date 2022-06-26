@@ -22,26 +22,26 @@ import com.itsaky.lsp.java.actions.BaseCodeAction
 
 /** @author Akash Yadav */
 class CommentAction : BaseCodeAction() {
-    override val id: String = "lsp_java_commentLine"
-    override var label: String = ""
+  override val id: String = "lsp_java_commentLine"
+  override var label: String = ""
 
-    override val titleTextRes: Int = R.string.action_comment_line
+  override val titleTextRes: Int = R.string.action_comment_line
 
-    override fun execAction(data: ActionData): Boolean {
-        val editor = requireEditor(data)
-        val text = editor.text
-        val cursor = editor.cursor
-        var line = cursor.leftLine
+  override fun execAction(data: ActionData): Boolean {
+    val editor = requireEditor(data)
+    val text = editor.text
+    val cursor = editor.cursor
+    var line = cursor.leftLine
 
-        text.beginBatchEdit()
-        while (line >= cursor.leftLine && line <= cursor.rightLine) {
-            if (!text.getLineString(line).trim { it <= ' ' }.startsWith("//")) {
-                text.insert(line, 0, "//")
-            }
-            line++
-        }
-        text.endBatchEdit()
-
-        return true
+    text.beginBatchEdit()
+    while (line >= cursor.leftLine && line <= cursor.rightLine) {
+      if (!text.getLineString(line).trim { it <= ' ' }.startsWith("//")) {
+        text.insert(line, 0, "//")
+      }
+      line++
     }
+    text.endBatchEdit()
+
+    return true
+  }
 }

@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 
 /** @author Akash Yadav */
 open class TransformProgressEvent(
-    override val displayName: String,
-    override val eventTime: Long,
-    override val descriptor: TransformOperationDescriptor
+  override val displayName: String,
+  override val eventTime: Long,
+  override val descriptor: TransformOperationDescriptor
 ) : ProgressEvent()

@@ -20,24 +20,22 @@ package com.itsaky.lsp.xml
 import com.itsaky.lsp.api.ILanguageServer
 import com.itsaky.lsp.api.LanguageServerProvider
 import com.itsaky.sdk.SDKInfo
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** @author Akash Yadav */
 class XmlLanguageServerProvider : LanguageServerProvider() {
-    private val server = XMLLanguageServer()
-    override fun getServer(): ILanguageServer = server
+  private val server = XMLLanguageServer()
+  override fun getServer(): ILanguageServer = server
 
-    override fun initIfNecessary() {
-        super.initIfNecessary()
+  override fun initIfNecessary() {
+    super.initIfNecessary()
 
-        if (server.isInitialized && server.sdkInfo == null) {
-            val application = RuntimeEnvironment.getApplication()
-            server.setupSDK(SDKInfo(application.resources))
-        }
+    if (server.isInitialized && server.sdkInfo == null) {
+      val application = RuntimeEnvironment.getApplication()
+      server.setupSDK(SDKInfo(application.resources))
     }
-    companion object {
-        @JvmField val INSTANCE = XmlLanguageServerProvider()
-    }
+  }
+  companion object {
+    @JvmField val INSTANCE = XmlLanguageServerProvider()
+  }
 }

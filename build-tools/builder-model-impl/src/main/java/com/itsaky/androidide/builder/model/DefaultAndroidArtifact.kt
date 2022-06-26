@@ -23,24 +23,24 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultAndroidArtifact : AndroidArtifact, Serializable {
-    private val serialVersionUID = 1L
-    override var resGenTaskName: String? = null
-    override var abiFilters: Set<String>? = null
-    override var assembleTaskOutputListingFile: File? = null
-    override var bundleInfo: DefaultBundleInfo? = null
-    override var codeShrinker: CodeShrinker? = null
-    override var generatedResourceFolders: Collection<File> = emptyList()
-    override var isSigned: Boolean = false
-    override var maxSdkVersion: Int? = null
-    override var minSdkVersion: DefaultApiVersion = DefaultApiVersion()
-    override var signingConfigName: String? = null
-    override var sourceGenTaskName: String = ""
-    override var testInfo: DefaultTestInfo? = null
-    override var assembleTaskName: String = ""
-    override var classesFolders: Set<File> = emptySet()
-    override var compileTaskName: String = ""
-    override var generatedSourceFolders: Collection<File> = emptyList()
-    override var ideSetupTaskNames: Set<String> = emptySet()
-    override var targetSdkVersionOverride: DefaultApiVersion? = null
-    override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+  private val serialVersionUID = 1L
+  override var resGenTaskName: String? = null
+  override var abiFilters: Set<String>? = null
+  override var assembleTaskOutputListingFile: File? = null
+  override var bundleInfo: DefaultBundleInfo? = null
+  override var codeShrinker: CodeShrinker? = null
+  override var generatedResourceFolders: Collection<File> = emptyList()
+  override var isSigned: Boolean = false
+  override var maxSdkVersion: Int? = null
+  override var minSdkVersion: DefaultApiVersion = DefaultApiVersion()
+  override var signingConfigName: String? = null
+  override var sourceGenTaskName: String = ""
+  override var testInfo: DefaultTestInfo? = null
+  override var assembleTaskName: String = ""
+  override var classesFolders: Set<File> = emptySet()
+  override var compileTaskName: String = ""
+  override var generatedSourceFolders: Collection<File> = emptyList()
+  override var ideSetupTaskNames: Set<String> = emptySet()
+  override var targetSdkVersionOverride: DefaultApiVersion? = null
+  override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
 }

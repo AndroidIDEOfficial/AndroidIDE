@@ -101,16 +101,6 @@ public class EditHelper {
     return buf.toString();
   }
 
-  private static String printParameters(final ExecutableType method, final MethodTree source) {
-    StringJoiner join = new StringJoiner(", ");
-    for (int i = 0; i < method.getParameterTypes().size(); i++) {
-      String type = EditHelper.printType(method.getParameterTypes().get(i));
-      Name name = source.getParameters().get(i).getName();
-      join.add(type + " " + name);
-    }
-    return join.toString();
-  }
-
   public static String printType(final TypeMirror type) {
     if (type instanceof DeclaredType) {
       DeclaredType declared = (DeclaredType) type;
@@ -125,14 +115,6 @@ public class EditHelper {
     } else {
       return type.toString();
     }
-  }
-
-  private static String printTypeParameters(final List<? extends TypeMirror> arguments) {
-    StringJoiner join = new StringJoiner(", ");
-    for (TypeMirror a : arguments) {
-      join.add(printType(a));
-    }
-    return join.toString();
   }
 
   public static String printTypeName(final TypeElement type) {
@@ -202,5 +184,23 @@ public class EditHelper {
       result.append(" ");
     }
     return result.toString();
+  }
+
+  private static String printParameters(final ExecutableType method, final MethodTree source) {
+    StringJoiner join = new StringJoiner(", ");
+    for (int i = 0; i < method.getParameterTypes().size(); i++) {
+      String type = EditHelper.printType(method.getParameterTypes().get(i));
+      Name name = source.getParameters().get(i).getName();
+      join.add(type + " " + name);
+    }
+    return join.toString();
+  }
+
+  private static String printTypeParameters(final List<? extends TypeMirror> arguments) {
+    StringJoiner join = new StringJoiner(", ");
+    for (TypeMirror a : arguments) {
+      join.add(printType(a));
+    }
+    return join.toString();
   }
 }

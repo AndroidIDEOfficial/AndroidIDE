@@ -9,9 +9,9 @@
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressbar"
-        android:indeterminate="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
 
     <TextView
         android:id="@+id/empty_label"
@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:textSize="24sp"
-        android:text="@string/wizard_loading"/>
+        android:text="@string/wizard_loading"
+        android:textSize="24sp" />
 </LinearLayout>

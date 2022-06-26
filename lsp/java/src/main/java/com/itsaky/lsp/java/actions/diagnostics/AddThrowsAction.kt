@@ -28,53 +28,54 @@ import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
 class AddThrowsAction : BaseCodeAction() {
-    override val id = "lsp_java_addThrows"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id = "lsp_java_addThrows"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_add_throws
+  override val titleTextRes: Int = R.string.action_add_throws
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
+    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val needsThrow = CodeActionUtils.findMethod(task, diagnostic.range)
-            val exceptionName = CodeActionUtils.extractExceptionName(diagnostic.message)
-            return@get AddException(
-                needsThrow.className,
-                needsThrow.methodName,
-                needsThrow.erasedParameterTypes,
-                exceptionName)
-        }
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
+    }
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
+    return server.compiler.compile(file).get { task ->
+      val needsThrow = CodeActionUtils.findMethod(task, diagnostic.range)
+      val exceptionName = CodeActionUtils.extractExceptionName(diagnostic.message)
+      return@get AddException(
+        needsThrow.className,
+        needsThrow.methodName,
+        needsThrow.erasedParameterTypes,
+        exceptionName
+      )
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is AddException) {
+      log.warn("Unable to add 'throws' expression")
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is AddException) {
-            log.warn("Unable to add 'throws' expression")
-            return
-        }
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    val file = requireFile(data)
 
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        val file = requireFile(data)
-
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
-    }
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

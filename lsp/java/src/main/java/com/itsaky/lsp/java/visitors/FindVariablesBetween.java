@@ -65,14 +65,14 @@ public class FindVariablesBetween extends TreePathScanner<Void, Void> {
     return super.visitVariable(node, unused);
   }
 
-  @NonNull
-  public List<TreePath> getPaths() {
-    return paths;
-  }
-
   private boolean isInRange(VariableTree node) {
     final long start = this.positions.getStartPosition(root, node);
     final long end = this.positions.getEndPosition(root, node);
     return (this.start <= start && end <= this.end) || (start <= this.start && end >= this.end);
+  }
+
+  @NonNull
+  public List<TreePath> getPaths() {
+    return paths;
   }
 }

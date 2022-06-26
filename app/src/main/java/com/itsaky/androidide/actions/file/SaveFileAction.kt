@@ -30,57 +30,57 @@ import com.itsaky.toaster.Toaster
 /** @author Akash Yadav */
 class SaveFileAction() : EditorRelatedAction() {
 
-    private val log = ILogger.newInstance("SaveFileAction")
+  private val log = ILogger.newInstance("SaveFileAction")
 
-    override val id: String = "editor_saveFile"
+  override val id: String = "editor_saveFile"
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.save)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_save)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.save)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_save)
+  }
 
-    override fun prepare(data: ActionData) {
+  override fun prepare(data: ActionData) {
 
-        val context =
-            getActivity(data)
-                ?: run {
-                    visible = false
-                    enabled = false
-                    return
-                }
-
-        visible = context.viewModel.openedFiles.isNotEmpty()
-        enabled = context.areFilesModified()
-    }
-
-    override fun execAction(data: ActionData): Boolean {
-        val context = getActivity(data) ?: return false
-        
-        return try {
-            // Cannot use context.saveAll() because this.execAction is called on non-UI thread
-            // and saveAll call will result in UI actions
-            val result = context.saveAllResult()
-
-            if (result.xmlSaved) {
-                ProjectManager.generateSources(context.buildService)
-            }
-            
-            if (result.gradleSaved) {
-                context.notifySyncNeeded()
-            }
-            true
-        } catch (error: Throwable) {
-            log.error("Failed to save file", error)
-            false
+    val context =
+      getActivity(data)
+        ?: run {
+          visible = false
+          enabled = false
+          return
         }
-    }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result is Boolean && result) {
-            StudioApp.getInstance().toast(R.string.all_saved, Toaster.Type.SUCCESS)
-        } else {
-            log.error("Failed to save file")
-            TODO("Create message in strings.xml")
-        }
+    visible = context.viewModel.openedFiles.isNotEmpty()
+    enabled = context.areFilesModified()
+  }
+
+  override fun execAction(data: ActionData): Boolean {
+    val context = getActivity(data) ?: return false
+
+    return try {
+      // Cannot use context.saveAll() because this.execAction is called on non-UI thread
+      // and saveAll call will result in UI actions
+      val result = context.saveAllResult()
+
+      if (result.xmlSaved) {
+        ProjectManager.generateSources(context.buildService)
+      }
+
+      if (result.gradleSaved) {
+        context.notifySyncNeeded()
+      }
+      true
+    } catch (error: Throwable) {
+      log.error("Failed to save file", error)
+      false
     }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result is Boolean && result) {
+      StudioApp.getInstance().toast(R.string.all_saved, Toaster.Type.SUCCESS)
+    } else {
+      log.error("Failed to save file")
+      TODO("Create message in strings.xml")
+    }
+  }
 }

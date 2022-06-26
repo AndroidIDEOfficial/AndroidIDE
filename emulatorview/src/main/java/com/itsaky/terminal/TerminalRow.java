@@ -14,14 +14,14 @@ public final class TerminalRow {
 
   /** The number of columns in this terminal row. */
   private final int mColumns;
+  /** The style bits of each cell in the row. See {@link TextStyle}. */
+  final long[] mStyle;
   /** The text filling this terminal row. */
   public char[] mText;
   /** The number of java char:s used in {@link #mText}. */
   private short mSpaceUsed;
   /** If this row has been line wrapped due to text output at the end of line. */
   boolean mLineWrap;
-  /** The style bits of each cell in the row. See {@link TextStyle}. */
-  final long[] mStyle;
   /** If this row might contain chars with width != 1, used for deactivating fast path */
   boolean mHasNonOneWidthOrSurrogateChars;
 
@@ -31,6 +31,13 @@ public final class TerminalRow {
     mText = new char[(int) (SPARE_CAPACITY_FACTOR * columns)];
     mStyle = new long[columns];
     clear(style);
+  }
+
+  public void clear(long style) {
+    Arrays.fill(mText, ' ');
+    Arrays.fill(mStyle, style);
+    mSpaceUsed = (short) mColumns;
+    mHasNonOneWidthOrSurrogateChars = false;
   }
 
   /** NOTE: The sourceX2 is exclusive. */
@@ -62,10 +69,6 @@ public final class TerminalRow {
       }
       setChar(destinationX, codePoint, line.getStyle(sourceX1));
     }
-  }
-
-  public int getSpaceUsed() {
-    return mSpaceUsed;
   }
 
   /** Note that the column may end of second half of wide character. */
@@ -106,28 +109,6 @@ public final class TerminalRow {
       }
       currentCharIndex = newCharIndex;
     }
-  }
-
-  private boolean wideDisplayCharacterStartingAt(int column) {
-    for (int currentCharIndex = 0, currentColumn = 0; currentCharIndex < mSpaceUsed; ) {
-      char c = mText[currentCharIndex++];
-      int codePoint =
-          Character.isHighSurrogate(c) ? Character.toCodePoint(c, mText[currentCharIndex++]) : c;
-      int wcwidth = WcWidth.width(codePoint);
-      if (wcwidth > 0) {
-        if (currentColumn == column && wcwidth == 2) return true;
-        currentColumn += wcwidth;
-        if (currentColumn > column) return false;
-      }
-    }
-    return false;
-  }
-
-  public void clear(long style) {
-    Arrays.fill(mText, ' ');
-    Arrays.fill(mStyle, style);
-    mSpaceUsed = (short) mColumns;
-    mHasNonOneWidthOrSurrogateChars = false;
   }
 
   // https://github.com/steven676/Android-Terminal-Emulator/commit/9a47042620bec87617f0b4f5d50568535668fe26
@@ -277,13 +258,32 @@ public final class TerminalRow {
     }
   }
 
+  public final long getStyle(int column) {
+    return mStyle[column];
+  }
+
+  private boolean wideDisplayCharacterStartingAt(int column) {
+    for (int currentCharIndex = 0, currentColumn = 0; currentCharIndex < mSpaceUsed; ) {
+      char c = mText[currentCharIndex++];
+      int codePoint =
+          Character.isHighSurrogate(c) ? Character.toCodePoint(c, mText[currentCharIndex++]) : c;
+      int wcwidth = WcWidth.width(codePoint);
+      if (wcwidth > 0) {
+        if (currentColumn == column && wcwidth == 2) return true;
+        currentColumn += wcwidth;
+        if (currentColumn > column) return false;
+      }
+    }
+    return false;
+  }
+
   boolean isBlank() {
     for (int charIndex = 0, charLen = getSpaceUsed(); charIndex < charLen; charIndex++)
       if (mText[charIndex] != ' ') return false;
     return true;
   }
 
-  public final long getStyle(int column) {
-    return mStyle[column];
+  public int getSpaceUsed() {
+    return mSpaceUsed;
   }
 }

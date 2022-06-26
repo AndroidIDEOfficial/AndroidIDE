@@ -22,14 +22,14 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultLibraryInfo(
-    override val attributes: Map<String, String>,
-    override val buildType: String?,
-    override val capabilities: List<String>,
-    override val isTestFixtures: Boolean,
-    override val productFlavors: Map<String, String>,
-    override val group: String,
-    override val name: String,
-    override val version: String
+  override val attributes: Map<String, String>,
+  override val buildType: String?,
+  override val capabilities: List<String>,
+  override val isTestFixtures: Boolean,
+  override val productFlavors: Map<String, String>,
+  override val group: String,
+  override val name: String,
+  override val version: String
 ) : LibraryInfo, Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

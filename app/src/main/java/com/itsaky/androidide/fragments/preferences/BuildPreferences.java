@@ -120,15 +120,6 @@ public class BuildPreferences extends BasePreferenceFragment
     return true;
   }
 
-  @Override
-  public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-    final var key = preference.getKey();
-    if (KEY_TP_FIX.equals(key)) {
-      getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
-    }
-    return true;
-  }
-
   private void changeGradleDist() {
     final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
     final var binding = LayoutDialogTextInputBinding.inflate(getLayoutInflater());
@@ -227,5 +218,14 @@ public class BuildPreferences extends BasePreferenceFragment
     return progressSheet == null
         ? progressSheet = new ProgressSheet().setMessage(getString(R.string.please_wait))
         : progressSheet;
+  }
+
+  @Override
+  public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+    final var key = preference.getKey();
+    if (KEY_TP_FIX.equals(key)) {
+      getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
+    }
+    return true;
   }
 }

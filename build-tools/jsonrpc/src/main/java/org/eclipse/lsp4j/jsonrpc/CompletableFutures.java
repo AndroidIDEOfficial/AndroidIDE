@@ -57,13 +57,13 @@ public final class CompletableFutures {
     }
 
     @Override
-    public void checkCanceled() {
-      if (future.isCancelled()) throw new CancellationException();
+    public boolean isCanceled() {
+      return future.isCancelled();
     }
 
     @Override
-    public boolean isCanceled() {
-      return future.isCancelled();
+    public void checkCanceled() {
+      if (future.isCancelled()) throw new CancellationException();
     }
   }
 }

@@ -30,23 +30,6 @@ public class AndroidUtils {
   }
 
   /**
-   * Checks if the given name is a valid general Java package name.
-   *
-   * <p>If validating the Android package name, use {@link #validateAndroidPackageName(String)}
-   * instead!
-   */
-  public static boolean isValidJavaPackageName(@NotNull String name) {
-    int index = 0;
-    while (true) {
-      int index1 = name.indexOf('.', index);
-      if (index1 < 0) index1 = name.length();
-      if (!isIdentifier(name.substring(index, index1))) return false;
-      if (index1 == name.length()) return true;
-      index = index1 + 1;
-    }
-  }
-
-  /**
    * Validates a potential package name and returns null if the package name is valid, and otherwise
    * returns a description for why it is not valid.
    *
@@ -75,19 +58,6 @@ public class AndroidUtils {
       return BaseApplication.getBaseInstance().getString(R.string.msg_package_is_not_valid);
     }
     return null;
-  }
-
-  public static boolean validateNameChecker(@NotNull String name) {
-    return name.matches("^([a-zA-Z0-9_]*)$");
-  }
-
-  @Nullable
-  public static String validatePackageName(@Nullable String packageName) {
-    packageName = (packageName == null) ? "" : packageName;
-    if (packageName.length() >= PACKAGE_LENGTH_LIMIT) {
-      return BaseApplication.getBaseInstance().getString(R.string.msg_package_is_to_long);
-    }
-    return AndroidUtils.validateAndroidPackageName(packageName);
   }
 
   // This method is a copy of android.content.pm.PackageParser#validateName with the
@@ -129,8 +99,38 @@ public class AndroidUtils {
         : BaseApplication.getBaseInstance().getString(R.string.msg_package_mus_have_dot);
   }
 
+  /**
+   * Checks if the given name is a valid general Java package name.
+   *
+   * <p>If validating the Android package name, use {@link #validateAndroidPackageName(String)}
+   * instead!
+   */
+  public static boolean isValidJavaPackageName(@NotNull String name) {
+    int index = 0;
+    while (true) {
+      int index1 = name.indexOf('.', index);
+      if (index1 < 0) index1 = name.length();
+      if (!isIdentifier(name.substring(index, index1))) return false;
+      if (index1 == name.length()) return true;
+      index = index1 + 1;
+    }
+  }
+
   public static boolean isIdentifier(@NotNull String candidate) {
     return StringUtil.isJavaIdentifier(candidate);
+  }
+
+  public static boolean validateNameChecker(@NotNull String name) {
+    return name.matches("^([a-zA-Z0-9_]*)$");
+  }
+
+  @Nullable
+  public static String validatePackageName(@Nullable String packageName) {
+    packageName = (packageName == null) ? "" : packageName;
+    if (packageName.length() >= PACKAGE_LENGTH_LIMIT) {
+      return BaseApplication.getBaseInstance().getString(R.string.msg_package_is_to_long);
+    }
+    return AndroidUtils.validateAndroidPackageName(packageName);
   }
 
   /**
@@ -160,10 +160,6 @@ public class AndroidUtils {
     }
 
     return sb.toString();
-  }
-
-  public static String trimWhiteSpace(String string) {
-    return StringUtils.deleteWhitespace(string);
   }
 
   /**
@@ -199,6 +195,10 @@ public class AndroidUtils {
   public static String appNameToPackageName(String appName, String packageName) {
     String newAppName = trimWhiteSpace(appName).toLowerCase(Locale.getDefault());
     return getPackageDomain(packageName) + "." + newAppName;
+  }
+
+  public static String trimWhiteSpace(String string) {
+    return StringUtils.deleteWhitespace(string);
   }
 
   public static String getPackageDomain(String packageName) {

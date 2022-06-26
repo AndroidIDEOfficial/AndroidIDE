@@ -94,16 +94,6 @@ public abstract class IDrawableParser extends CommonParseUtils {
   protected abstract Drawable parseDrawable() throws Exception;
 
   /**
-   * Set the minimum depth that this parser should keep parsing. Subclasses are expected to parse
-   * child tags with depths greater than this specified value.
-   *
-   * @param minDepth The minimum depth of this parser.
-   */
-  public void setMinDepth(int minDepth) {
-    this.minDepth = minDepth;
-  }
-
-  /**
    * Find the index of the attribute with the given name.
    *
    * @param name The name of the attribute to look for.
@@ -127,6 +117,16 @@ public abstract class IDrawableParser extends CommonParseUtils {
    */
   protected String value(int index) {
     return parser.getAttributeValue(index);
+  }
+
+  /**
+   * Set the minimum depth that this parser should keep parsing. Subclasses are expected to parse
+   * child tags with depths greater than this specified value.
+   *
+   * @param minDepth The minimum depth of this parser.
+   */
+  public void setMinDepth(int minDepth) {
+    this.minDepth = minDepth;
   }
 
   /**

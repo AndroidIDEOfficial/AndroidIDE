@@ -29,52 +29,52 @@ import com.itsaky.lsp.models.DiagnosticItem
 /** @author Akash Yadav */
 class FieldToBlockAction : BaseCodeAction() {
 
-    override val id: String = "lsp_java_fieldToBlock"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id: String = "lsp_java_fieldToBlock"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_convert_to_block
+  override val titleTextRes: Int = R.string.action_convert_to_block
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible) {
-            return
-        }
-
-        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data.get(DiagnosticItem::class.java)!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
+    if (!visible) {
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val server = data[JavaLanguageServer::class.java]!!
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        val file = requirePath(data)
-
-        return server.compiler.compile(file).get {
-            ConvertFieldToBlock(file, findPosition(it, diagnostic.range.start))
-        }
+    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is ConvertFieldToBlock) {
-            log.warn("Unable to convert field to block")
-            return
-        }
-
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        val file = requireFile(data)
-
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
     }
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val server = data[JavaLanguageServer::class.java]!!
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    val file = requirePath(data)
+
+    return server.compiler.compile(file).get {
+      ConvertFieldToBlock(file, findPosition(it, diagnostic.range.start))
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is ConvertFieldToBlock) {
+      log.warn("Unable to convert field to block")
+      return
+    }
+
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    val file = requireFile(data)
+
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

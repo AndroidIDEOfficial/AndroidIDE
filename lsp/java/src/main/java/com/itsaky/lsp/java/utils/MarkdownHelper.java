@@ -51,6 +51,9 @@ import javax.xml.transform.stream.StreamResult;
 
 public class MarkdownHelper {
 
+  private static final Pattern HTML_TAG = Pattern.compile("<(\\w+)[^>]*>");
+  private static final Logger LOG = Logger.getLogger("main");
+
   public static MarkupContent asMarkupContent(DocCommentTree comment) {
     String markdown = asMarkdown(comment);
     MarkupContent content = new MarkupContent();
@@ -62,6 +65,15 @@ public class MarkdownHelper {
   public static String asMarkdown(DocCommentTree comment) {
     List<? extends DocTree> lines = comment.getFirstSentence();
     return asMarkdown(lines);
+  }
+
+  /** If `commentText` looks like HTML, convert it to markdown */
+  public static String asMarkdown(String commentText) {
+    if (isHtml(commentText)) {
+      commentText = htmlToMarkdown(commentText);
+    }
+    commentText = replaceTags(commentText);
+    return commentText;
   }
 
   private static String asMarkdown(List<? extends DocTree> lines) {
@@ -199,8 +211,6 @@ public class MarkdownHelper {
     return print(doc);
   }
 
-  private static final Pattern HTML_TAG = Pattern.compile("<(\\w+)[^>]*>");
-
   private static boolean isHtml(String text) {
     Matcher tags = HTML_TAG.matcher(text);
     while (tags.find()) {
@@ -211,15 +221,4 @@ public class MarkdownHelper {
     }
     return false;
   }
-
-  /** If `commentText` looks like HTML, convert it to markdown */
-  public static String asMarkdown(String commentText) {
-    if (isHtml(commentText)) {
-      commentText = htmlToMarkdown(commentText);
-    }
-    commentText = replaceTags(commentText);
-    return commentText;
-  }
-
-  private static final Logger LOG = Logger.getLogger("main");
 }

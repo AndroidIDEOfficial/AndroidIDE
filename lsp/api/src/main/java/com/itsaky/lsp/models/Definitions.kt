@@ -19,8 +19,7 @@ package com.itsaky.lsp.models
 
 import java.nio.file.Path
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 data class DefinitionParams(var file: Path, var position: Position)
-data class DefinitionResult (var locations: List<Location>)
+
+data class DefinitionResult(var locations: List<Location>)

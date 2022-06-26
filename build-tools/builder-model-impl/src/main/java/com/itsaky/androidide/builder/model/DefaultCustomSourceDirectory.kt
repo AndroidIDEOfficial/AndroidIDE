@@ -23,8 +23,8 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultCustomSourceDirectory(
-    override val directory: File,
-    override val sourceTypeName: String
+  override val directory: File,
+  override val sourceTypeName: String
 ) : CustomSourceDirectory, Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

@@ -30,29 +30,29 @@ import java.io.File
  */
 abstract class LanguageServerProvider {
 
-    fun server(): ILanguageServer {
+  fun server(): ILanguageServer {
 
-        if (Environment.COMPILER_MODULE == null) {
-            val javaHome = System.getProperty("java.home")
-            assertThat(javaHome).isNotEmpty()
-            Environment.COMPILER_MODULE = File(javaHome)
-        }
-
-        initIfNecessary()
-
-        return getServer()
+    if (Environment.COMPILER_MODULE == null) {
+      val javaHome = System.getProperty("java.home")
+      assertThat(javaHome).isNotEmpty()
+      Environment.COMPILER_MODULE = File(javaHome)
     }
 
-    protected abstract fun getServer(): ILanguageServer
+    initIfNecessary()
 
-    protected open fun initIfNecessary() {
-        if (!getServer().isInitialized) {
-            getServer().initialize(createInitParams())
-        }
-    }
+    return getServer()
+  }
 
-    @Contract(" -> new")
-    private fun createInitParams(): InitializeParams {
-        return InitializeParams(mutableSetOf(resources()))
+  protected abstract fun getServer(): ILanguageServer
+
+  protected open fun initIfNecessary() {
+    if (!getServer().isInitialized) {
+      getServer().initialize(createInitParams())
     }
+  }
+
+  @Contract(" -> new")
+  private fun createInitParams(): InitializeParams {
+    return InitializeParams(mutableSetOf(resources()))
+  }
 }

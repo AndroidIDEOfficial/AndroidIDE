@@ -54,12 +54,62 @@ import javax.lang.model.element.Name;
 
 public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightToken>> {
 
+  private static final ILogger LOG = ILogger.newInstance("JavaSemanticHighlighter");
   private final Trees trees;
   private final CompileTask task;
 
   public SemanticHighlighter(CompileTask task) {
     this.task = task;
     this.trees = Trees.instance(task.task);
+  }
+
+  @Override
+  public Void visitClass(ClassTree t, List<HighlightToken> colors) {
+    putSemantics(t.getSimpleName(), colors);
+    return super.visitClass(t, colors);
+  }
+
+  @Override
+  public Void visitMethod(MethodTree tree, List<HighlightToken> colors) {
+    putSemantics(tree.getName(), colors);
+    return super.visitMethod(tree, colors);
+  }
+
+  @Override
+  public Void visitVariable(VariableTree t, List<HighlightToken> colors) {
+    putSemantics(t.getName(), colors);
+    return super.visitVariable(t, colors);
+  }
+
+  @Override
+  public Void visitMethodInvocation(MethodInvocationTree tree, List<HighlightToken> colors) {
+    Name name = null;
+    ExpressionTree select = tree.getMethodSelect();
+    if (select instanceof MemberSelectTree) {
+      name = ((MemberSelectTree) select).getIdentifier();
+    } else if (select instanceof IdentifierTree) {
+      name = ((IdentifierTree) select).getName();
+    }
+
+    if (name != null) {
+      Range range = find(getCurrentPath(), name);
+      if (range != null) {
+        colors.add(new HighlightToken(range, HighlightTokenKind.METHOD_INVOCATION));
+      }
+    }
+    return super.visitMethodInvocation(tree, colors);
+  }
+
+  @Override
+  public Void visitMemberSelect(MemberSelectTree t, List<HighlightToken> colors) {
+    putSemantics(t.getIdentifier(), colors);
+    return super.visitMemberSelect(t, colors);
+  }
+
+  @Override
+  public Void visitIdentifier(IdentifierTree t, List<HighlightToken> colors) {
+    putSemantics(t.getName(), colors);
+    return super.visitIdentifier(t, colors);
   }
 
   private void putSemantics(Name name, List<HighlightToken> tokens) {
@@ -142,15 +192,6 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
     tokens.add(new HighlightToken(range, tokenKind));
   }
 
-  @NonNull
-  private static Position getPosition(long position, @NonNull LineMap lines) {
-    // decrement the numbers
-    // to convert 1-based indexes to 0-based
-    final int line = (int) lines.getLineNumber(position) - 1;
-    final int column = (int) lines.getColumnNumber(position) - 1;
-    return new Position(line, column);
-  }
-
   private Range find(TreePath path, Name name) {
     // Find region containing name
     SourcePositions pos = trees.getSourcePositions();
@@ -179,54 +220,12 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
     return new Range(getPosition(start, root.getLineMap()), getPosition(end, root.getLineMap()));
   }
 
-  @Override
-  public Void visitIdentifier(IdentifierTree t, List<HighlightToken> colors) {
-    putSemantics(t.getName(), colors);
-    return super.visitIdentifier(t, colors);
+  @NonNull
+  private static Position getPosition(long position, @NonNull LineMap lines) {
+    // decrement the numbers
+    // to convert 1-based indexes to 0-based
+    final int line = (int) lines.getLineNumber(position) - 1;
+    final int column = (int) lines.getColumnNumber(position) - 1;
+    return new Position(line, column);
   }
-
-  @Override
-  public Void visitMemberSelect(MemberSelectTree t, List<HighlightToken> colors) {
-    putSemantics(t.getIdentifier(), colors);
-    return super.visitMemberSelect(t, colors);
-  }
-
-  @Override
-  public Void visitVariable(VariableTree t, List<HighlightToken> colors) {
-    putSemantics(t.getName(), colors);
-    return super.visitVariable(t, colors);
-  }
-
-  @Override
-  public Void visitClass(ClassTree t, List<HighlightToken> colors) {
-    putSemantics(t.getSimpleName(), colors);
-    return super.visitClass(t, colors);
-  }
-
-  @Override
-  public Void visitMethodInvocation(MethodInvocationTree tree, List<HighlightToken> colors) {
-    Name name = null;
-    ExpressionTree select = tree.getMethodSelect();
-    if (select instanceof MemberSelectTree) {
-      name = ((MemberSelectTree) select).getIdentifier();
-    } else if (select instanceof IdentifierTree) {
-      name = ((IdentifierTree) select).getName();
-    }
-
-    if (name != null) {
-      Range range = find(getCurrentPath(), name);
-      if (range != null) {
-        colors.add(new HighlightToken(range, HighlightTokenKind.METHOD_INVOCATION));
-      }
-    }
-    return super.visitMethodInvocation(tree, colors);
-  }
-
-  @Override
-  public Void visitMethod(MethodTree tree, List<HighlightToken> colors) {
-    putSemantics(tree.getName(), colors);
-    return super.visitMethod(tree, colors);
-  }
-
-  private static final ILogger LOG = ILogger.newInstance("JavaSemanticHighlighter");
 }

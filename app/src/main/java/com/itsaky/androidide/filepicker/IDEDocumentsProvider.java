@@ -94,108 +94,14 @@ public class IDEDocumentsProvider extends DocumentsProvider {
     return new File(Environment.DEFAULT_HOME);
   }
 
-  /**
-   * Get the document id given a file. This document id must be consistent across time as other
-   * applications may save the ID and use it to reference documents later.
-   *
-   * <p>The reverse of @{link #getFileForDocId}.
-   */
-  private static String getDocIdForFile(File file) {
-    return file.getAbsolutePath();
-  }
-
-  /** Get the file given a document id (the reverse of {@link #getDocIdForFile(File)}). */
-  private static File getFileForDocId(String docId) throws FileNotFoundException {
-    final File f = new File(docId);
-    if (!f.exists()) throw new FileNotFoundException(f.getAbsolutePath() + " not found");
-    return f;
-  }
-
-  private static String getMimeType(File file) {
-    if (file.isDirectory()) {
-      return Document.MIME_TYPE_DIR;
-    } else {
-      final String name = file.getName();
-      final int lastDot = name.lastIndexOf('.');
-      if (lastDot >= 0) {
-        final String extension = name.substring(lastDot + 1).toLowerCase(Locale.ROOT);
-        final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if (mime != null) return mime;
-      }
-      return "application/octet-stream";
-    }
-  }
-
-  @Override
-  public Cursor queryRoots(String[] projection) {
-    final MatrixCursor result =
-        new MatrixCursor(projection != null ? projection : DEFAULT_ROOT_PROJECTION);
-    final String applicationName = getContext().getString(R.string.app_name);
-
-    final MatrixCursor.RowBuilder row = result.newRow();
-    LOG.debug("queryRoots() before all add");
-    row.add(Root.COLUMN_ROOT_ID, getDocIdForFile(BASE_DIR));
-    LOG.debug("queryRoots() before all add, 1");
-    row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(BASE_DIR));
-    LOG.debug("queryRoots() before all add, 2");
-    row.add(Root.COLUMN_SUMMARY, null);
-    LOG.debug("queryRoots() before all add, 3");
-    row.add(
-        Root.COLUMN_FLAGS,
-        Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD);
-    LOG.debug("queryRoots() before all add, 4");
-    row.add(Root.COLUMN_TITLE, applicationName);
-    LOG.debug("queryRoots() before all add, 5");
-    row.add(Root.COLUMN_MIME_TYPES, ALL_MIME_TYPES);
-    LOG.debug("queryRoots() before all add, 6");
-    row.add(Root.COLUMN_AVAILABLE_BYTES, BASE_DIR.getFreeSpace());
-    LOG.debug("queryRoots() before all add, 7");
-    row.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
-    LOG.debug("queryRoots() before all add");
-    return result;
-  }
-
-  @Override
-  public Cursor queryDocument(String documentId, String[] projection) throws FileNotFoundException {
-    final MatrixCursor result =
-        new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
-    includeFile(result, documentId, null);
-    return result;
-  }
-
-  @Override
-  public Cursor queryChildDocuments(String parentDocumentId, String[] projection, String sortOrder)
-      throws FileNotFoundException {
-    final MatrixCursor result =
-        new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
-    final File parent = getFileForDocId(parentDocumentId);
-    for (File file : parent.listFiles()) {
-      includeFile(result, null, file);
-    }
-    return result;
-  }
-
-  @Override
-  public ParcelFileDescriptor openDocument(
-      final String documentId, String mode, CancellationSignal signal)
-      throws FileNotFoundException {
-    final File file = getFileForDocId(documentId);
-    final int accessMode = ParcelFileDescriptor.parseMode(mode);
-    return ParcelFileDescriptor.open(file, accessMode);
-  }
-
-  @Override
-  public AssetFileDescriptor openDocumentThumbnail(
-      String documentId, Point sizeHint, CancellationSignal signal) throws FileNotFoundException {
-    final File file = getFileForDocId(documentId);
-    final ParcelFileDescriptor pfd =
-        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-    return new AssetFileDescriptor(pfd, 0, file.length());
-  }
-
   @Override
   public boolean onCreate() {
     return true;
+  }
+
+  @Override
+  public boolean isChildDocument(String parentDocumentId, String documentId) {
+    return documentId.startsWith(parentDocumentId);
   }
 
   @Override
@@ -231,9 +137,62 @@ public class IDEDocumentsProvider extends DocumentsProvider {
   }
 
   @Override
-  public String getDocumentType(String documentId) throws FileNotFoundException {
-    File file = getFileForDocId(documentId);
-    return getMimeType(file);
+  public Cursor queryRoots(String[] projection) {
+    final MatrixCursor result =
+        new MatrixCursor(projection != null ? projection : DEFAULT_ROOT_PROJECTION);
+    final String applicationName = getContext().getString(R.string.app_name);
+
+    final MatrixCursor.RowBuilder row = result.newRow();
+    LOG.debug("queryRoots() before all add");
+    row.add(Root.COLUMN_ROOT_ID, getDocIdForFile(BASE_DIR));
+    LOG.debug("queryRoots() before all add, 1");
+    row.add(Root.COLUMN_DOCUMENT_ID, getDocIdForFile(BASE_DIR));
+    LOG.debug("queryRoots() before all add, 2");
+    row.add(Root.COLUMN_SUMMARY, null);
+    LOG.debug("queryRoots() before all add, 3");
+    row.add(
+        Root.COLUMN_FLAGS,
+        Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_SEARCH | Root.FLAG_SUPPORTS_IS_CHILD);
+    LOG.debug("queryRoots() before all add, 4");
+    row.add(Root.COLUMN_TITLE, applicationName);
+    LOG.debug("queryRoots() before all add, 5");
+    row.add(Root.COLUMN_MIME_TYPES, ALL_MIME_TYPES);
+    LOG.debug("queryRoots() before all add, 6");
+    row.add(Root.COLUMN_AVAILABLE_BYTES, BASE_DIR.getFreeSpace());
+    LOG.debug("queryRoots() before all add, 7");
+    row.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
+    LOG.debug("queryRoots() before all add");
+    return result;
+  }
+
+  /**
+   * Get the document id given a file. This document id must be consistent across time as other
+   * applications may save the ID and use it to reference documents later.
+   *
+   * <p>The reverse of @{link #getFileForDocId}.
+   */
+  private static String getDocIdForFile(File file) {
+    return file.getAbsolutePath();
+  }
+
+  @Override
+  public Cursor queryDocument(String documentId, String[] projection) throws FileNotFoundException {
+    final MatrixCursor result =
+        new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
+    includeFile(result, documentId, null);
+    return result;
+  }
+
+  @Override
+  public Cursor queryChildDocuments(String parentDocumentId, String[] projection, String sortOrder)
+      throws FileNotFoundException {
+    final MatrixCursor result =
+        new MatrixCursor(projection != null ? projection : DEFAULT_DOCUMENT_PROJECTION);
+    final File parent = getFileForDocId(parentDocumentId);
+    for (File file : parent.listFiles()) {
+      includeFile(result, null, file);
+    }
+    return result;
   }
 
   @Override
@@ -277,8 +236,27 @@ public class IDEDocumentsProvider extends DocumentsProvider {
   }
 
   @Override
-  public boolean isChildDocument(String parentDocumentId, String documentId) {
-    return documentId.startsWith(parentDocumentId);
+  public String getDocumentType(String documentId) throws FileNotFoundException {
+    File file = getFileForDocId(documentId);
+    return getMimeType(file);
+  }
+
+  @Override
+  public ParcelFileDescriptor openDocument(
+      final String documentId, String mode, CancellationSignal signal)
+      throws FileNotFoundException {
+    final File file = getFileForDocId(documentId);
+    final int accessMode = ParcelFileDescriptor.parseMode(mode);
+    return ParcelFileDescriptor.open(file, accessMode);
+  }
+
+  @Override
+  public AssetFileDescriptor openDocumentThumbnail(
+      String documentId, Point sizeHint, CancellationSignal signal) throws FileNotFoundException {
+    final File file = getFileForDocId(documentId);
+    final ParcelFileDescriptor pfd =
+        ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+    return new AssetFileDescriptor(pfd, 0, file.length());
   }
 
   /**
@@ -316,5 +294,27 @@ public class IDEDocumentsProvider extends DocumentsProvider {
     row.add(Document.COLUMN_LAST_MODIFIED, file.lastModified());
     row.add(Document.COLUMN_FLAGS, flags);
     row.add(Document.COLUMN_ICON, R.mipmap.ic_launcher);
+  }
+
+  /** Get the file given a document id (the reverse of {@link #getDocIdForFile(File)}). */
+  private static File getFileForDocId(String docId) throws FileNotFoundException {
+    final File f = new File(docId);
+    if (!f.exists()) throw new FileNotFoundException(f.getAbsolutePath() + " not found");
+    return f;
+  }
+
+  private static String getMimeType(File file) {
+    if (file.isDirectory()) {
+      return Document.MIME_TYPE_DIR;
+    } else {
+      final String name = file.getName();
+      final int lastDot = name.lastIndexOf('.');
+      if (lastDot >= 0) {
+        final String extension = name.substring(lastDot + 1).toLowerCase(Locale.ROOT);
+        final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (mime != null) return mime;
+      }
+      return "application/octet-stream";
+    }
   }
 }

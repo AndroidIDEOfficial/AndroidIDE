@@ -6,19 +6,19 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
-    tools:ignore="RtlCompat" >
+    tools:ignore="RtlCompat">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
         android:background="?attr/colorPrimaryDark"
-        android:gravity="center" >
+        android:gravity="center"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/toolbar_header"

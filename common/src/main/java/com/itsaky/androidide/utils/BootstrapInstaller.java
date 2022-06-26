@@ -182,13 +182,13 @@ public class BootstrapInstaller {
     }
   }
 
-  public interface UpdateListener {
-    void onUpdate(String message);
-  }
-
   public static class InstallationException extends RuntimeException {
     public InstallationException(String message) {
       super(message);
     }
+  }
+
+  public interface UpdateListener {
+    void onUpdate(String message);
   }
 }

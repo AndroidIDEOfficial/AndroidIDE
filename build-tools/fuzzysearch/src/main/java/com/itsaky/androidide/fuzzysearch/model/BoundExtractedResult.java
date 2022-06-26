@@ -26,10 +26,6 @@ public class BoundExtractedResult<T> implements Comparable<BoundExtractedResult<
     this.string = string;
   }
 
-  public int getScore() {
-    return score;
-  }
-
   public int getIndex() {
     return index;
   }
@@ -42,5 +38,9 @@ public class BoundExtractedResult<T> implements Comparable<BoundExtractedResult<
   @Override
   public int compareTo(BoundExtractedResult<T> o) {
     return Integer.compare(this.getScore(), o.getScore());
+  }
+
+  public int getScore() {
+    return score;
   }
 }

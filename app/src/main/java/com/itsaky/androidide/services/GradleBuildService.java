@@ -321,12 +321,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         .thenApply(this::markBuildAsFinished);
   }
 
-  private String getGradleInstallationPath() {
-    return StudioApp.getInstance()
-        .getPrefManager()
-        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
-  }
-
   @NonNull
   @Override
   public CompletableFuture<TaskExecutionResult> executeProjectTasks(
@@ -351,6 +345,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public CompletableFuture<BuildCancellationRequestResult> cancelCurrentBuild() {
     return server.cancelCurrentBuild();
+  }
+
+  private String getGradleInstallationPath() {
+    return StudioApp.getInstance()
+        .getPrefManager()
+        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
   }
 
   private void checkServerStarted() {

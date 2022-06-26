@@ -75,15 +75,6 @@ public class CompileBatch implements AutoCloseable {
         parent.fileManager, parent.diagnostics::add, options, Collections.emptyList(), sources);
   }
 
-  /**
-   * Combine source path or class path entries using the system separator, for example ':' in unix
-   */
-  private static String joinPath(Collection<Path> classOrSourcePath) {
-    return classOrSourcePath.stream()
-        .map(Path::toString)
-        .collect(Collectors.joining(File.pathSeparator));
-  }
-
   private static List<String> options(Set<Path> classPath) {
     List<String> list = new ArrayList<String>();
 
@@ -106,6 +97,20 @@ public class CompileBatch implements AutoCloseable {
         "-Xlint:static");
 
     return list;
+  }
+
+  /**
+   * Combine source path or class path entries using the system separator, for example ':' in unix
+   */
+  private static String joinPath(Collection<Path> classOrSourcePath) {
+    return classOrSourcePath.stream()
+        .map(Path::toString)
+        .collect(Collectors.joining(File.pathSeparator));
+  }
+
+  @Override
+  public void close() {
+    closed = true;
   }
 
   /**
@@ -177,11 +182,6 @@ public class CompileBatch implements AutoCloseable {
       }
     }
     return FILE_NOT_FOUND;
-  }
-
-  @Override
-  public void close() {
-    closed = true;
   }
 
   private boolean isValidFileRange(javax.tools.Diagnostic<? extends JavaFileObject> d) {

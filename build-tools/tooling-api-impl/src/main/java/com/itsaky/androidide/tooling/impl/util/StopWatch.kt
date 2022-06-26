@@ -27,25 +27,25 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class StopWatch(
-    val label: String,
-    val start: Long = System.currentTimeMillis(),
-    var lastLap: Long = start
+  val label: String,
+  val start: Long = System.currentTimeMillis(),
+  var lastLap: Long = start
 ) {
-    constructor(label: String) : this(label, System.currentTimeMillis())
+  constructor(label: String) : this(label, System.currentTimeMillis())
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    fun log() {
-        log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
-    }
+  fun log() {
+    log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
+  }
 
-    fun lap(message: String) {
-        log.debug("$message in ${System.currentTimeMillis() - start}ms")
-        lastLap = System.currentTimeMillis()
-    }
+  fun lap(message: String) {
+    log.debug("$message in ${System.currentTimeMillis() - start}ms")
+    lastLap = System.currentTimeMillis()
+  }
 
-    fun lapFromLast(message: String) {
-        log.debug("$message in ${System.currentTimeMillis() - start}ms")
-        lastLap = System.currentTimeMillis()
-    }
+  fun lapFromLast(message: String) {
+    log.debug("$message in ${System.currentTimeMillis() - start}ms")
+    lastLap = System.currentTimeMillis()
+  }
 }

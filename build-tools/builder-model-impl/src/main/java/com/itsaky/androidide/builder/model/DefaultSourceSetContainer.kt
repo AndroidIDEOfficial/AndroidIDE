@@ -21,9 +21,9 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultSourceSetContainer : SourceSetContainer, Serializable {
-    private val serialVersionUID = 1L
-    override var androidTestSourceProvider: DefaultSourceProvider? = null
-    override var sourceProvider: DefaultSourceProvider = DefaultSourceProvider()
-    override var testFixturesSourceProvider: DefaultSourceProvider? = null
-    override var unitTestSourceProvider: DefaultSourceProvider? = null
+  private val serialVersionUID = 1L
+  override var androidTestSourceProvider: DefaultSourceProvider? = null
+  override var sourceProvider: DefaultSourceProvider = DefaultSourceProvider()
+  override var testFixturesSourceProvider: DefaultSourceProvider? = null
+  override var unitTestSourceProvider: DefaultSourceProvider? = null
 }

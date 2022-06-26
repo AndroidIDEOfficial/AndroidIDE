@@ -41,15 +41,6 @@ public class Symbols {
     return new Symbol[0];
   }
 
-  public static String createTabSpaces() {
-    int size = StudioApp.getInstance().getPrefManager().getEditorTabSize();
-    StringBuilder tab = new StringBuilder();
-    for (int i = 1; i <= size; i++) {
-      tab.append(" ");
-    }
-    return tab.toString();
-  }
-
   public static Symbol[] javaSymbols() {
     return new Symbol[] {
       new Symbol("↹", "\t"),
@@ -104,5 +95,14 @@ public class Symbols {
       new Symbol("_"),
       new Symbol("-")
     };
+  }
+
+  public static String createTabSpaces() {
+    int size = StudioApp.getInstance().getPrefManager().getEditorTabSize();
+    StringBuilder tab = new StringBuilder();
+    for (int i = 1; i <= size; i++) {
+      tab.append(" ");
+    }
+    return tab.toString();
   }
 }

@@ -61,223 +61,223 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 internal class ToolingApiServerImpl(private val forwardingProject: InternalForwardingProject) :
-    IToolingApiServer {
+  IToolingApiServer {
 
-    private var initialized = false
-    private var client: IToolingApiClient? = null
-    private var connector: GradleConnector? = null
-    private var project: IdeGradleProject? = null
-    private var buildCancellationToken: CancellationTokenSource? = null
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private var initialized = false
+  private var client: IToolingApiClient? = null
+  private var connector: GradleConnector? = null
+  private var project: IdeGradleProject? = null
+  private var buildCancellationToken: CancellationTokenSource? = null
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    @Suppress("UnstableApiUsage")
-    override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
-        forwardingProject.projectPath = params.directory
-        return CompletableFutures.computeAsync {
-            try {
+  @Suppress("UnstableApiUsage")
+  override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
+    forwardingProject.projectPath = params.directory
+    return CompletableFutures.computeAsync {
+      try {
 
-                if (initialized && connector != null) {
-                    connector?.disconnect()
-                    connector = null
-                    project = null
-                }
-
-                Main.checkGradleWrapper()
-
-                if (buildCancellationToken != null) {
-                    cancelCurrentBuild().get()
-                }
-
-                log.debug("Got initialize request", params)
-                val stopWatch = StopWatch("Connection to project")
-                this.connector =
-                    GradleConnector.newConnector().forProjectDirectory(File(params.directory))
-                setupConnectorForGradleInstallation(this.connector!!, params.gradleInstallation)
-                stopWatch.lap("Connector created")
-
-                if (this.connector == null) {
-                    throw CompletionException(
-                        RuntimeException(
-                            "Unable to create gradle connector for project directory: ${params.directory}"))
-                }
-
-                val connection = this.connector!!.connect()
-                stopWatch.lapFromLast("Project connection established")
-
-                val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
-                this.project = ProjectReader.read(connection, issues)
-                stopWatch.lapFromLast(
-                    "Project read ${if(this.project == null) "failed" else "successful"}")
-
-                connection.close()
-                stopWatch.log()
-
-                this.forwardingProject.project = this.project
-
-                initialized = true
-
-                return@computeAsync InitializeResult(issues)
-            } catch (err: Throwable) {
-                log.error(err)
-            }
-
-            return@computeAsync InitializeResult(emptyMap())
-        }
-    }
-
-    override fun isServerInitialized(): CompletableFuture<Boolean> {
-        return CompletableFuture.supplyAsync { initialized }
-    }
-
-    override fun getRootProject(): CompletableFuture<IdeGradleProject> {
-        return CompletableFutures.computeAsync {
-            assertProjectInitialized()
-            return@computeAsync this.project
-        }
-    }
-
-    override fun executeTasks(
-        message: TaskExecutionMessage
-    ): CompletableFuture<TaskExecutionResult> {
-        return CompletableFutures.computeAsync {
-            assertProjectInitialized()
-
-            log.debug("Received request to run tasks.", message)
-            Main.checkGradleWrapper()
-
-            var projectPath = message.projectPath
-            if (projectPath == null) {
-                projectPath = ":"
-            }
-
-            val project =
-                this.project!!.findByPath(projectPath).get()
-                    ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
-
-            this.connector!!.forProjectDirectory(project.projectDir)
-            setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)
-
-            val connection = this.connector!!.connect()
-            val builder = connection.newBuild()
-            builder.addProgressListener(ForwardingProgressListener())
-
-            // System.in and System.out are used for communication between this server and the
-            // client.
-            val out = LoggingOutputStream()
-            builder.setStandardInput("NoOp".byteInputStream())
-            builder.setStandardError(out)
-            builder.setStandardOutput(out)
-            builder.forTasks(*message.tasks.filter { it.isNotBlank() }.toTypedArray())
-            Main.finalizeLauncher(builder)
-
-            this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
-            builder.withCancellationToken(this.buildCancellationToken!!.token())
-
-            notifyBeforeBuild()
-
-            try {
-                builder.run()
-                this.buildCancellationToken = null
-                notifyBuildSuccess(message.tasks)
-                return@computeAsync TaskExecutionResult(true, null)
-            } catch (error: Throwable) {
-                notifyBuildFailure(message.tasks)
-                return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
-            }
-        }
-    }
-
-    private fun setupConnectorForGradleInstallation(
-        connector: GradleConnector,
-        gradleDistribution: String?
-    ) {
-        if (gradleDistribution != null && gradleDistribution.isNotBlank()) {
-            val file = File(gradleDistribution)
-            if (file.exists() && file.isDirectory) {
-                log.info("Using Gradle installation:", file.canonicalPath)
-                connector.useInstallation(file)
-            } else {
-                log.error("Specified Gradle installation does not exist:", gradleDistribution)
-            }
-        } else {
-            log.info("Using Gradle wrapper for build...")
-        }
-    }
-
-    private fun notifyBuildFailure(tasks: List<String>) {
-        if (client != null) {
-            client!!.onBuildFailed(BuildResult((tasks)))
-        }
-    }
-
-    private fun notifyBuildSuccess(tasks: List<String>) {
-        if (client != null) {
-            client!!.onBuildSuccessful(BuildResult(tasks))
-        }
-    }
-
-    private fun notifyBeforeBuild() {
-        if (client != null) {
-            client!!.prepareBuild()
-        }
-    }
-
-    override fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult> {
-        return CompletableFutures.computeAsync {
-            if (this.buildCancellationToken == null) {
-                return@computeAsync BuildCancellationRequestResult(
-                    false, BuildCancellationRequestResult.Reason.NO_RUNNING_BUILD)
-            }
-
-            try {
-                this.buildCancellationToken!!.cancel()
-            } catch (e: Exception) {
-                val failureReason = CANCELLATION_ERROR
-                failureReason.message = "${failureReason.message}: ${e.message}"
-                return@computeAsync BuildCancellationRequestResult(false, failureReason)
-            }
-
-            return@computeAsync BuildCancellationRequestResult(true, null)
-        }
-    }
-
-    @Suppress("UnstableApiUsage")
-    override fun shutdown(): CompletableFuture<Void> {
-        return CompletableFuture.runAsync {
-            connector?.disconnect()
-            Main.future?.cancel(true)
-
-            this.connector = null
-            this.client = null
-            this.project = null
-            this.buildCancellationToken = null
-            this.forwardingProject.project = null
-            Main.future = null
-            Main.client = null
-
-            this.initialized = false
-        }
-    }
-
-    private fun getTaskFailureType(error: Throwable): Failure =
-        when (error) {
-            is BuildException -> BUILD_FAILED
-            is BuildCancelledException -> BUILD_CANCELLED
-            is GradleConnectionException -> CONNECTION_ERROR
-            is java.lang.IllegalStateException -> CONNECTION_CLOSED
-            is UnsupportedVersionException -> UNSUPPORTED_GRADLE_VERSION
-            is UnsupportedBuildArgumentException -> UNSUPPORTED_BUILD_ARGUMENT
-            is UnsupportedOperationConfigurationException -> UNSUPPORTED_CONFIGURATION
-            else -> UNKNOWN
+        if (initialized && connector != null) {
+          connector?.disconnect()
+          connector = null
+          project = null
         }
 
-    private fun assertProjectInitialized() {
-        if (!isServerInitialized().get() || project == null) {
-            throw CompletionException(IllegalStateException("Project is not initialized!"))
+        Main.checkGradleWrapper()
+
+        if (buildCancellationToken != null) {
+          cancelCurrentBuild().get()
         }
+
+        log.debug("Got initialize request", params)
+        val stopWatch = StopWatch("Connection to project")
+        this.connector = GradleConnector.newConnector().forProjectDirectory(File(params.directory))
+        setupConnectorForGradleInstallation(this.connector!!, params.gradleInstallation)
+        stopWatch.lap("Connector created")
+
+        if (this.connector == null) {
+          throw CompletionException(
+            RuntimeException(
+              "Unable to create gradle connector for project directory: ${params.directory}"
+            )
+          )
+        }
+
+        val connection = this.connector!!.connect()
+        stopWatch.lapFromLast("Project connection established")
+
+        val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
+        this.project = ProjectReader.read(connection, issues)
+        stopWatch.lapFromLast("Project read ${if(this.project == null) "failed" else "successful"}")
+
+        connection.close()
+        stopWatch.log()
+
+        this.forwardingProject.project = this.project
+
+        initialized = true
+
+        return@computeAsync InitializeResult(issues)
+      } catch (err: Throwable) {
+        log.error(err)
+      }
+
+      return@computeAsync InitializeResult(emptyMap())
+    }
+  }
+
+  override fun isServerInitialized(): CompletableFuture<Boolean> {
+    return CompletableFuture.supplyAsync { initialized }
+  }
+
+  override fun getRootProject(): CompletableFuture<IdeGradleProject> {
+    return CompletableFutures.computeAsync {
+      assertProjectInitialized()
+      return@computeAsync this.project
+    }
+  }
+
+  override fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult> {
+    return CompletableFutures.computeAsync {
+      assertProjectInitialized()
+
+      log.debug("Received request to run tasks.", message)
+      Main.checkGradleWrapper()
+
+      var projectPath = message.projectPath
+      if (projectPath == null) {
+        projectPath = ":"
+      }
+
+      val project =
+        this.project!!.findByPath(projectPath).get()
+          ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
+
+      this.connector!!.forProjectDirectory(project.projectDir)
+      setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)
+
+      val connection = this.connector!!.connect()
+      val builder = connection.newBuild()
+      builder.addProgressListener(ForwardingProgressListener())
+
+      // System.in and System.out are used for communication between this server and the
+      // client.
+      val out = LoggingOutputStream()
+      builder.setStandardInput("NoOp".byteInputStream())
+      builder.setStandardError(out)
+      builder.setStandardOutput(out)
+      builder.forTasks(*message.tasks.filter { it.isNotBlank() }.toTypedArray())
+      Main.finalizeLauncher(builder)
+
+      this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
+      builder.withCancellationToken(this.buildCancellationToken!!.token())
+
+      notifyBeforeBuild()
+
+      try {
+        builder.run()
+        this.buildCancellationToken = null
+        notifyBuildSuccess(message.tasks)
+        return@computeAsync TaskExecutionResult(true, null)
+      } catch (error: Throwable) {
+        notifyBuildFailure(message.tasks)
+        return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
+      }
+    }
+  }
+
+  private fun setupConnectorForGradleInstallation(
+    connector: GradleConnector,
+    gradleDistribution: String?
+  ) {
+    if (gradleDistribution != null && gradleDistribution.isNotBlank()) {
+      val file = File(gradleDistribution)
+      if (file.exists() && file.isDirectory) {
+        log.info("Using Gradle installation:", file.canonicalPath)
+        connector.useInstallation(file)
+      } else {
+        log.error("Specified Gradle installation does not exist:", gradleDistribution)
+      }
+    } else {
+      log.info("Using Gradle wrapper for build...")
+    }
+  }
+
+  private fun notifyBuildFailure(tasks: List<String>) {
+    if (client != null) {
+      client!!.onBuildFailed(BuildResult((tasks)))
+    }
+  }
+
+  private fun notifyBuildSuccess(tasks: List<String>) {
+    if (client != null) {
+      client!!.onBuildSuccessful(BuildResult(tasks))
+    }
+  }
+
+  private fun notifyBeforeBuild() {
+    if (client != null) {
+      client!!.prepareBuild()
+    }
+  }
+
+  override fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult> {
+    return CompletableFutures.computeAsync {
+      if (this.buildCancellationToken == null) {
+        return@computeAsync BuildCancellationRequestResult(
+          false,
+          BuildCancellationRequestResult.Reason.NO_RUNNING_BUILD
+        )
+      }
+
+      try {
+        this.buildCancellationToken!!.cancel()
+      } catch (e: Exception) {
+        val failureReason = CANCELLATION_ERROR
+        failureReason.message = "${failureReason.message}: ${e.message}"
+        return@computeAsync BuildCancellationRequestResult(false, failureReason)
+      }
+
+      return@computeAsync BuildCancellationRequestResult(true, null)
+    }
+  }
+
+  @Suppress("UnstableApiUsage")
+  override fun shutdown(): CompletableFuture<Void> {
+    return CompletableFuture.runAsync {
+      connector?.disconnect()
+      Main.future?.cancel(true)
+
+      this.connector = null
+      this.client = null
+      this.project = null
+      this.buildCancellationToken = null
+      this.forwardingProject.project = null
+      Main.future = null
+      Main.client = null
+
+      this.initialized = false
+    }
+  }
+
+  private fun getTaskFailureType(error: Throwable): Failure =
+    when (error) {
+      is BuildException -> BUILD_FAILED
+      is BuildCancelledException -> BUILD_CANCELLED
+      is GradleConnectionException -> CONNECTION_ERROR
+      is java.lang.IllegalStateException -> CONNECTION_CLOSED
+      is UnsupportedVersionException -> UNSUPPORTED_GRADLE_VERSION
+      is UnsupportedBuildArgumentException -> UNSUPPORTED_BUILD_ARGUMENT
+      is UnsupportedOperationConfigurationException -> UNSUPPORTED_CONFIGURATION
+      else -> UNKNOWN
     }
 
-    fun connect(client: IToolingApiClient) {
-        this.client = client
+  private fun assertProjectInitialized() {
+    if (!isServerInitialized().get() || project == null) {
+      throw CompletionException(IllegalStateException("Project is not initialized!"))
     }
+  }
+
+  fun connect(client: IToolingApiClient) {
+    this.client = client
+  }
 }

@@ -299,28 +299,6 @@ public class TypeName {
         || this.equals(BOXED_DOUBLE);
   }
 
-  CodeWriter emit(CodeWriter out) throws IOException {
-    if (keyword == null) throw new AssertionError();
-
-    if (isAnnotated()) {
-      out.emit("");
-      emitAnnotations(out);
-    }
-    return out.emitAndIndent(keyword);
-  }
-
-  public boolean isAnnotated() {
-    return !annotations.isEmpty();
-  }
-
-  CodeWriter emitAnnotations(CodeWriter out) throws IOException {
-    for (AnnotationSpec annotation : annotations) {
-      annotation.emit(out, true);
-      out.emit(" ");
-    }
-    return out;
-  }
-
   /**
    * Returns a boxed type if this is a primitive type (like {@code Integer} for {@code int}) or
    * {@code void}. Returns this type if boxing doesn't apply.
@@ -387,5 +365,27 @@ public class TypeName {
       }
     }
     return result;
+  }
+
+  CodeWriter emit(CodeWriter out) throws IOException {
+    if (keyword == null) throw new AssertionError();
+
+    if (isAnnotated()) {
+      out.emit("");
+      emitAnnotations(out);
+    }
+    return out.emitAndIndent(keyword);
+  }
+
+  public boolean isAnnotated() {
+    return !annotations.isEmpty();
+  }
+
+  CodeWriter emitAnnotations(CodeWriter out) throws IOException {
+    for (AnnotationSpec annotation : annotations) {
+      annotation.emit(out, true);
+      out.emit(" ");
+    }
+    return out;
   }
 }

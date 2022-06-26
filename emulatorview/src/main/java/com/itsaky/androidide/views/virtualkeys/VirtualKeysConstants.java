@@ -9,13 +9,52 @@ import java.util.Map;
 
 public class VirtualKeysConstants {
 
+  /** Aliases for the keys */
+  public static final VirtualKeyDisplayMap CONTROL_CHARS_ALIASES =
+      new VirtualKeyDisplayMap() {
+        {
+          put("ESCAPE", "ESC");
+          put("CONTROL", "CTRL");
+          put("SHFT", "SHIFT");
+          put("RETURN", "ENTER"); // Technically different keys, but most applications won't see
+          // the
+          // difference
+          put("FUNCTION", "FN");
+          // no alias for ALT
+
+          // Directions are sometimes written as first and last letter for brevety
+          put("LT", "LEFT");
+          put("RT", "RIGHT");
+          put("DN", "DOWN");
+          // put("UP", "UP"); well, "UP" is already two letters
+
+          put("PAGEUP", "PGUP");
+          put("PAGE_UP", "PGUP");
+          put("PAGE UP", "PGUP");
+          put("PAGE-UP", "PGUP");
+
+          // no alias for HOME
+          // no alias for END
+
+          put("PAGEDOWN", "PGDN");
+          put("PAGE_DOWN", "PGDN");
+          put("PAGE-DOWN", "PGDN");
+
+          put("DELETE", "DEL");
+          put("BACKSPACE", "BKSP");
+
+          // easier for writing in termux.properties
+          put("BACKSLASH", "\\");
+          put("QUOTE", "\"");
+          put("APOSTROPHE", "'");
+        }
+      };
   /**
    * Defines the repetitive keys that can be passed to {@link
    * VirtualKeysView#setRepetitiveKeys(List)}.
    */
   public static List<String> PRIMARY_REPETITIVE_KEYS =
       Arrays.asList("UP", "DOWN", "LEFT", "RIGHT", "BKSP", "DEL");
-
   /** Defines the {@link KeyEvent} for common keys. */
   public static Map<String, Integer> PRIMARY_KEY_CODES_FOR_STRINGS =
       new HashMap<String, Integer>() {
@@ -49,17 +88,6 @@ public class VirtualKeysConstants {
           put("F12", KeyEvent.KEYCODE_F12);
         }
       };
-
-  /**
-   * HashMap that implements Python dict.get(key, default) function. Default java.util .get(key) is
-   * then the same as .get(key, null);
-   */
-  static class CleverMap<K, V> extends HashMap<K, V> {
-    V get(K key, V defaultValue) {
-      if (containsKey(key)) return get(key);
-      else return defaultValue;
-    }
-  }
 
   public static class VirtualKeyDisplayMap extends CleverMap<String, String> {}
 
@@ -204,44 +232,14 @@ public class VirtualKeysConstants {
         };
   }
 
-  /** Aliases for the keys */
-  public static final VirtualKeyDisplayMap CONTROL_CHARS_ALIASES =
-      new VirtualKeyDisplayMap() {
-        {
-          put("ESCAPE", "ESC");
-          put("CONTROL", "CTRL");
-          put("SHFT", "SHIFT");
-          put("RETURN", "ENTER"); // Technically different keys, but most applications won't see
-          // the
-          // difference
-          put("FUNCTION", "FN");
-          // no alias for ALT
-
-          // Directions are sometimes written as first and last letter for brevety
-          put("LT", "LEFT");
-          put("RT", "RIGHT");
-          put("DN", "DOWN");
-          // put("UP", "UP"); well, "UP" is already two letters
-
-          put("PAGEUP", "PGUP");
-          put("PAGE_UP", "PGUP");
-          put("PAGE UP", "PGUP");
-          put("PAGE-UP", "PGUP");
-
-          // no alias for HOME
-          // no alias for END
-
-          put("PAGEDOWN", "PGDN");
-          put("PAGE_DOWN", "PGDN");
-          put("PAGE-DOWN", "PGDN");
-
-          put("DELETE", "DEL");
-          put("BACKSPACE", "BKSP");
-
-          // easier for writing in termux.properties
-          put("BACKSLASH", "\\");
-          put("QUOTE", "\"");
-          put("APOSTROPHE", "'");
-        }
-      };
+  /**
+   * HashMap that implements Python dict.get(key, default) function. Default java.util .get(key) is
+   * then the same as .get(key, null);
+   */
+  static class CleverMap<K, V> extends HashMap<K, V> {
+    V get(K key, V defaultValue) {
+      if (containsKey(key)) return get(key);
+      else return defaultValue;
+    }
+  }
 }

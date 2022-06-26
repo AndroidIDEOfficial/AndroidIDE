@@ -30,6 +30,10 @@ import java.util.regex.Pattern;
 /** {@code JavaCommentsHelper} extends {@link CommentsHelper} to rewrite Java comments. */
 public final class JavaCommentsHelper implements CommentsHelper {
 
+  // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
+  // contain leading spaces.
+  private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
+      Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
   private final String lineSeparator;
   private final JavaFormatterOptions options;
 
@@ -102,11 +106,6 @@ public final class JavaCommentsHelper implements CommentsHelper {
     }
     return builder.toString();
   }
-
-  // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
-  // contain leading spaces.
-  private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
-      Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
 
   private List<String> wrapLineComments(List<String> lines, int column0) {
     List<String> result = new ArrayList<>();

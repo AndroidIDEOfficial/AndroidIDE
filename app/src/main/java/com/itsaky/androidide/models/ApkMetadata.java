@@ -143,16 +143,16 @@ public class ApkMetadata {
     return elements;
   }
 
+  public void setElements(List<Element> elements) {
+    this.elements = elements;
+  }
+
   public ArtifactType getArtifactType() {
     return artifactType;
   }
 
   public void setArtifactType(ArtifactType artifactType) {
     this.artifactType = artifactType;
-  }
-
-  public void setElements(List<Element> elements) {
-    this.elements = elements;
   }
 
   public int getVersion() {

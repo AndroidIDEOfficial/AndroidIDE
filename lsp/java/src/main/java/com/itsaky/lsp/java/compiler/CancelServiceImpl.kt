@@ -18,30 +18,30 @@
 package com.itsaky.lsp.java.compiler
 
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.atomic.*
 import org.netbeans.lib.nbjavac.services.CancelService
+import java.util.concurrent.atomic.*
 
 /**
  * Cancel service implementation for the java compiler.
  * @author Akash Yadav
  */
 class CancelServiceImpl : CancelService() {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    val cancelled = AtomicBoolean(false)
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  val cancelled = AtomicBoolean(false)
 
-    /**
-     * Sets the cancellation flag.
-     *
-     * @return `true` if compilation process was running and it was set to be cancelled, `false`
-     * otherwise.
-     */
-    fun cancel(): Boolean {
-        log.info("...cancelling compilation")
-        if (cancelled.getAndSet(true)) {
-            return false
-        }
-        return true
+  /**
+   * Sets the cancellation flag.
+   *
+   * @return `true` if compilation process was running and it was set to be cancelled, `false`
+   * otherwise.
+   */
+  fun cancel(): Boolean {
+    log.info("...cancelling compilation")
+    if (cancelled.getAndSet(true)) {
+      return false
     }
+    return true
+  }
 
-    override fun isCanceled(): Boolean = cancelled.get()
+  override fun isCanceled(): Boolean = cancelled.get()
 }

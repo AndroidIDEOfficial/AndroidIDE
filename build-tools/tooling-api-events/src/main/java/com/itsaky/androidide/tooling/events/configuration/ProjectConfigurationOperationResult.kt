@@ -22,10 +22,10 @@ import com.itsaky.androidide.tooling.model.PluginIdentifier
 
 /** @author Akash Yadav */
 class ProjectConfigurationOperationResult(
-    val success: Boolean,
-    val pluginApplicationResults: List<PluginApplicationResult>,
-    override val startTime: Long,
-    override val endTime: Long
+  val success: Boolean,
+  val pluginApplicationResults: List<PluginApplicationResult>,
+  override val startTime: Long,
+  override val endTime: Long
 ) : OperationResult() {
-    class PluginApplicationResult(val plugin: PluginIdentifier, val duration: Long)
+  class PluginApplicationResult(val plugin: PluginIdentifier, val duration: Long)
 }

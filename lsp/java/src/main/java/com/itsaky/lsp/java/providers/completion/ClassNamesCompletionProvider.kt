@@ -37,77 +37,77 @@ import java.util.*
  * @author Akash Yadav
  */
 class ClassNamesCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings,
-    val root: CompilationUnitTree
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings,
+  val root: CompilationUnitTree
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val list = mutableListOf<CompletionItem>()
-        val packageName = Objects.toString(root.packageName, "")
-        val uniques: MutableSet<String> = HashSet()
-        val previousSize: Int = list.size
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val list = mutableListOf<CompletionItem>()
+    val packageName = Objects.toString(root.packageName, "")
+    val uniques: MutableSet<String> = HashSet()
+    val previousSize: Int = list.size
 
-        val file: Path = Paths.get(root.sourceFile.toUri())
-        val imports: Set<String> =
-            root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
+    val file: Path = Paths.get(root.sourceFile.toUri())
+    val imports: Set<String> =
+      root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
 
-        for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
-            val matchLevel = matchLevel(className, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
+    for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
+      val matchLevel = matchLevel(className, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
 
-            list.add(classItem(imports, file, className, partial, matchLevel))
-            uniques.add(className)
-        }
-
-        for (className in compiler.publicTopLevelTypes()) {
-            val matchLevel = matchLevel(simpleName(className), partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            if (uniques.contains(className)) {
-                continue
-            }
-            
-            if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
-                break
-            }
-            
-            list.add(classItem(imports, file, className, partial, matchLevel))
-            uniques.add(className)
-        }
-
-        for (t in root.typeDecls) {
-            if (t !is ClassTree) {
-                continue
-            }
-            val candidate = if (t.simpleName == null) "" else t.simpleName
-
-            val matchLevel = matchLevel(candidate, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            val name = packageName + "." + t.simpleName
-            list.add(classItem(name, partial, matchLevel))
-
-            if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
-                break
-            }
-        }
-
-        log.info("...found " + (list.size - previousSize) + " class names")
-
-        return CompletionResult(list)
+      list.add(classItem(imports, file, className, partial, matchLevel))
+      uniques.add(className)
     }
+
+    for (className in compiler.publicTopLevelTypes()) {
+      val matchLevel = matchLevel(simpleName(className), partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      if (uniques.contains(className)) {
+        continue
+      }
+
+      if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
+        break
+      }
+
+      list.add(classItem(imports, file, className, partial, matchLevel))
+      uniques.add(className)
+    }
+
+    for (t in root.typeDecls) {
+      if (t !is ClassTree) {
+        continue
+      }
+      val candidate = if (t.simpleName == null) "" else t.simpleName
+
+      val matchLevel = matchLevel(candidate, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      val name = packageName + "." + t.simpleName
+      list.add(classItem(name, partial, matchLevel))
+
+      if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
+        break
+      }
+    }
+
+    log.info("...found " + (list.size - previousSize) + " class names")
+
+    return CompletionResult(list)
+  }
 }

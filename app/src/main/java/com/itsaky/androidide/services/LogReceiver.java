@@ -29,12 +29,10 @@ import com.itsaky.androidide.utils.ILogger;
 
 public class LogReceiver extends BroadcastReceiver {
 
-  private LogListener listener;
-
   public static final String APPEND_LOG = "com.itsaky.androidide.logs.APPEND_LOG";
   public static final String EXTRA_LINE = "log_line";
-
   private final ILogger LOG = ILogger.newInstance("LogReceiver");
+  private LogListener listener;
 
   public LogReceiver setLogListener(LogListener listener) {
     this.listener = listener;

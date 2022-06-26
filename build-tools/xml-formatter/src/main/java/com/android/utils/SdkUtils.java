@@ -16,13 +16,23 @@
 
 package com.android.utils;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import static com.android.SdkConstants.DOT_9PNG;
+import static com.android.SdkConstants.DOT_BMP;
+import static com.android.SdkConstants.DOT_GIF;
+import static com.android.SdkConstants.DOT_JPEG;
+import static com.android.SdkConstants.DOT_JPG;
+import static com.android.SdkConstants.DOT_PNG;
+import static com.android.SdkConstants.DOT_WEBP;
+import static com.android.SdkConstants.DOT_XML;
+
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,29 +46,14 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.List;
 
-import static com.android.SdkConstants.DOT_WEBP;
-import static com.android.SdkConstants.DOT_XML;
-import static com.android.SdkConstants.DOT_PNG;
-import static com.android.SdkConstants.DOT_GIF;
-import static com.android.SdkConstants.DOT_9PNG;
-import static com.android.SdkConstants.DOT_JPEG;
-import static com.android.SdkConstants.DOT_JPG;
-import static com.android.SdkConstants.DOT_BMP;
-
 /** Miscellaneous utilities used by the Android SDK tools */
 public class SdkUtils {
-  /**
-   * Returns true if the given string ends with the given suffix, using a case-insensitive
-   * comparison.
-   *
-   * @param string the full string to be checked
-   * @param suffix the suffix to be checked for
-   * @return true if the string case-insensitively ends with the given suffix
-   */
-  public static boolean endsWithIgnoreCase(@NotNull String string, @NotNull String suffix) {
-    return string.regionMatches(
-        true /* ignoreCase */, string.length() - suffix.length(), suffix, 0, suffix.length());
-  }
+  /** Prefix in comments which mark the source locations for merge results */
+  public static final String FILENAME_PREFIX = "From: ";
+  public static final List<String> IMAGE_EXTENSIONS =
+      ImmutableList.of(DOT_PNG, DOT_9PNG, DOT_GIF, DOT_JPEG, DOT_JPG, DOT_BMP, DOT_WEBP);
+  /** For use by {@link #getLineSeparator()} */
+  private static String sLineSeparator;
 
   /**
    * Returns true if the given sequence ends with the given suffix (case sensitive).
@@ -154,9 +149,6 @@ public class SdkUtils {
     return false;
   }
 
-  /** For use by {@link #getLineSeparator()} */
-  private static String sLineSeparator;
-
   /**
    * Returns the default line separator to use.
    *
@@ -236,6 +228,23 @@ public class SdkUtils {
 
   /**
    * Returns the given localized string as an int. For example, in the US locale, "1,000", will
+   * return 1000. In the French locale, "1.000" will return 1000. If the format is invalid, returns
+   * the supplied default value instead.
+   *
+   * @param string the string to be parsed
+   * @param defaultValue the value to be returned if there is a parsing error
+   * @return the integer value
+   */
+  public static int parseLocalizedInt(@NotNull String string, int defaultValue) {
+    try {
+      return parseLocalizedInt(string);
+    } catch (ParseException e) {
+      return defaultValue;
+    }
+  }
+
+  /**
+   * Returns the given localized string as an int. For example, in the US locale, "1,000", will
    * return 1000. In the French locale, "1.000" will return 1000. It will return 0 for empty
    * strings.
    *
@@ -254,17 +263,17 @@ public class SdkUtils {
   }
 
   /**
-   * Returns the given localized string as an int. For example, in the US locale, "1,000", will
-   * return 1000. In the French locale, "1.000" will return 1000. If the format is invalid, returns
+   * Returns the given localized string as a double. For example, in the US locale, "3.14", will
+   * return 3.14. In the French locale, "3,14" will return 3.14. If the format is invalid, returns
    * the supplied default value instead.
    *
    * @param string the string to be parsed
    * @param defaultValue the value to be returned if there is a parsing error
-   * @return the integer value
+   * @return the double value
    */
-  public static int parseLocalizedInt(@NotNull String string, int defaultValue) {
+  public static double parseLocalizedDouble(@NotNull String string, double defaultValue) {
     try {
-      return parseLocalizedInt(string);
+      return parseLocalizedDouble(string);
     } catch (ParseException e) {
       return defaultValue;
     }
@@ -287,23 +296,6 @@ public class SdkUtils {
       return 0.0;
     }
     return NumberFormat.getNumberInstance().parse(string).doubleValue();
-  }
-
-  /**
-   * Returns the given localized string as a double. For example, in the US locale, "3.14", will
-   * return 3.14. In the French locale, "3,14" will return 3.14. If the format is invalid, returns
-   * the supplied default value instead.
-   *
-   * @param string the string to be parsed
-   * @param defaultValue the value to be returned if there is a parsing error
-   * @return the double value
-   */
-  public static double parseLocalizedDouble(@NotNull String string, double defaultValue) {
-    try {
-      return parseLocalizedDouble(string);
-    } catch (ParseException e) {
-      return defaultValue;
-    }
   }
 
   /**
@@ -332,29 +324,16 @@ public class SdkUtils {
   }
 
   /**
-   * Returns the corresponding URL string for the given {@link File}
-   *
-   * @param file the file to look up the URL for
-   * @return the corresponding URL
-   * @throws MalformedURLException in very unexpected cases
+   * Copies the given XML file to the given new path. It also inserts a comment at the end of the
+   * file which points to the original source location. This is intended for use with error parsers
+   * which can rewrite for example AAPT error messages in say layout or manifest files, which occur
+   * in the merged (copied) output, and present it as an error pointing to one of the user's
+   * original source files.
    */
-  public static String fileToUrlString(@NotNull File file) throws MalformedURLException {
-    return fileToUrl(file).toExternalForm();
+  public static void copyXmlWithSourceReference(@NotNull File from, @NotNull File to)
+      throws IOException {
+    copyXmlWithComment(from, to, createPathComment(from, true));
   }
-
-  /**
-   * Returns the corresponding URL for the given {@link File}
-   *
-   * @param file the file to look up the URL for
-   * @return the corresponding URL
-   * @throws MalformedURLException in very unexpected cases
-   */
-  public static URL fileToUrl(@NotNull File file) throws MalformedURLException {
-    return file.toURI().toURL();
-  }
-
-  /** Prefix in comments which mark the source locations for merge results */
-  public static final String FILENAME_PREFIX = "From: ";
 
   /**
    * Creates the path comment XML string. Note that it does not escape characters such as &amp; and
@@ -383,15 +362,25 @@ public class SdkUtils {
   }
 
   /**
-   * Copies the given XML file to the given new path. It also inserts a comment at the end of the
-   * file which points to the original source location. This is intended for use with error parsers
-   * which can rewrite for example AAPT error messages in say layout or manifest files, which occur
-   * in the merged (copied) output, and present it as an error pointing to one of the user's
-   * original source files.
+   * Returns the corresponding URL string for the given {@link File}
+   *
+   * @param file the file to look up the URL for
+   * @return the corresponding URL
+   * @throws MalformedURLException in very unexpected cases
    */
-  public static void copyXmlWithSourceReference(@NotNull File from, @NotNull File to)
-      throws IOException {
-    copyXmlWithComment(from, to, createPathComment(from, true));
+  public static String fileToUrlString(@NotNull File file) throws MalformedURLException {
+    return fileToUrl(file).toExternalForm();
+  }
+
+  /**
+   * Returns the corresponding URL for the given {@link File}
+   *
+   * @param file the file to look up the URL for
+   * @return the corresponding URL
+   * @throws MalformedURLException in very unexpected cases
+   */
+  public static URL fileToUrl(@NotNull File file) throws MalformedURLException {
+    return file.toURI().toURL();
   }
 
   /** Copies a given XML file, and appends a given comment to the end */
@@ -418,6 +407,19 @@ public class SdkUtils {
     } finally {
       Closeables.close(in, successfulOps < 2);
     }
+  }
+
+  /**
+   * Returns true if the given string ends with the given suffix, using a case-insensitive
+   * comparison.
+   *
+   * @param string the full string to be checked
+   * @param suffix the suffix to be checked for
+   * @return true if the string case-insensitively ends with the given suffix
+   */
+  public static boolean endsWithIgnoreCase(@NotNull String string, @NotNull String suffix) {
+    return string.regionMatches(
+        true /* ignoreCase */, string.length() - suffix.length(), suffix, 0, suffix.length());
   }
 
   /**
@@ -479,9 +481,6 @@ public class SdkUtils {
 
     return resourceName;
   }
-
-  public static final List<String> IMAGE_EXTENSIONS =
-      ImmutableList.of(DOT_PNG, DOT_9PNG, DOT_GIF, DOT_JPEG, DOT_JPG, DOT_BMP, DOT_WEBP);
 
   /**
    * Returns true if the given file path points to an image file recognized by Android. See

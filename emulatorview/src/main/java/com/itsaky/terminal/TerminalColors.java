@@ -17,15 +17,21 @@ public final class TerminalColors {
     reset();
   }
 
+  /** Reset all indexed colors with the default color from the color theme. */
+  public void reset() {
+    System.arraycopy(
+        COLOR_SCHEME.mDefaultColors, 0, mCurrentColors, 0, TextStyle.NUM_INDEXED_COLORS);
+  }
+
   /** Reset a particular indexed color with the default color from the color theme. */
   public void reset(int index) {
     mCurrentColors[index] = COLOR_SCHEME.mDefaultColors[index];
   }
 
-  /** Reset all indexed colors with the default color from the color theme. */
-  public void reset() {
-    System.arraycopy(
-        COLOR_SCHEME.mDefaultColors, 0, mCurrentColors, 0, TextStyle.NUM_INDEXED_COLORS);
+  /** Try parse a color from a text parameter and into a specified index. */
+  public void tryParseColor(int intoIndex, String textParameter) {
+    int c = parse(textParameter);
+    if (c != 0) mCurrentColors[intoIndex] = c;
   }
 
   /**
@@ -67,11 +73,5 @@ public final class TerminalColors {
     } catch (NumberFormatException | IndexOutOfBoundsException e) {
       return 0;
     }
-  }
-
-  /** Try parse a color from a text parameter and into a specified index. */
-  public void tryParseColor(int intoIndex, String textParameter) {
-    int c = parse(textParameter);
-    if (c != 0) mCurrentColors[intoIndex] = c;
   }
 }

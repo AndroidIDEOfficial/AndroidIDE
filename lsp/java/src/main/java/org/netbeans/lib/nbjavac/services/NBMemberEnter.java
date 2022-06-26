@@ -32,21 +32,20 @@ import com.sun.tools.javac.util.Context;
  */
 public class NBMemberEnter extends MemberEnter {
 
-  public static void preRegister(Context context, boolean backgroundScan) {
-    context.put(
-        MemberEnter.class,
-        (Context.Factory<MemberEnter>) c -> new NBMemberEnter(c, backgroundScan));
-  }
-
   private final CancelService cancelService;
   private final JavacTrees trees;
   private final boolean backgroundScan;
-
   public NBMemberEnter(Context context, boolean backgroundScan) {
     super(context);
     cancelService = CancelService.instance(context);
     trees = NBJavacTrees.instance(context);
     this.backgroundScan = backgroundScan;
+  }
+
+  public static void preRegister(Context context, boolean backgroundScan) {
+    context.put(
+        MemberEnter.class,
+        (Context.Factory<MemberEnter>) c -> new NBMemberEnter(c, backgroundScan));
   }
 
   @Override

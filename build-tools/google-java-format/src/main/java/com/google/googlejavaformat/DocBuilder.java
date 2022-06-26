@@ -61,6 +61,24 @@ public final class DocBuilder {
   }
 
   /**
+   * Return the {@link Doc}.
+   *
+   * @return the {@link Doc}
+   */
+  public Doc build() {
+    return base;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("base", base)
+        .add("stack", stack)
+        .add("appendLevel", appendLevel)
+        .toString();
+  }
+
+  /**
    * Open a new {@link Doc.Level}.
    *
    * @param plusIndent the extra indent for the {@link Doc.Level}
@@ -93,23 +111,5 @@ public final class DocBuilder {
   void breakDoc(Doc.Break breakDoc) {
     appendLevel = stack.peekLast();
     appendLevel.add(breakDoc);
-  }
-
-  /**
-   * Return the {@link Doc}.
-   *
-   * @return the {@link Doc}
-   */
-  public Doc build() {
-    return base;
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("base", base)
-        .add("stack", stack)
-        .add("appendLevel", appendLevel)
-        .toString();
   }
 }

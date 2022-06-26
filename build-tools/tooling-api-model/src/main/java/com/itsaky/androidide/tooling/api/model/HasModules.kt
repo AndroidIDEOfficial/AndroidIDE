@@ -24,6 +24,6 @@ package com.itsaky.androidide.tooling.api.model
  */
 interface HasModules {
 
-    /** Get the modules. */
-    fun getModules(): List<IdeGradleProject>
+  /** Get the modules. */
+  fun getModules(): List<IdeGradleProject>
 }

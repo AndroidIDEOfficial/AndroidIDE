@@ -17,16 +17,16 @@ public class ExtractedResult implements Comparable<ExtractedResult> {
     return Integer.compare(this.getScore(), o.getScore());
   }
 
+  public int getScore() {
+    return score;
+  }
+
   public String getString() {
     return string;
   }
 
   public void setString(String string) {
     this.string = string;
-  }
-
-  public int getScore() {
-    return score;
   }
 
   public int getIndex() {

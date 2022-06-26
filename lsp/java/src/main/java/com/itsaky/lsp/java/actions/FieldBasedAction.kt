@@ -42,149 +42,153 @@ import javax.lang.model.element.Modifier.STATIC
  */
 abstract class FieldBasedAction : BaseCodeAction() {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
-            markInvisible()
-            return
-        }
-
-        visible = true
-        enabled = true
+    if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val range = data[Range::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
+    visible = true
+    enabled = true
+  }
 
-        return server.compiler.compile(file).get { task ->
-            val triple = findFields(task, file, range)
-            val type = triple.second
-            val fields = triple.third
-            val fieldNames = fields.map { "${it.name}: ${it.type}" } // Get the names
+  override fun execAction(data: ActionData): Any {
+    val range = data[Range::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
 
-            log.debug("Found ${fieldNames.size} fields in class ${type.simpleName}")
+    return server.compiler.compile(file).get { task ->
+      val triple = findFields(task, file, range)
+      val type = triple.second
+      val fields = triple.third
+      val fieldNames = fields.map { "${it.name}: ${it.type}" } // Get the names
 
-            return@get fieldNames
-        }
+      log.debug("Found ${fieldNames.size} fields in class ${type.simpleName}")
+
+      return@get fieldNames
+    }
+  }
+
+  protected fun findFields(
+    task: CompileTask,
+    file: Path,
+    range: Range
+  ): Triple<FindTypeDeclarationAt, ClassTree, MutableList<VariableTree>> {
+    // 1-based line and column index
+    val startLine = range.start.line + 1
+    val startColumn = range.start.column + 1
+    val endLine = range.end.line + 1
+    val endColumn = range.end.column + 1
+    val lines = task.root().lineMap
+    val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
+    val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
+
+    if (start == (-1).toLong() || end == (-1).toLong()) {
+      throw CompletionException(
+        RuntimeException("Unable to find position for the given selection range")
+      )
     }
 
-    protected fun findFields(
-        task: CompileTask,
-        file: Path,
-        range: Range
-    ): Triple<FindTypeDeclarationAt, ClassTree, MutableList<VariableTree>> {
-        // 1-based line and column index
-        val startLine = range.start.line + 1
-        val startColumn = range.start.column + 1
-        val endLine = range.end.line + 1
-        val endColumn = range.end.column + 1
-        val lines = task.root().lineMap
-        val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
-        val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
-
-        if (start == (-1).toLong() || end == (-1).toLong()) {
-            throw CompletionException(
-                RuntimeException("Unable to find position for the given selection range"))
-        }
-
-        val typeFinder = FindTypeDeclarationAt(task.task)
-        var type = typeFinder.scan(task.root(file), start)
-        if (type == null) {
-            type = typeFinder.scan(task.root(file), end)
-        }
-
-        if (type == null) {
-            throw CompletionException(
-                RuntimeException("Unable to find class declaration within cursor range"))
-        }
-
-        val fields =
-            type.members
-                .filter { it.kind == VARIABLE }
-                .map { it as VariableTree }
-                .filter { !it.modifiers.flags.contains(STATIC) }
-                .toMutableList()
-        return Triple(typeFinder, type, fields)
+    val typeFinder = FindTypeDeclarationAt(task.task)
+    var type = typeFinder.scan(task.root(file), start)
+    if (type == null) {
+      type = typeFinder.scan(task.root(file), end)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is List<*>) {
-            log.error("Unable to find fields in the current class")
-            return
-        }
-        
-        if (result.isEmpty()) {
-            BaseApplication.getBaseInstance()
-                .toast(
-                    data[Context::class.java]!!.getString(R.string.msg_no_fields_found),
-                    Toaster.Type.INFO)
-            return
-        }
-
-        onGetFields(result as List<String>, data)
+    if (type == null) {
+      throw CompletionException(
+        RuntimeException("Unable to find class declaration within cursor range")
+      )
     }
+
+    val fields =
+      type.members
+        .filter { it.kind == VARIABLE }
+        .map { it as VariableTree }
+        .filter { !it.modifiers.flags.contains(STATIC) }
+        .toMutableList()
+    return Triple(typeFinder, type, fields)
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is List<*>) {
+      log.error("Unable to find fields in the current class")
+      return
+    }
+
+    if (result.isEmpty()) {
+      BaseApplication.getBaseInstance()
+        .toast(
+          data[Context::class.java]!!.getString(R.string.msg_no_fields_found),
+          Toaster.Type.INFO
+        )
+      return
+    }
+
+    onGetFields(result as List<String>, data)
+  }
+
+  /**
+   * Called when the fields of the current class are found. As this method is called inside
+   * [postExec], the current thread is the UI thread.
+   */
+  abstract fun onGetFields(fields: List<String>, data: ActionData)
+
+  /**
+   * Shows the field selector dialog. Returns a [CompletableFuture] which is completed when the user
+   * confirms the selected fields.
+   */
+  protected fun showFieldSelector(
+    fields: List<String>,
+    data: ActionData,
+    listener: OnFieldsSelectedListener?
+  ) {
+    val names = fields.toTypedArray()
+    val checkedNames = mutableSetOf<String>()
+    val builder = newDialogBuilder(data)
+    builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_fields))
+    builder.setMultiChoiceItems(names, BooleanArray(fields.size)) { _, which, checked ->
+      checkedNames.apply {
+        val item = names[which]
+        if (checked) {
+          add(item)
+        } else {
+          remove(item)
+        }
+      }
+    }
+
+    builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
+      dialog.dismiss()
+
+      if (checkedNames.isEmpty()) {
+        BaseApplication.getBaseInstance()
+          .toast(
+            data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
+            Toaster.Type.ERROR
+          )
+        return@setPositiveButton
+      }
+
+      listener?.onFieldsSelected(checkedNames)
+    }
+    builder.setNegativeButton(android.R.string.cancel, null)
+    builder.show()
+  }
+
+  /** Listener to get callback when fields are selected by the user. */
+  fun interface OnFieldsSelectedListener {
 
     /**
-     * Called when the fields of the current class are found. As this method is called inside
-     * [postExec], the current thread is the UI thread.
+     * Called when the user is done selecting fields.
+     *
+     * @param fields The selected field names.
      */
-    abstract fun onGetFields(fields: List<String>, data: ActionData)
-
-    /**
-     * Shows the field selector dialog. Returns a [CompletableFuture] which is completed when the
-     * user confirms the selected fields.
-     */
-    protected fun showFieldSelector(
-        fields: List<String>,
-        data: ActionData,
-        listener: OnFieldsSelectedListener?
-    ) {
-        val names = fields.toTypedArray()
-        val checkedNames = mutableSetOf<String>()
-        val builder = newDialogBuilder(data)
-        builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_fields))
-        builder.setMultiChoiceItems(names, BooleanArray(fields.size)) { _, which, checked ->
-            checkedNames.apply {
-                val item = names[which]
-                if (checked) {
-                    add(item)
-                } else {
-                    remove(item)
-                }
-            }
-        }
-
-        builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
-            dialog.dismiss()
-
-            if (checkedNames.isEmpty()) {
-                BaseApplication.getBaseInstance()
-                    .toast(
-                        data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
-                        Toaster.Type.ERROR)
-                return@setPositiveButton
-            }
-
-            listener?.onFieldsSelected(checkedNames)
-        }
-        builder.setNegativeButton(android.R.string.cancel, null)
-        builder.show()
-    }
-
-    /** Listener to get callback when fields are selected by the user. */
-    fun interface OnFieldsSelectedListener {
-
-        /**
-         * Called when the user is done selecting fields.
-         *
-         * @param fields The selected field names.
-         */
-        fun onFieldsSelected(fields: MutableSet<String>)
-    }
+    fun onFieldsSelected(fields: MutableSet<String>)
+  }
 }

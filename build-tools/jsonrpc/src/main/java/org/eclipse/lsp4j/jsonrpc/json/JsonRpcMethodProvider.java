@@ -11,9 +11,9 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json;
 
-import java.util.Map;
-
 import org.eclipse.lsp4j.jsonrpc.Endpoint;
+
+import java.util.Map;
 
 /**
  * Provides {@link JsonRpcMethod}. Can be implemented by {@link Endpoint}s to provide information

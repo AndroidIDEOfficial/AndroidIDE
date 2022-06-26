@@ -19,34 +19,36 @@ package com.itsaky.lsp.models
 
 import java.nio.file.Path
 
-data class CodeActionParams(var file: Path, var range: Range, var diagnostics: List<DiagnosticItem>)
+data class CodeActionParams(
+  var file: Path,
+  var range: Range,
+  var diagnostics: List<DiagnosticItem>
+)
 
 data class CodeActionResult(var actions: List<CodeActionItem>) {
-    constructor() : this(ArrayList())
+  constructor() : this(ArrayList())
 }
 
 data class CodeActionItem(
-    var title: String,
-    var changes: List<DocumentChange>,
-    var kind: CodeActionKind,
-    var command: Command
+  var title: String,
+  var changes: List<DocumentChange>,
+  var kind: CodeActionKind,
+  var command: Command
 ) {
-    constructor() : this("", ArrayList(), CodeActionKind.None, Command("", ""))
+  constructor() : this("", ArrayList(), CodeActionKind.None, Command("", ""))
 }
 
 enum class CodeActionKind {
-    QuickFix,
-    
-    None
+  QuickFix,
+  None
 }
 
 data class DocumentChange(var file: Path?, var edits: List<TextEdit>) {
-    constructor() : this(null, ArrayList())
+  constructor() : this(null, ArrayList())
 }
 
 data class TextEdit(var range: Range, var newText: String) {
-    companion object {
-        @JvmField
-        val NONE: TextEdit = TextEdit(Range.NONE, "");
-    }
+  companion object {
+    @JvmField val NONE: TextEdit = TextEdit(Range.NONE, "")
+  }
 }

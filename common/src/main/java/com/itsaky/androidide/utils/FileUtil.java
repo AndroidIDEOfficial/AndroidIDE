@@ -57,22 +57,6 @@ import java.util.List;
 
 public class FileUtil {
 
-  private static void createNewFile(String path) {
-    int lastSep = path.lastIndexOf(File.separator);
-    if (lastSep > 0) {
-      String dirPath = path.substring(0, lastSep);
-      makeDir(dirPath);
-    }
-
-    File file = new File(path);
-
-    try {
-      if (!file.exists()) file.createNewFile();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
   public static String readFile(String path) {
     createNewFile(path);
 
@@ -100,6 +84,34 @@ public class FileUtil {
     }
 
     return sb.toString();
+  }
+
+  private static void createNewFile(String path) {
+    int lastSep = path.lastIndexOf(File.separator);
+    if (lastSep > 0) {
+      String dirPath = path.substring(0, lastSep);
+      makeDir(dirPath);
+    }
+
+    File file = new File(path);
+
+    try {
+      if (!file.exists()) file.createNewFile();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void makeDir(String path) {
+    if (!isExistFile(path)) {
+      File file = new File(path);
+      file.mkdirs();
+    }
+  }
+
+  public static boolean isExistFile(String path) {
+    File file = new File(path);
+    return file.exists();
   }
 
   public static List<String> readFileAsLineList(String path) {
@@ -214,16 +226,10 @@ public class FileUtil {
     file.delete();
   }
 
-  public static boolean isExistFile(String path) {
-    File file = new File(path);
-    return file.exists();
-  }
-
-  public static void makeDir(String path) {
-    if (!isExistFile(path)) {
-      File file = new File(path);
-      file.mkdirs();
-    }
+  // Get the target saving path which not exist, by adding (1), (2), etc
+  @NonNull
+  public static String getTargetNonExistPath(String path, boolean isDir) {
+    return getTargetNonExistFile(path, isDir).getPath();
   }
 
   // Get the target saving file/dir which not exist, by adding (1), (2), etc
@@ -259,12 +265,6 @@ public class FileUtil {
       }
       index += 1;
     }
-  }
-
-  // Get the target saving path which not exist, by adding (1), (2), etc
-  @NonNull
-  public static String getTargetNonExistPath(String path, boolean isDir) {
-    return getTargetNonExistFile(path, isDir).getPath();
   }
 
   // Create a new directory by adding (1) (2), ...
@@ -411,6 +411,41 @@ public class FileUtil {
     return "com.android.providers.media.documents".equals(uri.getAuthority());
   }
 
+  public static Bitmap decodeSampleBitmapFromPath(String path, int reqWidth, int reqHeight) {
+    final BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inJustDecodeBounds = true;
+    BitmapFactory.decodeFile(path, options);
+
+    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+    options.inJustDecodeBounds = false;
+    return BitmapFactory.decodeFile(path, options);
+  }
+
+  public static int calculateInSampleSize(
+      BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    final int width = options.outWidth;
+    final int height = options.outHeight;
+    int inSampleSize = 1;
+
+    if (height > reqHeight || width > reqWidth) {
+      final int halfHeight = height / 2;
+      final int halfWidth = width / 2;
+
+      while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+        inSampleSize *= 2;
+      }
+    }
+
+    return inSampleSize;
+  }
+
+  public static void resizeBitmapFileRetainRatio(String fromPath, String destPath, int max) {
+    if (!isExistFile(fromPath)) return;
+    Bitmap bitmap = getScaledBitmap(fromPath, max);
+    saveBitmap(bitmap, destPath);
+  }
+
   private static void saveBitmap(Bitmap bitmap, String destPath) {
     FileOutputStream out = null;
     FileUtil.createNewFile(destPath);
@@ -448,41 +483,6 @@ public class FileUtil {
     }
 
     return Bitmap.createScaledBitmap(src, width, height, true);
-  }
-
-  public static int calculateInSampleSize(
-      BitmapFactory.Options options, int reqWidth, int reqHeight) {
-    final int width = options.outWidth;
-    final int height = options.outHeight;
-    int inSampleSize = 1;
-
-    if (height > reqHeight || width > reqWidth) {
-      final int halfHeight = height / 2;
-      final int halfWidth = width / 2;
-
-      while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
-        inSampleSize *= 2;
-      }
-    }
-
-    return inSampleSize;
-  }
-
-  public static Bitmap decodeSampleBitmapFromPath(String path, int reqWidth, int reqHeight) {
-    final BitmapFactory.Options options = new BitmapFactory.Options();
-    options.inJustDecodeBounds = true;
-    BitmapFactory.decodeFile(path, options);
-
-    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-    options.inJustDecodeBounds = false;
-    return BitmapFactory.decodeFile(path, options);
-  }
-
-  public static void resizeBitmapFileRetainRatio(String fromPath, String destPath, int max) {
-    if (!isExistFile(fromPath)) return;
-    Bitmap bitmap = getScaledBitmap(fromPath, max);
-    saveBitmap(bitmap, destPath);
   }
 
   public static void resizeBitmapFileToSquare(String fromPath, String destPath, int max) {

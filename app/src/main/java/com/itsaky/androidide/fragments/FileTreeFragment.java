@@ -96,6 +96,14 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   }
 
   @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    binding = null;
+    mFileTreeView = null;
+    mFileActionListener = null;
+  }
+
+  @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false);
@@ -201,12 +209,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         __ -> finalWhenDone.run());
   }
 
-  private void updateChevron(@NonNull TreeNode node) {
-    if (node.getViewHolder() instanceof FileTreeViewHolder) {
-      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(!node.isExpanded());
-    }
-  }
-
   private void getNodeFromFiles(File[] files, TreeNode parent) {
     Arrays.sort(files, new FileTreeCallable.SortFileName());
     Arrays.sort(files, new FileTreeCallable.SortFolder());
@@ -214,6 +216,12 @@ public class FileTreeFragment extends BottomSheetDialogFragment
       TreeNode node = new TreeNode(file);
       node.setViewHolder(new FileTreeViewHolder(getContext()));
       parent.addChild(node);
+    }
+  }
+
+  private void updateChevron(@NonNull TreeNode node) {
+    if (node.getViewHolder() instanceof FileTreeViewHolder) {
+      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(!node.isExpanded());
     }
   }
 
@@ -330,14 +338,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
             });
       }
     }
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    binding = null;
-    mFileTreeView = null;
-    mFileActionListener = null;
   }
 
   public interface FileActionListener {

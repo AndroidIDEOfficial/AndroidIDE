@@ -22,9 +22,9 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultJavaCompileOptions : JavaCompileOptions, Serializable {
-    private val serialVersionUID = 1L
-    override var encoding: String = ""
-    override var isCoreLibraryDesugaringEnabled: Boolean = false
-    override var sourceCompatibility: String = ""
-    override var targetCompatibility: String = ""
+  private val serialVersionUID = 1L
+  override var encoding: String = ""
+  override var isCoreLibraryDesugaringEnabled: Boolean = false
+  override var sourceCompatibility: String = ""
+  override var targetCompatibility: String = ""
 }

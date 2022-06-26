@@ -47,19 +47,50 @@ public final class ParameterSpec {
     this.javadoc = builder.javadoc.build();
   }
 
+  public static Builder builder(Type type, String name, Modifier... modifiers) {
+    return builder(TypeName.get(type), name, modifiers);
+  }
+
+  static List<ParameterSpec> parametersOf(ExecutableElement method) {
+    List<ParameterSpec> result = new ArrayList<>();
+    for (VariableElement parameter : method.getParameters()) {
+      result.add(ParameterSpec.get(parameter));
+    }
+    return result;
+  }
+
+  public static ParameterSpec get(VariableElement element) {
+    checkArgument(element.getKind().equals(ElementKind.PARAMETER), "element is not a parameter");
+
+    TypeName type = TypeName.get(element.asType());
+    String name = element.getSimpleName().toString();
+    // Copying parameter annotations can be incorrect so we're deliberately not including them.
+    // See https://github.com/square/javapoet/issues/482.
+    return ParameterSpec.builder(type, name).addModifiers(element.getModifiers()).build();
+  }
+
+  public static Builder builder(TypeName type, String name, Modifier... modifiers) {
+    checkNotNull(type, "type == null");
+    checkArgument(isValidParameterName(name), "not a valid name: %s", name);
+    return new Builder(type, name).addModifiers(modifiers);
+  }
+
+  private static boolean isValidParameterName(String name) {
+    // Allow "this" for explicit receiver parameters
+    // See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.1.
+    if (name.endsWith(".this")) {
+      return SourceVersion.isIdentifier(name.substring(0, name.length() - ".this".length()));
+    }
+    return name.equals("this") || SourceVersion.isName(name);
+  }
+
   public boolean hasModifier(Modifier modifier) {
     return modifiers.contains(modifier);
   }
 
-  void emit(CodeWriter codeWriter, boolean varargs) throws IOException {
-    codeWriter.emitAnnotations(annotations, true);
-    codeWriter.emitModifiers(modifiers);
-    if (varargs) {
-      TypeName.asArray(type).emit(codeWriter, true);
-    } else {
-      type.emit(codeWriter);
-    }
-    codeWriter.emit(" $L", name);
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 
   @Override
@@ -68,11 +99,6 @@ public final class ParameterSpec {
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return toString().hashCode();
   }
 
   @Override
@@ -87,41 +113,15 @@ public final class ParameterSpec {
     }
   }
 
-  public static ParameterSpec get(VariableElement element) {
-    checkArgument(element.getKind().equals(ElementKind.PARAMETER), "element is not a parameter");
-
-    TypeName type = TypeName.get(element.asType());
-    String name = element.getSimpleName().toString();
-    // Copying parameter annotations can be incorrect so we're deliberately not including them.
-    // See https://github.com/square/javapoet/issues/482.
-    return ParameterSpec.builder(type, name).addModifiers(element.getModifiers()).build();
-  }
-
-  static List<ParameterSpec> parametersOf(ExecutableElement method) {
-    List<ParameterSpec> result = new ArrayList<>();
-    for (VariableElement parameter : method.getParameters()) {
-      result.add(ParameterSpec.get(parameter));
+  void emit(CodeWriter codeWriter, boolean varargs) throws IOException {
+    codeWriter.emitAnnotations(annotations, true);
+    codeWriter.emitModifiers(modifiers);
+    if (varargs) {
+      TypeName.asArray(type).emit(codeWriter, true);
+    } else {
+      type.emit(codeWriter);
     }
-    return result;
-  }
-
-  private static boolean isValidParameterName(String name) {
-    // Allow "this" for explicit receiver parameters
-    // See https://docs.oracle.com/javase/specs/jls/se8/html/jls-8.html#jls-8.4.1.
-    if (name.endsWith(".this")) {
-      return SourceVersion.isIdentifier(name.substring(0, name.length() - ".this".length()));
-    }
-    return name.equals("this") || SourceVersion.isName(name);
-  }
-
-  public static Builder builder(TypeName type, String name, Modifier... modifiers) {
-    checkNotNull(type, "type == null");
-    checkArgument(isValidParameterName(name), "not a valid name: %s", name);
-    return new Builder(type, name).addModifiers(modifiers);
-  }
-
-  public static Builder builder(Type type, String name, Modifier... modifiers) {
-    return builder(TypeName.get(type), name, modifiers);
+    codeWriter.emit(" $L", name);
   }
 
   public Builder toBuilder() {
@@ -136,12 +136,11 @@ public final class ParameterSpec {
   }
 
   public static final class Builder {
+    public final List<AnnotationSpec> annotations = new ArrayList<>();
+    public final List<Modifier> modifiers = new ArrayList<>();
     private final TypeName type;
     private final String name;
     private final CodeBlock.Builder javadoc = CodeBlock.builder();
-
-    public final List<AnnotationSpec> annotations = new ArrayList<>();
-    public final List<Modifier> modifiers = new ArrayList<>();
 
     private Builder(TypeName type, String name) {
       this.type = type;
@@ -171,13 +170,13 @@ public final class ParameterSpec {
       return this;
     }
 
+    public Builder addAnnotation(Class<?> annotation) {
+      return addAnnotation(ClassName.get(annotation));
+    }
+
     public Builder addAnnotation(ClassName annotation) {
       this.annotations.add(AnnotationSpec.builder(annotation).build());
       return this;
-    }
-
-    public Builder addAnnotation(Class<?> annotation) {
-      return addAnnotation(ClassName.get(annotation));
     }
 
     public Builder addModifiers(Modifier... modifiers) {

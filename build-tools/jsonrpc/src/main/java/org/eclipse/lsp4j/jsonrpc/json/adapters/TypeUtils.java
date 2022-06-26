@@ -11,6 +11,11 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
+import com.google.gson.reflect.TypeToken;
+
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -21,11 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.jsonrpc.messages.Tuple;
-
-import com.google.gson.reflect.TypeToken;
 
 /** Utilities for handling types in the JSON parser / serializer. */
 public final class TypeUtils {
@@ -38,6 +38,41 @@ public final class TypeUtils {
    */
   public static Type[] getElementTypes(TypeToken<?> typeToken, Class<?> targetType) {
     return getElementTypes(typeToken.getType(), typeToken.getRawType(), targetType);
+  }
+
+  /**
+   * Return all possible types that can be expected when an element of the given type is parsed. If
+   * the type satisfies {@link #isEither(Type)}, a list of the corresponding type arguments is
+   * returned, otherwise a list containg the type itself is returned. Type parameters are
+   * <em>not</em> resolved by this method (use {@link #getElementTypes(TypeToken, Class)} to get
+   * resolved parameters).
+   */
+  public static Collection<Type> getExpectedTypes(Type type) {
+    Collection<Type> result = new ArrayList<>();
+    collectExpectedTypes(type, result);
+    return result;
+  }
+
+  /** Test whether the given type is Either. */
+  public static boolean isEither(Type type) {
+    if (type instanceof ParameterizedType) {
+      return isEither(((ParameterizedType) type).getRawType());
+    }
+    if (type instanceof Class) {
+      return Either.class.isAssignableFrom((Class<?>) type);
+    }
+    return false;
+  }
+
+  /** Test whether the given type is a two-tuple (pair). */
+  public static boolean isTwoTuple(Type type) {
+    if (type instanceof ParameterizedType) {
+      return isTwoTuple(((ParameterizedType) type).getRawType());
+    }
+    if (type instanceof Class) {
+      return Tuple.Two.class.isAssignableFrom((Class<?>) type);
+    }
+    return false;
   }
 
   private static Type[] getElementTypes(Type type, Class<?> rawType, Class<?> targetType) {
@@ -121,6 +156,23 @@ public final class TypeUtils {
     return type;
   }
 
+  private static void collectExpectedTypes(Type type, Collection<Type> types) {
+    if (isEither(type)) {
+      if (type instanceof ParameterizedType) {
+        for (Type typeArgument : ((ParameterizedType) type).getActualTypeArguments()) {
+          collectExpectedTypes(typeArgument, types);
+        }
+      }
+      if (type instanceof Class) {
+        for (Type typeParameter : ((Class<?>) type).getTypeParameters()) {
+          collectExpectedTypes(typeParameter, types);
+        }
+      }
+    } else {
+      types.add(type);
+    }
+  }
+
   private static class ParameterizedTypeImpl implements ParameterizedType {
 
     private final Type ownerType;
@@ -138,8 +190,8 @@ public final class TypeUtils {
     }
 
     @Override
-    public Type getOwnerType() {
-      return ownerType;
+    public Type[] getActualTypeArguments() {
+      return actualTypeArguments;
     }
 
     @Override
@@ -148,8 +200,8 @@ public final class TypeUtils {
     }
 
     @Override
-    public Type[] getActualTypeArguments() {
-      return actualTypeArguments;
+    public Type getOwnerType() {
+      return ownerType;
     }
 
     @Override
@@ -173,57 +225,5 @@ public final class TypeUtils {
       if (type instanceof Class<?>) return ((Class<?>) type).getName();
       else return String.valueOf(type);
     }
-  }
-
-  /**
-   * Return all possible types that can be expected when an element of the given type is parsed. If
-   * the type satisfies {@link #isEither(Type)}, a list of the corresponding type arguments is
-   * returned, otherwise a list containg the type itself is returned. Type parameters are
-   * <em>not</em> resolved by this method (use {@link #getElementTypes(TypeToken, Class)} to get
-   * resolved parameters).
-   */
-  public static Collection<Type> getExpectedTypes(Type type) {
-    Collection<Type> result = new ArrayList<>();
-    collectExpectedTypes(type, result);
-    return result;
-  }
-
-  private static void collectExpectedTypes(Type type, Collection<Type> types) {
-    if (isEither(type)) {
-      if (type instanceof ParameterizedType) {
-        for (Type typeArgument : ((ParameterizedType) type).getActualTypeArguments()) {
-          collectExpectedTypes(typeArgument, types);
-        }
-      }
-      if (type instanceof Class) {
-        for (Type typeParameter : ((Class<?>) type).getTypeParameters()) {
-          collectExpectedTypes(typeParameter, types);
-        }
-      }
-    } else {
-      types.add(type);
-    }
-  }
-
-  /** Test whether the given type is Either. */
-  public static boolean isEither(Type type) {
-    if (type instanceof ParameterizedType) {
-      return isEither(((ParameterizedType) type).getRawType());
-    }
-    if (type instanceof Class) {
-      return Either.class.isAssignableFrom((Class<?>) type);
-    }
-    return false;
-  }
-
-  /** Test whether the given type is a two-tuple (pair). */
-  public static boolean isTwoTuple(Type type) {
-    if (type instanceof ParameterizedType) {
-      return isTwoTuple(((ParameterizedType) type).getRawType());
-    }
-    if (type instanceof Class) {
-      return Tuple.Two.class.isAssignableFrom((Class<?>) type);
-    }
-    return false;
   }
 }

@@ -28,19 +28,19 @@ import com.itsaky.androidide.actions.ActionData
  * @author Akash Yadav
  */
 class GoToPreviousAction() : SearchActionModeAction() {
-    override val id: String = "editor.find.previous"
+  override val id: String = "editor.find.previous"
 
-    constructor(context: Context) : this() {
-        label = context.getString(string.previous)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_search_previous)
+  constructor(context: Context) : this() {
+    label = context.getString(string.previous)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_search_previous)
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val editor = getEditor(data)!!
+    if (!editor.searcher.hasQuery()) {
+      return false
     }
 
-    override fun execAction(data: ActionData): Any {
-        val editor = getEditor(data)!!
-        if (!editor.searcher.hasQuery()) {
-            return false
-        }
-
-        return editor.searcher.gotoPrevious()
-    }
+    return editor.searcher.gotoPrevious()
+  }
 }

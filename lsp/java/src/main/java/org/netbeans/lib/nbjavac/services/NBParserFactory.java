@@ -42,13 +42,13 @@ import com.sun.tools.javac.util.Position;
  */
 public class NBParserFactory extends ParserFactory {
 
-  public static void preRegister(Context context) {
-    context.put(parserFactoryKey, (Context.Factory<ParserFactory>) NBParserFactory::new);
-  }
-
   private final ScannerFactory scannerFactory;
   private final Names names;
   private final CancelService cancelService;
+
+  public static void preRegister(Context context) {
+    context.put(parserFactoryKey, (Context.Factory<ParserFactory>) NBParserFactory::new);
+  }
 
   protected NBParserFactory(Context context) {
     super(context);
@@ -99,6 +99,27 @@ public class NBParserFactory extends ParserFactory {
     }
 
     @Override
+    public int getEndPos(JCTree jctree) {
+      return TreeInfo.getEndPos(jctree, endPosTable);
+    }
+
+    @Override
+    public JCStatement parseSimpleStatement() {
+      JCStatement result = super.parseSimpleStatement();
+      // workaround: if the code looks like:
+      // for (name : <collection>) {...}
+      // the "name" will be made a type of a variable with name "<error>", with
+      // no end position. Inject the end position for the variable:
+      if (result instanceof JCEnhancedForLoop) {
+        JCEnhancedForLoop tree = (JCEnhancedForLoop) result;
+        if (getEndPos(tree.var) == Position.NOPOS) {
+          endPosTable.storeEnd(tree.var, getEndPos(tree.var.vartype));
+        }
+      }
+      return result;
+    }
+
+    @Override
     protected JCClassDecl classDeclaration(JCModifiers mods, Comment dc) {
       if (cancelService != null) {
         cancelService.abortIfCanceled();
@@ -140,27 +161,6 @@ public class NBParserFactory extends ParserFactory {
           pos, mods, type, name, typarams, isInterface, isVoid, isRecord, dc);
     }
 
-    @Override
-    public int getEndPos(JCTree jctree) {
-      return TreeInfo.getEndPos(jctree, endPosTable);
-    }
-
-    @Override
-    public JCStatement parseSimpleStatement() {
-      JCStatement result = super.parseSimpleStatement();
-      // workaround: if the code looks like:
-      // for (name : <collection>) {...}
-      // the "name" will be made a type of a variable with name "<error>", with
-      // no end position. Inject the end position for the variable:
-      if (result instanceof JCEnhancedForLoop) {
-        JCEnhancedForLoop tree = (JCEnhancedForLoop) result;
-        if (getEndPos(tree.var) == Position.NOPOS) {
-          endPosTable.storeEnd(tree.var, getEndPos(tree.var.vartype));
-        }
-      }
-      return result;
-    }
-
     public final class EndPosTableImpl extends AbstractEndPosTable {
 
       private final Lexer lexer;
@@ -178,14 +178,18 @@ public class NBParserFactory extends ParserFactory {
       }
 
       @Override
+      public int getEndPos(JCTree jctree) {
+        return delegate.getEndPos(jctree);
+      }
+
+      @Override
       public void storeEnd(JCTree tree, int endpos) {
         if (endpos >= 0) delegate.storeEnd(tree, endpos);
       }
 
       @Override
-      public void setErrorEndPos(int errPos) {
-        delegate.setErrorEndPos(errPos);
-        errorEndPos = delegate.errorEndPos;
+      public int replaceTree(JCTree jctree, JCTree jctree1) {
+        return delegate.replaceTree(jctree, jctree1);
       }
 
       @Override
@@ -201,13 +205,9 @@ public class NBParserFactory extends ParserFactory {
       }
 
       @Override
-      public int getEndPos(JCTree jctree) {
-        return delegate.getEndPos(jctree);
-      }
-
-      @Override
-      public int replaceTree(JCTree jctree, JCTree jctree1) {
-        return delegate.replaceTree(jctree, jctree1);
+      public void setErrorEndPos(int errPos) {
+        delegate.setErrorEndPos(errPos);
+        errorEndPos = delegate.errorEndPos;
       }
     }
   }

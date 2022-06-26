@@ -38,70 +38,70 @@ import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
  */
 class SearchActionMode(val editor: IDEEditor) : ActionMode.Callback {
 
-    @SuppressLint("RestrictedApi")
-    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+  @SuppressLint("RestrictedApi")
+  override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
 
-        if (mode == null) {
-            return false
-        }
-
-        if (menu is MenuBuilder) {
-            menu.setOptionalIconsVisible(true)
-        }
-
-        val search = SearchView(editor.context)
-        search.setOnQueryTextListener(OnQueryListener(editor))
-        search.isIconified = false
-        search.queryHint = editor.context.getString(R.string.text_to_search)
-        search.performClick()
-        search.setIconifiedByDefault(false)
-        mode.customView = search
-        return true
+    if (mode == null) {
+      return false
     }
 
-    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-        if (mode == null || menu == null) {
-            return false
-        }
-
-        menu.clear()
-        val registry = ActionsRegistry.getInstance()
-        registry.fillMenu(createData(mode), ActionItem.Location.EDITOR_SEARCH_ACTION_MODE, menu)
-
-        return true
+    if (menu is MenuBuilder) {
+      menu.setOptionalIconsVisible(true)
     }
 
-    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-        return true
+    val search = SearchView(editor.context)
+    search.setOnQueryTextListener(OnQueryListener(editor))
+    search.isIconified = false
+    search.queryHint = editor.context.getString(R.string.text_to_search)
+    search.performClick()
+    search.setIconifiedByDefault(false)
+    mode.customView = search
+    return true
+  }
+
+  override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+    if (mode == null || menu == null) {
+      return false
     }
 
-    override fun onDestroyActionMode(mode: ActionMode?) {
+    menu.clear()
+    val registry = ActionsRegistry.getInstance()
+    registry.fillMenu(createData(mode), ActionItem.Location.EDITOR_SEARCH_ACTION_MODE, menu)
+
+    return true
+  }
+
+  override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+    return true
+  }
+
+  override fun onDestroyActionMode(mode: ActionMode?) {
+    editor.searcher.stopSearch()
+  }
+
+  private fun createData(mode: ActionMode): ActionData {
+    return ActionData().apply {
+      put(Context::class.java, editor.context)
+      put(IDEEditor::class.java, editor)
+      put(CodeEditor::class.java, editor)
+      put(ActionMode::class.java, mode)
+    }
+  }
+
+  private class OnQueryListener(val editor: IDEEditor) : SearchView.OnQueryTextListener {
+    override fun onQueryTextSubmit(query: String?): Boolean {
+      editor.searcher.gotoNext()
+      return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+      if (TextUtils.isEmpty(newText)) {
         editor.searcher.stopSearch()
+        return false
+      }
+
+      editor.searcher.search(newText!!, SearchOptions(false, false))
+      return false
     }
-
-    private fun createData(mode: ActionMode): ActionData {
-        return ActionData().apply {
-            put(Context::class.java, editor.context)
-            put(IDEEditor::class.java, editor)
-            put(CodeEditor::class.java, editor)
-            put(ActionMode::class.java, mode)
-        }
-    }
-
-    private class OnQueryListener(val editor: IDEEditor) : SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(query: String?): Boolean {
-            editor.searcher.gotoNext()
-            return false
-        }
-
-        override fun onQueryTextChange(newText: String?): Boolean {
-            if (TextUtils.isEmpty(newText)) {
-                editor.searcher.stopSearch()
-                return false
-            }
-
-            editor.searcher.search(newText!!, SearchOptions(false, false))
-            return false
-        }
-    }
+  }
 }

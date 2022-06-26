@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedAttribute"
-	android:orientation="horizontal"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:paddingStart="16dp"
-	android:paddingEnd="16dp"
-	android:paddingTop="8dp"
-	android:paddingBottom="8dp"
-	android:gravity="top|start"
-	android:clickable="true"
-	android:focusable="true"
-	android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/content_background"
-	android:foreground="?attr/selectableItemBackground">
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="top|start"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    tools:ignore="UnusedAttribute">
 
-	<ImageView
-		android:layout_width="30dp"
-		android:layout_height="30dp"
-		android:id="@+id/icon"
-		android:layout_marginEnd="16dp"
-		android:scaleType="center"/>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="center" />
 
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:textSize="15sp"
-		android:id="@+id/title"
-		android:textColor="@color/primaryTextColor"/>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="15sp" />
 
 </LinearLayout>
 

@@ -23,19 +23,19 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultAndroidLibraryData(
-    override val aidlFolder: File,
-    override val assetsFolder: File,
-    override val compileJarFiles: List<File>,
-    override val externalAnnotations: File,
-    override val jniFolder: File,
-    override val manifest: File,
-    override val proguardRules: File,
-    override val publicResources: File,
-    override val renderscriptFolder: File,
-    override val resFolder: File,
-    override val resStaticLibrary: File,
-    override val runtimeJarFiles: List<File>,
-    override val symbolFile: File
+  override val aidlFolder: File,
+  override val assetsFolder: File,
+  override val compileJarFiles: List<File>,
+  override val externalAnnotations: File,
+  override val jniFolder: File,
+  override val manifest: File,
+  override val proguardRules: File,
+  override val publicResources: File,
+  override val renderscriptFolder: File,
+  override val resFolder: File,
+  override val resStaticLibrary: File,
+  override val runtimeJarFiles: List<File>,
+  override val symbolFile: File
 ) : AndroidLibraryData, Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

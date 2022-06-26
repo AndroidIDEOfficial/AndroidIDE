@@ -55,7 +55,7 @@ abstract class LogViewFragment : Fragment() {
     if (!lineString.endsWith("\n")) {
       lineString += "\n"
     }
-    
+
     ThreadUtils.runOnUiThread { this.binding!!.editor.append(lineString) }
   }
 

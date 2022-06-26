@@ -26,30 +26,30 @@ import com.itsaky.androidide.EditorActivity
  */
 abstract class BaseBuildAction : EditorActivityAction() {
 
-    override fun prepare(data: ActionData) {
-        val context = getActivity(data)
-        if (context == null) {
-            visible = false
-            return
-        } else {
-            visible = true
-        }
-
-        if (isBuildInProgress(context)) {
-            enabled = false
-            return
-        } else {
-            enabled = true
-        }
+  override fun prepare(data: ActionData) {
+    val context = getActivity(data)
+    if (context == null) {
+      visible = false
+      return
+    } else {
+      visible = true
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        val context = getActivity(data) ?: return
-        context.invalidateOptionsMenu()
+    if (isBuildInProgress(context)) {
+      enabled = false
+      return
+    } else {
+      enabled = true
     }
+  }
 
-    fun shouldPrepare() = visible && enabled
+  override fun postExec(data: ActionData, result: Any) {
+    val context = getActivity(data) ?: return
+    context.invalidateOptionsMenu()
+  }
 
-    private fun isBuildInProgress(activity: EditorActivity): Boolean =
-        activity.buildService == null || activity.buildService.isBuildInProgress
+  fun shouldPrepare() = visible && enabled
+
+  private fun isBuildInProgress(activity: EditorActivity): Boolean =
+    activity.buildService == null || activity.buildService.isBuildInProgress
 }

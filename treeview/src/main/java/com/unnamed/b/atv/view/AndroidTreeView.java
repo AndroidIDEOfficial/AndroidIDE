@@ -55,17 +55,17 @@ public class AndroidTreeView {
     Animation a =
         new Animation() {
           @Override
+          public boolean willChangeBounds() {
+            return true;
+          }
+
+          @Override
           protected void applyTransformation(float interpolatedTime, Transformation t) {
             v.getLayoutParams().height =
                 interpolatedTime == 1
                     ? LinearLayout.LayoutParams.WRAP_CONTENT
                     : (int) (targetHeight * interpolatedTime);
             v.requestLayout();
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-            return true;
           }
         };
 
@@ -81,6 +81,11 @@ public class AndroidTreeView {
     Animation a =
         new Animation() {
           @Override
+          public boolean willChangeBounds() {
+            return true;
+          }
+
+          @Override
           protected void applyTransformation(float interpolatedTime, Transformation t) {
             if (interpolatedTime == 1) {
               v.setVisibility(View.GONE);
@@ -88,11 +93,6 @@ public class AndroidTreeView {
               v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
               v.requestLayout();
             }
-          }
-
-          @Override
-          public boolean willChangeBounds() {
-            return true;
           }
         };
 
@@ -176,13 +176,13 @@ public class AndroidTreeView {
     mRoot.setViewHolder(
         new TreeNode.BaseNodeViewHolder(mContext) {
           @Override
-          public View createNodeView(TreeNode node, Object value) {
-            return null;
+          public ViewGroup getNodeItemsView() {
+            return viewTreeItems;
           }
 
           @Override
-          public ViewGroup getNodeItemsView() {
-            return viewTreeItems;
+          public View createNodeView(TreeNode node, Object value) {
+            return null;
           }
         });
 
@@ -197,17 +197,6 @@ public class AndroidTreeView {
   public void expandLevel(int level) {
     List<TreeNode> children = mRoot.getChildren();
     for (int i = 0; i < children.size(); i++) {
-      TreeNode n = children.get(i);
-      expandLevel(n, level);
-    }
-  }
-
-  private void expandLevel(TreeNode node, int level) {
-    if (node.getLevel() <= level) {
-      expandNode(node, false);
-    }
-    List<TreeNode> children = node.getChildren();
-    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
       TreeNode n = children.get(i);
       expandLevel(n, level);
     }
@@ -239,29 +228,6 @@ public class AndroidTreeView {
     }
   }
 
-  private void restoreNodeState(TreeNode node, Set<String> openNodes) {
-    List<TreeNode> children = node.getChildren();
-    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
-      TreeNode n = children.get(i);
-      if (openNodes.contains(n.getPath())) {
-        expandNode(n);
-        restoreNodeState(n, openNodes);
-      }
-    }
-  }
-
-  private void getSaveState(TreeNode root, StringBuilder sBuilder) {
-    List<TreeNode> children = root.getChildren();
-    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
-      TreeNode node = children.get(i);
-      if (node.isExpanded()) {
-        sBuilder.append(node.getPath());
-        sBuilder.append(NODES_PATH_SEPARATOR);
-        getSaveState(node, sBuilder);
-      }
-    }
-  }
-
   public void toggleNode(TreeNode node) {
     if (node.isExpanded()) {
       collapseNode(node, false);
@@ -284,9 +250,6 @@ public class AndroidTreeView {
     }
   }
 
-  // ------------------------------------------------------------
-  //  Selection methods
-
   public void expandNode(final TreeNode node, boolean includeSubnodes) {
     node.setExpanded(true);
     final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(node);
@@ -304,6 +267,136 @@ public class AndroidTreeView {
       }
     }
     parentViewHolder.getNodeItemsView().setVisibility(View.VISIBLE);
+  }
+
+  public <E> List<E> getSelectedValues(Class<E> clazz) {
+    List<E> result = new ArrayList<>();
+    List<TreeNode> selected = getSelected();
+    for (TreeNode n : selected) {
+      Object value = n.getValue();
+      if (value != null && value.getClass().equals(clazz)) {
+        result.add((E) value);
+      }
+    }
+    return result;
+  }
+
+  public boolean isSelectionModeEnabled() {
+    return mSelectionModeEnabled;
+  }
+
+  // ------------------------------------------------------------
+  //  Selection methods
+
+  public void setSelectionModeEnabled(boolean selectionModeEnabled) {
+    if (!selectionModeEnabled) {
+      // TODO fix double iteration over tree
+      deselectAll();
+    }
+    mSelectionModeEnabled = selectionModeEnabled;
+
+    List<TreeNode> children = mRoot.getChildren();
+    for (int i = 0; i < children.size(); i++) {
+      TreeNode node = children.get(i);
+      toggleSelectionMode(node, selectionModeEnabled);
+    }
+  }
+
+  public List<TreeNode> getSelected() {
+    if (mSelectionModeEnabled) {
+      return getSelected(mRoot);
+    } else {
+      return new ArrayList<TreeNode>();
+    }
+  }
+
+  public void selectAll(boolean skipCollapsed) {
+    makeAllSelection(true, skipCollapsed);
+  }
+
+  public void deselectAll() {
+    makeAllSelection(false, false);
+  }
+
+  public void selectNode(TreeNode node, boolean selected) {
+    if (mSelectionModeEnabled) {
+      node.setSelected(selected);
+      toogleSelectionForNode(node, true);
+    }
+  }
+
+  private void toogleSelectionForNode(TreeNode node, boolean makeSelectable) {
+    TreeNode.BaseNodeViewHolder holder = getViewHolderForNode(node);
+    if (holder.isInitialized()) {
+      getViewHolderForNode(node).toggleSelectionMode(makeSelectable);
+    }
+  }
+
+  private TreeNode.BaseNodeViewHolder getViewHolderForNode(TreeNode node) {
+    TreeNode.BaseNodeViewHolder viewHolder = node.getViewHolder();
+    if (viewHolder == null) {
+      viewHolder = defaultViewHolder;
+    }
+    if (viewHolder.getContainerStyle() <= 0) {
+      viewHolder.setContainerStyle(containerStyle);
+    }
+    if (viewHolder.getTreeView() == null) {
+      viewHolder.setTreeViev(this);
+    }
+    return viewHolder;
+  }
+
+  public void addNode(TreeNode parent, final TreeNode nodeToAdd) {
+    parent.addChild(nodeToAdd);
+    if (parent.isExpanded()) {
+      final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(parent);
+      addNode(parentViewHolder.getNodeItemsView(), nodeToAdd);
+    }
+  }
+
+  public void removeNode(TreeNode node) {
+    if (node.getParent() != null) {
+      TreeNode parent = node.getParent();
+      int index = parent.deleteChild(node);
+      if (parent.isExpanded() && index >= 0) {
+        final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(parent);
+        parentViewHolder.getNodeItemsView().removeViewAt(index);
+      }
+    }
+  }
+
+  private void expandLevel(TreeNode node, int level) {
+    if (node.getLevel() <= level) {
+      expandNode(node, false);
+    }
+    List<TreeNode> children = node.getChildren();
+    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
+      TreeNode n = children.get(i);
+      expandLevel(n, level);
+    }
+  }
+
+  private void restoreNodeState(TreeNode node, Set<String> openNodes) {
+    List<TreeNode> children = node.getChildren();
+    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
+      TreeNode n = children.get(i);
+      if (openNodes.contains(n.getPath())) {
+        expandNode(n);
+        restoreNodeState(n, openNodes);
+      }
+    }
+  }
+
+  private void getSaveState(TreeNode root, StringBuilder sBuilder) {
+    List<TreeNode> children = root.getChildren();
+    for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
+      TreeNode node = children.get(i);
+      if (node.isExpanded()) {
+        sBuilder.append(node.getPath());
+        sBuilder.append(NODES_PATH_SEPARATOR);
+        getSaveState(node, sBuilder);
+      }
+    }
   }
 
   private void addNode(ViewGroup container, final TreeNode n) {
@@ -344,36 +437,6 @@ public class AndroidTreeView {
         });
   }
 
-  public <E> List<E> getSelectedValues(Class<E> clazz) {
-    List<E> result = new ArrayList<>();
-    List<TreeNode> selected = getSelected();
-    for (TreeNode n : selected) {
-      Object value = n.getValue();
-      if (value != null && value.getClass().equals(clazz)) {
-        result.add((E) value);
-      }
-    }
-    return result;
-  }
-
-  public boolean isSelectionModeEnabled() {
-    return mSelectionModeEnabled;
-  }
-
-  public void setSelectionModeEnabled(boolean selectionModeEnabled) {
-    if (!selectionModeEnabled) {
-      // TODO fix double iteration over tree
-      deselectAll();
-    }
-    mSelectionModeEnabled = selectionModeEnabled;
-
-    List<TreeNode> children = mRoot.getChildren();
-    for (int i = 0; i < children.size(); i++) {
-      TreeNode node = children.get(i);
-      toggleSelectionMode(node, selectionModeEnabled);
-    }
-  }
-
   private void toggleSelectionMode(TreeNode parent, boolean mSelectionModeEnabled) {
     toogleSelectionForNode(parent, mSelectionModeEnabled);
     if (parent.isExpanded()) {
@@ -382,14 +445,6 @@ public class AndroidTreeView {
         TreeNode node = children.get(i);
         toggleSelectionMode(node, mSelectionModeEnabled);
       }
-    }
-  }
-
-  public List<TreeNode> getSelected() {
-    if (mSelectionModeEnabled) {
-      return getSelected(mRoot);
-    } else {
-      return new ArrayList<TreeNode>();
     }
   }
 
@@ -408,13 +463,8 @@ public class AndroidTreeView {
     return result;
   }
 
-  public void selectAll(boolean skipCollapsed) {
-    makeAllSelection(true, skipCollapsed);
-  }
-
-  public void deselectAll() {
-    makeAllSelection(false, false);
-  }
+  // -----------------------------------------------------------------
+  // Add / Remove
 
   private void makeAllSelection(boolean selected, boolean skipCollapsed) {
     if (mSelectionModeEnabled) {
@@ -423,13 +473,6 @@ public class AndroidTreeView {
         TreeNode node = children.get(i);
         selectNode(node, selected, skipCollapsed);
       }
-    }
-  }
-
-  public void selectNode(TreeNode node, boolean selected) {
-    if (mSelectionModeEnabled) {
-      node.setSelected(selected);
-      toogleSelectionForNode(node, true);
     }
   }
 
@@ -442,49 +485,6 @@ public class AndroidTreeView {
       for (int i = 0; i < children.size(); i++) {
         TreeNode node = children.get(i);
         selectNode(node, selected, skipCollapsed);
-      }
-    }
-  }
-
-  private void toogleSelectionForNode(TreeNode node, boolean makeSelectable) {
-    TreeNode.BaseNodeViewHolder holder = getViewHolderForNode(node);
-    if (holder.isInitialized()) {
-      getViewHolderForNode(node).toggleSelectionMode(makeSelectable);
-    }
-  }
-
-  private TreeNode.BaseNodeViewHolder getViewHolderForNode(TreeNode node) {
-    TreeNode.BaseNodeViewHolder viewHolder = node.getViewHolder();
-    if (viewHolder == null) {
-      viewHolder = defaultViewHolder;
-    }
-    if (viewHolder.getContainerStyle() <= 0) {
-      viewHolder.setContainerStyle(containerStyle);
-    }
-    if (viewHolder.getTreeView() == null) {
-      viewHolder.setTreeViev(this);
-    }
-    return viewHolder;
-  }
-
-  // -----------------------------------------------------------------
-  // Add / Remove
-
-  public void addNode(TreeNode parent, final TreeNode nodeToAdd) {
-    parent.addChild(nodeToAdd);
-    if (parent.isExpanded()) {
-      final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(parent);
-      addNode(parentViewHolder.getNodeItemsView(), nodeToAdd);
-    }
-  }
-
-  public void removeNode(TreeNode node) {
-    if (node.getParent() != null) {
-      TreeNode parent = node.getParent();
-      int index = parent.deleteChild(node);
-      if (parent.isExpanded() && index >= 0) {
-        final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(parent);
-        parentViewHolder.getNodeItemsView().removeViewAt(index);
       }
     }
   }

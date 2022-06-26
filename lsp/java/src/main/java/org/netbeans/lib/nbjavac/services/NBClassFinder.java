@@ -46,14 +46,15 @@ import javax.tools.JavaFileObject;
  */
 public class NBClassFinder extends ClassFinder {
 
-  public static void preRegister(Context context) {
-    context.put(classFinderKey, (Context.Factory<ClassFinder>) NBClassFinder::new);
-  }
-
   private final Context context;
   private final Names names;
   private final JCDiagnostic.Factory diagFactory;
   private final Log log;
+  private Completer completer;
+
+  public static void preRegister(Context context) {
+    context.put(classFinderKey, (Context.Factory<ClassFinder>) NBClassFinder::new);
+  }
 
   public NBClassFinder(Context context) {
     super(context);
@@ -62,23 +63,6 @@ public class NBClassFinder extends ClassFinder {
     this.diagFactory = JCDiagnostic.Factory.instance(context);
     this.log = Log.instance(context);
   }
-
-  @Override
-  protected JavaFileObject preferredFileObject(JavaFileObject a, JavaFileObject b) {
-    if (b.getName().toLowerCase(Locale.ROOT).endsWith(".sig")) {
-      // do not prefer sources over sig files (unless sources are newer):
-      boolean prevPreferSource = preferSource;
-      try {
-        preferSource = false;
-        return super.preferredFileObject(a, b);
-      } finally {
-        preferSource = prevPreferSource;
-      }
-    }
-    return super.preferredFileObject(a, b);
-  }
-
-  private Completer completer;
 
   @Override
   public Completer getCompleter() {
@@ -133,5 +117,20 @@ public class NBClassFinder extends ClassFinder {
       }
     }
     return completer;
+  }
+
+  @Override
+  protected JavaFileObject preferredFileObject(JavaFileObject a, JavaFileObject b) {
+    if (b.getName().toLowerCase(Locale.ROOT).endsWith(".sig")) {
+      // do not prefer sources over sig files (unless sources are newer):
+      boolean prevPreferSource = preferSource;
+      try {
+        preferSource = false;
+        return super.preferredFileObject(a, b);
+      } finally {
+        preferSource = prevPreferSource;
+      }
+    }
+    return super.preferredFileObject(a, b);
   }
 }

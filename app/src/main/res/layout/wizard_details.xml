@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingEnd="16dp"
     android:paddingStart="16dp"
-    android:paddingTop="8dp" >
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_app_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:hint="@string/project_app_name"
         android:theme="@style/AppTheme.ProjectCreator.TextInput"
         app:counterEnabled="true"
         app:counterMaxLength="20"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:placeholderText="My Application"
         app:startIconDrawable="@drawable/ic_android"
-        app:startIconTint="@color/primaryIconColor" >
+        app:startIconTint="@color/primaryIconColor">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_app_name"
@@ -37,16 +36,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_app_name"
         android:hint="@string/package_name"
         android:theme="@style/AppTheme.ProjectCreator.TextInput"
         app:counterEnabled="true"
         app:counterMaxLength="40"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_app_name"
         app:placeholderText="com.example.myapplication"
         app:startIconDrawable="@drawable/ic_package"
-        app:startIconTint="@color/primaryIconColor" >
+        app:startIconTint="@color/primaryIconColor">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_package_name"
@@ -62,14 +61,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_package_name"
         android:hint="@string/wizard_save_location"
         android:theme="@style/AppTheme.ProjectCreator.TextInput"
         app:endIconDrawable="@drawable/ic_folder"
         app:endIconMode="custom"
-        app:placeholderText="/storage/emulated/0/AppProjects/MyApplication" >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_package_name"
+        app:placeholderText="/storage/emulated/0/AppProjects/MyApplication">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_save_location"
@@ -85,10 +84,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/wizard_language"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_save_location"
-        android:hint="@string/wizard_language" >
+        app:layout_constraintTop_toBottomOf="@+id/til_save_location">
 
         <AutoCompleteTextView
             android:id="@+id/et_language"
@@ -103,11 +102,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/wizard_toolchain"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_language"
-        android:hint="@string/wizard_toolchain"
-        android:visibility="gone" >
+        app:layout_constraintTop_toBottomOf="@+id/til_language">
 
         <AutoCompleteTextView
             android:id="@+id/et_toolchain"
@@ -122,12 +121,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/minimum_sdk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_toolchain"
-        android:hint="@string/minimum_sdk"
         app:startIconDrawable="@drawable/ic_min_sdk"
-        app:startIconTint="@color/primaryIconColor" >
+        app:startIconTint="@color/primaryIconColor">
 
         <AutoCompleteTextView
             android:id="@+id/et_min_sdk"
@@ -142,12 +141,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:hint="@string/target_sdk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_min_sdk"
-        android:hint="@string/target_sdk"
         app:startIconDrawable="@drawable/ic_target_sdk"
-        app:startIconTint="@color/primaryIconColor" >
+        app:startIconTint="@color/primaryIconColor">
 
         <AutoCompleteTextView
             android:id="@+id/et_target_sdk"

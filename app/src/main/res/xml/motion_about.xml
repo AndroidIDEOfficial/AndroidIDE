@@ -6,143 +6,129 @@
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
         app:duration="50">
-        
+
         <OnSwipe
             app:dragDirection="dragUp"
-            app:touchAnchorId="@id/about_scroller"/>
-        
+            app:touchAnchorId="@id/about_scroller" />
+
         <KeyFrameSet>
             <KeyAttribute
+                android:alpha="0.0"
                 app:framePosition="50"
-                app:motionTarget="@id/icon_container"
-                android:alpha="0.0"/>
+                app:motionTarget="@id/icon_container" />
             <KeyAttribute
+                android:alpha="0.0"
                 app:framePosition="30"
-                app:motionTarget="@id/subtitle"
-                android:alpha="0.0"/>
+                app:motionTarget="@id/subtitle" />
         </KeyFrameSet>
-        
+
     </Transition>
 
-    
-    
+
     <ConstraintSet>
-        
-        <Constraint
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/icon_anchor"
-            android:layout_width="0dp"
-            android:layout_height="200dp"/>
 
         <Constraint
-            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/icon_anchor"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_anchor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Constraint
             android:id="@+id/icon_container"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_marginTop="-28dp"
-            android:layout_marginBottom="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
-        
-        <Constraint
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="-28dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_container"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_anchor" />
+
+        <Constraint
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"/>
-        
-        <Constraint
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="4dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_container" />
+
+        <Constraint
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
+            android:alpha="1.0"
             android:scaleX="1.0"
             android:scaleY="1.0"
-            android:alpha="1.0"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
         <Constraint
+            android:id="@+id/about_scroller"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/subtitle"
-            android:id="@+id/about_scroller"/>
-        
-    </ConstraintSet>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subtitle" />
 
-    <ConstraintSet
-        android:id="@+id/end">
+    </ConstraintSet>
+
+
+    <ConstraintSet android:id="@+id/end">
 
         <Constraint
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/icon_anchor"
             android:layout_width="0dp"
-            android:layout_height="56dp"/>
+            android:layout_height="56dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Constraint
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_anchor"
             android:id="@+id/icon_container"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:alpha="0.0"/>
+            android:alpha="0.0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_anchor" />
 
         <Constraint
-            app:layout_constraintStart_toStartOf="@id/icon_anchor"
-            app:layout_constraintTop_toTopOf="@id/icon_anchor"
-            app:layout_constraintBottom_toBottomOf="@id/icon_anchor"
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:scaleX="0.7"
             android:scaleY="0.7"
-            android:layout_marginStart="16dp"/>
+            app:layout_constraintBottom_toBottomOf="@id/icon_anchor"
+            app:layout_constraintStart_toStartOf="@id/icon_anchor"
+            app:layout_constraintTop_toTopOf="@id/icon_anchor" />
 
         <Constraint
-            app:layout_constraintStart_toStartOf="@id/icon_anchor"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintBottom_toBottomOf="@id/icon_anchor"
             android:id="@+id/subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:alpha="0.0"
             android:scaleX="0.0"
             android:scaleY="0.0"
-            android:alpha="0.0"/>
+            app:layout_constraintBottom_toBottomOf="@id/icon_anchor"
+            app:layout_constraintStart_toStartOf="@id/icon_anchor"
+            app:layout_constraintTop_toBottomOf="@id/title" />
 
         <Constraint
+            android:id="@+id/about_scroller"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icon_anchor"
-            android:id="@+id/about_scroller"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_anchor" />
 
     </ConstraintSet>
 

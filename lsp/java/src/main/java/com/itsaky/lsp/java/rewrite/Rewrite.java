@@ -40,15 +40,6 @@ public abstract class Rewrite {
   /** CANCELLED signals that the rewrite couldn't be completed. */
   public static Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap();
 
-  /**
-   * Perform a rewrite across the entire codebase. The given compiler can be used for anything
-   * except compiling other files. If you try to compile any file, the current thread will be
-   * blocked.
-   *
-   * @param compiler The compiler.
-   */
-  public abstract Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
-
   public CodeActionItem asCodeActions(CompilerProvider compiler, String title) {
     final Map<Path, TextEdit[]> edits = rewrite(compiler);
     if (edits == null || edits.isEmpty()) {
@@ -75,6 +66,15 @@ public abstract class Rewrite {
     applyCommands(action);
     return action;
   }
+
+  /**
+   * Perform a rewrite across the entire codebase. The given compiler can be used for anything
+   * except compiling other files. If you try to compile any file, the current thread will be
+   * blocked.
+   *
+   * @param compiler The compiler.
+   */
+  public abstract Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
 
   protected void applyCommands(@NonNull CodeActionItem action) {}
 }

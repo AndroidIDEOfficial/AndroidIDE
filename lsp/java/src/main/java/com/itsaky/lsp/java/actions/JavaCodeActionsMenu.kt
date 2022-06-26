@@ -21,9 +21,9 @@ import com.itsaky.lsp.actions.CodeActionsMenu
 import com.itsaky.lsp.java.actions.common.CommentAction
 import com.itsaky.lsp.java.actions.common.FindReferencesAction
 import com.itsaky.lsp.java.actions.common.GoToDefinitionAction
-import com.itsaky.lsp.java.actions.common.UncommentAction
-import com.itsaky.lsp.java.actions.common.RemoveUnusedImportsAction
 import com.itsaky.lsp.java.actions.common.OrganizeImportsAction
+import com.itsaky.lsp.java.actions.common.RemoveUnusedImportsAction
+import com.itsaky.lsp.java.actions.common.UncommentAction
 import com.itsaky.lsp.java.actions.diagnostics.AddImportAction
 import com.itsaky.lsp.java.actions.diagnostics.AddThrowsAction
 import com.itsaky.lsp.java.actions.diagnostics.CreateMissingMethodAction
@@ -42,30 +42,27 @@ import com.itsaky.lsp.java.actions.generators.OverrideSuperclassMethodsAction
 
 /** @author Akash Yadav */
 class JavaCodeActionsMenu : CodeActionsMenu() {
-    init {
-        addAction(CommentAction())
-        addAction(UncommentAction())
-        addAction(GoToDefinitionAction())
-        addAction(FindReferencesAction())
-        addAction(AddImportAction())
-        addAction(ImplementAbstractMethodsAction())
-        addAction(VariableToStatementAction())
-        addAction(FieldToBlockAction())
-        addAction(RemoveClassAction())
-        addAction(RemoveMethodAction())
-        addAction(RemoveUnusedThrowsAction())
-        addAction(CreateMissingMethodAction())
-        addAction(SuppressUncheckedWarningAction())
-        addAction(AddThrowsAction())
-        addAction(GenerateSettersAndGettersAction())
-        addAction(OverrideSuperclassMethodsAction())
-        addAction(GenerateMissingConstructorAction())
-        addAction(GenerateConstructorAction())
-        addAction(GenerateToStringMethodAction())
-        addAction(RemoveUnusedImportsAction())
-        addAction(OrganizeImportsAction())
-    }
+  init {
+    addAction(CommentAction())
+    addAction(UncommentAction())
+    addAction(GoToDefinitionAction())
+    addAction(FindReferencesAction())
+    addAction(AddImportAction())
+    addAction(ImplementAbstractMethodsAction())
+    addAction(VariableToStatementAction())
+    addAction(FieldToBlockAction())
+    addAction(RemoveClassAction())
+    addAction(RemoveMethodAction())
+    addAction(RemoveUnusedThrowsAction())
+    addAction(CreateMissingMethodAction())
+    addAction(SuppressUncheckedWarningAction())
+    addAction(AddThrowsAction())
+    addAction(GenerateSettersAndGettersAction())
+    addAction(OverrideSuperclassMethodsAction())
+    addAction(GenerateMissingConstructorAction())
+    addAction(GenerateConstructorAction())
+    addAction(GenerateToStringMethodAction())
+    addAction(RemoveUnusedImportsAction())
+    addAction(OrganizeImportsAction())
+  }
 }
-
-
-

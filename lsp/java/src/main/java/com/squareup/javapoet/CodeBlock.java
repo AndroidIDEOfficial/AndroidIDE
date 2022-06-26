@@ -78,38 +78,6 @@ public final class CodeBlock {
     this.args = Util.immutableList(builder.args);
   }
 
-  public boolean isEmpty() {
-    return formatParts.isEmpty();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null) return false;
-    if (getClass() != o.getClass()) return false;
-    return toString().equals(o.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return toString().hashCode();
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder out = new StringBuilder();
-    try {
-      new CodeWriter(out).emit(this);
-      return out.toString();
-    } catch (IOException e) {
-      throw new AssertionError();
-    }
-  }
-
-  public static CodeBlock of(String format, Object... args) {
-    return new Builder().add(format, args).build();
-  }
-
   /**
    * Joins {@code codeBlocks} into a single {@link CodeBlock}, each separated by {@code separator}.
    * For example, joining {@code String s}, {@code Object o} and {@code int i} using {@code ", "}
@@ -132,6 +100,10 @@ public final class CodeBlock {
         CodeBlockJoiner::join);
   }
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
   /**
    * A {@link Collector} implementation that joins {@link CodeBlock} instances together into one
    * separated by {@code separator}. For example, joining {@code String s}, {@code Object o} and
@@ -150,8 +122,36 @@ public final class CodeBlock {
         });
   }
 
-  public static Builder builder() {
-    return new Builder();
+  public static CodeBlock of(String format, Object... args) {
+    return new Builder().add(format, args).build();
+  }
+
+  public boolean isEmpty() {
+    return formatParts.isEmpty();
+  }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    if (getClass() != o.getClass()) return false;
+    return toString().equals(o.toString());
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder out = new StringBuilder();
+    try {
+      new CodeWriter(out).emit(this);
+      return out.toString();
+    } catch (IOException e) {
+      throw new AssertionError();
+    }
   }
 
   public Builder toBuilder() {
@@ -231,6 +231,64 @@ public final class CodeBlock {
         }
       }
 
+      return this;
+    }
+
+    private boolean isNoArgPlaceholder(char c) {
+      return c == '$' || c == '>' || c == '<' || c == '[' || c == ']' || c == 'W' || c == 'Z';
+    }
+
+    private void addArgument(String format, char c, Object arg) {
+      switch (c) {
+        case 'N':
+          this.args.add(argToName(arg));
+          break;
+        case 'L':
+          this.args.add(argToLiteral(arg));
+          break;
+        case 'S':
+          this.args.add(argToString(arg));
+          break;
+        case 'T':
+          this.args.add(argToType(arg));
+          break;
+        default:
+          throw new IllegalArgumentException(String.format("invalid format string: '%s'", format));
+      }
+    }
+
+    private String argToName(Object o) {
+      if (o instanceof CharSequence) return o.toString();
+      if (o instanceof ParameterSpec) return ((ParameterSpec) o).name;
+      if (o instanceof FieldSpec) return ((FieldSpec) o).name;
+      if (o instanceof MethodSpec) return ((MethodSpec) o).name;
+      if (o instanceof TypeSpec) return ((TypeSpec) o).name;
+      throw new IllegalArgumentException("expected name but was " + o);
+    }
+
+    private Object argToLiteral(Object o) {
+      return o;
+    }
+
+    private String argToString(Object o) {
+      return o != null ? String.valueOf(o) : null;
+    }
+
+    private TypeName argToType(Object o) {
+      if (o instanceof TypeName) return (TypeName) o;
+      if (o instanceof TypeMirror) return TypeName.get((TypeMirror) o);
+      if (o instanceof Element) return TypeName.get(((Element) o).asType());
+      if (o instanceof Type) return TypeName.get((Type) o);
+      throw new IllegalArgumentException("expected type but was " + o);
+    }
+
+    /**
+     * @param controlFlow the control flow construct and its code, such as "if (foo == 5)".
+     *     Shouldn't contain braces or newline characters.
+     */
+    public Builder beginControlFlow(String controlFlow, Object... args) {
+      add(controlFlow + " {\n", args);
+      indent();
       return this;
     }
 
@@ -328,61 +386,8 @@ public final class CodeBlock {
       return this;
     }
 
-    private boolean isNoArgPlaceholder(char c) {
-      return c == '$' || c == '>' || c == '<' || c == '[' || c == ']' || c == 'W' || c == 'Z';
-    }
-
-    private void addArgument(String format, char c, Object arg) {
-      switch (c) {
-        case 'N':
-          this.args.add(argToName(arg));
-          break;
-        case 'L':
-          this.args.add(argToLiteral(arg));
-          break;
-        case 'S':
-          this.args.add(argToString(arg));
-          break;
-        case 'T':
-          this.args.add(argToType(arg));
-          break;
-        default:
-          throw new IllegalArgumentException(String.format("invalid format string: '%s'", format));
-      }
-    }
-
-    private String argToName(Object o) {
-      if (o instanceof CharSequence) return o.toString();
-      if (o instanceof ParameterSpec) return ((ParameterSpec) o).name;
-      if (o instanceof FieldSpec) return ((FieldSpec) o).name;
-      if (o instanceof MethodSpec) return ((MethodSpec) o).name;
-      if (o instanceof TypeSpec) return ((TypeSpec) o).name;
-      throw new IllegalArgumentException("expected name but was " + o);
-    }
-
-    private Object argToLiteral(Object o) {
-      return o;
-    }
-
-    private String argToString(Object o) {
-      return o != null ? String.valueOf(o) : null;
-    }
-
-    private TypeName argToType(Object o) {
-      if (o instanceof TypeName) return (TypeName) o;
-      if (o instanceof TypeMirror) return TypeName.get((TypeMirror) o);
-      if (o instanceof Element) return TypeName.get(((Element) o).asType());
-      if (o instanceof Type) return TypeName.get((Type) o);
-      throw new IllegalArgumentException("expected type but was " + o);
-    }
-
-    /**
-     * @param controlFlow the control flow construct and its code, such as "if (foo == 5)".
-     *     Shouldn't contain braces or newline characters.
-     */
-    public Builder beginControlFlow(String controlFlow, Object... args) {
-      add(controlFlow + " {\n", args);
-      indent();
+    public Builder indent() {
+      this.formatParts.add("$>");
       return this;
     }
 
@@ -394,6 +399,11 @@ public final class CodeBlock {
       unindent();
       add("} " + controlFlow + " {\n", args);
       indent();
+      return this;
+    }
+
+    public Builder unindent() {
+      this.formatParts.add("$<");
       return this;
     }
 
@@ -413,6 +423,10 @@ public final class CodeBlock {
       return this;
     }
 
+    public Builder addStatement(CodeBlock codeBlock) {
+      return addStatement("$L", codeBlock);
+    }
+
     public Builder addStatement(String format, Object... args) {
       add("$[");
       add(format, args);
@@ -420,23 +434,9 @@ public final class CodeBlock {
       return this;
     }
 
-    public Builder addStatement(CodeBlock codeBlock) {
-      return addStatement("$L", codeBlock);
-    }
-
     public Builder add(CodeBlock codeBlock) {
       formatParts.addAll(codeBlock.formatParts);
       args.addAll(codeBlock.args);
-      return this;
-    }
-
-    public Builder indent() {
-      this.formatParts.add("$>");
-      return this;
-    }
-
-    public Builder unindent() {
-      this.formatParts.add("$<");
       return this;
     }
 
@@ -461,6 +461,14 @@ public final class CodeBlock {
       this.builder = builder;
     }
 
+    CodeBlockJoiner merge(CodeBlockJoiner other) {
+      CodeBlock otherBlock = other.builder.build();
+      if (!otherBlock.isEmpty()) {
+        add(otherBlock);
+      }
+      return this;
+    }
+
     CodeBlockJoiner add(CodeBlock codeBlock) {
       if (!first) {
         builder.add(delimiter);
@@ -468,14 +476,6 @@ public final class CodeBlock {
       first = false;
 
       builder.add(codeBlock);
-      return this;
-    }
-
-    CodeBlockJoiner merge(CodeBlockJoiner other) {
-      CodeBlock otherBlock = other.builder.build();
-      if (!otherBlock.isEmpty()) {
-        add(otherBlock);
-      }
       return this;
     }
 

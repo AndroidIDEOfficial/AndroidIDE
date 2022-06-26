@@ -26,12 +26,11 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 class JavaModuleExternalDependency(
-    jar: File,
+  jar: File,
 
-    /** `sources.jar` for this dependency. */
-    val sources: File? = null,
+  /** `sources.jar` for this dependency. */
+  val sources: File? = null,
 
-    /** `javadoc.jar` for this dependency. */
-    val javadoc: File? = null
-) : JavaModuleDependency(jar), Serializable {
-}
+  /** `javadoc.jar` for this dependency. */
+  val javadoc: File? = null
+) : JavaModuleDependency(jar), Serializable {}

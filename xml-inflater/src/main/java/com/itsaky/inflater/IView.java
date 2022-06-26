@@ -147,19 +147,19 @@ public interface IView {
   INamespace findRegisteredNamespace(@NonNull String name);
 
   /**
+   * Get the parent of this view
+   *
+   * @return The parent of this view or {@code null} if this is the root view.
+   */
+  IViewGroup getParent();
+
+  /**
    * Set the parent of this view. This is set by {@link IViewGroup} when {@link
    * IViewGroup#addView(IView, int)} is called.
    *
    * @param newParent The new parent of this view.
    */
   void setParent(IViewGroup newParent);
-
-  /**
-   * Get the parent of this view
-   *
-   * @return The parent of this view or {@code null} if this is the root view.
-   */
-  IViewGroup getParent();
 
   /**
    * Remove this view from its parent. This should take care of removing the actual {@link View}
@@ -177,13 +177,6 @@ public interface IView {
   boolean isPlaceholder();
 
   /**
-   * Store an object that is associated with this view.
-   *
-   * @param data The data to store.
-   */
-  void setExtraData(Object data);
-
-  /**
    * Get the stored data.
    *
    * @return The stored data.
@@ -193,11 +186,11 @@ public interface IView {
   Object getExtraData();
 
   /**
-   * Get the layout resource code for this file.
+   * Store an object that is associated with this view.
    *
-   * @param indentationLength The number of spaces to indent.
+   * @param data The data to store.
    */
-  String generateCode(int indentationLength);
+  void setExtraData(Object data);
 
   /**
    * @see #generateCode(int)
@@ -205,6 +198,13 @@ public interface IView {
   default String generateCode() {
     return generateCode(0);
   }
+
+  /**
+   * Get the layout resource code for this file.
+   *
+   * @param indentationLength The number of spaces to indent.
+   */
+  String generateCode(int indentationLength);
 
   /**
    * Get the tag name which will be used for generating XML Code for this view.

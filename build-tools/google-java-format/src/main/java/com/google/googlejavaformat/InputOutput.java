@@ -25,60 +25,11 @@ import java.util.Map;
 
 /** This interface defines methods common to an {@link Input} or an {@link Output}. */
 public abstract class InputOutput {
-  private ImmutableList<String> lines = ImmutableList.of();
-
   protected static final Range<Integer> EMPTY_RANGE = Range.closedOpen(-1, -1);
   private static final DiscreteDomain<Integer> INTEGERS = DiscreteDomain.integers();
-
-  /** Set the lines. */
-  protected final void setLines(ImmutableList<String> lines) {
-    this.lines = lines;
-  }
-
-  /**
-   * Get the line count.
-   *
-   * @return the line count
-   */
-  public final int getLineCount() {
-    return lines.size();
-  }
-
-  /**
-   * Get a line.
-   *
-   * @param lineI the line number
-   * @return the line
-   */
-  public final String getLine(int lineI) {
-    return lines.get(lineI);
-  }
-
   /** The {@link Range}s of the tokens or comments lying on each line, in any part. */
   protected final List<Range<Integer>> ranges = new ArrayList<>();
-
-  private static void addToRanges(List<Range<Integer>> ranges, int i, int k) {
-    while (ranges.size() <= i) {
-      ranges.add(EMPTY_RANGE);
-    }
-    Range<Integer> oldValue = ranges.get(i);
-    ranges.set(i, Range.closedOpen(oldValue.isEmpty() ? k : oldValue.lowerEndpoint(), k + 1));
-  }
-
-  protected final void computeRanges(List<? extends Input.Tok> toks) {
-    int lineI = 0;
-    for (Input.Tok tok : toks) {
-      String txt = tok.getOriginalText();
-      int lineI0 = lineI;
-      lineI += Newlines.count(txt);
-      int k = tok.getIndex();
-      if (k >= 0) {
-        for (int i = lineI0; i <= lineI; i++) {
-          addToRanges(ranges, i, k);
-        }
-      }
-    }
-  }
+  private ImmutableList<String> lines = ImmutableList.of();
 
   /**
    * Given an {@code InputOutput}, compute the map from tok indices to line ranges.
@@ -104,6 +55,15 @@ public abstract class InputOutput {
   }
 
   /**
+   * Get the line count.
+   *
+   * @return the line count
+   */
+  public final int getLineCount() {
+    return lines.size();
+  }
+
+  /**
    * Get the {@link Range} of {@link Input.Tok}s lying in any part on a line.
    *
    * @param lineI the line number
@@ -113,8 +73,46 @@ public abstract class InputOutput {
     return 0 <= lineI && lineI < ranges.size() ? ranges.get(lineI) : EMPTY_RANGE;
   }
 
+  /**
+   * Get a line.
+   *
+   * @param lineI the line number
+   * @return the line
+   */
+  public final String getLine(int lineI) {
+    return lines.get(lineI);
+  }
+
   @Override
   public String toString() {
     return "InputOutput{" + "lines=" + lines + ", ranges=" + ranges + '}';
+  }
+
+  /** Set the lines. */
+  protected final void setLines(ImmutableList<String> lines) {
+    this.lines = lines;
+  }
+
+  protected final void computeRanges(List<? extends Input.Tok> toks) {
+    int lineI = 0;
+    for (Input.Tok tok : toks) {
+      String txt = tok.getOriginalText();
+      int lineI0 = lineI;
+      lineI += Newlines.count(txt);
+      int k = tok.getIndex();
+      if (k >= 0) {
+        for (int i = lineI0; i <= lineI; i++) {
+          addToRanges(ranges, i, k);
+        }
+      }
+    }
+  }
+
+  private static void addToRanges(List<Range<Integer>> ranges, int i, int k) {
+    while (ranges.size() <= i) {
+      ranges.add(EMPTY_RANGE);
+    }
+    Range<Integer> oldValue = ranges.get(i);
+    ranges.set(i, Range.closedOpen(oldValue.isEmpty() ? k : oldValue.lowerEndpoint(), k + 1));
   }
 }

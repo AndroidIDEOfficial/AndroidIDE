@@ -21,8 +21,8 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultGraphItem : GraphItem, Serializable {
-    private val serialVersionUID = 1L
-    override var dependencies: List<DefaultGraphItem> = mutableListOf()
-    override var key: String = ""
-    override var requestedCoordinates: String? = ""
+  private val serialVersionUID = 1L
+  override var dependencies: List<DefaultGraphItem> = mutableListOf()
+  override var key: String = ""
+  override var requestedCoordinates: String? = ""
 }

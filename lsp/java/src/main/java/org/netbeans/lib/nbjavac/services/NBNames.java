@@ -28,17 +28,6 @@ import com.sun.tools.javac.util.Names;
 public class NBNames {
 
   public static final Context.Key<NBNames> nbNamesKey = new Context.Key<>();
-
-  public static void preRegister(Context context) {
-    context.put(nbNamesKey, (Context.Factory<NBNames>) NBNames::new);
-  }
-
-  public static NBNames instance(Context context) {
-    NBNames instance = context.get(nbNamesKey);
-    if (instance == null) instance = new NBNames(context);
-    return instance;
-  }
-
   public final Name _org_netbeans_EnclosingMethod;
   public final Name _org_netbeans_TypeSignature;
   public final Name _org_netbeans_ParameterNames;
@@ -46,6 +35,9 @@ public class NBNames {
   public final Name _org_netbeans_SourceLevelParameterAnnotations;
   public final Name _org_netbeans_SourceLevelTypeAnnotations;
 
+  public static void preRegister(Context context) {
+    context.put(nbNamesKey, (Context.Factory<NBNames>) NBNames::new);
+  }
   protected NBNames(Context context) {
     Names n = Names.instance(context);
 
@@ -57,5 +49,11 @@ public class NBNames {
         n.fromString("org.netbeans.SourceLevelParameterAnnotations");
     _org_netbeans_SourceLevelTypeAnnotations =
         n.fromString("org.netbeans.SourceLevelTypeAnnotations");
+  }
+
+  public static NBNames instance(Context context) {
+    NBNames instance = context.get(nbNamesKey);
+    if (instance == null) instance = new NBNames(context);
+    return instance;
   }
 }

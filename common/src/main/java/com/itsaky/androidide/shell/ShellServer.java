@@ -36,11 +36,10 @@ import java.util.Map;
 
 public class ShellServer extends Thread {
 
+  private static final ILogger LOG = ILogger.newInstance("ShellServer");
   private final Callback callback;
   private BufferedReader output;
   private Process process;
-
-  private static final ILogger LOG = ILogger.newInstance("ShellServer");
 
   public ShellServer(
       Callback callback,
@@ -66,16 +65,19 @@ public class ShellServer extends Thread {
     }
   }
 
+  @NonNull
+  private String getFullStackTrace(@NonNull Throwable th) {
+    StringWriter sw = new StringWriter();
+    th.printStackTrace(new PrintWriter(sw));
+    return sw.toString();
+  }
+
   public InputStream getProcessInputStream() {
     return process.getInputStream();
   }
 
   public OutputStream getProcessOutputStream() {
     return process.getOutputStream();
-  }
-
-  public void append(String str) {
-    append(str, true);
   }
 
   public void bgAppend(String str) {
@@ -103,20 +105,24 @@ public class ShellServer extends Thread {
     }
   }
 
+  public void output(String str) {
+    if (this.callback != null) {
+      this.callback.output(str);
+    }
+  }
+
   public void append(@NonNull String... strArr) {
     for (String append : strArr) {
       append(append);
     }
   }
 
-  public void exit() {
-    append("exit");
+  public void append(String str) {
+    append(str, true);
   }
 
-  public void output(String str) {
-    if (this.callback != null) {
-      this.callback.output(str);
-    }
+  public void exit() {
+    append("exit");
   }
 
   @Override
@@ -138,13 +144,6 @@ public class ShellServer extends Thread {
         this.process.getErrorStream(),
         this.process.getOutputStream());
     this.process.destroy();
-  }
-
-  @NonNull
-  private String getFullStackTrace(@NonNull Throwable th) {
-    StringWriter sw = new StringWriter();
-    th.printStackTrace(new PrintWriter(sw));
-    return sw.toString();
   }
 
   private void closeIOQuietly(@NonNull Closeable... toClose) {

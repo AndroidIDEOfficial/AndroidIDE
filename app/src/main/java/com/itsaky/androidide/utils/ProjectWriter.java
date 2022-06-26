@@ -46,8 +46,6 @@ import java.util.zip.ZipInputStream;
 
 public class ProjectWriter {
 
-  private static ProjectWriterCallback callback;
-
   private static final String XML_TEMPLATE_PATH = "templates/xml";
   private static final String SOURCE_PATH_REGEX = "/.*/src/.*/java|kt";
   private static final String FILE_EXT_REGEX = ".*/java|kt|gradle|xml|txt|cpp";
@@ -58,6 +56,7 @@ public class ProjectWriter {
       PACKAGE_NAME_CPP = "{$package_name_cpp}",
       CPP_FLAGS = "$cpp_flags",
       LIBRARY_NAME = "$library_name";
+  private static ProjectWriterCallback callback;
 
   @NonNull
   public static String createMenu() {

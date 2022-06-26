@@ -36,6 +36,12 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
   }
 
   @Override
+  public ClassTree reduce(ClassTree a, ClassTree b) {
+    if (a != null) return a;
+    return b;
+  }
+
+  @Override
   public ClassTree visitCompilationUnit(CompilationUnitTree t, Long find) {
     root = t;
     return super.visitCompilationUnit(t, find);
@@ -52,12 +58,6 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
       return t;
     }
     return null;
-  }
-
-  @Override
-  public ClassTree reduce(ClassTree a, ClassTree b) {
-    if (a != null) return a;
-    return b;
   }
 
   public TreePath getPath() {

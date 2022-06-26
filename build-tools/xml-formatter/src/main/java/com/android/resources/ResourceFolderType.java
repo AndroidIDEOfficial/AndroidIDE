@@ -23,8 +23,6 @@ public enum ResourceFolderType {
   VALUES(ResourceConstants.FD_RES_VALUES),
   XML(ResourceConstants.FD_RES_XML);
 
-  private final String name;
-
   private static final Map<String, ResourceFolderType> nameToType;
 
   static {
@@ -36,26 +34,10 @@ public enum ResourceFolderType {
     }
   }
 
+  private final String name;
+
   ResourceFolderType(String name) {
     this.name = name;
-  }
-
-  /** Returns the folder name for this resource folder type. */
-  @NotNull
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Returns the enum by name.
-   *
-   * @param name The enum string value.
-   * @return the enum or null if not found.
-   */
-  @Nullable
-  public static ResourceFolderType getTypeByName(@NotNull String name) {
-    assert name.indexOf('-') == -1 : name; // use #getFolderType instead
-    return nameToType.get(name);
   }
 
   /**
@@ -73,5 +55,23 @@ public enum ResourceFolderType {
       folderName = folderName.substring(0, index);
     }
     return getTypeByName(folderName);
+  }
+
+  /**
+   * Returns the enum by name.
+   *
+   * @param name The enum string value.
+   * @return the enum or null if not found.
+   */
+  @Nullable
+  public static ResourceFolderType getTypeByName(@NotNull String name) {
+    assert name.indexOf('-') == -1 : name; // use #getFolderType instead
+    return nameToType.get(name);
+  }
+
+  /** Returns the folder name for this resource folder type. */
+  @NotNull
+  public String getName() {
+    return name;
   }
 }

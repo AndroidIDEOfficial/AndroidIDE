@@ -20,9 +20,6 @@
 
 package com.itsaky.androidide.fragments;
 
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
-import abhishekti7.unicorn.filepicker.ui.FilePickerActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Environment;
@@ -41,31 +38,12 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.util.ArrayList;
 
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
+import abhishekti7.unicorn.filepicker.ui.FilePickerActivity;
+
 public class BaseFragment extends Fragment {
 
   private FileChoserCallback dirCallback;
-
-  protected StudioActivity getStudioActivity() {
-    return (StudioActivity) getActivity();
-  }
-
-  protected void pickDirectory(FileChoserCallback dirCallback) {
-    this.dirCallback = dirCallback;
-    UnicornFilePicker.from(this)
-        .addConfigBuilder()
-        .addItemDivider(false)
-        .selectMultipleFiles(false)
-        .setRootDirectory(Environment.getExternalStorageDirectory().getAbsolutePath())
-        .showHiddenFiles(true)
-        .showOnlyDirectory(true)
-        .theme(R.style.AppTheme_FilePicker)
-        .build();
-    Intent intent = new Intent(requireActivity(), FilePickerActivity.class);
-
-    // .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
-    startForResult.launch(intent);
-  }
-
   ActivityResultLauncher<Intent> startForResult =
       registerForActivityResult(
           new ActivityResultContracts.StartActivityForResult(),
@@ -94,6 +72,27 @@ public class BaseFragment extends Fragment {
               }
             }
           });
+
+  protected StudioActivity getStudioActivity() {
+    return (StudioActivity) getActivity();
+  }
+
+  protected void pickDirectory(FileChoserCallback dirCallback) {
+    this.dirCallback = dirCallback;
+    UnicornFilePicker.from(this)
+        .addConfigBuilder()
+        .addItemDivider(false)
+        .selectMultipleFiles(false)
+        .setRootDirectory(Environment.getExternalStorageDirectory().getAbsolutePath())
+        .showHiddenFiles(true)
+        .showOnlyDirectory(true)
+        .theme(R.style.AppTheme_FilePicker)
+        .build();
+    Intent intent = new Intent(requireActivity(), FilePickerActivity.class);
+
+    // .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
+    startForResult.launch(intent);
+  }
 
   interface FileChoserCallback {
     void picketDictionary(File file);

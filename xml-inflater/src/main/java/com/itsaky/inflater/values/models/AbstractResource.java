@@ -37,6 +37,25 @@ abstract class AbstractResource implements IResource {
     this.value = value;
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getValue());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (!(o instanceof AbstractResource)) {
+      return false;
+    }
+
+    AbstractResource that = (AbstractResource) o;
+    return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
+  }
+
   @NonNull
   @Override
   public String getName() {
@@ -61,24 +80,5 @@ abstract class AbstractResource implements IResource {
         + value
         + '\''
         + '}';
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-
-    if (!(o instanceof AbstractResource)) {
-      return false;
-    }
-
-    AbstractResource that = (AbstractResource) o;
-    return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getName(), getValue());
   }
 }

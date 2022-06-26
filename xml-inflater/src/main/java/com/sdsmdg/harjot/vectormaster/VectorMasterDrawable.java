@@ -76,29 +76,6 @@ public class VectorMasterDrawable extends Drawable {
     buildVectorModel();
   }
 
-  public VectorMasterDrawable(XmlPullParser parser) {
-    this.xpp = parser;
-    buildVectorModel();
-  }
-
-  @NonNull
-  @Contract("_ -> new")
-  public static VectorMasterDrawable fromXML(@NonNull String vectorXML)
-      throws XmlPullParserException {
-    final var factory = XmlPullParserFactory.newInstance();
-    factory.setNamespaceAware(true);
-
-    final var parser = factory.newPullParser();
-    parser.setInput(new StringReader(vectorXML));
-    return new VectorMasterDrawable(parser);
-  }
-
-  @NonNull
-  public static VectorMasterDrawable fromXMLFile(File file) throws XmlPullParserException {
-    final var source = FileIOUtils.readFile2String(file);
-    return VectorMasterDrawable.fromXML(source);
-  }
-
   private void buildVectorModel() {
     int tempPosition;
     PathModel pathModel = new PathModel();
@@ -350,6 +327,29 @@ public class VectorMasterDrawable extends Drawable {
     return -1;
   }
 
+  public VectorMasterDrawable(XmlPullParser parser) {
+    this.xpp = parser;
+    buildVectorModel();
+  }
+
+  @NonNull
+  public static VectorMasterDrawable fromXMLFile(File file) throws XmlPullParserException {
+    final var source = FileIOUtils.readFile2String(file);
+    return VectorMasterDrawable.fromXML(source);
+  }
+
+  @NonNull
+  @Contract("_ -> new")
+  public static VectorMasterDrawable fromXML(@NonNull String vectorXML)
+      throws XmlPullParserException {
+    final var factory = XmlPullParserFactory.newInstance();
+    factory.setNamespaceAware(true);
+
+    final var parser = factory.newPullParser();
+    parser.setInput(new StringReader(vectorXML));
+    return new VectorMasterDrawable(parser);
+  }
+
   public int getResID() {
     return resID;
   }
@@ -368,24 +368,6 @@ public class VectorMasterDrawable extends Drawable {
     this.useLegacyParser = useLegacyParser;
     buildVectorModel();
     scaleMatrix = null;
-  }
-
-  @Override
-  protected void onBoundsChange(Rect bounds) {
-    super.onBoundsChange(bounds);
-
-    if (bounds.width() != 0 && bounds.height() != 0) {
-
-      left = bounds.left;
-      top = bounds.top;
-
-      width = bounds.width();
-      height = bounds.height();
-
-      buildScaleMatrix();
-      scaleAllPaths();
-      scaleAllStrokes();
-    }
   }
 
   @Override
@@ -425,6 +407,24 @@ public class VectorMasterDrawable extends Drawable {
   @Override
   public int getOpacity() {
     return PixelFormat.TRANSLUCENT;
+  }
+
+  @Override
+  protected void onBoundsChange(Rect bounds) {
+    super.onBoundsChange(bounds);
+
+    if (bounds.width() != 0 && bounds.height() != 0) {
+
+      left = bounds.left;
+      top = bounds.top;
+
+      width = bounds.width();
+      height = bounds.height();
+
+      buildScaleMatrix();
+      scaleAllPaths();
+      scaleAllStrokes();
+    }
   }
 
   @Override

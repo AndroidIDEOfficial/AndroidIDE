@@ -429,12 +429,6 @@ public class EditorActivity extends StudioActivity
     return openFile(file, null);
   }
 
-  public void hideViewOptions() {
-    if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
-      mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
-  }
-
   public CodeEditorView openFile(File file, com.itsaky.lsp.models.Range selection) {
     if (selection == null) {
       selection = com.itsaky.lsp.models.Range.NONE;
@@ -534,6 +528,12 @@ public class EditorActivity extends StudioActivity
     }
 
     return mFileOptionsFragment;
+  }
+
+  public void hideViewOptions() {
+    if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+      mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
   }
 
   public ActivityEditorBinding getBinding() {
@@ -790,17 +790,6 @@ public class EditorActivity extends StudioActivity
     return saveAll(notify, false);
   }
 
-  @NonNull
-  private CompletableFuture<ArrayList<String>> getResourceDirPaths() {
-    return getResourceDirs()
-        .thenApply(
-            files ->
-                files.stream()
-                    .filter(Objects::nonNull)
-                    .map(File::getAbsolutePath)
-                    .collect(Collectors.toCollection(ArrayList::new)));
-  }
-
   public boolean saveAll(boolean notify, boolean canProcessResources) {
     SaveResult result = saveAllResult();
 
@@ -819,10 +808,6 @@ public class EditorActivity extends StudioActivity
     return result.gradleSaved;
   }
 
-  private CompletableFuture<List<File>> getResourceDirs() {
-    return ProjectManager.INSTANCE.getApplicationResDirectories();
-  }
-
   public SaveResult saveAllResult() {
     SaveResult result = new SaveResult();
     for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
@@ -830,15 +815,6 @@ public class EditorActivity extends StudioActivity
     }
 
     return result;
-  }
-
-  public void notifySyncNeeded() {
-    if (mBuildService != null && !mBuildService.isBuildInProgress()) {
-      getSyncBanner()
-          .setNegative(android.R.string.cancel, null)
-          .setPositive(android.R.string.ok, v -> initializeProject())
-          .show();
-    }
   }
 
   public void saveResult(int index, SaveResult result) {
@@ -877,6 +853,15 @@ public class EditorActivity extends StudioActivity
 
     final boolean finalModified = modified;
     ThreadUtils.runOnUiThread(() -> mViewModel.setFilesModified(finalModified));
+  }
+
+  public void notifySyncNeeded() {
+    if (mBuildService != null && !mBuildService.isBuildInProgress()) {
+      getSyncBanner()
+          .setNegative(android.R.string.cancel, null)
+          .setPositive(android.R.string.ok, v -> initializeProject())
+          .show();
+    }
   }
 
   public MaterialBanner getSyncBanner() {
@@ -925,6 +910,18 @@ public class EditorActivity extends StudioActivity
     setStatus(text, Gravity.CENTER);
   }
 
+  public void setStatus(final CharSequence text, @GravityInt int gravity) {
+    try {
+      runOnUiThread(
+          () -> {
+            mBinding.bottomSheet.statusText.setGravity(gravity);
+            mBinding.bottomSheet.statusText.setText(text);
+          });
+    } catch (Throwable th) {
+      LOG.error("Failed to update status text", th);
+    }
+  }
+
   protected void onProjectInitialized() {
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
@@ -941,16 +938,47 @@ public class EditorActivity extends StudioActivity
         });
   }
 
-  public void setStatus(final CharSequence text, @GravityInt int gravity) {
+  private void initialSetup() {
+    getApp()
+        .getPrefManager()
+        .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
+
     try {
-      runOnUiThread(
-          () -> {
-            mBinding.bottomSheet.statusText.setGravity(gravity);
-            mBinding.bottomSheet.statusText.setText(text);
-          });
+      //noinspection ConstantConditions
+      final var rootProject = ProjectManager.INSTANCE.getRootProject();
+
+      var projectName = rootProject.getName().get();
+      if (projectName.isEmpty()) {
+        projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
+        getSupportActionBar().setSubtitle(projectName);
+      } else {
+        getSupportActionBar().setSubtitle(projectName);
+      }
     } catch (Throwable th) {
-      LOG.error("Failed to update status text", th);
+      // ignored
     }
+
+    getResourceDirs()
+        .thenAccept(
+            dirs -> {
+              dirs.removeIf(Objects::isNull);
+              ValuesTableFactory.setupWithResDirectories(dirs.toArray(new File[0]));
+            });
+  }
+
+  private CompletableFuture<List<File>> getResourceDirs() {
+    return ProjectManager.INSTANCE.getApplicationResDirectories();
+  }
+
+  @NonNull
+  private CompletableFuture<ArrayList<String>> getResourceDirPaths() {
+    return getResourceDirs()
+        .thenApply(
+            files ->
+                files.stream()
+                    .filter(Objects::nonNull)
+                    .map(File::getAbsolutePath)
+                    .collect(Collectors.toCollection(ArrayList::new)));
   }
 
   public void assembleDebug(boolean installApk) {
@@ -975,6 +1003,14 @@ public class EditorActivity extends StudioActivity
                 resultHandler.accept(executionResult);
               }
             }));
+  }
+
+  public void appendBuildOut(final String str) {
+    final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
+
+    if (frag != null) {
+      frag.appendOutput(str);
+    }
   }
 
   public Consumer<TaskExecutionResult> installableTaskResultConsumer(@NonNull String variantName) {
@@ -1026,14 +1062,6 @@ public class EditorActivity extends StudioActivity
     };
   }
 
-  public void appendBuildOut(final String str) {
-    final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
-
-    if (frag != null) {
-      frag.appendOutput(str);
-    }
-  }
-
   public void install(@NonNull File apk) {
     runOnUiThread(
         () -> {
@@ -1079,13 +1107,13 @@ public class EditorActivity extends StudioActivity
     execTasks(null, "lintRelease");
   }
 
-  public void cleanAndRebuild() {
-    execTasks(null, "clean", "build");
-  }
-
   /////////////////////////////////////////////////
   ////////////// PRIVATE APIS /////////////////////
   /////////////////////////////////////////////////
+
+  public void cleanAndRebuild() {
+    execTasks(null, "clean", "build");
+  }
 
   public AlertDialog getFindInProjectDialog() {
     return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
@@ -1232,18 +1260,6 @@ public class EditorActivity extends StudioActivity
     }
   }
 
-  private void dispatchOnResumeToEditors() {
-    CompletableFuture.runAsync(
-        () -> {
-          for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            final var editor = getEditorAtIndex(i);
-            if (editor != null) {
-              editor.onResume();
-            }
-          }
-        });
-  }
-
   private void showCompilerModuleInstallError(Throwable error) {
     final var stacktrace = ThrowableUtils.getFullStackTrace(error);
     final var builder = DialogUtils.newMaterialDialogBuilder(this);
@@ -1258,6 +1274,18 @@ public class EditorActivity extends StudioActivity
           dialog.dismiss();
         });
     builder.show();
+  }
+
+  private void dispatchOnResumeToEditors() {
+    CompletableFuture.runAsync(
+        () -> {
+          for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+            final var editor = getEditorAtIndex(i);
+            if (editor != null) {
+              editor.onResume();
+            }
+          }
+        });
   }
 
   private void dispatchOnPauseToEditors() {
@@ -1542,34 +1570,6 @@ public class EditorActivity extends StudioActivity
         TerminalActivity.KEY_WORKING_DIRECTORY,
         Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
     startActivity(intent);
-  }
-
-  private void initialSetup() {
-    getApp()
-        .getPrefManager()
-        .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
-
-    try {
-      //noinspection ConstantConditions
-      final var rootProject = ProjectManager.INSTANCE.getRootProject();
-
-      var projectName = rootProject.getName().get();
-      if (projectName.isEmpty()) {
-        projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
-        getSupportActionBar().setSubtitle(projectName);
-      } else {
-        getSupportActionBar().setSubtitle(projectName);
-      }
-    } catch (Throwable th) {
-      // ignored
-    }
-
-    getResourceDirs()
-        .thenAccept(
-            dirs -> {
-              dirs.removeIf(Objects::isNull);
-              ValuesTableFactory.setupWithResDirectories(dirs.toArray(new File[0]));
-            });
   }
 
   private void setupDiagnosticInfo() {

@@ -3,32 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-	<ImageView
-		android:layout_height="48dp"
-		android:layout_width="48dp"
-		android:src="@mipmap/ic_launcher"
-		android:contentDescription="@string/label_splash_image"
-		android:id="@+id/activitysplashImageView1"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="8dp"
-		android:layout_centerInParent="true"/>
+    <ImageView
+        android:id="@+id/activitysplashImageView1"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:contentDescription="@string/label_splash_image"
+        android:src="@mipmap/ic_launcher" />
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:layout_centerHorizontal="true"
-		android:layout_alignParentBottom="true"
-		android:layout_marginBottom="32dp"
-		android:textColor="@color/secondaryTextColor"
-		android:id="@+id/splash_text"/>
+    <TextView
+        android:id="@+id/splash_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/secondaryTextColor" />
 
-	<ProgressBar
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_above="@id/splash_text"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="8dp"/>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/splash_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
 
 </RelativeLayout>
 

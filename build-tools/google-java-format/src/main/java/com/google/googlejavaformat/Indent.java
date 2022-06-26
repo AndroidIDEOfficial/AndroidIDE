@@ -28,9 +28,8 @@ public abstract class Indent {
 
   /** A constant function, returning a constant indent. */
   public static final class Const extends Indent {
-    private final int n;
-
     public static final Const ZERO = new Const(+0);
+    private final int n;
 
     private Const(int n) {
       this.n = n;
@@ -41,13 +40,13 @@ public abstract class Indent {
     }
 
     @Override
-    int eval() {
-      return n;
+    public String toString() {
+      return MoreObjects.toStringHelper(this).add("n", n).toString();
     }
 
     @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this).add("n", n).toString();
+    int eval() {
+      return n;
     }
   }
 
@@ -68,17 +67,17 @@ public abstract class Indent {
     }
 
     @Override
-    int eval() {
-      return (condition.wasBreakTaken() ? thenIndent : elseIndent).eval();
-    }
-
-    @Override
     public String toString() {
       return MoreObjects.toStringHelper(this)
           .add("condition", condition)
           .add("thenIndent", thenIndent)
           .add("elseIndent", elseIndent)
           .toString();
+    }
+
+    @Override
+    int eval() {
+      return (condition.wasBreakTaken() ? thenIndent : elseIndent).eval();
     }
   }
 }

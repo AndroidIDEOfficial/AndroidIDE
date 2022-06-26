@@ -25,9 +25,9 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 data class SimpleVariantData(
-    val name: String,
-    val mainArtifact: SimpleArtifact,
-    val otherArtifacts: Map<String, SimpleArtifact>
-): Serializable {
-    private val serialVersionUID = 1L
+  val name: String,
+  val mainArtifact: SimpleArtifact,
+  val otherArtifacts: Map<String, SimpleArtifact>
+) : Serializable {
+  private val serialVersionUID = 1L
 }

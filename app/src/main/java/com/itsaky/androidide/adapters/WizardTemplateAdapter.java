@@ -1,8 +1,6 @@
 package com.itsaky.androidide.adapters;
 
-import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -13,23 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.CornerFamily;
-
 import com.itsaky.androidide.databinding.WizardTemplateItemBinding;
 import com.itsaky.androidide.models.ProjectTemplate;
-import java.io.File;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class WizardTemplateAdapter extends RecyclerView.Adapter<WizardTemplateAdapter.ViewHolder> {
 
-  public interface OnItemClickListener {
-    void onItemClick(ProjectTemplate item, int position);
-  }
-
   private final List<ProjectTemplate> mItems = new ArrayList<>();
   private OnItemClickListener mListener;
-
   public WizardTemplateAdapter() {}
 
   public void setOnItemClickListener(OnItemClickListener listener) {
@@ -116,5 +108,9 @@ public class WizardTemplateAdapter extends RecyclerView.Adapter<WizardTemplateAd
               .setAllCorners(CornerFamily.ROUNDED, ConvertUtils.dp2px(8))
               .build());
     }
+  }
+
+  public interface OnItemClickListener {
+    void onItemClick(ProjectTemplate item, int position);
   }
 }

@@ -74,6 +74,23 @@ public class MethodPtr {
     }
   }
 
+  @NonNull
+  private String getSimpleName(TypeName name) throws IOException {
+    final StringBuilder sb = new StringBuilder();
+    final ImportCollectingCodeWriter writer = new ImportCollectingCodeWriter(sb);
+    writer.setPrintQualifiedNames(false);
+    writer.emit(name);
+    return sb.toString();
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(className, methodName);
+    result = 31 * result + Arrays.hashCode(erasedParameterTypes);
+    result = 31 * result + Arrays.hashCode(simplifiedErasedParameterTypes);
+    return result;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -87,22 +104,5 @@ public class MethodPtr {
         && Objects.equals(methodName, methodPtr.methodName)
         && Arrays.equals(erasedParameterTypes, methodPtr.erasedParameterTypes)
         && Arrays.equals(simplifiedErasedParameterTypes, methodPtr.simplifiedErasedParameterTypes);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = Objects.hash(className, methodName);
-    result = 31 * result + Arrays.hashCode(erasedParameterTypes);
-    result = 31 * result + Arrays.hashCode(simplifiedErasedParameterTypes);
-    return result;
-  }
-
-  @NonNull
-  private String getSimpleName(TypeName name) throws IOException {
-    final StringBuilder sb = new StringBuilder();
-    final ImportCollectingCodeWriter writer = new ImportCollectingCodeWriter(sb);
-    writer.setPrintQualifiedNames(false);
-    writer.emit(name);
-    return sb.toString();
   }
 }

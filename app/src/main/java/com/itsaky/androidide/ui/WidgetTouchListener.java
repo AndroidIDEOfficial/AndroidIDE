@@ -62,11 +62,6 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
     return mGestureDetector.onTouchEvent(motionEvent);
   }
 
-  @Override
-  public boolean onDown(MotionEvent e) {
-    return true; // We would like to get notified about further events.
-  }
-
   // TODO Should we use onSingleTapConfirmed instead?
   @Override
   public boolean onSingleTapUp(MotionEvent e) {
@@ -88,6 +83,11 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
     if (this.longClickListener != null && this.longClickListener.onLongClick(this.mView)) {
       this.mView.asView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
     }
+  }
+
+  @Override
+  public boolean onDown(MotionEvent e) {
+    return true; // We would like to get notified about further events.
   }
 
   /**

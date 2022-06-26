@@ -22,14 +22,14 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultVariant : Variant, Serializable {
-    private val serialVersionUID = 1L
-    override var androidTestArtifact: DefaultAndroidArtifact? = null
-    override var displayName: String = ""
-    override var isInstantAppCompatible: Boolean = false
-    var desugaredMethods: List<File> = emptyList()
-    override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
-    override var name: String = ""
-    override var testFixturesArtifact: DefaultAndroidArtifact? = null
-    override var testedTargetVariant: DefaultTestedTargetVariant? = null
-    override var unitTestArtifact: DefaultJavaArtifact? = null
+  private val serialVersionUID = 1L
+  override var androidTestArtifact: DefaultAndroidArtifact? = null
+  override var displayName: String = ""
+  override var isInstantAppCompatible: Boolean = false
+  var desugaredMethods: List<File> = emptyList()
+  override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
+  override var name: String = ""
+  override var testFixturesArtifact: DefaultAndroidArtifact? = null
+  override var testedTargetVariant: DefaultTestedTargetVariant? = null
+  override var unitTestArtifact: DefaultJavaArtifact? = null
 }

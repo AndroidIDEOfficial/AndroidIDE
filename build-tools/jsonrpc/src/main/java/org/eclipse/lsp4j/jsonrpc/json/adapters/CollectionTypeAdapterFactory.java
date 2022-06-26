@@ -11,12 +11,12 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.function.Supplier;
-
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 
 /**
  * @deprecated Use {@link CollectionTypeAdapter.Factory} instead.

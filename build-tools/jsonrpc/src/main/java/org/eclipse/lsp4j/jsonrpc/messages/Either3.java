@@ -11,12 +11,16 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.messages;
 
-import java.util.function.Function;
-
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
+
+import java.util.function.Function;
 
 /** Union type for three types. */
 public class Either3<T1, T2, T3> extends Either<T1, Either<T2, T3>> {
+
+  protected Either3(T1 left, Either<T2, T3> right) {
+    super(left, right);
+  }
 
   public static <T1, T2, T3> Either3<T1, T2, T3> forFirst(@NonNull T1 first) {
     return new Either3<T1, T2, T3>(first, null);
@@ -38,42 +42,19 @@ public class Either3<T1, T2, T3> extends Either<T1, Either<T2, T3>> {
     return new Either3<T1, T2, T3>(null, right);
   }
 
-  protected Either3(T1 left, Either<T2, T3> right) {
-    super(left, right);
-  }
-
-  public T1 getFirst() {
-    return getLeft();
-  }
-
-  public T2 getSecond() {
-    Either<T2, T3> right = getRight();
-    if (right == null) return null;
-    else return right.getLeft();
-  }
-
-  public T3 getThird() {
-    Either<T2, T3> right = getRight();
-    if (right == null) return null;
-    else return right.getRight();
-  }
-
   @Override
   public Object get() {
     if (isRight()) return getRight().get();
     return super.get();
   }
 
-  public boolean isFirst() {
-    return isLeft();
-  }
-
-  public boolean isSecond() {
-    return isRight() && getRight().isLeft();
-  }
-
-  public boolean isThird() {
-    return isRight() && getRight().isRight();
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder("Either3 [").append(System.lineSeparator());
+    builder.append("  first = ").append(getFirst()).append(System.lineSeparator());
+    builder.append("  second = ").append(getSecond()).append(System.lineSeparator());
+    builder.append("  third = ").append(getThird()).append(System.lineSeparator());
+    return builder.append("]").toString();
   }
 
   public <T> T map(
@@ -92,12 +73,31 @@ public class Either3<T1, T2, T3> extends Either<T1, Either<T2, T3>> {
     return null;
   }
 
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder("Either3 [").append(System.lineSeparator());
-    builder.append("  first = ").append(getFirst()).append(System.lineSeparator());
-    builder.append("  second = ").append(getSecond()).append(System.lineSeparator());
-    builder.append("  third = ").append(getThird()).append(System.lineSeparator());
-    return builder.append("]").toString();
+  public T1 getFirst() {
+    return getLeft();
+  }
+
+  public T2 getSecond() {
+    Either<T2, T3> right = getRight();
+    if (right == null) return null;
+    else return right.getLeft();
+  }
+
+  public T3 getThird() {
+    Either<T2, T3> right = getRight();
+    if (right == null) return null;
+    else return right.getRight();
+  }
+
+  public boolean isFirst() {
+    return isLeft();
+  }
+
+  public boolean isSecond() {
+    return isRight() && getRight().isLeft();
+  }
+
+  public boolean isThird() {
+    return isRight() && getRight().isRight();
   }
 }

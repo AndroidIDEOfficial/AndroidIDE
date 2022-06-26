@@ -53,12 +53,6 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
   private Consumer<Attr> clickConsumer;
   private List<Attr> mItems;
 
-  @Override
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_SheetAboveKeyboard);
-  }
-
   @Nullable
   @Override
   public View onCreateView(
@@ -104,6 +98,16 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
     return true;
   }
 
+  public void update() {
+    update(mItems);
+  }
+
+  public void update(List<Attr> items) {
+    if (binding != null) {
+      binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, items));
+    }
+  }
+
   public void setItems(@Nullable List<Attr> items) {
     if (items == null) {
       items = new ArrayList<>();
@@ -120,13 +124,9 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
     this.clickConsumer = (Consumer<Attr>) getParentFragment();
   }
 
-  public void update() {
-    update(mItems);
-  }
-
-  public void update(List<Attr> items) {
-    if (binding != null) {
-      binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, items));
-    }
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_SheetAboveKeyboard);
   }
 }

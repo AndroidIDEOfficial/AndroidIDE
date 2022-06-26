@@ -49,8 +49,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/msg_report_crash"
         android:textColor="@color/secondaryTextColor_light"
         android:textSize="14sp"
@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textColor="@color/secondaryColor"
-                tools:text="This is an error message."/>
+                tools:text="This is an error message." />
 
         </HorizontalScrollView>
 

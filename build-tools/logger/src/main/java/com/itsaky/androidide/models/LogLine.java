@@ -76,10 +76,6 @@ public class LogLine {
     this.formatted = false;
   }
 
-  private static ILogger.Priority parsePriority(char s) {
-    return ILogger.priority(Character.toUpperCase(s));
-  }
-
   public static LogLine forLogString(final String log) {
     try {
       final var split = log.split("\\s", 7);
@@ -98,12 +94,14 @@ public class LogLine {
     }
   }
 
-  @Override
-  public String toString() {
+  private static ILogger.Priority parsePriority(char s) {
+    return ILogger.priority(Character.toUpperCase(s));
+  }
+
+  public String toSimpleString() {
     return this.formatted
         ? String.format(
-            "%s %s %s/%s %s/%s %s",
-            date, time, pid, tid, ILogger.priorityChar(priority), tag, message)
+            "%-25s %-2s %s", trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
         : this.unformatted;
   }
 
@@ -122,17 +120,15 @@ public class LogLine {
     return sb.toString();
   }
 
-  public String toSimpleString() {
-    return this.formatted
-        ? String.format(
-            "%-25s %-2s %s", trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
-        : this.unformatted;
-  }
-
   public String formattedTagAndMessage() {
     return this.formatted
         ? String.format("%-25s %s", trimIfNeeded(tag, 25), message)
         : this.unformatted;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(unformatted, date, time, pid, tid, tag, message, priority, formatted);
   }
 
   @Override
@@ -156,7 +152,11 @@ public class LogLine {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(unformatted, date, time, pid, tid, tag, message, priority, formatted);
+  public String toString() {
+    return this.formatted
+        ? String.format(
+            "%s %s %s/%s %s/%s %s",
+            date, time, pid, tid, ILogger.priorityChar(priority), tag, message)
+        : this.unformatted;
   }
 }

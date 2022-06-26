@@ -70,6 +70,29 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
     return getFragmentById(getItemId(index));
   }
 
+  @Nullable
+  public Fragment getFragmentById(long itemId) {
+    final var fragments = getFragments();
+    if (fragments != null) {
+      return fragments.get(itemId);
+    }
+
+    return null;
+  }
+
+  @Nullable
+  private LongSparseArray<Fragment> getFragments() {
+    try {
+      final var field = FragmentStateAdapter.class.getDeclaredField("mFragments");
+      field.setAccessible(true);
+      return (LongSparseArray<Fragment>) field.get(this);
+    } catch (Throwable th) {
+      LOG.error("Unable to reflect fragment list from adapter.");
+    }
+
+    return null;
+  }
+
   @NonNull
   @Override
   public Fragment createFragment(int position) {
@@ -99,21 +122,6 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
   }
 
   @Nullable
-  public AppLogFragment getLogFragment() {
-    return findFragmentByClass(AppLogFragment.class);
-  }
-
-  @Nullable
-  public DiagnosticsListFragment getDiagnosticsFragment() {
-    return findFragmentByClass(DiagnosticsListFragment.class);
-  }
-
-  @Nullable
-  public SearchResultFragment getSearchResultFragment() {
-    return findFragmentByClass(SearchResultFragment.class);
-  }
-
-  @Nullable
   private <T extends Fragment> T findFragmentByClass(Class<T> clazz) {
     final var name = clazz.getName();
     for (final var tab : this.fragments) {
@@ -126,26 +134,18 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
   }
 
   @Nullable
-  public Fragment getFragmentById(long itemId) {
-    final var fragments = getFragments();
-    if (fragments != null) {
-      return fragments.get(itemId);
-    }
-
-    return null;
+  public AppLogFragment getLogFragment() {
+    return findFragmentByClass(AppLogFragment.class);
   }
 
   @Nullable
-  private LongSparseArray<Fragment> getFragments() {
-    try {
-      final var field = FragmentStateAdapter.class.getDeclaredField("mFragments");
-      field.setAccessible(true);
-      return (LongSparseArray<Fragment>) field.get(this);
-    } catch (Throwable th) {
-      LOG.error("Unable to reflect fragment list from adapter.");
-    }
+  public DiagnosticsListFragment getDiagnosticsFragment() {
+    return findFragmentByClass(DiagnosticsListFragment.class);
+  }
 
-    return null;
+  @Nullable
+  public SearchResultFragment getSearchResultFragment() {
+    return findFragmentByClass(SearchResultFragment.class);
   }
 
   public <T extends Fragment> int findIndexOfFragmentByClass(@NonNull Class<T> tClass) {

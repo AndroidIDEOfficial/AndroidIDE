@@ -11,6 +11,18 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc;
 
+import com.google.gson.GsonBuilder;
+
+import org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor;
+import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
+import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethodProvider;
+import org.eclipse.lsp4j.jsonrpc.json.MessageJsonHandler;
+import org.eclipse.lsp4j.jsonrpc.json.StreamMessageConsumer;
+import org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer;
+import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
+import org.eclipse.lsp4j.jsonrpc.services.ServiceEndpoints;
+import org.eclipse.lsp4j.jsonrpc.validation.ReflectiveMessageValidator;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -23,18 +35,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor;
-import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
-import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethodProvider;
-import org.eclipse.lsp4j.jsonrpc.json.MessageJsonHandler;
-import org.eclipse.lsp4j.jsonrpc.json.StreamMessageConsumer;
-import org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer;
-import org.eclipse.lsp4j.jsonrpc.messages.ResponseError;
-import org.eclipse.lsp4j.jsonrpc.services.ServiceEndpoints;
-import org.eclipse.lsp4j.jsonrpc.validation.ReflectiveMessageValidator;
-
-import com.google.gson.GsonBuilder;
 
 /**
  * This is the entry point for applications that use LSP4J. A Launcher does all the wiring that is
@@ -261,6 +261,25 @@ public interface Launcher<T> {
   // ------------------------------ Builder Class ------------------------------//
 
   /**
+   * Start a thread that listens to the input stream. The thread terminates when the stream is
+   * closed.
+   *
+   * @return a future that returns {@code null} when the listener thread is terminated
+   */
+  Future<Void> startListening();
+
+  // ---------------------------- Interface Methods ----------------------------//
+
+  /** Returns the proxy instance that implements the remote service interfaces. */
+  T getRemoteProxy();
+
+  /**
+   * Returns the remote endpoint. Use this one to send generic {@code request} or {@code notify}
+   * methods to the remote services.
+   */
+  RemoteEndpoint getRemoteEndpoint();
+
+  /**
    * The launcher builder wires up all components for JSON-RPC communication.
    *
    * @param <T> remote service interface type
@@ -377,6 +396,27 @@ public interface Launcher<T> {
       else return new MessageJsonHandler(supportedMethods);
     }
 
+    /** Gather all JSON-RPC methods from the local and remote services. */
+    protected Map<String, JsonRpcMethod> getSupportedMethods() {
+      Map<String, JsonRpcMethod> supportedMethods = new LinkedHashMap<>();
+      // Gather the supported methods of remote interfaces
+      for (Class<?> interface_ : remoteInterfaces) {
+        supportedMethods.putAll(ServiceEndpoints.getSupportedMethods(interface_));
+      }
+
+      // Gather the supported methods of local services
+      for (Object localService : localServices) {
+        if (localService instanceof JsonRpcMethodProvider) {
+          JsonRpcMethodProvider rpcMethodProvider = (JsonRpcMethodProvider) localService;
+          supportedMethods.putAll(rpcMethodProvider.supportedMethods());
+        } else {
+          supportedMethods.putAll(ServiceEndpoints.getSupportedMethods(localService.getClass()));
+        }
+      }
+
+      return supportedMethods;
+    }
+
     /** Create the remote endpoint that communicates with the local services. */
     protected RemoteEndpoint createRemoteEndpoint(MessageJsonHandler jsonHandler) {
       MessageConsumer outgoingMessageStream = new StreamMessageConsumer(output, jsonHandler);
@@ -389,6 +429,20 @@ public interface Launcher<T> {
         remoteEndpoint = new RemoteEndpoint(outgoingMessageStream, localEndpoint, exceptionHandler);
       jsonHandler.setMethodProvider(remoteEndpoint);
       return remoteEndpoint;
+    }
+
+    protected MessageConsumer wrapMessageConsumer(MessageConsumer consumer) {
+      MessageConsumer result = consumer;
+      if (messageTracer != null) {
+        result = messageTracer.apply(consumer);
+      }
+      if (validateMessages) {
+        result = new ReflectiveMessageValidator(result);
+      }
+      if (messageWrapper != null) {
+        result = messageWrapper.apply(result);
+      }
+      return result;
     }
 
     /** Create the proxy for calling methods on the remote service. */
@@ -416,59 +470,5 @@ public interface Launcher<T> {
         ConcurrentMessageProcessor msgProcessor) {
       return new StandardLauncher<T>(execService, remoteProxy, remoteEndpoint, msgProcessor);
     }
-
-    protected MessageConsumer wrapMessageConsumer(MessageConsumer consumer) {
-      MessageConsumer result = consumer;
-      if (messageTracer != null) {
-        result = messageTracer.apply(consumer);
-      }
-      if (validateMessages) {
-        result = new ReflectiveMessageValidator(result);
-      }
-      if (messageWrapper != null) {
-        result = messageWrapper.apply(result);
-      }
-      return result;
-    }
-
-    /** Gather all JSON-RPC methods from the local and remote services. */
-    protected Map<String, JsonRpcMethod> getSupportedMethods() {
-      Map<String, JsonRpcMethod> supportedMethods = new LinkedHashMap<>();
-      // Gather the supported methods of remote interfaces
-      for (Class<?> interface_ : remoteInterfaces) {
-        supportedMethods.putAll(ServiceEndpoints.getSupportedMethods(interface_));
-      }
-
-      // Gather the supported methods of local services
-      for (Object localService : localServices) {
-        if (localService instanceof JsonRpcMethodProvider) {
-          JsonRpcMethodProvider rpcMethodProvider = (JsonRpcMethodProvider) localService;
-          supportedMethods.putAll(rpcMethodProvider.supportedMethods());
-        } else {
-          supportedMethods.putAll(ServiceEndpoints.getSupportedMethods(localService.getClass()));
-        }
-      }
-
-      return supportedMethods;
-    }
   }
-
-  // ---------------------------- Interface Methods ----------------------------//
-
-  /**
-   * Start a thread that listens to the input stream. The thread terminates when the stream is
-   * closed.
-   *
-   * @return a future that returns {@code null} when the listener thread is terminated
-   */
-  Future<Void> startListening();
-
-  /** Returns the proxy instance that implements the remote service interfaces. */
-  T getRemoteProxy();
-
-  /**
-   * Returns the remote endpoint. Use this one to send generic {@code request} or {@code notify}
-   * methods to the remote services.
-   */
-  RemoteEndpoint getRemoteEndpoint();
 }

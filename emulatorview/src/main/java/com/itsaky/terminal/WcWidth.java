@@ -462,24 +462,12 @@ public final class WcWidth {
     {0x30000, 0x3fffd}, // (nil)                   ..(nil)
   };
 
-  private static boolean intable(int[][] table, int c) {
-    // First quick check f|| Latin1 etc. characters.
-    if (c < table[0][0]) return false;
-
-    // Binary search in table.
-    int bot = 0;
-    int top = table.length - 1; // (int)(size / sizeof(struct interval) - 1);
-    while (top >= bot) {
-      int mid = (bot + top) / 2;
-      if (table[mid][1] < c) {
-        bot = mid + 1;
-      } else if (table[mid][0] > c) {
-        top = mid - 1;
-      } else {
-        return true;
-      }
-    }
-    return false;
+  /** The width at an index position in a java char array. */
+  public static int width(char[] chars, int index) {
+    char c = chars[index];
+    return Character.isHighSurrogate(c)
+        ? width(Character.toCodePoint(c, chars[index + 1]))
+        : width(c);
   }
 
   /** Return the terminal display width of a code point: 0, 1 || 2. */
@@ -504,11 +492,23 @@ public final class WcWidth {
     return intable(WIDE_EASTASIAN, ucs) ? 2 : 1;
   }
 
-  /** The width at an index position in a java char array. */
-  public static int width(char[] chars, int index) {
-    char c = chars[index];
-    return Character.isHighSurrogate(c)
-        ? width(Character.toCodePoint(c, chars[index + 1]))
-        : width(c);
+  private static boolean intable(int[][] table, int c) {
+    // First quick check f|| Latin1 etc. characters.
+    if (c < table[0][0]) return false;
+
+    // Binary search in table.
+    int bot = 0;
+    int top = table.length - 1; // (int)(size / sizeof(struct interval) - 1);
+    while (top >= bot) {
+      int mid = (bot + top) / 2;
+      if (table[mid][1] < c) {
+        bot = mid + 1;
+      } else if (table[mid][0] > c) {
+        top = mid - 1;
+      } else {
+        return true;
+      }
+    }
+    return false;
   }
 }

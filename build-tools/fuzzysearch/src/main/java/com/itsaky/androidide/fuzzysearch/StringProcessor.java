@@ -25,6 +25,11 @@ package com.itsaky.androidide.fuzzysearch;
 @Deprecated
 public abstract class StringProcessor implements ToStringFunction<String> {
   // now abstract class because JDK1.7 does not allow default methods in interfaces
+  @Override
+  public String apply(String item) {
+    return process(item);
+  }
+
   /**
    * Transforms the input string
    *
@@ -34,9 +39,4 @@ public abstract class StringProcessor implements ToStringFunction<String> {
    */
   @Deprecated
   public abstract String process(String in);
-
-  @Override
-  public String apply(String item) {
-    return process(item);
-  }
 }

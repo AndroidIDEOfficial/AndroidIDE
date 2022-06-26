@@ -29,6 +29,8 @@ import java.util.Set;
 import javax.tools.JavaFileObject;
 
 public interface CompilerProvider {
+  Path NOT_FOUND = Paths.get("");
+
   Set<String> imports();
 
   List<String> publicTopLevelTypes();
@@ -52,6 +54,4 @@ public interface CompilerProvider {
   SynchronizedTask compile(Path... files);
 
   SynchronizedTask compile(Collection<? extends JavaFileObject> sources);
-
-  Path NOT_FOUND = Paths.get("");
 }

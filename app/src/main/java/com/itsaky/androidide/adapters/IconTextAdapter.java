@@ -98,14 +98,6 @@ public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAd
   @NonNull
   public abstract String getItemText(int index);
 
-  public interface OnBindListener<T> {
-    default boolean onBind(T item, VH holder, int position) {
-      return false;
-    }
-
-    default void postBind(T item, VH holder, int position) {}
-  }
-
   public static class VH extends RecyclerView.ViewHolder {
 
     public final LayoutSimpleIconTextBinding binding;
@@ -114,5 +106,13 @@ public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAd
       super(binding.getRoot());
       this.binding = binding;
     }
+  }
+
+  public interface OnBindListener<T> {
+    default boolean onBind(T item, VH holder, int position) {
+      return false;
+    }
+
+    default void postBind(T item, VH holder, int position) {}
   }
 }

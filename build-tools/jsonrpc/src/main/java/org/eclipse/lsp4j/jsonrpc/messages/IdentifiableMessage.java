@@ -26,11 +26,6 @@ public abstract class IdentifiableMessage extends Message {
     return null;
   }
 
-  @NonNull
-  public Either<String, Number> getRawId() {
-    return id;
-  }
-
   public void setId(String id) {
     this.id = Either.forLeft(id);
   }
@@ -39,8 +34,21 @@ public abstract class IdentifiableMessage extends Message {
     this.id = Either.forRight(id);
   }
 
+  @NonNull
+  public Either<String, Number> getRawId() {
+    return id;
+  }
+
   public void setRawId(@NonNull Either<String, Number> id) {
     this.id = id;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+    return result;
   }
 
   @Override
@@ -54,13 +62,5 @@ public abstract class IdentifiableMessage extends Message {
       if (other.id != null) return false;
     } else if (!this.id.equals(other.id)) return false;
     return true;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-    return result;
   }
 }

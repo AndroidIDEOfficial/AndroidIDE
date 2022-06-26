@@ -46,6 +46,21 @@ public class ProgressTransition extends Transition {
       };
 
   @Override
+  public Animator createAnimator(
+      ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
+    if (startValues != null && endValues != null && endValues.view instanceof ProgressBar) {
+      ProgressBar progressBar = (ProgressBar) endValues.view;
+      int start = (Integer) startValues.values.get(PROPNAME_PROGRESS);
+      int end = (Integer) endValues.values.get(PROPNAME_PROGRESS);
+      if (start != end) {
+        progressBar.setProgress(start);
+        return ObjectAnimator.ofInt(progressBar, PROGRESS_PROPERTY, end);
+      }
+    }
+    return null;
+  }
+
+  @Override
   public void captureStartValues(TransitionValues transitionValues) {
     captureValues(transitionValues);
   }
@@ -60,20 +75,5 @@ public class ProgressTransition extends Transition {
       ProgressBar progressBar = ((ProgressBar) transitionValues.view);
       transitionValues.values.put(PROPNAME_PROGRESS, progressBar.getProgress());
     }
-  }
-
-  @Override
-  public Animator createAnimator(
-      ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues) {
-    if (startValues != null && endValues != null && endValues.view instanceof ProgressBar) {
-      ProgressBar progressBar = (ProgressBar) endValues.view;
-      int start = (Integer) startValues.values.get(PROPNAME_PROGRESS);
-      int end = (Integer) endValues.values.get(PROPNAME_PROGRESS);
-      if (start != end) {
-        progressBar.setProgress(start);
-        return ObjectAnimator.ofInt(progressBar, PROGRESS_PROPERTY, end);
-      }
-    }
-    return null;
   }
 }

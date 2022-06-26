@@ -41,15 +41,9 @@ import java.util.concurrent.Future;
 public final class Main {
   private static final int MAX_THREADS = 20;
   private static final String STDIN_FILENAME = "<stdin>";
-
-  static String versionString() {
-    return "google-java-format: Version " + GoogleJavaFormatVersion.version();
-  }
-
   private final PrintWriter outWriter;
   private final PrintWriter errWriter;
   private final InputStream inStream;
-
   public Main(PrintWriter outWriter, PrintWriter errWriter, InputStream inStream) {
     this.outWriter = outWriter;
     this.errWriter = errWriter;
@@ -115,6 +109,10 @@ public final class Main {
     } else {
       return formatFiles(parameters, options);
     }
+  }
+
+  static String versionString() {
+    return "google-java-format: Version " + GoogleJavaFormatVersion.version();
   }
 
   private int formatFiles(CommandLineOptions parameters, JavaFormatterOptions options) {

@@ -27,11 +27,9 @@ final class LineWrapper {
   private final RecordingAppendable out;
   private final String indent;
   private final int columnLimit;
-  private boolean closed;
-
   /** Characters written since the last wrapping space that haven't yet been flushed. */
   private final StringBuilder buffer = new StringBuilder();
-
+  private boolean closed;
   /** The number of characters since the most recent newline. Includes both out and the buffer. */
   private int column = 0;
 
@@ -85,32 +83,6 @@ final class LineWrapper {
     column = lastNewline != -1 ? s.length() - lastNewline - 1 : column + s.length();
   }
 
-  /** Emit either a space or a newline character. */
-  void wrappingSpace(int indentLevel) throws IOException {
-    if (closed) throw new IllegalStateException("closed");
-
-    if (this.nextFlush != null) flush(nextFlush);
-    column++; // Increment the column even though the space is deferred to next call to flush().
-    this.nextFlush = FlushType.SPACE;
-    this.indentLevel = indentLevel;
-  }
-
-  /** Emit a newline character if the line will exceed it's limit, otherwise do nothing. */
-  void zeroWidthSpace(int indentLevel) throws IOException {
-    if (closed) throw new IllegalStateException("closed");
-
-    if (column == 0) return;
-    if (this.nextFlush != null) flush(nextFlush);
-    this.nextFlush = FlushType.EMPTY;
-    this.indentLevel = indentLevel;
-  }
-
-  /** Flush any outstanding text and forbid future writes to this line wrapper. */
-  void close() throws IOException {
-    if (nextFlush != null) flush(nextFlush);
-    closed = true;
-  }
-
   /** Write the space followed by any buffered text that follows it. */
   private void flush(FlushType flushType) throws IOException {
     switch (flushType) {
@@ -135,6 +107,32 @@ final class LineWrapper {
     buffer.delete(0, buffer.length());
     indentLevel = -1;
     nextFlush = null;
+  }
+
+  /** Emit either a space or a newline character. */
+  void wrappingSpace(int indentLevel) throws IOException {
+    if (closed) throw new IllegalStateException("closed");
+
+    if (this.nextFlush != null) flush(nextFlush);
+    column++; // Increment the column even though the space is deferred to next call to flush().
+    this.nextFlush = FlushType.SPACE;
+    this.indentLevel = indentLevel;
+  }
+
+  /** Emit a newline character if the line will exceed it's limit, otherwise do nothing. */
+  void zeroWidthSpace(int indentLevel) throws IOException {
+    if (closed) throw new IllegalStateException("closed");
+
+    if (column == 0) return;
+    if (this.nextFlush != null) flush(nextFlush);
+    this.nextFlush = FlushType.EMPTY;
+    this.indentLevel = indentLevel;
+  }
+
+  /** Flush any outstanding text and forbid future writes to this line wrapper. */
+  void close() throws IOException {
+    if (nextFlush != null) flush(nextFlush);
+    closed = true;
   }
 
   private enum FlushType {

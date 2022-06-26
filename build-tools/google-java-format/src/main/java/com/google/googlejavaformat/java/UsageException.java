@@ -81,10 +81,6 @@ final class UsageException extends Exception {
     super(buildMessage(null));
   }
 
-  UsageException(String message) {
-    super(buildMessage(checkNotNull(message)));
-  }
-
   private static String buildMessage(String message) {
     StringBuilder builder = new StringBuilder();
     if (message != null) {
@@ -104,5 +100,9 @@ final class UsageException extends Exception {
 
   private static void appendLines(StringBuilder builder, String[] lines) {
     NEWLINE_JOINER.appendTo(builder, lines).append(System.lineSeparator());
+  }
+
+  UsageException(String message) {
+    super(buildMessage(checkNotNull(message)));
   }
 }

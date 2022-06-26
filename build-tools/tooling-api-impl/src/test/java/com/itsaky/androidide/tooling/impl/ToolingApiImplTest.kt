@@ -33,14 +33,14 @@ import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.*
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -127,18 +127,18 @@ class ToolingApiImplTest {
 
     return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
   }
-  
+
   private fun findAndroidHome(): String {
     var androidHome = System.getenv("ANDROID_HOME")
     if (androidHome != null && androidHome.isNotBlank()) {
       return androidHome
     }
-    
+
     androidHome = System.getenv("ANDROID_SDK_ROOT")
     if (androidHome != null && androidHome.isNotBlank()) {
       return androidHome
     }
-    
+
     val os = System.getProperty("os.name")
     val home = System.getProperty("user.home")
     return if (os.contains("Linux")) {
@@ -147,7 +147,7 @@ class ToolingApiImplTest {
       "$home\\AppData\\Local\\Android\\Sdk"
     }
   }
-  
+
   private class TestClient : IToolingApiClient {
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun logMessage(line: LogLine) {

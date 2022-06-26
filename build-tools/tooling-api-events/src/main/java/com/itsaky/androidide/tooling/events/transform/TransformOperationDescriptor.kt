@@ -21,35 +21,35 @@ import com.itsaky.androidide.tooling.events.OperationDescriptor
 
 /** @author Akash Yadav */
 class TransformOperationDescriptor(
-    val dependencies: Set<OperationDescriptor>,
-    val subject: SubjectDescriptor,
-    val transformer: TransformerDescriptor,
-    override val name: String,
-    override val displayName: String
+  val dependencies: Set<OperationDescriptor>,
+  val subject: SubjectDescriptor,
+  val transformer: TransformerDescriptor,
+  override val name: String,
+  override val displayName: String
 ) : OperationDescriptor() {
-    class SubjectDescriptor(val displayName: String)
+  class SubjectDescriptor(val displayName: String)
 
-    class TransformerDescriptor(val displayName: String)
+  class TransformerDescriptor(val displayName: String)
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TransformOperationDescriptor) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is TransformOperationDescriptor) return false
 
-        if (dependencies != other.dependencies) return false
-        if (subject != other.subject) return false
-        if (transformer != other.transformer) return false
-        if (name != other.name) return false
-        if (displayName != other.displayName) return false
-        
-        return true
-    }
+    if (dependencies != other.dependencies) return false
+    if (subject != other.subject) return false
+    if (transformer != other.transformer) return false
+    if (name != other.name) return false
+    if (displayName != other.displayName) return false
 
-    override fun hashCode(): Int {
-        var result = dependencies.hashCode()
-        result = 31 * result + subject.hashCode()
-        result = 31 * result + transformer.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + displayName.hashCode()
-        return result
-    }
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = dependencies.hashCode()
+    result = 31 * result + subject.hashCode()
+    result = 31 * result + transformer.hashCode()
+    result = 31 * result + name.hashCode()
+    result = 31 * result + displayName.hashCode()
+    return result
+  }
 }

@@ -27,24 +27,13 @@ final class AutoValue_JavaInputAstVisitor_DeclarationModifiersAndTypeAnnotations
   }
 
   @Override
-  ImmutableList<JavaInputAstVisitor.AnnotationOrModifier> declarationModifiers() {
-    return declarationModifiers;
-  }
-
-  @Override
-  ImmutableList<AnnotationTree> typeAnnotations() {
-    return typeAnnotations;
-  }
-
-  @Override
-  public String toString() {
-    return "DeclarationModifiersAndTypeAnnotations{"
-        + "declarationModifiers="
-        + declarationModifiers
-        + ", "
-        + "typeAnnotations="
-        + typeAnnotations
-        + "}";
+  public int hashCode() {
+    int h$ = 1;
+    h$ *= 1000003;
+    h$ ^= declarationModifiers.hashCode();
+    h$ *= 1000003;
+    h$ ^= typeAnnotations.hashCode();
+    return h$;
   }
 
   @Override
@@ -62,12 +51,23 @@ final class AutoValue_JavaInputAstVisitor_DeclarationModifiersAndTypeAnnotations
   }
 
   @Override
-  public int hashCode() {
-    int h$ = 1;
-    h$ *= 1000003;
-    h$ ^= declarationModifiers.hashCode();
-    h$ *= 1000003;
-    h$ ^= typeAnnotations.hashCode();
-    return h$;
+  public String toString() {
+    return "DeclarationModifiersAndTypeAnnotations{"
+        + "declarationModifiers="
+        + declarationModifiers
+        + ", "
+        + "typeAnnotations="
+        + typeAnnotations
+        + "}";
+  }
+
+  @Override
+  ImmutableList<AnnotationTree> typeAnnotations() {
+    return typeAnnotations;
+  }
+
+  @Override
+  ImmutableList<JavaInputAstVisitor.AnnotationOrModifier> declarationModifiers() {
+    return declarationModifiers;
   }
 }

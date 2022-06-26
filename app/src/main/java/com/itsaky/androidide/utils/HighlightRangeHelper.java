@@ -44,6 +44,7 @@ import java.util.List;
 
 public class HighlightRangeHelper {
 
+  private static final ILogger LOG = ILogger.newInstance("HighlightRangeHelper");
   private final List<HighlightToken> highlights;
 
   public HighlightRangeHelper(List<HighlightToken> highlights) {
@@ -52,6 +53,36 @@ public class HighlightRangeHelper {
 
   public boolean isEnumType(int line, int column) {
     return isOfKind(line, column, ENUM_TYPE);
+  }
+
+  /**
+   * Check if the token at the given index has the given token kind.
+   *
+   * @param line The line to check.
+   * @param column The column to check.
+   * @param kind The kind to check.
+   * @return {@code true} if the token at the given position has the given kind, {@code false}
+   *     otherwise.
+   */
+  public boolean isOfKind(int line, int column, HighlightTokenKind kind) {
+    final var position = new Position(line, column);
+    int left = 0;
+    int right = this.highlights.size();
+    int mid;
+    while (left < right) {
+      mid = (left + right) / 2;
+      var token = this.highlights.get(mid);
+      var range = token.getRange();
+      var pos = range.getStart().compareTo(position);
+      if (pos < 0) {
+        left = mid + 1;
+      } else if (pos > 0) {
+        right = mid - 1;
+      } else {
+        return token.getKind() == kind;
+      }
+    }
+    return false;
   }
 
   public boolean isAnnotationType(int line, int column) {
@@ -121,36 +152,4 @@ public class HighlightRangeHelper {
   public boolean isLocal(int line, int column) {
     return isOfKind(line, column, LOCAL_VARIABLE);
   }
-
-  /**
-   * Check if the token at the given index has the given token kind.
-   *
-   * @param line The line to check.
-   * @param column The column to check.
-   * @param kind The kind to check.
-   * @return {@code true} if the token at the given position has the given kind, {@code false}
-   *     otherwise.
-   */
-  public boolean isOfKind(int line, int column, HighlightTokenKind kind) {
-    final var position = new Position(line, column);
-    int left = 0;
-    int right = this.highlights.size();
-    int mid;
-    while (left < right) {
-      mid = (left + right) / 2;
-      var token = this.highlights.get(mid);
-      var range = token.getRange();
-      var pos = range.getStart().compareTo(position);
-      if (pos < 0) {
-        left = mid + 1;
-      } else if (pos > 0) {
-        right = mid - 1;
-      } else {
-        return token.getKind() == kind;
-      }
-    }
-    return false;
-  }
-
-  private static final ILogger LOG = ILogger.newInstance("HighlightRangeHelper");
 }

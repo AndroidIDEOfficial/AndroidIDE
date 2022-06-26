@@ -1,5 +1,4 @@
-<animated-vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector
@@ -10,67 +9,67 @@
             android:viewportHeight="24">
             <path
                 android:name="path"
-                android:pathData="M 12 3 C 16.97 3 21 7.03 21 12 C 21 16.97 16.97 21 12 21 C 7.03 21 3 16.97 3 12 C 3 7.03 7.03 3 12 3 Z"
                 android:fillColor="#00FFFFFF"
-                android:strokeColor="#000000"
+                android:pathData="M 12 3 C 16.97 3 21 7.03 21 12 C 21 16.97 16.97 21 12 21 C 7.03 21 3 16.97 3 12 C 3 7.03 7.03 3 12 3 Z"
                 android:strokeWidth="1.6800001"
-                android:strokeLineCap="square"/>
+                android:strokeColor="#000000"
+                android:strokeLineCap="square" />
             <path
                 android:name="path_1"
-                android:pathData="M 12 8 L 12 12"
                 android:fillColor="#00FFFFFF"
-                android:strokeColor="#000000"
+                android:pathData="M 12 8 L 12 12"
                 android:strokeWidth="1.6800001"
-                android:strokeLineCap="square"/>
+                android:strokeColor="#000000"
+                android:strokeLineCap="square" />
             <path
                 android:name="path_2"
-                android:pathData="M 12 16 L 12 16"
                 android:fillColor="#00FFFFFF"
-                android:strokeColor="#000000"
+                android:pathData="M 12 16 L 12 16"
                 android:strokeWidth="1.6800001"
-                android:strokeLineCap="square"/>
+                android:strokeColor="#000000"
+                android:strokeLineCap="square" />
         </vector>
     </aapt:attr>
     <target android:name="path">
         <aapt:attr name="android:animation">
             <objectAnimator
-                android:propertyName="trimPathEnd"
                 android:duration="600"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathEnd"
                 android:valueFrom="0"
                 android:valueTo="1"
-                android:valueType="floatType"
-                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                android:valueType="floatType" />
         </aapt:attr>
     </target>
     <target android:name="path_1">
         <aapt:attr name="android:animation">
             <objectAnimator
+                android:duration="400"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
                 android:propertyName="trimPathStart"
                 android:startOffset="200"
-                android:duration="400"
                 android:valueFrom="1"
                 android:valueTo="0"
-                android:valueType="floatType"
-                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                android:valueType="floatType" />
         </aapt:attr>
     </target>
     <target android:name="path_2">
         <aapt:attr name="android:animation">
             <set>
                 <objectAnimator
-                    android:propertyName="trimPathStart"
                     android:duration="100"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="trimPathStart"
                     android:valueFrom="1"
                     android:valueTo="0"
-                    android:valueType="floatType"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                    android:valueType="floatType" />
                 <objectAnimator
-                    android:propertyName="strokeWidth"
                     android:duration="400"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="strokeWidth"
                     android:valueFrom="0"
                     android:valueTo="1.6800001"
-                    android:valueType="floatType"
-                    android:interpolator="@android:interpolator/fast_out_slow_in"/>
+                    android:valueType="floatType" />
             </set>
         </aapt:attr>
     </target>

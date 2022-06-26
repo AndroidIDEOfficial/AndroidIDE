@@ -189,16 +189,16 @@ public class DesignerActivity extends StudioActivity
         .show();
   }
 
+  private void finishWithError() {
+    final var intent = new Intent();
+    setResult(-123, intent);
+    finish();
+  }
+
   private void finishWithResult(String result) {
     final var intent = new Intent();
     intent.putExtra(KEY_GENERATED_CODE, result);
     setResult(RESULT_OK, intent);
-    finish();
-  }
-
-  private void finishWithError() {
-    final var intent = new Intent();
-    setResult(-123, intent);
     finish();
   }
 

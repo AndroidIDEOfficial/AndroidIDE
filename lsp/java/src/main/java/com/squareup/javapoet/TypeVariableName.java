@@ -49,29 +49,9 @@ public final class TypeVariableName extends TypeName {
     }
   }
 
-  @Override
-  public TypeVariableName annotated(List<AnnotationSpec> annotations) {
-    return new TypeVariableName(name, bounds, annotations);
-  }
-
-  @Override
-  public TypeName withoutAnnotations() {
-    return new TypeVariableName(name, bounds);
-  }
-
-  public TypeVariableName withBounds(Type... bounds) {
-    return withBounds(TypeName.list(bounds));
-  }
-
-  public TypeVariableName withBounds(TypeName... bounds) {
-    return withBounds(Arrays.asList(bounds));
-  }
-
-  public TypeVariableName withBounds(List<? extends TypeName> bounds) {
-    ArrayList<TypeName> newBounds = new ArrayList<>();
-    newBounds.addAll(this.bounds);
-    newBounds.addAll(bounds);
-    return new TypeVariableName(name, newBounds, annotations);
+  /** Returns type variable named {@code name} without bounds. */
+  public static TypeVariableName get(String name) {
+    return TypeVariableName.of(name, Collections.emptyList());
   }
 
   private static TypeVariableName of(String name, List<TypeName> bounds) {
@@ -79,17 +59,6 @@ public final class TypeVariableName extends TypeName {
     List<TypeName> boundsNoObject = new ArrayList<>(bounds);
     boundsNoObject.remove(OBJECT);
     return new TypeVariableName(name, Collections.unmodifiableList(boundsNoObject));
-  }
-
-  @Override
-  CodeWriter emit(CodeWriter out) throws IOException {
-    emitAnnotations(out);
-    return out.emitAndIndent(name);
-  }
-
-  /** Returns type variable named {@code name} without bounds. */
-  public static TypeVariableName get(String name) {
-    return TypeVariableName.of(name, Collections.emptyList());
   }
 
   /** Returns type variable named {@code name} with {@code bounds}. */
@@ -105,34 +74,6 @@ public final class TypeVariableName extends TypeName {
   /** Returns type variable equivalent to {@code mirror}. */
   public static TypeVariableName get(TypeVariable mirror) {
     return get((TypeParameterElement) mirror.asElement());
-  }
-
-  /**
-   * Make a TypeVariableName for the given TypeMirror. This form is used internally to avoid
-   * infinite recursion in cases like {@code Enum<E extends Enum<E>>}. When we encounter such a
-   * thing, we will make a TypeVariableName without bounds and add that to the {@code typeVariables}
-   * map before looking up the bounds. Then if we encounter this TypeVariable again while
-   * constructing the bounds, we can just return it from the map. And, the code that put the entry
-   * in {@code variables} will make sure that the bounds are filled in before returning.
-   */
-  static TypeVariableName get(
-      TypeVariable mirror, Map<TypeParameterElement, TypeVariableName> typeVariables) {
-    TypeParameterElement element = (TypeParameterElement) mirror.asElement();
-    TypeVariableName typeVariableName = typeVariables.get(element);
-    if (typeVariableName == null) {
-      // Since the bounds field is public, we need to make it an unmodifiableList. But we
-      // control
-      // the List that that wraps, which means we can change it before returning.
-      List<TypeName> bounds = new ArrayList<>();
-      List<TypeName> visibleBounds = Collections.unmodifiableList(bounds);
-      typeVariableName = new TypeVariableName(element.getSimpleName().toString(), visibleBounds);
-      typeVariables.put(element, typeVariableName);
-      for (TypeMirror typeMirror : element.getBounds()) {
-        bounds.add(TypeName.get(typeMirror, typeVariables));
-      }
-      bounds.remove(OBJECT);
-    }
-    return typeVariableName;
   }
 
   /** Returns type variable equivalent to {@code element}. */
@@ -170,5 +111,64 @@ public final class TypeVariableName extends TypeName {
       bounds.remove(OBJECT);
     }
     return result;
+  }
+
+  /**
+   * Make a TypeVariableName for the given TypeMirror. This form is used internally to avoid
+   * infinite recursion in cases like {@code Enum<E extends Enum<E>>}. When we encounter such a
+   * thing, we will make a TypeVariableName without bounds and add that to the {@code typeVariables}
+   * map before looking up the bounds. Then if we encounter this TypeVariable again while
+   * constructing the bounds, we can just return it from the map. And, the code that put the entry
+   * in {@code variables} will make sure that the bounds are filled in before returning.
+   */
+  static TypeVariableName get(
+      TypeVariable mirror, Map<TypeParameterElement, TypeVariableName> typeVariables) {
+    TypeParameterElement element = (TypeParameterElement) mirror.asElement();
+    TypeVariableName typeVariableName = typeVariables.get(element);
+    if (typeVariableName == null) {
+      // Since the bounds field is public, we need to make it an unmodifiableList. But we
+      // control
+      // the List that that wraps, which means we can change it before returning.
+      List<TypeName> bounds = new ArrayList<>();
+      List<TypeName> visibleBounds = Collections.unmodifiableList(bounds);
+      typeVariableName = new TypeVariableName(element.getSimpleName().toString(), visibleBounds);
+      typeVariables.put(element, typeVariableName);
+      for (TypeMirror typeMirror : element.getBounds()) {
+        bounds.add(TypeName.get(typeMirror, typeVariables));
+      }
+      bounds.remove(OBJECT);
+    }
+    return typeVariableName;
+  }
+
+  @Override
+  public TypeVariableName annotated(List<AnnotationSpec> annotations) {
+    return new TypeVariableName(name, bounds, annotations);
+  }
+
+  @Override
+  public TypeName withoutAnnotations() {
+    return new TypeVariableName(name, bounds);
+  }
+
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
+    emitAnnotations(out);
+    return out.emitAndIndent(name);
+  }
+
+  public TypeVariableName withBounds(Type... bounds) {
+    return withBounds(TypeName.list(bounds));
+  }
+
+  public TypeVariableName withBounds(List<? extends TypeName> bounds) {
+    ArrayList<TypeName> newBounds = new ArrayList<>();
+    newBounds.addAll(this.bounds);
+    newBounds.addAll(bounds);
+    return new TypeVariableName(name, newBounds, annotations);
+  }
+
+  public TypeVariableName withBounds(TypeName... bounds) {
+    return withBounds(Arrays.asList(bounds));
   }
 }

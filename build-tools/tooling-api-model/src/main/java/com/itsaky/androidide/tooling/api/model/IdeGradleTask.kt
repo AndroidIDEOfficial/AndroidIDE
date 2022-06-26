@@ -24,12 +24,11 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 open class IdeGradleTask(
-    val name: String,
-    val description: String?,
-    val group: String?,
-    val path: String,
-    displayName: String?,
-    isPublic: Boolean?,
-    val projectPath: String?
-) : IdeLaunchable(displayName, isPublic), Serializable {
-}
+  val name: String,
+  val description: String?,
+  val group: String?,
+  val path: String,
+  displayName: String?,
+  isPublic: Boolean?,
+  val projectPath: String?
+) : IdeLaunchable(displayName, isPublic), Serializable {}

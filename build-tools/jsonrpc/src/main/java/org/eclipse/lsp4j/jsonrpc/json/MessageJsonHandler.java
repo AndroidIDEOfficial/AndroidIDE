@@ -11,14 +11,13 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Consumer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.MalformedJsonException;
 
 import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
 import org.eclipse.lsp4j.jsonrpc.json.adapters.CollectionTypeAdapter;
@@ -32,24 +31,23 @@ import org.eclipse.lsp4j.jsonrpc.messages.Message;
 import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
 import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonParseException;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.MalformedJsonException;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /** A wrapper around Gson that includes configuration required for JSON-RPC messages. */
 public class MessageJsonHandler {
 
   public static final JsonRpcMethod CANCEL_METHOD =
       JsonRpcMethod.notification("$/cancelRequest", CancelParams.class);
-
+  private static MessageJsonHandler toStringInstance;
   private final Gson gson;
-
   private final Map<String, JsonRpcMethod> supportedMethods;
-
   private MethodProvider methodProvider;
 
   /**
@@ -59,6 +57,17 @@ public class MessageJsonHandler {
   public MessageJsonHandler(Map<String, JsonRpcMethod> supportedMethods) {
     this.supportedMethods = supportedMethods;
     this.gson = getDefaultGsonBuilder().create();
+  }
+
+  /** Create a {@link GsonBuilder} with default settings for parsing JSON-RPC messages. */
+  public GsonBuilder getDefaultGsonBuilder() {
+    return new GsonBuilder()
+        .registerTypeAdapterFactory(new CollectionTypeAdapter.Factory())
+        .registerTypeAdapterFactory(new ThrowableTypeAdapter.Factory())
+        .registerTypeAdapterFactory(new EitherTypeAdapter.Factory())
+        .registerTypeAdapterFactory(new TupleTypeAdapters.TwoTypeAdapterFactory())
+        .registerTypeAdapterFactory(new EnumTypeAdapter.Factory())
+        .registerTypeAdapterFactory(new MessageTypeAdapter.Factory(this));
   }
 
   /**
@@ -75,15 +84,20 @@ public class MessageJsonHandler {
     this.gson = gsonBuilder.create();
   }
 
-  /** Create a {@link GsonBuilder} with default settings for parsing JSON-RPC messages. */
-  public GsonBuilder getDefaultGsonBuilder() {
-    return new GsonBuilder()
-        .registerTypeAdapterFactory(new CollectionTypeAdapter.Factory())
-        .registerTypeAdapterFactory(new ThrowableTypeAdapter.Factory())
-        .registerTypeAdapterFactory(new EitherTypeAdapter.Factory())
-        .registerTypeAdapterFactory(new TupleTypeAdapters.TwoTypeAdapterFactory())
-        .registerTypeAdapterFactory(new EnumTypeAdapter.Factory())
-        .registerTypeAdapterFactory(new MessageTypeAdapter.Factory(this));
+  /**
+   * Perform JSON serialization of the given object using the default configuration of JSON-RPC
+   * messages enhanced with the pretty printing option.
+   */
+  public static String toString(Object object) {
+    if (toStringInstance == null) {
+      toStringInstance =
+          new MessageJsonHandler(
+              Collections.emptyMap(),
+              gsonBuilder -> {
+                gsonBuilder.setPrettyPrinting();
+              });
+    }
+    return toStringInstance.gson.toJson(object);
   }
 
   public Gson getGson() {
@@ -144,23 +158,5 @@ public class MessageJsonHandler {
 
   public void serialize(Message message, Writer output) throws JsonIOException {
     gson.toJson(message, Message.class, output);
-  }
-
-  private static MessageJsonHandler toStringInstance;
-
-  /**
-   * Perform JSON serialization of the given object using the default configuration of JSON-RPC
-   * messages enhanced with the pretty printing option.
-   */
-  public static String toString(Object object) {
-    if (toStringInstance == null) {
-      toStringInstance =
-          new MessageJsonHandler(
-              Collections.emptyMap(),
-              gsonBuilder -> {
-                gsonBuilder.setPrettyPrinting();
-              });
-    }
-    return toStringInstance.gson.toJson(object);
   }
 }

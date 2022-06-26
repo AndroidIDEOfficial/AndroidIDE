@@ -26,10 +26,10 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 data class SimpleModuleData(
-    val name: String,
-    val path: String,
-    val projectDir: File,
-    val classPaths: Set<File> = emptySet()
+  val name: String,
+  val path: String,
+  val projectDir: File,
+  val classPaths: Set<File> = emptySet()
 ) : Serializable {
-    private val serialVersionUID = 1L
+  private val serialVersionUID = 1L
 }

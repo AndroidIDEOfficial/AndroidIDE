@@ -24,36 +24,36 @@ import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class JavaDiagnosticUtils {
-    companion object {
-        @JvmStatic
-        fun asJCDiagnostic(diagnostic: Diagnostic<out JavaFileObject>): JCDiagnostic? {
-            if (diagnostic is JCDiagnostic) {
-                return diagnostic
-            } else if (diagnostic is ClientCodeWrapper.DiagnosticSourceUnwrapper) {
-                return diagnostic.d
-            }
+  companion object {
+    @JvmStatic
+    fun asJCDiagnostic(diagnostic: Diagnostic<out JavaFileObject>): JCDiagnostic? {
+      if (diagnostic is JCDiagnostic) {
+        return diagnostic
+      } else if (diagnostic is ClientCodeWrapper.DiagnosticSourceUnwrapper) {
+        return diagnostic.d
+      }
 
-            return null
-        }
-
-        @JvmStatic
-        fun asUnwrapper(
-            diagnostic: Diagnostic<out JavaFileObject>
-        ): ClientCodeWrapper.DiagnosticSourceUnwrapper? {
-            if (diagnostic is ClientCodeWrapper.DiagnosticSourceUnwrapper) {
-                return diagnostic
-            } else if (diagnostic is JCDiagnostic) {
-                return wrap(diagnostic)
-            }
-
-            return null
-        }
-
-        private fun wrap(diagnostic: JCDiagnostic): ClientCodeWrapper.DiagnosticSourceUnwrapper {
-            val klass = ClientCodeWrapper.DiagnosticSourceUnwrapper::class.java
-            val construct = klass.getDeclaredConstructor(JCDiagnostic::class.java)
-            construct.isAccessible = true
-            return construct.newInstance(diagnostic)
-        }
+      return null
     }
+
+    @JvmStatic
+    fun asUnwrapper(
+      diagnostic: Diagnostic<out JavaFileObject>
+    ): ClientCodeWrapper.DiagnosticSourceUnwrapper? {
+      if (diagnostic is ClientCodeWrapper.DiagnosticSourceUnwrapper) {
+        return diagnostic
+      } else if (diagnostic is JCDiagnostic) {
+        return wrap(diagnostic)
+      }
+
+      return null
+    }
+
+    private fun wrap(diagnostic: JCDiagnostic): ClientCodeWrapper.DiagnosticSourceUnwrapper {
+      val klass = ClientCodeWrapper.DiagnosticSourceUnwrapper::class.java
+      val construct = klass.getDeclaredConstructor(JCDiagnostic::class.java)
+      construct.isAccessible = true
+      return construct.newInstance(diagnostic)
+    }
+  }
 }

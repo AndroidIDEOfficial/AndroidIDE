@@ -45,12 +45,12 @@ final class Util {
     return Collections.unmodifiableMap(result);
   }
 
-  static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
-    return Collections.unmodifiableMap(new LinkedHashMap<>(map));
+  static <T> List<T> immutableList(Collection<T> collection) {
+    return Collections.unmodifiableList(new ArrayList<>(collection));
   }
 
-  static void checkArgument(boolean condition, String format, Object... args) {
-    if (!condition) throw new IllegalArgumentException(String.format(format, args));
+  static <K, V> Map<K, V> immutableMap(Map<K, V> map) {
+    return Collections.unmodifiableMap(new LinkedHashMap<>(map));
   }
 
   static <T> T checkNotNull(T reference, String format, Object... args) {
@@ -60,10 +60,6 @@ final class Util {
 
   static void checkState(boolean condition, String format, Object... args) {
     if (!condition) throw new IllegalStateException(String.format(format, args));
-  }
-
-  static <T> List<T> immutableList(Collection<T> collection) {
-    return Collections.unmodifiableList(new ArrayList<>(collection));
   }
 
   static <T> Set<T> immutableSet(Collection<T> set) {
@@ -89,28 +85,8 @@ final class Util {
         Arrays.toString(mutuallyExclusive));
   }
 
-  static String characterLiteralWithoutSingleQuotes(char c) {
-    // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
-    switch (c) {
-      case '\b':
-        return "\\b"; /* \u0008: backspace (BS) */
-      case '\t':
-        return "\\t"; /* \u0009: horizontal tab (HT) */
-      case '\n':
-        return "\\n"; /* \u000a: linefeed (LF) */
-      case '\f':
-        return "\\f"; /* \u000c: form feed (FF) */
-      case '\r':
-        return "\\r"; /* \u000d: carriage return (CR) */
-      case '\"':
-        return "\""; /* \u0022: double quote (") */
-      case '\'':
-        return "\\'"; /* \u0027: single quote (') */
-      case '\\':
-        return "\\\\"; /* \u005c: backslash (\) */
-      default:
-        return isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c);
-    }
+  static void checkArgument(boolean condition, String format, Object... args) {
+    if (!condition) throw new IllegalArgumentException(String.format(format, args));
   }
 
   /** Returns the string literal representing {@code value}, including wrapping double quotes. */
@@ -138,5 +114,29 @@ final class Util {
     }
     result.append('"');
     return result.toString();
+  }
+
+  static String characterLiteralWithoutSingleQuotes(char c) {
+    // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
+    switch (c) {
+      case '\b':
+        return "\\b"; /* \u0008: backspace (BS) */
+      case '\t':
+        return "\\t"; /* \u0009: horizontal tab (HT) */
+      case '\n':
+        return "\\n"; /* \u000a: linefeed (LF) */
+      case '\f':
+        return "\\f"; /* \u000c: form feed (FF) */
+      case '\r':
+        return "\\r"; /* \u000d: carriage return (CR) */
+      case '\"':
+        return "\""; /* \u0022: double quote (") */
+      case '\'':
+        return "\\'"; /* \u0027: single quote (') */
+      case '\\':
+        return "\\\\"; /* \u005c: backslash (\) */
+      default:
+        return isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c);
+    }
   }
 }

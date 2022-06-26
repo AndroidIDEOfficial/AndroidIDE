@@ -26,13 +26,9 @@ import com.itsaky.androidide.utils.ILogger;
 
 import java.lang.Override;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
-import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.text.Content;
 
 public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
 
@@ -43,8 +39,10 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
   }
 
   @Override
-  protected int[] getCodeBlockTokens() {
-    return new int[] {LeftBrace, RightBrace};
+  protected int[][] getMultilineTokenStartEndTypes() {
+    final var start = new int[] {Div, Star};
+    final var end = new int[] {Star, Div};
+    return new int[][] {start, end};
   }
 
   @Override
@@ -216,14 +214,12 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
   }
 
   @Override
-  protected int[][] getMultilineTokenStartEndTypes() {
-    final var start = new int[] {Div, Star};
-    final var end = new int[] {Star, Div};
-    return new int[][] {start, end};
+  protected void handleIncompleteToken(final IncrementalToken token) {
+    token.type = BlockComment;
   }
 
   @Override
-  protected void handleIncompleteToken(final IncrementalToken token) {
-    token.type = BlockComment;
+  protected int[] getCodeBlockTokens() {
+    return new int[] {LeftBrace, RightBrace};
   }
 }

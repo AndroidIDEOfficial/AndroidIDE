@@ -17,30 +17,30 @@
 
 package com.itsaky.androidide.tooling.events.configuration
 
-import com.itsaky.androidide.tooling.model.ProjectIdentifier
 import com.itsaky.androidide.tooling.events.OperationDescriptor
+import com.itsaky.androidide.tooling.model.ProjectIdentifier
 
 /** @author Akash Yadav */
 class ProjectConfigurationOperationDescriptor(
-    val project: ProjectIdentifier,
-    override val name: String,
-    override val displayName: String
+  val project: ProjectIdentifier,
+  override val name: String,
+  override val displayName: String
 ) : OperationDescriptor() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ProjectConfigurationOperationDescriptor) return false
-        
-        if (project != other.project) return false
-        if (name != other.name) return false
-        if (displayName != other.displayName) return false
-        
-        return true
-    }
-    
-    override fun hashCode(): Int {
-        var result = project.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + displayName.hashCode()
-        return result
-    }
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is ProjectConfigurationOperationDescriptor) return false
+
+    if (project != other.project) return false
+    if (name != other.name) return false
+    if (displayName != other.displayName) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = project.hashCode()
+    result = 31 * result + name.hashCode()
+    result = 31 * result + displayName.hashCode()
+    return result
+  }
 }

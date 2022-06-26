@@ -22,14 +22,14 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultJavaArtifact : JavaArtifact, Serializable {
-    private val serialVersionUID = 1L
-    override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+  private val serialVersionUID = 1L
+  override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
 
-    override var assembleTaskName: String = ""
-    override var classesFolders: Set<File> = emptySet()
-    override var compileTaskName: String = ""
-    override var generatedSourceFolders: Collection<File> = emptyList()
-    override var ideSetupTaskNames: Set<String> = emptySet()
-    override var mockablePlatformJar: File? = null
-    override var runtimeResourceFolder: File? = null
+  override var assembleTaskName: String = ""
+  override var classesFolders: Set<File> = emptySet()
+  override var compileTaskName: String = ""
+  override var generatedSourceFolders: Collection<File> = emptyList()
+  override var ideSetupTaskNames: Set<String> = emptySet()
+  override var mockablePlatformJar: File? = null
+  override var runtimeResourceFolder: File? = null
 }

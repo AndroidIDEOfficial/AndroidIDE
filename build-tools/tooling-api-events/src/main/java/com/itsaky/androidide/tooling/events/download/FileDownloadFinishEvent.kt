@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.events.FinishEvent
 
 /** @author Akash Yadav */
 class FileDownloadFinishEvent(
-    displayName: String,
-    eventTime: Long,
-    descriptor: FileDownloadOperationDescriptor,
-    override val result: FileDownloadResult
+  displayName: String,
+  eventTime: Long,
+  descriptor: FileDownloadOperationDescriptor,
+  override val result: FileDownloadResult
 ) : FileDownloadProgressEvent(displayName, eventTime, descriptor), FinishEvent

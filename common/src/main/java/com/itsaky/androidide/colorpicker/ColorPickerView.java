@@ -48,17 +48,13 @@ import com.itsaky.androidide.utils.ILogger;
  */
 public class ColorPickerView extends LinearLayout {
 
+  private static final ILogger LOG = ILogger.newInstance("ColorPickerView");
+  private final LayoutColorPickerBinding binding;
+  private final int DEFAULT_COLOR;
   private int alpha;
   private int red;
   private int green;
   private int blue;
-
-  private OnPickListener mPickListener;
-  private final LayoutColorPickerBinding binding;
-  private final int DEFAULT_COLOR;
-
-  private static final ILogger LOG = ILogger.newInstance("ColorPickerView");
-
   private final Slider.OnChangeListener mValueChangeListener =
       (slider, value, fromUser) -> {
 
@@ -79,6 +75,7 @@ public class ColorPickerView extends LinearLayout {
           updatePreview();
         }
       };
+  private OnPickListener mPickListener;
 
   public ColorPickerView(Context context) {
     this(context, null);
@@ -105,15 +102,6 @@ public class ColorPickerView extends LinearLayout {
         new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     init();
-  }
-
-  /**
-   * Set a listener that will be notified when the user picks a color.
-   *
-   * @param listener The listener to set.
-   */
-  public void setOnPickListener(OnPickListener listener) {
-    this.mPickListener = listener;
   }
 
   private void init() {
@@ -146,6 +134,34 @@ public class ColorPickerView extends LinearLayout {
   }
 
   /**
+   * Set a listener that will be notified when the user picks a color.
+   *
+   * @param listener The listener to set.
+   */
+  public void setOnPickListener(OnPickListener listener) {
+    this.mPickListener = listener;
+  }
+
+  /** A TextWatcher that is used to listen for text updates in the hex color input field. */
+  private class ColorTextWatcher implements TextWatcher {
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+      try {
+        final var color = parseColor("#" + s);
+        setColor(color);
+      } catch (Exception e) {
+        // May happen due to invalid color values
+        // Simply ignore
+      }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {}
+  }  /**
    * Set the color value of this picker to the given hex color code.
    *
    * @param hexCode The hex color code.
@@ -156,6 +172,20 @@ public class ColorPickerView extends LinearLayout {
   }
 
   /**
+   * A listener that can be used to get notified when the user picks a color.
+   *
+   * @author Akash Yadav
+   */
+  public interface OnPickListener {
+
+    /**
+     * Called when the user picks a color using the 'Pick' button.
+     *
+     * @param color The integer value of the color.
+     * @param hexCode The hex color code of the color.
+     */
+    void onPick(int color, String hexCode);
+  }  /**
    * Set the color value for this color picker. this will in turn update value of the sliders and
    * the color preview.
    *
@@ -190,40 +220,7 @@ public class ColorPickerView extends LinearLayout {
     this.binding.colorPreview.setBackgroundColor(getColor());
   }
 
-  /**
-   * A listener that can be used to get notified when the user picks a color.
-   *
-   * @author Akash Yadav
-   */
-  public interface OnPickListener {
 
-    /**
-     * Called when the user picks a color using the 'Pick' button.
-     *
-     * @param color The integer value of the color.
-     * @param hexCode The hex color code of the color.
-     */
-    void onPick(int color, String hexCode);
-  }
 
-  /** A TextWatcher that is used to listen for text updates in the hex color input field. */
-  private class ColorTextWatcher implements TextWatcher {
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void afterTextChanged(Editable s) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-      try {
-        final var color = parseColor("#" + s);
-        setColor(color);
-      } catch (Exception e) {
-        // May happen due to invalid color values
-        // Simply ignore
-      }
-    }
-  }
 }

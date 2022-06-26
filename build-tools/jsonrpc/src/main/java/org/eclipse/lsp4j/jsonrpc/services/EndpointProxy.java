@@ -11,6 +11,10 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.services;
 
+import org.eclipse.lsp4j.jsonrpc.Endpoint;
+import org.eclipse.lsp4j.jsonrpc.services.AnnotationUtil.DelegateInfo;
+import org.eclipse.lsp4j.jsonrpc.services.AnnotationUtil.MethodInfo;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -19,10 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-
-import org.eclipse.lsp4j.jsonrpc.Endpoint;
-import org.eclipse.lsp4j.jsonrpc.services.AnnotationUtil.DelegateInfo;
-import org.eclipse.lsp4j.jsonrpc.services.AnnotationUtil.MethodInfo;
 
 /**
  * A Proxy that wraps an {@link Endpoint} in one or more service interfaces, i.e. interfaces

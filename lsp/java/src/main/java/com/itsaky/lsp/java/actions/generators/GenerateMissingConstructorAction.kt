@@ -28,49 +28,48 @@ import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
 class GenerateMissingConstructorAction : BaseCodeAction() {
-    override val id = "lsp_java_generateMissingConstructor"
-    override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    override val titleTextRes: Int = R.string.action_generate_missing_constructor
+  override val id = "lsp_java_generateMissingConstructor"
+  override var label: String = ""
+  private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  override val titleTextRes: Int = R.string.action_generate_missing_constructor
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
-            markInvisible()
-            return
-        }
-
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        if (diagnosticCode != diagnostic.code) {
-            markInvisible()
-            return
-        }
+    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val needsConstructor =
-                CodeActionUtils.findClassNeedingConstructor(task, diagnostic.range)
-                    ?: return@get false
-            return@get GenerateRecordConstructor(needsConstructor)
-        }
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    if (diagnosticCode != diagnostic.code) {
+      markInvisible()
+      return
+    }
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val diagnostic = data[DiagnosticItem::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
+    return server.compiler.compile(file).get { task ->
+      val needsConstructor =
+        CodeActionUtils.findClassNeedingConstructor(task, diagnostic.range) ?: return@get false
+      return@get GenerateRecordConstructor(needsConstructor)
+    }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is GenerateRecordConstructor) {
+      log.warn("Unable to generate constructor")
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is GenerateRecordConstructor) {
-            log.warn("Unable to generate constructor")
-            return
-        }
+    val server = data[JavaLanguageServer::class.java]!!
+    val client = server.client!!
+    val file = requireFile(data)
 
-        val server = data[JavaLanguageServer::class.java]!!
-        val client = server.client!!
-        val file = requireFile(data)
-
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
-    }
+    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  }
 }

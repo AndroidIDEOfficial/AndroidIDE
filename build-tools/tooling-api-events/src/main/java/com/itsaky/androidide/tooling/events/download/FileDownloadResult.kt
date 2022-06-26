@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
 class FileDownloadResult(
-    val bytesDownloaded: Long,
-    override val startTime: Long,
-    override val endTime: Long
+  val bytesDownloaded: Long,
+  override val startTime: Long,
+  override val endTime: Long
 ) : OperationResult()

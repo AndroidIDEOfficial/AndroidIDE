@@ -12,5 +12,5 @@
     <string name="msg_package_not_use_digit_first">A digit cannot be the first character in a package segment</string>
     <string name="msg_package_not_valid_char_2">The character "%1$s" is not allowed in Android application package names</string>
     <string name="msg_package_mus_have_dot">The package must have at least one \'.\' separator</string>
-    
+
 </resources>

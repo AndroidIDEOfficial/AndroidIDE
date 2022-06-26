@@ -29,34 +29,34 @@ import java.io.File
  * @author Akash Yadav
  */
 class FindReferencesAction : BaseCodeAction() {
-    override val titleTextRes: Int = R.string.action_find_references
-    override val id: String = "lsp_java_findReferences"
-    override var label: String = ""
-    override var requiresUIThread: Boolean = true
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  override val titleTextRes: Int = R.string.action_find_references
+  override val id: String = "lsp_java_findReferences"
+  override var label: String = ""
+  override var requiresUIThread: Boolean = true
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, CodeEditor::class.java, File::class.java)) {
-            markInvisible()
-            return
-        }
+    if (!visible || !hasRequiredData(data, CodeEditor::class.java, File::class.java)) {
+      markInvisible()
+      return
     }
+  }
 
-    override fun execAction(data: ActionData): Any {
-        val editor = data[CodeEditor::class.java]!!
-        return tryExecFindDefinition(editor)
-    }
+  override fun execAction(data: ActionData): Any {
+    val editor = data[CodeEditor::class.java]!!
+    return tryExecFindDefinition(editor)
+  }
 
-    private fun tryExecFindDefinition(editor: CodeEditor): Boolean {
-        return try {
-            val method = editor::class.java.getDeclaredMethod("findReferences")
-            method.isAccessible = true
-            method.invoke(editor)
-            true
-        } catch (error: Throwable) {
-            false
-        }
+  private fun tryExecFindDefinition(editor: CodeEditor): Boolean {
+    return try {
+      val method = editor::class.java.getDeclaredMethod("findReferences")
+      method.isAccessible = true
+      method.invoke(editor)
+      true
+    } catch (error: Throwable) {
+      false
     }
+  }
 }

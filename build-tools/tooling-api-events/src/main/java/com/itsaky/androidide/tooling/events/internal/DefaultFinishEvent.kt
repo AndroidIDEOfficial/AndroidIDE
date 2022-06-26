@@ -23,8 +23,8 @@ import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
 class DefaultFinishEvent(
-    displayName: String,
-    eventTime: Long,
-    descriptor: OperationDescriptor,
-    override val result: OperationResult
+  displayName: String,
+  eventTime: Long,
+  descriptor: OperationDescriptor,
+  override val result: OperationResult
 ) : DefaultProgressEvent(displayName, eventTime, descriptor), FinishEvent

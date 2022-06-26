@@ -20,11 +20,6 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.DiagnosticItem;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import io.github.rosemoe.sora.lang.Language;
 
@@ -40,10 +35,6 @@ public abstract class IDELanguage implements Language {
     return false;
   }
 
-  public int getTabSize() {
-    return StudioApp.getInstance().getPrefManager().getEditorTabSize();
-  }
-
   @Override
   public CharSequence format(CharSequence text) {
     final var server = getLanguageServer();
@@ -54,11 +45,15 @@ public abstract class IDELanguage implements Language {
     return text;
   }
 
-  public int getIndentAdvance(@NonNull String line) {
-    return 0;
-  }
-
   protected ILanguageServer getLanguageServer() {
     return null;
+  }
+
+  public int getTabSize() {
+    return StudioApp.getInstance().getPrefManager().getEditorTabSize();
+  }
+
+  public int getIndentAdvance(@NonNull String line) {
+    return 0;
   }
 }

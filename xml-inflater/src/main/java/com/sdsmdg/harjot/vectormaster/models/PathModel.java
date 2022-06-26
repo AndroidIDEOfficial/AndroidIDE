@@ -64,19 +64,6 @@ public class PathModel {
     updatePaint();
   }
 
-  public void buildPath(boolean useLegacyParser) {
-    if (useLegacyParser) {
-      originalPath =
-          com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser.createPathFromPathData(
-              pathData);
-    } else {
-      originalPath = PathParser.doPath(pathData);
-    }
-    if (originalPath != null) originalPath.setFillType(fillType);
-
-    path = new Path(originalPath);
-  }
-
   public void updatePaint() {
     pathPaint.setStrokeWidth(strokeWidth * strokeRatio);
 
@@ -99,6 +86,19 @@ public class PathModel {
     pathPaint.setStrokeCap(strokeLineCap);
     pathPaint.setStrokeJoin(strokeLineJoin);
     pathPaint.setStrokeMiter(strokeMiterLimit);
+  }
+
+  public void buildPath(boolean useLegacyParser) {
+    if (useLegacyParser) {
+      originalPath =
+          com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser.createPathFromPathData(
+              pathData);
+    } else {
+      originalPath = PathParser.doPath(pathData);
+    }
+    if (originalPath != null) originalPath.setFillType(fillType);
+
+    path = new Path(originalPath);
   }
 
   public void makeStrokePaint() {

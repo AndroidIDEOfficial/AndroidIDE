@@ -63,6 +63,11 @@ import javax.tools.StandardLocation;
 
 /** Wraps string literals that exceed the column limit. */
 public final class StringWrapper {
+  public static final CharMatcher STRING_CONCAT_DELIMITER =
+      CharMatcher.whitespace().or(CharMatcher.anyOf("\"+"));
+
+  private StringWrapper() {}
+
   /** Reflows long string literals in the given Java source code. */
   public static String wrap(String input, Formatter formatter) throws FormatterException {
     return StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, input, formatter);
@@ -352,28 +357,12 @@ public final class StringWrapper {
         input.subSequence(getEndPosition(unit, one), getStartPosition(two)));
   }
 
-  public static final CharMatcher STRING_CONCAT_DELIMITER =
-      CharMatcher.whitespace().or(CharMatcher.anyOf("\"+"));
-
-  private static int getEndPosition(JCTree.JCCompilationUnit unit, Tree tree) {
-    return ((JCTree) tree).getEndPosition(unit.endPositions);
-  }
-
   private static int getStartPosition(Tree tree) {
     return ((JCTree) tree).getStartPosition();
   }
 
-  /** Returns true if any lines in the given Java source exceed the column limit. */
-  private static boolean longLines(int columnLimit, String input) {
-    // TODO(cushon): consider adding Newlines.lineIterable?
-    Iterator<String> it = Newlines.lineIterator(input);
-    while (it.hasNext()) {
-      String line = it.next();
-      if (line.length() > columnLimit) {
-        return true;
-      }
-    }
-    return false;
+  private static int getEndPosition(JCTree.JCCompilationUnit unit, Tree tree) {
+    return ((JCTree) tree).getEndPosition(unit.endPositions);
   }
 
   /** Parses the given Java source. */
@@ -414,6 +403,19 @@ public final class StringWrapper {
     return unit;
   }
 
+  /** Returns true if any lines in the given Java source exceed the column limit. */
+  private static boolean longLines(int columnLimit, String input) {
+    // TODO(cushon): consider adding Newlines.lineIterable?
+    Iterator<String> it = Newlines.lineIterator(input);
+    while (it.hasNext()) {
+      String line = it.next();
+      if (line.length() > columnLimit) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Applies replacements to the given string. */
   private static String applyReplacements(
       String javaInput, TreeRangeMap<Integer, String> replacementMap) throws FormatterException {
@@ -431,6 +433,4 @@ public final class StringWrapper {
     }
     return sb.toString();
   }
-
-  private StringWrapper() {}
 }

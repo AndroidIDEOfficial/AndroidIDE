@@ -34,12 +34,48 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.ILogger;
 
 public abstract class StudioActivity extends AppCompatActivity {
-  private boolean toRequestStorage = true;
-
   public static final String TAG = "StudioActivity";
   public static final int REQCODE_STORAGE = 1009;
-
   protected static ILogger LOG = ILogger.newInstance("StudioActivity");
+  private boolean toRequestStorage = true;
+
+  public void loadFrament(Fragment frag, View view) {
+    loadFragment(frag, view.getId());
+  }
+
+  public void loadFragment(Fragment fragment, int id) {
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    transaction.replace(id, fragment);
+    transaction.commit();
+  }
+
+  public StudioApp getApp() {
+    return (StudioApp) getApplication();
+  }
+
+  public int getColorPrimary() {
+    return getTypedValueForAttr(R.attr.colorPrimary).data;
+  }
+
+  public TypedValue getTypedValueForAttr(@AttrRes int attrRes) {
+    TypedValue typedValue = new TypedValue();
+    getTheme().resolveAttribute(attrRes, typedValue, true);
+    return typedValue;
+  }
+
+  public int getColorPrimaryDark() {
+    return getTypedValueForAttr(R.attr.colorPrimaryDark).data;
+  }
+
+  public int getColorAccent() {
+    return getTypedValueForAttr(R.attr.colorAccent).data;
+  }
+
+  public int dpToPx(int dp) {
+    return (int)
+        TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +101,6 @@ public abstract class StudioActivity extends AppCompatActivity {
             == PackageManager.PERMISSION_GRANTED;
   }
 
-  protected void doNotRequestStorage() {
-    this.toRequestStorage = false;
-  }
-
   protected void requestStorage() {
     if (isStoragePermissionGranted()) {
       onStorageGranted();
@@ -82,43 +114,7 @@ public abstract class StudioActivity extends AppCompatActivity {
         REQCODE_STORAGE);
   }
 
-  public void loadFrament(Fragment frag, View view) {
-    loadFragment(frag, view.getId());
-  }
-
-  public void loadFragment(Fragment fragment, int id) {
-    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-    transaction.replace(id, fragment);
-    transaction.commit();
-  }
-
-  public StudioApp getApp() {
-    return (StudioApp) getApplication();
-  }
-
-  public TypedValue getTypedValueForAttr(@AttrRes int attrRes) {
-    TypedValue typedValue = new TypedValue();
-    getTheme().resolveAttribute(attrRes, typedValue, true);
-    return typedValue;
-  }
-
-  public int getColorPrimary() {
-    return getTypedValueForAttr(R.attr.colorPrimary).data;
-  }
-
-  public int getColorPrimaryDark() {
-    return getTypedValueForAttr(R.attr.colorPrimaryDark).data;
-  }
-
-  public int getColorAccent() {
-    return getTypedValueForAttr(R.attr.colorAccent).data;
-  }
-
-  public int dpToPx(int dp) {
-    return (int)
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
-  }
+  protected void onStorageGranted() {}
 
   @Override
   public void onRequestPermissionsResult(
@@ -134,11 +130,13 @@ public abstract class StudioActivity extends AppCompatActivity {
 
   protected void onStorageAlreadyGranted() {}
 
-  protected void onStorageGranted() {}
-
   protected void onStorageDenied() {}
 
   protected void onSetContentView() {}
 
   protected abstract View bindLayout();
+
+  protected void doNotRequestStorage() {
+    this.toRequestStorage = false;
+  }
 }

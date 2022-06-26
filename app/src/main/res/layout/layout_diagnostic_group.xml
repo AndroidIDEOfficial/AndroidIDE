@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="Overdraw"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-    android:background="@color/content_background">
-    
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/content_background"
+    android:orientation="vertical"
+    tools:ignore="Overdraw">
+
     <include
         android:id="@+id/info"
-        layout="@layout/layout_diagnostic_item"/>
-    
+        layout="@layout/layout_diagnostic_item" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/diagnostics"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
+        android:paddingEnd="16dp" />
 
 </LinearLayout>
 

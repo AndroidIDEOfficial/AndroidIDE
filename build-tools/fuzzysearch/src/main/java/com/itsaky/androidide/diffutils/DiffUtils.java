@@ -29,6 +29,11 @@ import com.itsaky.androidide.diffutils.structs.OpCode;
  */
 public class DiffUtils {
 
+  public static MatchingBlock[] getMatchingBlocks(String s1, String s2) {
+
+    return getMatchingBlocks(s1.length(), s2.length(), getEditOps(s1, s2));
+  }
+
   public static EditOp[] getEditOps(String s1, String s2) {
     return getEditOps(s1.length(), s1, s2.length(), s2);
   }
@@ -221,76 +226,6 @@ public class DiffUtils {
     return ops;
   }
 
-  public static MatchingBlock[] getMatchingBlocks(String s1, String s2) {
-
-    return getMatchingBlocks(s1.length(), s2.length(), getEditOps(s1, s2));
-  }
-
-  public static MatchingBlock[] getMatchingBlocks(int len1, int len2, OpCode[] ops) {
-
-    int n = ops.length;
-
-    int noOfMB, i;
-    int o = 0;
-
-    noOfMB = 0;
-
-    for (i = n; i-- != 0; o++) {
-
-      if (ops[o].type == EditType.KEEP) {
-
-        noOfMB++;
-
-        while (i != 0 && ops[o].type == EditType.KEEP) {
-          i--;
-          o++;
-        }
-
-        if (i == 0) break;
-      }
-    }
-
-    MatchingBlock[] matchingBlocks = new MatchingBlock[noOfMB + 1];
-    int mb = 0;
-    o = 0;
-    matchingBlocks[mb] = new MatchingBlock();
-
-    for (i = n; i != 0; i--, o++) {
-
-      if (ops[o].type == EditType.KEEP) {
-
-        matchingBlocks[mb].spos = ops[o].sbeg;
-        matchingBlocks[mb].dpos = ops[o].dbeg;
-
-        while (i != 0 && ops[o].type == EditType.KEEP) {
-          i--;
-          o++;
-        }
-
-        if (i == 0) {
-          matchingBlocks[mb].length = len1 - matchingBlocks[mb].spos;
-          mb++;
-          break;
-        }
-
-        matchingBlocks[mb].length = ops[o].sbeg - matchingBlocks[mb].spos;
-        mb++;
-        matchingBlocks[mb] = new MatchingBlock();
-      }
-    }
-
-    assert mb == noOfMB;
-
-    MatchingBlock finalBlock = new MatchingBlock();
-    finalBlock.spos = len1;
-    finalBlock.dpos = len2;
-    finalBlock.length = 0;
-
-    matchingBlocks[mb] = finalBlock;
-
-    return matchingBlocks;
-  }
-
   private static MatchingBlock[] getMatchingBlocks(int len1, int len2, EditOp[] ops) {
 
     int n = ops.length;
@@ -437,152 +372,80 @@ public class DiffUtils {
     return matchingBlocks;
   }
 
-  private static OpCode[] editOpsToOpCodes(EditOp[] ops, int len1, int len2) {
+  public static MatchingBlock[] getMatchingBlocks(int len1, int len2, OpCode[] ops) {
 
     int n = ops.length;
-    int noOfBlocks, i, spos, dpos;
+
+    int noOfMB, i;
     int o = 0;
-    EditType type;
 
-    noOfBlocks = 0;
-    spos = dpos = 0;
+    noOfMB = 0;
 
-    for (i = n; i != 0; ) {
+    for (i = n; i-- != 0; o++) {
 
-      while (ops[o].type == EditType.KEEP && --i != 0) {
-        o++;
-      }
+      if (ops[o].type == EditType.KEEP) {
 
-      if (i == 0) break;
+        noOfMB++;
 
-      if (spos < ops[o].spos || dpos < ops[o].dpos) {
+        while (i != 0 && ops[o].type == EditType.KEEP) {
+          i--;
+          o++;
+        }
 
-        noOfBlocks++;
-        spos = ops[o].spos;
-        dpos = ops[o].dpos;
-      }
-
-      // TODO: Is this right?
-      noOfBlocks++;
-      type = ops[o].type;
-
-      switch (type) {
-        case REPLACE:
-          do {
-            spos++;
-            dpos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        case DELETE:
-          do {
-            spos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        case INSERT:
-          do {
-            dpos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        default:
-          break;
+        if (i == 0) break;
       }
     }
 
-    if (spos < len1 || dpos < len2) noOfBlocks++;
-
-    OpCode[] opCodes = new OpCode[noOfBlocks];
-
+    MatchingBlock[] matchingBlocks = new MatchingBlock[noOfMB + 1];
+    int mb = 0;
     o = 0;
-    spos = dpos = 0;
-    int oIndex = 0;
+    matchingBlocks[mb] = new MatchingBlock();
 
-    for (i = n; i != 0; ) {
+    for (i = n; i != 0; i--, o++) {
 
-      while (ops[o].type == EditType.KEEP && --i != 0) o++;
+      if (ops[o].type == EditType.KEEP) {
 
-      if (i == 0) break;
+        matchingBlocks[mb].spos = ops[o].sbeg;
+        matchingBlocks[mb].dpos = ops[o].dbeg;
 
-      OpCode oc = new OpCode();
-      opCodes[oIndex] = oc;
-      oc.sbeg = spos;
-      oc.dbeg = dpos;
+        while (i != 0 && ops[o].type == EditType.KEEP) {
+          i--;
+          o++;
+        }
 
-      if (spos < ops[o].spos || dpos < ops[o].dpos) {
+        if (i == 0) {
+          matchingBlocks[mb].length = len1 - matchingBlocks[mb].spos;
+          mb++;
+          break;
+        }
 
-        oc.type = EditType.KEEP;
-        spos = oc.send = ops[o].spos;
-        dpos = oc.dend = ops[o].dpos;
-
-        oIndex++;
-        OpCode oc2 = new OpCode();
-        opCodes[oIndex] = oc2;
-        oc2.sbeg = spos;
-        oc2.dbeg = dpos;
+        matchingBlocks[mb].length = ops[o].sbeg - matchingBlocks[mb].spos;
+        mb++;
+        matchingBlocks[mb] = new MatchingBlock();
       }
-
-      type = ops[o].type;
-
-      switch (type) {
-        case REPLACE:
-          do {
-            spos++;
-            dpos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        case DELETE:
-          do {
-            spos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        case INSERT:
-          do {
-            dpos++;
-            i--;
-            o++;
-          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
-          break;
-
-        default:
-          break;
-      }
-
-      opCodes[oIndex].type = type;
-      opCodes[oIndex].send = spos;
-      opCodes[oIndex].dend = dpos;
-      oIndex++;
     }
 
-    if (spos < len1 || dpos < len2) {
+    assert mb == noOfMB;
 
-      assert len1 - spos == len2 - dpos;
-      if (opCodes[oIndex] == null) opCodes[oIndex] = new OpCode();
-      opCodes[oIndex].type = EditType.KEEP;
-      opCodes[oIndex].sbeg = spos;
-      opCodes[oIndex].dbeg = dpos;
-      opCodes[oIndex].send = len1;
-      opCodes[oIndex].dend = len2;
+    MatchingBlock finalBlock = new MatchingBlock();
+    finalBlock.spos = len1;
+    finalBlock.dpos = len2;
+    finalBlock.length = 0;
 
-      oIndex++;
-    }
+    matchingBlocks[mb] = finalBlock;
 
-    assert oIndex == noOfBlocks;
+    return matchingBlocks;
+  }
 
-    return opCodes;
+  public static double getRatio(String s1, String s2) {
+
+    int len1 = s1.length();
+    int len2 = s2.length();
+    int lensum = len1 + len2;
+
+    int editDistance = levEditDistance(s1, s2, 1);
+
+    return (lensum - editDistance) / (double) lensum;
   }
 
   public static int levEditDistance(String s1, String s2, int xcost) {
@@ -768,14 +631,151 @@ public class DiffUtils {
     return 0;
   }
 
-  public static double getRatio(String s1, String s2) {
+  private static OpCode[] editOpsToOpCodes(EditOp[] ops, int len1, int len2) {
 
-    int len1 = s1.length();
-    int len2 = s2.length();
-    int lensum = len1 + len2;
+    int n = ops.length;
+    int noOfBlocks, i, spos, dpos;
+    int o = 0;
+    EditType type;
 
-    int editDistance = levEditDistance(s1, s2, 1);
+    noOfBlocks = 0;
+    spos = dpos = 0;
 
-    return (lensum - editDistance) / (double) lensum;
+    for (i = n; i != 0; ) {
+
+      while (ops[o].type == EditType.KEEP && --i != 0) {
+        o++;
+      }
+
+      if (i == 0) break;
+
+      if (spos < ops[o].spos || dpos < ops[o].dpos) {
+
+        noOfBlocks++;
+        spos = ops[o].spos;
+        dpos = ops[o].dpos;
+      }
+
+      // TODO: Is this right?
+      noOfBlocks++;
+      type = ops[o].type;
+
+      switch (type) {
+        case REPLACE:
+          do {
+            spos++;
+            dpos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        case DELETE:
+          do {
+            spos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        case INSERT:
+          do {
+            dpos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (spos < len1 || dpos < len2) noOfBlocks++;
+
+    OpCode[] opCodes = new OpCode[noOfBlocks];
+
+    o = 0;
+    spos = dpos = 0;
+    int oIndex = 0;
+
+    for (i = n; i != 0; ) {
+
+      while (ops[o].type == EditType.KEEP && --i != 0) o++;
+
+      if (i == 0) break;
+
+      OpCode oc = new OpCode();
+      opCodes[oIndex] = oc;
+      oc.sbeg = spos;
+      oc.dbeg = dpos;
+
+      if (spos < ops[o].spos || dpos < ops[o].dpos) {
+
+        oc.type = EditType.KEEP;
+        spos = oc.send = ops[o].spos;
+        dpos = oc.dend = ops[o].dpos;
+
+        oIndex++;
+        OpCode oc2 = new OpCode();
+        opCodes[oIndex] = oc2;
+        oc2.sbeg = spos;
+        oc2.dbeg = dpos;
+      }
+
+      type = ops[o].type;
+
+      switch (type) {
+        case REPLACE:
+          do {
+            spos++;
+            dpos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        case DELETE:
+          do {
+            spos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        case INSERT:
+          do {
+            dpos++;
+            i--;
+            o++;
+          } while (i != 0 && ops[o].type == type && spos == ops[o].spos && dpos == ops[o].dpos);
+          break;
+
+        default:
+          break;
+      }
+
+      opCodes[oIndex].type = type;
+      opCodes[oIndex].send = spos;
+      opCodes[oIndex].dend = dpos;
+      oIndex++;
+    }
+
+    if (spos < len1 || dpos < len2) {
+
+      assert len1 - spos == len2 - dpos;
+      if (opCodes[oIndex] == null) opCodes[oIndex] = new OpCode();
+      opCodes[oIndex].type = EditType.KEEP;
+      opCodes[oIndex].sbeg = spos;
+      opCodes[oIndex].dbeg = dpos;
+      opCodes[oIndex].send = len1;
+      opCodes[oIndex].dend = len2;
+
+      oIndex++;
+    }
+
+    assert oIndex == noOfBlocks;
+
+    return opCodes;
   }
 }

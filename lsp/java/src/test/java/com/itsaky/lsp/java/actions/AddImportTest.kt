@@ -30,29 +30,29 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE)
 class AddImportTest : BaseJavaTest() {
 
-    @Suppress("UNCHECKED_CAST")
-    @Test
-    fun testAddImport() {
-        openFile("AddImportAction")
+  @Suppress("UNCHECKED_CAST")
+  @Test
+  fun testAddImport() {
+    openFile("AddImportAction")
 
-        val diagnostic =
-            mServer.analyze(file!!).first { it.code == "compiler.err.cant.resolve.location" }
-        val file = this.file!!.toFile()
-        val data = createActionData(diagnostic, file, this.file!!, this.mServer)
+    val diagnostic =
+      mServer.analyze(file!!).first { it.code == "compiler.err.cant.resolve.location" }
+    val file = this.file!!.toFile()
+    val data = createActionData(diagnostic, file, this.file!!, this.mServer)
 
-        val action = AddImportAction()
-        action.prepare(data)
-        assertThat(action.visible).isTrue()
-        assertThat(action.enabled).isTrue()
+    val action = AddImportAction()
+    action.prepare(data)
+    assertThat(action.visible).isTrue()
+    assertThat(action.enabled).isTrue()
 
-        val execResult = action.execAction(data)
-        assertThat(execResult::class.java).isAssignableTo(Pair::class.java)
+    val execResult = action.execAction(data)
+    assertThat(execResult::class.java).isAssignableTo(Pair::class.java)
 
-        val result = execResult as Pair<List<String>, *>
-        assertThat(result.first).contains("java.util.stream.Stream")
-    }
+    val result = execResult as Pair<List<String>, *>
+    assertThat(result.first).contains("java.util.stream.Stream")
+  }
 
-    override fun openFile(fileName: String) {
-        super.openFile("actions/$fileName")
-    }
+  override fun openFile(fileName: String) {
+    super.openFile("actions/$fileName")
+  }
 }

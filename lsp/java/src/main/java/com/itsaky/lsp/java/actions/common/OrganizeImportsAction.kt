@@ -12,49 +12,49 @@ import com.itsaky.lsp.java.models.JavaServerSettings
 import io.github.rosemoe.sora.widget.CodeEditor
 
 class OrganizeImportsAction : BaseCodeAction() {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    override val id: String = "lsp_java_organizeImports"
-    override var label: String = ""
-    override val titleTextRes: Int = string.action_organize_imports
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  override val id: String = "lsp_java_organizeImports"
+  override var label: String = ""
+  override val titleTextRes: Int = string.action_organize_imports
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
-        if (!visible) {
-            return
-        }
-
-        if (!hasRequiredData(data, CodeEditor::class.java)) {
-            markInvisible()
-            return
-        }
-
-        visible = true
-        enabled = true
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
+    if (!visible) {
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val watch = StopWatch("Organize imports")
-        return try {
-            val editor = requireEditor(data)
-            val content = editor.text
-            val server = data[JavaLanguageServer::class.java]
-            val settings = server!!.settings as JavaServerSettings
-            val output = ImportOrderer.reorderImports(content.toString(), settings.style)
-            watch.log()
-            output
-        } catch (e: FormatterException) {
-            log.error("Failed to reorder imports", e)
-            false
-        }
+    if (!hasRequiredData(data, CodeEditor::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun postExec(data: ActionData, result: Any) {
-        super.postExec(data, result)
-        if (result is String) {
-            if (result.isNotEmpty()) {
-                val editor = requireEditor(data)
-                editor.setText(result)
-            }
-        }
+    visible = true
+    enabled = true
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val watch = StopWatch("Organize imports")
+    return try {
+      val editor = requireEditor(data)
+      val content = editor.text
+      val server = data[JavaLanguageServer::class.java]
+      val settings = server!!.settings as JavaServerSettings
+      val output = ImportOrderer.reorderImports(content.toString(), settings.style)
+      watch.log()
+      output
+    } catch (e: FormatterException) {
+      log.error("Failed to reorder imports", e)
+      false
     }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    super.postExec(data, result)
+    if (result is String) {
+      if (result.isNotEmpty()) {
+        val editor = requireEditor(data)
+        editor.setText(result)
+      }
+    }
+  }
 }

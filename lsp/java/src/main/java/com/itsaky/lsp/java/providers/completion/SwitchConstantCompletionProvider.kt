@@ -38,64 +38,64 @@ import javax.lang.model.type.DeclaredType
  * @author Akash Yadav
  */
 class SwitchConstantCompletionProvider(
-    completingFile: Path,
-    cursor: Long,
-    compiler: CompilerProvider,
-    settings: IServerSettings,
+  completingFile: Path,
+  cursor: Long,
+  compiler: CompilerProvider,
+  settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun doComplete(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean,
-    ): CompletionResult {
-        val switchTree = path.leaf as SwitchTree
-        val exprPath = TreePath(path, switchTree.expression)
-        val type = Trees.instance(task.task).getTypeMirror(exprPath)
+  override fun doComplete(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean,
+  ): CompletionResult {
+    val switchTree = path.leaf as SwitchTree
+    val exprPath = TreePath(path, switchTree.expression)
+    val type = Trees.instance(task.task).getTypeMirror(exprPath)
 
-        if (type.kind.isPrimitive || type !is DeclaredType) {
-            // primitive types do not have any members
-            return completeIdentifier(task, exprPath, partial, endsWithParen)
-        }
-
-        val element = type.asElement() as TypeElement
-
-        if (element.kind != ENUM) {
-            // If the switch's expression is not an enum type
-            // we will not get any constants to complete
-            // In this case, we fall back to completing identifiers
-            // At this point, we are sure that the case expression will definitely be an identifier
-            // tree
-            // see visitCase (CaseTree, Long) in FindCompletionsAt.java
-            return completeIdentifier(task, exprPath, partial, endsWithParen)
-        }
-
-        log.info("...complete constants of type $type")
-
-        val list: MutableList<CompletionItem> = ArrayList()
-        for (member in task.task.elements.getAllMembers(element)) {
-            if (member.kind != ENUM_CONSTANT) {
-                continue
-            }
-
-            val matchLevel = matchLevel(member.simpleName, partial)
-            if (matchLevel == NO_MATCH) {
-                continue
-            }
-
-            list.add(item(task, member, matchLevel))
-        }
-
-        return CompletionResult(list)
+    if (type.kind.isPrimitive || type !is DeclaredType) {
+      // primitive types do not have any members
+      return completeIdentifier(task, exprPath, partial, endsWithParen)
     }
 
-    private fun completeIdentifier(
-        task: CompileTask,
-        path: TreePath,
-        partial: String,
-        endsWithParen: Boolean
-    ) =
-        IdentifierCompletionProvider(completingFile, cursor, compiler, settings)
-            .complete(task, path, partial, endsWithParen)
+    val element = type.asElement() as TypeElement
+
+    if (element.kind != ENUM) {
+      // If the switch's expression is not an enum type
+      // we will not get any constants to complete
+      // In this case, we fall back to completing identifiers
+      // At this point, we are sure that the case expression will definitely be an identifier
+      // tree
+      // see visitCase (CaseTree, Long) in FindCompletionsAt.java
+      return completeIdentifier(task, exprPath, partial, endsWithParen)
+    }
+
+    log.info("...complete constants of type $type")
+
+    val list: MutableList<CompletionItem> = ArrayList()
+    for (member in task.task.elements.getAllMembers(element)) {
+      if (member.kind != ENUM_CONSTANT) {
+        continue
+      }
+
+      val matchLevel = matchLevel(member.simpleName, partial)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+
+      list.add(item(task, member, matchLevel))
+    }
+
+    return CompletionResult(list)
+  }
+
+  private fun completeIdentifier(
+    task: CompileTask,
+    path: TreePath,
+    partial: String,
+    endsWithParen: Boolean
+  ) =
+    IdentifierCompletionProvider(completingFile, cursor, compiler, settings)
+      .complete(task, path, partial, endsWithParen)
 }

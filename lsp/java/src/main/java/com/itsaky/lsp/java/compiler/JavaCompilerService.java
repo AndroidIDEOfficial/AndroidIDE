@@ -76,6 +76,198 @@ public class JavaCompilerService implements CompilerProvider {
     this.fileManager = new SourceFileManager();
   }
 
+  @Override
+  public Set<String> imports() {
+    HashSet<String> all = new HashSet<>();
+    for (Path f : FileStore.all()) {
+      all.addAll(readImports(f));
+    }
+    return all;
+  }
+
+  private List<String> readImports(Path file) {
+    if (cacheFileImports.needs(file, null)) {
+      loadImports(file);
+    }
+    return cacheFileImports.get(file, null);
+  }
+
+  private void loadImports(Path file) {
+    List<String> list = new ArrayList<>();
+    Pattern importClass = Pattern.compile("^import +([\\w\\.]+\\.\\w+);");
+    Pattern importStar = Pattern.compile("^import +([\\w\\.]+\\.\\*);");
+    try (BufferedReader lines = FileStore.lines(file)) {
+      for (String line = lines.readLine(); line != null; line = lines.readLine()) {
+        // If we reach a class declaration, stop looking for imports
+        // TODO This could be a little more specific
+        if (line.contains("class")) {
+          break;
+        }
+        // import foo.bar.Doh;
+        Matcher matchesClass = importClass.matcher(line);
+        if (matchesClass.matches()) {
+          list.add(matchesClass.group(1));
+        }
+        // import foo.bar.*
+        Matcher matchesStar = importStar.matcher(line);
+        if (matchesStar.matches()) {
+          list.add(matchesStar.group(1));
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    cacheFileImports.load(file, null, list);
+  }
+
+  @Override
+  public List<String> publicTopLevelTypes() {
+    List<String> all = new ArrayList<>();
+    for (Path file : FileStore.all()) {
+      String fileName = file.getFileName().toString();
+      if (!fileName.endsWith(".java")) {
+        continue;
+      }
+      String className = fileName.substring(0, fileName.length() - ".java".length());
+      String packageName = FileStore.packageName(file);
+      if (!packageName.isEmpty()) {
+        className = packageName + "." + className;
+      }
+      all.add(className);
+    }
+    all.addAll(classPathClasses);
+    all.addAll(jdkClasses);
+    return all;
+  }
+
+  @Override
+  public List<String> packagePrivateTopLevelTypes(String packageName) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Iterable<Path> search(String query) {
+    Predicate<Path> test = f -> StringSearch.containsWordMatching(f, query);
+    return () -> FileStore.all().stream().filter(test).iterator();
+  }
+
+  @Override
+  public Optional<JavaFileObject> findAnywhere(String className) {
+    Path fromSource = findTypeDeclaration(className);
+    if (fromSource != NOT_FOUND) {
+      return Optional.of(new SourceFileObject(fromSource));
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Path findTypeDeclaration(String className) {
+    Path fastFind = findPublicTypeDeclaration(className);
+    if (fastFind != NOT_FOUND) {
+      return fastFind;
+    }
+    // In principle, the slow path can be skipped in many cases.
+    // If we're spending a lot of time in findTypeDeclaration, this would be a good
+    // optimization.
+    String packageName = Extractors.packageName(className);
+    String simpleName = Extractors.simpleName(className);
+    for (Path f : FileStore.list(packageName)) {
+      if (containsWord(f, simpleName) && containsType(f, className)) {
+        return f;
+      }
+    }
+    return NOT_FOUND;
+  }
+
+  @Override
+  public Path[] findTypeReferences(String className) {
+    String packageName = Extractors.packageName(className);
+    String simpleName = Extractors.simpleName(className);
+    List<Path> candidates = new ArrayList<>();
+    for (Path f : FileStore.all()) {
+      if (containsWord(f, packageName)
+          && containsImport(f, className)
+          && containsWord(f, simpleName)) {
+        candidates.add(f);
+      }
+    }
+
+    return candidates.toArray(new Path[0]);
+  }
+
+  private boolean containsWord(Path file, String word) {
+    if (cacheContainsWord.needs(file, word)) {
+      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
+    }
+    return cacheContainsWord.get(file, word);
+  }
+
+  private boolean containsImport(Path file, String className) {
+    String packageName = Extractors.packageName(className);
+    if (FileStore.packageName(file).equals(packageName)) {
+      return true;
+    }
+    String star = packageName + ".*";
+    for (String i : readImports(file)) {
+      if (i.equals(className) || i.equals(star)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public Path[] findMemberReferences(String className, String memberName) {
+    List<Path> candidates = new ArrayList<>();
+    for (Path f : FileStore.all()) {
+      if (containsWord(f, memberName)) {
+        candidates.add(f);
+      }
+    }
+    return candidates.toArray(new Path[0]);
+  }
+
+  @Override
+  public ParseTask parse(Path file) {
+    Parser parser = Parser.parseFile(file);
+    return new ParseTask(parser.task, parser.root);
+  }
+
+  @Override
+  public ParseTask parse(JavaFileObject file) {
+    Parser parser = Parser.parseJavaFileObject(file);
+    return new ParseTask(parser.task, parser.root);
+  }
+
+  @Override
+  public SynchronizedTask compile(Path... files) {
+    List<JavaFileObject> sources = new ArrayList<>();
+    for (Path f : files) {
+      sources.add(new SourceFileObject(f));
+    }
+    return compile(sources);
+  }
+
+  @Override
+  public SynchronizedTask compile(Collection<? extends JavaFileObject> sources) {
+    return compileBatch(sources);
+  }
+
+  private SynchronizedTask compileBatch(Collection<? extends JavaFileObject> sources) {
+    synchronizedTask.doCompile(
+        () -> {
+          if (needsCompile(sources)) {
+            loadCompile(sources);
+          } else {
+            LOG.info("...using cached compile");
+          }
+          final CompileTask task = new CompileTask(cachedCompile, diagnostics);
+          synchronizedTask.setTask(task);
+        });
+
+    return synchronizedTask;
+  }
+
   private boolean needsCompile(Collection<? extends JavaFileObject> sources) {
 
     if (cachedModified.size() != sources.size()) {
@@ -133,26 +325,13 @@ public class JavaCompilerService implements CompilerProvider {
     return new CompileBatch(this, moreSources);
   }
 
-  private SynchronizedTask compileBatch(Collection<? extends JavaFileObject> sources) {
-    synchronizedTask.doCompile(
-        () -> {
-          if (needsCompile(sources)) {
-            loadCompile(sources);
-          } else {
-            LOG.info("...using cached compile");
-          }
-          final CompileTask task = new CompileTask(cachedCompile, diagnostics);
-          synchronizedTask.setTask(task);
-        });
-
-    return synchronizedTask;
-  }
-
-  private boolean containsWord(Path file, String word) {
-    if (cacheContainsWord.needs(file, word)) {
-      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
+  public synchronized void close() {
+    if (cachedCompile != null && !cachedCompile.closed) {
+      cachedCompile.close();
+      if (!cachedCompile.borrow.closed) {
+        cachedCompile.borrow.close();
+      }
     }
-    return cacheContainsWord.get(file, word);
   }
 
   private boolean containsType(Path file, String className) {
@@ -163,123 +342,6 @@ public class JavaCompilerService implements CompilerProvider {
       cacheContainsType.load(file, null, types);
     }
     return cacheContainsType.get(file, null).contains(className);
-  }
-
-  private List<String> readImports(Path file) {
-    if (cacheFileImports.needs(file, null)) {
-      loadImports(file);
-    }
-    return cacheFileImports.get(file, null);
-  }
-
-  private void loadImports(Path file) {
-    List<String> list = new ArrayList<>();
-    Pattern importClass = Pattern.compile("^import +([\\w\\.]+\\.\\w+);");
-    Pattern importStar = Pattern.compile("^import +([\\w\\.]+\\.\\*);");
-    try (BufferedReader lines = FileStore.lines(file)) {
-      for (String line = lines.readLine(); line != null; line = lines.readLine()) {
-        // If we reach a class declaration, stop looking for imports
-        // TODO This could be a little more specific
-        if (line.contains("class")) {
-          break;
-        }
-        // import foo.bar.Doh;
-        Matcher matchesClass = importClass.matcher(line);
-        if (matchesClass.matches()) {
-          list.add(matchesClass.group(1));
-        }
-        // import foo.bar.*
-        Matcher matchesStar = importStar.matcher(line);
-        if (matchesStar.matches()) {
-          list.add(matchesStar.group(1));
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    cacheFileImports.load(file, null, list);
-  }
-
-  @Override
-  public Set<String> imports() {
-    HashSet<String> all = new HashSet<>();
-    for (Path f : FileStore.all()) {
-      all.addAll(readImports(f));
-    }
-    return all;
-  }
-
-  @Override
-  public List<String> publicTopLevelTypes() {
-    List<String> all = new ArrayList<>();
-    for (Path file : FileStore.all()) {
-      String fileName = file.getFileName().toString();
-      if (!fileName.endsWith(".java")) {
-        continue;
-      }
-      String className = fileName.substring(0, fileName.length() - ".java".length());
-      String packageName = FileStore.packageName(file);
-      if (!packageName.isEmpty()) {
-        className = packageName + "." + className;
-      }
-      all.add(className);
-    }
-    all.addAll(classPathClasses);
-    all.addAll(jdkClasses);
-    return all;
-  }
-
-  @Override
-  public List<String> packagePrivateTopLevelTypes(String packageName) {
-    return Collections.emptyList();
-  }
-
-  private boolean containsImport(Path file, String className) {
-    String packageName = Extractors.packageName(className);
-    if (FileStore.packageName(file).equals(packageName)) {
-      return true;
-    }
-    String star = packageName + ".*";
-    for (String i : readImports(file)) {
-      if (i.equals(className) || i.equals(star)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public Iterable<Path> search(String query) {
-    Predicate<Path> test = f -> StringSearch.containsWordMatching(f, query);
-    return () -> FileStore.all().stream().filter(test).iterator();
-  }
-
-  @Override
-  public Optional<JavaFileObject> findAnywhere(String className) {
-    Path fromSource = findTypeDeclaration(className);
-    if (fromSource != NOT_FOUND) {
-      return Optional.of(new SourceFileObject(fromSource));
-    }
-    return Optional.empty();
-  }
-
-  @Override
-  public Path findTypeDeclaration(String className) {
-    Path fastFind = findPublicTypeDeclaration(className);
-    if (fastFind != NOT_FOUND) {
-      return fastFind;
-    }
-    // In principle, the slow path can be skipped in many cases.
-    // If we're spending a lot of time in findTypeDeclaration, this would be a good
-    // optimization.
-    String packageName = Extractors.packageName(className);
-    String simpleName = Extractors.simpleName(className);
-    for (Path f : FileStore.list(packageName)) {
-      if (containsWord(f, simpleName) && containsType(f, className)) {
-        return f;
-      }
-    }
-    return NOT_FOUND;
   }
 
   private Path findPublicTypeDeclaration(String className) {
@@ -302,67 +364,5 @@ public class JavaCompilerService implements CompilerProvider {
       return NOT_FOUND;
     }
     return file;
-  }
-
-  @Override
-  public Path[] findTypeReferences(String className) {
-    String packageName = Extractors.packageName(className);
-    String simpleName = Extractors.simpleName(className);
-    List<Path> candidates = new ArrayList<>();
-    for (Path f : FileStore.all()) {
-      if (containsWord(f, packageName)
-          && containsImport(f, className)
-          && containsWord(f, simpleName)) {
-        candidates.add(f);
-      }
-    }
-
-    return candidates.toArray(new Path[0]);
-  }
-
-  @Override
-  public Path[] findMemberReferences(String className, String memberName) {
-    List<Path> candidates = new ArrayList<>();
-    for (Path f : FileStore.all()) {
-      if (containsWord(f, memberName)) {
-        candidates.add(f);
-      }
-    }
-    return candidates.toArray(new Path[0]);
-  }
-
-  @Override
-  public ParseTask parse(Path file) {
-    Parser parser = Parser.parseFile(file);
-    return new ParseTask(parser.task, parser.root);
-  }
-
-  @Override
-  public ParseTask parse(JavaFileObject file) {
-    Parser parser = Parser.parseJavaFileObject(file);
-    return new ParseTask(parser.task, parser.root);
-  }
-
-  @Override
-  public SynchronizedTask compile(Path... files) {
-    List<JavaFileObject> sources = new ArrayList<>();
-    for (Path f : files) {
-      sources.add(new SourceFileObject(f));
-    }
-    return compile(sources);
-  }
-
-  @Override
-  public SynchronizedTask compile(Collection<? extends JavaFileObject> sources) {
-    return compileBatch(sources);
-  }
-
-  public synchronized void close() {
-    if (cachedCompile != null && !cachedCompile.closed) {
-      cachedCompile.close();
-      if (!cachedCompile.borrow.closed) {
-        cachedCompile.borrow.close();
-      }
-    }
   }
 }

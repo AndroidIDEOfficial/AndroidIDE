@@ -26,88 +26,88 @@ import android.graphics.drawable.Drawable
  */
 interface ActionItem {
 
-    val id: String
-    var label: String
-    var visible: Boolean
-    var enabled: Boolean
-    var icon: Drawable?
-    var requiresUIThread: Boolean
-    var location: Location
+  val id: String
+  var label: String
+  var visible: Boolean
+  var enabled: Boolean
+  var icon: Drawable?
+  var requiresUIThread: Boolean
+  var location: Location
 
-    /**
-     * Prepare the action. Subclasses can modify the visual properties of this action here.
-     * @param data The data containing various information about the event.
-     */
-    fun prepare(data: ActionData)
+  /**
+   * Prepare the action. Subclasses can modify the visual properties of this action here.
+   * @param data The data containing various information about the event.
+   */
+  fun prepare(data: ActionData)
 
-    /**
-     * Execute the action. The action executed in a background thread by default.
-     *
-     * @param data The data containing various information about the event.
-     * @return `true` if this action was executed successfully, `false` otherwise.
-     */
-    fun execAction(data: ActionData): Any
+  /**
+   * Execute the action. The action executed in a background thread by default.
+   *
+   * @param data The data containing various information about the event.
+   * @return `true` if this action was executed successfully, `false` otherwise.
+   */
+  fun execAction(data: ActionData): Any
 
-    /**
-     * Called just after the [execAction] method executes **successfully** (i.e. returns `true`).
-     * Subclasses are free to do UI related work here as this method is called on UI thread.
-     *
-     * @param data The data containing various information about the event.
-     */
-    fun postExec(data: ActionData, result: Any) = Unit
+  /**
+   * Called just after the [execAction] method executes **successfully** (i.e. returns `true`).
+   * Subclasses are free to do UI related work here as this method is called on UI thread.
+   *
+   * @param data The data containing various information about the event.
+   */
+  fun postExec(data: ActionData, result: Any) = Unit
 
-    /**
-     * Return the show as action flags for the menu item.
-     *
-     * @return The show as action flags.
-     */
-    fun getShowAsActionFlags(data: ActionData): Int = -1
+  /**
+   * Return the show as action flags for the menu item.
+   *
+   * @return The show as action flags.
+   */
+  fun getShowAsActionFlags(data: ActionData): Int = -1
 
-    /**
-     * Checks if the given [ActionData] has instances of the given [types].
-     *
-     * @param data The data to check.
-     * @param types The type of objects to look for.
-     * @return `true` if the [data] has the given [types], `false` otherwise.
-     */
-    fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
-        for (type in types) {
-            data.get(type) ?: return false
-        }
-
-        return true
+  /**
+   * Checks if the given [ActionData] has instances of the given [types].
+   *
+   * @param data The data to check.
+   * @param types The type of objects to look for.
+   * @return `true` if the [data] has the given [types], `false` otherwise.
+   */
+  fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
+    for (type in types) {
+      data.get(type) ?: return false
     }
 
-    /** Marks this action item as invisible. */
-    fun markInvisible() {
-        visible = false
-        enabled = false
+    return true
+  }
+
+  /** Marks this action item as invisible. */
+  fun markInvisible() {
+    visible = false
+    enabled = false
+  }
+
+  /** Location where an action item will be shown. */
+  enum class Location(val id: String) {
+
+    /** Location marker for action items shown in editor activity's toolbar. */
+    EDITOR_TOOLBAR("editor.activity.toolbar"),
+
+    /** Location marker for action items shown in editor's text action menu. */
+    EDITOR_TEXT_ACTIONS("editor.textActions"),
+
+    /**
+     * Location marker for action items shown in 'Code actions' submenu in editor's text action
+     * menu.
+     */
+    EDITOR_CODE_ACTIONS("editor.codeActions"),
+
+    /** Location marker for action items show in 'Find & Replace' action mode menu in editor. */
+    EDITOR_SEARCH_ACTION_MODE("editor.searchActionMode");
+
+    override fun toString(): String {
+      return id
     }
 
-    /** Location where an action item will be shown. */
-    enum class Location(val id: String) {
-
-        /** Location marker for action items shown in editor activity's toolbar. */
-        EDITOR_TOOLBAR("editor.activity.toolbar"),
-
-        /** Location marker for action items shown in editor's text action menu. */
-        EDITOR_TEXT_ACTIONS("editor.textActions"),
-
-        /**
-         * Location marker for action items shown in 'Code actions' submenu in editor's text action
-         * menu.
-         */
-        EDITOR_CODE_ACTIONS("editor.codeActions"),
-
-        /** Location marker for action items show in 'Find & Replace' action mode menu in editor. */
-        EDITOR_SEARCH_ACTION_MODE("editor.searchActionMode");
-
-        override fun toString(): String {
-            return id
-        }
-
-        fun forId(id: String): Location {
-            return values().first { it.id == id }
-        }
+    fun forId(id: String): Location {
+      return values().first { it.id == id }
     }
+  }
 }

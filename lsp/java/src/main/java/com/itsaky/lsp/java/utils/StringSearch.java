@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.utils;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
-import com.itsaky.lsp.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -52,9 +51,14 @@ import javax.lang.model.element.TypeElement;
 // https://www.cs.utexas.edu/~moore/publications/fstrpos.pdf (note: this aged
 // document uses 1-based indexing)
 public class StringSearch {
+  private static final ByteBuffer SEARCH_BUFFER = ByteBuffer.allocateDirect(1024 * 1024);
+  private static final ThreadLocal<char[]> SKIP_CHAR_BUFFER =
+      ThreadLocal.withInitial(StringSearch::charArray);
+  private static final ILogger LOG = ILogger.newInstance("StringSearch");
+  private static Cache<String, Boolean> cacheContainsClass = new Cache<>();
+  private static Cache<String, Boolean> cacheContainsInterface = new Cache<>();
   // pattern is the string that we are searching for in the text.
   private final byte[] pattern;
-
   // badCharSkip[b] contains the distance between the last byte of pattern
   // and the rightmost occurrence of b in pattern. If b is not in pattern,
   // badCharSkip[b] is len(pattern).
@@ -64,7 +68,6 @@ public class StringSearch {
   // the matching char could be in alignment.
   // TODO 256 is not coloring
   private final int[] badCharSkip = new int[256];
-
   // goodSuffixSkip[i] defines how far we can shift the matching frame given
   // that the suffix pattern[i+1:] matches, but the byte pattern[i] does
   // not. There are two cases to consider:
@@ -125,80 +128,6 @@ public class StringSearch {
     }
   }
 
-  int next(String text) {
-    return next(text.getBytes());
-  }
-
-  private int next(byte[] text) {
-    return next(ByteBuffer.wrap(text));
-  }
-
-  private int next(ByteBuffer text) {
-    return next(text, 0);
-  }
-
-  private int next(ByteBuffer text, int startingAfter) {
-    int i = startingAfter + pattern.length - 1;
-    while (i < text.limit()) {
-      // Compare backwards from the end until the first unmatching character.
-      int j = pattern.length - 1;
-      while (j >= 0 && text.get(i) == pattern[j]) {
-        i--;
-        j--;
-      }
-      if (j < 0) {
-        return i + 1; // match
-      }
-      i += Math.max(badCharSkip[text.get(i) + 128], goodSuffixSkip[j]);
-    }
-    return -1;
-  }
-
-  private boolean isWordChar(byte b) {
-    char c = (char) (b + 128);
-    return Character.isAlphabetic(c) || Character.isDigit(c) || c == '$' || c == '_';
-  }
-
-  private boolean startsWord(ByteBuffer text, int offset) {
-    if (offset == 0) {
-      return true;
-    }
-    return !isWordChar(text.get(offset - 1));
-  }
-
-  private boolean endsWord(ByteBuffer text, int offset) {
-    if (offset + 1 >= text.limit()) {
-      return true;
-    }
-    return !isWordChar(text.get(offset + 1));
-  }
-
-  private boolean isWord(ByteBuffer text, int offset) {
-    return startsWord(text, offset) && endsWord(text, offset + pattern.length - 1);
-  }
-
-  private int nextWord(String text) {
-    return nextWord(text.getBytes());
-  }
-
-  private int nextWord(byte[] text) {
-    return nextWord(ByteBuffer.wrap(text));
-  }
-
-  private int nextWord(ByteBuffer text) {
-    int i = 0;
-    while (true) {
-      i = next(text, i);
-      if (i == -1) {
-        return -1;
-      }
-      if (isWord(text, i)) {
-        return i;
-      }
-      i++;
-    }
-  }
-
   private boolean hasPrefix(byte[] s, Slice prefix) {
     for (int i = 0; i < prefix.length(); i++) {
       if (s[i] != prefix.get(i)) {
@@ -218,32 +147,6 @@ public class StringSearch {
     return i;
   }
 
-  private static class Slice {
-    private final byte[] target;
-    private final int from;
-    private final int until;
-
-    int length() {
-      return until - from;
-    }
-
-    byte get(int i) {
-      return target[from + i];
-    }
-
-    Slice(byte[] target, int from) {
-      this(target, from, target.length);
-    }
-
-    Slice(byte[] target, int from, int until) {
-      this.target = target;
-      this.from = from;
-      this.until = until;
-    }
-  }
-
-  private static final ByteBuffer SEARCH_BUFFER = ByteBuffer.allocateDirect(1024 * 1024);
-
   // TODO cache the progress made by searching shorter queries
   public static boolean containsWordMatching(Path java, String query) {
     if (FileStore.activeDocuments().contains(java)) {
@@ -259,62 +162,6 @@ public class StringSearch {
       SEARCH_BUFFER.position(0);
       CharBuffer chars = StandardCharsets.UTF_8.decode(SEARCH_BUFFER);
       return matchesTitleCase(chars, query);
-    } catch (NoSuchFileException e) {
-      LOG.warn(e.getMessage());
-      return false;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public static boolean containsWord(Path java, String query) {
-    StringSearch search = new StringSearch(query);
-    if (FileStore.activeDocuments().contains(java)) {
-      byte[] text = new byte[0];
-      try {
-        text =
-            toByteArray(new CharSequenceReader(FileStore.contents(java)), Charset.defaultCharset());
-      } catch (IOException e) {
-        LOG.error(e);
-      }
-      return search.nextWord(text) != -1;
-    }
-    try (FileChannel channel = FileChannel.open(java)) {
-      // Read up to 1 MB of data from file
-      int limit = Math.min((int) channel.size(), SEARCH_BUFFER.capacity());
-      SEARCH_BUFFER.position(0);
-      SEARCH_BUFFER.limit(limit);
-      channel.read(SEARCH_BUFFER);
-      SEARCH_BUFFER.position(0);
-      return search.nextWord(SEARCH_BUFFER) != -1;
-    } catch (NoSuchFileException e) {
-      LOG.warn(e.getMessage());
-      return false;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private static boolean containsString(Path java, String query) {
-    StringSearch search = new StringSearch(query);
-    if (FileStore.activeDocuments().contains(java)) {
-      byte[] text = new byte[0];
-      try {
-        text =
-            toByteArray(new CharSequenceReader(FileStore.contents(java)), Charset.defaultCharset());
-      } catch (IOException e) {
-        LOG.error(e);
-      }
-      return search.next(text) != -1;
-    }
-    try (FileChannel channel = FileChannel.open(java)) {
-      // Read up to 1 MB of data from file
-      int limit = Math.min((int) channel.size(), SEARCH_BUFFER.capacity());
-      SEARCH_BUFFER.position(0);
-      SEARCH_BUFFER.limit(limit);
-      channel.read(SEARCH_BUFFER);
-      SEARCH_BUFFER.position(0);
-      return search.next(SEARCH_BUFFER) != -1;
     } catch (NoSuchFileException e) {
       LOG.warn(e.getMessage());
       return false;
@@ -386,6 +233,34 @@ public class StringSearch {
     return Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c == '$';
   }
 
+  public static boolean containsWord(Path java, String query) {
+    StringSearch search = new StringSearch(query);
+    if (FileStore.activeDocuments().contains(java)) {
+      byte[] text = new byte[0];
+      try {
+        text =
+            toByteArray(new CharSequenceReader(FileStore.contents(java)), Charset.defaultCharset());
+      } catch (IOException e) {
+        LOG.error(e);
+      }
+      return search.nextWord(text) != -1;
+    }
+    try (FileChannel channel = FileChannel.open(java)) {
+      // Read up to 1 MB of data from file
+      int limit = Math.min((int) channel.size(), SEARCH_BUFFER.capacity());
+      SEARCH_BUFFER.position(0);
+      SEARCH_BUFFER.limit(limit);
+      channel.read(SEARCH_BUFFER);
+      SEARCH_BUFFER.position(0);
+      return search.nextWord(SEARCH_BUFFER) != -1;
+    } catch (NoSuchFileException e) {
+      LOG.warn(e.getMessage());
+      return false;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public static boolean containsType(Path file, TypeElement el) {
     switch (el.getKind()) {
       case INTERFACE:
@@ -395,27 +270,6 @@ public class StringSearch {
       default:
         throw new RuntimeException("Don't know what to do with " + el.getKind());
     }
-  }
-
-  private static Cache<String, Boolean> cacheContainsClass = new Cache<>();
-
-  private static boolean containsClass(Path file, String simpleName) {
-    if (cacheContainsClass.needs(file, simpleName)) {
-      cacheContainsClass.load(file, simpleName, containsString(file, "class " + simpleName));
-      // TODO verify this by actually parsing the file
-    }
-    return cacheContainsClass.get(file, simpleName);
-  }
-
-  private static Cache<String, Boolean> cacheContainsInterface = new Cache<>();
-
-  private static boolean containsInterface(Path file, String simpleName) {
-    if (cacheContainsInterface.needs(file, simpleName)) {
-      cacheContainsInterface.load(
-          file, simpleName, containsString(file, "interface " + simpleName));
-      // TODO verify this by actually parsing the file
-    }
-    return cacheContainsInterface.get(file, simpleName);
   }
 
   // TODO this doesn't work for inner classes, eliminate
@@ -479,10 +333,6 @@ public class StringSearch {
     writer.flush();
   }
 
-  static Charset toCharset(final Charset charset) {
-    return charset == null ? Charset.defaultCharset() : charset;
-  }
-
   public static int copy(final Reader reader, final Writer writer) throws IOException {
     final long count = copyLarge(reader, writer, SKIP_CHAR_BUFFER.get());
     if (count > Integer.MAX_VALUE) {
@@ -502,11 +352,154 @@ public class StringSearch {
     return count;
   }
 
+  private static boolean containsString(Path java, String query) {
+    StringSearch search = new StringSearch(query);
+    if (FileStore.activeDocuments().contains(java)) {
+      byte[] text = new byte[0];
+      try {
+        text =
+            toByteArray(new CharSequenceReader(FileStore.contents(java)), Charset.defaultCharset());
+      } catch (IOException e) {
+        LOG.error(e);
+      }
+      return search.next(text) != -1;
+    }
+    try (FileChannel channel = FileChannel.open(java)) {
+      // Read up to 1 MB of data from file
+      int limit = Math.min((int) channel.size(), SEARCH_BUFFER.capacity());
+      SEARCH_BUFFER.position(0);
+      SEARCH_BUFFER.limit(limit);
+      channel.read(SEARCH_BUFFER);
+      SEARCH_BUFFER.position(0);
+      return search.next(SEARCH_BUFFER) != -1;
+    } catch (NoSuchFileException e) {
+      LOG.warn(e.getMessage());
+      return false;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static boolean containsClass(Path file, String simpleName) {
+    if (cacheContainsClass.needs(file, simpleName)) {
+      cacheContainsClass.load(file, simpleName, containsString(file, "class " + simpleName));
+      // TODO verify this by actually parsing the file
+    }
+    return cacheContainsClass.get(file, simpleName);
+  }
+
+  private static boolean containsInterface(Path file, String simpleName) {
+    if (cacheContainsInterface.needs(file, simpleName)) {
+      cacheContainsInterface.load(
+          file, simpleName, containsString(file, "interface " + simpleName));
+      // TODO verify this by actually parsing the file
+    }
+    return cacheContainsInterface.get(file, simpleName);
+  }
+
   private static char[] charArray() {
     return new char[8192];
   }
 
-  private static final ThreadLocal<char[]> SKIP_CHAR_BUFFER =
-      ThreadLocal.withInitial(StringSearch::charArray);
-  private static final ILogger LOG = ILogger.newInstance("StringSearch");
+  static Charset toCharset(final Charset charset) {
+    return charset == null ? Charset.defaultCharset() : charset;
+  }
+
+  private int nextWord(String text) {
+    return nextWord(text.getBytes());
+  }
+
+  private int nextWord(byte[] text) {
+    return nextWord(ByteBuffer.wrap(text));
+  }
+
+  private int nextWord(ByteBuffer text) {
+    int i = 0;
+    while (true) {
+      i = next(text, i);
+      if (i == -1) {
+        return -1;
+      }
+      if (isWord(text, i)) {
+        return i;
+      }
+      i++;
+    }
+  }
+
+  private boolean isWord(ByteBuffer text, int offset) {
+    return startsWord(text, offset) && endsWord(text, offset + pattern.length - 1);
+  }
+
+  private boolean startsWord(ByteBuffer text, int offset) {
+    if (offset == 0) {
+      return true;
+    }
+    return !isWordChar(text.get(offset - 1));
+  }
+
+  private boolean isWordChar(byte b) {
+    char c = (char) (b + 128);
+    return Character.isAlphabetic(c) || Character.isDigit(c) || c == '$' || c == '_';
+  }
+
+  private boolean endsWord(ByteBuffer text, int offset) {
+    if (offset + 1 >= text.limit()) {
+      return true;
+    }
+    return !isWordChar(text.get(offset + 1));
+  }
+
+  int next(String text) {
+    return next(text.getBytes());
+  }
+
+  private int next(byte[] text) {
+    return next(ByteBuffer.wrap(text));
+  }
+
+  private int next(ByteBuffer text) {
+    return next(text, 0);
+  }
+
+  private int next(ByteBuffer text, int startingAfter) {
+    int i = startingAfter + pattern.length - 1;
+    while (i < text.limit()) {
+      // Compare backwards from the end until the first unmatching character.
+      int j = pattern.length - 1;
+      while (j >= 0 && text.get(i) == pattern[j]) {
+        i--;
+        j--;
+      }
+      if (j < 0) {
+        return i + 1; // match
+      }
+      i += Math.max(badCharSkip[text.get(i) + 128], goodSuffixSkip[j]);
+    }
+    return -1;
+  }
+
+  private static class Slice {
+    private final byte[] target;
+    private final int from;
+    private final int until;
+
+    Slice(byte[] target, int from) {
+      this(target, from, target.length);
+    }
+
+    Slice(byte[] target, int from, int until) {
+      this.target = target;
+      this.from = from;
+      this.until = until;
+    }
+
+    int length() {
+      return until - from;
+    }
+
+    byte get(int i) {
+      return target[from + i];
+    }
+  }
 }

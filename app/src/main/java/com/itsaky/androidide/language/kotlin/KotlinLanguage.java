@@ -22,15 +22,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.language.IDELanguage;
-
+import com.itsaky.androidide.lexers.kotlin.KotlinLexer;
+import com.itsaky.androidide.lexers.kotlin.KotlinParser;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
-import com.itsaky.androidide.lexers.kotlin.KotlinLexer;
-import com.itsaky.androidide.lexers.kotlin.KotlinParser;
 
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -45,40 +44,11 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 public class KotlinLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("KotlinLanguage");
-  private KotlinAnalyzer analyzer;
   private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private KotlinAnalyzer analyzer;
 
   public KotlinLanguage() {
     analyzer = new KotlinAnalyzer();
-  }
-
-  @Override
-  public int getIndentAdvance(@NonNull String line) {
-    try {
-      KotlinLexer lexer = new KotlinLexer(CharStreams.fromReader(new StringReader(line)));
-      Token token;
-      int advance = 0;
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        switch (token.getType()) {
-          case KotlinParser.LCURL:
-            advance++;
-            break;
-          case KotlinParser.RCURL:
-            advance--;
-            break;
-        }
-      }
-      advance = Math.max(0, advance);
-      return advance * getTabSize();
-    } catch (Throwable e) {
-      LOG.error("Error calculating indent advance", e);
-    }
-    return 0;
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new KotlinSymbolPairs();
   }
 
   @NonNull
@@ -109,8 +79,8 @@ public class KotlinLanguage extends IDELanguage {
   }
 
   @Override
-  public CharSequence format(CharSequence content) {
-    return content;
+  public SymbolPairMatch getSymbolPairs() {
+    return new KotlinSymbolPairs();
   }
 
   @Override
@@ -121,6 +91,35 @@ public class KotlinLanguage extends IDELanguage {
   @Override
   public void destroy() {
     analyzer = null;
+  }
+
+  @Override
+  public CharSequence format(CharSequence content) {
+    return content;
+  }
+
+  @Override
+  public int getIndentAdvance(@NonNull String line) {
+    try {
+      KotlinLexer lexer = new KotlinLexer(CharStreams.fromReader(new StringReader(line)));
+      Token token;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case KotlinParser.LCURL:
+            advance++;
+            break;
+          case KotlinParser.RCURL:
+            advance--;
+            break;
+        }
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Error calculating indent advance", e);
+    }
+    return 0;
   }
 
   private static class KotlinSymbolPairs extends SymbolPairMatch {

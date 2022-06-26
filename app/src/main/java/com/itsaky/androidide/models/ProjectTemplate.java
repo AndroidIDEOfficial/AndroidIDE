@@ -42,17 +42,21 @@ public class ProjectTemplate {
     this.imageId = imageId;
   }
 
+  public int getId() {
+    return id;
+  }
+
   public ProjectTemplate setId(int id) {
     this.id = id;
     return this;
   }
 
-  public int getId() {
-    return id;
-  }
-
   public ProjectTemplate setName(Context ctx, @StringRes int name) {
     return setName(ctx.getString(name));
+  }
+
+  public String getName() {
+    return name;
   }
 
   public ProjectTemplate setName(String name) {
@@ -60,12 +64,12 @@ public class ProjectTemplate {
     return this;
   }
 
-  public String getName() {
-    return name;
-  }
-
   public ProjectTemplate setDescription(Context ctx, @StringRes int desc) {
     return setDescription(ctx.getString(desc));
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public ProjectTemplate setDescription(String description) {
@@ -73,17 +77,13 @@ public class ProjectTemplate {
     return this;
   }
 
-  public String getDescription() {
-    return description;
+  public int getImageId() {
+    return imageId;
   }
 
   public ProjectTemplate setImageId(@DrawableRes int imageId) {
     this.imageId = imageId;
     return this;
-  }
-
-  public int getImageId() {
-    return imageId;
   }
 
   public boolean isSupportJava() {

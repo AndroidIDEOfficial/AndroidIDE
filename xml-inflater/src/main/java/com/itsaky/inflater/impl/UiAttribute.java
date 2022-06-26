@@ -36,6 +36,21 @@ public class UiAttribute implements IAttribute {
     this.value = value;
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(getNamespace(), name, getValue());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UiAttribute that = (UiAttribute) o;
+    return Objects.equals(getNamespace(), that.getNamespace())
+        && Objects.equals(name, that.name)
+        && Objects.equals(getValue(), that.getValue());
+  }
+
   @NonNull
   @Override
   public INamespace getNamespace() {
@@ -74,20 +89,5 @@ public class UiAttribute implements IAttribute {
         + value
         + "\n"
         + "]";
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    UiAttribute that = (UiAttribute) o;
-    return Objects.equals(getNamespace(), that.getNamespace())
-        && Objects.equals(name, that.name)
-        && Objects.equals(getValue(), that.getValue());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getNamespace(), name, getValue());
   }
 }

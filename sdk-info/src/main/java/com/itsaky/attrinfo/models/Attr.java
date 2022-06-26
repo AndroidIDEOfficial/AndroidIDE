@@ -199,23 +199,9 @@ public class Attr implements Parcelable {
     return (this.format & format) != 0;
   }
 
-  @NonNull
   @Override
-  public String toString() {
-    return "Attr ["
-        + "  name: "
-        + name
-        + "\n"
-        + "  namespace: "
-        + namespace
-        + "\n"
-        + "  values: "
-        + TextUtils.join(", ", this.possibleValues)
-        + "\n"
-        + "  format: "
-        + format
-        + "\n"
-        + "]";
+  public int hashCode() {
+    return Objects.hash(namespace, name, possibleValues, format);
   }
 
   @Override
@@ -235,9 +221,23 @@ public class Attr implements Parcelable {
         && Objects.equals(possibleValues, attr.possibleValues);
   }
 
+  @NonNull
   @Override
-  public int hashCode() {
-    return Objects.hash(namespace, name, possibleValues, format);
+  public String toString() {
+    return "Attr ["
+        + "  name: "
+        + name
+        + "\n"
+        + "  namespace: "
+        + namespace
+        + "\n"
+        + "  values: "
+        + TextUtils.join(", ", this.possibleValues)
+        + "\n"
+        + "  format: "
+        + format
+        + "\n"
+        + "]";
   }
 
   @Override

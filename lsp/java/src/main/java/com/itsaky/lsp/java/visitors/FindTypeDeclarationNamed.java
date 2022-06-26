@@ -29,6 +29,12 @@ public class FindTypeDeclarationNamed extends TreeScanner<ClassTree, String> {
   private List<CharSequence> qualifiedName = new ArrayList<>();
 
   @Override
+  public ClassTree reduce(ClassTree a, ClassTree b) {
+    if (a != null) return a;
+    return b;
+  }
+
+  @Override
   public ClassTree visitCompilationUnit(CompilationUnitTree t, String find) {
     String name = Objects.toString(t.getPackageName(), "");
     qualifiedName.add(name);
@@ -44,11 +50,5 @@ public class FindTypeDeclarationNamed extends TreeScanner<ClassTree, String> {
     ClassTree recurse = super.visitClass(t, find);
     qualifiedName.remove(qualifiedName.size() - 1);
     return recurse;
-  }
-
-  @Override
-  public ClassTree reduce(ClassTree a, ClassTree b) {
-    if (a != null) return a;
-    return b;
   }
 }

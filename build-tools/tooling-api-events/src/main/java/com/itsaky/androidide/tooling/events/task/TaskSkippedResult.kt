@@ -19,4 +19,4 @@ package com.itsaky.androidide.tooling.events.task
 
 /** @author Akash Yadav */
 class TaskSkippedResult(val skipMessage: String, startTime: Long, endTime: Long) :
-    TaskOperationResult(startTime, endTime)
+  TaskOperationResult(startTime, endTime)

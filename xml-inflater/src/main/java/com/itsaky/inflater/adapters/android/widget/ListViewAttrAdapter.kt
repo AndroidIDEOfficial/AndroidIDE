@@ -27,39 +27,39 @@ import com.itsaky.inflater.IResourceTable
 
 /** @author Akash Yadav */
 class ListViewAttrAdapter(resourceTable: IResourceTable, displayMetrics: DisplayMetrics) :
-    AbsListViewAttrAdapter(resourceTable, displayMetrics) {
+  AbsListViewAttrAdapter(resourceTable, displayMetrics) {
 
-    override fun isApplicableTo(view: View?): Boolean {
-        return view is ListView
+  override fun isApplicableTo(view: View?): Boolean {
+    return view is ListView
+  }
+
+  override fun apply(attribute: IAttribute, view: View): Boolean {
+    val list = view as ListView
+    val value = attribute.value
+    val context = list.context
+
+    if (!canHandleNamespace(attribute)) {
+      return false
     }
 
-    override fun apply(attribute: IAttribute, view: View): Boolean {
-        val list = view as ListView
-        val value = attribute.value
-        val context = list.context
+    var handled = true
 
-        if (!canHandleNamespace(attribute)) {
-            return false
-        }
-
-        var handled = true
-
-        when (attribute.attributeName) {
-            "divider" -> list.divider = parseDrawable(value, context)
-            "dividerHeight" ->
-                list.dividerHeight = parseDimension(value, SizeUtils.dp2px(1f), displayMetrics)
-            "entries" -> {
-                val entries = parseArray(value)
-                list.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, entries)
-            }
-            "footerDividersEnabled" -> list.setFooterDividersEnabled(parseBoolean(value))
-            "headerDividersEnabled" -> list.setHeaderDividersEnabled(parseBoolean(value))
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view)
-        }
-
-        return handled
+    when (attribute.attributeName) {
+      "divider" -> list.divider = parseDrawable(value, context)
+      "dividerHeight" ->
+        list.dividerHeight = parseDimension(value, SizeUtils.dp2px(1f), displayMetrics)
+      "entries" -> {
+        val entries = parseArray(value)
+        list.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, entries)
+      }
+      "footerDividersEnabled" -> list.setFooterDividersEnabled(parseBoolean(value))
+      "headerDividersEnabled" -> list.setHeaderDividersEnabled(parseBoolean(value))
     }
+
+    if (!handled) {
+      handled = super.apply(attribute, view)
+    }
+
+    return handled
+  }
 }

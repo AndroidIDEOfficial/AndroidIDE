@@ -40,7 +40,7 @@ import com.sun.source.tree.MethodTree
 import com.sun.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.*
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.*
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -55,264 +55,267 @@ import javax.tools.JavaFileObject
  * @author Akash Yadav
  */
 class OverrideSuperclassMethodsAction : BaseCodeAction() {
-    override val titleTextRes: Int = R.string.action_override_superclass_methods
-    override val id: String = "lsp_java_overrideSuperclassMethods"
-    override var label: String = ""
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    private var position: Long = -1
+  override val titleTextRes: Int = R.string.action_override_superclass_methods
+  override val id: String = "lsp_java_overrideSuperclassMethods"
+  override var label: String = ""
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  private var position: Long = -1
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+  override fun prepare(data: ActionData) {
+    super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
-            markInvisible()
-            return
-        }
-
-        visible = true
-        enabled = true
+    if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
+      markInvisible()
+      return
     }
 
-    override fun execAction(data: ActionData): Any {
-        val range = data[Range::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
+    visible = true
+    enabled = true
+  }
 
-        return server.compiler.compile(file).get { task ->
-            // 1-based line and column index
-            val startLine = range.start.line + 1
-            val startColumn = range.start.column + 1
-            val endLine = range.end.line + 1
-            val endColumn = range.end.column + 1
-            val lines = task.root().lineMap
-            val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
-            val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
+  override fun execAction(data: ActionData): Any {
+    val range = data[Range::class.java]!!
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
 
-            if (start == (-1).toLong() || end == (-1).toLong()) {
-                return@get false
-            }
+    return server.compiler.compile(file).get { task ->
+      // 1-based line and column index
+      val startLine = range.start.line + 1
+      val startColumn = range.start.column + 1
+      val endLine = range.end.line + 1
+      val endColumn = range.end.column + 1
+      val lines = task.root().lineMap
+      val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
+      val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
 
-            this.position = start
-            val typeFinder = FindTypeDeclarationAt(task.task)
-            var type = typeFinder.scan(task.root(file), start)
-            if (type == null) {
-                type = typeFinder.scan(task.root(file), end)
-                position = end
-            }
+      if (start == (-1).toLong() || end == (-1).toLong()) {
+        return@get false
+      }
 
-            if (type == null) {
-                return@get false
-            }
+      this.position = start
+      val typeFinder = FindTypeDeclarationAt(task.task)
+      var type = typeFinder.scan(task.root(file), start)
+      if (type == null) {
+        type = typeFinder.scan(task.root(file), end)
+        position = end
+      }
 
-            val overridable = mutableListOf<MethodPtr>()
-            val trees = Trees.instance(task.task)
-            val elements = task.task.elements
-            val classPath = typeFinder.path
-            val element = trees.getElement(classPath) as TypeElement
+      if (type == null) {
+        return@get false
+      }
 
-            for (member in elements.getAllMembers(element)) {
-                if (member.modifiers.contains(Modifier.FINAL) ||
-                    member.kind != ElementKind.METHOD) {
-                    continue
-                }
+      val overridable = mutableListOf<MethodPtr>()
+      val trees = Trees.instance(task.task)
+      val elements = task.task.elements
+      val classPath = typeFinder.path
+      val element = trees.getElement(classPath) as TypeElement
 
-                val method = member as ExecutableElement
-                val methodSource = member.getEnclosingElement() as TypeElement
-                if (methodSource.qualifiedName.contentEquals("java.lang.Object") ||
-                    methodSource == element) {
-                    continue
-                }
-
-                val pointer = MethodPtr(task.task, method)
-                overridable.add(pointer)
-            }
-
-            return@get overridable
+      for (member in elements.getAllMembers(element)) {
+        if (member.modifiers.contains(Modifier.FINAL) || member.kind != ElementKind.METHOD) {
+          continue
         }
+
+        val method = member as ExecutableElement
+        val methodSource = member.getEnclosingElement() as TypeElement
+        if (
+          methodSource.qualifiedName.contentEquals("java.lang.Object") || methodSource == element
+        ) {
+          continue
+        }
+
+        val pointer = MethodPtr(task.task, method)
+        overridable.add(pointer)
+      }
+
+      return@get overridable
+    }
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  override fun postExec(data: ActionData, result: Any) {
+    if (result !is List<*> || result.isEmpty() || position < 0) {
+      log.warn("Unable to find any overridable method")
+      BaseApplication.getBaseInstance()
+        .toast(
+          data[Context::class.java]!!.getString(R.string.msg_no_overridable_methods),
+          Toaster.Type.ERROR
+        )
+      return
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is List<*> || result.isEmpty() || position < 0) {
-            log.warn("Unable to find any overridable method")
-            BaseApplication.getBaseInstance()
-                .toast(
-                    data[Context::class.java]!!.getString(R.string.msg_no_overridable_methods),
-                    Toaster.Type.ERROR)
-            return
+    val methods = (result as List<MethodPtr>).sortedBy { it.methodName }
+    val checkedMethods = mutableListOf<MethodPtr>()
+    val names = mapMethodPointers(methods)
+    val builder = newDialogBuilder(data)
+    builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_methods))
+    builder.setMultiChoiceItems(names, BooleanArray(names.size)) { _, which, isChecked ->
+      checkedMethods.apply {
+        if (isChecked) {
+          add(methods[which])
+        } else {
+          remove(methods[which])
         }
-
-        val methods = (result as List<MethodPtr>).sortedBy { it.methodName }
-        val checkedMethods = mutableListOf<MethodPtr>()
-        val names = mapMethodPointers(methods)
-        val builder = newDialogBuilder(data)
-        builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_methods))
-        builder.setMultiChoiceItems(names, BooleanArray(names.size)) { _, which, isChecked ->
-            checkedMethods.apply {
-                if (isChecked) {
-                    add(methods[which])
-                } else {
-                    remove(methods[which])
-                }
-            }
-        }
-        builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
-            dialog.dismiss()
-
-            if (checkedMethods.isEmpty()) {
-                BaseApplication.getBaseInstance()
-                    .toast(
-                        data[Context::class.java]!!.getString(R.string.msg_no_methods_selected),
-                        Toaster.Type.ERROR)
-                return@setPositiveButton
-            }
-
-            CompletableFuture.runAsync { overrideMethods(data, checkedMethods) }.whenComplete {
-                _,
-                error,
-                ->
-                if (error != null) {
-                    log.error("An error occurred overriding methods")
-
-                    ThreadUtils.runOnUiThread {
-                        BaseApplication.getBaseInstance()
-                            .toast(
-                                data[Context::class.java]!!.getString(
-                                    R.string.msg_cannot_override_methods),
-                                Toaster.Type.ERROR)
-                    }
-                }
-            }
-        }
-        builder.setNegativeButton(android.R.string.cancel, null)
-        builder.show()
+      }
     }
-    
-    private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
+    builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
+      dialog.dismiss()
 
-        server.compiler.compile(file).run { task ->
-            val types = task.task.types
-            val trees = Trees.instance(task.task)
-            val sb = StringBuilder()
-            val imports = mutableSetOf<String>()
+      if (checkedMethods.isEmpty()) {
+        BaseApplication.getBaseInstance()
+          .toast(
+            data[Context::class.java]!!.getString(R.string.msg_no_methods_selected),
+            Toaster.Type.ERROR
+          )
+        return@setPositiveButton
+      }
 
-            val typeFinder = FindTypeDeclarationAt(task.task)
-            val classTree = typeFinder.scan(task.root(), position)
-            val thisClass = trees.getElement(typeFinder.path) as TypeElement
-            val indent = EditHelper.indent(task.task, task.root(), classTree) + 4
-            val fileImports =
-                task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
-            val filePackage = task.root(file).`package`.packageName.toString()
-
-            for (pointer in checkedMethods) {
-                val superMethod =
-                    FindHelper.findMethod(
-                        task, pointer.className, pointer.methodName, pointer.erasedParameterTypes)
-
-                val thisDeclaredType = thisClass.asType() as DeclaredType
-                val executableType =
-                    types.asMemberOf(thisDeclaredType, superMethod) as ExecutableType
-                val source = findSource(server.compiler, task, superMethod)
-                val method =
-                    if (source != null) {
-                        JavaParserUtils.printMethod(superMethod, executableType, source)
-                    } else {
-                        JavaParserUtils.printMethod(superMethod, executableType, superMethod)
-                    }
-                
-                val newImports = JavaParserUtils.collectImports(executableType)
-                sb.append("\n")
-                sb.append(method.toString())
-                sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
-                sb.append("\n")
-
-                newImports.removeIf {
-                    it.startsWith("java.lang.") ||
-                        it.startsWith(filePackage) ||
-                        fileImports.contains(it)
-                }
-
-                imports.addAll(newImports)
-            }
+      CompletableFuture.runAsync { overrideMethods(data, checkedMethods) }
+        .whenComplete { _, error,
+          ->
+          if (error != null) {
+            log.error("An error occurred overriding methods")
 
             ThreadUtils.runOnUiThread {
-                performEdits(
-                    data,
-                    sb,
-                    imports,
-                    EditHelper.insertAtEndOfClass(task.task, task.root(file), classTree))
+              BaseApplication.getBaseInstance()
+                .toast(
+                  data[Context::class.java]!!.getString(R.string.msg_cannot_override_methods),
+                  Toaster.Type.ERROR
+                )
             }
+          }
         }
     }
+    builder.setNegativeButton(android.R.string.cancel, null)
+    builder.show()
+  }
 
-    private fun performEdits(
-        data: ActionData,
-        sb: StringBuilder,
-        imports: MutableSet<String>,
-        position: Position,
-    ) {
-        val server = data[JavaLanguageServer::class.java]!!
-        val editor = data[CodeEditor::class.java]!!
-        val file = requirePath(data)
-        val text = editor.text
+  private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
+    val server = data[JavaLanguageServer::class.java]!!
+    val file = requirePath(data)
 
-        text.beginBatchEdit()
+    server.compiler.compile(file).run { task ->
+      val types = task.task.types
+      val trees = Trees.instance(task.task)
+      val sb = StringBuilder()
+      val imports = mutableSetOf<String>()
 
-        text.insert(position.line, position.column, sb)
+      val typeFinder = FindTypeDeclarationAt(task.task)
+      val classTree = typeFinder.scan(task.root(), position)
+      val thisClass = trees.getElement(typeFinder.path) as TypeElement
+      val indent = EditHelper.indent(task.task, task.root(), classTree) + 4
+      val fileImports = task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
+      val filePackage = task.root(file).`package`.packageName.toString()
 
-        for (name in imports) {
-            val rewrite = AddImport(file, name)
-            val edits = rewrite.rewrite(server.compiler)[file]
-            if (edits == null || edits.isEmpty()) {
-                continue
-            }
+      for (pointer in checkedMethods) {
+        val superMethod =
+          FindHelper.findMethod(
+            task,
+            pointer.className,
+            pointer.methodName,
+            pointer.erasedParameterTypes
+          )
 
-            for (edit in edits) {
-                if (edit.range.start == edit.range.end) {
-                    text.insert(edit.range.start.line, edit.range.start.column, edit.newText)
-                } else {
-                    text.replace(
-                        edit.range.start.line,
-                        edit.range.start.column,
-                        edit.range.end.line,
-                        edit.range.end.column,
-                        edit.newText)
-                }
-            }
+        val thisDeclaredType = thisClass.asType() as DeclaredType
+        val executableType = types.asMemberOf(thisDeclaredType, superMethod) as ExecutableType
+        val source = findSource(server.compiler, task, superMethod)
+        val method =
+          if (source != null) {
+            JavaParserUtils.printMethod(superMethod, executableType, source)
+          } else {
+            JavaParserUtils.printMethod(superMethod, executableType, superMethod)
+          }
+
+        val newImports = JavaParserUtils.collectImports(executableType)
+        sb.append("\n")
+        sb.append(method.toString())
+        sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
+        sb.append("\n")
+
+        newImports.removeIf {
+          it.startsWith("java.lang.") || it.startsWith(filePackage) || fileImports.contains(it)
         }
 
-        text.endBatchEdit()
-        editor.formatCodeAsync()
+        imports.addAll(newImports)
+      }
+
+      ThreadUtils.runOnUiThread {
+        performEdits(
+          data,
+          sb,
+          imports,
+          EditHelper.insertAtEndOfClass(task.task, task.root(file), classTree)
+        )
+      }
+    }
+  }
+
+  private fun performEdits(
+    data: ActionData,
+    sb: StringBuilder,
+    imports: MutableSet<String>,
+    position: Position,
+  ) {
+    val server = data[JavaLanguageServer::class.java]!!
+    val editor = data[CodeEditor::class.java]!!
+    val file = requirePath(data)
+    val text = editor.text
+
+    text.beginBatchEdit()
+
+    text.insert(position.line, position.column, sb)
+
+    for (name in imports) {
+      val rewrite = AddImport(file, name)
+      val edits = rewrite.rewrite(server.compiler)[file]
+      if (edits == null || edits.isEmpty()) {
+        continue
+      }
+
+      for (edit in edits) {
+        if (edit.range.start == edit.range.end) {
+          text.insert(edit.range.start.line, edit.range.start.column, edit.newText)
+        } else {
+          text.replace(
+            edit.range.start.line,
+            edit.range.start.column,
+            edit.range.end.line,
+            edit.range.end.column,
+            edit.newText
+          )
+        }
+      }
     }
 
-    private fun mapMethodPointers(methods: List<MethodPtr>): Array<CharSequence> {
-        return methods
-            .map { Arrays.toString(it.simplifiedErasedParameterTypes) }
-            .map {
-                val arr = it.toCharArray()
-                arr[0] = '('
-                arr[arr.size - 1] = ')'
+    text.endBatchEdit()
+    editor.formatCodeAsync()
+  }
 
-                String(arr)
-            }
-            .mapIndexed { index, params -> "${methods[index].methodName}$params" }
-            .toTypedArray()
-    }
+  private fun mapMethodPointers(methods: List<MethodPtr>): Array<CharSequence> {
+    return methods
+      .map { Arrays.toString(it.simplifiedErasedParameterTypes) }
+      .map {
+        val arr = it.toCharArray()
+        arr[0] = '('
+        arr[arr.size - 1] = ')'
 
-    private fun findSource(
-        compiler: CompilerProvider,
-        task: CompileTask,
-        method: ExecutableElement,
-    ): MethodTree? {
-        val superClass = method.enclosingElement as TypeElement
-        val superClassName = superClass.qualifiedName.toString()
-        val methodName = method.simpleName.toString()
-        val erasedParameterTypes = FindHelper.erasedParameterTypes(task, method)
-        val sourceFile: Optional<JavaFileObject> = compiler.findAnywhere(superClassName)
-        if (!sourceFile.isPresent) return null
-        val parse: ParseTask = compiler.parse(sourceFile.get())
-        return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes)
-    }
+        String(arr)
+      }
+      .mapIndexed { index, params -> "${methods[index].methodName}$params" }
+      .toTypedArray()
+  }
+
+  private fun findSource(
+    compiler: CompilerProvider,
+    task: CompileTask,
+    method: ExecutableElement,
+  ): MethodTree? {
+    val superClass = method.enclosingElement as TypeElement
+    val superClassName = superClass.qualifiedName.toString()
+    val methodName = method.simpleName.toString()
+    val erasedParameterTypes = FindHelper.erasedParameterTypes(task, method)
+    val sourceFile: Optional<JavaFileObject> = compiler.findAnywhere(superClassName)
+    if (!sourceFile.isPresent) return null
+    val parse: ParseTask = compiler.parse(sourceFile.get())
+    return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes)
+  }
 }

@@ -30,27 +30,6 @@ public class JavaCharacter {
   /** Compressed bit set for isJavaIdentifierPart() */
   private static int[] state_part;
 
-  /**
-   * Get bit in compressed bit set
-   *
-   * @param values Compressed bit set
-   * @param bitIndex Target index
-   * @return Boolean value at the index
-   */
-  private static boolean get(int[] values, int bitIndex) {
-    return ((values[bitIndex / 32] & (1 << (bitIndex % 32))) != 0);
-  }
-
-  /**
-   * Make the given position's bit true
-   *
-   * @param values Compressed bit set
-   * @param bitIndex Index of bit
-   */
-  private static void set(int[] values, int bitIndex) {
-    values[bitIndex / 32] |= (1 << (bitIndex % 32));
-  }
-
   /** Init maps */
   public static void initMap() {
     if (state_start != null) {
@@ -71,12 +50,33 @@ public class JavaCharacter {
   }
 
   /**
+   * Make the given position's bit true
+   *
+   * @param values Compressed bit set
+   * @param bitIndex Index of bit
+   */
+  private static void set(int[] values, int bitIndex) {
+    values[bitIndex / 32] |= (1 << (bitIndex % 32));
+  }
+
+  /**
    * @param key Character
    * @return Whether a identifier part
    * @see Character#isJavaIdentifierPart(char)
    */
   public static boolean isJavaIdentifierPart(int key) {
     return get(state_part, key);
+  }
+
+  /**
+   * Get bit in compressed bit set
+   *
+   * @param values Compressed bit set
+   * @param bitIndex Target index
+   * @return Boolean value at the index
+   */
+  private static boolean get(int[] values, int bitIndex) {
+    return ((values[bitIndex / 32] & (1 << (bitIndex % 32))) != 0);
   }
 
   /**

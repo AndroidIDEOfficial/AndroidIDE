@@ -53,13 +53,9 @@ public class SourceFileObject implements JavaFileObject {
     this.modified = modified;
   }
 
-  private static Kind kindFromExtension(String name) {
-    for (Kind candidate : Kind.values()) {
-      if (name.endsWith(candidate.extension)) {
-        return candidate;
-      }
-    }
-    return null;
+  @Override
+  public int hashCode() {
+    return this.path.hashCode();
   }
 
   @Override
@@ -70,14 +66,23 @@ public class SourceFileObject implements JavaFileObject {
   }
 
   @Override
-  public int hashCode() {
-    return this.path.hashCode();
+  public String toString() {
+    return path.toString();
   }
 
   @Override
   public Kind getKind() {
     String name = path.getFileName().toString();
     return kindFromExtension(name);
+  }
+
+  private static Kind kindFromExtension(String name) {
+    for (Kind candidate : Kind.values()) {
+      if (name.endsWith(candidate.extension)) {
+        return candidate;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -151,10 +156,5 @@ public class SourceFileObject implements JavaFileObject {
   @Override
   public boolean delete() {
     throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public String toString() {
-    return path.toString();
   }
 }

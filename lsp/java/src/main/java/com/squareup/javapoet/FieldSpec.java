@@ -48,20 +48,23 @@ public final class FieldSpec {
         (builder.initializer == null) ? CodeBlock.builder().build() : builder.initializer;
   }
 
+  public static Builder builder(Type type, String name, Modifier... modifiers) {
+    return builder(TypeName.get(type), name, modifiers);
+  }
+
+  public static Builder builder(TypeName type, String name, Modifier... modifiers) {
+    checkNotNull(type, "type == null");
+    checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
+    return new Builder(type, name).addModifiers(modifiers);
+  }
+
   public boolean hasModifier(Modifier modifier) {
     return modifiers.contains(modifier);
   }
 
-  void emit(CodeWriter codeWriter, Set<Modifier> implicitModifiers) throws IOException {
-    codeWriter.emitJavadoc(javadoc);
-    codeWriter.emitAnnotations(annotations, false);
-    codeWriter.emitModifiers(modifiers, implicitModifiers);
-    codeWriter.emit("$T $L", type, name);
-    if (!initializer.isEmpty()) {
-      codeWriter.emit(" = ");
-      codeWriter.emit(initializer);
-    }
-    codeWriter.emit(";\n");
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 
   @Override
@@ -70,11 +73,6 @@ public final class FieldSpec {
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
-  }
-
-  @Override
-  public int hashCode() {
-    return toString().hashCode();
   }
 
   @Override
@@ -89,14 +87,16 @@ public final class FieldSpec {
     }
   }
 
-  public static Builder builder(TypeName type, String name, Modifier... modifiers) {
-    checkNotNull(type, "type == null");
-    checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
-    return new Builder(type, name).addModifiers(modifiers);
-  }
-
-  public static Builder builder(Type type, String name, Modifier... modifiers) {
-    return builder(TypeName.get(type), name, modifiers);
+  void emit(CodeWriter codeWriter, Set<Modifier> implicitModifiers) throws IOException {
+    codeWriter.emitJavadoc(javadoc);
+    codeWriter.emitAnnotations(annotations, false);
+    codeWriter.emitModifiers(modifiers, implicitModifiers);
+    codeWriter.emit("$T $L", type, name);
+    if (!initializer.isEmpty()) {
+      codeWriter.emit(" = ");
+      codeWriter.emit(initializer);
+    }
+    codeWriter.emit(";\n");
   }
 
   public Builder toBuilder() {
@@ -109,14 +109,12 @@ public final class FieldSpec {
   }
 
   public static final class Builder {
-    private final TypeName type;
-    private final String name;
-
-    private final CodeBlock.Builder javadoc = CodeBlock.builder();
-    private CodeBlock initializer = null;
-
     public final List<AnnotationSpec> annotations = new ArrayList<>();
     public final List<Modifier> modifiers = new ArrayList<>();
+    private final TypeName type;
+    private final String name;
+    private final CodeBlock.Builder javadoc = CodeBlock.builder();
+    private CodeBlock initializer = null;
 
     private Builder(TypeName type, String name) {
       this.type = type;
@@ -146,13 +144,13 @@ public final class FieldSpec {
       return this;
     }
 
+    public Builder addAnnotation(Class<?> annotation) {
+      return addAnnotation(ClassName.get(annotation));
+    }
+
     public Builder addAnnotation(ClassName annotation) {
       this.annotations.add(AnnotationSpec.builder(annotation).build());
       return this;
-    }
-
-    public Builder addAnnotation(Class<?> annotation) {
-      return addAnnotation(ClassName.get(annotation));
     }
 
     public Builder addModifiers(Modifier... modifiers) {

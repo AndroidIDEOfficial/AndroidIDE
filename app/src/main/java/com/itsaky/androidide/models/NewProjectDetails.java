@@ -46,17 +46,12 @@ public class NewProjectDetails {
     this.savePath = savePath;
   }
 
-  public NewProjectDetails setName(String name) {
-    this.name = name;
-    return this;
-  }
-
   public String getName() {
     return name;
   }
 
-  public NewProjectDetails setPackageName(String packageName) {
-    this.packageName = packageName;
+  public NewProjectDetails setName(String name) {
+    this.name = name;
     return this;
   }
 
@@ -64,8 +59,8 @@ public class NewProjectDetails {
     return packageName;
   }
 
-  public NewProjectDetails setMinSdk(int minSdk) {
-    this.minSdk = minSdk;
+  public NewProjectDetails setPackageName(String packageName) {
+    this.packageName = packageName;
     return this;
   }
 
@@ -73,8 +68,8 @@ public class NewProjectDetails {
     return minSdk;
   }
 
-  public NewProjectDetails setTargetSdk(int targetSdk) {
-    this.targetSdk = targetSdk;
+  public NewProjectDetails setMinSdk(int minSdk) {
+    this.minSdk = minSdk;
     return this;
   }
 
@@ -82,12 +77,17 @@ public class NewProjectDetails {
     return targetSdk;
   }
 
-  public NewProjectDetails setCppFlags(String cppFlags) {
-    this.cppFlags = cppFlags;
+  public NewProjectDetails setTargetSdk(int targetSdk) {
+    this.targetSdk = targetSdk;
     return this;
   }
 
   public String getCppFlags() {
     return cppFlags;
+  }
+
+  public NewProjectDetails setCppFlags(String cppFlags) {
+    this.cppFlags = cppFlags;
+    return this;
   }
 }

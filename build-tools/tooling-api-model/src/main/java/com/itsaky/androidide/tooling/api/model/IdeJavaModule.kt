@@ -30,46 +30,45 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 open class IdeJavaModule(
-    name: String,
-    path: String,
-    description: String?,
-    projectDir: File,
-    buildDir: File,
-    buildScript: File,
-    parent: IdeGradleProject?,
-    tasks: List<IdeGradleTask>,
+  name: String,
+  path: String,
+  description: String?,
+  projectDir: File,
+  buildDir: File,
+  buildScript: File,
+  parent: IdeGradleProject?,
+  tasks: List<IdeGradleTask>,
 
-    /** * Source directories of this project. */
-    val contentRoots: List<JavaContentRoot>,
+  /** * Source directories of this project. */
+  val contentRoots: List<JavaContentRoot>,
 
-    /** Dependencies of this project. */
-    private val javaDependencies: List<JavaModuleDependency>
+  /** Dependencies of this project. */
+  private val javaDependencies: List<JavaModuleDependency>
 ) :
-    IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
-    IdeModule,
-    HasDependencies,
-    Serializable {
+  IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
+  IdeModule,
+  HasDependencies,
+  Serializable {
 
-    override fun getDependencies() = javaDependencies
+  override fun getDependencies() = javaDependencies
 
-    override fun getType(): CompletableFuture<Type> {
-        return CompletableFuture.completedFuture(Java)
+  override fun getType(): CompletableFuture<Type> {
+    return CompletableFuture.completedFuture(Java)
+  }
+
+  @Deprecated("Use getClasspath() instead.")
+  override fun getGeneratedJar(variant: String): File {
+    var jar = File(buildDir, "libs/$name.jar")
+    if (jar.exists()) {
+      return jar
     }
 
-    @Deprecated("Use getClasspath() instead.")
-    override fun getGeneratedJar(variant: String): File {
-        var jar = File(buildDir, "libs/$name.jar")
-        if (jar.exists()) {
-            return jar
-        }
+    jar =
+      File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
+        ?: File("i-do-not-exist.jar")
 
-        jar =
-            File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
-                ?: File("i-do-not-exist.jar")
+    return jar
+  }
 
-        return jar
-    }
-
-    @Suppress("DEPRECATION")
-    override fun getClassPaths(): Set<File> = setOf(getGeneratedJar("debug"))
+  @Suppress("DEPRECATION") override fun getClassPaths(): Set<File> = setOf(getGeneratedJar("debug"))
 }

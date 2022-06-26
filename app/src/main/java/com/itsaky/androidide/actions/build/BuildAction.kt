@@ -26,17 +26,17 @@ import com.itsaky.androidide.actions.BaseBuildAction
 /** @author Akash Yadav */
 class BuildAction() : BaseBuildAction() {
 
-    constructor(context: Context) : this() {
-        label = context.getString(R.string.build)
-        icon = ContextCompat.getDrawable(context, R.drawable.ic_run)
-    }
+  constructor(context: Context) : this() {
+    label = context.getString(R.string.build)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_run)
+  }
 
-    override val id: String = "editor_build"
+  override val id: String = "editor_build"
 
-    override fun execAction(data: ActionData): Boolean {
-        val activity = getActivity(data) ?: return false
+  override fun execAction(data: ActionData): Boolean {
+    val activity = getActivity(data) ?: return false
 
-        activity.build()
-        return true
-    }
+    activity.build()
+    return true
+  }
 }

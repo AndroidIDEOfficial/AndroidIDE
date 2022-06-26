@@ -11,8 +11,6 @@
  ******************************************************************************/
 package org.eclipse.lsp4j.jsonrpc.json.adapters;
 
-import java.io.IOException;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
@@ -21,8 +19,34 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import java.io.IOException;
+
 /** A type adapter that reads every input into a tree of {@link JsonElement}s. */
 public class JsonElementTypeAdapter extends TypeAdapter<Object> {
+
+  private final Gson gson;
+  private final TypeAdapter<JsonElement> adapter;
+  public JsonElementTypeAdapter(Gson gson) {
+    this.gson = gson;
+    this.adapter = gson.getAdapter(JsonElement.class);
+  }
+
+  @Override
+  public void write(JsonWriter out, Object value) throws IOException {
+    if (value == null) {
+      out.nullValue();
+    } else if (value instanceof JsonElement) {
+      adapter.write(out, (JsonElement) value);
+    } else {
+      gson.toJson(value, value.getClass(), out);
+      ;
+    }
+  }
+
+  @Override
+  public JsonElement read(JsonReader in) throws IOException {
+    return adapter.read(in);
+  }
 
   /**
    * This factory should not be registered with a GsonBuilder because it always matches. Use it as
@@ -35,31 +59,6 @@ public class JsonElementTypeAdapter extends TypeAdapter<Object> {
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
       return (TypeAdapter<T>) new JsonElementTypeAdapter(gson);
-    }
-  }
-
-  private final Gson gson;
-  private final TypeAdapter<JsonElement> adapter;
-
-  public JsonElementTypeAdapter(Gson gson) {
-    this.gson = gson;
-    this.adapter = gson.getAdapter(JsonElement.class);
-  }
-
-  @Override
-  public JsonElement read(JsonReader in) throws IOException {
-    return adapter.read(in);
-  }
-
-  @Override
-  public void write(JsonWriter out, Object value) throws IOException {
-    if (value == null) {
-      out.nullValue();
-    } else if (value instanceof JsonElement) {
-      adapter.write(out, (JsonElement) value);
-    } else {
-      gson.toJson(value, value.getClass(), out);
-      ;
     }
   }
 }
