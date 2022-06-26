@@ -39,6 +39,7 @@ import com.sun.tools.javac.main.Arguments;
 import com.sun.tools.javac.main.JavaCompiler;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.model.LazyTreeLoader;
+import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
@@ -59,8 +60,11 @@ import org.netbeans.lib.nbjavac.services.NBTreeMaker;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -139,7 +143,7 @@ public class ReusableCompiler {
     if (!opts.equals(currentOptions)) {
       currentOptions.clear();
       currentOptions.addAll(opts);
-      currentContext = new ReusableContext(new ArrayList<>(opts), cancelService);
+      currentContext = new ReusableContext(cancelService);
     }
     JavacTaskImpl task =
         (JavacTaskImpl)
@@ -181,16 +185,28 @@ public class ReusableCompiler {
     }
   }
 
-  static class ReusableContext extends Context implements TaskListener {
+  public static class ReusableContext extends Context implements TaskListener {
 
-    final List<String> arguments;
+    private final Set<URI> flowCompleted = new HashSet<>();
 
-    ReusableContext(List<String> arguments, final CancelService cancelService) {
+    ReusableContext(final CancelService cancelService) {
       super();
-      this.arguments = arguments;
       put(Log.logKey, ReusableLog.factory);
       put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
+      put(JavacFlowListener.flowListenerKey, this::hasFlowCompleted);
       registerNBServices(cancelService);
+    }
+
+    public boolean hasFlowCompleted(final JavaFileObject fo) {
+      if (fo == null) {
+        return false;
+      } else {
+        try {
+          return this.flowCompleted.contains(fo.toUri());
+        } catch (Exception e) {
+          return false;
+        }
+      }
     }
 
     private void registerNBServices(final CancelService cancelService) {
@@ -218,7 +234,12 @@ public class ReusableCompiler {
     @Override
     @DefinedBy(Api.COMPILER_TREE)
     public void finished(TaskEvent e) {
-      // do nothing
+      if (e.getKind() == TaskEvent.Kind.ANALYZE) {
+        JCTree.JCCompilationUnit cu = (JCTree.JCCompilationUnit) e.getCompilationUnit();
+        if (cu != null && cu.sourcefile != null) {
+          flowCompleted.add(cu.sourcefile.toUri());
+        }
+      }
     }
 
     void clear() {

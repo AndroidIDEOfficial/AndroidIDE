@@ -18,29 +18,49 @@
 package com.itsaky.lsp.java.partial
 
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.java.FileStore
+import com.itsaky.lsp.java.compiler.JavacFlowListener
 import com.itsaky.lsp.java.visitors.FindAnonymousVisitor
 import com.itsaky.lsp.java.visitors.FindMethodAt
 import com.itsaky.lsp.java.visitors.TranslatePositionsVisitor
 import com.itsaky.lsp.java.visitors.UnEnter
+import com.sun.source.tree.BlockTree
+import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree.Kind.BLOCK
 import com.sun.source.tree.Tree.Kind.METHOD
 import com.sun.source.util.TreePath
+import com.sun.tools.javac.api.JavacScope
 import com.sun.tools.javac.api.JavacTrees
+import com.sun.tools.javac.code.Flags
+import com.sun.tools.javac.code.Symbol
+import com.sun.tools.javac.code.Symtab
+import com.sun.tools.javac.comp.Attr
+import com.sun.tools.javac.comp.AttrContext
 import com.sun.tools.javac.comp.Enter
+import com.sun.tools.javac.comp.Env
+import com.sun.tools.javac.comp.Flow
+import com.sun.tools.javac.comp.TypeEnter
 import com.sun.tools.javac.parser.JavacParser
 import com.sun.tools.javac.parser.LazyDocCommentTable
 import com.sun.tools.javac.parser.ScannerFactory
 import com.sun.tools.javac.tree.EndPosTable
 import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.JCTree.JCBlock
+import com.sun.tools.javac.tree.JCTree.JCClassDecl
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl
+import com.sun.tools.javac.tree.TreeInfo
+import com.sun.tools.javac.tree.TreeMaker
 import com.sun.tools.javac.util.Context
+import com.sun.tools.javac.util.List
+import com.sun.tools.javac.util.Log
+import com.sun.tools.javac.util.Names
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.nio.CharBuffer
+import java.nio.file.Paths
 import java.util.*
 import org.netbeans.lib.nbjavac.services.CancelService
 import org.netbeans.lib.nbjavac.services.NBLog
@@ -97,6 +117,12 @@ class PartialReparserImpl : PartialReparser {
   }
 
   override fun parseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean {
+
+    if (!allowPartialReparse) {
+      log.debug("Partial reparse is disabled")
+      return false
+    }
+
     val cu = ci.cu
     val fo = cu.sourceFile
     val task = ci.task
@@ -139,7 +165,7 @@ class PartialReparserImpl : PartialReparser {
       try {
         val dl = ci.diagnosticListener as DiagnosticListenerImpl
         dl.startPartialReparse(origStartPos, origEndPos)
-        val start = System.currentTimeMillis()
+        var start = System.currentTimeMillis()
         val docComments = HashMap<JCTree, Any>()
         block = reparseMethodBody(context, cu, orig, newBody, docComments)
         val endPosTable = (cu as JCCompilationUnit).endPositions
@@ -165,13 +191,39 @@ class PartialReparserImpl : PartialReparser {
         val docCommentsTable = lazyDocCommentsTable!!.get(cu.docComments) as MutableMap<JCTree, Any>
         docCommentsTable.keys.removeAll(fav.docOwners)
         docCommentsTable.putAll(docComments)
-        val end = System.currentTimeMillis()
         val delta = newEndPos - origEndPos
         val tpv = TranslatePositionsVisitor(orig, endPosTable, delta)
         tpv.scan(cu, null)
         doUnenter(context, cu, orig)
         orig.body = block
-        log.debug("New body:", block)
+
+        log.debug("Reparsed method body (", System.currentTimeMillis() - start, "ms ):", block)
+
+        start = System.currentTimeMillis()
+        reAttrMethodBody(context, methodScope, orig, block)
+        log.debug("Resolved method (", System.currentTimeMillis() - start, "ms):", block)
+
+        if (!dl.hasPartialReparseErrors()) {
+          val fl = JavacFlowListener.instance(context)
+          if (fl != null && fl.hasFlowCompleted(cu.sourceFile)) {
+            log.debug("Reflow...")
+            start = System.currentTimeMillis()
+            val tp = TreePath.getPath(cu, orig)
+            val t = tp.parentPath.leaf as ClassTree
+            reflowMethodBody(context, t, orig)
+            log.debug("Reflowed method (", System.currentTimeMillis() - start, "ms)")
+          }
+        }
+
+        val contents = FileStore.contents(Paths.get(cu.sourceFile.toUri()))
+        val arr = CharArray(contents.length)
+        for (index in contents.indices) {
+          arr[index] = contents[index]
+        }
+
+        lineMapBuild!!.invoke(cu.getLineMap(), arr, arr.size)
+
+        dl.endPartialReparse(delta)
       } finally {
         l.endPartialReparse(cu.sourceFile)
         l.useSource(prevLogged)
@@ -270,5 +322,62 @@ class PartialReparserImpl : PartialReparser {
         }
       }
     }
+  }
+
+  private fun reAttrMethodBody(
+    context: Context,
+    scope: JavacScope,
+    tree: JCMethodDecl,
+    block: JCBlock,
+  ): JCBlock {
+    val attr = Attr.instance(context)
+    val names: Names = Names.instance(context)
+    val syms: Symtab = Symtab.instance(context)
+    val typeEnter: TypeEnter = TypeEnter.instance(context)
+    val log: Log = Log.instance(context)
+    val make: TreeMaker = TreeMaker.instance(context)
+    val env: Env<AttrContext> = scope.env // this is a copy anyway...
+    val owner: Symbol.ClassSymbol = env.enclClass.sym
+
+    if (tree.name === names.init && !owner.type.isErroneous && owner.type !== syms.objectType) {
+      val body = tree.body
+      if (body.stats.isEmpty() || !TreeInfo.isSelfCall(body.stats.head)) {
+        body.stats =
+          body.stats.prepend(
+            make.at(body.pos).Exec(make.Apply(List.nil(), make.Ident(names._super), List.nil()))
+          )
+      } else if (
+        (env.enclClass.sym.flags() and Flags.ENUM.toLong()) != 0L &&
+          (tree.mods.flags and Flags.GENERATEDCONSTR) == 0L &&
+          TreeInfo.isSuperCall(body.stats.head)
+      ) {
+        // enum constructors are not allowed to call super
+        // directly, so make sure there aren't any super calls
+        // in enum constructorObjectCheckers, except in the compiler
+        // generated one.
+        log.error(
+          tree.body.stats.head.pos(),
+          com.sun.tools.javac.util.JCDiagnostic.Error(
+            "compiler",
+            "call.to.super.not.allowed.in.enum.ctor",
+            env.enclClass.sym
+          )
+        )
+      }
+    }
+    attr.attribStat(block, env)
+    return block
+  }
+
+  private fun reflowMethodBody(
+    context: Context,
+    ownerClass: ClassTree,
+    decl: JCMethodDecl
+  ): BlockTree {
+    val flow = Flow.instance(context)
+    val maker = TreeMaker.instance(context)
+    val enter = Enter.instance(context)
+    flow.analyzeTree(enter.getEnv((ownerClass as JCClassDecl).sym), maker)
+    return decl.body
   }
 }
