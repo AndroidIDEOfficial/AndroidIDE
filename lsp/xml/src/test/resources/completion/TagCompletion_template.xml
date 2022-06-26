@@ -14,27 +14,40 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:background="@drawable/bg_ripple"
-    android:clickable="true" android:descendantFocusability="blocksDescendants"
-    android:focusable="true" android:minHeight="35dp" android:orientation="horizontal"
-    android:paddingStart="4dp" android:paddingTop="4dp" android:paddingEnd="4dp"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_ripple"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:minHeight="35dp"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="4dp"
     android:paddingBottom="4dp">
 
     <Image@@cursor@@
-    android:id="@+id/icon"
-    android:layout_width="30dp"
-    android:layout_height="30dp"
-    android:src="@drawable/ic_android"
-    android:scaleType="fitCenter"
-    android:padding="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_gravity="center_vertical"/>
+        android:id="@+id/icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/ic_android"
+        android:scaleType="fitCenter"
+        android:padding="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="center_vertical"/>
 
-    <TextView android:id="@+id/text" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:gravity="center_vertical"
-        android:paddingStart="4dp" android:paddingEnd="4dp"
-        android:textColor="@color/primaryTextColor" tools:text="Button" />
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:textColor="@color/primaryTextColor"
+        tools:text="Button" />
 
 </LinearLayout>
