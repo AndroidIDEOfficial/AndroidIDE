@@ -145,7 +145,7 @@ public class MainActivity extends StudioActivity {
   }
 
   private boolean checkToolsIsInstalled() {
-    return Environment.JAVA.exists() | Environment.ANDROID_HOME.exists();
+    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists();
   }
 
   private void openTerminal() {
