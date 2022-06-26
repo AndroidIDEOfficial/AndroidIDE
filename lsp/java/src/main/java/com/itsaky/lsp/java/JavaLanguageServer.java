@@ -69,7 +69,6 @@ import java.util.concurrent.CompletableFuture;
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
-  private final AnalyzeTimer analyzeTimer;
   private ILanguageClient client;
   private IServerSettings settings;
   private JavaCompilerService compiler;
@@ -84,7 +83,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     this.initialized = false;
     this.createCompiler = true;
     this.configuration = new JavaServerConfiguration();
-    this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
@@ -159,7 +157,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     FileStore.shutdown();
-    this.analyzeTimer.shutdown();
     initialized = false;
   }
 
@@ -302,7 +299,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public void onFileOpened(DocumentOpenEvent event) {
     onFileSelected(event.getOpenedFile());
-    ensureAnalyzeTimerStarted();
     FileStore.open(event);
   }
 
@@ -310,7 +306,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   public void onContentChange(@NonNull DocumentChangeEvent event) {
     // If a file's content is changed, it is definitely visible to user.
     onFileSelected(event.getChangedFile());
-    ensureAnalyzeTimerStarted();
     FileStore.change(event);
   }
 
@@ -327,13 +322,5 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public void onFileSelected(@NonNull Path path) {
     this.selectedFile = path;
-  }
-
-  private void ensureAnalyzeTimerStarted() {
-    if (!this.analyzeTimer.isStarted()) {
-      this.analyzeTimer.start();
-    } else {
-      this.analyzeTimer.restart();
-    }
   }
 }

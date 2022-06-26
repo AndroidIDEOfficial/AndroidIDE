@@ -25,7 +25,7 @@ import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.internal.model.CachedCompletion;
-import com.itsaky.lsp.java.compiler.CompilationCancellationException;
+import com.itsaky.lsp.java.CompilationCancellationException;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -82,20 +82,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   @NonNull
   @Override
   public CompletionResult complete(@NonNull CompletionParams params) {
-    try {
-      return completeInternal(params);
-    } catch (Throwable err) {
-      if (err instanceof CancelAbort
-          || err instanceof CompilationCancellationException
-          || err.getCause() instanceof CancelAbort
-          || err.getCause() instanceof CompilationCancellationException) {
-        LOG.debug("Completion cancelled");
-        compiler.close();
-      } else {
-        LOG.error("An error occurred while computing completions", err);
-      }
+    if (compiler.getSynchronizedTask().isCompiling()) {
       return CompletionResult.EMPTY;
     }
+    return completeInternal(params);
   }
 
   @NonNull

@@ -20,7 +20,7 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.java.compiler.CompileTask;
-import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.DiagnosticItem;
 
@@ -35,9 +35,9 @@ import java.util.List;
  */
 public class JavaDiagnosticProvider {
 
-  private final CompilerProvider compiler;
+  private final JavaCompilerService compiler;
 
-  public JavaDiagnosticProvider(CompilerProvider compiler) {
+  public JavaDiagnosticProvider(JavaCompilerService compiler) {
     this.compiler = compiler;
   }
 

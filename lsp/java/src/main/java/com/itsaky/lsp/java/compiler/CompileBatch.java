@@ -53,13 +53,14 @@ public class CompileBatch implements AutoCloseable {
 
   CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
     this.parent = parent;
-    borrow = batchTask(parent, files);
-    task = borrow.task;
-    roots = new ArrayList<>();
+    this.borrow = batchTask(parent, files);
+    this.task = borrow.task;
+    this.roots = new ArrayList<>();
 
     for (CompilationUnitTree t : borrow.task.parse()) {
       roots.add(t);
     }
+
     // The results of borrow.task.analyze() are unreliable when errors are present
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();

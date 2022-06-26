@@ -26,4 +26,8 @@ import com.sun.tools.javac.util.Abort;
  */
 public final class CancelAbort extends Abort {
   CancelAbort() {}
+
+  public static boolean isCancelled(Throwable err) {
+    return err instanceof CancelAbort || err.getCause() instanceof CancelAbort;
+  }
 }

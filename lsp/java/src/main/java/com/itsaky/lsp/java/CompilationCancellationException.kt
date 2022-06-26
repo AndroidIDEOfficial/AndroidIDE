@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.compiler
+package com.itsaky.lsp.java
 
 /**
  * Thrown when a compilation process is cancelled.

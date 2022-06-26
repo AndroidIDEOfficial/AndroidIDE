@@ -261,8 +261,7 @@ public class JavaCompilerService implements CompilerProvider {
           } else {
             LOG.info("...using cached compile");
           }
-          final CompileTask task = new CompileTask(cachedCompile, diagnostics);
-          synchronizedTask.setTask(task);
+          synchronizedTask.setTask(new CompileTask(cachedCompile, diagnostics));
         });
 
     return synchronizedTask;
@@ -287,12 +286,7 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   private synchronized void loadCompile(Collection<? extends JavaFileObject> sources) {
-    if (cachedCompile != null) {
-      if (!cachedCompile.closed) {
-        throw new RuntimeException("Compiler is still in-use!");
-      }
-      cachedCompile.borrow.close();
-    }
+    close();
     cachedCompile = doCompile(sources);
     cachedModified.clear();
     for (JavaFileObject f : sources) {
@@ -364,5 +358,9 @@ public class JavaCompilerService implements CompilerProvider {
       return NOT_FOUND;
     }
     return file;
+  }
+
+  public SynchronizedTask getSynchronizedTask() {
+    return synchronizedTask;
   }
 }

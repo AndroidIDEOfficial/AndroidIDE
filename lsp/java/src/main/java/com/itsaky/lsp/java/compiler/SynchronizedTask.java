@@ -37,6 +37,7 @@ package com.itsaky.lsp.java.compiler;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.java.CompilationCancellationException;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import org.netbeans.lib.nbjavac.services.CancelAbort;
@@ -50,7 +51,7 @@ import kotlin.jvm.functions.Function1;
 public class SynchronizedTask {
 
   private static final ILogger LOG = ILogger.newInstance("SynchronizedTask");
-  private volatile boolean isWriting = false;
+  private volatile boolean isCompiling = false;
   private final Semaphore semaphore = new Semaphore(1);
   private CompileTask task;
 
@@ -68,7 +69,15 @@ public class SynchronizedTask {
 
     final CancelServiceImpl cancelService =
         (CancelServiceImpl) CancelService.instance(task.getContext());
-//    cancelService.cancel();
+//    try {
+//      cancelService.cancel();
+//    } catch (Throwable e) {
+//      if (!(e instanceof CancelAbort || e.getCause() instanceof CancelAbort)) {
+//        throw new RuntimeException(e);
+//      }
+//    }
+//
+//    this.task.close();
   }
 
   public void run(@NonNull Consumer<CompileTask> taskConsumer) {
@@ -104,7 +113,7 @@ public class SynchronizedTask {
       throw new CompilationCancellationException(e);
     }
 
-    isWriting = true;
+    isCompiling = true;
 
     try {
       if (this.task != null) {
@@ -116,6 +125,7 @@ public class SynchronizedTask {
       run.run();
     } finally {
       semaphore.release();
+      isCompiling = false;
     }
   }
 
@@ -123,7 +133,7 @@ public class SynchronizedTask {
     this.task = task;
   }
 
-  public synchronized boolean isWriting() {
-    return isWriting || semaphore.hasQueuedThreads();
+  public synchronized boolean isCompiling() {
+    return isCompiling || semaphore.hasQueuedThreads();
   }
 }
