@@ -28,6 +28,7 @@ import com.sun.source.tree.Tree.Kind.METHOD
 import com.sun.source.util.TreePath
 import com.sun.tools.javac.api.JavacTrees
 import com.sun.tools.javac.comp.Enter
+import com.itsaky.lsp.java.visitors.UnEnterScanner
 import com.sun.tools.javac.parser.JavacParser
 import com.sun.tools.javac.parser.LazyDocCommentTable
 import com.sun.tools.javac.parser.ScannerFactory
@@ -54,16 +55,23 @@ class PartialReparserImpl : PartialReparser {
   private var parserDocComments: Field?
   private var lineMapBuild: Method?
   private var allowPartialReparse: Boolean
+  private var useUnEnterScanner: Boolean
 
   init {
     try {
       // These methods can be easily accessed without reflection in Android Runtime
       // But not in JVM (for tests)
-      this.unenter =
-        Enter::class
-          .java
-          .getDeclaredMethod("unenter", JCCompilationUnit::class.java, JCTree::class.java)
-      this.unenter!!.isAccessible = true
+      try {
+        this.unenter =
+          Enter::class
+            .java
+            .getDeclaredMethod("unenter", JCCompilationUnit::class.java, JCTree::class.java)
+        this.unenter!!.isAccessible = true
+        this.useUnEnterScanner = false
+      } catch (methodNotFound: NoSuchMethodException) {
+        this.unenter = null
+        this.useUnEnterScanner = true
+      }
       this.lazyDocCommentsTable = LazyDocCommentTable::class.java.getDeclaredField("table")
       this.lazyDocCommentsTable!!.isAccessible = true
       this.parserDocComments = JavacParser::class.java.getDeclaredField("docComments")
@@ -80,6 +88,7 @@ class PartialReparserImpl : PartialReparser {
       this.parserDocComments = null
       this.lineMapBuild = null
       this.allowPartialReparse = false
+      this.useUnEnterScanner = false
     }
   }
 
@@ -136,8 +145,9 @@ class PartialReparserImpl : PartialReparser {
           return false
         }
 
-        val newEndPos = jt.sourcePositions.getEndPosition(cu, block).toInt()
-        if (newEndPos != origEndPos + newBody.length) {
+        val sourcePositions = jt.sourcePositions
+        val newEndPos = sourcePositions.getEndPosition(cu, block).toInt()
+        if (newEndPos != origStartPos + newBody.length) {
           return false
         }
 
@@ -155,7 +165,7 @@ class PartialReparserImpl : PartialReparser {
         val delta = newEndPos - origEndPos
         val tpv = TranslatePositionsVisitor(orig, endPosTable, delta)
         tpv.scan(cu, null)
-        unenter!!.invoke(Enter.instance(context), cu, orig.body)
+        doUnenter(context, cu, orig)
         orig.body = block
         log.debug("New body:", block)
       } finally {
@@ -167,6 +177,19 @@ class PartialReparserImpl : PartialReparser {
     }
 
     return true
+  }
+
+  private fun doUnenter(context: Context?, cu: CompilationUnitTree, method: JCMethodDecl) {
+    if (cu !is JCCompilationUnit) {
+      throw IllegalStateException()
+    }
+
+    val enter = Enter.instance(context)
+    if (this.unenter != null) {
+      this.unenter!!.invoke(enter, cu, method.body)
+    } else if (useUnEnterScanner) {
+      UnEnterScanner(enter, cu.modle).scan(method)
+    }
   }
 
   private fun reparseMethodBody(
@@ -229,11 +252,11 @@ class PartialReparserImpl : PartialReparser {
           }
 
           override fun getEndPos(tree: JCTree?): Int {
-            return (endPositions as EndPosTableImpl).getEndPos(tree)
+            return endPositions!!.getEndPos(tree)
           }
 
           override fun replaceTree(oldtree: JCTree?, newtree: JCTree?): Int {
-            return (endPositions as EndPosTableImpl).replaceTree(oldtree, newtree)
+            return endPositions!!.replaceTree(oldtree, newtree)
           }
 
           override fun setErrorEndPos(errPos: Int) {

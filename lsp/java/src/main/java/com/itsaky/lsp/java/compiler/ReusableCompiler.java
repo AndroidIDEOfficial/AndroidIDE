@@ -57,6 +57,8 @@ import org.netbeans.lib.nbjavac.services.NBResolve;
 import org.netbeans.lib.nbjavac.services.NBTreeMaker;
 
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -339,7 +341,13 @@ public class ReusableCompiler {
       // not returning the context to the pool if task crashes with an exception
       // the task/context may be in a broken state
       currentContext.clear();
-      task.cleanup();
+      try {
+        Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
+        method.setAccessible(true);
+        method.invoke(task);
+      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
+      }
 
       checkedOut = false;
       closed = true;

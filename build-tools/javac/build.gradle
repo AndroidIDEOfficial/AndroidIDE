@@ -23,6 +23,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-compileJava {
-    options.compilerArgs << "-Xlint:-removal"
+dependencies {
+    api androidide.javac
 }
