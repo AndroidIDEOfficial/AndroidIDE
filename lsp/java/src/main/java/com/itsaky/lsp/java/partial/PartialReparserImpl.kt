@@ -21,6 +21,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.visitors.FindAnonymousVisitor
 import com.itsaky.lsp.java.visitors.FindMethodAt
 import com.itsaky.lsp.java.visitors.TranslatePositionsVisitor
+import com.itsaky.lsp.java.visitors.UnEnter
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree.Kind.BLOCK
@@ -28,7 +29,6 @@ import com.sun.source.tree.Tree.Kind.METHOD
 import com.sun.source.util.TreePath
 import com.sun.tools.javac.api.JavacTrees
 import com.sun.tools.javac.comp.Enter
-import com.itsaky.lsp.java.visitors.UnEnter
 import com.sun.tools.javac.parser.JavacParser
 import com.sun.tools.javac.parser.LazyDocCommentTable
 import com.sun.tools.javac.parser.ScannerFactory
@@ -46,7 +46,11 @@ import org.netbeans.lib.nbjavac.services.CancelService
 import org.netbeans.lib.nbjavac.services.NBLog
 import org.netbeans.lib.nbjavac.services.NBParserFactory
 
-/** @author Akash Yadav */
+/**
+ * Partial reparser implementation.
+ *
+ * @author Akash Yadav
+ */
 class PartialReparserImpl : PartialReparser {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
@@ -82,7 +86,7 @@ class PartialReparserImpl : PartialReparser {
       this.lineMapBuild!!.isAccessible = true
       this.allowPartialReparse = true
     } catch (err: Throwable) {
-      err.printStackTrace()
+      log.error(err)
       this.unenter = null
       this.lazyDocCommentsTable = null
       this.parserDocComments = null
