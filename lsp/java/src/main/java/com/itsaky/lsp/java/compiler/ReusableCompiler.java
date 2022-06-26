@@ -97,7 +97,6 @@ public class ReusableCompiler {
 
   private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
   private static final JavacTool systemProvider = JavacTool.create();
-  // TODO This is not used currently
   private static final CancelService cancelService = new CancelServiceImpl();
   private final List<String> currentOptions = new ArrayList<>();
   private ReusableContext currentContext;
@@ -138,10 +137,6 @@ public class ReusableCompiler {
         StreamSupport.stream(options.spliterator(), false)
             .collect(Collectors.toCollection(ArrayList::new));
     if (!opts.equals(currentOptions)) {
-      final ArrayList<String> newOpts = new ArrayList<>(currentOptions);
-      newOpts.removeAll(currentOptions);
-      LOG.debug("New compiler options:", newOpts);
-
       currentOptions.clear();
       currentOptions.addAll(opts);
       currentContext = new ReusableContext(new ArrayList<>(opts), cancelService);

@@ -25,7 +25,8 @@ import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.internal.model.CachedCompletion;
-import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.CompilationCancellationException;
+import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.parser.ParseTask;
@@ -43,6 +44,8 @@ import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.sun.source.util.TreePath;
 
+import org.netbeans.lib.nbjavac.services.CancelAbort;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -54,12 +57,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
   public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
   private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
-  private final CompilerProvider compiler;
+  private final JavaCompilerService compiler;
   private final CachedCompletion cache;
   private final Consumer<CachedCompletion> nextCacheConsumer;
 
   public CompletionProvider(
-      CompilerProvider compiler,
+      JavaCompilerService compiler,
       IServerSettings settings,
       CachedCompletion cache,
       Consumer<CachedCompletion> nextCacheConsumer) {
@@ -79,6 +82,24 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   @NonNull
   @Override
   public CompletionResult complete(@NonNull CompletionParams params) {
+    try {
+      return completeInternal(params);
+    } catch (Throwable err) {
+      if (err instanceof CancelAbort
+          || err instanceof CompilationCancellationException
+          || err.getCause() instanceof CancelAbort
+          || err.getCause() instanceof CompilationCancellationException) {
+        LOG.debug("Completion cancelled");
+        compiler.close();
+      } else {
+        LOG.error("An error occurred while computing completions", err);
+      }
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  @NonNull
+  private CompletionResult completeInternal(final @NonNull CompletionParams params) {
     Path file = params.getFile();
     int line = params.getPosition().getLine();
     int column = params.getPosition().getColumn();
