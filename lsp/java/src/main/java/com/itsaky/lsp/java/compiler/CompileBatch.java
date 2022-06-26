@@ -21,6 +21,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
+import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
@@ -34,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Name;
@@ -48,6 +50,7 @@ public class CompileBatch implements AutoCloseable {
   final ReusableCompiler.Borrow borrow;
   final JavacTaskImpl task;
   final List<CompilationUnitTree> roots;
+  DiagnosticListenerImpl diagnosticListener;
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
@@ -66,14 +69,17 @@ public class CompileBatch implements AutoCloseable {
     borrow.task.analyze();
   }
 
-  private static ReusableCompiler.Borrow batchTask(
+  private ReusableCompiler.Borrow batchTask(
       JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
 
     parent.diagnostics.clear();
     final Iterable<String> options = options(parent.classPath);
 
+    diagnosticListener =
+        new DiagnosticListenerWrapper(parent.diagnostics::add, sources.iterator().next());
+
     return parent.compiler.getTask(
-        parent.fileManager, parent.diagnostics::add, options, Collections.emptyList(), sources);
+        parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
   }
 
   private static List<String> options(Set<Path> classPath) {
@@ -189,5 +195,22 @@ public class CompileBatch implements AutoCloseable {
     return d.getSource().toUri().getScheme().equals("file")
         && d.getStartPosition() >= 0
         && d.getEndPosition() >= 0;
+  }
+
+  public static class DiagnosticListenerWrapper extends DiagnosticListenerImpl {
+
+    private final Consumer<Diagnostic<? extends JavaFileObject>> consumer;
+
+    public DiagnosticListenerWrapper(
+        final Consumer<Diagnostic<? extends JavaFileObject>> consumer, JavaFileObject jfo) {
+      super(jfo);
+      this.consumer = consumer;
+    }
+
+    @Override
+    public void report(final Diagnostic<? extends JavaFileObject> diagnostic) {
+      consumer.accept(diagnostic);
+      super.report(diagnostic);
+    }
   }
 }

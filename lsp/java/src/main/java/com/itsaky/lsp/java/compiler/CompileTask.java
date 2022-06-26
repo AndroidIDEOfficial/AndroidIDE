@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.compiler;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
@@ -33,8 +34,8 @@ public class CompileTask implements AutoCloseable {
   public final JavacTaskImpl task;
   public final List<CompilationUnitTree> roots;
   public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
-
-  private final CompileBatch compileBatch;
+  public final CompileBatch compileBatch;
+  public final DiagnosticListenerImpl diagnosticListener;
 
   public CompileTask(
       @NonNull CompileBatch compileBatch, List<Diagnostic<? extends JavaFileObject>> diagnostics) {
@@ -42,6 +43,7 @@ public class CompileTask implements AutoCloseable {
     this.task = compileBatch.task;
     this.roots = compileBatch.roots;
     this.diagnostics = diagnostics;
+    this.diagnosticListener = compileBatch.diagnosticListener;
   }
 
   public CompilationUnitTree root() {

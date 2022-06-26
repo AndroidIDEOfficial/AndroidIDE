@@ -514,7 +514,7 @@ public class JavacParser implements Parser {
      *  indexed by the tree nodes they refer to.
      *  defined only if option flag keepDocComment is set.
      */
-    private final DocCommentTable docComments;
+    public final DocCommentTable docComments;
 
     /** Make an entry into docComments hashtable,
      *  provided flag keepDocComments is set and given doc comment is non-null.
