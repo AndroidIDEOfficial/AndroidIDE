@@ -40,7 +40,6 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.CompilationCancellationException;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
-import org.netbeans.lib.nbjavac.services.CancelAbort;
 import org.netbeans.lib.nbjavac.services.CancelService;
 
 import java.util.concurrent.Semaphore;
@@ -106,7 +105,7 @@ public class SynchronizedTask {
     }
   }
 
-  void doCompile(@NonNull Runnable run) {
+  void post(@NonNull Runnable run) {
     try {
       semaphore.acquire();
     } catch (InterruptedException e) {

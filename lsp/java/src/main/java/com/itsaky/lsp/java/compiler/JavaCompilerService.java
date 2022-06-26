@@ -57,16 +57,12 @@ public class JavaCompilerService implements CompilerProvider {
   protected final ScanClassPath classPathScanner = new ScanClassPath();
   protected final Set<Path> classPath, docPath;
   protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(), classPathClasses;
-  protected final ReusableCompiler compiler = new ReusableCompiler();
   protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
-  // Use the same file manager for multiple tasks, so we don't repeatedly re-compile the same
-  // files
-  // TODO intercept files that aren't in the batch and erase method bodies so compilation is
-  // faster
   protected final SourceFileManager fileManager;
   private final Cache<Void, List<String>> cacheFileImports = new Cache<>();
+  protected ReusableCompiler compiler = new ReusableCompiler();
   private CompileBatch cachedCompile;
 
   public JavaCompilerService(Set<Path> classPath, Set<Path> docPath) {
@@ -254,7 +250,7 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   private SynchronizedTask compileBatch(Collection<? extends JavaFileObject> sources) {
-    synchronizedTask.doCompile(
+    synchronizedTask.post(
         () -> {
           if (needsCompile(sources)) {
             loadCompile(sources);
@@ -326,6 +322,16 @@ public class JavaCompilerService implements CompilerProvider {
         cachedCompile.borrow.close();
       }
     }
+  }
+
+  public void destroy() {
+    synchronizedTask.post(
+        () -> {
+          close();
+          cachedCompile = null;
+          cachedModified.clear();
+          compiler = new ReusableCompiler();
+        });
   }
 
   private boolean containsType(Path file, String className) {

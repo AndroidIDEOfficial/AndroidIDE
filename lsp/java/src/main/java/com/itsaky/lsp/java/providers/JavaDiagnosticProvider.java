@@ -19,10 +19,14 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.java.CompilationCancellationException;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.DiagnosticItem;
+
+import org.netbeans.lib.nbjavac.services.CancelAbort;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ import java.util.List;
 public class JavaDiagnosticProvider {
 
   private final JavaCompilerService compiler;
+  private static final ILogger LOG = ILogger.newInstance("JavaDiagnosticProvider");
 
   public JavaDiagnosticProvider(JavaCompilerService compiler) {
     this.compiler = compiler;
@@ -43,16 +48,27 @@ public class JavaDiagnosticProvider {
 
   @NonNull
   public List<DiagnosticItem> analyze(@NonNull Path file) {
-    final SynchronizedTask synchronizedTask = compiler.compile(file);
-    return synchronizedTask.get(
-        task -> {
-          if (!isTaskValid(task)) {
-            // Do not use Collections.emptyList ()
-            return new ArrayList<>();
-          }
+    try {
+      final SynchronizedTask synchronizedTask = compiler.compile(file);
+      return synchronizedTask.get(
+          task -> {
+            if (!isTaskValid(task)) {
+              // Do not use Collections.emptyList ()
+              return new ArrayList<>();
+            }
 
-          return DiagnosticsProvider.findDiagnostics(task, file);
-        });
+            return DiagnosticsProvider.findDiagnostics(task, file);
+          });
+    } catch (Throwable err) {
+      if (CompilationCancellationException.isCancelled(err) && !CancelAbort.isCancelled(err)) {
+        throw err;
+      }
+
+      LOG.warn("Unable to analyze file", err);
+      compiler.destroy();
+
+      return new ArrayList<>();
+    }
   }
 
   private static boolean isTaskValid(CompileTask task) {

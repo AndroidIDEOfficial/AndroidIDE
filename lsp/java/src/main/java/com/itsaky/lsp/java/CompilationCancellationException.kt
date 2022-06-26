@@ -32,4 +32,12 @@ class CompilationCancellationException : java.lang.RuntimeException {
     enableSuppression: Boolean,
     writableStackTrace: Boolean
   ) : super(message, cause, enableSuppression, writableStackTrace)
+
+  companion object {
+    @JvmStatic
+    fun isCancelled(err: Throwable): Boolean {
+      return err is CompilationCancellationException ||
+        err.cause is CompilationCancellationException
+    }
+  }
 }
