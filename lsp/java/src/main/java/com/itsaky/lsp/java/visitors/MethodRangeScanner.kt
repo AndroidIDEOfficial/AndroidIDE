@@ -18,13 +18,14 @@
 package com.itsaky.lsp.java.visitors
 
 import androidx.core.util.Pair
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.LineMap
 import com.sun.source.tree.MethodTree
-import com.sun.source.tree.Tree
-import com.sun.source.util.TreeScanner
+import com.sun.source.util.TreePath
+import com.sun.source.util.TreePathScanner
 import com.sun.source.util.Trees
 import com.sun.tools.javac.api.JavacTaskImpl
 
@@ -34,7 +35,9 @@ import com.sun.tools.javac.api.JavacTaskImpl
  * @author Akash Yadav
  */
 class MethodRangeScanner(val task: JavacTaskImpl) :
-  TreeScanner<Unit, MutableList<Pair<Range, MethodTree>>>() {
+  TreePathScanner<Unit, MutableList<Pair<Range, TreePath>>>() {
+
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
   var root: CompilationUnitTree? = null
   var lines: LineMap? = null
@@ -42,14 +45,14 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
 
   override fun visitCompilationUnit(
     node: CompilationUnitTree?,
-    p: MutableList<Pair<Range, MethodTree>>?
+    p: MutableList<Pair<Range, TreePath>>?
   ) {
     this.root = node
     this.lines = node?.lineMap
     return super.visitCompilationUnit(node, p)
   }
 
-  override fun visitMethod(node: MethodTree?, list: MutableList<Pair<Range, MethodTree>>) {
+  override fun visitMethod(node: MethodTree?, list: MutableList<Pair<Range, TreePath>>) {
     val result = super.visitMethod(node, list)
     if (node == null || this.root == null) {
       return result
@@ -58,16 +61,29 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
     val start = getStartPosition(node)
     val end = getEndPosition(node)
 
-    list.add(Pair.create(Range(start, end), node))
+    if (start == null || end == null) {
+      log.warn("Method '${node.name}' skipped. Invalid position.")
+      return result
+    }
+
+    list.add(Pair.create(Range(start!!, end!!), currentPath))
     return result
   }
 
-  fun getStartPosition(node: Tree): Position {
-    return getPosition(this.pos.getStartPosition(this.root!!, node))
+  fun getStartPosition(node: MethodTree): Position? {
+    val position = this.pos.getStartPosition(this.root!!, node)
+    if (position.toInt() == -1) {
+      return null
+    }
+    return getPosition(position)
   }
 
-  fun getEndPosition(node: Tree): Position {
-    return getPosition(this.pos.getEndPosition(this.root!!, node))
+  fun getEndPosition(node: MethodTree): Position? {
+    val position = this.pos.getEndPosition(this.root!!, node)
+    if (position.toInt() == -1) {
+      return null
+    }
+    return getPosition(position)
   }
 
   fun getPosition(position: Long): Position {

@@ -35,6 +35,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.ChangeType;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -195,8 +196,20 @@ public class IDEEditor extends CodeEditor {
           final var documentHandler = mLanguageServer.getDocumentHandler();
           final var file = getFile().toPath();
           if (documentHandler.accepts(file)) {
+            var type = ChangeType.INSERT;
+            if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
+              type = ChangeType.DELETE;
+            } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+              type = ChangeType.NEW_TEXT;
+            }
+
+            var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
+            if (type == ChangeType.DELETE) {
+              changeDelta = -changeDelta;
+            }
+
             documentHandler.onContentChange(
-                new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+                new DocumentChangeEvent(file, getText(), mFileVersion + 1, type, changeDelta));
           }
 
           checkForSignatureHelp(event);

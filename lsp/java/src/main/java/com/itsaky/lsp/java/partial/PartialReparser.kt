@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.partial
 
-import com.sun.source.tree.MethodTree
+import com.sun.source.util.TreePath
 
 /**
  * A parser reparser parses part of code.
@@ -25,5 +25,5 @@ import com.sun.source.tree.MethodTree
  * @author Akash Yadav
  */
 interface PartialReparser {
-  fun reparseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean
+  fun reparseMethod(ci: CompilationInfo, methodPath: TreePath, newBody: String, fileContents: CharSequence): Boolean
 }

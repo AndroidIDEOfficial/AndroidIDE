@@ -17,6 +17,7 @@
 package com.itsaky.lsp.api
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.itsaky.lsp.models.Position
 import io.github.rosemoe.sora.text.Content
@@ -44,7 +45,7 @@ abstract class CursorDependentTest : LoggingTest() {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!, 1))
+    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!, 1, NEW_TEXT, 0))
   }
 
   fun cursorPosition(): Position {

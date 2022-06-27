@@ -32,7 +32,7 @@ data class DocumentOpenEvent(var openedFile: Path, var text: String, var version
 
 data class DocumentCloseEvent(var closedFile: Path) : DocumentEvent(closedFile)
 
-data class DocumentChangeEvent(var changedFile: Path, var newText: CharSequence, var version: Int) :
+data class DocumentChangeEvent(var changedFile: Path, var newText: CharSequence, var version: Int, var changeType: ChangeType, var changeDelta: Int) :
   DocumentEvent(changedFile)
 
 data class DocumentSaveEvent(var savedFile: Path) : DocumentEvent(savedFile)
@@ -40,3 +40,9 @@ data class DocumentSaveEvent(var savedFile: Path) : DocumentEvent(savedFile)
 data class ShowDocumentParams(var file: Path, var selection: Range)
 
 data class ShowDocumentResult(var success: Boolean)
+
+enum class ChangeType {
+  INSERT,
+  DELETE,
+  NEW_TEXT
+}

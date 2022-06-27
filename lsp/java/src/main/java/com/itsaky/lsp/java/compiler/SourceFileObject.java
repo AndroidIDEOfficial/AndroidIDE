@@ -38,9 +38,9 @@ public class SourceFileObject implements JavaFileObject {
   /** path is the absolute path to this file on disk */
   final Path path;
   /** contents is the text in this file, or null if we should use the text in FileStore */
-  final String contents;
+  String contents;
   /** if contents is set, the modified time of contents */
-  final Instant modified;
+  Instant modified;
 
   public SourceFileObject(Path path) {
     this(path, null, Instant.EPOCH);

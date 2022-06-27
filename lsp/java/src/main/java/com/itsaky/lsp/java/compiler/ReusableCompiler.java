@@ -103,8 +103,9 @@ public class ReusableCompiler {
   private static final JavacTool systemProvider = JavacTool.create();
   private static final CancelService cancelService = new CancelServiceImpl();
   private final List<String> currentOptions = new ArrayList<>();
-  private ReusableContext currentContext;
   private boolean checkedOut;
+
+  public ReusableContext currentContext;
 
   /**
    * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided

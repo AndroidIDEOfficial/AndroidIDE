@@ -18,6 +18,7 @@ package com.itsaky.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.java.BaseJavaTest
+import com.itsaky.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.itsaky.lsp.models.ExpandSelectionParams
 import com.itsaky.lsp.models.Position
@@ -44,7 +45,9 @@ class JavaSelectionProviderTest : BaseJavaTest() {
     openFile("SimpleSelectionExpansionTest")
     cursor = requireCursor()
     deleteCursorText()
-    mServer.documentHandler.onContentChange(DocumentChangeEvent(file!!, contents.toString(), 1))
+    mServer.documentHandler.onContentChange(
+      DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0)
+    )
 
     val range = findRange()
     val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))

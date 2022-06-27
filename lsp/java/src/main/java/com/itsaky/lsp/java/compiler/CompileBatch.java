@@ -29,7 +29,7 @@ import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
 import com.itsaky.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MethodTree;
+import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.io.File;
@@ -63,7 +63,7 @@ public class CompileBatch implements AutoCloseable {
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
-  final Map<String, List<Pair<Range, MethodTree>>> methodPositions = new HashMap<>();
+  final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
 
   CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
     this.parent = parent;
@@ -72,32 +72,33 @@ public class CompileBatch implements AutoCloseable {
     this.roots = new ArrayList<>();
 
     final StopWatch watch = new StopWatch("Create CompileBatch");
-    boolean first = true;
-    for (CompilationUnitTree t : borrow.task.parse()) {
-      if (first) {
-        watch.lap("Parsed");
-        first = false;
-      }
 
+    final Iterable<? extends CompilationUnitTree> trees = borrow.task.parse();
+    watch.lap("CompilationUnitTree(s) parsed");
+
+    for (CompilationUnitTree t : trees) {
       roots.add(t);
-
-      final StopWatch positionWatch = new StopWatch("Scan method positions");
-      final List<Pair<Range, MethodTree>> positions = new ArrayList<>();
-      new MethodRangeScanner(this.task).scan(t, positions);
-      final String path = new File(t.getSourceFile().toUri()).getAbsolutePath();
-      final List<Pair<Range, MethodTree>> old = this.methodPositions.put(path, positions);
-      if (old != null) {
-        throw new IllegalStateException(
-            "Duplicate CompilationUnitTree for file:" + t.getSourceFile().toUri());
-      }
-
-      positionWatch.log();
+      updatePositions(t, false);
     }
 
     // The results of borrow.task.analyze() are unreliable when errors are present
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();
     watch.log();
+  }
+
+  void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
+    final StopWatch positionWatch = new StopWatch("Scan method positions");
+    final List<Pair<Range, TreePath>> positions = new ArrayList<>();
+    new MethodRangeScanner(this.task).scan(tree, positions);
+    final String path = new File(tree.getSourceFile().toUri()).getAbsolutePath();
+    final List<Pair<Range, TreePath>> old = this.methodPositions.put(path, positions);
+    if (old != null && !allowDuplicate) {
+      throw new IllegalStateException(
+          "Duplicate CompilationUnitTree for file:" + tree.getSourceFile().toUri());
+    }
+
+    positionWatch.log();
   }
 
   private ReusableCompiler.Borrow batchTask(

@@ -18,16 +18,15 @@
 package com.itsaky.lsp.java.partial
 
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.lsp.java.FileStore
 import com.itsaky.lsp.java.compiler.JavacFlowListener
 import com.itsaky.lsp.java.visitors.FindAnonymousVisitor
-import com.itsaky.lsp.java.visitors.FindMethodAt
-import com.itsaky.lsp.java.visitors.TranslatePositionsVisitor
+import com.itsaky.lsp.java.visitors.TranslateMethodPositionsVisitor
 import com.itsaky.lsp.java.visitors.UnEnter
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree.Kind.BLOCK
 import com.sun.source.tree.Tree.Kind.METHOD
 import com.sun.source.util.TreePath
@@ -116,7 +115,7 @@ class PartialReparserImpl : PartialReparser {
     }
   }
 
-  override fun reparseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean {
+  override fun reparseMethod(ci: CompilationInfo, methodPath: TreePath, newBody: String, fileContents: CharSequence): Boolean {
 
     if (!allowPartialReparse) {
       log.debug("Partial reparse is disabled")
@@ -126,15 +125,19 @@ class PartialReparserImpl : PartialReparser {
     val cu = ci.cu
     val fo = cu.sourceFile
     val task = ci.task
-    val methodPath = FindMethodAt(task).scan(cu, ((orig as JCMethodDecl).pos + 1).toLong())
-    if (methodPath == null || methodPath.leaf.kind != METHOD) {
+    val method = methodPath.leaf as JCMethodDecl
+    if (methodPath.leaf.kind != METHOD) {
+      log.warn("Provided TreePath does not correspond to a MethodTree")
       return false
     }
 
-    val methodScope = ci.trees.getScope(TreePath(methodPath, (methodPath.leaf as MethodTree).body))
+    val watch = StopWatch("reparseMethod")
+    val methodScope = ci.trees.getScope(TreePath(methodPath, method.body))
+    watch.lapFromLast("Found method scope")
     val jt = JavacTrees.instance(task)
-    val origStartPos = jt.sourcePositions.getStartPosition(cu, orig.body).toInt()
-    val origEndPos = jt.sourcePositions.getEndPosition(cu, orig.body).toInt()
+    val origStartPos = jt.sourcePositions.getStartPosition(cu, method.body).toInt()
+    val origEndPos = jt.sourcePositions.getEndPosition(cu, method.body).toInt()
+    watch.lapFromLast("Found start and end positions")
     if (origStartPos < 0) {
       log.warn("Javac returned start position $origStartPos < 0")
       return false
@@ -146,8 +149,8 @@ class PartialReparserImpl : PartialReparser {
     }
 
     val fav = FindAnonymousVisitor()
-    fav.scan(orig.body, null)
-
+    fav.scan(method.body, null)
+    watch.lapFromLast("FindAnonymousVisitor")
     if (fav.hasLocalClass) {
       log.debug("Skipped reparse method. Old local classes.", fo)
       return false
@@ -160,14 +163,15 @@ class PartialReparserImpl : PartialReparser {
       val l = NBLog.instance(context)
       l.startPartialReparse(fo)
       val prevLogged = l.useSource(fo)
-      var block: JCBlock?
+      val block: JCBlock?
 
       try {
         val dl = ci.diagnosticListener as DiagnosticListenerImpl
         dl.startPartialReparse(origStartPos, origEndPos)
-        var start = System.currentTimeMillis()
+        watch.lapFromLast("Started partial reparse")
         val docComments = HashMap<JCTree, Any>()
-        block = reparseMethodBody(context, cu, orig, newBody, docComments)
+        block = reparseMethodBody(context, cu, method, newBody, docComments)
+        watch.lapFromLast("Partially reparsed method")
         val endPosTable = (cu as JCCompilationUnit).endPositions
         log.debug("Reparsed method in $fo")
         if (block == null) {
@@ -178,11 +182,14 @@ class PartialReparserImpl : PartialReparser {
         val sourcePositions = jt.sourcePositions
         val newEndPos = sourcePositions.getEndPosition(cu, block).toInt()
         if (newEndPos != origStartPos + newBody.length) {
+          log.warn("Invalid position in reparsed method")
           return false
         }
 
         fav.reset()
         fav.scan(block, null)
+        watch.lapFromLast("FindAnonymousVisitor")
+
         val newNoInner = fav.noInner
         if (fav.hasLocalClass || noInner != newNoInner) {
           log.debug("Skipped method reparse (new local class): $fo")
@@ -191,44 +198,46 @@ class PartialReparserImpl : PartialReparser {
         val docCommentsTable = lazyDocCommentsTable!!.get(cu.docComments) as MutableMap<JCTree, Any>
         docCommentsTable.keys.removeAll(fav.docOwners)
         docCommentsTable.putAll(docComments)
+        watch.lapFromLast("Updated doc comments")
         val delta = newEndPos - origEndPos
-        val tpv = TranslatePositionsVisitor(orig, endPosTable, delta)
+        val tpv = TranslateMethodPositionsVisitor(method, endPosTable, delta)
         tpv.scan(cu, null)
-        doUnenter(context, cu, orig)
-        orig.body = block
+        watch.lapFromLast("Translated positions")
+        doUnenter(context, cu, method)
+        watch.lapFromLast("Unentered")
+        method.body = block
 
-        log.debug("Reparsed method body (", System.currentTimeMillis() - start, "ms ):", block)
-
-        start = System.currentTimeMillis()
-        reAttrMethodBody(context, methodScope, orig, block)
-        log.debug("Resolved method (", System.currentTimeMillis() - start, "ms):", block)
+        reAttrMethodBody(context, methodScope, method, block)
+        watch.lapFromLast("ReAttr method")
 
         if (!dl.hasPartialReparseErrors()) {
           val fl = JavacFlowListener.instance(context)
           if (fl != null && fl.hasFlowCompleted(cu.sourceFile)) {
             log.debug("Reflow...")
-            start = System.currentTimeMillis()
-            val tp = TreePath.getPath(cu, orig)
+            val start = System.currentTimeMillis()
+            val tp = TreePath.getPath(cu, method)
             val t = tp.parentPath.leaf as ClassTree
-            reflowMethodBody(context, t, orig)
-            log.debug("Reflowed method (", System.currentTimeMillis() - start, "ms)")
+            reflowMethodBody(context, t, method)
+            log.debug("Reflowed method in ${System.currentTimeMillis() - start}ms)")
           }
+          watch.lapFromLast("Method reflow")
         }
-
-        val contents = FileStore.contents(Paths.get(cu.sourceFile.toUri()))
-        val arr = CharArray(contents.length)
-        for (index in contents.indices) {
-          arr[index] = contents[index]
+        
+        val arr = CharArray(fileContents.length)
+        for (index in fileContents.indices) {
+          arr[index] = fileContents[index]
         }
-
+        
         lineMapBuild!!.invoke(cu.getLineMap(), arr, arr.size)
-
+        watch.lapFromLast("Line map built")
         dl.endPartialReparse(delta)
       } finally {
         l.endPartialReparse(cu.sourceFile)
         l.useSource(prevLogged)
+        watch.log()
       }
     } catch (err: Throwable) {
+      log.error("Failed to reparse method", err)
       return false
     }
 

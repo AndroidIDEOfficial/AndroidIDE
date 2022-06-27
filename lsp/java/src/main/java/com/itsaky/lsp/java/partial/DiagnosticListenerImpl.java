@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.partial;
 
 import androidx.annotation.Nullable;
 
+import com.sun.tools.javac.api.ClientCodeWrapper;
 import com.sun.tools.javac.util.JCDiagnostic;
 
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
       this.affectedErrors = new ArrayList<>(tail.size());
       HashSet<DiagNode> tailNodes = new HashSet<>();
       for (Iterator<Map.Entry<Integer, Collection<DiagNode>>> it = tail.entrySet().iterator();
-           it.hasNext(); ) {
+          it.hasNext(); ) {
         Map.Entry<Integer, Collection<DiagNode>> e = it.next();
         for (DiagNode d : e.getValue()) {
           tailNodes.add(d);
@@ -132,7 +133,12 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
       while (node != null) {
         if (tailNodes.contains(node)) {
           errors.unlink(node);
-          final JCDiagnostic diagnostic = (JCDiagnostic) node.diag;
+          final JCDiagnostic diagnostic;
+          if (node.diag instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
+            diagnostic = ((ClientCodeWrapper.DiagnosticSourceUnwrapper) node.diag).d;
+          } else {
+            diagnostic = (JCDiagnostic) node.diag;
+          }
           if (diagnostic == null) {
             throw new IllegalStateException(
                 "#184910: diagnostic == null "

@@ -20,12 +20,17 @@ package com.itsaky.lsp.java.partial
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.java.BaseJavaTest
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.visitors.FindMethodAt
+import com.itsaky.lsp.java.compiler.SourceFileObject
+import com.itsaky.lsp.java.models.CompilationRequest
+import com.itsaky.lsp.java.models.PartialReparseRequest
+import com.itsaky.lsp.models.ChangeType.INSERT
+import com.itsaky.lsp.models.DocumentChangeEvent
 import com.sun.source.tree.ExpressionStatementTree
 import com.sun.source.tree.LiteralTree
-import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree
+import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit
+import com.sun.tools.javac.tree.JCTree.JCErroneous
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl
 import com.sun.tools.javac.tree.JCTree.JCMethodInvocation
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl
@@ -47,22 +52,54 @@ class PartialReparserImplTest : BaseJavaTest() {
   fun parseMethod() {
     openFile("PartialReparserTest")
     jls.compiler.compile(file).run { task ->
-      val reparser = PartialReparserImpl()
-      val method = FindMethodAt(task.task).scan(task.root(), 133)
-      val reparsed =
-        reparser.reparseMethod(
-          CompilationInfo(task.task, task.diagnosticListener, task.root()),
-          method!!.leaf as MethodTree,
-          "{System.out.println(\"Hello world!\"); var klass = String.class;}"
-        )
-
-      assertThat(reparsed).isTrue()
       AssertingScanner().scan(task.root() as JCCompilationUnit)
     }
   }
 
+  @Test
+  fun testSimpleErrorneousStatement() {
+    openFile("PartialErrReparserTest")
+    jls.compiler
+      .compile(
+        CompilationRequest(
+          listOf(SourceFileObject(file)),
+          PartialReparseRequest(172, contents.toString())
+        )
+      )
+      .run { PrintingScanner().scan(it.root() as JCCompilationUnit) }
+    jls.onContentChange(
+      DocumentChangeEvent(
+        file!!,
+        contents!!.insert(192, "trim().").toString(),
+        2,
+        INSERT,
+        "trim().".length
+      )
+    )
+    jls.compiler.compile(
+      CompilationRequest(
+        listOf(SourceFileObject(file)),
+        PartialReparseRequest(179, contents.toString())
+      )
+    )
+  }
+
   override fun openFile(fileName: String) {
     super.openFile("partial/$fileName")
+  }
+
+  class PrintingScanner : TreeScanner() {
+    override fun scan(tree: JCTree?) {
+      if (tree != null) println(tree!!::class.java.name + ", " + tree)
+      super.scan(tree)
+    }
+
+    override fun visitErroneous(tree: JCErroneous?) {
+      if (tree?.errs != null) {
+        tree.errs.forEach { scan(it) }
+      }
+      super.visitErroneous(tree)
+    }
   }
 
   class AssertingScanner : TreeScanner() {

@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.models.CompilationRequest;
 import com.itsaky.lsp.java.parser.ParseTask;
@@ -34,9 +35,13 @@ import com.itsaky.lsp.java.utils.Extractors;
 import com.itsaky.lsp.java.utils.ScanClassPath;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
+import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.util.SourcePositions;
+import com.sun.source.util.TreePath;
+import com.sun.source.util.Trees;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -74,8 +79,9 @@ public class JavaCompilerService implements CompilerProvider {
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
   protected final SourceFileManager fileManager;
   private final Cache<Void, List<String>> cacheFileImports = new Cache<>();
-  protected ReusableCompiler compiler = new ReusableCompiler();
+  public ReusableCompiler compiler = new ReusableCompiler();
   private CompileBatch cachedCompile;
+  private int changeDelta = 0;
 
   public JavaCompilerService(Set<Path> classPath, Set<Path> docPath) {
     this.classPath = Collections.unmodifiableSet(classPath);
@@ -300,53 +306,82 @@ public class JavaCompilerService implements CompilerProvider {
         || request.sources.size() != 1; // Cannot perform a reparse if there are multiple files
   }
 
-  private void tryReparse(final CompilationRequest request) {
+  private void tryReparse(@NonNull final CompilationRequest request) {
 
     // Satisfy lint
     Objects.requireNonNull(request.partialRequest);
 
+    final StopWatch watch = new StopWatch("Method reparse");
     final File file = new File(request.sources.iterator().next().toUri());
     final String path = file.getAbsolutePath();
-    final List<Pair<Range, MethodTree>> positions = this.cachedCompile.methodPositions.get(path);
+    final List<Pair<Range, TreePath>> positions = this.cachedCompile.methodPositions.get(path);
     if (positions == null) {
       LOG.warn("Cannot perform reparse. No method positions found.");
       recompile(request);
       return;
     }
 
-    final Pair<Range, MethodTree> currentMethod =
+    final Pair<Range, TreePath> currentMethod =
         binarySearchCurrentMethod(positions, request.partialRequest.cursor);
     if (currentMethod == null) {
       LOG.warn("Cannot perform reparse. Unable to find current method");
       recompile(request);
       return;
+    } else {
+      watch.lapFromLast("Found method at cursor position");
     }
 
-    LOG.debug("Trying to reparse method:", currentMethod.second.getName());
+    final MethodTree methodTree = (MethodTree) currentMethod.second.getLeaf();
+    LOG.debug("Trying to reparse method:", methodTree.getName());
 
     final CompilationInfo info =
         new CompilationInfo(
             cachedCompile.task, cachedCompile.diagnosticListener, cachedCompile.roots.get(0));
+    watch.setLastLap(System.currentTimeMillis());
+    final SourcePositions sourcePositions = Trees.instance(cachedCompile.task).getSourcePositions();
+    final int start = (int) sourcePositions.getStartPosition(info.cu, methodTree.getBody());
+    final int end =
+        (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + this.changeDelta;
+    watch.lapFromLast("Found start and end positions of current method");
     final PartialReparser reparser = new PartialReparserImpl();
+
+    if (end < 0 || end > request.partialRequest.contents.length()) {
+      LOG.warn(
+          "Cannot reparse. Invalid change delta. end:",
+          end,
+          "changeDelta:",
+          this.changeDelta,
+          "content.length:",
+          request.partialRequest.contents.length());
+      recompile(request);
+      return;
+    }
+
+    final String newBody = request.partialRequest.contents.substring(start, end);
     final boolean reparsed =
-        reparser.reparseMethod(info, currentMethod.second, request.partialRequest.contents);
+        reparser.reparseMethod(
+            info, currentMethod.second, newBody, request.partialRequest.contents);
     if (!reparsed) {
       LOG.error("Failed to reparse");
       recompile(request);
       return;
     }
 
-    LOG.info("Successfully reparsed method", currentMethod.second.getName());
+    watch.log();
+    LOG.info("Successfully reparsed method", methodTree.getName());
+    updateModificationCache(request);
+    cachedCompile.updatePositions(info.cu, true);
+    this.changeDelta = 0;
   }
 
   @Nullable
-  private Pair<Range, MethodTree> binarySearchCurrentMethod(
-      @NonNull final List<Pair<Range, MethodTree>> positions, final long cursor) {
+  private Pair<Range, TreePath> binarySearchCurrentMethod(
+      @NonNull final List<Pair<Range, TreePath>> positions, final long cursor) {
     int left = 0;
     int right = positions.size() - 1;
     while (left <= right) {
       int mid = (left + right) / 2;
-      final Pair<Range, MethodTree> method = positions.get(mid);
+      final Pair<Range, TreePath> method = positions.get(mid);
       final Range range = method.first;
       final int startIndex = range.getStart().requireIndex();
       final int endIndex = range.getEnd().requireIndex();
@@ -365,6 +400,11 @@ public class JavaCompilerService implements CompilerProvider {
   private synchronized void recompile(CompilationRequest request) {
     close();
     cachedCompile = performCompilation(request.sources);
+    updateModificationCache(request);
+    this.changeDelta = 0;
+  }
+
+  private void updateModificationCache(final CompilationRequest request) {
     cachedModified.clear();
     for (JavaFileObject f : request.sources) {
       cachedModified.put(f, f.getLastModified());
@@ -394,6 +434,10 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     return new CompileBatch(this, moreSources);
+  }
+
+  public void onContentChanged(@NonNull DocumentChangeEvent event) {
+    this.changeDelta += event.getChangeDelta();
   }
 
   public synchronized void close() {

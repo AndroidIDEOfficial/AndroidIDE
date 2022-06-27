@@ -307,6 +307,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     // If a file's content is changed, it is definitely visible to user.
     onFileSelected(event.getChangedFile());
     FileStore.change(event);
+    if (compiler != null) {
+      compiler.onContentChanged(event);
+    }
   }
 
   @Override

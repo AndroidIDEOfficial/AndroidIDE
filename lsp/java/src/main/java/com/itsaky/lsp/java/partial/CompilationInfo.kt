@@ -29,9 +29,9 @@ import javax.tools.JavaFileObject
  * @author Akash Yadav
  */
 data class CompilationInfo(
-  val task: JavacTaskImpl,
-  val diagnosticListener: DiagnosticListener<JavaFileObject>,
-  val cu: CompilationUnitTree,
+  @JvmField val task: JavacTaskImpl,
+  @JvmField val diagnosticListener: DiagnosticListener<JavaFileObject>,
+  @JvmField val cu: CompilationUnitTree,
 ) {
   val trees: JavacTrees = JavacTrees.instance(task)
 }
