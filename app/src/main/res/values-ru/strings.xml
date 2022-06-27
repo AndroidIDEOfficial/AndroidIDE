@@ -334,6 +334,6 @@
     <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
     <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
     <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
-    <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот щаблон будет работать только после настройки NDK</string>
+    <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
     <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 </resources>
