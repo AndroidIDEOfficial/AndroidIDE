@@ -50,7 +50,7 @@ class PartialReparserImplTest : BaseJavaTest() {
       val reparser = PartialReparserImpl()
       val method = FindMethodAt(task.task).scan(task.root(), 133)
       val reparsed =
-        reparser.parseMethod(
+        reparser.reparseMethod(
           CompilationInfo(task.task, task.diagnosticListener, task.root()),
           method!!.leaf as MethodTree,
           "{System.out.println(\"Hello world!\"); var klass = String.class;}"

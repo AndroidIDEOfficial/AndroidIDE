@@ -17,18 +17,29 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
+import com.itsaky.lsp.java.models.CompilationRequest;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.parser.Parser;
+import com.itsaky.lsp.java.partial.CompilationInfo;
+import com.itsaky.lsp.java.partial.PartialReparser;
+import com.itsaky.lsp.java.partial.PartialReparserImpl;
 import com.itsaky.lsp.java.utils.Cache;
 import com.itsaky.lsp.java.utils.Extractors;
 import com.itsaky.lsp.java.utils.ScanClassPath;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
+import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.MethodTree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -236,24 +248,15 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   @Override
-  public SynchronizedTask compile(Path... files) {
-    List<JavaFileObject> sources = new ArrayList<>();
-    for (Path f : files) {
-      sources.add(new SourceFileObject(f));
-    }
-    return compile(sources);
+  public SynchronizedTask compile(final CompilationRequest request) {
+    return compileBatch(request);
   }
 
-  @Override
-  public SynchronizedTask compile(Collection<? extends JavaFileObject> sources) {
-    return compileBatch(sources);
-  }
-
-  private SynchronizedTask compileBatch(Collection<? extends JavaFileObject> sources) {
+  private SynchronizedTask compileBatch(CompilationRequest request) {
     synchronizedTask.post(
         () -> {
-          if (needsCompile(sources)) {
-            loadCompile(sources);
+          if (needsCompilation(request.sources)) {
+            reparseOrRecompile(request);
           } else {
             LOG.info("...using cached compile");
           }
@@ -263,12 +266,10 @@ public class JavaCompilerService implements CompilerProvider {
     return synchronizedTask;
   }
 
-  private boolean needsCompile(Collection<? extends JavaFileObject> sources) {
-
+  private boolean needsCompilation(Collection<? extends JavaFileObject> sources) {
     if (cachedModified.size() != sources.size()) {
       return true;
     }
-
     for (JavaFileObject f : sources) {
       if (!cachedModified.containsKey(f)) {
         return true;
@@ -281,16 +282,96 @@ public class JavaCompilerService implements CompilerProvider {
     return false;
   }
 
-  private synchronized void loadCompile(Collection<? extends JavaFileObject> sources) {
+  private synchronized void reparseOrRecompile(CompilationRequest request) {
+    if (needsRecompilation(request)) {
+      LOG.warn("Cannot reparse. Recompilation is required");
+      recompile(request);
+    } else {
+      LOG.debug("Trying to perform a reparse...");
+      tryReparse(request);
+    }
+  }
+
+  private boolean needsRecompilation(final CompilationRequest request) {
+    return this.cachedCompile == null
+        || this.cachedCompile.closed
+        || request.partialRequest == null
+        || request.partialRequest.cursor < 0
+        || request.sources.size() != 1; // Cannot perform a reparse if there are multiple files
+  }
+
+  private void tryReparse(final CompilationRequest request) {
+
+    // Satisfy lint
+    Objects.requireNonNull(request.partialRequest);
+
+    final File file = new File(request.sources.iterator().next().toUri());
+    final String path = file.getAbsolutePath();
+    final List<Pair<Range, MethodTree>> positions = this.cachedCompile.methodPositions.get(path);
+    if (positions == null) {
+      LOG.warn("Cannot perform reparse. No method positions found.");
+      recompile(request);
+      return;
+    }
+
+    final Pair<Range, MethodTree> currentMethod =
+        binarySearchCurrentMethod(positions, request.partialRequest.cursor);
+    if (currentMethod == null) {
+      LOG.warn("Cannot perform reparse. Unable to find current method");
+      recompile(request);
+      return;
+    }
+
+    LOG.debug("Trying to reparse method:", currentMethod.second.getName());
+
+    final CompilationInfo info =
+        new CompilationInfo(
+            cachedCompile.task, cachedCompile.diagnosticListener, cachedCompile.roots.get(0));
+    final PartialReparser reparser = new PartialReparserImpl();
+    final boolean reparsed =
+        reparser.reparseMethod(info, currentMethod.second, request.partialRequest.contents);
+    if (!reparsed) {
+      LOG.error("Failed to reparse");
+      recompile(request);
+      return;
+    }
+
+    LOG.info("Successfully reparsed method", currentMethod.second.getName());
+  }
+
+  @Nullable
+  private Pair<Range, MethodTree> binarySearchCurrentMethod(
+      @NonNull final List<Pair<Range, MethodTree>> positions, final long cursor) {
+    int left = 0;
+    int right = positions.size() - 1;
+    while (left <= right) {
+      int mid = (left + right) / 2;
+      final Pair<Range, MethodTree> method = positions.get(mid);
+      final Range range = method.first;
+      final int startIndex = range.getStart().requireIndex();
+      final int endIndex = range.getEnd().requireIndex();
+
+      if (cursor < startIndex) {
+        right = mid - 1;
+      } else if (cursor > endIndex) {
+        left = mid + 1;
+      } else {
+        return method;
+      }
+    }
+    return null;
+  }
+
+  private synchronized void recompile(CompilationRequest request) {
     close();
-    cachedCompile = doCompile(sources);
+    cachedCompile = performCompilation(request.sources);
     cachedModified.clear();
-    for (JavaFileObject f : sources) {
+    for (JavaFileObject f : request.sources) {
       cachedModified.put(f, f.getLastModified());
     }
   }
 
-  private CompileBatch doCompile(Collection<? extends JavaFileObject> sources) {
+  private CompileBatch performCompilation(Collection<? extends JavaFileObject> sources) {
     if (sources.isEmpty()) {
       throw new RuntimeException("empty sources");
     }

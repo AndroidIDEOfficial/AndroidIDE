@@ -25,10 +25,11 @@ import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.internal.model.CachedCompletion;
-import com.itsaky.lsp.java.CompilationCancellationException;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.models.CompilationRequest;
+import com.itsaky.lsp.java.models.PartialReparseRequest;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider;
 import com.itsaky.lsp.java.providers.completion.IdentifierCompletionProvider;
@@ -43,8 +44,6 @@ import com.itsaky.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.sun.source.util.TreePath;
-
-import org.netbeans.lib.nbjavac.services.CancelAbort;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -126,7 +125,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     int endOfLine = endOfLine(contents, (int) cursor);
     contents.insert(endOfLine, ';');
 
-    CompletionResult result = compileAndComplete(file, contents.toString(), cursor);
+    final String contentString = contents.toString();
+    CompletionResult result = compileAndComplete(file, contentString, cursor, new PartialReparseRequest(cursor - params.requirePrefix().length(), contentString));
     if (result == null) {
       result = CompletionResult.EMPTY;
     }
@@ -171,12 +171,15 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return cursor;
   }
 
-  private CompletionResult compileAndComplete(Path file, String contents, long cursor) {
+  private CompletionResult compileAndComplete(Path file, String contents, long cursor, PartialReparseRequest partialRequest) {
     Instant started = Instant.now();
     SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
     String partial = partialIdentifier(contents, (int) cursor);
     boolean endsWithParen = endsWithParen(contents, (int) cursor);
-    SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList(source));
+    SynchronizedTask synchronizedTask =
+        compiler.compile(
+            new CompilationRequest(
+                Collections.singletonList(source), partialRequest));
     return synchronizedTask.get(
         task -> {
           LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");

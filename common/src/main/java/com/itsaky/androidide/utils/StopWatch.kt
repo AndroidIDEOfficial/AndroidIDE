@@ -24,8 +24,11 @@ package com.itsaky.androidide.utils
  * @param label The label for the log message.
  * @author Akash Yadav
  */
-class StopWatch(val label: String, val start: Long = System.currentTimeMillis()) {
+class StopWatch(val label: String, val start: Long) {
+
   private val log = ILogger.newInstance(javaClass.simpleName)
+
+  constructor(label: String) : this(label, System.currentTimeMillis())
 
   fun log() {
     log.debug("$label completed in ${System.currentTimeMillis() - start}ms")

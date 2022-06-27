@@ -116,7 +116,7 @@ class PartialReparserImpl : PartialReparser {
     }
   }
 
-  override fun parseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean {
+  override fun reparseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean {
 
     if (!allowPartialReparse) {
       log.debug("Partial reparse is disabled")

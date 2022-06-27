@@ -17,12 +17,19 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
+
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
 import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
+import com.itsaky.lsp.java.visitors.MethodRangeScanner;
+import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.MethodTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.io.File;
@@ -31,9 +38,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -54,23 +63,45 @@ public class CompileBatch implements AutoCloseable {
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
+  final Map<String, List<Pair<Range, MethodTree>>> methodPositions = new HashMap<>();
+
   CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
     this.parent = parent;
     this.borrow = batchTask(parent, files);
     this.task = borrow.task;
     this.roots = new ArrayList<>();
 
+    final StopWatch watch = new StopWatch("Create CompileBatch");
+    boolean first = true;
     for (CompilationUnitTree t : borrow.task.parse()) {
+      if (first) {
+        watch.lap("Parsed");
+        first = false;
+      }
+
       roots.add(t);
+
+      final StopWatch positionWatch = new StopWatch("Scan method positions");
+      final List<Pair<Range, MethodTree>> positions = new ArrayList<>();
+      new MethodRangeScanner(this.task).scan(t, positions);
+      final String path = new File(t.getSourceFile().toUri()).getAbsolutePath();
+      final List<Pair<Range, MethodTree>> old = this.methodPositions.put(path, positions);
+      if (old != null) {
+        throw new IllegalStateException(
+            "Duplicate CompilationUnitTree for file:" + t.getSourceFile().toUri());
+      }
+
+      positionWatch.log();
     }
 
     // The results of borrow.task.analyze() are unreliable when errors are present
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();
+    watch.log();
   }
 
   private ReusableCompiler.Borrow batchTask(
-      JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
+      @NonNull JavaCompilerService parent, @NonNull Collection<? extends JavaFileObject> sources) {
 
     parent.diagnostics.clear();
     final Iterable<String> options = options(parent.classPath);
@@ -82,8 +113,9 @@ public class CompileBatch implements AutoCloseable {
         parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
   }
 
+  @NonNull
   private static List<String> options(Set<Path> classPath) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
 
     Collections.addAll(list, "-classpath", joinPath(classPath));
     Collections.addAll(list, "-source", "11", "-target", "11");
@@ -109,7 +141,7 @@ public class CompileBatch implements AutoCloseable {
   /**
    * Combine source path or class path entries using the system separator, for example ':' in unix
    */
-  private static String joinPath(Collection<Path> classOrSourcePath) {
+  private static String joinPath(@NonNull Collection<Path> classOrSourcePath) {
     return classOrSourcePath.stream()
         .map(Path::toString)
         .collect(Collectors.joining(File.pathSeparator));
@@ -126,8 +158,8 @@ public class CompileBatch implements AutoCloseable {
    */
   Set<Path> needsAdditionalSources() {
     // Check for "class not found errors" that refer to package private classes
-    Set<Path> addFiles = new HashSet<Path>();
-    for (Diagnostic err : parent.diagnostics) {
+    Set<Path> addFiles = new HashSet<>();
+    for (Diagnostic<? extends JavaFileObject> err : parent.diagnostics) {
       if (!err.getCode().equals("compiler.err.cant.resolve.location")) {
         continue;
       }

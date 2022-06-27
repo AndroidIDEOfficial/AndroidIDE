@@ -25,5 +25,5 @@ import com.sun.source.tree.MethodTree
  * @author Akash Yadav
  */
 interface PartialReparser {
-  fun parseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean
+  fun reparseMethod(ci: CompilationInfo, orig: MethodTree, newBody: String): Boolean
 }
