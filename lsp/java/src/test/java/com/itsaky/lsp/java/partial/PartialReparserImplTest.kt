@@ -23,14 +23,13 @@ import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.compiler.SourceFileObject
 import com.itsaky.lsp.java.models.CompilationRequest
 import com.itsaky.lsp.java.models.PartialReparseRequest
+import com.itsaky.lsp.java.visitors.PrintingVisitor
 import com.itsaky.lsp.models.ChangeType.INSERT
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.sun.source.tree.ExpressionStatementTree
 import com.sun.source.tree.LiteralTree
 import com.sun.source.tree.Tree
-import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit
-import com.sun.tools.javac.tree.JCTree.JCErroneous
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl
 import com.sun.tools.javac.tree.JCTree.JCMethodInvocation
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl
@@ -66,7 +65,7 @@ class PartialReparserImplTest : BaseJavaTest() {
           PartialReparseRequest(172, contents.toString())
         )
       )
-      .run { PrintingScanner().scan(it.root() as JCCompilationUnit) }
+      .run { PrintingVisitor().scan(it.root() as JCCompilationUnit) }
     jls.onContentChange(
       DocumentChangeEvent(
         file!!,
@@ -86,20 +85,6 @@ class PartialReparserImplTest : BaseJavaTest() {
 
   override fun openFile(fileName: String) {
     super.openFile("partial/$fileName")
-  }
-
-  class PrintingScanner : TreeScanner() {
-    override fun scan(tree: JCTree?) {
-      if (tree != null) println(tree!!::class.java.name + ", " + tree)
-      super.scan(tree)
-    }
-
-    override fun visitErroneous(tree: JCErroneous?) {
-      if (tree?.errs != null) {
-        tree.errs.forEach { scan(it) }
-      }
-      super.visitErroneous(tree)
-    }
   }
 
   class AssertingScanner : TreeScanner() {

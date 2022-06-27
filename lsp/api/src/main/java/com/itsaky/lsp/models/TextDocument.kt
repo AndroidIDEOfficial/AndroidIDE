@@ -32,7 +32,7 @@ data class DocumentOpenEvent(var openedFile: Path, var text: String, var version
 
 data class DocumentCloseEvent(var closedFile: Path) : DocumentEvent(closedFile)
 
-data class DocumentChangeEvent(var changedFile: Path, var newText: CharSequence, var version: Int, var changeType: ChangeType, var changeDelta: Int) :
+data class DocumentChangeEvent(var changedFile: Path, var newText: String, var version: Int, var changeType: ChangeType, var changeDelta: Int) :
   DocumentEvent(changedFile)
 
 data class DocumentSaveEvent(var savedFile: Path) : DocumentEvent(savedFile)

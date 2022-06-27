@@ -45,9 +45,9 @@ abstract class CursorDependentTest : LoggingTest() {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!, 1, NEW_TEXT, 0))
+    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!.toString(), 1, NEW_TEXT, 0))
   }
-
+  
   fun cursorPosition(): Position {
     return cursorPosition(true)
   }

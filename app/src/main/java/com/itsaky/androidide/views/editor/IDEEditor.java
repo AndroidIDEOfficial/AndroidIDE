@@ -209,7 +209,8 @@ public class IDEEditor extends CodeEditor {
             }
 
             documentHandler.onContentChange(
-                new DocumentChangeEvent(file, getText(), mFileVersion + 1, type, changeDelta));
+                new DocumentChangeEvent(
+                    file, getText().toString(), mFileVersion + 1, type, changeDelta));
           }
 
           checkForSignatureHelp(event);

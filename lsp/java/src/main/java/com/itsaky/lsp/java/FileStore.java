@@ -211,7 +211,7 @@ public class FileStore {
     }
 
     // We do not support range changes
-    CharSequence newText = params.getNewText();
+    String newText = params.getNewText();
     activeDocuments.put(document, new VersionedContent(newText, params.getVersion()));
   }
 
@@ -228,7 +228,7 @@ public class FileStore {
     return activeDocuments.keySet();
   }
 
-  public static CharSequence contents(Path file) {
+  public static String contents(Path file) {
     if (!isJavaFile(file)) {
       throw new RuntimeException(file + " is not a java file");
     }
@@ -352,11 +352,11 @@ public class FileStore {
   }
 
   static class VersionedContent {
-    final CharSequence content;
+    final String content;
     final int version;
     final Instant modified = Instant.now();
 
-    VersionedContent(CharSequence content, int version) {
+    VersionedContent(String content, int version) {
       Objects.requireNonNull(content, "content is null");
       this.content = content;
       this.version = version;
