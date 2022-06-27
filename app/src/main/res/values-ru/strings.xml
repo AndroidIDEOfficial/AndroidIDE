@@ -117,7 +117,7 @@
     <string name="msg_search_modules">Искать в модулях</string>
     <string name="msg_no_modules">Модулей в проекте не найдено</string>
     <string name="hint_find_project_filter">Фильтровать файлы по расширению (необязательно)</string>
-    <string name="msg_find_project_filter">Разделены при помощи \'|\'</string>
+    <string name="msg_find_project_filter">Разделять при помощи \'|\'</string>
     <string name="msg_empty_search_query">Пожалуйста, введите текст</string>
     <string name="msg_select_search_modules">Выберите модули для поиска</string>
     <string name="msg_searching_project">Поиск в проекте, пожалуйста, подождите&#8230;</string>
@@ -175,7 +175,7 @@
     <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
     <string name="msg_failed_list_files">Не удалось получить список проектов!</string>
     <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
-    <string name="msg_storage_granted">Разрешение на взаимодействие получено!</string>
+    <string name="msg_storage_granted">Разрешение на взаимодействие с памятью получено!</string>
 
     <!-- Code Editor -->
     <string name="undo">Отмена действия</string>
@@ -245,7 +245,7 @@
     <string name="msg_yesno_def_title">Пожалуйста, подтвердите</string>
     <string name="msg_yesno_def_message">Вы уверены?</string>
     <string name="msg_view_deletion_failed">Невозможно удалить элемент.</string>
-    <string name="msg_empty_ui_layout">Элементов добавлено не было. Нажмите, чтобы добавить.</string>
+    <string name="msg_empty_ui_layout">Вы ещё не добавили элементов. Нажмите, чтобы добавить.</string>
     <string name="msg_no_attr_format">Нет доступного форматирования для этого атрибута.</string>
     <string name="msg_generate_xml_failed">Не удалось сгенерировать код XML</string>
     <string name="title_generating_xml">Генерация кода XML</string>
@@ -254,7 +254,7 @@
     <string name="msg_invalid_designer_result">Дизайнер интерфейсов возвратил недопустимое значение</string>
     <string name="msg_swipe_up">Провведите вверх, для просмотра сообщений сборки, логов и прочего.</string>
     <string name="msg_ide_crashed">AndroidIDE приостановила работу из-за непридвиденной ошибки</string>
-    <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже :</string>
+    <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
     <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
     <string name="msg_copy_report_action">Копировать и сообщить</string>
     <string name="msg_reading_bootstrap">Чтение архива Bootstrap…</string>
@@ -266,7 +266,7 @@
     <string name="msg_compiler_module_installed">Модуль компилятора успешно установлен!</string>
     <string name="action_expand_selection">Расширить выделение</string>
     <string name="idepref_java_matchLower_title">Искать совпадения в строчном регистре</string>
-    <string name="idepref_editor_category_common">Common</string>
+    <string name="idepref_editor_category_common">Общее</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Несохраненные файлы</string>
     <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>
