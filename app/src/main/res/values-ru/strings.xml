@@ -5,7 +5,7 @@
     <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
     <string name="title_open_source_licenses">Лицензирование открытого кода</string>
     <string name="msg_open_source_licenses">AndroidIDE использует открытые библиотеки. Вы можете найти исходный код и лицензии использованных библиотек, перейдя по ссылкам ниже.</string>
-    <string name="msg_about_licensed_under">Лицензия:ᅠ</string>
+    <string name="msg_about_licensed_under">"Лицензия: "</string>
     <string name="about_option_email">Email</string>
     <string name="about_option_website">Вебсайт</string>
     <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
@@ -30,7 +30,7 @@
     <string name="get_started">Давайте начнём!</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_cannot_perform_fix">Невозможно применить Быстрое Решение</string>
+    <string name="msg_cannot_perform_fix">Невозможно применить быстрое решение</string>
     <string name="msg_performing_actions">Применение изменений&#8230;</string>
     <string name="msg_code_actions">действия</string>
     <string name="msg_api_info_since">Начиная с API %d</string>
@@ -181,7 +181,7 @@
     <string name="undo">Отмена действия</string>
     <string name="redo">Повтор действия</string>
     <item name="copy" type="string" tools:override="true">Копировать</item>
-    <item name="next" type="string">Следующее</item>
+    <item name="next" type="string">Далее</item>
     <item name="text_to_search" type="string">Искать текст</item>
 
     <!-- Preferences -->
@@ -325,4 +325,15 @@
     <string name="msg_running_task">Запущенная задача: \'%1$s\'</string>
     <string name="msg_replacement">Замена</string>
     <string name="title_sync_project">Синхронизация проекта</string>
+    <string name="template_navigation_tabs">Проект с Bottom Navigation</string>
+    <string name="template_tabs">Проект с вкладками</string>
+    <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
+    <string name="template_cpp">Нативный проект на C++</string>
+    <string name="title_warning">Предупреждение</string>
+    <string name="wizard_toolchain">Стандартный C++</string>
+    <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
+    <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
+    <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
+    <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот щаблон будет работать только после настройки NDK</string>
+    <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 </resources>
