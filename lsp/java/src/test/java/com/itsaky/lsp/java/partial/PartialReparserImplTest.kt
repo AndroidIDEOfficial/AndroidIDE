@@ -148,7 +148,7 @@ class PartialReparserImplTest : BaseJavaTest() {
       assertThat(arg).isNotNull()
       assertThat(arg.kind).isEqualTo(Tree.Kind.STRING_LITERAL)
       arg as LiteralTree
-      assertThat(arg.value).isEqualTo("Hello world!")
+      assertThat(arg.value).isEqualTo("Hello World!")
 
       val varDecl = statements[1]
       assertThat(varDecl).isNotNull()
