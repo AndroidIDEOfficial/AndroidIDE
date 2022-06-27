@@ -12,7 +12,7 @@
     <string name="about_footer">AndroidIDE %1$s для %2$s</string>
     <string name="about_subtitle">Просто IDE для Android</string>
     <string name="msg_get_package_failed">Ошибка распаковки имени пакета!</string>
-    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает :\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает:\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
     <string name="msg_need_help">Если вы столкнулись с какими-либо проблемами при использовании AndroidIDE или при сборке Android приложений, вы можете присоединиться к нашей группе в Telegram и попросить о помощи там.\n\nВы также можете присылать нам свои пожелания и предложения на наш электронный адрес.</string>
     <string name="discuss_amp_help">Обсуждение и помощь</string>
     <string name="title_github">GitHub</string>
@@ -32,7 +32,7 @@
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Невозможно применить быстрое решение</string>
     <string name="msg_performing_actions">Применение изменений&#8230;</string>
-    <string name="msg_code_actions">действия</string>
+    <string name="msg_code_actions">Действия</string>
     <string name="msg_api_info_since">Начиная с API %d</string>
     <string name="msg_api_info_removed">Удалено в API %d</string>
     <string name="msg_api_info_deprecated">Устаревшее с API %d</string>
@@ -46,7 +46,7 @@
     <string name="title_installation_failed">Установка не удалась</string>
     <string name="get_ready_for_something_awesome">Приготовьтесь к чему-то замечательному!</string>
     <string name="msg_picked_isnt_dir">Выбранный файл не является директорией!</string>
-    <string name="msg_pick_single_file">Пожалуйста, выберите лишь одну директорию</string>
+    <string name="msg_pick_single_file">Пожалуйста, выберите только одну директорию</string>
     <string name="please_wait">Пожалуйста, подождите немного &#8230;</string>
     <string name="title_device_not_supported">Устройство не поддерживается</string>
     <string name="msg_device_not_supported">К сожалению, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
@@ -76,7 +76,7 @@
     <string name="run">Запустить</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">Первая сборка</string>
-    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
+    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, в зависимости от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
 
     <!-- Project -->
     <string name="create_project">Создать проект</string>
@@ -108,6 +108,15 @@
     <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
     <string name="template_compose">Jetpack Compose</string>
     <string name="template_description_compose">Базовый hello world проект Jetpack Compose.</string>
+    <string name="template_navigation_tabs">Проект с Bottom Navigation</string>
+    <string name="template_tabs">Проект с вкладками</string>
+    <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
+    <string name="template_cpp">Нативный проект на C++</string>
+    <string name="title_warning">Предупреждение</string>
+    <string name="wizard_toolchain">Стандартный C++</string>
+    <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
+    <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
+    <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
 
     <!-- Files -->
     <string name="save">Сохранить</string>
@@ -272,7 +281,7 @@
     <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>
     <string name="idepref_editor_autoSave_title">Сохранять файлы перед закрытием</string>
     <string name="idepref_editor_autoSave_summary">Сохранение файлов перед закрытием - ЭКСПЕРЕМЕНТАЛЬНАЯ опция. Подразумевается, что вы будете сохранять файлы самостоятельно.</string>
-    <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, атодополнение будет предлагать классы, переменные и методы.</string>
+    <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, автодополнение будет предлагать классы, переменные и методы.</string>
     <string name="idepref_editor_ligatures_title">Лигатуры шрифтов</string>
     <string name="idepref_editor_ligatures_summary">Включить/выключить лигатуры шрифтов</string>
 
@@ -325,15 +334,6 @@
     <string name="msg_running_task">Запущенная задача: \'%1$s\'</string>
     <string name="msg_replacement">Замена</string>
     <string name="title_sync_project">Синхронизация проекта</string>
-    <string name="template_navigation_tabs">Проект с Bottom Navigation</string>
-    <string name="template_tabs">Проект с вкладками</string>
-    <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
-    <string name="template_cpp">Нативный проект на C++</string>
-    <string name="title_warning">Предупреждение</string>
-    <string name="wizard_toolchain">Стандартный C++</string>
-    <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
-    <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
-    <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
     <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
     <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 </resources>
