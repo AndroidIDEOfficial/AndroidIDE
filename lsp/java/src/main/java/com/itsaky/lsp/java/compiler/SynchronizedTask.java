@@ -54,33 +54,7 @@ public class SynchronizedTask {
   private final Semaphore semaphore = new Semaphore(1);
   private CompileTask task;
 
-  public void cancelCompilation() {
-    if (this.task == null) {
-      return;
-    }
-
-    final JavacTaskImpl task = this.task.task;
-    if (task == null || task.getContext() == null) {
-      return;
-    }
-
-    LOG.debug("...cancelling compilation process");
-
-    final CancelServiceImpl cancelService =
-        (CancelServiceImpl) CancelService.instance(task.getContext());
-//    try {
-//      cancelService.cancel();
-//    } catch (Throwable e) {
-//      if (!(e instanceof CancelAbort || e.getCause() instanceof CancelAbort)) {
-//        throw new RuntimeException(e);
-//      }
-//    }
-//
-//    this.task.close();
-  }
-
   public void run(@NonNull Consumer<CompileTask> taskConsumer) {
-    cancelCompilation();
     semaphore.acquireUninterruptibly();
     try {
       taskConsumer.accept(this.task);
@@ -90,8 +64,6 @@ public class SynchronizedTask {
   }
 
   public <T> T get(@NonNull Function1<CompileTask, T> function) {
-    cancelCompilation();
-
     try {
       semaphore.acquire();
     } catch (InterruptedException e) {
@@ -118,9 +90,6 @@ public class SynchronizedTask {
       if (this.task != null) {
         this.task.close();
       }
-
-      cancelCompilation();
-
       run.run();
     } finally {
       semaphore.release();

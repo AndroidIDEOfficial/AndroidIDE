@@ -19,6 +19,7 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.java.utils.JavacTaskUtil;
 import com.itsaky.lsp.java.utils.TestUtils;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
@@ -363,13 +364,7 @@ public class ReusableCompiler {
       // not returning the context to the pool if task crashes with an exception
       // the task/context may be in a broken state
       currentContext.clear();
-      try {
-        Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
-        method.setAccessible(true);
-        method.invoke(task);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-        throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
-      }
+      JavacTaskUtil.cleanup(task);
 
       checkedOut = false;
       closed = true;

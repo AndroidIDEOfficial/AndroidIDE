@@ -39,7 +39,6 @@ import com.itsaky.lsp.models.ChangeType;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -154,9 +153,6 @@ public class IDEEditor extends CodeEditor {
         final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
         documentHandler.onFileOpened(event);
       }
-
-      // request diagnostics
-      analyze();
     }
 
     if (file != null) {
@@ -174,8 +170,7 @@ public class IDEEditor extends CodeEditor {
           .whenComplete(
               (diagnostics, throwable) -> {
                 if (mLanguageClient != null) {
-                  mLanguageClient.publishDiagnostics(
-                      new DiagnosticResult(getFile().toPath(), diagnostics));
+                  mLanguageClient.publishDiagnostics(diagnostics);
                 }
               });
     }

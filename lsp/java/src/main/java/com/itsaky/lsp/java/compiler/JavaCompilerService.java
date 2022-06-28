@@ -71,15 +71,18 @@ public class JavaCompilerService implements CompilerProvider {
   private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
+
   protected final ScanClassPath classPathScanner = new ScanClassPath();
   protected final Set<Path> classPath, docPath;
   protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(), classPathClasses;
-  protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
+  protected final Cache<Void, List<String>> cacheFileImports = new Cache<>();
+  protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final SourceFileManager fileManager;
-  private final Cache<Void, List<String>> cacheFileImports = new Cache<>();
+
   public ReusableCompiler compiler = new ReusableCompiler();
+
   private CompileBatch cachedCompile;
   private int changeDelta = 0;
 

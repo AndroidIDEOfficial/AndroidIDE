@@ -36,7 +36,7 @@ class AddImportTest : BaseJavaTest() {
     openFile("AddImportAction")
 
     val diagnostic =
-      mServer.analyze(file!!).first { it.code == "compiler.err.cant.resolve.location" }
+      mServer.analyze(file!!).diagnostics.first { it.code == "compiler.err.cant.resolve.location" }
     val file = this.file!!.toFile()
     val data = createActionData(diagnostic, file, this.file!!, this.mServer)
 

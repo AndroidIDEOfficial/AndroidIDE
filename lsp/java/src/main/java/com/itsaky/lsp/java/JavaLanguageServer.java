@@ -39,9 +39,9 @@ import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
+import com.itsaky.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
@@ -59,9 +59,7 @@ import com.itsaky.lsp.util.LSPEditorActions;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -69,6 +67,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
   public static final String SERVER_ID = "java";
+  private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
+  private final CompletionProvider completionProvider;
+  private final JavaDiagnosticProvider diagnosticProvider;
   private ILanguageClient client;
   private IServerSettings settings;
   private JavaCompilerService compiler;
@@ -83,6 +84,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     this.initialized = false;
     this.createCompiler = true;
     this.configuration = new JavaServerConfiguration();
+    this.completionProvider = new CompletionProvider();
+    this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
@@ -97,11 +100,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         .whenComplete(
             ((diagnostics, throwable) -> {
               if (client != null) {
-                if (diagnostics == null) {
-                  diagnostics = new ArrayList<>(0);
-                }
-
-                client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
+                client.publishDiagnostics(diagnostics);
               }
             }));
   }
@@ -162,6 +161,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     FileStore.shutdown();
+    timer.shutdown();
     initialized = false;
   }
 
@@ -209,7 +209,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
       return new NoCompletionsProvider();
     }
 
-    return new CompletionProvider(
+    return this.completionProvider.reset(
         getCompiler(), this.settings, this.cachedCompletion, this::updateCachedCompletion);
   }
 
@@ -255,12 +255,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @NonNull
   @Override
-  public List<DiagnosticItem> analyze(@NonNull Path file) {
+  public DiagnosticResult analyze(@NonNull Path file) {
     if (!settings.codeAnalysisEnabled()) {
-      return Collections.emptyList();
+      return DiagnosticResult.NO_UPDATE;
     }
 
-    return new JavaDiagnosticProvider(getCompiler()).analyze(file);
+    return this.diagnosticProvider.analyze(getCompiler(), file);
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -305,6 +305,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   public void onFileOpened(DocumentOpenEvent event) {
     onFileSelected(event.getOpenedFile());
     FileStore.open(event);
+    startOrRestartAnalyzeTimer();
   }
 
   @Override
@@ -315,6 +316,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     if (compiler != null) {
       compiler.onContentChanged(event);
     }
+    startOrRestartAnalyzeTimer();
   }
 
   @Override
@@ -330,5 +332,13 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public void onFileSelected(@NonNull Path path) {
     this.selectedFile = path;
+  }
+
+  private void startOrRestartAnalyzeTimer() {
+    if (!this.timer.isStarted()) {
+      this.timer.start();
+    } else {
+      this.timer.restart();
+    }
   }
 }

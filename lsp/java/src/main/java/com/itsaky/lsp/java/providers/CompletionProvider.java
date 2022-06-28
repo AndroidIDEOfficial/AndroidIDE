@@ -42,41 +42,49 @@ import com.itsaky.lsp.java.providers.completion.SwitchConstantCompletionProvider
 import com.itsaky.lsp.java.providers.completion.TopLevelSnippetsProvider;
 import com.itsaky.lsp.java.utils.ASTFixer;
 import com.itsaky.lsp.java.visitors.FindCompletionsAt;
-import com.itsaky.lsp.java.visitors.PrintingVisitor;
 import com.itsaky.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;
-import com.sun.tools.javac.tree.JCTree;
 
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
   public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
   private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
-  private final JavaCompilerService compiler;
-  private final CachedCompletion cache;
-  private final Consumer<CachedCompletion> nextCacheConsumer;
+  private JavaCompilerService compiler;
+  private CachedCompletion cache;
+  private Consumer<CachedCompletion> nextCacheConsumer;
+  private final AtomicBoolean completing = new AtomicBoolean(false);
 
-  public CompletionProvider(
+  public CompletionProvider() {
+    super();
+  }
+
+  public synchronized CompletionProvider reset(
       JavaCompilerService compiler,
       IServerSettings settings,
       CachedCompletion cache,
       Consumer<CachedCompletion> nextCacheConsumer) {
-    super();
-    super.applySettings(settings);
-
     this.compiler = compiler;
     this.cache = cache;
     this.nextCacheConsumer = nextCacheConsumer;
+
+    super.applySettings(settings);
+    return this;
+  }
+
+  public boolean isCompleting() {
+    return completing.get();
   }
 
   @Override
@@ -90,7 +98,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     if (compiler.getSynchronizedTask().isCompiling()) {
       return CompletionResult.EMPTY;
     }
-    return completeInternal(params);
+
+    completing.set(true);
+    try {
+      return completeInternal(params);
+    } finally {
+      completing.set(false);
+    }
   }
 
   @NonNull

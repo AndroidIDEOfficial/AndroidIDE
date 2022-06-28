@@ -38,7 +38,7 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
@@ -49,7 +49,6 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * A language server provides API for providing functions related to a specific file type.
@@ -177,10 +176,11 @@ public interface ILanguageServer {
    * Analyze the given file and provide diagnostics from the analyze result.
    *
    * @param file The file to analyze.
-   * @return The list of diagnostics. May be empty.
+   * @return The diagnostic result. Points to {@link DiagnosticResult#NO_UPDATE} if no diagnotic
+   *     items are available.
    */
   @NonNull
-  List<DiagnosticItem> analyze(@NonNull Path file);
+  DiagnosticResult analyze(@NonNull Path file);
 
   /**
    * Format the given source code input.

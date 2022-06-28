@@ -27,6 +27,7 @@ import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_NONE
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_TYPO
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_WARNING
 import java.nio.file.Path
+import java.nio.file.Paths
 
 data class DiagnosticItem(
   var message: String,
@@ -57,7 +58,11 @@ data class DiagnosticItem(
     DiagnosticRegion(range.start.requireIndex(), range.end.requireIndex(), mapSeverity(severity))
 }
 
-data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>)
+data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>) {
+  companion object {
+    @JvmField val NO_UPDATE = DiagnosticResult(Paths.get(""), emptyList())
+  }
+}
 
 enum class DiagnosticSeverity {
   ERROR,

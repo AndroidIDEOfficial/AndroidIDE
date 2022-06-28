@@ -27,7 +27,7 @@ import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
@@ -47,7 +47,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Language server implementation for XML files.
@@ -176,8 +175,8 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public List<DiagnosticItem> analyze(@NonNull Path file) {
-    return Collections.emptyList();
+  public DiagnosticResult analyze(@NonNull Path file) {
+    return DiagnosticResult.NO_UPDATE;
   }
 
   @NonNull
