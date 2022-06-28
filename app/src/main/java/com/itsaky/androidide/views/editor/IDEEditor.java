@@ -203,9 +203,15 @@ public class IDEEditor extends CodeEditor {
               changeDelta = -changeDelta;
             }
 
+            final var start = event.getChangeStart();
+            final var end = event.getChangeEnd();
+            final var changeRange =
+                new Range(
+                    new Position(start.line, start.column, start.index),
+                    new Position(end.line, end.column, end.index));
             documentHandler.onContentChange(
                 new DocumentChangeEvent(
-                    file, getText().toString(), mFileVersion + 1, type, changeDelta));
+                    file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange));
           }
 
           checkForSignatureHelp(event);

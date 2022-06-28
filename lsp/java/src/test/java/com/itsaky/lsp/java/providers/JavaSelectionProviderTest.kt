@@ -46,7 +46,7 @@ class JavaSelectionProviderTest : BaseJavaTest() {
     cursor = requireCursor()
     deleteCursorText()
     mServer.documentHandler.onContentChange(
-      DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0)
+      DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, Range.NONE)
     )
 
     val range = findRange()

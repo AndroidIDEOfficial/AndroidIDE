@@ -26,6 +26,7 @@ import com.itsaky.lsp.java.models.PartialReparseRequest
 import com.itsaky.lsp.java.visitors.PrintingVisitor
 import com.itsaky.lsp.models.ChangeType.INSERT
 import com.itsaky.lsp.models.DocumentChangeEvent
+import com.itsaky.lsp.models.Range
 import com.sun.source.tree.ExpressionStatementTree
 import com.sun.source.tree.LiteralTree
 import com.sun.source.tree.Tree
@@ -72,7 +73,8 @@ class PartialReparserImplTest : BaseJavaTest() {
         contents!!.insert(192, "trim().").toString(),
         2,
         INSERT,
-        "trim().".length
+        "trim().".length,
+        Range.NONE
       )
     )
     jls.compiler.compile(
