@@ -34,4 +34,11 @@ dependencies {
     implementation project (path: ':lsp:api')
     implementation project (path: ':lsp:java')
     implementation project (path: ':lsp:xml')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+    androidTestImplementation tests.androidx_junit
+    androidTestImplementation tests.androidx_espresso
+    androidTestImplementation tests.google_truth
 }
