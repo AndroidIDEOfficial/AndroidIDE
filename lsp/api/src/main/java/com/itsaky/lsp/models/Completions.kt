@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.models
 
+import android.os.Looper
+import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
@@ -31,6 +33,9 @@ import com.itsaky.lsp.models.MatchLevel.PARTIAL_MATCH
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
+import java.util.concurrent.*
+import java.util.concurrent.TimeUnit.*
+import java.util.function.*
 
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
@@ -57,13 +62,12 @@ open class CompletionResult(items: List<CompletionItem>) {
   val items: List<CompletionItem> = run {
     var temp = items.toMutableList()
     temp.sort()
-
     if (TRIM_TO_MAX && temp.size > MAX_ITEMS) {
       temp = temp.subList(0, MAX_ITEMS)
     }
     return@run temp
   }
-
+  
   var isIncomplete = this.items.size < items.size
   var isCached = false
 
@@ -88,7 +92,7 @@ open class CompletionResult(items: List<CompletionItem>) {
       // Max limit has been reached
       return
     }
-
+    
     if (items is MutableList) {
       this.items.add(item)
     }
@@ -118,6 +122,8 @@ open class CompletionItem(
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
 
+  private val log = ILogger.newInstance(javaClass.simpleName)
+
   var sortText: String? = sortText
     get() {
       if (field == null) {
@@ -137,6 +143,8 @@ open class CompletionItem(
     }
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
+
+  var postComputeAdditionalEdits: Supplier<List<TextEdit>>? = null
 
   constructor() :
     this(
@@ -191,6 +199,11 @@ open class CompletionItem(
   fun getLabel(): String = this.label as String
 
   override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      ThreadUtils.runOnUiThread { performCompletion(editor, text, line, column) }
+      return
+    }
+
     val start = getIdentifierStart(text.getLine(line), column)
     val shift = insertText.contains("$0")
 
@@ -204,7 +217,6 @@ open class CompletionItem(
         if (i != 0) {
           commit = "\n" + commit
         }
-
         editor.commitText(commit)
         i++
       }
@@ -220,6 +232,17 @@ open class CompletionItem(
       if (c != -1) {
         editor.setSelection(l, c)
         editor.text.delete(l, c, l, c + 2)
+      }
+    }
+
+    if (postComputeAdditionalEdits != null) {
+      try {
+        log.debug("Computing text edits for selected completion item...")
+        this.additionalTextEdits =
+          CompletableFuture.supplyAsync(postComputeAdditionalEdits).get(200, MILLISECONDS)
+      } catch (e: Throwable) {
+        log.error("Unable to compute additional edits for completion item", e)
+        this.additionalTextEdits = null
       }
     }
 
@@ -250,17 +273,14 @@ open class CompletionItem(
   }
 
   private fun getIdentifierStart(text: CharSequence, end: Int): Int {
-
     var start = end
     while (start > 0) {
       if (Character.isJavaIdentifierPart(text[start - 1])) {
         start--
         continue
       }
-
       break
     }
-
     return start
   }
 

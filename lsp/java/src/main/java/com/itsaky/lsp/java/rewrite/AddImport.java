@@ -56,6 +56,7 @@ public class AddImport extends Rewrite {
         file, new TextEdit[] {new TextEdit(new Range(point, point), text)});
   }
 
+  @SuppressWarnings("Since15")
   private Position insertPosition(@NonNull ParseTask task) {
     List<? extends ImportTree> imports = task.root.getImports();
     for (ImportTree i : imports) {

@@ -39,6 +39,7 @@ import com.itsaky.lsp.models.MatchLevel
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
 import java.nio.file.Path
+import java.util.function.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.ANNOTATION_TYPE
 import javax.lang.model.element.ElementKind.CLASS
@@ -75,7 +76,7 @@ abstract class IJavaCompletionProvider(
   protected val log: ILogger = ILogger.newInstance(javaClass.name)
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
-
+  
   open fun complete(
     task: CompileTask,
     path: TreePath,
@@ -85,7 +86,7 @@ abstract class IJavaCompletionProvider(
     val root = task.root(completingFile)
     filePackage = root.`package`.packageName.toString()
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
-    return doComplete(task, path, partial, endsWithParen)
+    return doComplete(task, path, partial, endsWithParen);
   }
 
   /**
@@ -201,7 +202,9 @@ abstract class IJavaCompletionProvider(
     val data = CompletionData()
     data.className = className
     item.data = data
-    item.additionalTextEdits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
+    item.postComputeAdditionalEdits = Supplier {
+      EditHelper.addImportIfNeeded(compiler, file, imports, className)
+    }
     return item
   }
 

@@ -127,7 +127,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
       result.markCached();
 
-      if (!result.isIncomplete() && result.getItems().size() > 10) {
+      if (!result.isIncomplete() && !result.getItems().isEmpty()) {
         LOG.info("...using cached completion");
         logCompletionDuration(started, result);
         return result;

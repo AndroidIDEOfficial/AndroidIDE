@@ -179,7 +179,7 @@ class ScopeCompletionProvider(
     if (item.additionalTextEdits == null) {
       item.additionalTextEdits = mutableListOf()
     }
-
+    
     imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
     if (imports.isNotEmpty()) {
       for (className in imports) {
