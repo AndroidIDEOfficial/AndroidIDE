@@ -37,9 +37,7 @@ public class JavacTaskUtil {
     if (VMUtils.isJvm()) {
       jvmCleanup(task);
     } else {
-      // TODO Use the below method call once version 17.0.0.1 if nb-javac-android is released
-      // task.cleanup();
-      jvmCleanup(task);
+      task.cleanup();
     }
   }
 
