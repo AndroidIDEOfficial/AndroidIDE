@@ -127,6 +127,7 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
+import com.itsaky.lsp.api.ILanguageServerRegistry;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -1638,8 +1639,7 @@ public class EditorActivity extends StudioActivity
   }
 
   private void shutdownLanguageServers() {
-    final var javaServer = getApp().getJavaLanguageServer();
-    javaServer.shutdown();
+    ILanguageServerRegistry.getDefault().destroy();
   }
 
   private void onSoftInputChanged() {

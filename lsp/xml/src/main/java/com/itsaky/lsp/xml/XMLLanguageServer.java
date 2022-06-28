@@ -61,6 +61,8 @@ public class XMLLanguageServer implements ILanguageServer {
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public SDKInfo sdkInfo;
 
+  public static final String SERVER_ID = "xml";
+
   private ILanguageClient client;
   private IServerSettings settings;
   private boolean initialized = false;
@@ -89,6 +91,11 @@ public class XMLLanguageServer implements ILanguageServer {
     capabilities.setSmartSelectionsEnabled(false);
 
     initialized = true;
+  }
+
+  @Override
+  public String getServerId() {
+    return SERVER_ID;
   }
 
   @Override

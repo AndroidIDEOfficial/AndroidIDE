@@ -16,8 +16,6 @@
  */
 package com.itsaky.androidide.projects
 
-import com.itsaky.androidide.app.StudioApp
-import com.itsaky.androidide.services.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
@@ -25,6 +23,8 @@ import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.tooling.api.util.ProjectDataCollector
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.api.ILanguageServerRegistry
+import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.models.JavaServerConfiguration
 import java.io.File
 import java.nio.file.Path
@@ -50,7 +50,7 @@ object ProjectManager {
     }
   var projectPath: String? = null
 
-  fun isInitialized() = this.rootProject != null && this.rootProject!!.isProjectInitialized.get()
+  fun isInitialized() = rootProject != null && rootProject!!.isProjectInitialized.get()
 
   fun checkInit(): Boolean {
     if (isInitialized()) {
@@ -67,7 +67,7 @@ object ProjectManager {
     return projectPath
   }
 
-  fun generateSources(builder: BuildService?) {
+  fun generateSources(builder: com.itsaky.androidide.projects.builder.BuildService?) {
     if (builder == null) {
       log.warn("Cannot generate sources. BuildService is null.")
       return
@@ -140,22 +140,22 @@ object ProjectManager {
         return@whenCompleteAsync
       }
 
-      val server = StudioApp.getInstance().javaLanguageServer
+      val server = ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
       val classPaths = collectClassPaths(it)
       val sourceDirs = collectSourceDirs(it)
       val configuration = JavaServerConfiguration(classPaths, sourceDirs)
-      server.configurationChanged(configuration)
+      server!!.configurationChanged(configuration)
     }
   }
 
   fun collectResDirectories(android: IdeAndroidModule) =
-    ProjectDataCollector.collectResDirectories(this.rootProject!!, android)
+    ProjectDataCollector.collectResDirectories(rootProject!!, android)
 
   fun collectClassPaths(app: IdeAndroidModule) =
-    ProjectDataCollector.collectClassPaths(this.rootProject!!, app)
+    ProjectDataCollector.collectClassPaths(rootProject!!, app)
 
   fun collectSourceDirs(app: IdeAndroidModule): Set<Path> =
-    ProjectDataCollector.collectSourceDirs(this.rootProject!!, app)
+    ProjectDataCollector.collectSourceDirs(rootProject!!, app)
 
   @Suppress("unused")
   fun collectProjectDependencies(project: IProject, app: IdeAndroidModule) =

@@ -59,6 +59,13 @@ import java.util.List;
 public interface ILanguageServer {
 
   /**
+   * Get the unique language server ID.
+   *
+   * @return The server ID.
+   */
+  String getServerId();
+
+  /**
    * Initialize this language server with the given params. Subclasses are expected to throw {@link
    * AlreadyInitializedException} if the language server was already initialized.
    *

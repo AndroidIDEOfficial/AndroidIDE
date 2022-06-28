@@ -39,7 +39,6 @@ import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
-import com.itsaky.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -69,6 +68,7 @@ import java.util.concurrent.CompletableFuture;
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
+  public static final String SERVER_ID = "java";
   private ILanguageClient client;
   private IServerSettings settings;
   private JavaCompilerService compiler;
@@ -112,6 +112,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     return settings;
+  }
+
+  @Override
+  public String getServerId() {
+    return SERVER_ID;
   }
 
   @Override

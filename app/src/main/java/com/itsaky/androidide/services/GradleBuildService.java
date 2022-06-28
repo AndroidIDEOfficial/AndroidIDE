@@ -44,6 +44,7 @@ import com.itsaky.androidide.fragments.preferences.BuildPreferences;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tooling.api.IProject;
