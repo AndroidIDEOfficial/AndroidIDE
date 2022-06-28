@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.partial
 
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.lsp.java.compiler.JavacFlowListener
 import com.itsaky.lsp.java.visitors.FindAnonymousVisitor
 import com.itsaky.lsp.java.visitors.TranslateMethodPositionsVisitor
@@ -42,6 +43,7 @@ import com.sun.tools.javac.comp.TypeEnter
 import com.sun.tools.javac.parser.JavacParser
 import com.sun.tools.javac.parser.LazyDocCommentTable
 import com.sun.tools.javac.parser.ScannerFactory
+import com.sun.tools.javac.tree.DocCommentTable
 import com.sun.tools.javac.tree.EndPosTable
 import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.JCTree.JCBlock
@@ -54,6 +56,7 @@ import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.List
 import com.sun.tools.javac.util.Log
 import com.sun.tools.javac.util.Names
+import com.sun.tools.javac.util.Position.LineMapImpl
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.nio.CharBuffer
@@ -70,14 +73,34 @@ import org.netbeans.lib.nbjavac.services.NBParserFactory
 class PartialReparserImpl : PartialReparser {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
-  private var unenter: Method?
-  private var lazyDocCommentsTable: Field?
-  private var parserDocComments: Field?
-  private var lineMapBuild: Method?
-  private var allowPartialReparse: Boolean
-  private var useUnEnterScanner: Boolean
+  private var unenter: Method? = null
+  private var lazyDocCommentsTable: Field? = null
+  private var parserDocComments: Field? = null
+  private var lineMapBuild: Method? = null
+  private var allowPartialReparse: Boolean = false
+  private var useUnEnterScanner: Boolean = true
+  private var isAndroid = VMUtils.isJvm().not()
 
   init {
+    if (isAndroid) {
+      nullReflectors()
+      this.allowPartialReparse = true
+      this.useUnEnterScanner = false
+    } else {
+      initializeReflectors()
+    }
+  }
+
+  private fun nullReflectors() {
+    this.unenter = null
+    this.lazyDocCommentsTable = null
+    this.parserDocComments = null
+    this.lineMapBuild = null
+    this.allowPartialReparse = false
+    this.useUnEnterScanner = false
+  }
+
+  private fun initializeReflectors() {
     try {
       // These methods can be easily accessed without reflection in Android Runtime
       // But not in JVM (for tests)
@@ -103,12 +126,7 @@ class PartialReparserImpl : PartialReparser {
       this.allowPartialReparse = true
     } catch (err: Throwable) {
       log.error(err)
-      this.unenter = null
-      this.lazyDocCommentsTable = null
-      this.parserDocComments = null
-      this.lineMapBuild = null
-      this.allowPartialReparse = false
-      this.useUnEnterScanner = false
+      nullReflectors()
     }
   }
 
@@ -191,7 +209,7 @@ class PartialReparserImpl : PartialReparser {
           return false
         }
 
-        val docCommentsTable = lazyDocCommentsTable!!.get(cu.docComments) as MutableMap<JCTree, Any>
+        val docCommentsTable = getLazyDocCommentsTable(cu)
         docCommentsTable.keys.removeAll(fav.docOwners)
         docCommentsTable.putAll(docComments)
         val delta = newEndPos - origEndPos
@@ -218,7 +236,7 @@ class PartialReparserImpl : PartialReparser {
           arr[index] = fileContents[index]
         }
 
-        lineMapBuild!!.invoke(cu.getLineMap(), arr, arr.size)
+        buildLineMap(cu, arr)
         dl.endPartialReparse(delta)
       } finally {
         l.endPartialReparse(cu.sourceFile)
@@ -231,9 +249,38 @@ class PartialReparserImpl : PartialReparser {
     return true
   }
 
+  private fun buildLineMap(cu: JCCompilationUnit, arr: CharArray) {
+    if (isAndroid) {
+      // We can acess this directly in Android Runtime
+      (cu.getLineMap() as LineMapImpl).build(arr, arr.size)
+      return
+    }
+
+    lineMapBuild!!.invoke(cu.getLineMap(), arr, arr.size)
+  }
+
+  private fun getLazyDocCommentsTable(cu: JCCompilationUnit): MutableMap<JCTree, Any> {
+    return getLazyDocCommentsTable(cu.docComments)
+  }
+
+  private fun getLazyDocCommentsTable(docs: DocCommentTable): MutableMap<JCTree, Any> {
+    if (isAndroid) {
+      // We can acess this directly in Android Runtime
+      return (docs as LazyDocCommentTable).table as MutableMap<JCTree, Any>
+    }
+
+    return lazyDocCommentsTable!!.get(docs) as MutableMap<JCTree, Any>
+  }
+
   private fun doUnenter(context: Context?, cu: CompilationUnitTree, method: JCMethodDecl) {
     if (cu !is JCCompilationUnit) {
       throw IllegalStateException()
+    }
+
+    if (isAndroid) {
+      // We can acess this directly in Android Runtime
+      Enter.instance(context).unenter(cu, method)
+      return
     }
 
     val enter = Enter.instance(context)
@@ -262,14 +309,20 @@ class PartialReparserImpl : PartialReparser {
     val parser = newParser(context, buf, method.body.pos, (cu as JCCompilationUnit).endPositions)
     val statement = parser.parseStatement()
     if (statement.kind == BLOCK) {
-      docComments.putAll(
-        lazyDocCommentsTable!!.get(parserDocComments!!.get(parser)) as MutableMap<JCTree, Any>
-      )
+      docComments.putAll(getLazyDocCommentsTable(getParserDocComments(parser)))
       return statement as JCBlock
     }
-    
+
     log.warn("JavacParser parsed invalid statment. Block statement was expected...")
     return null
+  }
+
+  private fun getParserDocComments(parser: JavacParser): DocCommentTable {
+    if (isAndroid) {
+      return parser.docComments
+    }
+
+    return parserDocComments!!.get(parser) as DocCommentTable
   }
 
   private fun newParser(

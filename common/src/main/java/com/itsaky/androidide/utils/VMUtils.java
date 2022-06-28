@@ -24,23 +24,30 @@ package com.itsaky.androidide.utils;
  */
 public class VMUtils {
 
+  private static Boolean isJvm = null;
+
   /**
    * @return <code>true</code> if the current platform is JVM, <code>false</code> otherwise.
    */
   public static boolean isJvm() {
+
+    if (isJvm != null) {
+      return isJvm;
+    }
+
     try {
       // If we're in a testing environment
       Class.forName("org.junit.runners.JUnit4");
-      return true;
+      return isJvm = true;
     } catch (ClassNotFoundException e) {
       // ignored
     }
 
     try {
       Class.forName("android.content.Context");
-      return false;
+      return isJvm = false;
     } catch (ClassNotFoundException e) {
-      return true;
+      return isJvm = true;
     }
   }
 }
