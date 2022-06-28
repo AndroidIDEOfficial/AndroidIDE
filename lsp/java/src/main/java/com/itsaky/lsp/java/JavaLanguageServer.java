@@ -49,6 +49,7 @@ import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
@@ -57,6 +58,8 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.LSPEditorActions;
 import com.itsaky.lsp.util.NoCompletionsProvider;
+
+import org.netbeans.lib.nbjavac.services.CancelAbort;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -332,6 +335,25 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public void onFileSelected(@NonNull Path path) {
     this.selectedFile = path;
+  }
+
+  @Override
+  public boolean handleFailure(final LSPFailure failure) {
+    //noinspection SwitchStatementWithTooFewBranches
+    switch (failure.getType()) {
+      case COMPLETION:
+        if (CancelAbort.isCancelled(failure.getError())
+            || CompilationCancellationException.isCancelled(failure.getError())) {
+          return false;
+        }
+
+        if (compiler != null) {
+          compiler.close();
+        }
+        return true;
+    }
+
+    return false;
   }
 
   private void startOrRestartAnalyzeTimer() {

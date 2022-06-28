@@ -41,6 +41,7 @@ import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
@@ -200,6 +201,16 @@ public interface ILanguageServer {
    */
   @NonNull
   IDocumentHandler getDocumentHandler();
+
+  /**
+   * Handle failure caused by LSP
+   *
+   * @param failure {@link LSPFailure} describing the failure.
+   * @return <code>true</code> if the failure was handled. <code>false</code> otherwise.
+   */
+  default boolean handleFailure(LSPFailure failure) {
+    return false;
+  }
 
   /**
    * Thrown to indicate that a language server received an initialize notification but was already
