@@ -21,6 +21,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
+import com.itsaky.lsp.java.edits.ClassImportEditHandler
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.models.Command
 import com.itsaky.lsp.models.CompletionData
@@ -202,9 +203,7 @@ abstract class IJavaCompletionProvider(
     val data = CompletionData()
     data.className = className
     item.data = data
-    item.postComputeAdditionalEdits = Supplier {
-      EditHelper.addImportIfNeeded(compiler, file, imports, className)
-    }
+    item.additionalEditHandler = ClassImportEditHandler(imports, file!!)
     return item
   }
 

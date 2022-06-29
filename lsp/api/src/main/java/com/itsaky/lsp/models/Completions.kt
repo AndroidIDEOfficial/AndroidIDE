@@ -23,6 +23,7 @@ import com.itsaky.androidide.fuzzysearch.FuzzySearch
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ICompletionProvider
+import com.itsaky.lsp.edits.IEditHandler
 import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
 import com.itsaky.lsp.models.MatchLevel.CASE_INSENSITIVE_PREFIX
@@ -30,12 +31,10 @@ import com.itsaky.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.lsp.models.MatchLevel.CASE_SENSITIVE_PREFIX
 import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.lsp.models.MatchLevel.PARTIAL_MATCH
+import com.itsaky.lsp.util.RewriteHelper
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
-import java.util.concurrent.*
-import java.util.concurrent.TimeUnit.*
-import java.util.function.*
 
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
@@ -67,7 +66,7 @@ open class CompletionResult(items: List<CompletionItem>) {
     }
     return@run temp
   }
-  
+
   var isIncomplete = this.items.size < items.size
   var isCached = false
 
@@ -92,7 +91,7 @@ open class CompletionResult(items: List<CompletionItem>) {
       // Max limit has been reached
       return
     }
-    
+
     if (items is MutableList) {
       this.items.add(item)
     }
@@ -143,8 +142,7 @@ open class CompletionItem(
     }
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
-
-  var postComputeAdditionalEdits: Supplier<List<TextEdit>>? = null
+  var additionalEditHandler: IEditHandler? = null
 
   constructor() :
     this(
@@ -207,6 +205,7 @@ open class CompletionItem(
     val start = getIdentifierStart(text.getLine(line), column)
     val shift = insertText.contains("$0")
 
+    text.beginBatchEdit()
     text.delete(line, start, line, column)
 
     if (text.contains("\n")) {
@@ -235,29 +234,13 @@ open class CompletionItem(
       }
     }
 
-    if (postComputeAdditionalEdits != null) {
-      try {
-        log.debug("Computing text edits for selected completion item...")
-        this.additionalTextEdits =
-          CompletableFuture.supplyAsync(postComputeAdditionalEdits).get(200, MILLISECONDS)
-      } catch (e: Throwable) {
-        log.error("Unable to compute additional edits for completion item", e)
-        this.additionalTextEdits = null
-      }
+    if (additionalEditHandler != null) {
+      additionalEditHandler!!.performEdits(editor, this)
+    } else if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
+      RewriteHelper.performEdits(additionalTextEdits!!, editor)
     }
 
-    if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
-      additionalTextEdits!!.forEach {
-        val s = it.range.start
-        val e = it.range.end
-        if (s == e) {
-          editor.text.insert(s.line, s.column, it.newText)
-        } else {
-          editor.text.replace(s.line, s.column, e.line, e.column, it.newText)
-        }
-      }
-    }
-
+    text.beginBatchEdit()
     executeCommand(editor)
   }
 

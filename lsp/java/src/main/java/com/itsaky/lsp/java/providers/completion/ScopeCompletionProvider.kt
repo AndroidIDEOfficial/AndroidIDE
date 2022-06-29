@@ -21,6 +21,7 @@ import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.java.FileStore
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
+import com.itsaky.lsp.java.edits.MultipleClassImportEditHandler
 import com.itsaky.lsp.java.parser.ParseTask
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.java.utils.EditHelper.repeatSpaces
@@ -179,17 +180,12 @@ class ScopeCompletionProvider(
     if (item.additionalTextEdits == null) {
       item.additionalTextEdits = mutableListOf()
     }
-    
+
     imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
-    if (imports.isNotEmpty()) {
-      for (className in imports) {
-        item.additionalTextEdits =
-          EditHelper.addImportIfNeeded(compiler, completingFile, fileImports, className)
-      }
-    }
+    item.additionalEditHandler = MultipleClassImportEditHandler(imports, fileImports, completingFile)
     return item
   }
-
+  
   private fun findSource(
     compiler: CompilerProvider,
     task: CompileTask,

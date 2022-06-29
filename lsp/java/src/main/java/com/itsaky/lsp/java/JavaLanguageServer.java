@@ -344,7 +344,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
       case COMPLETION:
         if (CancelAbort.isCancelled(failure.getError())
             || CompilationCancellationException.isCancelled(failure.getError())) {
-          return false;
+          return true;
         }
 
         if (compiler != null) {
