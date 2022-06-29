@@ -102,9 +102,15 @@
     <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão.  Adequado quando você quer fazer todas as coisas básicas sozinho.</string>
     <string name="template_description_navigation_drawer">Projeto com barra de ferramentas AppCompat, DrawerLayout e NavigationView</string>
     <string name="template_empty">Projeto vazio</string>
-    <string name="template_navigation_drawer">Projeto navigation drawer</string>
+    <string name="template_navigation_drawer">Projeto Menu de Navegação</string>
     <string name="template_libgdx">Jogo LibGDX</string>
     <string name="template_description_libgdx">Projeto de jogo LibGDX configurado para renderizar uma imagem como exemplo.</string>
+    <string name="template_navigation_tabs">Activity Barra de Navegação</string>
+    <string name="template_navigation_tabs_description">Cria uma Activity com barra de navegação abaixo</string>
+    <string name="template_tabs">Activity Abas</string>
+    <string name="template_tabs_description">Cria uma Activity com abas</string>
+    <string name="template_cpp">C++ Nativo</string>
+    <string name="template_cpp_description">Cria um novo projeto com uma Activity vazia configurada para usar JNI</string>
 
     <!-- Files -->
     <string name="save">Salvar</string>
@@ -275,6 +281,7 @@
     <string name="idepref_java_matchLower_summary">Se ativado, a digitação em letras minúsculas sugerirá classes e variáveis.</string>
     <string name="idepref_editor_ligatures_title">Ligaduras de fonte</string>
     <string name="idepref_editor_ligatures_summary">Ativar/desativar ligaduras de fonte</string>
+    <string name="title_warning>Atenção<\string>
 
     <string name="yes">Sim</string>
     <string name="no">Não</string>
