@@ -64,9 +64,9 @@ binding.openSdk.setOnClickListener(this);
     } else if (p1.getId() == binding.openTerminal.getId()) {
       startActivity(new Intent(requireActivity(), TerminalActivity.class));
     } else if(p1.getId() == binding.openSdk.getId()){
-	    getActivity().getSupportFragmentManager()
+	getParentFragmentManager()
         .beginTransaction()
-        .replace(binding.getRoot().getId(),new SdkManager(), "SDK")
+        .add(R.id.container,new SdkManager(), "SDK_MANAGER")
         .addToBackStack(null)
         .commit();
     
