@@ -150,7 +150,7 @@
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
-        android:text="@string/btn_terminal"
+        android:text="SDK-Manager"
         android:textAlignment="center"
         android:textColor="@color/primaryTextColor"
         android:textSize="14sp"
