@@ -44,6 +44,7 @@ public class MainFragment extends BaseFragment
     binding.openProject.setOnClickListener(this);
     binding.openTerminal.setOnClickListener(this);
     binding.gotoPreferences.setOnClickListener(this);
+binding.openSdk.setOnClickListener(this);
   }
 
   @Override
