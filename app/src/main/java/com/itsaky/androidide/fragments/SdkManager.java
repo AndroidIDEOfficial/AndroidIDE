@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.databinding.LayoutSdkManagerBinding;
+import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding.java;
 import com.itsaky.androidide.Downloader;
 import android.app.ProgressDialog;
 
