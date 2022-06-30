@@ -25,6 +25,8 @@ import com.google.googlejavaformat.java.Formatter;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.java.models.JavaServerSettings;
+import com.itsaky.lsp.models.FormatCodeParams;
+import com.itsaky.lsp.models.Range;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -45,18 +47,30 @@ public class CodeFormatProvider {
     this.settings = (JavaServerSettings) settings;
   }
 
-  public CharSequence format(CharSequence input) {
+  public CharSequence format(FormatCodeParams params) {
     final long start = System.currentTimeMillis();
+    //    final Formatter formatter = new Formatter(settings.getFormatterOptions());
+    //    final String formatted = formatter.formatSource(params.getContent());
+    CharSequence formatted;
     try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
-      final CharSource source = CharSource.wrap(input);
+      final CharSource source = CharSource.wrap(params.getContent());
       final Formatter formatter = new Formatter(settings.getFormatterOptions());
+      //      formatter.formatSource()
       formatter.formatSource(source, sink);
-      LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
-      return sink.toString();
+      formatted = sink.toString();
     } catch (Throwable e) {
       LOG.error("Failed to format code.", e);
-      return input;
+      formatted = params.getContent();
     }
+
+    if (params.getRange() != Range.NONE) {
+      final Range range = params.getRange();
+      return formatted.subSequence(range.getStart().requireIndex(), range.getEnd().requireIndex());
+    }
+
+    LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
+
+    return formatted;
   }
 
   private static class StringWriterCharSink extends CharSink implements AutoCloseable {

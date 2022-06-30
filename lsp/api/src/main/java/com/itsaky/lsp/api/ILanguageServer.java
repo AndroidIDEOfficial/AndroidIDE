@@ -40,6 +40,7 @@ import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
+import com.itsaky.lsp.models.FormatCodeParams;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
@@ -186,12 +187,12 @@ public interface ILanguageServer {
   /**
    * Format the given source code input.
    *
-   * @param input The source code to format.
+   * @param params The code formatting parameters.
    * @return The formatted source.
    */
   @NonNull
-  default CharSequence formatCode(CharSequence input) {
-    return input;
+  default CharSequence formatCode(FormatCodeParams params) {
+    return params.getContent();
   }
 
   /**

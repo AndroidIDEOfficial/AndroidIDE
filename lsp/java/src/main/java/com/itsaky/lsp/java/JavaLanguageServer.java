@@ -48,6 +48,7 @@ import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.ExpandSelectionParams;
+import com.itsaky.lsp.models.FormatCodeParams;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
@@ -75,13 +76,13 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   private final JavaDiagnosticProvider diagnosticProvider;
   private ILanguageClient client;
   private IServerSettings settings;
-  private JavaCompilerService compiler;
+  private Path selectedFile;
+  private JavaCompilerService compilerService;
   private JavaServerConfiguration configuration;
   private CachedCompletion cachedCompletion;
+  private ServerCapabilities capabilities;
   private boolean initialized;
   private boolean createCompiler;
-  private ServerCapabilities capabilities;
-  private Path selectedFile;
 
   public JavaLanguageServer() {
     this.initialized = false;
@@ -157,9 +158,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void shutdown() {
-    if (compiler != null) {
-      compiler.close();
-      compiler = null;
+    if (compilerService != null) {
+      compilerService.close();
+      compilerService = null;
       createCompiler = true;
     }
 
@@ -270,11 +271,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   public JavaCompilerService getCompiler() {
     if (createCompiler) {
       LOG.info("Creating new compiler instance...");
-      compiler = createCompiler();
+      compilerService = createCompiler();
       createCompiler = false;
     }
 
-    return compiler;
+    return compilerService;
   }
 
   @NonNull
@@ -284,8 +285,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @NonNull
   @Override
-  public CharSequence formatCode(CharSequence input) {
-    return new CodeFormatProvider(getSettings()).format(input);
+  public CharSequence formatCode(FormatCodeParams params) {
+    return new CodeFormatProvider(getSettings()).format(params);
   }
 
   @NonNull
@@ -316,8 +317,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     // If a file's content is changed, it is definitely visible to user.
     onFileSelected(event.getChangedFile());
     FileStore.change(event);
-    if (compiler != null) {
-      compiler.onContentChanged(event);
+    if (compilerService != null) {
+      compilerService.onContentChanged(event);
     }
     startOrRestartAnalyzeTimer();
   }
@@ -347,8 +348,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
           return true;
         }
 
-        if (compiler != null) {
-          compiler.close();
+        if (compilerService != null) {
+          compilerService.close();
         }
         return true;
     }
