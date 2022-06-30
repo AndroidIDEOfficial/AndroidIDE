@@ -44,6 +44,6 @@ public class SdkManager extends Fragment{
 	d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 download_list.add("https://cdn.discordapp.com/attachments/756840975443296370/992014909439234108/dummy.pdf");
       new Downloader(getActivity(),getActivity(),d,download_list).execute();
-    })
+    });
   }
 }

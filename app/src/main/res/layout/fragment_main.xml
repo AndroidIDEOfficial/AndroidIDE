@@ -139,4 +139,26 @@
         app:layout_constraintTop_toBottomOf="@id/open_terminal"
         app:rippleColor="@color/rippleHighlightColor" />
 
+<Button
+        android:id="@+id/open_sdk"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="0dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="@string/btn_terminal"
+        android:textAlignment="center"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_terminal"
+        app:iconPadding="8dp"
+        app:iconTint="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="@id/create_project"
+        app:layout_constraintTop_toBottomOf="@id/goto_preferences"
+        app:rippleColor="@color/rippleHighlightColor" />
 </androidx.constraintlayout.widget.ConstraintLayout>
