@@ -63,9 +63,9 @@ public class MainFragment extends BaseFragment
     } else if (p1.getId() == binding.openTerminal.getId()) {
       startActivity(new Intent(requireActivity(), TerminalActivity.class));
     } else if(p1.getId() == binding.openSdk.getId()){
-	    getSupportFragmentManager()
+	    getActivity().getSupportFragmentManager()
         .beginTransaction()
-        .replace(binding.getRoot().getId(),new SdkManagerFragment(), "crash_report_fragmen>
+        .replace(binding.getRoot().getId(),new SdkManagerFragment(), "SDK")
         .addToBackStack(null)
         .commit();
     
