@@ -15,7 +15,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.TerminalActivity;
 import com.itsaky.androidide.databinding.FragmentMainBinding;
 import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.fragments.SdkManagerFragment; 
+import com.itsaky.androidide.fragments.SdkManager;
 
 import java.io.File;
 
