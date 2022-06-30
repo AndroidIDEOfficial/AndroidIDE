@@ -65,7 +65,7 @@ public class MainFragment extends BaseFragment
     } else if(p1.getId() == binding.openSdk.getId()){
 	    getActivity().getSupportFragmentManager()
         .beginTransaction()
-        .replace(binding.getRoot().getId(),new SdkManagerFragment(), "SDK")
+        .replace(binding.getRoot().getId(),new SdkManager(), "SDK")
         .addToBackStack(null)
         .commit();
     
