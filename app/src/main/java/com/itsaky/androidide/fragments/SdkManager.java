@@ -16,12 +16,12 @@ import androidx.fragment.app.Fragment;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding.java;
+import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding;
 import com.itsaky.androidide.Downloader;
 import android.app.ProgressDialog;
 
 public class SdkManager extends Fragment{
-	private LayoutSdkManagerBinding binding;
+	private FragmentSdkmanagerBinding binding;
 	public static final String aarch_sdk="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/android-sdk-33.0.1-aarch64.tar.xz";
 	public static final String arm_sdk="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/android-sdk-33.0.1-arm.tar.xz";
 	public static final String CMDLINE_TOOLS="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/cmdline-tools-all.tar.xz";
@@ -34,7 +34,7 @@ public class SdkManager extends Fragment{
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    return (binding = LayoutSdkManagerBinding.inflate(inflater, container, false)).getRoot();
+    return (binding = FragmentSdkmanagerBinding.inflate(inflater, container, false)).getRoot();
   }
 
   @Override
