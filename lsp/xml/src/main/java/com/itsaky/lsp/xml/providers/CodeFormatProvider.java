@@ -5,6 +5,7 @@ import com.android.ide.common.xml.XmlFormatStyle;
 import com.android.ide.common.xml.XmlPrettyPrinter;
 import com.android.utils.XmlUtils;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.models.FormatCodeParams;
 
 import org.w3c.dom.Document;
 
@@ -14,7 +15,8 @@ public class CodeFormatProvider {
 
   public CodeFormatProvider() {}
 
-  public CharSequence format(CharSequence input) {
+  public CharSequence format(FormatCodeParams params) {
+    final CharSequence input = params.getContent();
     final long start = System.currentTimeMillis();
     try {
       Document document = XmlUtils.parseDocument(input.toString(), true);

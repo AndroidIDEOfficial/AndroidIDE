@@ -29,6 +29,7 @@ import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
+import com.itsaky.lsp.models.FormatCodeParams;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
@@ -181,8 +182,8 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CharSequence formatCode(CharSequence input) {
-    return new CodeFormatProvider().format(input);
+  public CharSequence formatCode(FormatCodeParams params) {
+    return new CodeFormatProvider().format(params);
   }
 
   @NonNull
