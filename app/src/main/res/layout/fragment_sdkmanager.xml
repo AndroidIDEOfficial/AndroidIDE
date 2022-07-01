@@ -1,18 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-	android:layout_height="match_parent">
-
+    android:layout_height="match_parent">
+	
 	<TextView
         android:id="@+id/device_type"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-<android.widget.CheckBox
+	android:layout_height="wrap_content"
+	android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/primaryTextColor"
+	android:textStyle="bold"
+	android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+	<android.widget.CheckBox
         android:id="@+id/sdk64"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/device_type"
+        app:layout_constraintTop_toBottomOf="@id/device_type"
         android:layout_margin="10dp"
         android:text="SDK(64 Bit)" />
 
@@ -20,7 +27,7 @@
         android:id="@+id/sdk32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/sdk64"
+        app:layout_constraintTop_toBottomOf="@id/sdk64"
         android:layout_margin="10dp"
         android:text="SDK(32 Bit)" />
 
@@ -36,7 +43,9 @@
         android:id="@+id/download"
         android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-        android:text="Download" />
+	    android:text="Download"
+	    android:textColor="@color/primaryTextColor"
+	    android:textStyle="bold"
+	    app:layout_constraintBottom_toBottomOf="parent"/>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

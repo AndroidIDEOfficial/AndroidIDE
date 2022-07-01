@@ -42,6 +42,9 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     super.onViewCreated(view, savedInstanceState);
     Device_Arch=System.getProperty("os.arch");
     binding.deviceType.setText("Your Device Type :"+Device_Arch);
+    if(Device_Arch.equals("aarch64"){
+    binding.sdk32.setEnabled(false);
+    else binding.sdk64.setEnabled(false);
     binding.sdk32.setOnCheckedChangeListener(this);
     binding.sdk64.setOnCheckedChangeListener(this);
     binding.buildtools.setOnCheckedChangeListener(this);
