@@ -66,7 +66,7 @@ binding.openSdk.setOnClickListener(this);
     } else if(p1.getId() == binding.openSdk.getId()){
 	getParentFragmentManager()
         .beginTransaction()
-        .add(R.id.container,new SdkManager(), "SDK_MANAGER")
+        .replace(R.id.container,new SdkManager(), "SDK_MANAGER")
         .addToBackStack(null)
         .commit();
     
