@@ -170,6 +170,7 @@ public class EditorActivity extends StudioActivity
 
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
   private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
+  private static final String KEY_PROJECT_PATH = "saved_projectPath";
   private static final int ACTION_ID_CLOSE = 100;
   private static final int ACTION_ID_OTHERS = 101;
   private static final int ACTION_ID_ALL = 102;
@@ -1135,6 +1136,10 @@ public class EditorActivity extends StudioActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
+      ProjectManager.INSTANCE.setProjectPath(savedInstanceState.getString(KEY_PROJECT_PATH));
+    }
+
     setSupportActionBar(mBinding.editorToolbar);
 
     mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
@@ -1204,6 +1209,12 @@ public class EditorActivity extends StudioActivity
       LOG.error("Failed to update files list", th);
       getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);
     }
+  }
+
+  @Override
+  protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    outState.putString(KEY_PROJECT_PATH, ProjectManager.INSTANCE.getProjectDirPath());
+    super.onSaveInstanceState(outState);
   }
 
   @SuppressWarnings("deprecation")
