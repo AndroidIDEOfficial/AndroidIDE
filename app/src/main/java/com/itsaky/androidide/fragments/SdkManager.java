@@ -58,10 +58,15 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 		download_list.add(ARM_SDK);
 		else download_list.remove(ARM_SDK);
 		}
-		else if(cbuttton.getId() == binding.sdk64.getId()){               if(isChecked)
-		download_list.add(AARCH_SDK);                                           else download_list.remove(AARCH_SDK);               
-	     }
-		else if(cbuttton.getId() == binding.buildtools.getId()){                   if(isChecked)
-	download_list.add(CMDLINE_TOOLS);                                           else download_list.remove(CMDLINE_TOOLS);
-	}
+		else if(cbuttton.getId() == binding.sdk64.getId()){
+                if(isChecked)
+		download_list.add(AARCH_SDK);
+                else download_list.remove(AARCH_SDK);               
+	        }
+		else if(cbuttton.getId() == binding.buildtools.getId()){
+                if(isChecked)
+	        download_list.add(CMDLINE_TOOLS);
+                else download_list.remove(CMDLINE_TOOLS);
+	        }
+        }
 }
