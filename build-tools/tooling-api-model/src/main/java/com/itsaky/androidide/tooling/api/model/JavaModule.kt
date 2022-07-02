@@ -29,7 +29,7 @@ import java.util.concurrent.*
  *
  * @author Akash Yadav
  */
-open class IdeJavaModule(
+open class JavaModule(
   name: String,
   path: String,
   description: String?,

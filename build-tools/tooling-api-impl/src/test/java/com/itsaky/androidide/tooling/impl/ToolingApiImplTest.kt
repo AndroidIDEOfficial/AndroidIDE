@@ -29,7 +29,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.AndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
@@ -96,7 +96,7 @@ class ToolingApiImplTest {
 
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
-    assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
+    assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
 
     assertThat(project.findByPath(":does-not-exist").get()).isNull()
   }

@@ -32,7 +32,7 @@ import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
+import com.itsaky.androidide.tooling.api.model.JavaModule;
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
@@ -251,7 +251,7 @@ public class ProjectReader {
     return new ModelInfoContainer(module, syncIssues);
   }
 
-  private static IdeJavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
+  private static JavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
     final var builder = new ProjectBuilder();
     builder.setName(gradle.getName());
     builder.setDescription(gradle.getDescription());

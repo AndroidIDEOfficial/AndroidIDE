@@ -23,7 +23,7 @@ import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.AndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
@@ -105,7 +105,7 @@ object ProjectDataCollector {
   fun collectSourceDirs(projects: List<IdeModule>): Set<File> {
     val sources = mutableSetOf<File>()
     for (project in projects) {
-      if (project is IdeJavaModule) {
+      if (project is JavaModule) {
         sources.addAll(collectSources(project))
       } else if (project is AndroidModule) {
         sources.addAll(collectSources(project))
@@ -118,7 +118,7 @@ object ProjectDataCollector {
   fun collectSourceDirs(vararg projects: IdeModule): List<File> {
     val sources = mutableListOf<File>()
     for (project in projects) {
-      if (project is IdeJavaModule) {
+      if (project is JavaModule) {
         sources.addAll(collectSources(project))
       } else if (project is AndroidModule) {
         sources.addAll(collectSources(project))
@@ -128,7 +128,7 @@ object ProjectDataCollector {
     return sources
   }
 
-  fun collectSources(java: IdeJavaModule): List<File> {
+  fun collectSources(java: JavaModule): List<File> {
     val sources = mutableListOf<File>()
     for (root in java.contentRoots) {
       sources.addAll(root.sourceDirectories.map { it.directory })

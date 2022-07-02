@@ -24,7 +24,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
+import com.itsaky.androidide.tooling.api.model.JavaModule;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
@@ -102,7 +102,7 @@ public class ToolingApiLauncher {
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
             .registerSubtype(AndroidModule.class, AndroidModule.class.getName())
-            .registerSubtype(IdeJavaModule.class, IdeJavaModule.class.getName())
+            .registerSubtype(JavaModule.class, JavaModule.class.getName())
             .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)

@@ -19,7 +19,7 @@ package com.itsaky.androidide.projects
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.tooling.api.util.ProjectDataCollector
 import com.itsaky.androidide.utils.ILogger
@@ -166,7 +166,7 @@ object ProjectManager {
     ProjectDataCollector.collectSourceDirs(projects)
 
   @Suppress("unused")
-  fun collectSources(java: IdeJavaModule) = ProjectDataCollector.collectSources(java)
+  fun collectSources(java: JavaModule) = ProjectDataCollector.collectSources(java)
 
   @Suppress("unused")
   fun collectSources(android: AndroidModule) = ProjectDataCollector.collectSources(android)

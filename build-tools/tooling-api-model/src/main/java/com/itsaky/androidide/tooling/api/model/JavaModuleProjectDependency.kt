@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.api.model
 import java.io.Serializable
 
 /**
- * A project dependency of an [IdeJavaModule]. More details about the project can be fetched by
+ * A project dependency of an [JavaModule]. More details about the project can be fetched by
  * querying the [projectPath] in the root project.
  *
  * @author Akash Yadav

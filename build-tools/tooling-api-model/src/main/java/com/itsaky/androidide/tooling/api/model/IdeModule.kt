@@ -29,7 +29,7 @@ interface IdeModule {
   /**
    * Get the generated JAR file for this module.
    *
-   * @param variant The build variant name. NOT application for [IdeJavaModule].
+   * @param variant The build variant name. NOT application for [JavaModule].
    */
   @Deprecated("Use getClasspath() instead.") fun getGeneratedJar(variant: String): File
 

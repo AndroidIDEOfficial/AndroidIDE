@@ -25,7 +25,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
 import java.io.File
@@ -71,8 +71,8 @@ class ProjectBuilder {
     )
   }
 
-  fun buildJavaModule(): IdeJavaModule {
-    return IdeJavaModule(
+  fun buildJavaModule(): JavaModule {
+    return JavaModule(
       name,
       path,
       description,
