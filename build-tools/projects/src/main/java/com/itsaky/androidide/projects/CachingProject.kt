@@ -41,13 +41,19 @@ open class CachingProject(val project: IProject) : IProject {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  private val mName: String by lazy { this.project.name.get() }
-  private val mDescription: String by lazy { this.project.description.get() }
-  private val mProjectPath: String by lazy { this.project.projectPath.get() }
-  private val mProjectDir: File by lazy { this.project.projectDir.get() }
-  private val mBuildDir: File by lazy { this.project.buildDir.get() }
-  private val mBuildScript: File by lazy { this.project.buildScript.get() }
-  private val mProjectType: Type by lazy { this.project.type.get() }
+  private val mName: String by lazy { this.project.name.get() ?: "" }
+  private val mDescription: String by lazy { this.project.description.get() ?: "" }
+  private val mProjectPath: String by lazy { this.project.projectPath.get() ?: "" }
+  private val mProjectDir: File by lazy {
+    this.project.projectDir.get() ?: File(IProject.FILE_PATH_NOT_AVAILABLE)
+  }
+  private val mBuildDir: File by lazy {
+    this.project.buildDir.get() ?: File(IProject.FILE_PATH_NOT_AVAILABLE)
+  }
+  private val mBuildScript: File by lazy {
+    this.project.buildScript.get() ?: File(IProject.FILE_PATH_NOT_AVAILABLE)
+  }
+  private val mProjectType: Type by lazy { this.project.type.get() ?: Type.Gradle }
   private val mTasks = mutableListOf<GradleTask>()
 
   private var mFirstAppModule: AndroidModule? = null

@@ -48,9 +48,8 @@ open class Project(
   val projectDir: File,
   val buildDir: File,
   val buildScript: File,
-  val parentPath: String?,
   val tasks: List<GradleTask>,
-  val subModules: List<Project>
+  val subModules: List<Project> = mutableListOf()
 ) {
 
   var type: Type = Gradle

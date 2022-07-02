@@ -71,9 +71,7 @@ class AndroidModule(
   projectDir: File,
   buildDir: File,
   buildScript: File,
-  parentPath: String?,
   tasks: List<GradleTask>,
-  subModules: List<Project>,
   val packageName: String,
   val resourcePrefix: String?,
   val namespace: String?,
@@ -89,7 +87,7 @@ class AndroidModule(
   val dynamicFeatures: Collection<String>?,
   val lintCheckJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
-  val variants: List<SimpleVariantData>
+  val variants: List<SimpleVariantData> = listOf()
 ) :
   Project(
     name,
@@ -98,9 +96,7 @@ class AndroidModule(
     projectDir,
     buildDir,
     buildScript,
-    parentPath,
-    tasks,
-    subModules
+    tasks
   ),
   ModuleProject {
 

@@ -21,8 +21,8 @@ import com.itsaky.androidide.tooling.api.messages.VariantDataRequest;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;

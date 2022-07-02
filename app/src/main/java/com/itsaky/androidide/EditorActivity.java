@@ -896,7 +896,7 @@ public class EditorActivity extends StudioActivity
         });
 
     final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
-    future.whenComplete(
+    future.whenCompleteAsync(
         (result, error) -> {
           if (result == null || error != null) {
             LOG.error("An error occurred initializing the project with Tooling API", error);
@@ -925,6 +925,7 @@ public class EditorActivity extends StudioActivity
   }
 
   protected void onProjectInitialized() {
+    ProjectManager.INSTANCE.setRootProject(mBuildService.projectProxy);
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
         () -> {

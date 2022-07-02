@@ -16,12 +16,13 @@
  */
 package com.itsaky.androidide.projects
 
+import com.itsaky.androidide.projects.util.ProjectDataCollector
+import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.ModuleProject
-import com.itsaky.androidide.projects.util.ProjectDataCollector
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ILanguageServerRegistry
 import com.itsaky.lsp.java.JavaLanguageServer
@@ -42,6 +43,8 @@ object ProjectManager {
   var rootProject: IProject? = null
     set(value) {
       field = if (value == null) null else CachingProject(value)
+
+      ProjectTransformer().transform(field!!)
 
       // Cache the module data in advance for future use
       if (field != null) {

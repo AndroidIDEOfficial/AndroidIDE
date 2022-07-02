@@ -91,6 +91,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private Thread toolingServerThread;
   private NotificationManager notificationManager;
   private IToolingApiServer server;
+  public IProject projectProxy;
   private EventListener eventListener;
 
   @Override
@@ -511,9 +512,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         GradleBuildService.this.startServerOutputReader(serverStreams.err);
         GradleBuildService.this.server = (IToolingApiServer) launcher.getRemoteProxy();
+        GradleBuildService.this.projectProxy = (IProject) launcher.getRemoteProxy();
         GradleBuildService.this.isToolingServerStarted = true;
 
-        ProjectManager.INSTANCE.setRootProject((IProject) launcher.getRemoteProxy());
+        ProjectManager.INSTANCE.setRootProject(GradleBuildService.this.projectProxy);
 
         if (listener != null) {
           listener.onServerStarted();

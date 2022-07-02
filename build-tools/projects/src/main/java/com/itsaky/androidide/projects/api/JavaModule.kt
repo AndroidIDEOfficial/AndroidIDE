@@ -51,9 +51,7 @@ class JavaModule(
   projectDir: File,
   buildDir: File,
   buildScript: File,
-  parentPath: String?,
   tasks: List<GradleTask>,
-  subModules: List<Project>,
   val contentRoots: List<JavaContentRoot>,
   val dependencies: List<JavaModuleDependency>
 ) :
@@ -64,9 +62,7 @@ class JavaModule(
     projectDir,
     buildDir,
     buildScript,
-    parentPath,
-    tasks,
-    subModules
+    tasks
   ),
   ModuleProject {
   

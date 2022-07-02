@@ -82,10 +82,6 @@ open class IdeGradleProject(
     return CompletableFutures.computeAsync { this.tasks.toMutableList() }
   }
 
-  override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> {
-    return CompletableFutures.computeAsync { this.moduleProjects.toMutableList() }
-  }
-
   override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
     return CompletableFutures.computeAsync {
       return@computeAsync this.moduleProjects
