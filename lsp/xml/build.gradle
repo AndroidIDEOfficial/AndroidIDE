@@ -65,6 +65,8 @@ dependencies {
     implementation androidx.ktx
     implementation common.kotlin
     
+    testImplementation project (':build-tools:projects')
+    testImplementation project (':build-tools:tooling-api')
     testImplementation project (':lsp:testing')
     testImplementation project (':common')
     testImplementation project (':actions')

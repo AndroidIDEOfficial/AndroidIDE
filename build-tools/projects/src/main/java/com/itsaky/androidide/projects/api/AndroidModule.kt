@@ -68,7 +68,7 @@ import java.io.File
  * @param modelSyncFiles The model sync files.
  * @author Akash Yadav
  */
-class AndroidModule(
+open class AndroidModule( // Class must be open because BaseXMLTest mocks this...
   name: String,
   description: String,
   path: String,
@@ -76,7 +76,7 @@ class AndroidModule(
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
-  val packageName: String,
+  open val packageName: String, // Property must be open because BaseXMLTest mocks this...
   val resourcePrefix: String?,
   val namespace: String?,
   val androidTestNamespace: String?,
