@@ -106,10 +106,10 @@ import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.utils.CharSequenceInputStream;
@@ -128,6 +128,8 @@ import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.api.ILanguageServerRegistry;
+import com.itsaky.lsp.java.JavaLanguageServer;
+import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -148,6 +150,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -769,19 +772,12 @@ public class EditorActivity extends StudioActivity
 
       saveAll(false);
 
-      getResourceDirPaths()
-          .whenComplete(
-              (dirs, error) ->
-                  runOnUiThread(
-                      () -> {
-                        final Intent intent = new Intent(this, DesignerActivity.class);
-                        intent.putExtra(
-                            DesignerActivity.KEY_LAYOUT_PATH,
-                            getCurrentEditor().getFile().getAbsolutePath());
-                        intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, dirs);
-                        LOG.info("Launching UI Designer...");
-                        mUIDesignerLauncher.launch(intent);
-                      }));
+      final Intent intent = new Intent(this, DesignerActivity.class);
+      intent.putExtra(
+          DesignerActivity.KEY_LAYOUT_PATH, getCurrentEditor().getFile().getAbsolutePath());
+      intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirPaths());
+      LOG.info("Launching UI Designer...");
+      mUIDesignerLauncher.launch(intent);
     } catch (Throwable th) {
       LOG.error(getString(R.string.err_cannot_preview_layout), th);
       getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
@@ -878,11 +874,6 @@ public class EditorActivity extends StudioActivity
 
   public void initializeProject() {
     final var projectPath = ProjectManager.INSTANCE.getProjectPath();
-    if (projectPath == null) {
-      LOG.error("Cannot initialize project. Project model is null.");
-      return;
-    }
-
     final var projectDir = new File(projectPath);
     if (!projectDir.exists()) {
       LOG.error("Project directory does not exist. Cannot initialize project");
@@ -925,7 +916,7 @@ public class EditorActivity extends StudioActivity
   }
 
   protected void onProjectInitialized() {
-    ProjectManager.INSTANCE.setRootProject(mBuildService.projectProxy);
+    ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
         () -> {
@@ -947,41 +938,40 @@ public class EditorActivity extends StudioActivity
         .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
 
     try {
-      //noinspection ConstantConditions
       final var rootProject = ProjectManager.INSTANCE.getRootProject();
+      if (rootProject == null) {
+        LOG.warn("Project not initialized. Skipping initial setup...");
+        return;
+      }
 
-      var projectName = rootProject.getName().get();
+      var projectName = rootProject.getName();
       if (projectName.isEmpty()) {
         projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
-        getSupportActionBar().setSubtitle(projectName);
-      } else {
-        getSupportActionBar().setSubtitle(projectName);
       }
+
+      getSupportActionBar().setSubtitle(projectName);
     } catch (Throwable th) {
       // ignored
     }
 
-    getResourceDirs()
-        .thenAccept(
-            dirs -> {
-              dirs.removeIf(Objects::isNull);
-              ValuesTableFactory.setupWithResDirectories(dirs.toArray(new File[0]));
-            });
+    CompletableFuture.runAsync(
+        () -> {
+          final var resDirs = getResourceDirs();
+          resDirs.removeIf(Objects::isNull);
+          ValuesTableFactory.setupWithResDirectories(resDirs.toArray(new File[0]));
+        });
   }
 
-  private CompletableFuture<List<File>> getResourceDirs() {
+  private Set<File> getResourceDirs() {
     return ProjectManager.INSTANCE.getApplicationResDirectories();
   }
 
   @NonNull
-  private CompletableFuture<ArrayList<String>> getResourceDirPaths() {
-    return getResourceDirs()
-        .thenApply(
-            files ->
-                files.stream()
-                    .filter(Objects::nonNull)
-                    .map(File::getAbsolutePath)
-                    .collect(Collectors.toCollection(ArrayList::new)));
+  private ArrayList<String> getResourceDirPaths() {
+    return getResourceDirs().stream()
+        .filter(Objects::nonNull)
+        .map(File::getAbsolutePath)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public void assembleDebug(boolean installApk) {
@@ -1022,43 +1012,38 @@ public class EditorActivity extends StudioActivity
         LOG.debug("Installing APK(s) for variant:", variantName);
         // TODO Handle multiple application modules
         final var projectManager = ProjectManager.INSTANCE;
-        final var future = projectManager.getApplicationModule();
-        future.whenCompleteAsync(
-            (app, error) -> {
-              if (app == null) {
-                return;
-              }
+        final var app = projectManager.getApplicationModule();
+        if (app == null) {
+          LOG.warn("No application module found. Cannot install APKs");
+          return;
+        }
 
-              Optional<SimpleVariantData> foundVariant =
-                  app.getSimpleVariants().stream()
-                      .filter(it -> variantName.equals(it.getName()))
-                      .findFirst();
-              if (foundVariant.isPresent()) {
-                final var variant = foundVariant.get();
-                final var main = variant.getMainArtifact();
-                final var outputListingFile = main.getAssembleTaskOutputListingFile();
-                if (outputListingFile == null) {
-                  LOG.error("No output listing file provided with project model");
-                  return;
-                }
+        Optional<SimpleVariantData> foundVariant =
+            app.getVariants().stream().filter(it -> variantName.equals(it.getName())).findFirst();
+        if (foundVariant.isPresent()) {
+          final var variant = foundVariant.get();
+          final var main = variant.getMainArtifact();
+          final var outputListingFile = main.getAssembleTaskOutputListingFile();
+          if (outputListingFile == null) {
+            LOG.error("No output listing file provided with project model");
+            return;
+          }
 
-                final var apkFile = ApkMetadata.findApkFile(outputListingFile);
-                if (apkFile == null) {
-                  LOG.error("No apk file specified in output listing file:", outputListingFile);
-                  return;
-                }
+          final var apkFile = ApkMetadata.findApkFile(outputListingFile);
+          if (apkFile == null) {
+            LOG.error("No apk file specified in output listing file:", outputListingFile);
+            return;
+          }
 
-                if (!apkFile.exists()) {
-                  LOG.error("APK file specified in output listing file does not exist!", apkFile);
-                  return;
-                }
+          if (!apkFile.exists()) {
+            LOG.error("APK file specified in output listing file does not exist!", apkFile);
+            return;
+          }
 
-                install(apkFile);
-              } else {
-                LOG.error(
-                    "No", variantName, "variant found in application module", app.projectPath);
-              }
-            });
+          install(apkFile);
+        } else {
+          LOG.error("No", variantName, "variant found in application module", app.getPath());
+        }
       } else {
         LOG.debug("Cannot install APK. Task execution result:", result);
       }
@@ -1137,6 +1122,25 @@ public class EditorActivity extends StudioActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    ProjectManager.INSTANCE.setProjectUpdateNotificationConsumer(
+        () -> {
+          try {
+            final var app = Objects.requireNonNull(ProjectManager.INSTANCE.getApp());
+            final var server =
+                ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID);
+            final var classPaths =
+                app.getClassPaths().stream()
+                    .filter(Objects::nonNull)
+                    .map(File::toPath)
+                    .collect(Collectors.toSet());
+            final var sourceDirs =
+                app.getSourceDirectories().stream().map(File::toPath).collect(Collectors.toSet());
+            final var configuration = new JavaServerConfiguration(classPaths, sourceDirs);
+            server.configurationChanged(configuration);
+          } catch (Throwable err) {
+            LOG.error("Unable to notify configuration change event", err);
+          }
+        });
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       ProjectManager.INSTANCE.setProjectPath(savedInstanceState.getString(KEY_PROJECT_PATH));
     }
@@ -1710,8 +1714,8 @@ public class EditorActivity extends StudioActivity
     List<File> moduleDirs;
     try {
       moduleDirs =
-          rootProject.listModules().get().stream()
-              .map(SimpleModuleData::getProjectDir)
+          rootProject.getSubModules().stream()
+              .map(Project::getProjectDir)
               .collect(Collectors.toList());
     } catch (Throwable e) {
       StudioApp.getInstance().toast(getString(R.string.msg_no_modules), Toaster.Type.ERROR);

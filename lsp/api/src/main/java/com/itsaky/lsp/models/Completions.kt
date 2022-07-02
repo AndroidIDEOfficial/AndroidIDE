@@ -20,7 +20,7 @@ package com.itsaky.lsp.models
 import android.os.Looper
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.edits.IEditHandler
@@ -39,7 +39,7 @@ import java.nio.file.Path
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
   var prefix: String? = null
-  var module: IdeGradleProject? = null
+  var module: Project? = null
 
   fun requirePrefix(): String {
     if (prefix == null) {

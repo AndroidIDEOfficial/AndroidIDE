@@ -17,6 +17,7 @@
 package com.itsaky.androidide.language
 
 import com.itsaky.androidide.projects.ProjectManager.findModuleForFile
+import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ILanguageServer
@@ -62,9 +63,9 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
           CompletionHelper.computePrefix(content, position) { t: Char -> prefixMatcher.test(t) }
         val completer = server.completionProvider
         if (completer.canComplete(file)) {
-          var fileModule: IdeGradleProject? = null
+          var fileModule: Project? = null
           try {
-            fileModule = findModuleForFile(file.toFile()).get()
+            fileModule = findModuleForFile(file.toFile())
           } catch (e: Throwable) {
             if (e !is InterruptedException) {
               // This can occur if the completion was cancelled

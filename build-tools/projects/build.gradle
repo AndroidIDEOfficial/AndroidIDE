@@ -31,9 +31,6 @@ android {
 dependencies {
     implementation project (path: ':build-tools:tooling-api')
     implementation project (path: ':common')
-    implementation project (path: ':lsp:api')
-    implementation project (path: ':lsp:java')
-    implementation project (path: ':lsp:xml')
     
     testImplementation tests.junit
     testImplementation tests.google_truth

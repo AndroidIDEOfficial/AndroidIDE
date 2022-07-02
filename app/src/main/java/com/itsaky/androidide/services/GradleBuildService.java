@@ -515,7 +515,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         GradleBuildService.this.projectProxy = (IProject) launcher.getRemoteProxy();
         GradleBuildService.this.isToolingServerStarted = true;
 
-        ProjectManager.INSTANCE.setRootProject(GradleBuildService.this.projectProxy);
+        ProjectManager.INSTANCE.setupProject(GradleBuildService.this.projectProxy);
 
         if (listener != null) {
           listener.onServerStarted();

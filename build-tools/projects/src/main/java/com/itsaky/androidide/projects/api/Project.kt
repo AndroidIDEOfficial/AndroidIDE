@@ -74,11 +74,15 @@ open class Project(
    *
    * @return The first Android module.
    */
-  fun findFirstAndroidModule(): AndroidModule {
+  fun findFirstAndroidModule(): AndroidModule? {
     if (this is AndroidModule) {
       return this
     }
-    return this.subModules.find { it is AndroidModule } as AndroidModule
+    val android = this.subModules.find { it is AndroidModule }
+    if (android != null) {
+      return android as AndroidModule
+    }
+    return null
   }
 
   /**
@@ -88,12 +92,16 @@ open class Project(
    *
    * @return The first Android module.
    */
-  fun findFirstAndroidAppModule(): AndroidModule {
+  fun findFirstAndroidAppModule(): AndroidModule? {
     if (this is AndroidModule && this.projectType == APPLICATION) {
       return this
     }
-    return this.subModules.find { it is AndroidModule && it.projectType == APPLICATION }
-      as AndroidModule
+    val app = this.subModules.find { it is AndroidModule && it.projectType == APPLICATION }
+
+    if (app != null) {
+      return app as AndroidModule
+    }
+    return null
   }
 
   /**

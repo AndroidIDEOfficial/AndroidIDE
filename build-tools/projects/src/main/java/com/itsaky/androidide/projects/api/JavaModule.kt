@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.projects.api
 
-import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
@@ -54,22 +53,12 @@ class JavaModule(
   tasks: List<GradleTask>,
   val contentRoots: List<JavaContentRoot>,
   val dependencies: List<JavaModuleDependency>
-) :
-  Project(
-    name,
-    description,
-    path,
-    projectDir,
-    buildDir,
-    buildScript,
-    tasks
-  ),
-  ModuleProject {
-  
+) : Project(name, description, path, projectDir, buildDir, buildScript, tasks), ModuleProject {
+
   init {
     type = Java
   }
-  
+
   override fun getGeneratedJar(variant: String): File {
     var jar = File(buildDir, "libs/$name.jar")
     if (jar.exists()) {
@@ -83,6 +72,15 @@ class JavaModule(
     return jar
   }
 
-  override fun getClassPaths() =
-    dependencies.mapNotNull { it.jarFile }.toMutableSet().apply { add(getGeneratedJar("")) }
+  override fun getClassPaths(): MutableSet<File> {
+    return dependencies.mapNotNull { it.jarFile }.toMutableSet().apply { add(getGeneratedJar("")) }
+  }
+
+  fun getSourceDirectories(): Set<File> {
+    val sources = mutableSetOf<File>()
+    contentRoots.forEach {
+      sources.addAll(it.sourceDirectories.map { sourceDirectory -> sourceDirectory.directory })
+    }
+    return sources
+  }
 }

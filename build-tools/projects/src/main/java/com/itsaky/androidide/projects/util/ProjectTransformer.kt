@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.projects.util
 
+import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType.LIBRARY
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -28,6 +29,7 @@ import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.IProject.Type.Unknown
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * Transforms project models from tooling API to the projects API.
@@ -36,24 +38,22 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
  */
 class ProjectTransformer {
 
+  private val log = ILogger.newInstance(javaClass.simpleName)
+
   fun transform(project: IProject): Project? {
-    try {
-      val path = project.projectPath.get()
-      val root =
-        Project(
-          name = project.name.get(),
-          description = project.description.get() ?: "",
-          path = path,
-          projectDir = project.projectDir.get(),
-          buildDir = project.buildDir.get(),
-          buildScript = project.buildScript.get(),
-          tasks = project.tasks.get() ?: listOf()
-        )
-      (root.subModules as MutableList).addAll(transform(project.listModules().get(), project))
-      return root
-    } catch (err: Throwable) {
-      return null
-    }
+    val path = project.projectPath.get()
+    val root =
+      Project(
+        name = project.name.get(),
+        description = project.description.get() ?: "",
+        path = path,
+        projectDir = project.projectDir.get(),
+        buildDir = project.buildDir.get(),
+        buildScript = project.buildScript.get(),
+        tasks = project.tasks.get() ?: listOf()
+      )
+    (root.subModules as MutableList).addAll(transform(project.listModules().get(), project))
+    return root
   }
 
   fun transform(project: com.itsaky.androidide.tooling.api.model.AndroidModule): AndroidModule {
@@ -76,7 +76,10 @@ class ProjectTransformer {
       javaCompileOptions = project.javaCompileOptions,
       viewBindingOptions = project.viewBindingOptions ?: DefaultViewBindingOptions(),
       bootClassPaths = project.bootClassPaths,
-      debugLibraries = project.debugLibraries,
+      debugLibraries =
+        project.debugLibraries.filter {
+          !(it.type == PROJECT && it.projectInfo!!.projectPath == project.projectPath)
+        },
       dynamicFeatures = project.dynamicFeatures,
       lintCheckJars = project.lintChecksJars,
       modelSyncFiles = project.modelSyncFiles,
