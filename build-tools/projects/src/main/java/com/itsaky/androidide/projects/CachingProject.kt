@@ -25,8 +25,8 @@ import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.util.concurrent.*
@@ -37,7 +37,7 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 @RestrictTo(LIBRARY)
-class CachingProject(val project: IProject) : IProject {
+open class CachingProject(val project: IProject) : IProject {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -48,9 +48,11 @@ class CachingProject(val project: IProject) : IProject {
   private val mBuildDir: File by lazy { this.project.buildDir.get() }
   private val mBuildScript: File by lazy { this.project.buildScript.get() }
   private val mProjectType: Type by lazy { this.project.type.get() }
+  private val mTasks = mutableListOf<GradleTask>()
 
   private var mFirstAppModule: AndroidModule? = null
   private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
+  private val mCachedProjects: MutableMap<String, IdeGradleProject> = mutableMapOf()
   private val mModules: MutableList<SimpleModuleData> = mutableListOf()
 
   override fun isProjectInitialized(): CompletableFuture<Boolean> {
@@ -86,11 +88,24 @@ class CachingProject(val project: IProject) : IProject {
   }
 
   override fun getTasks(): CompletableFuture<MutableList<GradleTask>> {
-    return this.project.tasks
-  }
+    if (mTasks.isNotEmpty()) {
+      return CompletableFuture.completedFuture(mTasks)
+    }
 
-  override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> {
-    return this.project.modules
+    return this.project.tasks.whenComplete { tasks, throwable ->
+      if (throwable != null) {
+        log.warn("Unable to get tasks of project '$mName'", throwable)
+        return@whenComplete
+      }
+
+      if (tasks == null || tasks.isEmpty()) {
+        log.warn("No tasks found in project '$mName'")
+        return@whenComplete
+      }
+
+      mTasks.clear()
+      mTasks.addAll(tasks)
+    }
   }
 
   override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
@@ -136,7 +151,23 @@ class CachingProject(val project: IProject) : IProject {
   }
 
   override fun findByPath(path: String): CompletableFuture<IdeGradleProject> {
-    return this.project.findByPath(path)
+    if (this.mCachedProjects.containsKey(path)) {
+      return CompletableFuture.completedFuture(mCachedProjects[path]!!)
+    }
+
+    return this.project.findByPath(path).whenComplete { project, throwable ->
+      if (throwable != null) {
+        log.warn("Unable to find project with path: '$path'", throwable)
+        return@whenComplete
+      }
+
+      if (project == null) {
+        log.warn("Project with path '$path' not found")
+        return@whenComplete
+      }
+
+      mCachedProjects[path] = project
+    }
   }
 
   override fun findAndroidModules(): CompletableFuture<MutableList<AndroidModule>> {

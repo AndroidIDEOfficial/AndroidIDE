@@ -80,10 +80,6 @@ class InternalForwardingProject(
     if (this.project != null) this.project!!.tasks
     else CompletableFuture.completedFuture(mutableListOf())
 
-  override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> =
-    if (this.project != null) this.project!!.modules
-    else CompletableFuture.completedFuture(mutableListOf())
-
   override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> =
     if (this.project != null) project!!.listModules()
     else CompletableFuture.completedFuture(mutableListOf())

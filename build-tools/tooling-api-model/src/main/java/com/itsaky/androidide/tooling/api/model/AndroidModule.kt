@@ -191,7 +191,7 @@ open class AndroidModule(
       shouldLookupPackage = false
       return
     }
-
+    
     val manifestFile = mainSourceSet!!.sourceProvider.manifestFile
     if (manifestFile == DefaultSourceProvider.NoFile) {
       shouldLookupPackage = false
@@ -211,7 +211,7 @@ open class AndroidModule(
     this.shouldLookupPackage = false
   }
 
-  override val androidTestNamespace: String? = null
-  override val namespace: String = ""
-  override val testFixturesNamespace: String? = null
+  override var androidTestNamespace: String? = null
+  override var namespace: String = ""
+  override var testFixturesNamespace: String? = null
 }

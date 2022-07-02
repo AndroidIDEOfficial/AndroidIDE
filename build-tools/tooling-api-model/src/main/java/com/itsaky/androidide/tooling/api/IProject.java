@@ -80,10 +80,6 @@ public interface IProject {
 
   @NotNull
   @JsonRequest
-  CompletableFuture<List<IdeGradleProject>> getModules();
-
-  @NotNull
-  @JsonRequest
   CompletableFuture<List<SimpleModuleData>> listModules();
 
   @NotNull
