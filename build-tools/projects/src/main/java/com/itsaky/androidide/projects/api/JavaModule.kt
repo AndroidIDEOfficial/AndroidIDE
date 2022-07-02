@@ -21,7 +21,6 @@ import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
-import com.itsaky.androidide.tooling.api.model.ModuleProject
 import java.io.File
 
 /**
@@ -33,12 +32,9 @@ import java.io.File
  * @param path The project path (same as Gradle project paths). For example, `:app`,
  * `:module:submodule`, etc. Root project is always represented by path `:`.
  * @param projectDir The project directory.
- * @param type The type of Gradle project.
  * @param buildDir The build directory of the project.
  * @param buildScript The Gradle buildscript file of the project.
- * @param parentPath The parent project path. Always `null` for root project.
  * @param tasks The tasks of the project.
- * @param subModules The submodules of the project.
  * @param contentRoots The source roots of this module.
  * @param dependencies The dependencies of this module.
  * @author Akash Yadav
@@ -53,7 +49,7 @@ class JavaModule(
   tasks: List<GradleTask>,
   val contentRoots: List<JavaContentRoot>,
   val dependencies: List<JavaModuleDependency>
-) : Project(name, description, path, projectDir, buildDir, buildScript, tasks), ModuleProject {
+) : ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks) {
 
   init {
     type = Java
@@ -76,7 +72,7 @@ class JavaModule(
     return dependencies.mapNotNull { it.jarFile }.toMutableSet().apply { add(getGeneratedJar("")) }
   }
 
-  fun getSourceDirectories(): Set<File> {
+  override fun getSourceDirectories(): Set<File> {
     val sources = mutableSetOf<File>()
     contentRoots.forEach {
       sources.addAll(it.sourceDirectories.map { sourceDirectory -> sourceDirectory.directory })

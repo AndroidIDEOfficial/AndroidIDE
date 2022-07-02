@@ -34,7 +34,6 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
 import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.tooling.api.model.ModuleProject
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
@@ -94,9 +93,7 @@ class AndroidModule(
   val modelSyncFiles: List<DefaultModelSyncFile>,
   val variants: List<SimpleVariantData> = listOf()
 ) :
-  Project(name, description, path, projectDir, buildDir, buildScript, tasks),
-  ModuleProject,
-  WithModuleData {
+  ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks), WithModuleData {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   override var moduleData: SimpleModuleData? = null
@@ -115,7 +112,7 @@ class AndroidModule(
       log.error("Project is not initialized. Cannot collect classpaths for project $name")
       return emptySet()
     }
-    
+
     return mutableSetOf<File>().apply {
       add(getGeneratedJar("debug"))
       addAll(getVariant("debug")?.mainArtifact?.classJars ?: emptyList())
@@ -173,7 +170,7 @@ class AndroidModule(
       .map { root.findByPath(it.projectInfo!!.projectPath)!! }
   }
 
-  fun getSourceDirectories(): Set<File> {
+  override fun getSourceDirectories(): Set<File> {
     val sources = mutableSetOf<File>()
     sources.addAll(getModuleSourceDirectories())
     getProjectDependencies().forEach {
