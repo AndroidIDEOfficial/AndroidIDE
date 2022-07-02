@@ -30,11 +30,11 @@ import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.*
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Default implementation of [AndroidModule].
@@ -176,21 +176,13 @@ open class AndroidModule(
     return CompletableFuture.completedFuture(Android)
   }
 
-  @Deprecated(
-    "Use getClasspath() instead.",
-    ReplaceWith(
-      "File(buildDir, \"\$FD_INTERMEDIATES/compile_library_classes_jar/\$variant/classes.jar\")",
-      "java.io.File",
-      "com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES"
-    )
-  )
   override fun getGeneratedJar(variant: String): File {
     return File(buildDir, "$FD_INTERMEDIATES/compile_library_classes_jar/$variant/classes.jar")
   }
 
   override fun getClassPaths(): Set<File> =
     mutableSetOf<File>().apply {
-      add(File(buildDir, "$FD_INTERMEDIATES/compile_library_classes_jar/${"debug"}/classes.jar"))
+      add(getGeneratedJar("debug"))
       addAll(simpleVariants.first { it.name == "debug" }.mainArtifact.classJars)
     }
 
@@ -218,8 +210,7 @@ open class AndroidModule(
     this.packageName = packageAttr.nodeValue
     this.shouldLookupPackage = false
   }
-
-  // These properties are not supported on newer versions
+  
   override val androidTestNamespace: String? = null
   override val namespace: String = ""
   override val testFixturesNamespace: String? = null

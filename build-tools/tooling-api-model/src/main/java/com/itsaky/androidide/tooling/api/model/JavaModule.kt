@@ -38,25 +38,21 @@ open class JavaModule(
   buildScript: File,
   parent: IdeGradleProject?,
   tasks: List<GradleTask>,
-  
+
   /** * Source directories of this project. */
   val contentRoots: List<JavaContentRoot>,
-  
+
   /** Dependencies of this project. */
   private val javaDependencies: List<JavaModuleDependency>
 ) :
   IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
   ModuleProject,
-  HasDependencies,
   Serializable {
-
-  override fun getDependencies() = javaDependencies
 
   override fun getType(): CompletableFuture<Type> {
     return CompletableFuture.completedFuture(Java)
   }
 
-  @Deprecated("Use getClasspath() instead.")
   override fun getGeneratedJar(variant: String): File {
     var jar = File(buildDir, "libs/$name.jar")
     if (jar.exists()) {
@@ -65,10 +61,11 @@ open class JavaModule(
 
     jar =
       File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
-        ?: File("i-do-not-exist.jar")
+        ?: File("module-jar-does-not-exist.jar")
 
     return jar
   }
 
-  @Suppress("DEPRECATION") override fun getClassPaths(): Set<File> = setOf(getGeneratedJar("debug"))
+  override fun getClassPaths() =
+    javaDependencies.mapNotNull { it.jarFile }.toMutableSet().apply { add(getGeneratedJar("")) }
 }
