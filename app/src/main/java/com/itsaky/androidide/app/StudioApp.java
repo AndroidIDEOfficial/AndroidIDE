@@ -62,9 +62,6 @@ public class StudioApp extends BaseApplication {
     this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
     super.onCreate();
-
-    ILanguageServerRegistry.getDefault().register(new JavaLanguageServer());
-    ILanguageServerRegistry.getDefault().register(new XMLLanguageServer());
     getApiInformation();
   }
 

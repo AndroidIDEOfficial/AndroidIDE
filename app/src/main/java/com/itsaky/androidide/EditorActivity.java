@@ -134,6 +134,7 @@ import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.xml.XMLLanguageServer;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 
@@ -1122,6 +1123,8 @@ public class EditorActivity extends StudioActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    ILanguageServerRegistry.getDefault().register(new JavaLanguageServer());
+    ILanguageServerRegistry.getDefault().register(new XMLLanguageServer());
     ProjectManager.INSTANCE.setProjectUpdateNotificationConsumer(
         () -> {
           try {
