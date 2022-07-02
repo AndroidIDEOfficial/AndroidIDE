@@ -63,7 +63,7 @@ open class AndroidModule(
   val simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
 ) :
   IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
-  IdeModule,
+  ModuleProject,
   AndroidProject,
   Serializable {
 

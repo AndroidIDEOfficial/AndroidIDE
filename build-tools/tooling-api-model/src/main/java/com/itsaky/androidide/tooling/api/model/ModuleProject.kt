@@ -24,7 +24,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-interface IdeModule {
+interface ModuleProject {
 
   /**
    * Get the generated JAR file for this module.

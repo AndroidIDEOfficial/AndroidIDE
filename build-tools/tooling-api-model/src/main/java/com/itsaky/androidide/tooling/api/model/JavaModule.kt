@@ -46,7 +46,7 @@ open class JavaModule(
   private val javaDependencies: List<JavaModuleDependency>
 ) :
   IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
-  IdeModule,
+  ModuleProject,
   HasDependencies,
   Serializable {
 

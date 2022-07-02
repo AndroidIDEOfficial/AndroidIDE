@@ -24,7 +24,7 @@ import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.JavaModule
-import com.itsaky.androidide.tooling.api.model.IdeModule
+import com.itsaky.androidide.tooling.api.model.ModuleProject
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.nio.file.Path
@@ -95,14 +95,14 @@ object ProjectDataCollector {
     return sourcePaths.map { it.toPath() }.toSet()
   }
 
-  fun collectProjectDependencies(project: IProject, app: AndroidModule): List<IdeModule> {
+  fun collectProjectDependencies(project: IProject, app: AndroidModule): List<ModuleProject> {
     return app.debugLibraries
       .filter { it.type == PROJECT }
       .map { project.findByPath(it.projectInfo!!.projectPath) }
-      .filterIsInstance(IdeModule::class.java)
+      .filterIsInstance(ModuleProject::class.java)
   }
 
-  fun collectSourceDirs(projects: List<IdeModule>): Set<File> {
+  fun collectSourceDirs(projects: List<ModuleProject>): Set<File> {
     val sources = mutableSetOf<File>()
     for (project in projects) {
       if (project is JavaModule) {
@@ -115,7 +115,7 @@ object ProjectDataCollector {
     return sources
   }
 
-  fun collectSourceDirs(vararg projects: IdeModule): List<File> {
+  fun collectSourceDirs(vararg projects: ModuleProject): List<File> {
     val sources = mutableListOf<File>()
     for (project in projects) {
       if (project is JavaModule) {

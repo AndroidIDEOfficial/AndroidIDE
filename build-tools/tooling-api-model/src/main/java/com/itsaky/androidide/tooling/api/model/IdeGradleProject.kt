@@ -94,7 +94,7 @@ open class IdeGradleProject(
             name = it.name,
             path = it.projectPath,
             projectDir = it.projectDir,
-            classPaths = if (it is IdeModule) it.getClassPaths() else emptySet()
+            classPaths = if (it is ModuleProject) it.getClassPaths() else emptySet()
           )
         }
         .toMutableList()
