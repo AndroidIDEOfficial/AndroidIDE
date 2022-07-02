@@ -37,7 +37,7 @@ import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
- * Default implementation of [AndroidModule].
+ * Default implementation of [AndroidProject].
  *
  * @author Akash Yadav
  */
@@ -210,7 +210,7 @@ open class AndroidModule(
     this.packageName = packageAttr.nodeValue
     this.shouldLookupPackage = false
   }
-  
+
   override val androidTestNamespace: String? = null
   override val namespace: String = ""
   override val testFixturesNamespace: String? = null

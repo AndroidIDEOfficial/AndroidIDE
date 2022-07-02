@@ -21,7 +21,7 @@ import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.ModuleProject
-import com.itsaky.androidide.tooling.api.util.ProjectDataCollector
+import com.itsaky.androidide.projects.util.ProjectDataCollector
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ILanguageServerRegistry
 import com.itsaky.lsp.java.JavaLanguageServer

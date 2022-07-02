@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.util
+package com.itsaky.androidide.projects.util
 
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
@@ -50,8 +50,7 @@ object ProjectDataCollector {
     }
 
     val dependencies =
-      collectProjectDependencies(rootProject, android)
-        .filterIsInstance(AndroidModule::class.java)
+      collectProjectDependencies(rootProject, android).filterIsInstance(AndroidModule::class.java)
 
     for (dependency in dependencies) {
       dirs.addAll(collectResDirectories(rootProject, dependency))
