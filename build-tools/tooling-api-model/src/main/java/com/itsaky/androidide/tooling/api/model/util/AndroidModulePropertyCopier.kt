@@ -68,11 +68,11 @@ import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.messages.result.SimpleArtifact
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.utils.ILogger
 
 /**
- * As the data is sent over streams, and the instances of properties specified in [IdeAndroidModule]
+ * As the data is sent over streams, and the instances of properties specified in [AndroidModule]
  * are just proxy classes, we need to make copy of those properties so that they can ben serialized
  * by Gson.
  *
@@ -84,9 +84,9 @@ object AndroidModulePropertyCopier {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  fun copy(module: IdeAndroidModule): IdeAndroidModule {
+  fun copy(module: AndroidModule): AndroidModule {
     @Suppress("DEPRECATION")
-    return IdeAndroidModule(
+    return AndroidModule(
       module.name,
       module.projectPath,
       module.description,

@@ -18,12 +18,12 @@
 package com.itsaky.androidide.tooling.impl.util
 
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import java.io.Serializable
 
 /** @author Akash Yadav */
 data class ModelInfoContainer(
-  val project: IdeAndroidModule,
+  val project: AndroidModule,
   val syncIssues: DefaultProjectSyncIssues,
 ) : Serializable {
   private val serialVersionUID = 1L

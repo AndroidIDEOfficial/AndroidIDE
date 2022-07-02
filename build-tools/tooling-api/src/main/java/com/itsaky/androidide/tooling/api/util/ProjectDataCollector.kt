@@ -22,7 +22,7 @@ import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
@@ -37,7 +37,7 @@ import java.nio.file.Path
 object ProjectDataCollector {
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  fun collectResDirectories(rootProject: IProject, android: IdeAndroidModule): List<File> {
+  fun collectResDirectories(rootProject: IProject, android: AndroidModule): List<File> {
     val main = android.mainSourceSet
     if (main == null) {
       log.error("No main source set found in application module: ${android.name}")
@@ -51,7 +51,7 @@ object ProjectDataCollector {
 
     val dependencies =
       collectProjectDependencies(rootProject, android)
-        .filterIsInstance(IdeAndroidModule::class.java)
+        .filterIsInstance(AndroidModule::class.java)
 
     for (dependency in dependencies) {
       dirs.addAll(collectResDirectories(rootProject, dependency))
@@ -60,7 +60,7 @@ object ProjectDataCollector {
     return dirs
   }
 
-  fun collectClassPaths(rootProject: IProject, app: IdeAndroidModule): Set<Path> {
+  fun collectClassPaths(rootProject: IProject, app: AndroidModule): Set<Path> {
 
     val libraries = app.debugLibraries
     val paths = mutableSetOf<Path>()
@@ -87,7 +87,7 @@ object ProjectDataCollector {
     return paths
   }
 
-  fun collectSourceDirs(rootProject: IProject, app: IdeAndroidModule): Set<Path> {
+  fun collectSourceDirs(rootProject: IProject, app: AndroidModule): Set<Path> {
     val sourcePaths = mutableSetOf<File>()
     val projectSources = collectSourceDirs(collectProjectDependencies(rootProject, app))
     sourcePaths.addAll(projectSources)
@@ -95,7 +95,7 @@ object ProjectDataCollector {
     return sourcePaths.map { it.toPath() }.toSet()
   }
 
-  fun collectProjectDependencies(project: IProject, app: IdeAndroidModule): List<IdeModule> {
+  fun collectProjectDependencies(project: IProject, app: AndroidModule): List<IdeModule> {
     return app.debugLibraries
       .filter { it.type == PROJECT }
       .map { project.findByPath(it.projectInfo!!.projectPath) }
@@ -107,7 +107,7 @@ object ProjectDataCollector {
     for (project in projects) {
       if (project is IdeJavaModule) {
         sources.addAll(collectSources(project))
-      } else if (project is IdeAndroidModule) {
+      } else if (project is AndroidModule) {
         sources.addAll(collectSources(project))
       }
     }
@@ -120,7 +120,7 @@ object ProjectDataCollector {
     for (project in projects) {
       if (project is IdeJavaModule) {
         sources.addAll(collectSources(project))
-      } else if (project is IdeAndroidModule) {
+      } else if (project is AndroidModule) {
         sources.addAll(collectSources(project))
       }
     }
@@ -137,7 +137,7 @@ object ProjectDataCollector {
     return sources
   }
 
-  fun collectSources(android: IdeAndroidModule): List<File> {
+  fun collectSources(android: AndroidModule): List<File> {
     if (android.mainSourceSet == null) {
       return mutableListOf()
     }

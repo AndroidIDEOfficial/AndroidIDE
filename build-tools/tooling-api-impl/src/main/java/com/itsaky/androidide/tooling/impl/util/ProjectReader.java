@@ -29,7 +29,7 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
@@ -88,9 +88,9 @@ public class ProjectReader {
     return buildActionExecutor.run();
   }
 
-  public static IdeAndroidModule buildAndroidModuleProject(
+  public static AndroidModule buildAndroidModuleProject(
       GradleProject gradle, AndroidProject android, ProjectType type) {
-    System.err.println("Building IdeAndroidModule for project: " + gradle.getName());
+    System.err.println("Building AndroidModule for project: " + gradle.getName());
     final var builder = new ProjectBuilder();
     final var copier = AndroidModulePropertyCopier.INSTANCE;
     builder.setName(gradle.getName());
@@ -311,8 +311,8 @@ public class ProjectReader {
 
   private static <T extends ConfigurableLauncher<T>> void applyAndroidModelBuilderProps(
       ConfigurableLauncher<T> launcher) {
-    addProperty(launcher, IdeAndroidModule.PROPERTY_BUILD_MODEL_ONLY, true);
-    addProperty(launcher, IdeAndroidModule.PROPERTY_INVOKED_FROM_IDE, true);
+    addProperty(launcher, AndroidModule.PROPERTY_BUILD_MODEL_ONLY, true);
+    addProperty(launcher, AndroidModule.PROPERTY_INVOKED_FROM_IDE, true);
   }
 
   private static void addProperty(ConfigurableLauncher<?> launcher, String property, Object value) {

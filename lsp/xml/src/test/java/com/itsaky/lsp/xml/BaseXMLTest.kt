@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.xml
 
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.lsp.api.CursorDependentTest
 import com.itsaky.lsp.api.ILanguageServer
 import org.mockito.Mockito.`when`
@@ -28,8 +28,8 @@ open class BaseXMLTest : CursorDependentTest() {
   protected val mServer = XmlLanguageServerProvider.INSTANCE.server()
   override fun getServer(): ILanguageServer = mServer
 
-  protected fun mockModuleProject(): IdeAndroidModule {
-    val mocked = mock(IdeAndroidModule::class.java)
+  protected fun mockModuleProject(): AndroidModule {
+    val mocked = mock(AndroidModule::class.java)
     `when`(mocked.packageName).thenReturn("com.itsaky.androidide.test")
     return mocked
   }

@@ -37,11 +37,11 @@ import java.io.Serializable
 import java.util.concurrent.*
 
 /**
- * Default implementation of [IdeAndroidModule].
+ * Default implementation of [AndroidModule].
  *
  * @author Akash Yadav
  */
-open class IdeAndroidModule(
+open class AndroidModule(
   name: String,
   path: String,
   description: String?,
@@ -55,7 +55,7 @@ open class IdeAndroidModule(
   override var flags: DefaultAndroidGradlePluginProjectFlags,
   override var javaCompileOptions: DefaultJavaCompileOptions,
   override var resourcePrefix: String?,
-  @Deprecated("This is resource intensive. Use IdeAndroidModule.simpleVariants instead.")
+  @Deprecated("This is resource intensive. Use AndroidModule.simpleVariants instead.")
   override val variants: Collection<DefaultVariant> = emptyList(),
   override var viewBindingOptions: DefaultViewBindingOptions?,
   override val lintChecksJars: List<File>,
@@ -181,7 +181,7 @@ open class IdeAndroidModule(
     ReplaceWith(
       "File(buildDir, \"\$FD_INTERMEDIATES/compile_library_classes_jar/\$variant/classes.jar\")",
       "java.io.File",
-      "com.itsaky.androidide.tooling.api.model.IdeAndroidModule.Companion.FD_INTERMEDIATES"
+      "com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES"
     )
   )
   override fun getGeneratedJar(variant: String): File {

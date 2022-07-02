@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.api;
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 
@@ -96,15 +96,15 @@ public interface IProject {
 
   @NotNull
   @JsonRequest
-  CompletableFuture<IdeAndroidModule> findFirstAndroidModule();
+  CompletableFuture<AndroidModule> findFirstAndroidModule();
 
   @NotNull
   @JsonRequest
-  CompletableFuture<IdeAndroidModule> findFirstAndroidAppModule();
+  CompletableFuture<AndroidModule> findFirstAndroidAppModule();
 
   @NotNull
   @JsonRequest
-  CompletableFuture<List<IdeAndroidModule>> findAndroidModules();
+  CompletableFuture<List<AndroidModule>> findAndroidModules();
 
   /** Type of the {@link IProject}. */
   enum Type {

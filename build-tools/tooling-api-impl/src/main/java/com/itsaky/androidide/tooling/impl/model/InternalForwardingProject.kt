@@ -24,7 +24,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.utils.ILogger
@@ -92,15 +92,15 @@ class InternalForwardingProject(
     if (this.project != null) this.project!!.findByPath(path)
     else CompletableFuture.completedFuture(null)
 
-  override fun findAndroidModules(): CompletableFuture<MutableList<IdeAndroidModule>> =
+  override fun findAndroidModules(): CompletableFuture<MutableList<AndroidModule>> =
     if (this.project != null) this.project!!.findAndroidModules()
     else CompletableFuture.completedFuture(mutableListOf())
 
-  override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> =
+  override fun findFirstAndroidModule(): CompletableFuture<AndroidModule?> =
     if (this.project != null) this.project!!.findFirstAndroidModule()
     else CompletableFuture.completedFuture(null)
 
-  override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> =
+  override fun findFirstAndroidAppModule(): CompletableFuture<AndroidModule> =
     if (this.project != null) this.project!!.findFirstAndroidAppModule()
     else CompletableFuture.completedFuture(null)
 

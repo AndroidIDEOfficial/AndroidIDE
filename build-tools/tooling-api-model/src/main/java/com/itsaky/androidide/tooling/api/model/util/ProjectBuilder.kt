@@ -22,7 +22,7 @@ import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
@@ -86,8 +86,8 @@ class ProjectBuilder {
     )
   }
 
-  fun buildAndroidModule(): IdeAndroidModule =
-    IdeAndroidModule(
+  fun buildAndroidModule(): AndroidModule =
+    AndroidModule(
       name = name,
       path = path,
       description = description,

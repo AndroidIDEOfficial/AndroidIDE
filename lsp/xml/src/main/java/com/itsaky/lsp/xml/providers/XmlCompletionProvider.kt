@@ -73,7 +73,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       //   'params.module'
 
       // val namespace =
-      // INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
+      // INamespace.forPackageName((params.module as AndroidModule).packageName)
 
       val namespace = INamespace.ANDROID
       val contents = toString(params.requireContents())

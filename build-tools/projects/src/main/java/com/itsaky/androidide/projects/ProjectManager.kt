@@ -17,7 +17,7 @@
 package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
@@ -112,7 +112,7 @@ object ProjectManager {
     }
   }
 
-  fun getApplicationModule(): CompletableFuture<IdeAndroidModule?> {
+  fun getApplicationModule(): CompletableFuture<AndroidModule?> {
     if (rootProject == null) {
       log.error("No root project instance is set. Is the project initialization process finished?")
       return CompletableFuture.completedFuture(null)
@@ -148,17 +148,17 @@ object ProjectManager {
     }
   }
 
-  fun collectResDirectories(android: IdeAndroidModule) =
+  fun collectResDirectories(android: AndroidModule) =
     ProjectDataCollector.collectResDirectories(rootProject!!, android)
 
-  fun collectClassPaths(app: IdeAndroidModule) =
+  fun collectClassPaths(app: AndroidModule) =
     ProjectDataCollector.collectClassPaths(rootProject!!, app)
 
-  fun collectSourceDirs(app: IdeAndroidModule): Set<Path> =
+  fun collectSourceDirs(app: AndroidModule): Set<Path> =
     ProjectDataCollector.collectSourceDirs(rootProject!!, app)
 
   @Suppress("unused")
-  fun collectProjectDependencies(project: IProject, app: IdeAndroidModule) =
+  fun collectProjectDependencies(project: IProject, app: AndroidModule) =
     ProjectDataCollector.collectProjectDependencies(project, app)
 
   @Suppress("unused")
@@ -169,7 +169,7 @@ object ProjectManager {
   fun collectSources(java: IdeJavaModule) = ProjectDataCollector.collectSources(java)
 
   @Suppress("unused")
-  fun collectSources(android: IdeAndroidModule) = ProjectDataCollector.collectSources(android)
+  fun collectSources(android: AndroidModule) = ProjectDataCollector.collectSources(android)
 
   fun findModuleForFile(file: File): CompletableFuture<IdeGradleProject?> {
     if (!checkInit()) {

@@ -103,7 +103,7 @@ open class IdeGradleProject(
 
   override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> {
     return findByPath(request.projectPath).thenApply { project ->
-      if (project !is IdeAndroidModule) {
+      if (project !is AndroidModule) {
         return@thenApply null
       }
 
@@ -121,18 +121,18 @@ open class IdeGradleProject(
     }
   }
 
-  override fun findAndroidModules(): CompletableFuture<List<IdeAndroidModule>> {
+  override fun findAndroidModules(): CompletableFuture<List<AndroidModule>> {
     return CompletableFutures.computeAsync {
-      moduleProjects.filterIsInstance(IdeAndroidModule::class.java)
+      moduleProjects.filterIsInstance(AndroidModule::class.java)
     }
   }
 
-  override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> {
+  override fun findFirstAndroidModule(): CompletableFuture<AndroidModule?> {
     return findAndroidModules().thenApply { it.firstOrNull() }
   }
 
-  override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
-    if (this is IdeAndroidModule) {
+  override fun findFirstAndroidAppModule(): CompletableFuture<AndroidModule> {
+    if (this is AndroidModule) {
       return CompletableFuture.completedFuture(this)
     }
 

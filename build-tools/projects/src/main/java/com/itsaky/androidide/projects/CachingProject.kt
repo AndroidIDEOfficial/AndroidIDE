@@ -17,12 +17,14 @@
 
 package com.itsaky.androidide.projects
 
+import androidx.annotation.RestrictTo
+import androidx.annotation.RestrictTo.Scope.LIBRARY
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.utils.ILogger
@@ -34,6 +36,7 @@ import java.util.concurrent.*
  *
  * @author Akash Yadav
  */
+@RestrictTo(LIBRARY)
 class CachingProject(val project: IProject) : IProject {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
@@ -46,7 +49,7 @@ class CachingProject(val project: IProject) : IProject {
   private val mBuildScript: File by lazy { this.project.buildScript.get() }
   private val mProjectType: Type by lazy { this.project.type.get() }
 
-  private var mFirstAppModule: IdeAndroidModule? = null
+  private var mFirstAppModule: AndroidModule? = null
   private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
   private val mModules: MutableList<SimpleModuleData> = mutableListOf()
 
@@ -136,15 +139,15 @@ class CachingProject(val project: IProject) : IProject {
     return this.project.findByPath(path)
   }
 
-  override fun findAndroidModules(): CompletableFuture<MutableList<IdeAndroidModule>> {
+  override fun findAndroidModules(): CompletableFuture<MutableList<AndroidModule>> {
     return this.project.findAndroidModules()
   }
 
-  override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule> {
+  override fun findFirstAndroidModule(): CompletableFuture<AndroidModule> {
     return this.project.findFirstAndroidModule()
   }
 
-  override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
+  override fun findFirstAndroidAppModule(): CompletableFuture<AndroidModule> {
     if (mFirstAppModule != null) {
       return CompletableFuture.completedFuture(mFirstAppModule)
     }
