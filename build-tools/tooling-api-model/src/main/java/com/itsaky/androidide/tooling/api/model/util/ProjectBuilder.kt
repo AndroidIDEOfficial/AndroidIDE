@@ -24,7 +24,7 @@ import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
@@ -44,7 +44,7 @@ class ProjectBuilder {
   var buildScript: File = File(".")
   var parent: IdeGradleProject? = null
   var modules: List<IdeGradleProject> = mutableListOf()
-  var tasks: List<IdeGradleTask> = mutableListOf()
+  var tasks: List<GradleTask> = mutableListOf()
   var dynamicFeatures: Collection<String>? = mutableListOf()
   var flags: DefaultAndroidGradlePluginProjectFlags =
     DefaultAndroidGradlePluginProjectFlags(emptyMap())

@@ -26,7 +26,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.util.concurrent.*
@@ -85,7 +85,7 @@ class CachingProject(val project: IProject) : IProject {
     return CompletableFuture.completedFuture(mBuildScript)
   }
 
-  override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> {
+  override fun getTasks(): CompletableFuture<MutableList<GradleTask>> {
     return this.project.tasks
   }
 

@@ -37,11 +37,11 @@ open class JavaModule(
   buildDir: File,
   buildScript: File,
   parent: IdeGradleProject?,
-  tasks: List<IdeGradleTask>,
-
+  tasks: List<GradleTask>,
+  
   /** * Source directories of this project. */
   val contentRoots: List<JavaContentRoot>,
-
+  
   /** Dependencies of this project. */
   private val javaDependencies: List<JavaModuleDependency>
 ) :

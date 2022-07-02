@@ -31,7 +31,7 @@ import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.GradleTask;
 import com.itsaky.androidide.tooling.api.model.JavaModule;
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
@@ -48,7 +48,6 @@ import org.gradle.tooling.ConfigurableLauncher;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
-import org.gradle.tooling.model.GradleTask;
 import org.gradle.tooling.model.idea.IdeaDependency;
 import org.gradle.tooling.model.idea.IdeaModule;
 import org.gradle.tooling.model.idea.IdeaModuleDependency;
@@ -121,8 +120,8 @@ public class ProjectReader {
     }
   }
 
-  private static IdeGradleTask buildGradleTaskModel(IdeGradleProject project, GradleTask task) {
-    return new IdeGradleTask(
+  private static GradleTask buildGradleTaskModel(IdeGradleProject project, GradleTask task) {
+    return new GradleTask(
         task.getName(),
         task.getDescription(),
         task.getGroup(),

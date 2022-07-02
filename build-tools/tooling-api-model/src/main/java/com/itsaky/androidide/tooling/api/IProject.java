@@ -22,7 +22,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.GradleTask;
 
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
@@ -76,7 +76,7 @@ public interface IProject {
 
   @NotNull
   @JsonRequest
-  CompletableFuture<List<IdeGradleTask>> getTasks();
+  CompletableFuture<List<GradleTask>> getTasks();
 
   @NotNull
   @JsonRequest

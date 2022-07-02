@@ -49,7 +49,7 @@ open class AndroidModule(
   buildDir: File,
   buildScript: File,
   parent: IdeGradleProject?,
-  tasks: List<IdeGradleTask>,
+  tasks: List<GradleTask>,
   val projectType: ProjectType?,
   override var dynamicFeatures: Collection<String>?,
   override var flags: DefaultAndroidGradlePluginProjectFlags,

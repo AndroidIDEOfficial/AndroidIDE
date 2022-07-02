@@ -26,7 +26,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.util.concurrent.*
@@ -76,7 +76,7 @@ class InternalForwardingProject(
     if (this.project != null) this.project!!.buildScript
     else CompletableFuture.completedFuture(File(projectPath))
 
-  override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> =
+  override fun getTasks(): CompletableFuture<MutableList<GradleTask>> =
     if (this.project != null) this.project!!.tasks
     else CompletableFuture.completedFuture(mutableListOf())
 

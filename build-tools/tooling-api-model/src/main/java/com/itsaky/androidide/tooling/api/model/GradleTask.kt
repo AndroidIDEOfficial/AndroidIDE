@@ -19,11 +19,11 @@ package com.itsaky.androidide.tooling.api.model
 import java.io.Serializable
 
 /**
- * Default implementation for [IdeGradleTask].
+ * Default implementation for [GradleTask].
  *
  * @author Akash Yadav
  */
-open class IdeGradleTask(
+open class GradleTask(
   val name: String,
   val description: String?,
   val group: String?,

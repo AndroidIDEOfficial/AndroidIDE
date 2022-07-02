@@ -39,7 +39,7 @@ open class IdeGradleProject(
   @JvmField val buildDir: File,
   @JvmField val buildScript: File,
   @JvmField val parent: IdeGradleProject?,
-  @JvmField val tasks: List<IdeGradleTask>,
+  @JvmField val tasks: List<GradleTask>,
 ) : com.itsaky.androidide.tooling.api.IProject, Serializable {
   private val serialVersionUID = 1L
 
@@ -78,7 +78,7 @@ open class IdeGradleProject(
     return CompletableFutures.computeAsync { this.buildScript }
   }
 
-  override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> {
+  override fun getTasks(): CompletableFuture<MutableList<GradleTask>> {
     return CompletableFutures.computeAsync { this.tasks.toMutableList() }
   }
 
