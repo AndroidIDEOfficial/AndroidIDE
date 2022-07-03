@@ -48,7 +48,7 @@ import java.util.Objects;
  */
 public abstract class ILogger {
 
-  private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
+  public static final String MSG_SEPARATOR = " "; // Separate messages with a space.
   private static final List<LogListener> logListeners = new ArrayList<>();
   private static ILogger instance;
   protected final String TAG;
