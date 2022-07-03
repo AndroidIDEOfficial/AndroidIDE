@@ -35,9 +35,9 @@
         android:id="@+id/buildtools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/sdk32"
+        android:layout_below="@id/sdk32"
         android:layout_margin="10dp"
-	android:text="-with Build Tools" />
+	    android:text="-with Build Tools" />
 
     <Button
         android:id="@+id/download"
@@ -46,7 +46,6 @@
 	    android:text="Download"
 	    android:textColor="@color/primaryTextColor"
 	    android:textStyle="bold"
-	    android:background="#ff5252"
 	    app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
