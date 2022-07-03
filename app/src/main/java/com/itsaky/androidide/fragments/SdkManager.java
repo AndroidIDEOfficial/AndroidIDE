@@ -9,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import java.util.ArrayList;
-
+import com.blankj.utilcode.util.ThreadUtils;
+import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -36,6 +37,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 	public static final String CMDLINE_TOOLS="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/cmdline-tools-all.tar.xz";
 	public static String Device_Arch;
 	ArrayList<String> download_list = new ArrayList<>();
+	private ProgressSheet progressSheet;
 
   @Nullable
   @Override
@@ -79,10 +81,9 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                     new InputStreamLineReader(holder.in, this::onInstallationOutput);
             new Thread(reader).start();
 
-        } catch (Exception e) {
+        } catch (SdkManager.InstallationException e) {
             onInstallationFailed(e.exitCode);
         } catch (IOException e) {
-            LOG.error(getString(R.string.err_installation), e);
             onInstallationFailed(5);
         }
     });
@@ -94,10 +95,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     private void onInstallProcessExit(final int code) {
         ThreadUtils.runOnUiThread(
                 () -> {
-                    if (code == 0) { // 0 = normal execution
-                        getApp().getPrefManager()
-                                .putBoolean(PreferenceManager.KEY_FRAMEWORK_INSTALLED, true);
-                        showRestartNeeded();
+                    if (code == 0) {
                         if (getProgressSheet().isShowing()) {
                             getProgressSheet().dismiss();
                         }
