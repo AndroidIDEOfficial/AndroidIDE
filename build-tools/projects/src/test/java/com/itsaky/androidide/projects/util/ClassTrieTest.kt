@@ -1,0 +1,63 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.projects.util
+
+import com.google.common.truth.Truth.assertThat
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+/** @author Akash Yadav */
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
+class ClassTrieTest {
+
+  @Test
+  fun testAppend() {
+    val trie = ClassTrie()
+    trie.append("java.lang.String")
+    trie.append("java.lang.Object")
+    trie.append("java.util.List")
+    trie.append("java.io.File")
+    trie.append("java.nio.file.Path")
+
+    assertThat(trie.findClassName("java.lang"))
+      .containsExactly("java.lang.String", "java.lang.Object")
+    assertThat(trie.findClassName("java.util")).containsExactly("java.util.List")
+    assertThat(trie.findClassName("java.nio")).containsExactly("java.nio.file.Path")
+  }
+  
+  @Test
+  fun testRemoval() {
+    val trie = ClassTrie()
+    trie.append("java.lang.String")
+    trie.append("java.lang.Object")
+    trie.append("java.util.List")
+    trie.append("java.io.File")
+    trie.append("java.nio.file.Path")
+    
+    trie.remove("java.lang.String")
+    trie.remove("java.nio.file.Path")
+    
+    assertThat(trie.findClassName("java.lang"))
+      .containsExactly("java.lang.Object")
+    assertThat(trie.findClassName("java.util")).containsExactly("java.util.List")
+    assertThat(trie.findClassName("java.nio")).isEmpty()
+  }
+}

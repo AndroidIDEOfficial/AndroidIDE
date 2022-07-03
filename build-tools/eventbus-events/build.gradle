@@ -26,6 +26,8 @@ java {
 
 dependencies {
     implementation common.jkotlin
+    
+    api project (path: ':build-tools:eventbus')
 }
 
 compileKotlin {

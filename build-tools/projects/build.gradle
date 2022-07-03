@@ -29,6 +29,9 @@ android {
 }
 
 dependencies {
+    api project (path: ':build-tools:eventbus')
+    api project (path: ':build-tools:eventbus-events')
+    
     implementation project (path: ':build-tools:tooling-api')
     implementation project (path: ':common')
     

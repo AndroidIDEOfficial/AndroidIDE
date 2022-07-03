@@ -20,34 +20,22 @@ package com.itsaky.androidide.handlers
 import android.content.Context
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.eventbus.events.Event
+import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.utils.ILogger
-import org.greenrobot.eventbus.EventBus
 
 /**
  * Base class for event handlers.
  *
  * @author Akash Yadav
  */
-abstract class BaseEventHandler {
+abstract class BaseEventHandler : EventReceiver {
 
   protected val log = ILogger.newInstance(javaClass.simpleName)
-
-  /** Registeres this handler with [EventBus]. */
-  fun register() {
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this)
-    }
-  }
-
-  /** Unregisteres this handler from [EventBus]. */
-  fun unregister() {
-    EventBus.getDefault().unregister(this)
-  }
 
   protected open fun checkIsEditorActivity(event: Event): Boolean {
     return event.get(Context::class.java) is EditorActivity
   }
-  
+
   protected open fun logCannotHandle(event: Event) {
     log.warn("Context is not EditorActivity. Cannot handle ${event.javaClass.simpleName} event.")
   }

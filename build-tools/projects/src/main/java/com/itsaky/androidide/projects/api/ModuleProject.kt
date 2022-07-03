@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.itsaky.androidide.eventbus.events.EventReceiver
+import com.itsaky.androidide.projects.util.ClassTrie
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import java.io.File
 
@@ -35,7 +37,10 @@ abstract class ModuleProject(
   tasks: List<GradleTask>
 ) :
   Project(name, description, path, projectDir, buildDir, buildScript, tasks),
-  com.itsaky.androidide.tooling.api.model.ModuleProject {
+  com.itsaky.androidide.tooling.api.model.ModuleProject,
+  EventReceiver {
+
+  private val classes = ClassTrie()
 
   /**
    * Get the source directories of this module (transitive).
@@ -43,4 +48,15 @@ abstract class ModuleProject(
    * @return The source directories.
    */
   abstract fun getSourceDirectories(): Set<File>
+
+  override fun register() {
+    super.register()
+  }
+
+  /** Finds the source files from source directories and indexes them. */
+  fun indexSources() {
+    val sourceDirs = getSourceDirectories()
+  }
+
+  fun findClass(className: String) {}
 }

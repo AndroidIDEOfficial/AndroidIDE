@@ -48,12 +48,12 @@ import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.SUCCESS
 import com.unnamed.b.atv.model.TreeNode
-import java.io.File
-import java.util.*
-import java.util.regex.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
+import java.util.*
+import java.util.regex.*
 
 /**
  * Handles events related to files in filetree.

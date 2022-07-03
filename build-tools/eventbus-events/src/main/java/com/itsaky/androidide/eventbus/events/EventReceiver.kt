@@ -15,20 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects
+package com.itsaky.androidide.eventbus.events
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.greenrobot.eventbus.EventBus
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * Any class that receives an [Event].
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * @author Akash Yadav
  */
-class ExampleUnitTest {
-  @Test
-  fun addition_isCorrect() {
-    assertEquals(4, 2 + 2)
+interface EventReceiver {
+
+  /** Registeres this handler with [EventBus]. */
+  fun register() {
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this)
+    }
+  }
+
+  /** Unregisteres this handler from [EventBus]. */
+  fun unregister() {
+    EventBus.getDefault().unregister(this)
   }
 }
