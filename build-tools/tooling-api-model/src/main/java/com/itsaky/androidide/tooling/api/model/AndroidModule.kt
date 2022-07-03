@@ -79,13 +79,7 @@ open class AndroidModule(
   var bootClassPaths: Collection<File> = emptyList()
   var mainSourceSet: DefaultSourceSetContainer? = null
 
-  @Deprecated(
-    "We do not keep references to all variant dependencies (to cut down memory usage)." +
-      " Use debugLibraries instead."
-  )
-  var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
-
-  var debugLibraries: List<DefaultLibrary> = emptyList()
+  var libraries: List<DefaultLibrary> = emptyList()
 
   @Suppress("unused")
   companion object {

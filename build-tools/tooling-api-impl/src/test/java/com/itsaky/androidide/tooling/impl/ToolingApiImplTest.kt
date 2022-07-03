@@ -87,12 +87,9 @@ class ToolingApiImplTest {
     assertThat(app.tasks.size).isAtLeast(100)
     assertThat(app.tasks.first { it.path == "${app.projectPath}:thisIsATestTask" }).isNotNull()
 
-    // This is not expected to be filled. Instead debugLibraries must be filled
-    @Suppress("DEPRECATION") assertThat(app.variantDependencies).isEmpty()
-
-    assertThat(app.debugLibraries).isNotEmpty()
+    assertThat(app.libraries).isNotEmpty()
     // At least one project library
-    assertThat(app.debugLibraries.filter { it.type == PROJECT }).isNotEmpty()
+    assertThat(app.libraries.filter { it.type == PROJECT }).isNotEmpty()
 
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()

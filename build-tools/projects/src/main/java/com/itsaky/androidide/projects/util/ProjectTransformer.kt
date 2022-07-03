@@ -77,7 +77,7 @@ class ProjectTransformer {
       viewBindingOptions = project.viewBindingOptions ?: DefaultViewBindingOptions(),
       bootClassPaths = project.bootClassPaths,
       debugLibraries =
-        project.debugLibraries.filter {
+        project.libraries.filter {
           !(it.type == PROJECT && it.projectInfo!!.projectPath == project.projectPath)
         },
       dynamicFeatures = project.dynamicFeatures,

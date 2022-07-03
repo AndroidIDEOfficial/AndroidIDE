@@ -227,7 +227,7 @@ public class ProjectReader {
         .getLibraries()
         .forEach((s, library) -> libraries.add(AndroidModulePropertyCopier.INSTANCE.copy(library)));
 
-    module.setDebugLibraries(libraries);
+    module.setLibraries(libraries);
 
     log("Fetching project sync issues...");
     final var issues = controller.findModel(gradle, ProjectSyncIssues.class);
