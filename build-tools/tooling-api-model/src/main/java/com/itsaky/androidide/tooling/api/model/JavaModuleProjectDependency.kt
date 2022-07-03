@@ -27,5 +27,11 @@ import java.io.Serializable
  */
 class JavaModuleProjectDependency(
   /** The name of the module project. */
-  val moduleName: String
-) : JavaModuleDependency(null), Serializable {}
+  val moduleName: String,
+
+  /** Scope of this dependency. */
+  scope: String,
+
+  /** Whether the dependency is exported. */
+  exported: Boolean
+) : JavaModuleDependency(null, scope, exported), Serializable {}

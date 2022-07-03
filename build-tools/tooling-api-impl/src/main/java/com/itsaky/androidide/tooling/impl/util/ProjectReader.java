@@ -32,6 +32,7 @@ import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
+import com.itsaky.androidide.tooling.api.model.GradleArtifact;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot;
@@ -260,22 +261,34 @@ public class ProjectReader {
 
   private static List<? extends JavaModuleDependency> collectJavaDependencies(IdeaModule idea) {
     final var list = new ArrayList<JavaModuleDependency>();
-    log("Java dependencies: " + idea.getDependencies());
     for (IdeaDependency dependency : idea.getDependencies()) {
-      log("Java dependency: " + dependency.getClass().getName());
+      log("Java dependency: ", dependency, dependency.getClass().getName());
       // TODO There might be unresolved dependencies here. We need to handle them too.
       if (dependency instanceof IdeaSingleEntryLibraryDependency) {
         final var external = (IdeaSingleEntryLibraryDependency) dependency;
         // There might be multiple entries of same dependency, but with different scope
         // So we only add dependencies with 'RUNTIME' scope
         if (external.getScope().getScope().equals("RUNTIME")) {
+          final var moduleVersion = external.getGradleModuleVersion();
           list.add(
               new JavaModuleExternalDependency(
-                  external.getFile(), external.getSource(), external.getJavadoc()));
+                  external.getFile(),
+                  external.getSource(),
+                  external.getJavadoc(),
+                  new GradleArtifact(
+                      moduleVersion.getGroup(),
+                      moduleVersion.getName(),
+                      moduleVersion.getVersion()),
+                  dependency.getScope().getScope(),
+                  dependency.getExported()));
         }
       } else if (dependency instanceof IdeaModuleDependency) {
         final var project = ((IdeaModuleDependency) dependency);
-        list.add(new JavaModuleProjectDependency(project.getTargetModuleName()));
+        list.add(
+            new JavaModuleProjectDependency(
+                project.getTargetModuleName(),
+                dependency.getScope().getScope(),
+                dependency.getExported()));
       }
     }
     return list;
@@ -373,8 +386,7 @@ public class ProjectReader {
 
   private static void log(Object... messages) {
     final var line =
-        new LogLine(
-            ILogger.Priority.DEBUG, "BuildActionExecutor", generateMessage(messages));
+        new LogLine(ILogger.Priority.DEBUG, "BuildActionExecutor", generateMessage(messages));
     System.err.println(line.toSimpleString());
   }
 
