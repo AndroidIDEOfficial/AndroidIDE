@@ -25,7 +25,6 @@ import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultVariant
-import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
@@ -185,7 +184,7 @@ open class AndroidModule(
       shouldLookupPackage = false
       return
     }
-    
+
     val manifestFile = mainSourceSet!!.sourceProvider.manifestFile
     if (manifestFile == DefaultSourceProvider.NoFile) {
       shouldLookupPackage = false

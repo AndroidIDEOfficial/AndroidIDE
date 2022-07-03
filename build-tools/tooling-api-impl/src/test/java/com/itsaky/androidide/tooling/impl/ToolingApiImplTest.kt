@@ -33,14 +33,14 @@ import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.*
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -90,6 +90,31 @@ class ToolingApiImplTest {
     assertThat(app.libraries).isNotEmpty()
     // At least one project library
     assertThat(app.libraries.filter { it.type == PROJECT }).isNotEmpty()
+
+    // :app module includes :java-library as a dependency. But it is not transitive
+    assertThat(
+        app.libraries.firstOrNull {
+          it.type == PROJECT &&
+            it.projectInfo!!.projectPath == ":another-java-library" &&
+            it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
+        }
+      )
+      .isNull()
+
+    val androidLib = project.findByPath(":android-library").get()
+    assertThat(androidLib).isNotNull()
+    assertThat(androidLib).isInstanceOf(AndroidModule::class.java)
+    // Make sure that transitive dependencies are included here because :android-library includes
+    // :java-library project which further includes :another-java-libraries project with 'api'
+    // configuration
+    assertThat(
+        (androidLib as AndroidModule).libraries.first {
+          it.type == PROJECT &&
+            it.projectInfo!!.projectPath == ":another-java-library" &&
+            it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
+        }
+      )
+      .isNotNull()
 
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
