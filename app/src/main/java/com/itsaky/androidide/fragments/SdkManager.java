@@ -129,7 +129,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                 else download_list.remove(CMDLINE_TOOLS);
 	        }
         }
-private File createExtractScript() throws Exception{
+private File createExtractScript() throws SdkManager.InstallationException{
         final StringBuilder sb = new StringBuilder();
         sb.append("cd");
         joiner(sb);
