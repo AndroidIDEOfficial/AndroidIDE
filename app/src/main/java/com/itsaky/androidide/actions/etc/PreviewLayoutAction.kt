@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.handlers.FileOptionsHandler
+import com.itsaky.androidide.handlers.FileTreeActionHandler
 
 /** @author Akash Yadav */
 class PreviewLayoutAction() : EditorRelatedAction() {
@@ -49,7 +49,7 @@ class PreviewLayoutAction() : EditorRelatedAction() {
     visible =
       isXml &&
         file.parentFile != null &&
-        Regex(FileOptionsHandler.LAYOUT_RES_PATH_REGEX).matches(file.parentFile!!.absolutePath)
+        Regex(FileTreeActionHandler.LAYOUT_RES_PATH_REGEX).matches(file.parentFile!!.absolutePath)
     enabled = visible
   }
 

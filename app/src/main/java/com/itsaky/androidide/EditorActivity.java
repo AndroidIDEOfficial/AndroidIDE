@@ -88,12 +88,10 @@ import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.NonEditableEditorFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.SimpleOutputFragment;
-import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.EditorEventListener;
-import com.itsaky.androidide.handlers.FileOptionsHandler;
-import com.itsaky.androidide.handlers.IDEHandler;
+import com.itsaky.androidide.handlers.FileTreeActionHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
@@ -104,7 +102,6 @@ import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.services.GradleBuildService;
@@ -136,7 +133,6 @@ import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.xml.XMLLanguageServer;
 import com.itsaky.toaster.Toaster;
-import com.unnamed.b.atv.model.TreeNode;
 
 import org.jetbrains.annotations.Contract;
 
@@ -164,16 +160,12 @@ import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
 public class EditorActivity extends StudioActivity
-    implements FileTreeFragment.FileActionListener,
-        TabLayout.OnTabSelectedListener,
+    implements TabLayout.OnTabSelectedListener,
         NavigationView.OnNavigationItemSelectedListener,
         DiagnosticClickListener,
-        IDEHandler.Provider,
-        EditorActivityProvider,
-        OptionsListFragment.OnOptionsClickListener {
+        EditorActivityProvider {
 
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
-  private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
   private static final String KEY_PROJECT_PATH = "saved_projectPath";
   private static final int ACTION_ID_CLOSE = 100;
   private static final int ACTION_ID_OTHERS = 101;
@@ -185,17 +177,16 @@ public class EditorActivity extends StudioActivity
   private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
   private final LogReceiver mLogReceiver = new LogReceiver().setLogListener(this::appendApkLog);
   private FileTreeFragment mFileTreeFragment;
-  private TreeNode mLastHeld;
   private SymbolInputView symbolInput;
-  private FileOptionsHandler mFileOptionsHandler;
   private QuickAction mTabCloseAction;
   private TextSheetFragment mDaemonStatusFragment;
-  private OptionsListFragment mFileOptionsFragment;
   private ProgressSheet mSearchingProgress;
   private AlertDialog mFindInProjectDialog;
   private ActivityResultLauncher<Intent> mUIDesignerLauncher;
   private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
+
+  private final FileTreeActionHandler mFileActionsHandler = new FileTreeActionHandler();
 
   private GradleBuildService mBuildService;
   private final ServiceConnection mGradleServiceConnection =
@@ -225,8 +216,6 @@ public class EditorActivity extends StudioActivity
       mBinding.getRoot().closeDrawer(GravityCompat.START);
     } else if (getDaemonStatusFragment().isShowing()) {
       getDaemonStatusFragment().dismiss();
-    } else if (mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
-      mFileOptionsFragment.dismiss();
     } else if (mEditorBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
       mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
     } else {
@@ -284,11 +273,6 @@ public class EditorActivity extends StudioActivity
 
   @Override
   public EditorActivity provide() {
-    return this;
-  }
-
-  @Override
-  public EditorActivity provideEditorActivity() {
     return this;
   }
 
@@ -430,7 +414,6 @@ public class EditorActivity extends StudioActivity
     return null;
   }
 
-  @Override
   public CodeEditorView openFile(File file) {
     return openFile(file, null);
   }
@@ -512,30 +495,6 @@ public class EditorActivity extends StudioActivity
     }
   }
 
-  @Override
-  public void showFileOptions(File thisFile, TreeNode node) {
-    mLastHeld = node;
-    getFileOptionsFragment(thisFile).show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
-  }
-
-  public OptionsListFragment getFileOptionsFragment(File file) {
-    mFileOptionsFragment = new OptionsListFragment();
-    mFileOptionsFragment.addOption(
-        new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
-    mFileOptionsFragment.addOption(
-        new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
-    mFileOptionsFragment.addOption(
-        new SheetOption(2, R.drawable.ic_delete, R.string.delete_file, file));
-    if (file.isDirectory()) {
-      mFileOptionsFragment.addOption(
-          new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
-      mFileOptionsFragment.addOption(
-          new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
-    }
-
-    return mFileOptionsFragment;
-  }
-
   public void hideViewOptions() {
     if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
       mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -609,14 +568,6 @@ public class EditorActivity extends StudioActivity
 
   public void loadFragment(Fragment fragment) {
     super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
-  }
-
-  public FileTreeFragment getFileTreeFragment() {
-    return mFileTreeFragment;
-  }
-
-  public TreeNode getLastHoldTreeNode() {
-    return mLastHeld;
   }
 
   public ProgressSheet getProgressSheet(int msg) {
@@ -1108,13 +1059,6 @@ public class EditorActivity extends StudioActivity
     return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
   }
 
-  @Override
-  public void onOptionsClick(SheetOption option) {
-    if (mFileOptionsHandler != null) {
-      mFileOptionsHandler.onOptionsClick(option);
-    }
-  }
-
   public GradleBuildService getBuildService() {
     return mBuildService;
   }
@@ -1166,7 +1110,6 @@ public class EditorActivity extends StudioActivity
     createQuickActions();
 
     mBuildEventListener.setActivity(this);
-    mFileOptionsHandler = new FileOptionsHandler(this);
 
     startServices();
 
@@ -1223,6 +1166,18 @@ public class EditorActivity extends StudioActivity
   protected void onSaveInstanceState(@NonNull final Bundle outState) {
     outState.putString(KEY_PROJECT_PATH, ProjectManager.INSTANCE.getProjectDirPath());
     super.onSaveInstanceState(outState);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mFileActionsHandler.register();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    mFileActionsHandler.unregister();
   }
 
   @SuppressWarnings("deprecation")
@@ -1623,11 +1578,6 @@ public class EditorActivity extends StudioActivity
     }
 
     initializeLanguageServers();
-
-    // Actually, we don't need to start FileOptionsHandler
-    // Because it would work anyway
-    // But still we do...
-    mFileOptionsHandler.start();
   }
 
   private void initializeLanguageServers() {
@@ -1652,9 +1602,6 @@ public class EditorActivity extends StudioActivity
     }
 
     shutdownLanguageServers();
-    if (mFileOptionsHandler != null) {
-      mFileOptionsHandler.stop();
-    }
   }
 
   private void shutdownLanguageServers() {
