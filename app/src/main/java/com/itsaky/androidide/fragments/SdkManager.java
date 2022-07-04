@@ -67,7 +67,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
             final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
-showProgress()
+showProgress();
             executor.execAsync(
                     holder,
                     this::onInstallProcessExit,
