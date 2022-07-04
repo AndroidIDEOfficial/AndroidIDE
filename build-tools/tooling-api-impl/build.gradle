@@ -70,6 +70,7 @@ dependencies {
     implementation common.jkotlin
     implementation 'org.gradle:gradle-tooling-api:7.5-rc-3'
     
+    testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
     testImplementation tests.google_truth
     
