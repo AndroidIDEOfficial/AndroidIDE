@@ -57,8 +57,7 @@ abstract class ModuleProject(
 
   /**
    * Get the source directories with compile scope. This must include source directories of
-   * transitive project dependencies as well. This includes source directories for this module as
-   * well.
+   * transitive project dependencies and this module.
    *
    * @return The source directories.
    */

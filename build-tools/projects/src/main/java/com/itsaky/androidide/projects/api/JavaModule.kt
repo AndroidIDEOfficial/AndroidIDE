@@ -75,8 +75,8 @@ class JavaModule(
     return jar
   }
 
-  override fun getClassPaths(): MutableSet<File> {
-    return mutableSetOf(getGeneratedJar(""))
+  override fun getClassPaths(): Set<File> {
+    return getModuleClasspaths()
   }
 
   override fun getSourceDirectories(): Set<File> {
@@ -89,19 +89,30 @@ class JavaModule(
 
   override fun getCompileSourceDirectories(): Set<File> {
     val dirs = getSourceDirectories().toMutableSet()
+    getCompileModuleProjects().forEach { dirs.addAll(it.getSourceDirectories()) }
     return dirs
   }
 
   override fun getModuleClasspaths(): Set<File> {
-    TODO("Not yet implemented")
+    return mutableSetOf(getGeneratedJar(""))
   }
 
   override fun getCompileClasspaths(): Set<File> {
-    TODO("Not yet implemented")
+    val classpaths = getModuleClasspaths().toMutableSet()
+    getCompileModuleProjects().forEach { classpaths.addAll(it.getCompileClasspaths()) }
+    return classpaths
   }
 
+  // TODO IdeaDependency.getExported() always returns false
+  //   Find out its cause and handle exported dependencies here.
+  //
+  //  Currently transitive dependencies are not included in this.
   override fun getCompileModuleProjects(): List<ModuleProject> {
     val root = ProjectManager.rootProject ?: return emptyList()
-    return emptyList()
+    return this.dependencies
+      .filterIsInstance(JavaModuleProjectDependency::class.java)
+      .filter { it.scope == SCOPE_COMPILE }
+      .mapNotNull { root.findByPath(it.projectPath) }
+      .filterIsInstance(ModuleProject::class.java)
   }
 }
