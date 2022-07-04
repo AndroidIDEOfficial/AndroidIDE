@@ -53,7 +53,9 @@ public class DownloaderTest {
         countDownLatch = new CountDownLatch(1);
     }
     public void install() throws InterruptedException {
-        boolean result = downloadFiles();
+        new Thread (()->{
+boolean result = downloadFiles();
+});
         if (bar.isShowing()) bar.dismiss();
         if (result) {
             Toast.makeText(activity.getApplicationContext(), "Done!", Toast.LENGTH_SHORT).show();
@@ -63,11 +65,13 @@ public class DownloaderTest {
     }
 
     public boolean downloadFiles() throws InterruptedException {
-        bar.setCancelable(false);
+      ThreadUtils.runOnUiThread(()->{
+	bar.setCancelable(false);
         bar.setCanceledOnTouchOutside(false);
         bar.setTitle("Connecting");
         bar.setIndeterminate(true);
         bar.show();
+});
         final AtomicBoolean flag = new AtomicBoolean(false);
         new Thread(()-> {
             for (String link : DownloadList) {
