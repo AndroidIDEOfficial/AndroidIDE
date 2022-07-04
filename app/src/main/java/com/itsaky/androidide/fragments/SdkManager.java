@@ -62,7 +62,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     binding.download.setOnClickListener(v->{
     ProgressDialog d = new ProgressDialog(getActivity());
 	d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-      new Downloader(getActivity(),getActivity(),d,download_list).execute();
+  //    new Downloader(getActivity(),getActivity(),d,download_list).execute();
         try {
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
@@ -83,6 +83,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 
         } catch (SdkManager.InstallationException e) {
             onInstallationFailed(e.exitCode);
+	    
         } catch (IOException e) {
             onInstallationFailed(5);
         }
