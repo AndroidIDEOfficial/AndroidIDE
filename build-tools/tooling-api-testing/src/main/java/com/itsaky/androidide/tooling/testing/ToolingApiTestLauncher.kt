@@ -41,8 +41,8 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 class ToolingApiTestLauncher {
-  
-  fun launchServer(client: IToolingApiClient): Pair<IToolingApiServer, IProject> {
+
+  fun launchServer(client: IToolingApiClient = TestClient()): Pair<IToolingApiServer, IProject> {
     val builder =
       ProcessBuilder(
         "java",
@@ -53,33 +53,33 @@ class ToolingApiTestLauncher {
         "--add-opens",
         "java.base/java.io=ALL-UNNAMED",
         "-jar",
-        "./build/libs/tooling-api-all.jar"
+        "../tooling-api-impl/build/libs/tooling-api-all.jar"
       )
     val androidHome = findAndroidHome()
     println("ANDROID_HOME=$androidHome")
     builder.environment()["ANDROID_SDK_ROOT"] = androidHome
     builder.environment()["ANDROID_HOME"] = androidHome
     val proc = builder.start()
-    
+
     Thread(Reader(proc.errorStream)).start()
     val launcher = ToolingApiLauncher.newClientLauncher(client, proc.inputStream, proc.outputStream)
-    
+
     launcher.startListening()
-    
+
     return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
   }
-  
+
   private fun findAndroidHome(): String {
     var androidHome = System.getenv("ANDROID_HOME")
     if (androidHome != null && androidHome.isNotBlank()) {
       return androidHome
     }
-    
+
     androidHome = System.getenv("ANDROID_SDK_ROOT")
     if (androidHome != null && androidHome.isNotBlank()) {
       return androidHome
     }
-    
+
     val os = System.getProperty("os.name")
     val home = System.getProperty("user.home")
     return if (os.contains("Linux")) {
@@ -88,31 +88,31 @@ class ToolingApiTestLauncher {
       "$home\\AppData\\Local\\Android\\Sdk"
     }
   }
-  
+
   class TestClient : IToolingApiClient {
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun logMessage(line: LogLine) {
       log.log(line.priority, line.formattedTagAndMessage())
     }
-    
+
     override fun logOutput(line: String) {
       log.debug(line.trim())
     }
-    
+
     override fun prepareBuild() {}
     override fun onBuildSuccessful(result: BuildResult) {}
     override fun onBuildFailed(result: BuildResult) {}
-    
+
     override fun onProgressEvent(event: ProgressEvent) {}
-    
+
     override fun getBuildArguments(): CompletableFuture<List<String>> {
       return CompletableFuture.completedFuture(listOf("--stacktrace", "--info"))
     }
-    
+
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
       CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
   }
-  
+
   private class Reader(val input: InputStream) : Runnable {
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun run() {

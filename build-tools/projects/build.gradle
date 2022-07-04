@@ -35,6 +35,7 @@ dependencies {
     implementation project (path: ':build-tools:tooling-api')
     implementation project (path: ':common')
     
+    testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric

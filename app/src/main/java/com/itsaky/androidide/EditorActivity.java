@@ -195,7 +195,6 @@ public class EditorActivity extends StudioActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
           mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
           LOG.info("Gradle build service has been started...");
-
           mBuildService
               .setEventListener(mBuildEventListener)
               .startToolingServer(() -> initializeProject());
