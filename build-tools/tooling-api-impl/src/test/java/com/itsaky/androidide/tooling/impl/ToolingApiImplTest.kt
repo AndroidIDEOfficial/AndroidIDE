@@ -108,7 +108,7 @@ class ToolingApiImplTest {
     // :java-library project which further includes :another-java-libraries project with 'api'
     // configuration
     assertThat(
-        (androidLib as AndroidModule).libraries.first {
+        (androidLib as AndroidModule).libraries.firstOrNull {
           it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
