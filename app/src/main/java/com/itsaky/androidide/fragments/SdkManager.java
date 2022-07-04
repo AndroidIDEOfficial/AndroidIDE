@@ -63,11 +63,12 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     binding.cmdTools.setOnCheckedChangeListener(this);
     binding.jdk17.setOnCheckedChangeListener(this);
     binding.download.setOnClickListener(v->{
+	    showProgress();
         try {
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
             final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
-showProgress();
+
             executor.execAsync(
                     holder,
                     this::onInstallProcessExit,
@@ -160,7 +161,7 @@ joiner(sb);
 	});
 	sb.append("echo 'Downloading Files...'");
         joiner(sb);
-	File scriptPath = new File(requireActivity().getFilesDir()+"/home/");
+	/*File scriptPath = new File(requireActivity().getFilesDir()+"/home/");
         File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
 
         if (files == null || files.length <= 0) {
@@ -184,10 +185,11 @@ joiner(sb);
                 joiner(sb);
             }
         }
+	*/
         String DONE = "DONE";
         sb.append("echo ").append(DONE);
 
-        final File script = new File(getActivity().getFilesDir()+"/home/", "extract_tools.sh");
+        final File script = new File(getActivity().getFilesDir()+"/home/", "install_tools.sh");
         if (!FileIOUtils.writeFileFromString(script, sb.toString())) {
             throw new InstallationException(2);
         }
