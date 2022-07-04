@@ -146,14 +146,14 @@ private File createExtractScript() throws SdkManager.InstallationException{
         for (File f : files) {
             if (f.getName().endsWith(".tar.xz")) {
                 if(f.getName().startsWith("cmdline-tools-all")){
-                    sb.append("mkdir -p $HOME/android-sdk && cd $HOME/android-sdk");
+                    sb.append("mkdir -p $HOME/android-sdk &&");
                     }
-                sb.append("$BUSYBOX tar xvJf '").append(f.getAbsolutePath()).append("'");
+                sb.append("$BUSYBOX tar xvJf ").append("$HOME/"+f.getName()).append(" -C $HOME/android-sdk");
                 joiner(sb);
                 sb.append("cd $HOME");
                 joiner(sb);
             } else if (f.getName().endsWith(".zip")) {
-                sb.append("$BUSYBOX unzip '").append(f.getAbsolutePath()).append("'");
+                sb.append("$BUSYBOX unzip ").append(f.getAbsolutePath());
                 joiner(sb);
             }
         }
