@@ -63,6 +63,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     ProgressDialog d = new ProgressDialog(getActivity());
 	d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
   //    new Downloader(getActivity(),getActivity(),d,download_list).execute();
+  showProgress();
         try {
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
@@ -111,7 +112,14 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
             getProgressSheet().dismiss();
         }
     }
-    
+   private void showProgress() {
+       getProgressSheet().setCancelable(false);
+        getProgressSheet().setShowShadow(false);
+        getProgressSheet()
+                .setSubMessageEnabled(true)
+                .setWelcomeTextEnabled(true)
+                .show(getActivity().getSupportFragmentManager(), "progress_sheet");
+    } 
   @Override
 	public void onCheckedChanged(CompoundButton cbuttton, boolean isChecked) {
 		if(cbuttton.getId() == binding.sdk32.getId()){
