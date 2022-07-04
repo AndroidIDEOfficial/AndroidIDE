@@ -872,6 +872,10 @@ public class EditorActivity extends StudioActivity
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
         () -> {
+          if (mBinding == null) {
+            // Activity has been destroyed
+            return;
+          }
           initialSetup();
           setStatus(getString(R.string.msg_project_initialized));
           mBinding.buildProgressIndicator.setVisibility(View.GONE);

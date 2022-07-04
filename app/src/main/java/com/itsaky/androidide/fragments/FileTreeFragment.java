@@ -205,6 +205,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   }
 
   public void listProjectFiles() {
+    if (binding == null) {
+      // Fragment has been destroyed
+      return;
+    }
     final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
     final File gradleProps = Environment.GRADLE_PROPS;
     final File gradleHome = Environment.GRADLE_USER_HOME;
