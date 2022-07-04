@@ -1,12 +1,14 @@
 package com.itsaky.androidide.fragments;
 
 import android.widget.CompoundButton;
-import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.itsaky.androidide.DownloaderTest;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import java.util.ArrayList;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -15,17 +17,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.itsaky.androidide.R; 
-import com.blankj.utilcode.util.ClipboardUtils;
-import com.itsaky.androidide.app.BaseApplication;
+
 import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding;
 import com.itsaky.androidide.Downloader;
 import android.app.ProgressDialog;
 import com.blankj.utilcode.util.FileIOUtils;
 import java.io.File;
 import java.io.FileFilter;
+
 import com.itsaky.androidide.shell.IProcessExecutor;
 import com.itsaky.androidide.shell.ProcessExecutorFactory;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 
@@ -58,17 +61,24 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     else binding.sdk64.setEnabled(false);
     binding.sdk32.setOnCheckedChangeListener(this);
     binding.sdk64.setOnCheckedChangeListener(this);
-    binding.buildtools.setOnCheckedChangeListener(this);
+    binding.cmdTools.setOnCheckedChangeListener(this);
     binding.download.setOnClickListener(v->{
     ProgressDialog d = new ProgressDialog(getActivity());
 	d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-  //    new Downloader(getActivity(),getActivity(),d,download_list).execute();
-  showProgress();
+
+
+  //new Downloader(getActivity(),getActivity(),d,download_list).execute();
+      try {
+        new DownloaderTest(getActivity(),getActivity(),d,download_list).install();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      showProgress();
         try {
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
             final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
-            
+
             executor.execAsync(
                     holder,
                     this::onInstallProcessExit,
@@ -82,13 +92,31 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                     new InputStreamLineReader(holder.in, this::onInstallationOutput);
             new Thread(reader).start();
 
-        } catch (SdkManager.InstallationException e) {
+        } catch (InstallationException e) {
             onInstallationFailed(e.exitCode);
 	    
         } catch (IOException e) {
             onInstallationFailed(5);
         }
     });
+  }
+  @Override
+  public void onCheckedChanged(CompoundButton cbuttton, boolean isChecked) {
+    switch (cbuttton.getId()){
+      case R.id.sdk32:handleCheck(isChecked,ARM_SDK);
+      break;
+      case R.id.sdk64: handleCheck(isChecked,AARCH_SDK);
+      break;
+      case R.id.cmdTools: handleCheck(isChecked,CMDLINE_TOOLS);
+      break;
+    }
+  }
+  public void handleCheck(boolean check, String link){
+    if (check) {
+      download_list.add(link);
+    } else {
+      download_list.remove(link);
+    }
   }
   private void onInstallationOutput(final String line) {
         ThreadUtils.runOnUiThread(() -> this.appendOut(line));
@@ -118,54 +146,39 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
         getProgressSheet()
                 .setSubMessageEnabled(true)
                 .setWelcomeTextEnabled(true)
-                .show(getActivity().getSupportFragmentManager(), "progress_sheet");
+                .show(requireActivity().getSupportFragmentManager(), "progress_sheet");
     } 
-  @Override
-	public void onCheckedChanged(CompoundButton cbuttton, boolean isChecked) {
-		if(cbuttton.getId() == binding.sdk32.getId()){
-		if(isChecked)
-		download_list.add(ARM_SDK);
-		else download_list.remove(ARM_SDK);
-		}
-		else if(cbuttton.getId() == binding.sdk64.getId()){
-                if(isChecked)
-		download_list.add(AARCH_SDK);
-                else download_list.remove(AARCH_SDK);               
-	        }
-		else if(cbuttton.getId() == binding.buildtools.getId()){
-                if(isChecked)
-	        download_list.add(CMDLINE_TOOLS);
-                else download_list.remove(CMDLINE_TOOLS);
-	        }
-        }
+
 private File createExtractScript() throws SdkManager.InstallationException{
         final StringBuilder sb = new StringBuilder();
         sb.append("cd");
         joiner(sb);
         sb.append("echo 'Installing...'");
         joiner(sb);
-		File scriptPath = new File(getActivity().getFilesDir()+"/home/");
+		File scriptPath = new File(requireActivity().getFilesDir()+"/home/");
         File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
 
         if (files == null || files.length <= 0) {
             throw new InstallationException(2);
         }
-
         for (File f : files) {
             if (f.getName().endsWith(".tar.xz")) {
                 if(f.getName().startsWith("cmdline-tools-all")){
-                    sb.append("mkdir -p $HOME/android-sdk &&");
+                    sb.append("mkdir -p $HOME/android-sdk");
+                    joiner(sb);
+                    sb.append("$BUSYBOX tar xvJf ").append("$HOME/"+f.getName()).append(" -C $HOME/android-sdk");
                     }
-                sb.append("$BUSYBOX tar xvJf ").append("$HOME/"+f.getName()).append(" -C $HOME/android-sdk");
-                joiner(sb);
-                sb.append("cd $HOME");
-                joiner(sb);
+                else {
+                  sb.append("$BUSYBOX tar xvJf ").append("$HOME/" + f.getName());
+                  joiner(sb);
+                  sb.append("cd $HOME");
+                  joiner(sb);
+                }
             } else if (f.getName().endsWith(".zip")) {
                 sb.append("$BUSYBOX unzip ").append(f.getAbsolutePath());
                 joiner(sb);
             }
         }
-
         sb.append("echo 'Cleaning unsupported flags in binaries...'");
         joiner(sb);
         String DONE = "DONE";
