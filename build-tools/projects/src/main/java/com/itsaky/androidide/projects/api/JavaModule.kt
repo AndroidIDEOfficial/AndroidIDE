@@ -17,11 +17,12 @@
 
 package com.itsaky.androidide.projects.api
 
-import com.itsaky.androidide.builder.model.DefaultLibrary
+import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
+import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import java.io.File
 
 /**
@@ -52,6 +53,11 @@ class JavaModule(
   val dependencies: List<JavaModuleDependency>
 ) : ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks) {
 
+  companion object {
+    const val SCOPE_COMPILE = "COMPILE"
+    const val SCOPE_RUNTIME = "RUNTIME"
+  }
+
   init {
     type = Java
   }
@@ -70,7 +76,7 @@ class JavaModule(
   }
 
   override fun getClassPaths(): MutableSet<File> {
-    return dependencies.mapNotNull { it.jarFile }.toMutableSet().apply { add(getGeneratedJar("")) }
+    return mutableSetOf(getGeneratedJar(""))
   }
 
   override fun getSourceDirectories(): Set<File> {
@@ -80,20 +86,22 @@ class JavaModule(
     }
     return sources
   }
-  
+
   override fun getCompileSourceDirectories(): Set<File> {
-    TODO("Not yet implemented")
+    val dirs = getSourceDirectories().toMutableSet()
+    return dirs
   }
-  
+
   override fun getModuleClasspaths(): Set<File> {
     TODO("Not yet implemented")
   }
-  
+
   override fun getCompileClasspaths(): Set<File> {
     TODO("Not yet implemented")
   }
-  
+
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    TODO("Not yet implemented")
+    val root = ProjectManager.rootProject ?: return emptyList()
+    return emptyList()
   }
 }

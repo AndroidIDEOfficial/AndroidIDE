@@ -64,11 +64,15 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Akash Yadav
  */
 public class ProjectReader {
+
+  /** All modules mapped by their names (not paths). */
+  private static final Map<String, IdeaModule> allModules = new ConcurrentHashMap<>();
 
   public static IdeGradleProject read(
       ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
@@ -265,7 +269,6 @@ public class ProjectReader {
   private static List<? extends JavaModuleDependency> collectJavaDependencies(IdeaModule idea) {
     final var list = new ArrayList<JavaModuleDependency>();
     for (IdeaDependency dependency : idea.getDependencies()) {
-      log("Java dependency: ", dependency, dependency.getClass().getName());
       // TODO There might be unresolved dependencies here. We need to handle them too.
       final var reflected = reflectIdeaDependency(dependency);
       if (reflected != null) {
@@ -289,14 +292,24 @@ public class ProjectReader {
                 dependency.getExported()));
       } else if (dependency instanceof IdeaModuleDependency) {
         final var project = ((IdeaModuleDependency) dependency);
+        final var moduleName = project.getTargetModuleName();
         list.add(
             new JavaModuleProjectDependency(
-                project.getTargetModuleName(),
+                moduleName,
+                findModulePathByName(moduleName),
                 project.getScope().getScope(),
                 project.getExported()));
       }
     }
     return list;
+  }
+
+  private static String findModulePathByName(final String moduleName) {
+    final var module = allModules.get(moduleName);
+    if (module != null) {
+      return module.getGradleProject().getPath();
+    }
+    return "";
   }
 
   private static List<JavaContentRoot> collectContentRoots(IdeaModule module) {
@@ -334,6 +347,11 @@ public class ProjectReader {
       IdeaProject ideaProject,
       BuildController controller,
       Map<String, DefaultProjectSyncIssues> outIssues) {
+
+    for (final IdeaModule module : ideaProject.getModules()) {
+      allModules.put(module.getName(), module);
+    }
+
     final var rootModule =
         ideaProject.getModules().stream()
             .filter(it -> it.getGradleProject().getPath().equals(":"))
@@ -341,7 +359,7 @@ public class ProjectReader {
 
     if (rootModule.isEmpty()) {
       throw new IllegalArgumentException(
-          "No GradleProject model is associated with project path: " + ":");
+          "No GradleProject model is associated with project path: " + "':'");
     }
 
     IdeGradleProject project = buildModuleProject(controller, rootModule.get(), outIssues, true);
@@ -366,6 +384,8 @@ public class ProjectReader {
     }
 
     addModules(ideaProject, project, controller, outIssues);
+
+    allModules.clear();
 
     return project;
   }

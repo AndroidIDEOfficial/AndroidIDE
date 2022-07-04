@@ -108,28 +108,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getClassPaths(): Set<File> {
-    val root = ProjectManager.rootProject
-    if (root == null) {
-      log.error("Project is not initialized. Cannot collect classpaths for project $name")
-      return emptySet()
-    }
-
-    return mutableSetOf<File>().apply {
-      for (library in libraries) {
-        when (library.type) {
-          RELOCATED -> continue
-          ANDROID_LIBRARY -> addAll(library.androidLibraryData!!.compileJarFiles)
-          JAVA_LIBRARY -> add(library.artifact!!)
-          PROJECT -> {
-            val projectPath = library.projectInfo!!.projectPath
-            val module = root.findByPath(projectPath) ?: continue
-            if (module is ModuleProject) {
-              addAll(module.getClassPaths())
-            }
-          }
-        }
-      }
-    }
+    return getModuleClasspaths()
   }
 
   fun getVariant(name: String): SimpleVariantData? {

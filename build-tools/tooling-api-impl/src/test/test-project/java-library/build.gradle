@@ -8,8 +8,10 @@ java {
 }
 
 dependencies {
-    implementation 'io.github.itsaky:nb-javac-android:17.0.0.0'
+    api 'io.github.itsaky:nb-javac-android:17.0.0.0'
     api project(path: ':another-java-library')
+    api project(path: ':java-library:nested-java-library')
+    api project(path: ':another-java-library:nested-java-library')
 }
 
 repositories {

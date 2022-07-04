@@ -29,6 +29,9 @@ class JavaModuleProjectDependency(
   /** The name of the module project. */
   val moduleName: String,
 
+  /** The path of the project. */
+  val projectPath: String,
+
   /** Scope of this dependency. */
   scope: String,
 

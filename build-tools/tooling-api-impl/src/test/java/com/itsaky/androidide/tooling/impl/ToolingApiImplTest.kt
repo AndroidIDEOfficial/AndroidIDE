@@ -35,14 +35,14 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.*
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -140,6 +140,14 @@ class ToolingApiImplTest {
         }
       )
       .isNotNull()
+
+    // In case we have multiple dependencies with same name but different path
+    val nested =
+      javaLibrary.javaDependencies
+        .filterIsInstance(JavaModuleProjectDependency::class.java)
+        .filter { it.moduleName.endsWith("nested-java-library") }
+    assertThat(nested).hasSize(2)
+    assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
 
     assertThat(project.findByPath(":does-not-exist").get()).isNull()
   }
