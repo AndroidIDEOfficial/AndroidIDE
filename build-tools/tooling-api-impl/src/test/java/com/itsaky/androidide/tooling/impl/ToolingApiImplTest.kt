@@ -30,6 +30,8 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.JavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
@@ -119,6 +121,25 @@ class ToolingApiImplTest {
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
     assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
+
+    assertThat(
+        (javaLibrary as JavaModule).javaDependencies.firstOrNull {
+          it is JavaModuleExternalDependency &&
+            it.run {
+              gradleArtifact.group == "io.github.itsaky" &&
+                gradleArtifact.name == "nb-javac-android" &&
+                gradleArtifact.version == "17.0.0.0"
+            }
+        }
+      )
+      .isNotNull()
+
+    assertThat(
+        javaLibrary.javaDependencies.first {
+          it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
+        }
+      )
+      .isNotNull()
 
     assertThat(project.findByPath(":does-not-exist").get()).isNull()
   }
