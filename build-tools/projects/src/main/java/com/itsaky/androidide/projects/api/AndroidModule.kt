@@ -239,6 +239,9 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   private fun getCompileAndroidOrJavaLibraries(libs: List<DefaultLibrary>): List<DefaultLibrary> {
-    return libs.filter { it.type == ANDROID_LIBRARY || it.type == JAVA_LIBRARY }
+    return libs.filter {
+      (it.type == ANDROID_LIBRARY || it.type == JAVA_LIBRARY) &&
+        it.libraryInfo!!.attributes[PROP_USAGE] == USAGE_API
+    }
   }
 }
