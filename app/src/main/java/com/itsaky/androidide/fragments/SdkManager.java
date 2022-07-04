@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.DownloaderTest;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import java.util.ArrayList;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -19,8 +18,6 @@ import androidx.fragment.app.Fragment;
 import com.itsaky.androidide.R; 
 
 import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding;
-import com.itsaky.androidide.Downloader;
-import android.app.ProgressDialog;
 import com.blankj.utilcode.util.FileIOUtils;
 import java.io.File;
 import java.io.FileFilter;
@@ -41,6 +38,8 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 	public static String Device_Arch;
 	ArrayList<String> download_list = new ArrayList<>();
 	private ProgressSheet progressSheet;
+	final StringBuilder sb = new StringBuilder();
+	private boolean install_jdk=false;
 
   @Nullable
   @Override
@@ -62,23 +61,13 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     binding.sdk32.setOnCheckedChangeListener(this);
     binding.sdk64.setOnCheckedChangeListener(this);
     binding.cmdTools.setOnCheckedChangeListener(this);
+    binding.jdk17.setOnCheckedChangeListener(this);
     binding.download.setOnClickListener(v->{
-    ProgressDialog d = new ProgressDialog(getActivity());
-	d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
-
-  //new Downloader(getActivity(),getActivity(),d,download_list).execute();
-      try {
-        new DownloaderTest(getActivity(),getActivity(),d,download_list).install();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      showProgress();
         try {
             final File script = createExtractScript();
             final ProcessStreamsHolder holder = new ProcessStreamsHolder();
             final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
-
+showProgress()
             executor.execAsync(
                     holder,
                     this::onInstallProcessExit,
@@ -100,6 +89,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
         }
     });
   }
+
   @Override
   public void onCheckedChanged(CompoundButton cbuttton, boolean isChecked) {
     switch (cbuttton.getId()){
@@ -109,6 +99,12 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
       break;
       case R.id.cmdTools: handleCheck(isChecked,CMDLINE_TOOLS);
       break;
+      case R.id.jdk17:
+			  if(isChecked)
+				  install_jdk=true;
+			  else 
+				  install_jdk=false;
+	break;
     }
   }
   public void handleCheck(boolean check, String link){
@@ -150,12 +146,21 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     } 
 
 private File createExtractScript() throws SdkManager.InstallationException{
-        final StringBuilder sb = new StringBuilder();
         sb.append("cd");
         joiner(sb);
-        sb.append("echo 'Installing...'");
+	if(install_jdk){
+	sb.append("pkg install -y openjdk-17 && echo 'JAVA_HOME=/data/data/com.itsaky.androidide/files/usr/opt/openjdk' > $SYSROOT/etc/ide-environment.properties");
+joiner(sb);
+	}
+	sb.append("pkg install -y wget");
+	joiner(sb);
+	download_list.forEach(link -> {
+		sb.append("wget "+link);
+		joiner(sb);
+	});
+	sb.append("echo 'Downloading Files...'");
         joiner(sb);
-		File scriptPath = new File(requireActivity().getFilesDir()+"/home/");
+	File scriptPath = new File(requireActivity().getFilesDir()+"/home/");
         File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
 
         if (files == null || files.length <= 0) {
@@ -179,8 +184,6 @@ private File createExtractScript() throws SdkManager.InstallationException{
                 joiner(sb);
             }
         }
-        sb.append("echo 'Cleaning unsupported flags in binaries...'");
-        joiner(sb);
         String DONE = "DONE";
         sb.append("echo ").append(DONE);
 
@@ -204,7 +207,6 @@ private File createExtractScript() throws SdkManager.InstallationException{
     private void appendOut(String line) {
         output.append(line.trim());
         output.append("\n");
-
         getProgressSheet().setSubMessage(line);
         
     }

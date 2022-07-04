@@ -40,6 +40,13 @@
         android:layout_margin="10dp"
 	android:text="-with Command Line Tools " />
 
+    <android.widget.CheckBox
+	    android:id="@+id/jdk17"                                            android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cmdTools"
+        android:layout_margin="10dp"
+	    android:text="OpenJDK-17(Java-17)"/>
+
     <Button
         android:id="@+id/download"
         android:layout_width="match_parent"
