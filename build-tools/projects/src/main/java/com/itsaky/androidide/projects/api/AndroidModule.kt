@@ -62,7 +62,7 @@ import java.io.File
  * @param viewBindingOptions The view binding options of this module.
  * @param bootClassPaths The boot class paths of the project. Usually contains the path to the
  * `android.jar` file.
- * @param debugLibraries The list of libraries for the debug variant.
+ * @param libraries The list of libraries for the debug variant.
  * @param dynamicFeatures The dynamic features.
  * @param lintCheckJars The lint check jar files.
  * @param modelSyncFiles The model sync files.
@@ -87,7 +87,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val javaCompileOptions: DefaultJavaCompileOptions,
   val viewBindingOptions: DefaultViewBindingOptions,
   val bootClassPaths: Collection<File>,
-  val debugLibraries: List<DefaultLibrary>,
+  val libraries: List<DefaultLibrary>,
   val dynamicFeatures: Collection<String>?,
   val lintCheckJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
@@ -96,6 +96,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks), WithModuleData {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
+  private var cachedLibraries: Map<String, List<DefaultLibrary>> = mutableMapOf()
   override var moduleData: SimpleModuleData? = null
 
   init {
@@ -114,10 +115,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     }
 
     return mutableSetOf<File>().apply {
-      add(getGeneratedJar("debug"))
-      addAll(getVariant("debug")?.mainArtifact?.classJars ?: emptyList())
-
-      for (library in debugLibraries) {
+      for (library in libraries) {
         when (library.type) {
           RELOCATED -> continue
           ANDROID_LIBRARY -> addAll(library.androidLibraryData!!.compileJarFiles)
@@ -149,7 +147,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       dirs.addAll(mainSourceSet.sourceProvider.resDirectories!!)
     }
 
-    val dependencies = getProjectDependencies().filterIsInstance(AndroidModule::class.java)
+    val dependencies = getCompileModuleProjects().filterIsInstance(AndroidModule::class.java)
 
     for (dependency in dependencies) {
       dirs.addAll(dependency.getResourceDirectories())
@@ -158,32 +156,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     return dirs
   }
 
-  fun getProjectDependencies(): List<Project> {
-    val root = ProjectManager.rootProject
-    if (root == null) {
-      log.error("Project is not initialized. Cannot find project dependencies.")
-      return emptyList()
-    }
-
-    return debugLibraries
-      .filter { it.type == PROJECT }
-      .map { root.findByPath(it.projectInfo!!.projectPath)!! }
-  }
-
   override fun getSourceDirectories(): Set<File> {
-    val sources = mutableSetOf<File>()
-    sources.addAll(getModuleSourceDirectories())
-    getProjectDependencies().forEach {
-      if (it is AndroidModule) {
-        sources.addAll(it.getSourceDirectories())
-      } else if (it is JavaModule) {
-        sources.addAll(it.getSourceDirectories())
-      }
-    }
-    return sources
-  }
-
-  fun getModuleSourceDirectories(): Set<File> {
     if (mainSourceSet == null) {
       log.warn("No main source set is available for project $name. Cannot get source directories.")
       return mutableSetOf()
@@ -202,5 +175,70 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       sources.addAll(debugVariant.mainArtifact.generatedSourceFolders)
     }
     return sources
+  }
+
+  override fun getCompileSourceDirectories(): Set<File> {
+    val dirs = mutableSetOf<File>()
+    dirs.addAll(getSourceDirectories())
+    getCompileModuleProjects().forEach { dirs.addAll(it.getSourceDirectories()) }
+    return dirs
+  }
+
+  override fun getModuleClasspaths(): Set<File> {
+    return mutableSetOf<File>().apply {
+      add(getGeneratedJar("debug"))
+      addAll(getVariant("debug")?.mainArtifact?.classJars ?: emptyList())
+    }
+  }
+
+  override fun getCompileClasspaths(): Set<File> {
+    val compileLibraries = getCompileLibraries()
+    val classpaths = getModuleClasspaths().toMutableSet()
+    getCompileModuleProjects(compileLibraries).forEach {
+      classpaths.addAll(it.getModuleClasspaths())
+    }
+    getCompileAndroidOrJavaLibraries(compileLibraries).forEach {
+      if (it.type == ANDROID_LIBRARY) {
+        classpaths.addAll(it.androidLibraryData!!.compileJarFiles)
+      } else {
+        classpaths.add(it.artifact!!)
+      }
+    }
+    return classpaths
+  }
+
+  override fun getCompileModuleProjects(): List<ModuleProject> {
+    return getCompileModuleProjects(getCompileLibraries())
+  }
+
+  fun getCompileAndroidOrJavaLibraries(): List<DefaultLibrary> {
+    return getCompileAndroidOrJavaLibraries(getCompileLibraries())
+  }
+
+  /**
+   * Get all the libraries of this project with compile scope. This includes libraries of all
+   * [com.android.builder.model.v2.ide.LibraryType]s.
+   */
+  fun getCompileLibraries(): List<DefaultLibrary> {
+    return this.libraries.filter {
+      when (it.type) {
+        PROJECT -> it.projectInfo!!.attributes[PROP_USAGE] == USAGE_API
+        ANDROID_LIBRARY,
+        JAVA_LIBRARY -> it.libraryInfo!!.attributes[PROP_USAGE] == USAGE_API
+        else -> false
+      }
+    }
+  }
+
+  private fun getCompileModuleProjects(libs: List<DefaultLibrary>): List<ModuleProject> {
+    val root = ProjectManager.rootProject ?: return emptyList()
+    return libs
+      .filter { it.type == PROJECT }
+      .mapNotNull { root.findByPath(it.projectInfo!!.projectPath) }
+      .filterIsInstance(ModuleProject::class.java)
+  }
+
+  private fun getCompileAndroidOrJavaLibraries(libs: List<DefaultLibrary>): List<DefaultLibrary> {
+    return libs.filter { it.type == ANDROID_LIBRARY || it.type == JAVA_LIBRARY }
   }
 }

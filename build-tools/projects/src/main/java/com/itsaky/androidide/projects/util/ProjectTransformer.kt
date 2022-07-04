@@ -76,7 +76,7 @@ class ProjectTransformer {
       javaCompileOptions = project.javaCompileOptions,
       viewBindingOptions = project.viewBindingOptions ?: DefaultViewBindingOptions(),
       bootClassPaths = project.bootClassPaths,
-      debugLibraries =
+      libraries =
         project.libraries.filter {
           !(it.type == PROJECT && it.projectInfo!!.projectPath == project.projectPath)
         },

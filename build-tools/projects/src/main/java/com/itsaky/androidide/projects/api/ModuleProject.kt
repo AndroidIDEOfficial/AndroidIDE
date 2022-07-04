@@ -40,14 +40,50 @@ abstract class ModuleProject(
   com.itsaky.androidide.tooling.api.model.ModuleProject,
   EventReceiver {
 
-  private val classes = ClassTrie()
+  companion object {
+    const val PROP_USAGE = "org.gradle.usage"
+    const val USAGE_API = "java-api"
+    const val USAGE_RUNTIME = "java-runtime"
+  }
+
+  private val compileClasses = ClassTrie()
 
   /**
-   * Get the source directories of this module (transitive).
+   * Get the source directories of this module (non-transitive i.e for this module only).
    *
    * @return The source directories.
    */
   abstract fun getSourceDirectories(): Set<File>
+
+  /**
+   * Get the source directories with compile scope. This must include source directories of
+   * transitive project dependencies as well. This includes source directories for this module as
+   * well.
+   *
+   * @return The source directories.
+   */
+  abstract fun getCompileSourceDirectories(): Set<File>
+
+  /**
+   * Get the JAR files for this module. This does not include JAR files of any dependencies.
+   *
+   * @return The classpaths of this project.
+   */
+  abstract fun getModuleClasspaths() : Set<File>
+
+  /**
+   * Get the classpaths with compile scope. This must include classpaths of transitive project
+   * dependencies as well. This includes classpaths for this module as well.
+   *
+   * @return The source directories.
+   */
+  abstract fun getCompileClasspaths(): Set<File>
+
+  /**
+   * Get the list of module projects with compile scope. This includes transitive module projects as
+   * well.
+   */
+  abstract fun getCompileModuleProjects(): List<ModuleProject>
 
   override fun register() {
     super.register()

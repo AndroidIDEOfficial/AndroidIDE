@@ -58,6 +58,9 @@ import org.gradle.tooling.model.idea.IdeaModuleDependency;
 import org.gradle.tooling.model.idea.IdeaProject;
 import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -264,31 +267,33 @@ public class ProjectReader {
     for (IdeaDependency dependency : idea.getDependencies()) {
       log("Java dependency: ", dependency, dependency.getClass().getName());
       // TODO There might be unresolved dependencies here. We need to handle them too.
+      final var reflected = reflectIdeaDependency(dependency);
+      if (reflected != null) {
+        dependency = reflected;
+      }
+
       if (dependency instanceof IdeaSingleEntryLibraryDependency) {
         final var external = (IdeaSingleEntryLibraryDependency) dependency;
-        // There might be multiple entries of same dependency, but with different scope
-        // So we only add dependencies with 'RUNTIME' scope
-        if (external.getScope().getScope().equals("RUNTIME")) {
-          final var moduleVersion = external.getGradleModuleVersion();
-          list.add(
-              new JavaModuleExternalDependency(
-                  external.getFile(),
-                  external.getSource(),
-                  external.getJavadoc(),
-                  new GradleArtifact(
-                      moduleVersion.getGroup(),
-                      moduleVersion.getName(),
-                      moduleVersion.getVersion()),
-                  dependency.getScope().getScope(),
-                  dependency.getExported()));
-        }
+        final var moduleVersion = external.getGradleModuleVersion();
+        final var file = external.getFile();
+        final var source = external.getSource();
+        final var javadoc = external.getJavadoc();
+        list.add(
+            new JavaModuleExternalDependency(
+                file,
+                source,
+                javadoc,
+                new GradleArtifact(
+                    moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion()),
+                dependency.getScope().getScope(),
+                dependency.getExported()));
       } else if (dependency instanceof IdeaModuleDependency) {
         final var project = ((IdeaModuleDependency) dependency);
         list.add(
             new JavaModuleProjectDependency(
                 project.getTargetModuleName(),
-                dependency.getScope().getScope(),
-                dependency.getExported()));
+                project.getScope().getScope(),
+                project.getExported()));
       }
     }
     return list;
@@ -404,4 +409,75 @@ public class ProjectReader {
 
     return sb.toString();
   }
+
+  private static IdeaDependency reflectIdeaDependency(final IdeaDependency dependency) {
+    log("Creating Proxy for IdeaDependency...");
+    try {
+      final InvocationHandler invocationHandler = Proxy.getInvocationHandler(dependency);
+      final var klass = invocationHandler.getClass();
+      final var sourceObjectField = klass.getDeclaredField("sourceObject");
+      sourceObjectField.setAccessible(true);
+      return createProxy(sourceObjectField.get(invocationHandler));
+    } catch (Throwable err) {
+      log("Unable to reflect IdeaDependency", err);
+      return null;
+    }
+  }
+
+  private static IdeaDependency createProxy(final Object dependency) {
+    final var className = dependency.getClass().getName();
+    Class<?>[] proxyTypes;
+    if (className.equals(SINGLE_ENTRY_IMPL)) {
+      proxyTypes = new Class[] {IdeaSingleEntryLibraryDependency.class};
+    } else if (className.equals(MODULE_IMPL)) {
+      proxyTypes = new Class[] {IdeaModuleDependency.class};
+    } else {
+      return null;
+    }
+
+    return (IdeaDependency)
+        Proxy.newProxyInstance(
+            ProjectReader.class.getClassLoader(),
+            proxyTypes,
+            new IdeaDependencyMethodInvocationHandler(dependency));
+  }
+
+  private static class IdeaDependencyMethodInvocationHandler implements InvocationHandler {
+    private final Object object;
+    private final Class<?> targetType;
+
+    private final List<String> innerProxyClasses =
+        List.of(
+            "org.gradle.tooling.model.idea.IdeaDependencyScope",
+            "org.gradle.tooling.model.GradleModuleVersion");
+
+    private IdeaDependencyMethodInvocationHandler(final Object object) {
+      this.object = object;
+      this.targetType = object.getClass();
+    }
+
+    @Override
+    public Object invoke(final Object target, final Method invokedMethod, final Object[] objects)
+        throws Throwable {
+      if (innerProxyClasses.contains(invokedMethod.getReturnType().getName())) {
+        final Object inner =
+            targetType
+                .getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes())
+                .invoke(object, objects);
+        return Proxy.newProxyInstance(
+            IdeaDependencyMethodInvocationHandler.class.getClassLoader(),
+            new Class<?>[] {invokedMethod.getReturnType()},
+            new IdeaDependencyMethodInvocationHandler(inner));
+      }
+
+      final var method =
+          targetType.getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes());
+      return method.invoke(object, objects);
+    }
+  }
+
+  private static final String SINGLE_ENTRY_IMPL =
+      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaSingleEntryLibraryDependency";
+  private static final String MODULE_IMPL =
+      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaModuleDependency";
 }

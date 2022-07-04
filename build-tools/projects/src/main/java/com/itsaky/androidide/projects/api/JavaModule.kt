@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
@@ -78,5 +79,21 @@ class JavaModule(
       sources.addAll(it.sourceDirectories.map { sourceDirectory -> sourceDirectory.directory })
     }
     return sources
+  }
+  
+  override fun getCompileSourceDirectories(): Set<File> {
+    TODO("Not yet implemented")
+  }
+  
+  override fun getModuleClasspaths(): Set<File> {
+    TODO("Not yet implemented")
+  }
+  
+  override fun getCompileClasspaths(): Set<File> {
+    TODO("Not yet implemented")
+  }
+  
+  override fun getCompileModuleProjects(): List<ModuleProject> {
+    TODO("Not yet implemented")
   }
 }

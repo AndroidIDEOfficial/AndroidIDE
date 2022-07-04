@@ -22,4 +22,5 @@ package com.itsaky.androidide.tooling.api.model
  *
  * @author Akash Yadav
  */
-data class GradleArtifact(val group: String, val name: String, val version: String)
+data class GradleArtifact(val group: String, val name: String, val version: String) :
+  java.io.Serializable
