@@ -44,15 +44,15 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
-import com.itsaky.lsp.api.ILanguageClient;
-import com.itsaky.lsp.models.CodeActionItem;
-import com.itsaky.lsp.models.Command;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticResult;
-import com.itsaky.lsp.models.Location;
-import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.TextEdit;
-import com.itsaky.lsp.util.DiagnosticUtil;
+import com.itsaky.androidide.lsp.api.ILanguageClient;
+import com.itsaky.androidide.lsp.models.CodeActionItem;
+import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.DiagnosticResult;
+import com.itsaky.androidide.lsp.models.Location;
+import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -283,10 +283,10 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   @Override
-  public com.itsaky.lsp.models.ShowDocumentResult showDocument(
-      com.itsaky.lsp.models.ShowDocumentParams params) {
+  public com.itsaky.androidide.lsp.models.ShowDocumentResult showDocument(
+      com.itsaky.androidide.lsp.models.ShowDocumentParams params) {
     boolean success = false;
-    final var result = new com.itsaky.lsp.models.ShowDocumentResult(false);
+    final var result = new com.itsaky.androidide.lsp.models.ShowDocumentResult(false);
     if (activity() == null) {
       return result;
     }

@@ -18,11 +18,11 @@ package com.itsaky.androidide.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.BaseJavaTest
-import com.itsaky.lsp.models.ChangeType.NEW_TEXT
-import com.itsaky.lsp.models.DocumentChangeEvent
-import com.itsaky.lsp.models.ExpandSelectionParams
-import com.itsaky.lsp.models.Position
-import com.itsaky.lsp.models.Range
+import com.itsaky.androidide.lsp.models.ChangeType.NEW_TEXT
+import com.itsaky.androidide.lsp.models.DocumentChangeEvent
+import com.itsaky.androidide.lsp.models.ExpandSelectionParams
+import com.itsaky.androidide.lsp.models.Position
+import com.itsaky.androidide.lsp.models.Range
 import io.github.rosemoe.sora.text.Content
 import org.junit.Before
 import org.junit.Test

@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.lsp.java
 
-import com.itsaky.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.LanguageServerProvider
-import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.JavaLanguageServer
 
 class JavaLanguageServerProvider : LanguageServerProvider() {
   private val server: JavaLanguageServer = JavaLanguageServer()

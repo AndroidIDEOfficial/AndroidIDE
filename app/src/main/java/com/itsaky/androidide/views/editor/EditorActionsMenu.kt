@@ -47,10 +47,10 @@ import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.models.DiagnosticItem
-import com.itsaky.lsp.models.Range
-import com.itsaky.lsp.xml.XMLLanguageServer
+import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.models.DiagnosticItem
+import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent

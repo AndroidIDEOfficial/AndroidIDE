@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.lsp.api.CursorDependentTest;
-import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
 
 import org.mockito.Mockito;
 

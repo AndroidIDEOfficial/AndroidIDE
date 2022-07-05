@@ -18,7 +18,7 @@
 package com.itsaky.androidide.lsp.java
 
 import com.itsaky.androidide.lsp.api.CursorDependentTest
-import com.itsaky.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.api.ILanguageServer
 
 /** @author Akash Yadav */
 open class BaseJavaTest : CursorDependentTest() {

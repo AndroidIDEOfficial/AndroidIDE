@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.api
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.lsp.api.FileProvider.Companion.resources
-import com.itsaky.lsp.api.ILanguageServer
-import com.itsaky.lsp.models.InitializeParams
+import com.itsaky.androidide.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.models.InitializeParams
 import org.jetbrains.annotations.Contract
 import java.io.File
 

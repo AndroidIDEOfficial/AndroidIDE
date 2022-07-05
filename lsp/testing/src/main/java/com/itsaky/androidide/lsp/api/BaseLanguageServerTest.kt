@@ -18,8 +18,8 @@ package com.itsaky.androidide.lsp.api
 
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.lsp.api.ILanguageServer
-import com.itsaky.lsp.models.DocumentOpenEvent
+import com.itsaky.androidide.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.models.DocumentOpenEvent
 import org.robolectric.RuntimeEnvironment
 import java.nio.file.Path
 

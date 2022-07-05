@@ -124,14 +124,14 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.lsp.api.ILanguageServerRegistry;
-import com.itsaky.lsp.java.JavaLanguageServer;
-import com.itsaky.lsp.java.models.JavaServerConfiguration;
-import com.itsaky.lsp.java.models.JavaServerSettings;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.InitializeParams;
-import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.xml.XMLLanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
+import com.itsaky.androidide.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.InitializeParams;
+import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
@@ -417,9 +417,9 @@ public class EditorActivity extends StudioActivity
     return openFile(file, null);
   }
 
-  public CodeEditorView openFile(File file, com.itsaky.lsp.models.Range selection) {
+  public CodeEditorView openFile(File file, com.itsaky.androidide.lsp.models.Range selection) {
     if (selection == null) {
-      selection = com.itsaky.lsp.models.Range.NONE;
+      selection = com.itsaky.androidide.lsp.models.Range.NONE;
     }
 
     int index = openFileAndGetIndex(file, selection);
@@ -444,7 +444,7 @@ public class EditorActivity extends StudioActivity
   }
 
   @SuppressLint("NotifyDataSetChanged")
-  public int openFileAndGetIndex(File file, com.itsaky.lsp.models.Range selection) {
+  public int openFileAndGetIndex(File file, com.itsaky.androidide.lsp.models.Range selection) {
     final var openedFileIndex = findIndexOfEditorByFile(file);
 
     if (openedFileIndex != -1) {

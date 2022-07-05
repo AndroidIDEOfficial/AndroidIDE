@@ -18,8 +18,8 @@ package com.itsaky.androidide.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.BaseJavaTest
-import com.itsaky.lsp.models.CompletionParams
-import com.itsaky.lsp.models.Position
+import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.lsp.models.Position
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

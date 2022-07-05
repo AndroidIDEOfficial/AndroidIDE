@@ -43,8 +43,8 @@ import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
-import com.itsaky.lsp.models.CompletionItem;
-import com.itsaky.lsp.models.CompletionItemKind;
+import com.itsaky.androidide.lsp.models.CompletionItem;
+import com.itsaky.androidide.lsp.models.CompletionItemKind;
 
 import java.util.List;
 

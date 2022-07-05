@@ -19,14 +19,14 @@ package com.itsaky.androidide.lsp.java.partial
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.BaseJavaTest
-import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.compiler.SourceFileObject
-import com.itsaky.lsp.java.models.CompilationRequest
-import com.itsaky.lsp.java.models.PartialReparseRequest
-import com.itsaky.lsp.java.visitors.PrintingVisitor
-import com.itsaky.lsp.models.ChangeType.INSERT
-import com.itsaky.lsp.models.DocumentChangeEvent
-import com.itsaky.lsp.models.Range
+import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.compiler.SourceFileObject
+import com.itsaky.androidide.lsp.java.models.CompilationRequest
+import com.itsaky.androidide.lsp.java.models.PartialReparseRequest
+import com.itsaky.androidide.lsp.java.visitors.PrintingVisitor
+import com.itsaky.androidide.lsp.models.ChangeType.INSERT
+import com.itsaky.androidide.lsp.models.DocumentChangeEvent
+import com.itsaky.androidide.lsp.models.Range
 import com.sun.source.tree.ExpressionStatementTree
 import com.sun.source.tree.LiteralTree
 import com.sun.source.tree.Tree

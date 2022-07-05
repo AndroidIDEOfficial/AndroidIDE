@@ -34,25 +34,25 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.ChangeType;
-import com.itsaky.lsp.models.Command;
-import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DocumentChangeEvent;
-import com.itsaky.lsp.models.DocumentCloseEvent;
-import com.itsaky.lsp.models.DocumentOpenEvent;
-import com.itsaky.lsp.models.DocumentSaveEvent;
-import com.itsaky.lsp.models.ExpandSelectionParams;
-import com.itsaky.lsp.models.Position;
-import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.ReferenceParams;
-import com.itsaky.lsp.models.ReferenceResult;
-import com.itsaky.lsp.models.ShowDocumentParams;
-import com.itsaky.lsp.models.SignatureHelp;
-import com.itsaky.lsp.models.SignatureHelpParams;
-import com.itsaky.lsp.util.DiagnosticUtil;
-import com.itsaky.lsp.util.PathUtils;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.models.ChangeType;
+import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DefinitionResult;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.DocumentChangeEvent;
+import com.itsaky.androidide.lsp.models.DocumentCloseEvent;
+import com.itsaky.androidide.lsp.models.DocumentOpenEvent;
+import com.itsaky.androidide.lsp.models.DocumentSaveEvent;
+import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
+import com.itsaky.androidide.lsp.models.Position;
+import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.lsp.models.ReferenceParams;
+import com.itsaky.androidide.lsp.models.ReferenceResult;
+import com.itsaky.androidide.lsp.models.ShowDocumentParams;
+import com.itsaky.androidide.lsp.models.SignatureHelp;
+import com.itsaky.androidide.lsp.models.SignatureHelpParams;
+import com.itsaky.androidide.lsp.util.DiagnosticUtil;
+import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -437,9 +437,9 @@ public class IDEEditor extends CodeEditor {
           CompletableFuture.supplyAsync(
               () -> {
                 final var params =
-                    new com.itsaky.lsp.models.DefinitionParams(
+                    new com.itsaky.androidide.lsp.models.DefinitionParams(
                         getFile().toPath(),
-                        new com.itsaky.lsp.models.Position(
+                        new com.itsaky.androidide.lsp.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()));
 
                 return mLanguageServer.findDefinition(params);
@@ -603,7 +603,7 @@ public class IDEEditor extends CodeEditor {
                 final var referenceParams =
                     new ReferenceParams(
                         getFile().toPath(),
-                        new com.itsaky.lsp.models.Position(
+                        new com.itsaky.androidide.lsp.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()),
                         true);
                 return mLanguageServer.findReferences(referenceParams);
