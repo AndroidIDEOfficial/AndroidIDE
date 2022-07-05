@@ -37,10 +37,10 @@ class ClassTrieTest {
     trie.append("java.io.File")
     trie.append("java.nio.file.Path")
 
-    assertThat(trie.findClassName("java.lang"))
+    assertThat(trie.findClassNames("java.lang"))
       .containsExactly("java.lang.String", "java.lang.Object")
-    assertThat(trie.findClassName("java.util")).containsExactly("java.util.List")
-    assertThat(trie.findClassName("java.nio")).containsExactly("java.nio.file.Path")
+    assertThat(trie.findClassNames("java.util")).containsExactly("java.util.List")
+    assertThat(trie.findClassNames("java.nio")).containsExactly("java.nio.file.Path")
   }
   
   @Test
@@ -52,12 +52,19 @@ class ClassTrieTest {
     trie.append("java.io.File")
     trie.append("java.nio.file.Path")
     
+    assertThat(trie.contains("java.io.File")).isTrue()
+    assertThat(trie.contains("java.nio.file.Path")).isTrue()
+    
     trie.remove("java.lang.String")
     trie.remove("java.nio.file.Path")
+  
+    assertThat(trie.contains("java.io.File")).isTrue()
+    assertThat(trie.contains("java.nio.file.Path")).isFalse()
+    assertThat(trie.contains("java.lang.String")).isFalse()
     
-    assertThat(trie.findClassName("java.lang"))
+    assertThat(trie.findClassNames("java.lang"))
       .containsExactly("java.lang.Object")
-    assertThat(trie.findClassName("java.util")).containsExactly("java.util.List")
-    assertThat(trie.findClassName("java.nio")).isEmpty()
+    assertThat(trie.findClassNames("java.util")).containsExactly("java.util.List")
+    assertThat(trie.findClassNames("java.nio")).isEmpty()
   }
 }

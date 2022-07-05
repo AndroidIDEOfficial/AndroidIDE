@@ -38,6 +38,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 
+@SuppressWarnings("Since15")
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
   private static final Logger LOG = Logger.getLogger("main");

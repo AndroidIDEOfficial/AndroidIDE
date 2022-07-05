@@ -9,6 +9,7 @@ import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.utils.StringSearch;
+import com.itsaky.lsp.java.utils.TypeUtils;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -317,13 +318,13 @@ public class FileStore {
     String className = StringSearch.lastName(qualifiedName);
     // Fast path: look for text `class Foo` in file Foo.java
     for (Path f : list(packageName)) {
-      if (f.getFileName().toString().equals(className) && StringSearch.containsType(f, el)) {
+      if (f.getFileName().toString().equals(className) && TypeUtils.containsType(f, el)) {
         return Optional.of(f);
       }
     }
     // Slow path: look for text `class Foo` in any file in package
     for (Path f : list(packageName)) {
-      if (StringSearch.containsType(f, el)) {
+      if (TypeUtils.containsType(f, el)) {
         return Optional.of(f);
       }
     }

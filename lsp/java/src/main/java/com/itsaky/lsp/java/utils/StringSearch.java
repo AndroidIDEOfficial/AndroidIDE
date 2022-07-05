@@ -17,8 +17,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.TypeElement;
-
 // Translated from https://golang.org/src/strings/search.go
 
 // Search efficiently finds strings in a source text. It's implemented
@@ -181,29 +179,6 @@ public class StringSearch {
     return i;
   }
 
-  private static class Slice {
-    private final byte[] target;
-    private int from, until;
-
-    int length() {
-      return until - from;
-    }
-
-    byte get(int i) {
-      return target[from + i];
-    }
-
-    Slice(byte[] target, int from) {
-      this(target, from, target.length);
-    }
-
-    Slice(byte[] target, int from, int until) {
-      this.target = target;
-      this.from = from;
-      this.until = until;
-    }
-  }
-
   private static final ByteBuffer SEARCH_BUFFER = ByteBuffer.allocateDirect(1024 * 1024);
 
   // TODO cache the progress made by searching shorter queries
@@ -327,20 +302,9 @@ public class StringSearch {
     return Character.isAlphabetic(c) || Character.isDigit(c) || c == '_' || c == '$';
   }
 
-  public static boolean containsType(Path file, TypeElement el) {
-    switch (el.getKind()) {
-      case INTERFACE:
-        return containsInterface(file, el.getSimpleName().toString());
-      case CLASS:
-        return containsClass(file, el.getSimpleName().toString());
-      default:
-        throw new RuntimeException("Don't know what to do with " + el.getKind());
-    }
-  }
-
   private static Cache<String, Boolean> cacheContainsClass = new Cache<>();
 
-  private static boolean containsClass(Path file, String simpleName) {
+  public static boolean containsClass(Path file, String simpleName) {
     if (cacheContainsClass.needs(file, simpleName)) {
       cacheContainsClass.load(file, simpleName, containsString(file, "class " + simpleName));
       // TODO verify this by actually parsing the file
@@ -350,7 +314,7 @@ public class StringSearch {
 
   private static Cache<String, Boolean> cacheContainsInterface = new Cache<>();
 
-  private static boolean containsInterface(Path file, String simpleName) {
+  public static boolean containsInterface(Path file, String simpleName) {
     if (cacheContainsInterface.needs(file, simpleName)) {
       cacheContainsInterface.load(
           file, simpleName, containsString(file, "interface " + simpleName));
@@ -402,6 +366,29 @@ public class StringSearch {
       if (candidate.charAt(i) != partialName.charAt(i)) return false;
     }
     return true;
+  }
+
+  private static class Slice {
+    private final byte[] target;
+    private int from, until;
+
+    int length() {
+      return until - from;
+    }
+
+    byte get(int i) {
+      return target[from + i];
+    }
+
+    Slice(byte[] target, int from) {
+      this(target, from, target.length);
+    }
+
+    Slice(byte[] target, int from, int until) {
+      this.target = target;
+      this.from = from;
+      this.until = until;
+    }
   }
 
   private static final Logger LOG = Logger.getLogger("main");

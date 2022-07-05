@@ -20,7 +20,9 @@ package com.itsaky.androidide.projects.api
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.projects.util.ClassTrie
 import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.utils.ILogger
 import java.io.File
+import java.util.zip.*
 
 /**
  * A module project. Base class for [AndroidModule] and [JavaModule].
@@ -40,13 +42,16 @@ abstract class ModuleProject(
   com.itsaky.androidide.tooling.api.model.ModuleProject,
   EventReceiver {
 
+  private val log = ILogger.newInstance(javaClass.simpleName)
+
   companion object {
     const val PROP_USAGE = "org.gradle.usage"
     const val USAGE_API = "java-api"
     const val USAGE_RUNTIME = "java-runtime"
   }
 
-  private val compileClasses = ClassTrie()
+  val compileSourceClasses = ClassTrie()
+  val compileClasspathClasses = ClassTrie()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -68,7 +73,7 @@ abstract class ModuleProject(
    *
    * @return The classpaths of this project.
    */
-  abstract fun getModuleClasspaths() : Set<File>
+  abstract fun getModuleClasspaths(): Set<File>
 
   /**
    * Get the classpaths with compile scope. This must include classpaths of transitive project
@@ -84,14 +89,41 @@ abstract class ModuleProject(
    */
   abstract fun getCompileModuleProjects(): List<ModuleProject>
 
-  override fun register() {
-    super.register()
-  }
-
   /** Finds the source files from source directories and indexes them. */
   fun indexSources() {
-    val sourceDirs = getSourceDirectories()
-  }
+    getCompileSourceDirectories().forEach {
+      val sourceDir = it
+      val sourceDirLength = sourceDir.absolutePath.length
+      it
+        .walk()
+        .filter { file -> file.isFile && file.exists() }
+        .forEach { file ->
+          // TODO Multiple classes can be defined in a single file
+          //  Also, their package names might be different
+          //  We need to handle these cases as well
+          val parentPath = file.parentFile!!.absolutePath
+          val path = parentPath.substring(sourceDirLength + 1) + "/" + file.nameWithoutExtension
+          val fullyQualifiedName = path.replace('/', '.')
+          this.compileSourceClasses.append(fullyQualifiedName)
+        }
+    }
+    getCompileClasspaths()
+      .filter { it.exists() }
+      .forEach { classpath ->
+        ZipFile(classpath).use { zip ->
+          for (entry in zip.entries()) {
+            if (!entry.name.endsWith(".class")) {
+              continue
+            }
 
-  fun findClass(className: String) {}
+            val name = entry.name.substringBeforeLast('.').replace('/', '.').replace('$', '.')
+            if (!compileClasspathClasses.contains(name)) {
+              compileClasspathClasses.append(name)
+            } else {
+              log.warn("Duplicate class '$name'")
+            }
+          }
+        }
+      }
+  }
 }

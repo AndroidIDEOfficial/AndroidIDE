@@ -15,12 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.util.com.itsaky.androidide.projects.api
+package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.projects.api.JavaModule
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.ILogger
@@ -151,5 +149,16 @@ class ModuleProjectTest {
     val javaLibSourceDirs = (javaLibrary as JavaModule).getSourceDirectories()
     assertThat(javaLibSourceDirs).isNotEmpty()
     assertThat(javaLibSourceDirs).contains(File(rootDir, "java-library/src/main/java"))
+
+    app.indexSources()
+
+    val classNames = app.compileSourceClasses.findClassNames("com.itsaky")
+    assertThat(classNames).isNotNull()
+    assertThat(classNames).isNotEmpty()
+    assertThat(classNames)
+      .containsExactly(
+        "com.itsaky.androidide.tooling.test.Main",
+        "com.itsaky.test.app.MainActivity"
+      )
   }
 }

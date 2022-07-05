@@ -38,6 +38,10 @@ class ClassTrie {
     val segments = segments(name)
     var node = root
     for (segment in segments) {
+      if (segment.isEmpty() || !segment[0].isJavaIdentifierStart()) {
+        continue
+      }
+
       node = node.createChild(segment)
     }
     node.isClass = true
@@ -77,12 +81,37 @@ class ClassTrie {
     }
   }
 
+  /** Removes all entries from this trie. */
+  fun clear() {
+    this.root.children.clear()
+  }
+
+  /**
+   * Checks if there is an entry with the given fully qualified name (package or class name).
+   *
+   * @param name The fully qualified package or class name.
+   * @return Whether there is a an entry for the given fully qualified name.
+   */
+  fun contains(name: String): Boolean {
+    val segments = segments(name)
+    var node: Node? = root
+    for (segment in segments) {
+      if (node == null) {
+        return false
+      }
+
+      node = node.children[segment]
+    }
+
+    return node != null
+  }
+
   /**
    * Finds all class names in the given package.
    *
    * @param packageName The package name to list classes from.
    */
-  fun findClassName(packageName: String): List<String> {
+  fun findClassNames(packageName: String): List<String> {
     val segments = segments(packageName)
     val classes = mutableListOf<String>()
     val curr = StringBuilder()
@@ -111,13 +140,27 @@ class ClassTrie {
     if (node == null || node.children.isEmpty()) {
       return classes
     }
-    
-    node.children.values.forEach {
-      addRecursively(it, curr.toString(), classes)
-    }
+
+    node.children.values.forEach { addRecursively(it, curr.toString(), classes) }
     return classes
   }
-  
+
+  fun print() {
+    root.children.forEach { print(it.value, 0) }
+  }
+
+  fun print(node: Node?, indent: Int) {
+    if (node == null) {
+      return
+    }
+
+    val prefix = if (indent == 0) "" else "| ".repeat(indent / 2)
+    println(prefix + node.name)
+    if (node.children.isNotEmpty()) {
+      node.children.forEach { print(it.value, indent + 2) }
+    }
+  }
+
   private fun addRecursively(node: Node, curr: String, classes: MutableList<String>) {
     val segement = node.name
     var packageName = curr
@@ -128,22 +171,21 @@ class ClassTrie {
       }
       classes.add(name)
     } else {
-      packageName = if (curr.isEmpty()) {
-        segement
-      } else {
-        "$packageName.$segement"
-      }
+      packageName =
+        if (curr.isEmpty()) {
+          segement
+        } else {
+          "$packageName.$segement"
+        }
     }
-  
+
     if (node.children.isEmpty()) {
       return
     }
-    
-    node.children.values.forEach {
-      addRecursively(it, packageName, classes)
-    }
+
+    node.children.values.forEach { addRecursively(it, packageName, classes) }
   }
-  
+
   private fun segments(name: String): List<String> {
     return if (name.contains('.')) {
       name.split(".")

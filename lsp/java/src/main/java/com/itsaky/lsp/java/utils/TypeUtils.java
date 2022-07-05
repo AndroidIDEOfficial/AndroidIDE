@@ -16,6 +16,9 @@
  */
 package com.itsaky.lsp.java.utils;
 
+import static com.itsaky.lsp.java.utils.StringSearch.containsClass;
+import static com.itsaky.lsp.java.utils.StringSearch.containsInterface;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.SimpleName;
@@ -42,9 +45,11 @@ import com.sun.source.tree.WildcardTree;
 import com.sun.tools.javac.code.BoundKind;
 import com.sun.tools.javac.tree.JCTree;
 
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeKind;
@@ -270,5 +275,16 @@ public class TypeUtils {
     PrettyPrintingVisitor visitor = new PrettyPrintingVisitor(configuration);
     DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter(t -> visitor, configuration);
     return prettyPrinter.print(type);
+  }
+
+  public static boolean containsType(Path file, TypeElement el) {
+    switch (el.getKind()) {
+      case INTERFACE:
+        return containsInterface(file, el.getSimpleName().toString());
+      case CLASS:
+        return containsClass(file, el.getSimpleName().toString());
+      default:
+        throw new RuntimeException("Don't know what to do with " + el.getKind());
+    }
   }
 }
