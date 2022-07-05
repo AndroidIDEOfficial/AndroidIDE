@@ -18,7 +18,7 @@ package com.itsaky.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.lsp.java.R
+import com.itsaky.androidide.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File

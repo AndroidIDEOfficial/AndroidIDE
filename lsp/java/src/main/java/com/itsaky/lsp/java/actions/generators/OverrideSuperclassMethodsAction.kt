@@ -22,7 +22,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.R
+import com.itsaky.androidide.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider

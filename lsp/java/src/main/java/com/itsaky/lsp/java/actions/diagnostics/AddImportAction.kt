@@ -20,7 +20,7 @@ import com.google.common.collect.Iterables.toArray
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.R
+import com.itsaky.androidide.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.AddImport

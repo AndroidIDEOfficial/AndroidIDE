@@ -5,7 +5,7 @@ import com.google.googlejavaformat.java.RemoveUnusedImports
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
-import com.itsaky.lsp.java.R.string
+import com.itsaky.androidide.lsp.java.R.string
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
 

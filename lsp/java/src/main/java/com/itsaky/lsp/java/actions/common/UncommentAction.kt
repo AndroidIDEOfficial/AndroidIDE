@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.lsp.java.R
+import com.itsaky.androidide.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 
 /** @author Akash Yadav */

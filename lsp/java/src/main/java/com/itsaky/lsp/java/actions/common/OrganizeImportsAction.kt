@@ -6,7 +6,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.R.string
+import com.itsaky.androidide.lsp.java.R.string
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.JavaServerSettings
 import io.github.rosemoe.sora.widget.CodeEditor
