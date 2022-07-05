@@ -1,60 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-    android:layout_height="match_parent">
-	
+	android:layout_height="match_parent">
+
 	<TextView
-        android:id="@+id/device_type"
-        android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/primaryTextColor"
-	android:textStyle="bold"
-	android:layout_margin="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+		android:id="@+id/device_type"
+		android:gravity="center"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:textColor="@color/primaryTextColor"
+		android:textStyle="bold"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<android.widget.CheckBox
-        android:id="@+id/sdk64"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/device_type"
-        android:layout_margin="10dp"
-        android:text="SDK(64 Bit)" />
+		android:id="@+id/sdk64"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:text="SDK(64 Bit)"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/device_type" />
 
-    <android.widget.CheckBox
-        android:id="@+id/sdk32"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/sdk64"
-        android:layout_margin="10dp"
-        android:text="SDK(32 Bit)" />
+	<android.widget.CheckBox
+		android:id="@+id/sdk32"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:text="SDK(32 Bit)"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/sdk64" />
 
-    <android.widget.CheckBox
-        android:id="@+id/cmdTools"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/sdk32"
-        android:layout_margin="10dp"
-	android:text="-with Command Line Tools " />
+	<android.widget.CheckBox
+		android:id="@+id/cmdTools"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:layout_marginTop="4dp"
+		android:text="Command Line Tools "
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/sdk32" />
 
-    <android.widget.CheckBox
-	    android:id="@+id/jdk17"                                            android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/cmdTools"
-        android:layout_margin="10dp"
-	    android:text="OpenJDK-17(Java-17)"/>
+	<android.widget.CheckBox
+		android:id="@+id/jdk17"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:text="OpenJDK-17(Java-17)"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/cmdTools" />
 
-    <Button
-        android:id="@+id/download"
-        android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:text="Download"
-	    android:textColor="@color/primaryTextColor"
-	    android:textStyle="bold"
-	    android:background="#ff5252"
-	    app:layout_constraintBottom_toBottomOf="parent"/>
+	<Button
+		android:id="@+id/download"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:backgroundTint="#ff5252"
+		android:text="Download"
+		android:layout_marginStart="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="4dp"
+		android:textColor="@color/primaryTextColor"
+		android:textStyle="bold"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent"
+		app:layout_constraintRight_toLeftOf="@id/install"
+		app:layout_constraintHorizontal_chainStyle="spread"
+		/>
+
+	<Button
+		android:id="@+id/install"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:backgroundTint="#ff5252"
+		android:text="Install"
+		android:layout_marginStart="4dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="8dp"
+		android:textColor="@color/primaryTextColor"
+		android:textStyle="bold"
+		app:layout_constraintLeft_toRightOf="@id/download"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
