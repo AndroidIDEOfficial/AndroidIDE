@@ -28,8 +28,8 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.AndroidModule
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
@@ -69,9 +69,9 @@ class ToolingApiImplTest {
 
     val app = project.findByPath(":app").get()
     assertThat(app).isNotNull()
-    assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
+    assertThat(app).isInstanceOf(AndroidModule::class.java)
 
-    assertThat((app as IdeAndroidModule).javaCompileOptions).isNotNull()
+    assertThat((app as AndroidModule).javaCompileOptions).isNotNull()
     assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
     assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
     assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
@@ -96,7 +96,7 @@ class ToolingApiImplTest {
 
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
-    assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
+    assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
 
     assertThat(project.findByPath(":does-not-exist").get()).isNull()
   }

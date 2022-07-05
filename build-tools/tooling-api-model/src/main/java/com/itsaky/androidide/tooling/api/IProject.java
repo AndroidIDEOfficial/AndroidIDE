@@ -20,9 +20,9 @@ package com.itsaky.androidide.tooling.api;
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.AndroidModule;
+import com.itsaky.androidide.tooling.api.model.GradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
@@ -76,11 +76,7 @@ public interface IProject {
 
   @NotNull
   @JsonRequest
-  CompletableFuture<List<IdeGradleTask>> getTasks();
-
-  @NotNull
-  @JsonRequest
-  CompletableFuture<List<IdeGradleProject>> getModules();
+  CompletableFuture<List<GradleTask>> getTasks();
 
   @NotNull
   @JsonRequest
@@ -96,15 +92,15 @@ public interface IProject {
 
   @NotNull
   @JsonRequest
-  CompletableFuture<IdeAndroidModule> findFirstAndroidModule();
+  CompletableFuture<AndroidModule> findFirstAndroidModule();
 
   @NotNull
   @JsonRequest
-  CompletableFuture<IdeAndroidModule> findFirstAndroidAppModule();
+  CompletableFuture<AndroidModule> findFirstAndroidAppModule();
 
   @NotNull
   @JsonRequest
-  CompletableFuture<List<IdeAndroidModule>> findAndroidModules();
+  CompletableFuture<List<AndroidModule>> findAndroidModules();
 
   /** Type of the {@link IProject}. */
   enum Type {

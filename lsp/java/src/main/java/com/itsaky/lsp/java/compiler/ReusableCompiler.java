@@ -19,6 +19,7 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.java.utils.JavacTaskUtil;
 import com.itsaky.lsp.java.utils.TestUtils;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
@@ -39,6 +40,7 @@ import com.sun.tools.javac.main.Arguments;
 import com.sun.tools.javac.main.JavaCompiler;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.model.LazyTreeLoader;
+import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
@@ -59,8 +61,11 @@ import org.netbeans.lib.nbjavac.services.NBTreeMaker;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -97,11 +102,11 @@ public class ReusableCompiler {
 
   private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
   private static final JavacTool systemProvider = JavacTool.create();
-  // TODO This is not used currently
   private static final CancelService cancelService = new CancelServiceImpl();
   private final List<String> currentOptions = new ArrayList<>();
-  private ReusableContext currentContext;
   private boolean checkedOut;
+
+  public ReusableContext currentContext;
 
   /**
    * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided
@@ -138,13 +143,9 @@ public class ReusableCompiler {
         StreamSupport.stream(options.spliterator(), false)
             .collect(Collectors.toCollection(ArrayList::new));
     if (!opts.equals(currentOptions)) {
-      final ArrayList<String> newOpts = new ArrayList<>(currentOptions);
-      newOpts.removeAll(currentOptions);
-      LOG.debug("New compiler options:", newOpts);
-
       currentOptions.clear();
       currentOptions.addAll(opts);
-      currentContext = new ReusableContext(new ArrayList<>(opts), cancelService);
+      currentContext = new ReusableContext(cancelService);
     }
     JavacTaskImpl task =
         (JavacTaskImpl)
@@ -186,16 +187,28 @@ public class ReusableCompiler {
     }
   }
 
-  static class ReusableContext extends Context implements TaskListener {
+  public static class ReusableContext extends Context implements TaskListener {
 
-    final List<String> arguments;
+    private final Set<URI> flowCompleted = new HashSet<>();
 
-    ReusableContext(List<String> arguments, final CancelService cancelService) {
+    ReusableContext(final CancelService cancelService) {
       super();
-      this.arguments = arguments;
       put(Log.logKey, ReusableLog.factory);
       put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
+      put(JavacFlowListener.flowListenerKey, this::hasFlowCompleted);
       registerNBServices(cancelService);
+    }
+
+    public boolean hasFlowCompleted(final JavaFileObject fo) {
+      if (fo == null) {
+        return false;
+      } else {
+        try {
+          return this.flowCompleted.contains(fo.toUri());
+        } catch (Exception e) {
+          return false;
+        }
+      }
     }
 
     private void registerNBServices(final CancelService cancelService) {
@@ -223,7 +236,12 @@ public class ReusableCompiler {
     @Override
     @DefinedBy(Api.COMPILER_TREE)
     public void finished(TaskEvent e) {
-      // do nothing
+      if (e.getKind() == TaskEvent.Kind.ANALYZE) {
+        JCTree.JCCompilationUnit cu = (JCTree.JCCompilationUnit) e.getCompilationUnit();
+        if (cu != null && cu.sourcefile != null) {
+          flowCompleted.add(cu.sourcefile.toUri());
+        }
+      }
     }
 
     void clear() {
@@ -346,13 +364,7 @@ public class ReusableCompiler {
       // not returning the context to the pool if task crashes with an exception
       // the task/context may be in a broken state
       currentContext.clear();
-      try {
-        Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
-        method.setAccessible(true);
-        method.invoke(task);
-      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-        throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
-      }
+      JavacTaskUtil.cleanup(task);
 
       checkedOut = false;
       closed = true;

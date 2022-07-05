@@ -1597,7 +1597,7 @@
             name="textEditNoPasteWindowLayout"
             format="reference" />
         <!-- Used instead of textEditPasteWindowLayout when the window is moved on the side of the
-             insertion cursor because it would be clipped if it were positioned on top. -->
+             edit cursor because it would be clipped if it were positioned on top. -->
         <attr
             name="textEditSidePasteWindowLayout"
             format="reference" />
@@ -2031,7 +2031,7 @@
         name="textColorLink"
         format="reference|color" />
 
-    <!-- Reference to a drawable that will be drawn under the insertion cursor. -->
+    <!-- Reference to a drawable that will be drawn under the edit cursor. -->
     <attr
         name="textCursorDrawable"
         format="reference" />
@@ -8352,7 +8352,7 @@
         <!-- Variation of textEditPasteWindowLayout displayed when the clipboard is empty. -->
         <attr name="textEditNoPasteWindowLayout" />
         <!-- Used instead of textEditPasteWindowLayout when the window is moved on the side of the
-             insertion cursor because it would be clipped if it were positioned on top. -->
+             edit cursor because it would be clipped if it were positioned on top. -->
         <attr name="textEditSidePasteWindowLayout" />
         <!-- Variation of textEditSidePasteWindowLayout displayed when the clipboard is empty. -->
         <attr name="textEditSideNoPasteWindowLayout" />
@@ -8365,7 +8365,7 @@
         <attr name="textEditSuggestionHighlightStyle" />
 
 
-        <!-- Reference to a drawable that will be drawn under the insertion cursor. -->
+        <!-- Reference to a drawable that will be drawn under the edit cursor. -->
         <attr name="textCursorDrawable" />
 
         <!-- Indicates that the content of a non-editable text can be selected. -->

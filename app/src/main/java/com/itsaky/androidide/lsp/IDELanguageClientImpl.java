@@ -124,6 +124,11 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
   @Override
   public void publishDiagnostics(DiagnosticResult result) {
+    if (result == DiagnosticResult.NO_UPDATE) {
+      // No update is expected
+      return;
+    }
+
     boolean error = result == null;
     activity().handleDiagnosticsResultVisibility(error || result.getDiagnostics().isEmpty());
 

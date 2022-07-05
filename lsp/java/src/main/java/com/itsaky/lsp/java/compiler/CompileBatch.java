@@ -17,11 +17,19 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
+
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
+import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
+import com.itsaky.lsp.java.visitors.MethodRangeScanner;
+import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.io.File;
@@ -30,10 +38,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.Name;
@@ -48,35 +59,64 @@ public class CompileBatch implements AutoCloseable {
   final ReusableCompiler.Borrow borrow;
   final JavacTaskImpl task;
   final List<CompilationUnitTree> roots;
+  DiagnosticListenerImpl diagnosticListener;
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
+  final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
+
   CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
     this.parent = parent;
-    borrow = batchTask(parent, files);
-    task = borrow.task;
-    roots = new ArrayList<>();
+    this.borrow = batchTask(parent, files);
+    this.task = borrow.task;
+    this.roots = new ArrayList<>();
 
-    for (CompilationUnitTree t : borrow.task.parse()) {
+    final StopWatch watch = new StopWatch("Create CompileBatch");
+
+    final Iterable<? extends CompilationUnitTree> trees = borrow.task.parse();
+    watch.lap("CompilationUnitTree(s) parsed");
+
+    for (CompilationUnitTree t : trees) {
       roots.add(t);
+      updatePositions(t, false);
     }
+
     // The results of borrow.task.analyze() are unreliable when errors are present
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();
+    watch.log();
   }
 
-  private static ReusableCompiler.Borrow batchTask(
-      JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
+  void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
+    final StopWatch positionWatch = new StopWatch("Scan method positions");
+    final List<Pair<Range, TreePath>> positions = new ArrayList<>();
+    new MethodRangeScanner(this.task).scan(tree, positions);
+    final String path = new File(tree.getSourceFile().toUri()).getAbsolutePath();
+    final List<Pair<Range, TreePath>> old = this.methodPositions.put(path, positions);
+    if (old != null && !allowDuplicate) {
+      throw new IllegalStateException(
+          "Duplicate CompilationUnitTree for file:" + tree.getSourceFile().toUri());
+    }
+
+    positionWatch.log();
+  }
+
+  private ReusableCompiler.Borrow batchTask(
+      @NonNull JavaCompilerService parent, @NonNull Collection<? extends JavaFileObject> sources) {
 
     parent.diagnostics.clear();
     final Iterable<String> options = options(parent.classPath);
 
+    diagnosticListener =
+        new DiagnosticListenerWrapper(parent.diagnostics::add, sources.iterator().next());
+
     return parent.compiler.getTask(
-        parent.fileManager, parent.diagnostics::add, options, Collections.emptyList(), sources);
+        parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
   }
 
+  @NonNull
   private static List<String> options(Set<Path> classPath) {
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
 
     Collections.addAll(list, "-classpath", joinPath(classPath));
     Collections.addAll(list, "-source", "11", "-target", "11");
@@ -102,7 +142,7 @@ public class CompileBatch implements AutoCloseable {
   /**
    * Combine source path or class path entries using the system separator, for example ':' in unix
    */
-  private static String joinPath(Collection<Path> classOrSourcePath) {
+  private static String joinPath(@NonNull Collection<Path> classOrSourcePath) {
     return classOrSourcePath.stream()
         .map(Path::toString)
         .collect(Collectors.joining(File.pathSeparator));
@@ -119,8 +159,8 @@ public class CompileBatch implements AutoCloseable {
    */
   Set<Path> needsAdditionalSources() {
     // Check for "class not found errors" that refer to package private classes
-    Set<Path> addFiles = new HashSet<Path>();
-    for (Diagnostic err : parent.diagnostics) {
+    Set<Path> addFiles = new HashSet<>();
+    for (Diagnostic<? extends JavaFileObject> err : parent.diagnostics) {
       if (!err.getCode().equals("compiler.err.cant.resolve.location")) {
         continue;
       }
@@ -188,5 +228,22 @@ public class CompileBatch implements AutoCloseable {
     return d.getSource().toUri().getScheme().equals("file")
         && d.getStartPosition() >= 0
         && d.getEndPosition() >= 0;
+  }
+
+  public static class DiagnosticListenerWrapper extends DiagnosticListenerImpl {
+
+    private final Consumer<Diagnostic<? extends JavaFileObject>> consumer;
+
+    public DiagnosticListenerWrapper(
+        final Consumer<Diagnostic<? extends JavaFileObject>> consumer, JavaFileObject jfo) {
+      super(jfo);
+      this.consumer = consumer;
+    }
+
+    @Override
+    public void report(final Diagnostic<? extends JavaFileObject> diagnostic) {
+      consumer.accept(diagnostic);
+      super.report(diagnostic);
+    }
   }
 }

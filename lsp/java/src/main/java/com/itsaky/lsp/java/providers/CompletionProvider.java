@@ -25,9 +25,12 @@ import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.internal.model.CachedCompletion;
-import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.CompileTask;
+import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.models.CompilationRequest;
+import com.itsaky.lsp.java.models.PartialReparseRequest;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider;
 import com.itsaky.lsp.java.providers.completion.IdentifierCompletionProvider;
@@ -37,38 +40,51 @@ import com.itsaky.lsp.java.providers.completion.MemberReferenceCompletionProvide
 import com.itsaky.lsp.java.providers.completion.MemberSelectCompletionProvider;
 import com.itsaky.lsp.java.providers.completion.SwitchConstantCompletionProvider;
 import com.itsaky.lsp.java.providers.completion.TopLevelSnippetsProvider;
+import com.itsaky.lsp.java.utils.ASTFixer;
 import com.itsaky.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
+import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
   public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
   private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
-  private final CompilerProvider compiler;
-  private final CachedCompletion cache;
-  private final Consumer<CachedCompletion> nextCacheConsumer;
+  private JavaCompilerService compiler;
+  private CachedCompletion cache;
+  private Consumer<CachedCompletion> nextCacheConsumer;
+  private final AtomicBoolean completing = new AtomicBoolean(false);
 
-  public CompletionProvider(
-      CompilerProvider compiler,
+  public CompletionProvider() {
+    super();
+  }
+
+  public synchronized CompletionProvider reset(
+      JavaCompilerService compiler,
       IServerSettings settings,
       CachedCompletion cache,
       Consumer<CachedCompletion> nextCacheConsumer) {
-    super();
-    super.applySettings(settings);
-
     this.compiler = compiler;
     this.cache = cache;
     this.nextCacheConsumer = nextCacheConsumer;
+
+    super.applySettings(settings);
+    return this;
+  }
+
+  public boolean isCompleting() {
+    return completing.get();
   }
 
   @Override
@@ -79,6 +95,20 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   @NonNull
   @Override
   public CompletionResult complete(@NonNull CompletionParams params) {
+    if (compiler.getSynchronizedTask().isCompiling()) {
+      return CompletionResult.EMPTY;
+    }
+
+    completing.set(true);
+    try {
+      return completeInternal(params);
+    } finally {
+      completing.set(false);
+    }
+  }
+
+  @NonNull
+  private CompletionResult completeInternal(final @NonNull CompletionParams params) {
     Path file = params.getFile();
     int line = params.getPosition().getLine();
     int column = params.getPosition().getColumn();
@@ -97,7 +127,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
       result.markCached();
 
-      if (!result.isIncomplete() && result.getItems().size() > 10) {
+      if (!result.isIncomplete() && !result.getItems().isEmpty()) {
         LOG.info("...using cached completion");
         logCompletionDuration(started, result);
         return result;
@@ -111,11 +141,21 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     ParseTask task = compiler.parse(file);
 
     long cursor = task.root.getLineMap().getPosition(line, column);
-    StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
-    int endOfLine = endOfLine(contents, (int) cursor);
-    contents.insert(endOfLine, ';');
+    StringBuilder pruned = new PruneMethodBodies(task.task).scan(task.root, cursor);
+    int endOfLine = endOfLine(pruned, (int) cursor);
+    pruned.insert(endOfLine, ';');
 
-    CompletionResult result = compileAndComplete(file, contents.toString(), cursor);
+    final CharSequence contents;
+    if (compiler.compiler.currentContext != null) {
+      contents = new ASTFixer(compiler.compiler.currentContext).fix(pruned);
+    } else {
+      contents = pruned.toString();
+    }
+
+    final String contentString = contents.toString();
+    final PartialReparseRequest partialRequest =
+        new PartialReparseRequest(cursor - params.requirePrefix().length(), contentString);
+    CompletionResult result = compileAndComplete(file, contentString, cursor, partialRequest);
     if (result == null) {
       result = CompletionResult.EMPTY;
     }
@@ -160,49 +200,76 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return cursor;
   }
 
-  private CompletionResult compileAndComplete(Path file, String contents, long cursor) {
-    Instant started = Instant.now();
-    SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
-    String partial = partialIdentifier(contents, (int) cursor);
-    boolean endsWithParen = endsWithParen(contents, (int) cursor);
-    SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList(source));
+  private CompletionResult compileAndComplete(
+      Path file, String contents, final long cursor, PartialReparseRequest partialRequest) {
+    final Instant started = Instant.now();
+    final SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
+    final String partial = partialIdentifier(contents, (int) cursor);
+    final boolean endsWithParen = endsWithParen(contents, (int) cursor);
+    SynchronizedTask synchronizedTask =
+        compiler.compile(new CompilationRequest(Collections.singletonList(source), partialRequest));
     return synchronizedTask.get(
         task -> {
+          if (task == null
+              || task.task == null
+              || ((JavacTaskImpl) task.task).getContext() == null) {
+            return CompletionResult.EMPTY;
+          }
           LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
           TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
 
-          final Class<? extends IJavaCompletionProvider> klass;
-          switch (path.getLeaf().getKind()) {
-            case IDENTIFIER:
-              klass = IdentifierCompletionProvider.class;
-              break;
-            case MEMBER_SELECT:
-              klass = MemberSelectCompletionProvider.class;
-              break;
-            case MEMBER_REFERENCE:
-              klass = MemberReferenceCompletionProvider.class;
-              break;
-            case SWITCH:
-              klass = SwitchConstantCompletionProvider.class;
-              break;
-            case IMPORT:
-              klass = ImportCompletionProvider.class;
-              break;
-            default:
-              klass = KeywordCompletionProvider.class;
-              break;
+          String newPartial = partial;
+          if (path.getLeaf().getKind() == Tree.Kind.IMPORT) {
+            newPartial = qualifiedPartialIdentifier(contents, (int) cursor);
+            if (newPartial.endsWith(ASTFixer.IDENT)) {
+              newPartial = newPartial.substring(0, newPartial.length() - ASTFixer.IDENT.length());
+            }
           }
 
-          final IJavaCompletionProvider provider =
-              ReflectUtils.reflect(klass).newInstance(file, cursor, compiler, getSettings()).get();
-
-          if (provider instanceof ImportCompletionProvider) {
-            ((ImportCompletionProvider) provider)
-                .setImportPath(qualifiedPartialIdentifier(contents, (int) cursor));
-          }
-
-          return provider.complete(task, path, partial, endsWithParen);
+          return doComplete(file, contents, cursor, newPartial, endsWithParen, task, path);
         });
+  }
+
+  @NonNull
+  private CompletionResult doComplete(
+      final Path file,
+      final String contents,
+      final long cursor,
+      final String partial,
+      final boolean endsWithParen,
+      final CompileTask task,
+      final TreePath path) {
+    final Class<? extends IJavaCompletionProvider> klass;
+    switch (path.getLeaf().getKind()) {
+      case IDENTIFIER:
+        klass = IdentifierCompletionProvider.class;
+        break;
+      case MEMBER_SELECT:
+        klass = MemberSelectCompletionProvider.class;
+        break;
+      case MEMBER_REFERENCE:
+        klass = MemberReferenceCompletionProvider.class;
+        break;
+      case SWITCH:
+        klass = SwitchConstantCompletionProvider.class;
+        break;
+      case IMPORT:
+        klass = ImportCompletionProvider.class;
+        break;
+      default:
+        klass = KeywordCompletionProvider.class;
+        break;
+    }
+
+    final IJavaCompletionProvider provider =
+        ReflectUtils.reflect(klass).newInstance(file, cursor, compiler, getSettings()).get();
+
+    if (provider instanceof ImportCompletionProvider) {
+      ((ImportCompletionProvider) provider)
+          .setImportPath(qualifiedPartialIdentifier(contents, (int) cursor));
+    }
+
+    return provider.complete(task, path, partial, endsWithParen);
   }
 
   private boolean endsWithParen(@NonNull String contents, int cursor) {

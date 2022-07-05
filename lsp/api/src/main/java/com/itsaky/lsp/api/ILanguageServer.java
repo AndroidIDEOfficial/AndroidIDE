@@ -38,9 +38,11 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ExpandSelectionParams;
+import com.itsaky.lsp.models.FormatCodeParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
@@ -49,7 +51,6 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * A language server provides API for providing functions related to a specific file type.
@@ -57,6 +58,13 @@ import java.util.List;
  * @author Akash Yadav
  */
 public interface ILanguageServer {
+
+  /**
+   * Get the unique language server ID.
+   *
+   * @return The server ID.
+   */
+  String getServerId();
 
   /**
    * Initialize this language server with the given params. Subclasses are expected to throw {@link
@@ -170,20 +178,21 @@ public interface ILanguageServer {
    * Analyze the given file and provide diagnostics from the analyze result.
    *
    * @param file The file to analyze.
-   * @return The list of diagnostics. May be empty.
+   * @return The diagnostic result. Points to {@link DiagnosticResult#NO_UPDATE} if no diagnotic
+   *     items are available.
    */
   @NonNull
-  List<DiagnosticItem> analyze(@NonNull Path file);
+  DiagnosticResult analyze(@NonNull Path file);
 
   /**
    * Format the given source code input.
    *
-   * @param input The source code to format.
+   * @param params The code formatting parameters.
    * @return The formatted source.
    */
   @NonNull
-  default CharSequence formatCode(CharSequence input) {
-    return input;
+  default CharSequence formatCode(FormatCodeParams params) {
+    return params.getContent();
   }
 
   /**
@@ -193,6 +202,16 @@ public interface ILanguageServer {
    */
   @NonNull
   IDocumentHandler getDocumentHandler();
+
+  /**
+   * Handle failure caused by LSP
+   *
+   * @param failure {@link LSPFailure} describing the failure.
+   * @return <code>true</code> if the failure was handled. <code>false</code> otherwise.
+   */
+  default boolean handleFailure(LSPFailure failure) {
+    return false;
+  }
 
   /**
    * Thrown to indicate that a language server received an initialize notification but was already

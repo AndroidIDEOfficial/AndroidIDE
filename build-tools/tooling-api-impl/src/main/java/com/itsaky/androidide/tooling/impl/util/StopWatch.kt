@@ -45,7 +45,7 @@ class StopWatch(
   }
 
   fun lapFromLast(message: String) {
-    log.debug("$message in ${System.currentTimeMillis() - start}ms")
+    log.debug("$message in ${System.currentTimeMillis() - lastLap}ms")
     lastLap = System.currentTimeMillis()
   }
 }

@@ -35,10 +35,10 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.ChangeType;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -153,9 +153,6 @@ public class IDEEditor extends CodeEditor {
         final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
         documentHandler.onFileOpened(event);
       }
-
-      // request diagnostics
-      analyze();
     }
 
     if (file != null) {
@@ -173,8 +170,7 @@ public class IDEEditor extends CodeEditor {
           .whenComplete(
               (diagnostics, throwable) -> {
                 if (mLanguageClient != null) {
-                  mLanguageClient.publishDiagnostics(
-                      new DiagnosticResult(getFile().toPath(), diagnostics));
+                  mLanguageClient.publishDiagnostics(diagnostics);
                 }
               });
     }
@@ -195,8 +191,27 @@ public class IDEEditor extends CodeEditor {
           final var documentHandler = mLanguageServer.getDocumentHandler();
           final var file = getFile().toPath();
           if (documentHandler.accepts(file)) {
+            var type = ChangeType.INSERT;
+            if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
+              type = ChangeType.DELETE;
+            } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+              type = ChangeType.NEW_TEXT;
+            }
+
+            var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
+            if (type == ChangeType.DELETE) {
+              changeDelta = -changeDelta;
+            }
+
+            final var start = event.getChangeStart();
+            final var end = event.getChangeEnd();
+            final var changeRange =
+                new Range(
+                    new Position(start.line, start.column, start.index),
+                    new Position(end.line, end.column, end.index));
             documentHandler.onContentChange(
-                new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+                new DocumentChangeEvent(
+                    file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange));
           }
 
           checkForSignatureHelp(event);

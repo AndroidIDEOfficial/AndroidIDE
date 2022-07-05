@@ -3,6 +3,7 @@ package com.itsaky.lsp.java;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -11,6 +12,7 @@ import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
+import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.util.PathUtils;
 
 import java.io.BufferedReader;
@@ -200,7 +202,8 @@ public class FileStore {
       return;
     }
 
-    activeDocuments.put(document, new VersionedContent(params.getText(), params.getVersion()));
+    activeDocuments.put(
+        document, new VersionedContent(params.getText(), params.getVersion(), Range.NONE));
   }
 
   public static void change(DocumentChangeEvent params) {
@@ -211,8 +214,9 @@ public class FileStore {
     }
 
     // We do not support range changes
-    CharSequence newText = params.getNewText();
-    activeDocuments.put(document, new VersionedContent(newText, params.getVersion()));
+    String newText = params.getNewText();
+    activeDocuments.put(
+        document, new VersionedContent(newText, params.getVersion(), params.getChangeRange()));
   }
 
   public static void close(DocumentCloseEvent params) {
@@ -228,7 +232,12 @@ public class FileStore {
     return activeDocuments.keySet();
   }
 
-  public static CharSequence contents(Path file) {
+  @Nullable
+  public static VersionedContent versionedContent(Path file) {
+    return activeDocuments.get(file);
+  }
+
+  public static String contents(Path file) {
     if (!isJavaFile(file)) {
       throw new RuntimeException(file + " is not a java file");
     }
@@ -352,11 +361,13 @@ public class FileStore {
   }
 
   static class VersionedContent {
-    final CharSequence content;
+    final String content;
     final int version;
+    final Range modifiedRange;
     final Instant modified = Instant.now();
 
-    VersionedContent(CharSequence content, int version) {
+    VersionedContent(String content, int version, final Range modifiedRange) {
+      this.modifiedRange = modifiedRange;
       Objects.requireNonNull(content, "content is null");
       this.content = content;
       this.version = version;

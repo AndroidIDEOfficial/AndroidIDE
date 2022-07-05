@@ -21,10 +21,10 @@ import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
+import com.itsaky.androidide.tooling.api.model.GradleTask;
+import com.itsaky.androidide.tooling.api.model.JavaModule;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
@@ -101,12 +101,12 @@ public class ToolingApiLauncher {
   public static void configureGson(GsonBuilder builder) {
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
-            .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
-            .registerSubtype(IdeJavaModule.class, IdeJavaModule.class.getName())
+            .registerSubtype(AndroidModule.class, AndroidModule.class.getName())
+            .registerSubtype(JavaModule.class, JavaModule.class.getName())
             .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
-            .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
+            .registerSubtype(GradleTask.class, GradleTask.class.getName())
             .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(JavaModuleDependency.class, "gsonType", true)

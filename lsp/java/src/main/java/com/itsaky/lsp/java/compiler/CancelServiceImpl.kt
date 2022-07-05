@@ -36,7 +36,7 @@ class CancelServiceImpl : CancelService() {
    * otherwise.
    */
   fun cancel(): Boolean {
-    log.info("...cancelling compilation")
+    log.info("...requesting compilation cancellation")
     if (cancelled.getAndSet(true)) {
       return false
     }

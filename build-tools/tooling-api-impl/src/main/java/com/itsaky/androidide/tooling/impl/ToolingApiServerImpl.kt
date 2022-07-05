@@ -263,11 +263,11 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     when (error) {
       is BuildException -> BUILD_FAILED
       is BuildCancelledException -> BUILD_CANCELLED
-      is GradleConnectionException -> CONNECTION_ERROR
-      is java.lang.IllegalStateException -> CONNECTION_CLOSED
+      is UnsupportedOperationConfigurationException -> UNSUPPORTED_CONFIGURATION
       is UnsupportedVersionException -> UNSUPPORTED_GRADLE_VERSION
       is UnsupportedBuildArgumentException -> UNSUPPORTED_BUILD_ARGUMENT
-      is UnsupportedOperationConfigurationException -> UNSUPPORTED_CONFIGURATION
+      is GradleConnectionException -> CONNECTION_ERROR
+      is java.lang.IllegalStateException -> CONNECTION_CLOSED
       else -> UNKNOWN
     }
 

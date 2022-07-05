@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildFeatures.viewBinding true
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+        }
+    }
+}
+
+dependencies {
+    implementation project (path: ':build-tools:tooling-api')
+    implementation project (path: ':common')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+    androidTestImplementation tests.androidx_junit
+    androidTestImplementation tests.androidx_espresso
+    androidTestImplementation tests.google_truth
+}

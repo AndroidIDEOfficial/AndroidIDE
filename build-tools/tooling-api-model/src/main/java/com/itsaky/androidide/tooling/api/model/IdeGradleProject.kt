@@ -39,7 +39,7 @@ open class IdeGradleProject(
   @JvmField val buildDir: File,
   @JvmField val buildScript: File,
   @JvmField val parent: IdeGradleProject?,
-  @JvmField val tasks: List<IdeGradleTask>,
+  @JvmField val tasks: List<GradleTask>,
 ) : com.itsaky.androidide.tooling.api.IProject, Serializable {
   private val serialVersionUID = 1L
 
@@ -78,12 +78,8 @@ open class IdeGradleProject(
     return CompletableFutures.computeAsync { this.buildScript }
   }
 
-  override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> {
+  override fun getTasks(): CompletableFuture<MutableList<GradleTask>> {
     return CompletableFutures.computeAsync { this.tasks.toMutableList() }
-  }
-
-  override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> {
-    return CompletableFutures.computeAsync { this.moduleProjects.toMutableList() }
   }
 
   override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
@@ -94,7 +90,7 @@ open class IdeGradleProject(
             name = it.name,
             path = it.projectPath,
             projectDir = it.projectDir,
-            classPaths = if (it is IdeModule) it.getClassPaths() else emptySet()
+            classPaths = if (it is ModuleProject) it.getClassPaths() else emptySet()
           )
         }
         .toMutableList()
@@ -103,7 +99,7 @@ open class IdeGradleProject(
 
   override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> {
     return findByPath(request.projectPath).thenApply { project ->
-      if (project !is IdeAndroidModule) {
+      if (project !is AndroidModule) {
         return@thenApply null
       }
 
@@ -121,18 +117,18 @@ open class IdeGradleProject(
     }
   }
 
-  override fun findAndroidModules(): CompletableFuture<List<IdeAndroidModule>> {
+  override fun findAndroidModules(): CompletableFuture<List<AndroidModule>> {
     return CompletableFutures.computeAsync {
-      moduleProjects.filterIsInstance(IdeAndroidModule::class.java)
+      moduleProjects.filterIsInstance(AndroidModule::class.java)
     }
   }
 
-  override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> {
+  override fun findFirstAndroidModule(): CompletableFuture<AndroidModule?> {
     return findAndroidModules().thenApply { it.firstOrNull() }
   }
 
-  override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
-    if (this is IdeAndroidModule) {
+  override fun findFirstAndroidAppModule(): CompletableFuture<AndroidModule> {
+    if (this is AndroidModule) {
       return CompletableFuture.completedFuture(this)
     }
 

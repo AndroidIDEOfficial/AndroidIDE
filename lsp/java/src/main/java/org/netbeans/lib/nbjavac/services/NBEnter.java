@@ -50,6 +50,11 @@ public class NBEnter extends Enter {
     compiler = c instanceof NBJavaCompiler ? (NBJavaCompiler) c : null;
   }
 
+  @SuppressWarnings("unused")
+  public void doUnenter(JCTree.JCCompilationUnit cu, JCTree tree) {
+    super.unenter(cu, tree);
+  }
+
   @Override
   public Env<AttrContext> getEnv(TypeSymbol sym) {
     Env<AttrContext> env = super.getEnv(sym);

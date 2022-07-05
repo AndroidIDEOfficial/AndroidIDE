@@ -32,12 +32,14 @@ import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
 import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.api.ILanguageServerRegistry;
 import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.lsp.xml.XMLLanguageServer;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -47,8 +49,6 @@ public class StudioApp extends BaseApplication {
   private static final ILogger LOG = ILogger.newInstance("StudioApp");
   private static StudioApp instance;
   private static SDKInfo sdkInfo;
-  private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer();
-  private final ILanguageServer mXMLLanguageServer = new XMLLanguageServer();
   private IResourceTable mResTable;
   private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
@@ -62,7 +62,6 @@ public class StudioApp extends BaseApplication {
     this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
     super.onCreate();
-
     getApiInformation();
   }
 
@@ -92,7 +91,7 @@ public class StudioApp extends BaseApplication {
           if (sdkInfo == null) {
             try {
               sdkInfo = new SDKInfo(StudioApp.this);
-              ((XMLLanguageServer) mXMLLanguageServer).setupSDK(sdkInfo);
+              ((XMLLanguageServer) getXMLLanguageServer()).setupSDK(sdkInfo);
             } catch (Throwable th) {
               LOG.error(getString(R.string.err_init_sdkinfo), th);
             }
@@ -104,12 +103,14 @@ public class StudioApp extends BaseApplication {
 
   @NonNull
   public ILanguageServer getJavaLanguageServer() {
-    return mJavaLanguageServer;
+    return Objects.requireNonNull(
+        ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID));
   }
 
   @NonNull
   public ILanguageServer getXMLLanguageServer() {
-    return mXMLLanguageServer;
+    return Objects.requireNonNull(
+        ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID));
   }
 
   public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(

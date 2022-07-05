@@ -19,15 +19,15 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.google.common.io.CharSink;
-import com.google.common.io.CharSource;
+import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.Formatter;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.java.models.JavaServerSettings;
+import com.itsaky.lsp.models.FormatCodeParams;
+import com.itsaky.lsp.models.Range;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.util.Collection;
 
 /**
  * Formats Java code using Google Java Format.
@@ -45,43 +45,37 @@ public class CodeFormatProvider {
     this.settings = (JavaServerSettings) settings;
   }
 
-  public CharSequence format(CharSequence input) {
+  public CharSequence format(FormatCodeParams params) {
     final long start = System.currentTimeMillis();
-    try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
-      final CharSource source = CharSource.wrap(input);
+    final String strContent = params.getContent().toString();
+    CharSequence formatted;
+    try {
       final Formatter formatter = new Formatter(settings.getFormatterOptions());
-      formatter.formatSource(source, sink);
-      LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
-      return sink.toString();
+      if (params.getRange() != Range.NONE) {
+        formatted = formatter.formatSource(strContent, getCharRanges(params.getRange()));
+      } else {
+        formatted = formatter.formatSource(strContent);
+      }
     } catch (Throwable e) {
       LOG.error("Failed to format code.", e);
-      return input;
+      formatted = params.getContent();
     }
+
+    if (params.getRange() != Range.NONE) {
+      final Range range = params.getRange();
+      return formatted.subSequence(range.getStart().requireIndex(), range.getEnd().requireIndex());
+    }
+
+    LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
+
+    return formatted;
   }
 
-  private static class StringWriterCharSink extends CharSink implements AutoCloseable {
-
-    private final StringWriter writer;
-
-    private StringWriterCharSink() {
-      this.writer = new StringWriter();
-    }
-
-    @NonNull
-    @Override
-    public Writer openStream() {
-      return this.writer;
-    }
-
-    @Override
-    public void close() throws Exception {
-      this.writer.close();
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-      return this.writer.toString();
-    }
+  @NonNull
+  private Collection<com.google.common.collect.Range<Integer>> getCharRanges(
+      @NonNull final Range range) {
+    return ImmutableList.of(
+        com.google.common.collect.Range.closedOpen(
+            range.getStart().requireIndex(), range.getEnd().requireIndex()));
   }
 }

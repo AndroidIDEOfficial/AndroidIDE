@@ -119,6 +119,7 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
+    implementation project(':build-tools:projects')
     implementation project (':build-tools:tooling-api')
     implementation project (':treeview')
     implementation project (':emulatorview')

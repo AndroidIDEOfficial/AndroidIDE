@@ -17,14 +17,17 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import com.itsaky.lsp.java.models.CompilationRequest;
 import com.itsaky.lsp.java.parser.ParseTask;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.tools.JavaFileObject;
 
@@ -51,7 +54,13 @@ public interface CompilerProvider {
 
   ParseTask parse(JavaFileObject file);
 
-  SynchronizedTask compile(Path... files);
+  default SynchronizedTask compile(Path... files) {
+    return compile(Arrays.stream(files).map(SourceFileObject::new).collect(Collectors.toList()));
+  }
 
-  SynchronizedTask compile(Collection<? extends JavaFileObject> sources);
+  default SynchronizedTask compile(Collection<? extends JavaFileObject> sources) {
+    return compile(new CompilationRequest(sources));
+  }
+
+  SynchronizedTask compile(CompilationRequest request);
 }

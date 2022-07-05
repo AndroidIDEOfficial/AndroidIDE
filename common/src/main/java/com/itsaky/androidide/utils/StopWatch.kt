@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.utils
 
+import com.itsaky.androidide.utils.ILogger
+
 /**
  * A stop watch helps to log duration between the time when the instance of the stopwatch instance
  * was created and the time when [StopWatch.log] or [StopWatch.lap] method is called.
@@ -24,14 +26,26 @@ package com.itsaky.androidide.utils
  * @param label The label for the log message.
  * @author Akash Yadav
  */
-class StopWatch(val label: String, val start: Long = System.currentTimeMillis()) {
+class StopWatch(
+  val label: String,
+  val start: Long = System.currentTimeMillis(),
+  var lastLap: Long = start
+) {
+  constructor(label: String) : this(label, System.currentTimeMillis())
+  
   private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   fun log() {
     log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
   }
-
+  
   fun lap(message: String) {
     log.debug("$message in ${System.currentTimeMillis() - start}ms")
+    lastLap = System.currentTimeMillis()
+  }
+  
+  fun lapFromLast(message: String) {
+    log.debug("$message in ${System.currentTimeMillis() - lastLap}ms")
+    lastLap = System.currentTimeMillis()
   }
 }

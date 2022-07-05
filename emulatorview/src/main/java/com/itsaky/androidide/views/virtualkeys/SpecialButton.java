@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 /** The {@link Class} that implements special buttons for {@link VirtualKeysView}. */
 public class SpecialButton {
-   
+
   private static final HashMap<String, SpecialButton> map = new HashMap<>();
   public static final SpecialButton CTRL = new SpecialButton("CTRL");
   public static final SpecialButton ALT = new SpecialButton("ALT");

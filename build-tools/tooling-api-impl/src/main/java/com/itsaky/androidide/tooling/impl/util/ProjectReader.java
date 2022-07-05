@@ -29,11 +29,11 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.AndroidModule;
+import com.itsaky.androidide.tooling.api.model.GradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
-import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot;
+import com.itsaky.androidide.tooling.api.model.JavaModule;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
@@ -48,7 +48,6 @@ import org.gradle.tooling.ConfigurableLauncher;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
-import org.gradle.tooling.model.GradleTask;
 import org.gradle.tooling.model.idea.IdeaDependency;
 import org.gradle.tooling.model.idea.IdeaModule;
 import org.gradle.tooling.model.idea.IdeaModuleDependency;
@@ -88,9 +87,9 @@ public class ProjectReader {
     return buildActionExecutor.run();
   }
 
-  public static IdeAndroidModule buildAndroidModuleProject(
+  public static AndroidModule buildAndroidModuleProject(
       GradleProject gradle, AndroidProject android, ProjectType type) {
-    System.err.println("Building IdeAndroidModule for project: " + gradle.getName());
+    System.err.println("Building AndroidModule for project: " + gradle.getName());
     final var builder = new ProjectBuilder();
     final var copier = AndroidModulePropertyCopier.INSTANCE;
     builder.setName(gradle.getName());
@@ -121,8 +120,9 @@ public class ProjectReader {
     }
   }
 
-  private static IdeGradleTask buildGradleTaskModel(IdeGradleProject project, GradleTask task) {
-    return new IdeGradleTask(
+  private static GradleTask buildGradleTaskModel(
+      IdeGradleProject project, org.gradle.tooling.model.GradleTask task) {
+    return new GradleTask(
         task.getName(),
         task.getDescription(),
         task.getGroup(),
@@ -251,7 +251,7 @@ public class ProjectReader {
     return new ModelInfoContainer(module, syncIssues);
   }
 
-  private static IdeJavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
+  private static JavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
     final var builder = new ProjectBuilder();
     builder.setName(gradle.getName());
     builder.setDescription(gradle.getDescription());
@@ -311,8 +311,8 @@ public class ProjectReader {
 
   private static <T extends ConfigurableLauncher<T>> void applyAndroidModelBuilderProps(
       ConfigurableLauncher<T> launcher) {
-    addProperty(launcher, IdeAndroidModule.PROPERTY_BUILD_MODEL_ONLY, true);
-    addProperty(launcher, IdeAndroidModule.PROPERTY_INVOKED_FROM_IDE, true);
+    addProperty(launcher, AndroidModule.PROPERTY_BUILD_MODEL_ONLY, true);
+    addProperty(launcher, AndroidModule.PROPERTY_INVOKED_FROM_IDE, true);
   }
 
   private static void addProperty(ConfigurableLauncher<?> launcher, String property, Object value) {

@@ -42,14 +42,15 @@ import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.ExpandSelectionParams;
+import com.itsaky.lsp.models.FormatCodeParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.LSPFailure;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
@@ -59,32 +60,36 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.LSPEditorActions;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 
+import org.netbeans.lib.nbjavac.services.CancelAbort;
+
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
-  private final AnalyzeTimer analyzeTimer;
+  public static final String SERVER_ID = "java";
+  private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
+  private final CompletionProvider completionProvider;
+  private final JavaDiagnosticProvider diagnosticProvider;
   private ILanguageClient client;
   private IServerSettings settings;
-  private JavaCompilerService compiler;
+  private Path selectedFile;
+  private JavaCompilerService compilerService;
   private JavaServerConfiguration configuration;
   private CachedCompletion cachedCompletion;
+  private ServerCapabilities capabilities;
   private boolean initialized;
   private boolean createCompiler;
-  private ServerCapabilities capabilities;
-  private Path selectedFile;
 
   public JavaLanguageServer() {
     this.initialized = false;
     this.createCompiler = true;
     this.configuration = new JavaServerConfiguration();
-    this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
+    this.completionProvider = new CompletionProvider();
+    this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
@@ -99,11 +104,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         .whenComplete(
             ((diagnostics, throwable) -> {
               if (client != null) {
-                if (diagnostics == null) {
-                  diagnostics = new ArrayList<>(0);
-                }
-
-                client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
+                client.publishDiagnostics(diagnostics);
               }
             }));
   }
@@ -114,6 +115,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     return settings;
+  }
+
+  @Override
+  public String getServerId() {
+    return SERVER_ID;
   }
 
   @Override
@@ -152,14 +158,14 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void shutdown() {
-    if (compiler != null) {
-      compiler.close();
-      compiler = null;
+    if (compilerService != null) {
+      compilerService.close();
+      compilerService = null;
       createCompiler = true;
     }
 
     FileStore.shutdown();
-    this.analyzeTimer.shutdown();
+    timer.shutdown();
     initialized = false;
   }
 
@@ -207,7 +213,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
       return new NoCompletionsProvider();
     }
 
-    return new CompletionProvider(
+    return this.completionProvider.reset(
         getCompiler(), this.settings, this.cachedCompletion, this::updateCachedCompletion);
   }
 
@@ -253,23 +259,23 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @NonNull
   @Override
-  public List<DiagnosticItem> analyze(@NonNull Path file) {
+  public DiagnosticResult analyze(@NonNull Path file) {
     if (!settings.codeAnalysisEnabled()) {
-      return Collections.emptyList();
+      return DiagnosticResult.NO_UPDATE;
     }
 
-    return new JavaDiagnosticProvider(getCompiler()).analyze(file);
+    return this.diagnosticProvider.analyze(getCompiler(), file);
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public JavaCompilerService getCompiler() {
     if (createCompiler) {
       LOG.info("Creating new compiler instance...");
-      compiler = createCompiler();
+      compilerService = createCompiler();
       createCompiler = false;
     }
 
-    return compiler;
+    return compilerService;
   }
 
   @NonNull
@@ -279,8 +285,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @NonNull
   @Override
-  public CharSequence formatCode(CharSequence input) {
-    return new CodeFormatProvider(getSettings()).format(input);
+  public CharSequence formatCode(FormatCodeParams params) {
+    return new CodeFormatProvider(getSettings()).format(params);
   }
 
   @NonNull
@@ -302,16 +308,19 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public void onFileOpened(DocumentOpenEvent event) {
     onFileSelected(event.getOpenedFile());
-    ensureAnalyzeTimerStarted();
     FileStore.open(event);
+    startOrRestartAnalyzeTimer();
   }
 
   @Override
   public void onContentChange(@NonNull DocumentChangeEvent event) {
     // If a file's content is changed, it is definitely visible to user.
     onFileSelected(event.getChangedFile());
-    ensureAnalyzeTimerStarted();
     FileStore.change(event);
+    if (compilerService != null) {
+      compilerService.onContentChanged(event);
+    }
+    startOrRestartAnalyzeTimer();
   }
 
   @Override
@@ -329,11 +338,30 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     this.selectedFile = path;
   }
 
-  private void ensureAnalyzeTimerStarted() {
-    if (!this.analyzeTimer.isStarted()) {
-      this.analyzeTimer.start();
+  @Override
+  public boolean handleFailure(final LSPFailure failure) {
+    //noinspection SwitchStatementWithTooFewBranches
+    switch (failure.getType()) {
+      case COMPLETION:
+        if (CancelAbort.isCancelled(failure.getError())
+            || CompilationCancellationException.isCancelled(failure.getError())) {
+          return true;
+        }
+
+        if (compilerService != null) {
+          compilerService.close();
+        }
+        return true;
+    }
+
+    return false;
+  }
+
+  private void startOrRestartAnalyzeTimer() {
+    if (!this.timer.isStarted()) {
+      this.timer.start();
     } else {
-      this.analyzeTimer.restart();
+      this.timer.restart();
     }
   }
 }

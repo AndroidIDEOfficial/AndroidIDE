@@ -21,7 +21,7 @@ import java.io.File
 import java.io.Serializable
 
 /**
- * A source directory of an [IdeJavaModule].
+ * A source directory of an [JavaModule].
  *
  * @author Akash Yadav
  */

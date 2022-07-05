@@ -50,10 +50,10 @@ dependencies {
     implementation androidx.appcompat
     implementation androidx.ktx
     implementation common.kotlin
+    implementation common.utilcode
     implementation google.material
     
-    api project (':build-tools:tooling-api-model')
-    
+    compileOnly project (':build-tools:projects')
     compileOnly project (':xml-inflater')
     compileOnly project (':actions')
     compileOnly project (':common')

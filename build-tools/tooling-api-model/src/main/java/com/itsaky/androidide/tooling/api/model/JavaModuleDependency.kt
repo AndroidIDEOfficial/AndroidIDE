@@ -21,7 +21,7 @@ import java.io.File
 import java.io.Serializable
 
 /**
- * Dependency of an [IdeJavaModule].
+ * Dependency of an [JavaModule].
  *
  * @author Akash Yadav
  */

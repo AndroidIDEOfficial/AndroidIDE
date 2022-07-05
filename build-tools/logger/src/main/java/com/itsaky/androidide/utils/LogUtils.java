@@ -36,6 +36,14 @@ class LogUtils {
    */
   public static boolean isJvm() {
     try {
+      // If we're in a testing environment
+      Class.forName("org.junit.runners.JUnit4");
+      return true;
+    } catch (ClassNotFoundException e) {
+      // ignored
+    }
+
+    try {
       Class.forName("android.content.Context");
       return false;
     } catch (ClassNotFoundException e) {
