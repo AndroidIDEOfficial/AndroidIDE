@@ -27,7 +27,7 @@ import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.atomic.*
 import java.util.function.*
-import org.netbeans.lib.nbjavac.services.CancelAbort
+import com.itsaky.androidide.javac.services.CancelAbort
 
 /**
  * Code analyzer for java source code.
@@ -69,7 +69,7 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
         compiler.compile(file).get { task -> doAnalyze(file, task) }
       } catch (err: Throwable) {
 
-        if (isCancelled(err) || CancelAbort.isCancelled(err)) {
+        if (isCancelled(err) || com.itsaky.androidide.javac.services.CancelAbort.isCancelled(err)) {
           throw err
         }
 

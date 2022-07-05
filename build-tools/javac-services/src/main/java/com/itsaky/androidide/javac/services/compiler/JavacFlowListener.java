@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.compiler;
+package com.itsaky.androidide.javac.services.compiler;
 
 import androidx.annotation.NonNull;
 

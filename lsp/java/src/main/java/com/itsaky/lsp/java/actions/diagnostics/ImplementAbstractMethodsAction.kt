@@ -23,7 +23,7 @@ import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.ImplementAbstractMethods
-import com.itsaky.lsp.java.utils.JavaDiagnosticUtils
+import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.lsp.models.DiagnosticItem
 import java.io.File
 import javax.tools.Diagnostic

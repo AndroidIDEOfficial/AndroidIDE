@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.compiler;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
+import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;

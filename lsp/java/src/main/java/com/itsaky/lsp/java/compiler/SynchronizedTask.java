@@ -38,9 +38,6 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.CompilationCancellationException;
-import com.sun.tools.javac.api.JavacTaskImpl;
-
-import org.netbeans.lib.nbjavac.services.CancelService;
 
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;

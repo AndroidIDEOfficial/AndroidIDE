@@ -16,11 +16,21 @@
  */
 
 // Forked from JavacTaskImpl
-package com.itsaky.lsp.java.compiler;
+package com.itsaky.androidide.javac.services.compiler;
 
+import com.itsaky.androidide.javac.services.CancelService;
+import com.itsaky.androidide.javac.services.NBAttr;
+import com.itsaky.androidide.javac.services.NBClassFinder;
+import com.itsaky.androidide.javac.services.NBEnter;
+import com.itsaky.androidide.javac.services.NBJavaCompiler;
+import com.itsaky.androidide.javac.services.NBJavacTrees;
+import com.itsaky.androidide.javac.services.NBLog;
+import com.itsaky.androidide.javac.services.NBMemberEnter;
+import com.itsaky.androidide.javac.services.NBParserFactory;
+import com.itsaky.androidide.javac.services.NBResolve;
+import com.itsaky.androidide.javac.services.NBTreeMaker;
+import com.itsaky.androidide.javac.services.util.JavacTaskUtil;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.java.utils.JavacTaskUtil;
-import com.itsaky.lsp.java.utils.TestUtils;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
@@ -46,21 +56,7 @@ import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
 import com.sun.tools.javac.util.Log;
 
-import org.netbeans.lib.nbjavac.services.CancelService;
-import org.netbeans.lib.nbjavac.services.NBAttr;
-import org.netbeans.lib.nbjavac.services.NBClassFinder;
-import org.netbeans.lib.nbjavac.services.NBEnter;
-import org.netbeans.lib.nbjavac.services.NBJavaCompiler;
-import org.netbeans.lib.nbjavac.services.NBJavacTrees;
-import org.netbeans.lib.nbjavac.services.NBLog;
-import org.netbeans.lib.nbjavac.services.NBMemberEnter;
-import org.netbeans.lib.nbjavac.services.NBParserFactory;
-import org.netbeans.lib.nbjavac.services.NBResolve;
-import org.netbeans.lib.nbjavac.services.NBTreeMaker;
-
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -127,7 +123,7 @@ public class ReusableCompiler {
    * @throws IllegalArgumentException if any of the options are invalid, or if any of the given
    *     compilation units are of other kind than {@linkplain JavaFileObject.Kind#SOURCE source}
    */
-  Borrow getTask(
+  public Borrow getTask(
       JavaFileManager fileManager,
       DiagnosticListener<? super JavaFileObject> diagnosticListener,
       Iterable<String> options,
@@ -221,10 +217,6 @@ public class ReusableCompiler {
       NBMemberEnter.preRegister(this, false);
       NBClassFinder.preRegister(this);
       CancelService.preRegister(this, cancelService);
-
-      if (!TestUtils.isTestEnvironment()) {
-        put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
-      }
     }
 
     @Override
@@ -280,7 +272,7 @@ public class ReusableCompiler {
      * Reusable JavaCompiler; exposes a method to clean up the component from leftovers associated
      * with previous compilations.
      */
-    static class ReusableJavaCompiler extends NBJavaCompiler {
+    public static class ReusableJavaCompiler extends NBJavaCompiler {
 
       static final Factory<JavaCompiler> factory = ReusableJavaCompiler::new;
 
@@ -347,10 +339,10 @@ public class ReusableCompiler {
     }
   }
 
-  class Borrow implements AutoCloseable {
+  public class Borrow implements AutoCloseable {
 
-    final JavacTaskImpl task;
-    boolean closed;
+    public final JavacTaskImpl task;
+    public boolean closed;
 
     Borrow(JavacTaskImpl task) {
       this.task = task;

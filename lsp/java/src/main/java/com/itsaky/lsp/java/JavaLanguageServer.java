@@ -60,7 +60,7 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.LSPEditorActions;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 
-import org.netbeans.lib.nbjavac.services.CancelAbort;
+import com.itsaky.androidide.javac.services.CancelAbort;
 
 import java.nio.file.Path;
 import java.util.Collections;

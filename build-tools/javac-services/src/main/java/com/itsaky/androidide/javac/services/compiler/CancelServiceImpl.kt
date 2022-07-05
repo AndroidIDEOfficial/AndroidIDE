@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.compiler
+package com.itsaky.androidide.javac.services.compiler
 
+import com.itsaky.androidide.javac.services.CancelService
 import com.itsaky.androidide.utils.ILogger
-import org.netbeans.lib.nbjavac.services.CancelService
 import java.util.concurrent.atomic.*
 
 /**

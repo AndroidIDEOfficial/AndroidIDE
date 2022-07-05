@@ -22,6 +22,7 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;

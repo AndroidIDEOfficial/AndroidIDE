@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.utils
+package com.itsaky.androidide.javac.services.util
 
 import com.sun.tools.javac.api.ClientCodeWrapper
 import com.sun.tools.javac.util.JCDiagnostic
