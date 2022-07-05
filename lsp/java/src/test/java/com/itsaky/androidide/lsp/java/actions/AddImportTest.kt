@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.actions
+package com.itsaky.androidide.lsp.java.actions
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.java.BaseJavaTest
+import com.itsaky.androidide.lsp.java.BaseJavaTest
 import com.itsaky.lsp.java.actions.diagnostics.AddImportAction
 import org.junit.Test
 import org.junit.runner.RunWith

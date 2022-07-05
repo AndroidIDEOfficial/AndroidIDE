@@ -15,13 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java
+package com.itsaky.androidide.lsp.java
 
-import com.itsaky.lsp.api.CursorDependentTest
 import com.itsaky.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.api.LanguageServerProvider
+import com.itsaky.lsp.java.JavaLanguageServer
 
-/** @author Akash Yadav */
-open class BaseJavaTest : CursorDependentTest() {
-  protected val mServer = JavaLanguageServerProvider.INSTANCE.server()
-  override fun getServer(): ILanguageServer = mServer
+class JavaLanguageServerProvider : LanguageServerProvider() {
+  private val server: JavaLanguageServer = JavaLanguageServer()
+  override fun getServer(): ILanguageServer {
+    return server
+  }
+
+  companion object {
+    @JvmStatic val INSTANCE: LanguageServerProvider = JavaLanguageServerProvider()
+  }
 }

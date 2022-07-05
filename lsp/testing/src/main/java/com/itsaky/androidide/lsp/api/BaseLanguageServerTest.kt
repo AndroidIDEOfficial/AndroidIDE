@@ -14,10 +14,11 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.api
+package com.itsaky.androidide.lsp.api
 
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.lsp.api.ILanguageServer
 import com.itsaky.lsp.models.DocumentOpenEvent
 import org.robolectric.RuntimeEnvironment
 import java.nio.file.Path

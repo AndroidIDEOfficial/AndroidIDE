@@ -15,11 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.xml.providers
+package com.itsaky.androidide.lsp.xml.providers
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.models.CompletionParams
-import com.itsaky.lsp.xml.BaseXMLTest
+import com.itsaky.androidide.lsp.xml.BaseXMLTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

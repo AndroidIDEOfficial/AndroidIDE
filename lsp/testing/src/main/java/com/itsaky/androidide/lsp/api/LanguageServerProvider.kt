@@ -14,11 +14,12 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.api
+package com.itsaky.androidide.lsp.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.lsp.api.FileProvider.Companion.resources
+import com.itsaky.androidide.lsp.api.FileProvider.Companion.resources
+import com.itsaky.lsp.api.ILanguageServer
 import com.itsaky.lsp.models.InitializeParams
 import org.jetbrains.annotations.Contract
 import java.io.File

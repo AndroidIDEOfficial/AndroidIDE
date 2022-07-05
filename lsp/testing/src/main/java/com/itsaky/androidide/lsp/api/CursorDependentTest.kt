@@ -14,14 +14,13 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.api
+package com.itsaky.androidide.lsp.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
-import com.itsaky.lsp.models.Range.Companion
 import io.github.rosemoe.sora.text.Content
 
 /**

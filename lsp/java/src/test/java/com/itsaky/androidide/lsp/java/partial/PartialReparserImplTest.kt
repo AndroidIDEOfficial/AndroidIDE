@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.partial
+package com.itsaky.androidide.lsp.java.partial
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.java.BaseJavaTest
+import com.itsaky.androidide.lsp.java.BaseJavaTest
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.compiler.SourceFileObject
 import com.itsaky.lsp.java.models.CompilationRequest

@@ -15,12 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.xml;
+package com.itsaky.androidide.lsp.xml;
 
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.projects.api.AndroidModule;
-import com.itsaky.lsp.api.CursorDependentTest;
+import com.itsaky.androidide.lsp.api.CursorDependentTest;
 import com.itsaky.lsp.api.ILanguageServer;
 
 import org.mockito.Mockito;

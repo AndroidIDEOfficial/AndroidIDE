@@ -14,34 +14,22 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.api
+package com.itsaky.androidide.lsp.api.util
 
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
-import com.itsaky.lsp.api.util.ReflectiveLogListener
-import java.util.*
 
-/**
- * This class provides an efficient way to log messages.
- *
- * @author Akash Yadav
- */
-abstract class LoggingTest : BaseLanguageServerTest() {
-  companion object {
-    private var logListener: ReflectiveLogListener? = null
-
-    init {
-      logListener = ReflectiveLogListener(LoggingTest::class.java)
-      ILogger.addLogListener(logListener)
-    }
-
-    @Suppress("unused")
-    @JvmStatic
-    fun log(priority: Priority, tag: String, message: String) {
-      System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", priority, tag, message)
-      println()
-    }
+/** @author Akash Yadav */
+class ReflectiveLogListener(private val receiver: Class<out Any>) : ILogger.LogListener {
+  override fun log(priority: Priority, tag: String, message: String) {
+    val method =
+      receiver.getDeclaredMethod(
+        "log",
+        Priority::class.java,
+        String::class.java,
+        String::class.java
+      )
+    method.isAccessible = true
+    method.invoke(null, priority, tag, message)
   }
-
-  @Suppress("PropertyName") @JvmField protected val LOG = ILogger.newInstance(javaClass.simpleName)
 }

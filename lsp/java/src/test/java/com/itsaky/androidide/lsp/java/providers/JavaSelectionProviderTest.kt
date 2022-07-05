@@ -14,10 +14,10 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.java.providers
+package com.itsaky.androidide.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.java.BaseJavaTest
+import com.itsaky.androidide.lsp.java.BaseJavaTest
 import com.itsaky.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.itsaky.lsp.models.ExpandSelectionParams
