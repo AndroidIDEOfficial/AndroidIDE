@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.compiler;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
+import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.tools.javac.api.JavacTaskImpl;
 

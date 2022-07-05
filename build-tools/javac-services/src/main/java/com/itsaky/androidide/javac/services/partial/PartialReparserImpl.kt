@@ -15,14 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.partial
+package com.itsaky.androidide.javac.services.partial
 
+import com.itsaky.androidide.javac.services.compiler.JavacFlowListener
+import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor
+import com.itsaky.androidide.javac.services.visitors.TranslateMethodPositionsVisitor
+import com.itsaky.androidide.javac.services.visitors.UnEnter
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
-import com.itsaky.androidide.javac.services.compiler.JavacFlowListener
-import com.itsaky.lsp.java.visitors.FindAnonymousVisitor
-import com.itsaky.lsp.java.visitors.TranslateMethodPositionsVisitor
-import com.itsaky.lsp.java.visitors.UnEnter
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
@@ -328,16 +328,29 @@ class PartialReparserImpl : PartialReparser {
     pos: Int,
     endPositions: EndPosTable?,
   ): JavacParser {
-    val factory = com.itsaky.androidide.javac.services.NBParserFactory.instance(context) as com.itsaky.androidide.javac.services.NBParserFactory
+    val factory =
+      com.itsaky.androidide.javac.services.NBParserFactory.instance(context)
+        as com.itsaky.androidide.javac.services.NBParserFactory
     val scannerFactory = ScannerFactory.instance(context)
     val cancelService = com.itsaky.androidide.javac.services.CancelService.instance(context)
     val lexer = scannerFactory.newScanner(buf, true)
-    if (endPositions is com.itsaky.androidide.javac.services.NBParserFactory.NBJavacParser.EndPosTableImpl) {
+    if (
+      endPositions
+        is com.itsaky.androidide.javac.services.NBParserFactory.NBJavacParser.EndPosTableImpl
+    ) {
       endPositions.resetErrorEndPos()
     }
 
     return object :
-      com.itsaky.androidide.javac.services.NBParserFactory.NBJavacParser(factory, lexer, true, false, true, false, cancelService) {
+      com.itsaky.androidide.javac.services.NBParserFactory.NBJavacParser(
+        factory,
+        lexer,
+        true,
+        false,
+        true,
+        false,
+        cancelService
+      ) {
       override fun newEndPosTable(keepEndPositions: Boolean): AbstractEndPosTable {
         return object : AbstractEndPosTable(this) {
           override fun storeEnd(tree: JCTree?, endpos: Int) {

@@ -26,7 +26,7 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
-import com.itsaky.lsp.java.partial.DiagnosticListenerImpl;
+import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;

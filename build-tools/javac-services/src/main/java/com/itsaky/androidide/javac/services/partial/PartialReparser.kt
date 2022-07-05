@@ -15,23 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.partial
+package com.itsaky.androidide.javac.services.partial
 
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.tools.javac.api.JavacTaskImpl
-import com.sun.tools.javac.api.JavacTrees
-import javax.tools.DiagnosticListener
-import javax.tools.JavaFileObject
+import com.sun.source.util.TreePath
 
 /**
- * Information about a compilation.
+ * A parser reparser parses part of code.
  *
  * @author Akash Yadav
  */
-data class CompilationInfo(
-  @JvmField val task: JavacTaskImpl,
-  @JvmField val diagnosticListener: DiagnosticListener<JavaFileObject>,
-  @JvmField val cu: CompilationUnitTree,
-) {
-  val trees: JavacTrees = JavacTrees.instance(task)
+interface PartialReparser {
+  fun reparseMethod(ci: CompilationInfo, methodPath: TreePath, newBody: String, fileContents: CharSequence): Boolean
 }

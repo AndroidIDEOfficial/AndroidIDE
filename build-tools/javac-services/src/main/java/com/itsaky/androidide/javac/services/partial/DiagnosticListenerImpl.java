@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.partial;
+package com.itsaky.androidide.javac.services.partial;
 
 import androidx.annotation.Nullable;
 

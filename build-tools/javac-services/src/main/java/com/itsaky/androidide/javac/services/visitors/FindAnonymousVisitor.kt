@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java.visitors
+package com.itsaky.androidide.javac.services.visitors
 
-import com.itsaky.lsp.java.visitors.FindAnonymousVisitor.Mode.CHECK
-import com.itsaky.lsp.java.visitors.FindAnonymousVisitor.Mode.COLLECT
+import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor.Mode.CHECK
+import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor.Mode.COLLECT
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree
