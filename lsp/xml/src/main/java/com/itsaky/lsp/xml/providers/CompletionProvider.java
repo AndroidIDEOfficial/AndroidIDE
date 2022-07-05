@@ -35,7 +35,7 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
-import com.itsaky.lsp.xml.R;
+import com.itsaky.androidide.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
 
