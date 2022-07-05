@@ -83,6 +83,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
+import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.NonEditableEditorFragment;
@@ -95,6 +96,14 @@ import com.itsaky.androidide.handlers.FileTreeActionHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
+import com.itsaky.androidide.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.InitializeParams;
+import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.ApkMetadata;
@@ -124,16 +133,9 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
-import com.itsaky.androidide.lsp.java.JavaLanguageServer;
-import com.itsaky.androidide.lsp.java.models.JavaServerConfiguration;
-import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
-import com.itsaky.androidide.lsp.models.DiagnosticItem;
-import com.itsaky.androidide.lsp.models.InitializeParams;
-import com.itsaky.androidide.lsp.models.Range;
-import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.toaster.Toaster;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -869,6 +871,9 @@ public class EditorActivity extends StudioActivity
   protected void onProjectInitialized() {
     ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
     ProjectManager.INSTANCE.notifyProjectUpdate();
+
+    dispatchProjectInitialized();
+
     ThreadUtils.runOnUiThread(
         () -> {
           if (mBinding == null) {
@@ -885,6 +890,12 @@ public class EditorActivity extends StudioActivity
 
           mFindInProjectDialog = null; // Create the dialog again if needed
         });
+  }
+
+  protected void dispatchProjectInitialized() {
+    final var event = new ProjectInitializedEvent();
+    event.put(Project.class, ProjectManager.INSTANCE.getRootProject());
+    EventBus.getDefault().post(event);
   }
 
   private void initialSetup() {
