@@ -90,7 +90,7 @@ abstract class ModuleProject(
   abstract fun getCompileModuleProjects(): List<ModuleProject>
 
   /** Finds the source files from source directories and indexes them. */
-  fun indexSources() {
+  fun indexSourcesAndClasspaths() {
     getCompileSourceDirectories().forEach {
       val sourceDir = it
       val sourceDirLength = sourceDir.absolutePath.length

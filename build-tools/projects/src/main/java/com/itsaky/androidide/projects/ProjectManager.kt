@@ -17,6 +17,7 @@
 package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
@@ -43,6 +44,9 @@ object ProjectManager {
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
+      this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
+        it.indexSourcesAndClasspaths()
+      }
     }
   }
 
@@ -58,7 +62,7 @@ object ProjectManager {
   }
 
   fun getProjectDir(): File {
-      return File(getProjectDirPath())
+    return File(getProjectDirPath())
   }
 
   fun getProjectDirPath(): String {

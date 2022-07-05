@@ -150,7 +150,7 @@ class ModuleProjectTest {
     assertThat(javaLibSourceDirs).isNotEmpty()
     assertThat(javaLibSourceDirs).contains(File(rootDir, "java-library/src/main/java"))
 
-    app.indexSources()
+    app.indexSourcesAndClasspaths()
 
     val classNames = app.compileSourceClasses.findClassNames("com.itsaky")
     assertThat(classNames).isNotNull()
