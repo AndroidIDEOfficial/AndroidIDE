@@ -26,9 +26,9 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.models.ActiveDocument
-import com.itsaky.androidide.utils.BootstrapClassesProvider
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.utils.BootstrapClassesProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedInputStream
 import java.io.BufferedReader
@@ -201,12 +201,9 @@ object ProjectManager : EventReceiver {
       return getLastModifiedFromDisk(file)
     }
 
-    if (isDocumentActive(file)) {
-      val project = findModuleForFile(file) ?: return getLastModifiedFromDisk(file)
-      val source = project.compileJavaSourceClasses.findSource(file)
-      if (source != null) {
-        return source.modified
-      }
+    val document = getActiveDocument(file)
+    if (document != null) {
+      return document.modified
     }
 
     return getLastModifiedFromDisk(file)
@@ -229,14 +226,12 @@ object ProjectManager : EventReceiver {
     if (!checkInit()) {
       return createFileReader(file)
     }
-
-    if (isDocumentActive(file)) {
-      val document = getActiveDocument(file)
-      if (document != null) {
-        return BufferedReader(StringReader(document.content))
-      }
+  
+    val document = getActiveDocument(file)
+    if (document != null) {
+      return BufferedReader(StringReader(document.content))
     }
-
+    
     return createFileReader(file)
   }
 
@@ -244,12 +239,10 @@ object ProjectManager : EventReceiver {
     if (!checkInit()) {
       return createFileInputStream(file)
     }
-
-    if (isDocumentActive(file)) {
-      val document = getActiveDocument(file)
-      if (document != null) {
-        BufferedInputStream(document.content.byteInputStream())
-      }
+  
+    val document = getActiveDocument(file)
+    if (document != null) {
+      BufferedInputStream(document.content.byteInputStream())
     }
 
     return createFileInputStream(file)

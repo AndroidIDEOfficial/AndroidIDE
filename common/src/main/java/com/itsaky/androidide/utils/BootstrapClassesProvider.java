@@ -19,8 +19,6 @@ package com.itsaky.androidide.utils;
 
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.ILogger;
-
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -72,7 +70,12 @@ public class BootstrapClassesProvider {
             sCachedClasses.add(qualifiedName);
           }
         }
-        LOG.info("Found", sCachedClasses.size(), "classes in bootstrap classpath");
+        LOG.info(
+            "Found",
+            sCachedClasses.size(),
+            "classes in bootstrap classpath in",
+            System.currentTimeMillis() - start,
+            "ms");
       } catch (IOException io) {
         LOG.error("An error occurred while listing classes from bootstrap classpath", io);
       }

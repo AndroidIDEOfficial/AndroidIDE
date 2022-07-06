@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects.models
 
 import com.itsaky.androidide.models.Range
 import java.nio.file.Path
+import java.time.Instant
 
 /**
  * A document that is opened in the editor.
@@ -30,5 +31,6 @@ open class ActiveDocument(
   val content: String,
   val changeRange: Range,
   var changDelta: Int,
-  val version: Int
+  val version: Int,
+  val modified: Instant
 )

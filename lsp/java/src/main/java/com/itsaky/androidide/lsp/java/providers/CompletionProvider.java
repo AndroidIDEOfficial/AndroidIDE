@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ReflectUtils;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.api.AbstractServiceProvider;
 import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.IServerSettings;
@@ -45,6 +44,7 @@ import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;

@@ -36,6 +36,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLClassLoader
 import java.nio.file.Path
+import java.time.Instant
 import java.util.concurrent.*
 
 /**
@@ -177,10 +178,10 @@ abstract class ModuleProject(
           count++
         }
     }
-    
+
     log.debug("Sources indexed for project: '$path'. Found $count source files.")
     count = 0
-    
+
     val urls =
       getCompileClasspaths().filter { it.exists() }.map { toUrl(it.toPath()) }.toTypedArray()
     val loader = URLClassLoader(urls, null)
@@ -191,7 +192,7 @@ abstract class ModuleProject(
       log.warn("Unable to read classpaths for project:", path)
       throw RuntimeException(e)
     }
-    
+
     log.debug("Classpaths indexed for project:", path)
     scanner.topLevelClasses.forEach {
       this.compileClasspathClasses.append(it.name)
@@ -262,7 +263,8 @@ abstract class ModuleProject(
       content = event.text,
       changeRange = Range.NONE,
       version = event.version,
-      changDelta = 0
+      changDelta = 0,
+      modified = Instant.now()
     )
   }
 
@@ -272,7 +274,8 @@ abstract class ModuleProject(
       content = event.newText,
       changeRange = event.changeRange,
       version = event.version,
-      changDelta = event.changeDelta
+      changDelta = event.changeDelta,
+      modified = Instant.now()
     )
   }
 
