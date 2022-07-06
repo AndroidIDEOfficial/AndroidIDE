@@ -118,7 +118,7 @@ abstract class ModuleProject(
     if (!isCacheable(event.openedFile) || !isFromThisModule(event.openedFile)) {
       return false
     }
-    log.debug("File ${event.file} opened from module:", path)
+
     activeDocuments[event.openedFile.normalize()] = createDocument(event)
     return true
   }
@@ -161,19 +161,26 @@ abstract class ModuleProject(
     return this.activeDocuments[file.normalize()]
   }
 
-  // TODO implement this as replacement of FileStore.javaSources
   /** Finds the source files and classes from source directories and classpaths and indexes them. */
   fun indexSourcesAndClasspaths() {
-    log.debug("Starting to index sources and classpaths for project:", path)
+    log.info("Indexing sources and classpaths for project:", path)
+
+    var count = 0
     getCompileSourceDirectories().forEach {
       val sourceDir = it.toPath()
       it
         .walk()
         .filter { file -> file.isFile && file.exists() && DocumentUtils.isJavaFile(file.toPath()) }
         .map { file -> file.toPath() }
-        .forEach { file -> this.compileJavaSourceClasses.append(file, sourceDir) }
+        .forEach { file ->
+          this.compileJavaSourceClasses.append(file, sourceDir)
+          count++
+        }
     }
-    log.debug("Sources indexed for project:", path)
+    
+    log.debug("Sources indexed for project: '$path'. Found $count source files.")
+    count = 0
+    
     val urls =
       getCompileClasspaths().filter { it.exists() }.map { toUrl(it.toPath()) }.toTypedArray()
     val loader = URLClassLoader(urls, null)
@@ -184,14 +191,14 @@ abstract class ModuleProject(
       log.warn("Unable to read classpaths for project:", path)
       throw RuntimeException(e)
     }
+    
     log.debug("Classpaths indexed for project:", path)
-    var count = 0
     scanner.topLevelClasses.forEach {
       this.compileClasspathClasses.append(it.name)
       count++
     }
 
-    log.debug("Found $count classes in classpath of project '${this.path}'")
+    log.debug("Classpaths indexed for project: '$path'. Found $count classpaths.")
   }
 
   fun getSourceFilesInDir(dir: Path): List<SourceNode> =

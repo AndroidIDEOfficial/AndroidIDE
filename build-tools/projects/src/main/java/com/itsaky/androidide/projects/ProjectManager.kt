@@ -264,14 +264,12 @@ object ProjectManager : EventReceiver {
       return
     }
 
-    log.debug("Dispatching document open event to submodules...")
     for (subModule in this.rootProject!!.subModules) {
       if (subModule !is ModuleProject) {
         continue
       }
-      
+
       if (subModule.onDocumentOpen(event)) {
-        log.debug("DocumentOpenEvent consumed by '${subModule.path}'")
         break
       }
     }
@@ -284,14 +282,12 @@ object ProjectManager : EventReceiver {
       return
     }
 
-    log.debug("Dispatching document close event to submodules...")
     for (subModule in this.rootProject!!.subModules) {
       if (subModule !is ModuleProject) {
         continue
       }
 
       if (subModule.onDocumentClose(event)) {
-        log.debug("DocumentCloseEvent consumed by '${subModule.path}'")
         break
       }
     }
@@ -304,14 +300,12 @@ object ProjectManager : EventReceiver {
       return
     }
 
-    log.debug("Dispatching document change event to submodules...")
     for (subModule in this.rootProject!!.subModules) {
       if (subModule !is ModuleProject) {
         continue
       }
 
       if (subModule.onDocumentChanged(event)) {
-        log.debug("DocumentChangeEvent consumed by '${subModule.path}'")
         break
       }
     }

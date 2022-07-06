@@ -38,16 +38,16 @@ import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -376,7 +376,6 @@ public class CodeEditorView extends FrameLayout {
 
   private void notifySaved() {
     binding.editor.dispatchDocumentSaveEvent();
-
     if (Objects.requireNonNull(getFile()).getName().endsWith(".xml")) {
       ValuesTableFactory.syncWithFile(getFile());
     }
