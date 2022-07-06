@@ -26,6 +26,7 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.models.ActiveDocument
+import com.itsaky.androidide.projects.util.BootstrapClassesProvider
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger
@@ -37,6 +38,7 @@ import java.io.StringReader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
+import java.util.concurrent.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.BACKGROUND
@@ -256,6 +258,13 @@ object ProjectManager : EventReceiver {
   //////////////////////////////////////////////////////////////////////////////////////////
   ////// TODO Subscribe to file creation/deletion/rename events and update source map //////
   //////////////////////////////////////////////////////////////////////////////////////////
+
+  override fun register() {
+    super.register()
+
+    // Make sure we list and store the bootstrap classes
+    CompletableFuture.runAsync { BootstrapClassesProvider.bootstrapClasses() }
+  }
 
   @Subscribe(threadMode = BACKGROUND)
   @Suppress("unused")

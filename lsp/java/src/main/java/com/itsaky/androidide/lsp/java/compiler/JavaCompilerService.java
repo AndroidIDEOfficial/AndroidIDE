@@ -29,12 +29,12 @@ import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.utils.Extractors;
-import com.itsaky.androidide.lsp.java.utils.ScanClassPath;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.models.ActiveDocument;
+import com.itsaky.androidide.projects.util.BootstrapClassesProvider;
 import com.itsaky.androidide.projects.util.Cache;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
@@ -76,9 +76,9 @@ public class JavaCompilerService implements CompilerProvider {
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
 
-  protected final ScanClassPath classPathScanner = new ScanClassPath();
   protected final Set<Path> classPath;
-  protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(), classPathClasses;
+  protected final Set<String> classPathClasses;
+  protected final Set<String> jdkClasses = BootstrapClassesProvider.bootstrapClasses();
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
   protected final Cache<Void, List<String>> cacheFileImports = new Cache<>();
@@ -94,15 +94,16 @@ public class JavaCompilerService implements CompilerProvider {
   // It is marked as nullable just for some special cases like tests
   public JavaCompilerService(@Nullable ModuleProject module) {
     this.module = module;
+    this.fileManager = new SourceFileManager(module);
     if (module == null) {
       this.classPath = Collections.unmodifiableSet(Collections.emptySet());
+      this.classPathClasses = Collections.emptySet();
     } else {
       this.classPath =
           Collections.unmodifiableSet(
               module.getCompileClasspaths().stream().map(File::toPath).collect(Collectors.toSet()));
+      this.classPathClasses = module.compileClasspathClasses.allClassNames();
     }
-    this.classPathClasses = classPathScanner.classPathTopLevelClasses(classPath);
-    this.fileManager = new SourceFileManager(module);
   }
 
   public ModuleProject getModule() {
