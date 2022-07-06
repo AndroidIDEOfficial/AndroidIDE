@@ -70,6 +70,8 @@ import javax.tools.StandardLocation;
 
 public class JavaCompilerService implements CompilerProvider {
 
+  public static JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
+
   private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
@@ -89,7 +91,7 @@ public class JavaCompilerService implements CompilerProvider {
   private CompileBatch cachedCompile;
 
   // The module project must not be null
-  // It is marked as nullable just to work with tests
+  // It is marked as nullable just for some special cases like tests
   public JavaCompilerService(@Nullable ModuleProject module) {
     this.module = module;
     if (module == null) {

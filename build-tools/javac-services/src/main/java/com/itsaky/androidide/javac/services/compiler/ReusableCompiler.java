@@ -31,7 +31,6 @@ import com.itsaky.androidide.javac.services.NBResolve;
 import com.itsaky.androidide.javac.services.NBTreeMaker;
 import com.itsaky.androidide.javac.services.util.JavacTaskUtil;
 import com.itsaky.androidide.utils.ILogger;
-import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
@@ -39,7 +38,6 @@ import com.sun.tools.javac.api.JavacTaskImpl;
 import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.api.MultiTaskListener;
-import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Types;
 import com.sun.tools.javac.comp.Annotate;
 import com.sun.tools.javac.comp.Check;
@@ -49,7 +47,6 @@ import com.sun.tools.javac.comp.Modules;
 import com.sun.tools.javac.main.Arguments;
 import com.sun.tools.javac.main.JavaCompiler;
 import com.sun.tools.javac.model.JavacElements;
-import com.sun.tools.javac.model.LazyTreeLoader;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.DefinedBy;
@@ -97,8 +94,8 @@ import javax.tools.JavaFileObject;
 public class ReusableCompiler {
 
   private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
-  private static final JavacTool systemProvider = JavacTool.create();
   private static final CancelService cancelService = new CancelServiceImpl();
+  private final JavacTool systemProvider = JavacTool.create();
   private final List<String> currentOptions = new ArrayList<>();
   private boolean checkedOut;
 
@@ -157,30 +154,6 @@ public class ReusableCompiler {
     task.addTaskListener(currentContext);
 
     return new Borrow(task);
-  }
-
-  private static class IDELazyTreeLoader extends LazyTreeLoader {
-    @Override
-    public boolean loadTreeFor(Symbol.ClassSymbol clazz, boolean persist) {
-      LOG.debug("loadTreeFor:", clazz, persist);
-      return true;
-    }
-
-    @Override
-    public boolean loadParamNames(Symbol.ClassSymbol clazz) {
-      LOG.debug("loadParamNames:", clazz);
-      return true;
-    }
-
-    @Override
-    public void couplingError(Symbol.ClassSymbol clazz, Tree t) {
-      LOG.debug("Coupling error:", clazz, t);
-    }
-
-    @Override
-    public void updateContext(Context context) {
-      LOG.debug("updateContext:", context);
-    }
   }
 
   public static class ReusableContext extends Context implements TaskListener {

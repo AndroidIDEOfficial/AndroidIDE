@@ -116,17 +116,17 @@ public class JavaLanguageServer implements ILanguageServer {
 
   protected JavaCompilerService getCompiler(Path file) {
     if (!DocumentUtils.isJavaFile(file)) {
-      return null;
+      return JavaCompilerService.NO_MODULE_COMPILER;
     }
 
     final Project root = ProjectManager.INSTANCE.getRootProject();
     if (root == null) {
-      return null;
+      return JavaCompilerService.NO_MODULE_COMPILER;
     }
 
     final ModuleProject module = root.findModuleForFile(file);
     if (module == null) {
-      return null;
+      return JavaCompilerService.NO_MODULE_COMPILER;
     }
 
     return JavaCompilerProvider.get(module);
@@ -199,7 +199,11 @@ public class JavaLanguageServer implements ILanguageServer {
   public void configurationChanged(Object newConfiguration) {}
 
   @Override
-  public void setupWithProject(@NonNull final Project project) {}
+  public void setupWithProject(@NonNull final Project project) {
+    // Once we have project initialized
+    // Destory the NO_MODULE_COMPILER instance
+    JavaCompilerService.NO_MODULE_COMPILER.destroy();
+  }
 
   @NonNull
   @Override
