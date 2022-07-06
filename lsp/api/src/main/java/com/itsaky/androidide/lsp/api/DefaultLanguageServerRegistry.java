@@ -20,6 +20,13 @@ package com.itsaky.androidide.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
+import com.itsaky.androidide.projects.api.Project;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -37,6 +44,9 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
 
   @Override
   public void register(@NonNull final ILanguageServer server) {
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
     lock.writeLock().lock();
     try {
       final var old = mRegister.put(server.getServerId(), server);
@@ -64,6 +74,7 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
 
   @Override
   public void destroy() {
+    EventBus.getDefault().unregister(this);
     lock.readLock().lock();
     try {
       for (var server : mRegister.values()) {
@@ -89,6 +100,20 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
       return mRegister.get(serverId);
     } finally {
       lock.readLock().unlock();
+    }
+  }
+
+  @Subscribe(threadMode = ThreadMode.BACKGROUND)
+  @SuppressWarnings("unused")
+  public void onProjectInitialized(ProjectInitializedEvent event) {
+    final var project = event.get(Project.class);
+    if (project == null) {
+      return;
+    }
+
+    LOG.debug("Dispatching ProjectInitializedEvent to language servers...");
+    for (final var server : mRegister.values()) {
+      server.setupWithProject(project);
     }
   }
 }

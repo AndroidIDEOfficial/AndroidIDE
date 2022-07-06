@@ -17,13 +17,13 @@
 
 package com.itsaky.androidide.lsp.java.providers.completion
 
-import com.itsaky.androidide.lsp.java.FileStore
 import com.itsaky.androidide.lsp.java.parser.ParseTask
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.SNIPPET
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
+import com.itsaky.androidide.projects.ProjectManager
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.Tree.Kind.ERRONEOUS
 import java.nio.file.Path
@@ -36,7 +36,10 @@ class TopLevelSnippetsProvider {
     if (!hasTypeDeclaration(task.root)) {
       result.add(classSnippet(file))
       if (task.root.getPackage() == null) {
-        result.add(packageSnippet(file))
+        val packageSnippet = packageSnippet(file)
+        if (packageSnippet != null) {
+          result.add(packageSnippet)
+        }
       }
     }
   }
@@ -56,8 +59,9 @@ class TopLevelSnippetsProvider {
     return snippetItem("class $name", "class $name {\n    $0\n}")
   }
 
-  private fun packageSnippet(file: Path): CompletionItem {
-    val name = FileStore.suggestedPackageName(file)
+  private fun packageSnippet(file: Path): CompletionItem? {
+    val module = ProjectManager.findModuleForFile(file) ?: return null
+    val name = module.suggestPackageName(file)
     return snippetItem("package $name", "package $name;\n\n")
   }
 

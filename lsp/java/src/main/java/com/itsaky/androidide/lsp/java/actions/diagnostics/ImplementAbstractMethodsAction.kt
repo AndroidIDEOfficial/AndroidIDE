@@ -17,15 +17,13 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods
-import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.androidide.lsp.models.DiagnosticItem
-import java.io.File
+import com.itsaky.androidide.utils.ILogger
 import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
@@ -46,12 +44,12 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    val diagnostic = data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!
     if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
       markInvisible()
       return
@@ -71,7 +69,7 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
   override fun execAction(data: ActionData): Any {
     val diagnostic =
       JavaDiagnosticUtils.asJCDiagnostic(
-        data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
+        data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
       )
     return ImplementAbstractMethods(diagnostic!!)
   }
@@ -81,17 +79,7 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
       log.warn("Unable to perform action. Invalid result from execAction(..)")
       return
     }
-
-    val server = data.get(JavaLanguageServer::class.java)!!
-    val client = server.client
-    if (client == null) {
-      log.error("No client set to java language server")
-      return
-    }
-
-    client.performCodeAction(
-      data.get(File::class.java)!!,
-      result.asCodeActions(server.compiler, label)
-    )
+  
+    performCodeAction(data, result)
   }
 }

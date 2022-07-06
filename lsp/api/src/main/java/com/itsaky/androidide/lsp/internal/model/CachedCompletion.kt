@@ -17,11 +17,9 @@
 
 package com.itsaky.androidide.lsp.internal.model
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.models.CompletionParams
-import com.itsaky.androidide.lsp.models.CompletionResult
-import com.itsaky.androidide.lsp.models.Position
-import java.nio.file.Files
+import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Paths
 
 /**
@@ -30,14 +28,24 @@ import java.nio.file.Paths
  * @author Akash Yadav
  */
 class CachedCompletion
-private constructor(val params: CompletionParams, val result: CompletionResult) {
+private constructor(
+  val params: com.itsaky.androidide.lsp.models.CompletionParams,
+  val result: com.itsaky.androidide.lsp.models.CompletionResult
+) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   companion object {
 
     /** Empty cached completion. Could be used to represent "no cache available". */
     @JvmField
-    val EMPTY = cache(CompletionParams(Position.NONE, Paths.get("")), CompletionResult.EMPTY)
+    val EMPTY =
+      cache(
+        com.itsaky.androidide.lsp.models.CompletionParams(
+          com.itsaky.androidide.models.Position.NONE,
+          Paths.get("")
+        ),
+        com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
+      )
 
     /**
      * Creates cached version of the result from the given params and result.
@@ -47,19 +55,21 @@ private constructor(val params: CompletionParams, val result: CompletionResult) 
      * @param result The result of the completion to cache.
      */
     @JvmStatic
-    fun cache(_params: CompletionParams, result: CompletionResult): CachedCompletion {
+    fun cache(
+      _params: com.itsaky.androidide.lsp.models.CompletionParams,
+      result: com.itsaky.androidide.lsp.models.CompletionResult
+    ): CachedCompletion {
       val params =
-        CompletionParams(_params.position, _params.file).apply {
+        com.itsaky.androidide.lsp.models.CompletionParams(_params.position, _params.file).apply {
           prefix = _params.prefix ?: ""
           content = ""
-          module = null
         }
 
       return CachedCompletion(params, result)
     }
   }
 
-  fun canUseCache(params: CompletionParams): Boolean {
+  fun canUseCache(params: com.itsaky.androidide.lsp.models.CompletionParams): Boolean {
     val partial = params.requirePrefix()
     val position = this.params.position
     val file = this.params.file
@@ -87,7 +97,7 @@ private constructor(val params: CompletionParams, val result: CompletionResult) 
       return false
     }
 
-    if (!Files.isSameFile(file, params.file)) {
+    if (!DocumentUtils.isSameFile(file, params.file)) {
       log.info("...no cache available for current file")
       return false
     }

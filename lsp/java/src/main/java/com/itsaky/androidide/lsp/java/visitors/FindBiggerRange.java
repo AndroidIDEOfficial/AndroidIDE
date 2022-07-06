@@ -21,8 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;

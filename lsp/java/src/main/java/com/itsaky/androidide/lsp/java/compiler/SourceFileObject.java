@@ -17,8 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
-import com.itsaky.androidide.lsp.java.FileStore;
 import com.itsaky.androidide.lsp.util.PathUtils;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.util.DocumentUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ public class SourceFileObject implements JavaFileObject {
   }
 
   public SourceFileObject(Path path, String contents, Instant modified) {
-    if (!FileStore.isJavaFile(path)) throw new RuntimeException(path + " is not a java source");
+    if (!DocumentUtils.isJavaFile(path)) throw new RuntimeException(path + " is not a java source");
     this.path = path;
     this.contents = contents;
     this.modified = modified;
@@ -116,7 +117,7 @@ public class SourceFileObject implements JavaFileObject {
       byte[] bytes = contents.getBytes();
       return new ByteArrayInputStream(bytes);
     }
-    return FileStore.inputStream(path);
+    return ProjectManager.INSTANCE.getInputStream(path);
   }
 
   @Override
@@ -129,7 +130,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return new StringReader(contents);
     }
-    return FileStore.bufferedReader(path);
+    return ProjectManager.INSTANCE.getReader(path);
   }
 
   @Override
@@ -137,7 +138,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return contents;
     }
-    return FileStore.contents(path);
+    return ProjectManager.INSTANCE.getDocumentContents(this.path);
   }
 
   @Override
@@ -150,7 +151,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return modified.toEpochMilli();
     }
-    return FileStore.modified(path).toEpochMilli();
+    return ProjectManager.INSTANCE.getLastModified(this.path).toEpochMilli();
   }
 
   @Override

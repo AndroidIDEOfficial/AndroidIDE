@@ -14,30 +14,38 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
-}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
-java {
-    sourceCompatibility = rootProject.ext.javaSourceVersion
-    targetCompatibility = rootProject.ext.javaTargetVersion
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
 
 dependencies {
     implementation common.jkotlin
+    implementation project (path: ':common')
     
     api project (path: ':build-tools:eventbus')
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }

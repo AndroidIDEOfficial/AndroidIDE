@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.java.providers
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.BaseJavaTest
 import com.itsaky.androidide.lsp.models.CompletionParams
-import com.itsaky.androidide.lsp.models.Position
+import com.itsaky.androidide.models.Position
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -75,9 +75,9 @@ class JavaCompletionProviderTest : BaseJavaTest() {
     super.openFile("completion/${fileName}")
   }
 
-  private fun completionTitles(pos: Position): List<CharSequence> {
+  private fun completionTitles(pos: com.itsaky.androidide.models.Position): List<CharSequence> {
     return mServer.completionProvider
-      .complete(CompletionParams(pos, file!!).apply { prefix = "" })
+      .complete(com.itsaky.androidide.lsp.models.CompletionParams(pos, file!!).apply { prefix = "" })
       .items
       .map { it.label }
   }

@@ -22,22 +22,24 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
-import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.StopWatch;
-import com.itsaky.androidide.lsp.java.FileStore;
-import com.itsaky.androidide.lsp.java.models.CompilationRequest;
-import com.itsaky.androidide.lsp.java.parser.ParseTask;
-import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.javac.services.partial.CompilationInfo;
 import com.itsaky.androidide.javac.services.partial.PartialReparser;
 import com.itsaky.androidide.javac.services.partial.PartialReparserImpl;
-import com.itsaky.androidide.lsp.java.utils.Cache;
+import com.itsaky.androidide.lsp.java.models.CompilationRequest;
+import com.itsaky.androidide.lsp.java.parser.ParseTask;
+import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.utils.Extractors;
 import com.itsaky.androidide.lsp.java.utils.ScanClassPath;
-import com.itsaky.androidide.lsp.java.utils.StringSearch;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
-import com.itsaky.androidide.lsp.models.DocumentChangeEvent;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.models.ActiveDocument;
+import com.itsaky.androidide.projects.util.Cache;
+import com.itsaky.androidide.projects.util.SourceClassTrie;
+import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.SourcePositions;
@@ -53,15 +55,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -74,33 +75,36 @@ public class JavaCompilerService implements CompilerProvider {
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
 
   protected final ScanClassPath classPathScanner = new ScanClassPath();
-  protected final Set<Path> classPath, docPath;
+  protected final Set<Path> classPath;
   protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(), classPathClasses;
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
   protected final Cache<Void, List<String>> cacheFileImports = new Cache<>();
   protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final SourceFileManager fileManager;
+  protected final ModuleProject module;
 
   public ReusableCompiler compiler = new ReusableCompiler();
 
   private CompileBatch cachedCompile;
-  private int changeDelta = 0;
 
-  public JavaCompilerService(Set<Path> classPath, Set<Path> docPath) {
-    this.classPath = Collections.unmodifiableSet(classPath);
-    this.docPath = Collections.unmodifiableSet(docPath);
+  // The module project must not be null
+  // It is marked as nullable just to work with tests
+  public JavaCompilerService(@Nullable ModuleProject module) {
+    this.module = module;
+    if (module == null) {
+      this.classPath = Collections.unmodifiableSet(Collections.emptySet());
+    } else {
+      this.classPath =
+          Collections.unmodifiableSet(
+              module.getCompileClasspaths().stream().map(File::toPath).collect(Collectors.toSet()));
+    }
     this.classPathClasses = classPathScanner.classPathTopLevelClasses(classPath);
-    this.fileManager = new SourceFileManager();
+    this.fileManager = new SourceFileManager(module);
   }
 
-  @Override
-  public Set<String> imports() {
-    HashSet<String> all = new HashSet<>();
-    for (Path f : FileStore.all()) {
-      all.addAll(readImports(f));
-    }
-    return all;
+  public ModuleProject getModule() {
+    return module;
   }
 
   private List<String> readImports(Path file) {
@@ -110,11 +114,15 @@ public class JavaCompilerService implements CompilerProvider {
     return cacheFileImports.get(file, null);
   }
 
+  private String packageNameOrEmpty(Path file) {
+    return module != null ? module.packageNameOrEmpty(file) : "";
+  }
+
   private void loadImports(Path file) {
     List<String> list = new ArrayList<>();
-    Pattern importClass = Pattern.compile("^import +([\\w\\.]+\\.\\w+);");
-    Pattern importStar = Pattern.compile("^import +([\\w\\.]+\\.\\*);");
-    try (BufferedReader lines = FileStore.lines(file)) {
+    Pattern importClass = Pattern.compile("^import +([\\w.]+\\.\\w+);");
+    Pattern importStar = Pattern.compile("^import +([\\w.]+\\.\\*);");
+    try (BufferedReader lines = ProjectManager.INSTANCE.getReader(file)) {
       for (String line = lines.readLine(); line != null; line = lines.readLine()) {
         // If we reach a class declaration, stop looking for imports
         // TODO This could be a little more specific
@@ -141,17 +149,10 @@ public class JavaCompilerService implements CompilerProvider {
   @Override
   public List<String> publicTopLevelTypes() {
     List<String> all = new ArrayList<>();
-    for (Path file : FileStore.all()) {
-      String fileName = file.getFileName().toString();
-      if (!fileName.endsWith(".java")) {
-        continue;
-      }
-      String className = fileName.substring(0, fileName.length() - ".java".length());
-      String packageName = FileStore.packageName(file);
-      if (!packageName.isEmpty()) {
-        className = packageName + "." + className;
-      }
-      all.add(className);
+    List<SourceClassTrie.SourceNode> sourceClasses =
+        module != null ? module.compileJavaSourceClasses.allSources() : Collections.emptyList();
+    for (SourceClassTrie.SourceNode node : sourceClasses) {
+      all.add(node.getQualifiedName());
     }
     all.addAll(classPathClasses);
     all.addAll(jdkClasses);
@@ -161,12 +162,6 @@ public class JavaCompilerService implements CompilerProvider {
   @Override
   public List<String> packagePrivateTopLevelTypes(String packageName) {
     return Collections.emptyList();
-  }
-
-  @Override
-  public Iterable<Path> search(String query) {
-    Predicate<Path> test = f -> StringSearch.containsWordMatching(f, query);
-    return () -> FileStore.all().stream().filter(test).iterator();
   }
 
   @Override
@@ -189,9 +184,12 @@ public class JavaCompilerService implements CompilerProvider {
     // optimization.
     String packageName = Extractors.packageName(className);
     String simpleName = Extractors.simpleName(className);
-    for (Path f : FileStore.list(packageName)) {
-      if (containsWord(f, simpleName) && containsType(f, className)) {
-        return f;
+    List<SourceClassTrie.SourceNode> classes =
+        module != null ? module.listClassesFromSourceDirs(packageName) : Collections.emptyList();
+    for (SourceClassTrie.SourceNode node : classes) {
+      final Path path = node.getFile();
+      if (containsWord(path, simpleName) && containsType(path, className)) {
+        return path;
       }
     }
     return NOT_FOUND;
@@ -202,11 +200,14 @@ public class JavaCompilerService implements CompilerProvider {
     String packageName = Extractors.packageName(className);
     String simpleName = Extractors.simpleName(className);
     List<Path> candidates = new ArrayList<>();
-    for (Path f : FileStore.all()) {
-      if (containsWord(f, packageName)
-          && containsImport(f, className)
-          && containsWord(f, simpleName)) {
-        candidates.add(f);
+    List<SourceClassTrie.SourceNode> sourceNodes =
+        module != null ? module.compileJavaSourceClasses.allSources() : Collections.emptyList();
+    for (SourceClassTrie.SourceNode node : sourceNodes) {
+      final Path path = node.getFile();
+      if (containsWord(path, packageName)
+          && containsImport(path, className)
+          && containsWord(path, simpleName)) {
+        candidates.add(path);
       }
     }
 
@@ -222,7 +223,7 @@ public class JavaCompilerService implements CompilerProvider {
 
   private boolean containsImport(Path file, String className) {
     String packageName = Extractors.packageName(className);
-    if (FileStore.packageName(file).equals(packageName)) {
+    if (packageNameOrEmpty(file).equals(packageName)) {
       return true;
     }
     String star = packageName + ".*";
@@ -237,9 +238,12 @@ public class JavaCompilerService implements CompilerProvider {
   @Override
   public Path[] findMemberReferences(String className, String memberName) {
     List<Path> candidates = new ArrayList<>();
-    for (Path f : FileStore.all()) {
-      if (containsWord(f, memberName)) {
-        candidates.add(f);
+    List<SourceClassTrie.SourceNode> sourceNodes =
+        module != null ? module.compileJavaSourceClasses.allSources() : Collections.emptyList();
+    for (SourceClassTrie.SourceNode node : sourceNodes) {
+      final Path path = node.getFile();
+      if (containsWord(path, memberName)) {
+        candidates.add(path);
       }
     }
     return candidates.toArray(new Path[0]);
@@ -285,7 +289,8 @@ public class JavaCompilerService implements CompilerProvider {
         return true;
       }
 
-      if (f.getLastModified() != cachedModified.get(f)) {
+      final Long modified = cachedModified.get(f);
+      if (modified != null && f.getLastModified() != modified) {
         return true;
       }
     }
@@ -338,6 +343,13 @@ public class JavaCompilerService implements CompilerProvider {
     final MethodTree methodTree = (MethodTree) currentMethod.second.getLeaf();
     LOG.debug("Trying to reparse method:", methodTree.getName());
 
+    final int changeDelta;
+    final ActiveDocument document = ProjectManager.INSTANCE.getActiveDocument(file.toPath());
+    if (document != null) {
+      changeDelta = document.getChangDelta();
+    } else {
+      changeDelta = 0;
+    }
     final CompilationInfo info =
         new CompilationInfo(
             cachedCompile.task, cachedCompile.diagnosticListener, cachedCompile.roots.get(0));
@@ -345,7 +357,7 @@ public class JavaCompilerService implements CompilerProvider {
     final SourcePositions sourcePositions = Trees.instance(cachedCompile.task).getSourcePositions();
     final int start = (int) sourcePositions.getStartPosition(info.cu, methodTree.getBody());
     final int end =
-        (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + this.changeDelta;
+        (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + changeDelta;
     watch.lapFromLast("Found start and end positions of current method");
     final PartialReparser reparser = new PartialReparserImpl();
 
@@ -354,7 +366,7 @@ public class JavaCompilerService implements CompilerProvider {
           "Cannot reparse. Invalid change delta. end:",
           end,
           "changeDelta:",
-          this.changeDelta,
+          changeDelta,
           "content.length:",
           request.partialRequest.contents.length());
       recompile(request);
@@ -375,7 +387,10 @@ public class JavaCompilerService implements CompilerProvider {
     LOG.info("Successfully reparsed method", methodTree.getName());
     updateModificationCache(request);
     cachedCompile.updatePositions(info.cu, true);
-    this.changeDelta = 0;
+
+    if (document != null) {
+      document.setChangDelta(0);
+    }
   }
 
   @Nullable
@@ -405,7 +420,6 @@ public class JavaCompilerService implements CompilerProvider {
     close();
     cachedCompile = performCompilation(request.sources);
     updateModificationCache(request);
-    this.changeDelta = 0;
   }
 
   private void updateModificationCache(final CompilationRequest request) {
@@ -438,10 +452,6 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     return new CompileBatch(this, moreSources);
-  }
-
-  public void onContentChanged(@NonNull DocumentChangeEvent event) {
-    this.changeDelta += event.getChangeDelta();
   }
 
   public synchronized void close() {

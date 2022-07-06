@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.java.visitors
 
 import androidx.core.util.Pair
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.models.Position
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.models.Range
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.LineMap
 import com.sun.source.tree.MethodTree
@@ -35,7 +35,7 @@ import com.sun.tools.javac.api.JavacTaskImpl
  * @author Akash Yadav
  */
 class MethodRangeScanner(val task: JavacTaskImpl) :
-  TreePathScanner<Unit, MutableList<Pair<Range, TreePath>>>() {
+  TreePathScanner<Unit, MutableList<Pair<com.itsaky.androidide.models.Range, TreePath>>>() {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -45,14 +45,14 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
 
   override fun visitCompilationUnit(
     node: CompilationUnitTree?,
-    p: MutableList<Pair<Range, TreePath>>?
+    p: MutableList<Pair<com.itsaky.androidide.models.Range, TreePath>>?
   ) {
     this.root = node
     this.lines = node?.lineMap
     return super.visitCompilationUnit(node, p)
   }
 
-  override fun visitMethod(node: MethodTree?, list: MutableList<Pair<Range, TreePath>>) {
+  override fun visitMethod(node: MethodTree?, list: MutableList<Pair<com.itsaky.androidide.models.Range, TreePath>>) {
     val result = super.visitMethod(node, list)
     if (node == null || this.root == null) {
       return result
@@ -66,11 +66,11 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
       return result
     }
 
-    list.add(Pair.create(Range(start!!, end!!), currentPath))
+    list.add(Pair.create(com.itsaky.androidide.models.Range(start!!, end!!), currentPath))
     return result
   }
 
-  fun getStartPosition(node: MethodTree): Position? {
+  fun getStartPosition(node: MethodTree): com.itsaky.androidide.models.Position? {
     val position = this.pos.getStartPosition(this.root!!, node)
     if (position.toInt() == -1) {
       return null
@@ -78,7 +78,7 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
     return getPosition(position)
   }
 
-  fun getEndPosition(node: MethodTree): Position? {
+  fun getEndPosition(node: MethodTree): com.itsaky.androidide.models.Position? {
     val position = this.pos.getEndPosition(this.root!!, node)
     if (position.toInt() == -1) {
       return null
@@ -86,9 +86,9 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
     return getPosition(position)
   }
 
-  fun getPosition(position: Long): Position {
+  fun getPosition(position: Long): com.itsaky.androidide.models.Position {
     val line = lines!!.getLineNumber(position).toInt()
     val column = lines!!.getColumnNumber(position).toInt()
-    return Position(line, column).apply { index = position.toInt() }
+    return com.itsaky.androidide.models.Position(line, column).apply { index = position.toInt() }
   }
 }

@@ -25,7 +25,7 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Range;
 
 import java.util.Collection;
 

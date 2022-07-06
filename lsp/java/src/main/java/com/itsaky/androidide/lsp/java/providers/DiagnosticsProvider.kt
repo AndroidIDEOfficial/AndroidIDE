@@ -16,17 +16,17 @@
  */
 package com.itsaky.androidide.lsp.java.providers
 
-import com.itsaky.androidide.lsp.java.FileStore
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode.EMPTY_BLOCK
+import com.itsaky.androidide.lsp.java.models.DiagnosticCode.UNUSED_THROWS
 import com.itsaky.androidide.lsp.java.visitors.DiagnosticVisitor
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.models.DiagnosticSeverity
 import com.itsaky.androidide.lsp.models.DiagnosticSeverity.WARNING
-import com.itsaky.androidide.lsp.models.Position
-import com.itsaky.androidide.lsp.models.Range
 import com.itsaky.androidide.lsp.util.PathUtils.Companion.isSameFile
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.ProjectManager
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
@@ -61,7 +61,10 @@ object DiagnosticsProvider {
    * @return The list of diagnostics retrieved from the task. Never null.
    */
   @JvmStatic
-  fun findDiagnostics(task: CompileTask, file: Path?): List<DiagnosticItem> {
+  fun findDiagnostics(
+    task: CompileTask,
+    file: Path?
+  ): List<DiagnosticItem> {
     val result = mutableListOf<DiagnosticItem>()
     var root: CompilationUnitTree? = null
     for (tree in task.roots) {
@@ -102,7 +105,11 @@ object DiagnosticsProvider {
     }
   }
 
-  private fun warnEmptyBlock(task: CompileTask, path: TreePath, name: String): DiagnosticItem {
+  private fun warnEmptyBlock(
+    task: CompileTask,
+    path: TreePath,
+    name: String
+  ): DiagnosticItem {
     val trees = Trees.instance(task.task)
     val thisTree = path.leaf
     val code = EMPTY_BLOCK
@@ -118,10 +125,11 @@ object DiagnosticsProvider {
       message = "'$name' statement has empty body",
       severity = WARNING,
       range =
-        Range(getPosition(start, lines), getPosition(end, lines)).apply {
-          this.start.index = start.toInt()
-          this.end.index = end.toInt()
-        }
+        Range(getPosition(start, lines), getPosition(end, lines))
+          .apply {
+            this.start.index = start.toInt()
+            this.end.index = end.toInt()
+          }
     )
   }
 
@@ -141,7 +149,11 @@ object DiagnosticsProvider {
     }
   }
 
-  private fun warnNotThrown(task: CompileTask, name: String?, path: TreePath): DiagnosticItem {
+  private fun warnNotThrown(
+    task: CompileTask,
+    name: String?,
+    path: TreePath
+  ): DiagnosticItem {
     val trees = Trees.instance(task.task)
     val pos = trees.sourcePositions
     val root = path.compilationUnit
@@ -151,17 +163,21 @@ object DiagnosticsProvider {
     return DiagnosticItem(
       message = String.format("'%s' is not thrown in the body of the method", name),
       range =
-        Range(getPosition(start, lines), getPosition(end, lines)).apply {
-          this.start.index = start.toInt()
-          this.end.index = end.toInt()
-        },
-      code = DiagnosticCode.UNUSED_THROWS.id,
+        Range(getPosition(start, lines), getPosition(end, lines))
+          .apply {
+            this.start.index = start.toInt()
+            this.end.index = end.toInt()
+          },
+      code = UNUSED_THROWS.id,
       severity = DiagnosticSeverity.INFO,
       source = ""
     )
   }
 
-  private fun warnUnused(task: CompileTask, unusedEl: Element): DiagnosticItem {
+  private fun warnUnused(
+    task: CompileTask,
+    unusedEl: Element
+  ): DiagnosticItem {
     val trees = Trees.instance(task.task)
     val path = trees.getPath(unusedEl) ?: throw RuntimeException("$unusedEl has no path")
     val root = path.compilationUnit
@@ -176,7 +192,7 @@ object DiagnosticsProvider {
       }
     }
     val file = Paths.get(root.sourceFile.toUri())
-    val contents = FileStore.contents(file)
+    val contents = ProjectManager.getDocumentContents(file)
     var name = unusedEl.simpleName
     if (name.contentEquals("<init>")) {
       name = unusedEl.enclosingElement.simpleName
@@ -240,10 +256,11 @@ object DiagnosticsProvider {
       code = code,
       severity = severity,
       range =
-        Range(getPosition(start, root.lineMap), getPosition(end, root.lineMap)).apply {
-          this.start.index = start.toInt()
-          this.end.index = end.toInt()
-        },
+        Range(getPosition(start, root.lineMap), getPosition(end, root.lineMap))
+          .apply {
+            this.start.index = start.toInt()
+            this.end.index = end.toInt()
+          },
       source = ""
     )
   }
@@ -275,19 +292,22 @@ object DiagnosticsProvider {
     return Range(start, end)
   }
 
-  private fun getPosition(position: Long, lines: LineMap): Position {
+  private fun getPosition(position: Long, lines: LineMap): com.itsaky.androidide.models.Position {
     // decrement the numbers
     // to convert 1-based indexes to 0-based
     val line = (lines.getLineNumber(position) - 1).toInt()
     val column = (lines.getColumnNumber(position) - 1).toInt()
-    return Position(line, column)
+    return com.itsaky.androidide.models.Position(line, column)
   }
 
-  private fun severityFor(kind: Diagnostic.Kind): DiagnosticSeverity {
+  private fun severityFor(
+    kind: Diagnostic.Kind
+  ): DiagnosticSeverity {
     return when (kind) {
       Diagnostic.Kind.ERROR -> DiagnosticSeverity.ERROR
       Diagnostic.Kind.WARNING,
-      Diagnostic.Kind.MANDATORY_WARNING -> DiagnosticSeverity.WARNING
+      Diagnostic.Kind.MANDATORY_WARNING ->
+        WARNING
       Diagnostic.Kind.NOTE -> DiagnosticSeverity.INFO
       Diagnostic.Kind.OTHER -> DiagnosticSeverity.HINT
       else -> DiagnosticSeverity.HINT

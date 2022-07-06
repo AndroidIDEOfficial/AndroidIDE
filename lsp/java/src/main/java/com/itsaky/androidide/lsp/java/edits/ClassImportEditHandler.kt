@@ -36,10 +36,10 @@ class ClassImportEditHandler(val imports: Set<String>, file: Path) : IJavaEditHa
   override fun performEdits(
     compiler: JavaCompilerService,
     editor: CodeEditor,
-    completionItem: CompletionItem
+    completionItem: com.itsaky.androidide.lsp.models.CompletionItem
   ) {
     val className = completionItem.data!!.className
     val edits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
-    RewriteHelper.performEdits(edits, editor)
+    com.itsaky.androidide.lsp.util.RewriteHelper.performEdits(edits, editor)
   }
 }

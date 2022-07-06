@@ -44,9 +44,9 @@ class MultipleClassImportEditHandler(
   override fun performEdits(
     compiler: JavaCompilerService,
     editor: CodeEditor,
-    completionItem: CompletionItem
+    completionItem: com.itsaky.androidide.lsp.models.CompletionItem
   ) {
-    val edits = mutableListOf<TextEdit>()
+    val edits = mutableListOf<com.itsaky.androidide.lsp.models.TextEdit>()
     for (className in classes) {
       try {
         edits.addAll(EditHelper.addImportIfNeeded(compiler, file, imported, className))
@@ -54,6 +54,6 @@ class MultipleClassImportEditHandler(
         log.error("Unable to compute edits to perform import for class:", className)
       }
     }
-    RewriteHelper.performEdits(edits, editor)
+    com.itsaky.androidide.lsp.util.RewriteHelper.performEdits(edits, editor)
   }
 }

@@ -54,7 +54,7 @@ class MemberReferenceCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val trees = Trees.instance(task.task)
     val select = path.leaf as MemberReferenceTree
     log.info("...complete methods of " + select.qualifierExpression)
@@ -67,20 +67,20 @@ class MemberReferenceCompletionProvider(
       is ArrayType -> completeArrayMemberReference(isStatic, partial)
       is TypeVariable -> completeTypeVariableMemberReference(task, scope, type, isStatic, partial)
       is DeclaredType -> completeDeclaredTypeMemberReference(task, scope, type, isStatic, partial)
-      else -> CompletionResult.EMPTY
+      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     }
   }
 
   private fun completeArrayMemberReference(
     isStatic: Boolean,
     partialName: CharSequence,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     return if (isStatic) {
-      val list = mutableListOf<CompletionItem>()
+      val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
       list.add(keyword("new", partialName, 100))
-      CompletionResult(list)
+      com.itsaky.androidide.lsp.models.CompletionResult(list)
     } else {
-      CompletionResult.EMPTY
+      com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     }
   }
 
@@ -90,7 +90,7 @@ class MemberReferenceCompletionProvider(
     type: TypeVariable,
     isStatic: Boolean,
     partial: String,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberReference(
@@ -108,7 +108,7 @@ class MemberReferenceCompletionProvider(
           isStatic,
           partial
         )
-      else -> CompletionResult.EMPTY
+      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     }
   }
 
@@ -118,12 +118,12 @@ class MemberReferenceCompletionProvider(
     type: DeclaredType,
     isStatic: Boolean,
     partial: String,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
     val methods: MutableMap<String, MutableList<ExecutableElement>> = mutableMapOf()
-    val matchLevels: MutableMap<String, MatchLevel> = HashMap()
+    val matchLevels: MutableMap<String, com.itsaky.androidide.lsp.models.MatchLevel> = HashMap()
     for (member in task.task.elements.getAllMembers(typeElement)) {
       val matchLevel = matchLevel(member.simpleName, partial)
       if (matchLevel == NO_MATCH) {
@@ -163,6 +163,6 @@ class MemberReferenceCompletionProvider(
       list.add(keyword("new", partial, 100))
     }
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 }

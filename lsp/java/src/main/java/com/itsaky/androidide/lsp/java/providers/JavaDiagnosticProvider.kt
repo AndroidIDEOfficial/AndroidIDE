@@ -16,18 +16,16 @@
  */
 package com.itsaky.androidide.lsp.java.providers
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.CompilationCancellationException.Companion.isCancelled
-import com.itsaky.androidide.lsp.java.FileStore
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.DiagnosticsProvider.findDiagnostics
-import com.itsaky.androidide.lsp.models.DiagnosticResult
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.atomic.*
 import java.util.function.*
-import com.itsaky.androidide.javac.services.CancelAbort
 
 /**
  * Code analyzer for java source code.
@@ -38,19 +36,22 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val analyzeTimestamps = mutableMapOf<Path, Instant>()
-  private var cachedDiagnostics = DiagnosticResult.NO_UPDATE
+  private var cachedDiagnostics = com.itsaky.androidide.lsp.models.DiagnosticResult.NO_UPDATE
   private var analyzing = AtomicBoolean(false)
 
-  fun analyze(compiler: JavaCompilerService, file: Path): DiagnosticResult {
+  fun analyze(
+    compiler: JavaCompilerService,
+    file: Path
+  ): com.itsaky.androidide.lsp.models.DiagnosticResult {
 
     log.debug("Analyzing:", file)
 
     if (completionChecker.get()) {
       log.warn("Completion is in progress. Skipping analyze...")
-      return DiagnosticResult.NO_UPDATE
+      return com.itsaky.androidide.lsp.models.DiagnosticResult.NO_UPDATE
     }
 
-    val modifiedAt = FileStore.modified(file)
+    val modifiedAt = ProjectManager.getLastModified(file)
     val analyzedAt = analyzeTimestamps[file]
 
     if (analyzedAt?.isAfter(modifiedAt) == true) {
@@ -60,7 +61,7 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
 
     if (analyzing.get()) {
       log.warn("Another analyze process is in progress...")
-      return DiagnosticResult.NO_UPDATE
+      return com.itsaky.androidide.lsp.models.DiagnosticResult.NO_UPDATE
     }
 
     analyzing.set(true)
@@ -76,7 +77,7 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
         log.warn("Unable to analyze file", err)
 
         compiler.destroy()
-        DiagnosticResult.NO_UPDATE
+        com.itsaky.androidide.lsp.models.DiagnosticResult.NO_UPDATE
       }
       .also {
         cachedDiagnostics = it
@@ -85,13 +86,16 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
       }
   }
 
-  private fun doAnalyze(file: Path, task: CompileTask): DiagnosticResult {
+  private fun doAnalyze(
+    file: Path,
+    task: CompileTask
+  ): com.itsaky.androidide.lsp.models.DiagnosticResult {
     return if (!isTaskValid(task)) {
       // Do not use Collections.emptyList ()
       // The returned list is accessed and the list returned by Collections.emptyList()
       // throws exception when trying to access.
       cachedDiagnostics
-    } else DiagnosticResult(file, findDiagnostics(task, file))
+    } else com.itsaky.androidide.lsp.models.DiagnosticResult(file, findDiagnostics(task, file))
   }
 
   companion object {

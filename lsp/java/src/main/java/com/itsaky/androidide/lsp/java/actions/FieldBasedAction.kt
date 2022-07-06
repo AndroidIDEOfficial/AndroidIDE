@@ -20,12 +20,13 @@ package com.itsaky.androidide.lsp.java.actions
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.Tree.Kind.VARIABLE
@@ -47,7 +48,11 @@ abstract class FieldBasedAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
+    if (
+      !visible ||
+        !hasRequiredData(data, com.itsaky.androidide.models.Range::class.java, CodeEditor::class.java) ||
+        ProjectManager.rootProject == null
+    ) {
       markInvisible()
       return
     }
@@ -57,11 +62,11 @@ abstract class FieldBasedAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val range = data[Range::class.java]!!
-    val server = data[JavaLanguageServer::class.java]!!
+    val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = requirePath(data)
+    val module = ProjectManager.findModuleForFile(file) ?: return Any()
 
-    return server.compiler.compile(file).get { task ->
+    return JavaCompilerProvider.get(module).compile(file).get { task ->
       val triple = findFields(task, file, range)
       val type = triple.second
       val fields = triple.third
@@ -76,7 +81,7 @@ abstract class FieldBasedAction : BaseCodeAction() {
   protected fun findFields(
     task: CompileTask,
     file: Path,
-    range: Range
+    range: com.itsaky.androidide.models.Range
   ): Triple<FindTypeDeclarationAt, ClassTree, MutableList<VariableTree>> {
     // 1-based line and column index
     val startLine = range.start.line + 1

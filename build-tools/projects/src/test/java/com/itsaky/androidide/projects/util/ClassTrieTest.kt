@@ -32,17 +32,19 @@ class ClassTrieTest {
   fun testAppend() {
     val trie = ClassTrie()
     trie.append("java.lang.String")
+    trie.append("java.lang.String.Inner")
     trie.append("java.lang.Object")
     trie.append("java.util.List")
     trie.append("java.io.File")
     trie.append("java.nio.file.Path")
 
     assertThat(trie.findClassNames("java.lang"))
-      .containsExactly("java.lang.String", "java.lang.Object")
+      .containsExactly("java.lang.String", "java.lang.String.Inner", "java.lang.Object")
+    assertThat(trie.findInPackage("java.lang").map { it.isClass }).containsExactly(true, true, true)
     assertThat(trie.findClassNames("java.util")).containsExactly("java.util.List")
     assertThat(trie.findClassNames("java.nio")).containsExactly("java.nio.file.Path")
   }
-  
+
   @Test
   fun testRemoval() {
     val trie = ClassTrie()
@@ -51,19 +53,30 @@ class ClassTrieTest {
     trie.append("java.util.List")
     trie.append("java.io.File")
     trie.append("java.nio.file.Path")
-    
+
+    assertThat(trie.allClassNames())
+      .containsExactly(
+        "java.lang.String",
+        "java.lang.Object",
+        "java.util.List",
+        "java.io.File",
+        "java.nio.file.Path"
+      )
+
     assertThat(trie.contains("java.io.File")).isTrue()
     assertThat(trie.contains("java.nio.file.Path")).isTrue()
-    
+
     trie.remove("java.lang.String")
     trie.remove("java.nio.file.Path")
-  
+
+    assertThat(trie.allClassNames())
+      .containsExactly("java.lang.Object", "java.util.List", "java.io.File")
+
     assertThat(trie.contains("java.io.File")).isTrue()
     assertThat(trie.contains("java.nio.file.Path")).isFalse()
     assertThat(trie.contains("java.lang.String")).isFalse()
-    
-    assertThat(trie.findClassNames("java.lang"))
-      .containsExactly("java.lang.Object")
+
+    assertThat(trie.findClassNames("java.lang")).containsExactly("java.lang.Object")
     assertThat(trie.findClassNames("java.util")).containsExactly("java.util.List")
     assertThat(trie.findClassNames("java.nio")).isEmpty()
   }

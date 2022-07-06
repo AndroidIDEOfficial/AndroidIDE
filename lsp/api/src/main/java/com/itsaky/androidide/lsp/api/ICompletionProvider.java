@@ -39,6 +39,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.models.CompletionItem;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
+import com.itsaky.androidide.lsp.models.CompletionsKt;
 import com.itsaky.androidide.lsp.models.MatchLevel;
 
 import java.nio.file.Files;
@@ -51,7 +52,7 @@ import java.nio.file.Path;
  */
 public interface ICompletionProvider {
 
-  int MIN_MATCH_RATIO = 59;
+  int MIN_MATCH_RATIO = CompletionsKt.MIN_MATCH_RATIO;
 
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);

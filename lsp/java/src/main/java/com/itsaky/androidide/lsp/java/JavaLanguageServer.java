@@ -19,18 +19,16 @@ package com.itsaky.androidide.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
 
-import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.lsp.api.ICompletionProvider;
-import com.itsaky.androidide.lsp.api.IDocumentHandler;
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
+import com.itsaky.androidide.javac.services.CancelAbort;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.internal.model.CachedCompletion;
 import com.itsaky.androidide.lsp.java.actions.JavaCodeActionsMenu;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
-import com.itsaky.androidide.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.java.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider;
@@ -40,34 +38,38 @@ import com.itsaky.androidide.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.androidide.lsp.java.providers.ReferenceProvider;
 import com.itsaky.androidide.lsp.java.providers.SignatureProvider;
 import com.itsaky.androidide.lsp.java.utils.AnalyzeTimer;
+import com.itsaky.androidide.lsp.models.CompletionParams;
+import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
-import com.itsaky.androidide.lsp.models.DocumentChangeEvent;
-import com.itsaky.androidide.lsp.models.DocumentCloseEvent;
-import com.itsaky.androidide.lsp.models.DocumentOpenEvent;
-import com.itsaky.androidide.lsp.models.DocumentSaveEvent;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
 import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.models.LSPFailure;
-import com.itsaky.androidide.lsp.models.Range;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.LSPEditorActions;
-import com.itsaky.androidide.lsp.util.NoCompletionsProvider;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.projects.util.DocumentUtils;
+import com.itsaky.androidide.utils.ILogger;
 
-import com.itsaky.androidide.javac.services.CancelAbort;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
+public class JavaLanguageServer implements ILanguageServer {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
   public static final String SERVER_ID = "java";
@@ -77,17 +79,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   private ILanguageClient client;
   private IServerSettings settings;
   private Path selectedFile;
-  private JavaCompilerService compilerService;
-  private JavaServerConfiguration configuration;
   private CachedCompletion cachedCompletion;
   private ServerCapabilities capabilities;
   private boolean initialized;
-  private boolean createCompiler;
 
   public JavaLanguageServer() {
     this.initialized = false;
-    this.createCompiler = true;
-    this.configuration = new JavaServerConfiguration();
     this.completionProvider = new CompletionProvider();
     this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
     this.cachedCompletion = CachedCompletion.EMPTY;
@@ -117,6 +114,24 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     return settings;
   }
 
+  protected JavaCompilerService getCompiler(Path file) {
+    if (!DocumentUtils.isJavaFile(file)) {
+      return null;
+    }
+
+    final Project root = ProjectManager.INSTANCE.getRootProject();
+    if (root == null) {
+      return null;
+    }
+
+    final ModuleProject module = root.findModuleForFile(file);
+    if (module == null) {
+      return null;
+    }
+
+    return JavaCompilerProvider.get(module);
+  }
+
   @Override
   public String getServerId() {
     return SERVER_ID;
@@ -129,8 +144,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
       throw new AlreadyInitializedException();
     }
 
-    FileStore.setWorkspaceRoots(params.getWorkspaceRoots());
-
     capabilities = new ServerCapabilities();
     capabilities.setCompletionsAvailable(true);
     capabilities.setCodeActionsAvailable(true);
@@ -141,7 +154,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     capabilities.setSmartSelectionsEnabled(true);
 
     LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
     initialized = true;
   }
 
@@ -158,13 +173,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void shutdown() {
-    if (compilerService != null) {
-      compilerService.close();
-      compilerService = null;
-      createCompiler = true;
-    }
-
-    FileStore.shutdown();
+    JavaCompilerProvider.getInstance().destory();
+    EventBus.getDefault().unregister(this);
     timer.shutdown();
     initialized = false;
   }
@@ -186,101 +196,79 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   }
 
   @Override
-  public void configurationChanged(Object newConfiguration) {
-    if (!(newConfiguration instanceof JavaServerConfiguration)) {
-      LOG.error("Invalid configuration passed to server.", newConfiguration);
-      LOG.error("Configuration change event will be ignored.");
-      return;
-    }
+  public void configurationChanged(Object newConfiguration) {}
 
-    this.configuration = (JavaServerConfiguration) newConfiguration;
-    LOG.info("Java language server configuration changed.");
-    LOG.info(
-        this.configuration.getClassPaths().size(),
-        "class paths and",
-        this.configuration.getSourceDirs().size(),
-        "source directories were provided in the configuration");
-    // Compiler must be recreated on a configuration change
-    this.createCompiler = true;
-
-    FileStore.configurationChanged(this.configuration.getSourceDirs());
-  }
+  @Override
+  public void setupWithProject(@NonNull final Project project) {}
 
   @NonNull
   @Override
-  public ICompletionProvider getCompletionProvider() {
-    if (!settings.completionsEnabled()) {
-      return new NoCompletionsProvider();
+  public CompletionResult complete(final CompletionParams params) {
+    final JavaCompilerService compiler = getCompiler(params.getFile());
+    if (compiler == null
+        || !settings.completionsEnabled()
+        || !this.completionProvider.canComplete(params.getFile())) {
+      return CompletionResult.EMPTY;
     }
 
-    return this.completionProvider.reset(
-        getCompiler(), this.settings, this.cachedCompletion, this::updateCachedCompletion);
+    this.completionProvider.reset(
+        compiler, this.settings, this.cachedCompletion, this::updateCachedCompletion);
+    return this.completionProvider.complete(params);
   }
 
   @NonNull
   @Override
   public ReferenceResult findReferences(@NonNull ReferenceParams params) {
-    if (!settings.referencesEnabled()) {
+    final JavaCompilerService compiler = getCompiler(params.getFile());
+    if (!settings.referencesEnabled() || compiler == null) {
       return new ReferenceResult(Collections.emptyList());
     }
 
-    return new ReferenceProvider(getCompiler()).findReferences(params);
+    return new ReferenceProvider(compiler).findReferences(params);
   }
 
   @NonNull
   @Override
   public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
-    if (!settings.definitionsEnabled()) {
+    final JavaCompilerService compiler = getCompiler(params.getFile());
+    if (!settings.definitionsEnabled() || compiler == null) {
       return new DefinitionResult(Collections.emptyList());
     }
 
-    return new DefinitionProvider(getCompiler()).findDefinition(params);
+    return new DefinitionProvider(compiler).findDefinition(params);
   }
 
   @NonNull
   @Override
   public Range expandSelection(@NonNull ExpandSelectionParams params) {
-    if (!settings.smartSelectionsEnabled()) {
+    final JavaCompilerService compiler = getCompiler(params.getFile());
+    if (!settings.smartSelectionsEnabled() || compiler == null) {
       return params.getSelection();
     }
 
-    return new JavaSelectionProvider(getCompiler()).expandSelection(params);
+    return new JavaSelectionProvider(compiler).expandSelection(params);
   }
 
   @NonNull
   @Override
   public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
-    if (!settings.signatureHelpEnabled()) {
+    final JavaCompilerService compiler = getCompiler(params.getFile());
+    if (!settings.signatureHelpEnabled() || compiler == null) {
       return new SignatureHelp(Collections.emptyList(), -1, -1);
     }
 
-    return new SignatureProvider(getCompiler()).signatureHelp(params);
+    return new SignatureProvider(compiler).signatureHelp(params);
   }
 
   @NonNull
   @Override
   public DiagnosticResult analyze(@NonNull Path file) {
-    if (!settings.codeAnalysisEnabled()) {
+    final JavaCompilerService compiler = getCompiler(file);
+    if (!settings.codeAnalysisEnabled() || compiler == null) {
       return DiagnosticResult.NO_UPDATE;
     }
 
-    return this.diagnosticProvider.analyze(getCompiler(), file);
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public JavaCompilerService getCompiler() {
-    if (createCompiler) {
-      LOG.info("Creating new compiler instance...");
-      compilerService = createCompiler();
-      createCompiler = false;
-    }
-
-    return compilerService;
-  }
-
-  @NonNull
-  private JavaCompilerService createCompiler() {
-    return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
+    return this.diagnosticProvider.analyze(compiler, file);
   }
 
   @NonNull
@@ -289,53 +277,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     return new CodeFormatProvider(getSettings()).format(params);
   }
 
-  @NonNull
-  @Override
-  public IDocumentHandler getDocumentHandler() {
-    return this;
-  }
-
   private void updateCachedCompletion(CachedCompletion cachedCompletion) {
     Objects.requireNonNull(cachedCompletion);
     this.cachedCompletion = cachedCompletion;
-  }
-
-  @Override
-  public boolean accepts(Path file) {
-    return FileStore.isJavaFile(file);
-  }
-
-  @Override
-  public void onFileOpened(DocumentOpenEvent event) {
-    onFileSelected(event.getOpenedFile());
-    FileStore.open(event);
-    startOrRestartAnalyzeTimer();
-  }
-
-  @Override
-  public void onContentChange(@NonNull DocumentChangeEvent event) {
-    // If a file's content is changed, it is definitely visible to user.
-    onFileSelected(event.getChangedFile());
-    FileStore.change(event);
-    if (compilerService != null) {
-      compilerService.onContentChanged(event);
-    }
-    startOrRestartAnalyzeTimer();
-  }
-
-  @Override
-  public void onFileSaved(DocumentSaveEvent event) {
-    // TODO Run a lint check (or a simple compilation)
-  }
-
-  @Override
-  public void onFileClosed(DocumentCloseEvent event) {
-    FileStore.close(event);
-  }
-
-  @Override
-  public void onFileSelected(@NonNull Path path) {
-    this.selectedFile = path;
   }
 
   @Override
@@ -348,13 +292,23 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
           return true;
         }
 
-        if (compilerService != null) {
-          compilerService.close();
-        }
+        JavaCompilerProvider.getInstance().destory();
         return true;
     }
 
     return false;
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onContentChange(@NonNull DocumentChangeEvent event) {
+    startOrRestartAnalyzeTimer();
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileSelected(@NonNull DocumentSelectedEvent event) {
+    this.selectedFile = event.getSelectedFile();
   }
 
   private void startOrRestartAnalyzeTimer() {

@@ -56,7 +56,7 @@ class MemberSelectCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val trees = Trees.instance(task.task)
     val select = path.leaf as MemberSelectTree
     log.info("...complete members of " + select.expression)
@@ -70,20 +70,20 @@ class MemberSelectCompletionProvider(
         completeTypeVariableMemberSelect(task, scope, type, isStatic, partial, endsWithParen)
       is DeclaredType ->
         completeDeclaredTypeMemberSelect(task, scope, type, isStatic, partial, endsWithParen)
-      else -> CompletionResult.EMPTY
+      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     }
   }
 
   private fun completeArrayMemberSelect(
     isStatic: Boolean,
     partialName: CharSequence
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     return if (isStatic) {
-      CompletionResult.EMPTY
+      com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     } else {
-      val list = mutableListOf<CompletionItem>()
+      val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
       list.add(keyword("length", partialName, 100))
-      CompletionResult(list)
+      com.itsaky.androidide.lsp.models.CompletionResult(list)
     }
   }
 
@@ -94,7 +94,7 @@ class MemberSelectCompletionProvider(
     isStatic: Boolean,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberSelect(
@@ -114,7 +114,7 @@ class MemberSelectCompletionProvider(
           partial,
           endsWithParen
         )
-      else -> CompletionResult.EMPTY
+      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
     }
   }
 
@@ -125,12 +125,12 @@ class MemberSelectCompletionProvider(
     isStatic: Boolean,
     partialName: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-    val matchLevels: MutableMap<String, MatchLevel> = mutableMapOf()
+    val matchLevels: MutableMap<String, com.itsaky.androidide.lsp.models.MatchLevel> = mutableMapOf()
     for (member in task.task.elements.getAllMembers(typeElement)) {
       if (member.kind == CONSTRUCTOR) {
         continue
@@ -173,7 +173,7 @@ class MemberSelectCompletionProvider(
       list.add(keyword("super", partialName, 100))
     }
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
   private fun isEnclosingClass(type: DeclaredType, start: Scope): Boolean {

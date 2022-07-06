@@ -47,7 +47,7 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -375,7 +375,7 @@ public class CodeEditorView extends FrameLayout {
   }
 
   private void notifySaved() {
-    binding.editor.didSave();
+    binding.editor.dispatchDocumentSaveEvent();
 
     if (Objects.requireNonNull(getFile()).getName().endsWith(".xml")) {
       ValuesTableFactory.syncWithFile(getFile());

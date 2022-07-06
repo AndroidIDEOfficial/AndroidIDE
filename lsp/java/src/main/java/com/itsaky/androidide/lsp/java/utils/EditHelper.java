@@ -21,8 +21,8 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.rewrite.AddImport;
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;

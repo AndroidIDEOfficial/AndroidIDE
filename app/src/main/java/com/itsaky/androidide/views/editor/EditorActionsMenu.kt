@@ -49,7 +49,7 @@ import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
@@ -275,8 +275,8 @@ open class EditorActionsMenu(val editor: IDEEditor) :
       editor
     ) // For LSP actions, as they cannot access IDEEditor class
     data.put(File::class.java, editor.file)
-    data.put(DiagnosticItem::class.java, getDiagnosticAtCursor())
-    data.put(Range::class.java, editor.cursorRange)
+    data.put(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java, getDiagnosticAtCursor())
+    data.put(com.itsaky.androidide.models.Range::class.java, editor.cursorRange)
     data.put(
       JavaLanguageServer::class.java,
       StudioApp.getInstance().javaLanguageServer as JavaLanguageServer
@@ -290,7 +290,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
   protected open fun getMenu(): Menu = menu
 
-  private fun getDiagnosticAtCursor(): DiagnosticItem? {
+  private fun getDiagnosticAtCursor(): com.itsaky.androidide.lsp.models.DiagnosticItem? {
     val start = editor.cursorRange.start
     return editor.mLanguageClient?.getDiagnosticAt(editor.file, start.line, start.column)
   }

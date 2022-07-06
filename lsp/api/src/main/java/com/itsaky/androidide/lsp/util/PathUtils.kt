@@ -17,8 +17,7 @@
 
 package com.itsaky.androidide.lsp.util
 
-import java.io.IOException
-import java.nio.file.Files
+import com.itsaky.androidide.projects.util.DocumentUtils
 import java.nio.file.Path
 
 /** @author Akash Yadav */
@@ -26,11 +25,7 @@ class PathUtils {
   companion object {
     @JvmStatic
     fun isSameFile(first: Path, second: Path): Boolean {
-      return try {
-        Files.isSameFile(first, second)
-      } catch (e: IOException) {
-        false
-      }
+      return DocumentUtils.isSameFile(first, second)
     }
   }
 }

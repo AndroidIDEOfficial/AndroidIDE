@@ -24,9 +24,7 @@ import java.util.function.*
  *
  * @author Akash Yadav
  */
-class ClassTrie {
-
-  val root = Node()
+open class ClassTrie(val root: Node = Node()) {
 
   /**
    * Appends the class name entry to this trie.
@@ -34,15 +32,15 @@ class ClassTrie {
    * @param name The fully qualified class name.
    * @return The added node.
    */
-  fun append(name: String): Node {
+  open fun append(name: String): Node {
     val segments = segments(name)
     var node = root
-    for (segment in segments) {
+    for ((index, segment) in segments.withIndex()) {
       if (segment.isEmpty() || !segment[0].isJavaIdentifierStart()) {
         continue
       }
 
-      node = node.createChild(segment)
+      node = createNode(node, segment, segments, index)
     }
     node.isClass = true
     return node
@@ -53,7 +51,7 @@ class ClassTrie {
    *
    * @param name The fully qualified name of the package segment or class name to remove.
    */
-  fun remove(name: String) {
+  open fun remove(name: String) {
     remove(name, null)
   }
 
@@ -64,7 +62,7 @@ class ClassTrie {
    * @param name The fully qualified name of the package segment or the class.
    * @param predicate The predicate which can be used to test which entries should be deleted.
    */
-  fun remove(name: String, predicate: Predicate<Node>?) {
+  open fun remove(name: String, predicate: Predicate<Node>?) {
     val segments = segments(name)
     val condition = predicate ?: Predicate { it.isClass }
     var node: Node? = root
@@ -92,7 +90,7 @@ class ClassTrie {
    * @param name The fully qualified package or class name.
    * @return Whether there is a an entry for the given fully qualified name.
    */
-  fun contains(name: String): Boolean {
+  open fun contains(name: String): Boolean {
     val segments = segments(name)
     var node: Node? = root
     for (segment in segments) {
@@ -107,14 +105,13 @@ class ClassTrie {
   }
 
   /**
-   * Finds all class names in the given package.
+   * Finds all class nodes in the given package.
    *
-   * @param packageName The package name to list classes from.
+   * @param packageName The package name to list class nodes from.
    */
-  fun findClassNames(packageName: String): List<String> {
+  open fun findInPackage(packageName: String): List<Node> {
     val segments = segments(packageName)
-    val classes = mutableListOf<String>()
-    val curr = StringBuilder()
+    val classes = mutableListOf<Node>()
     var node: Node? = root
     for (segement in segments) {
       if (node == null || node.children.isEmpty() || !node.children.containsKey(segement)) {
@@ -122,16 +119,7 @@ class ClassTrie {
       }
 
       if (node.isClass) {
-        var name = "$curr.$segement"
-        if (curr.isEmpty()) {
-          name = segement
-        }
-        classes.add(name)
-      } else {
-        if (curr.isNotEmpty()) {
-          curr.append(".")
-        }
-        curr.append(segement)
+        classes.add(node)
       }
 
       node = node.children[segement]
@@ -141,8 +129,27 @@ class ClassTrie {
       return classes
     }
 
-    node.children.values.forEach { addRecursively(it, curr.toString(), classes) }
+    node.children.values.forEach { addRecursively(it, classes) }
     return classes
+  }
+
+  /**
+   * Finds all class names in the given package.
+   *
+   * @param packageName The package name to list classes from.
+   */
+  open fun findClassNames(packageName: String): List<String> {
+    return findInPackage(packageName).map { it.qualifiedName }
+  }
+
+  /** Returns all class nodes available in this trie. */
+  fun allClassNodes(): Set<Node> {
+    return root.allClassNodes()
+  }
+
+  /** Returns all classes available in this trie. */
+  fun allClassNames(): Set<String> {
+    return root.allClassNames()
   }
 
   fun print() {
@@ -161,32 +168,10 @@ class ClassTrie {
     }
   }
 
-  private fun addRecursively(node: Node, curr: String, classes: MutableList<String>) {
-    val segement = node.name
-    var packageName = curr
-    if (node.isClass) {
-      var name = "$packageName.$segement"
-      if (packageName.isEmpty()) {
-        name = segement
-      }
-      classes.add(name)
-    } else {
-      packageName =
-        if (curr.isEmpty()) {
-          segement
-        } else {
-          "$packageName.$segement"
-        }
-    }
+  protected open fun createNode(node: Node, segment: String, segments: List<String>, index: Int) =
+    node.createChild(segment, segments.subList(0, index + 1).joinToString(separator = "."))
 
-    if (node.children.isEmpty()) {
-      return
-    }
-
-    node.children.values.forEach { addRecursively(it, packageName, classes) }
-  }
-
-  private fun segments(name: String): List<String> {
+  protected open fun segments(name: String): List<String> {
     return if (name.contains('.')) {
       name.split(".")
     } else {
@@ -194,16 +179,45 @@ class ClassTrie {
     }
   }
 
-  /** A Node can be a package segment or a class name in the package trie. */
-  class Node(val name: String) {
+  private fun addRecursively(node: Node, classes: MutableList<Node>) {
+    if (node.isClass) {
+      classes.add(node)
+    }
 
-    internal constructor() : this("")
+    if (node.children.isEmpty()) {
+      return
+    }
+
+    node.children.values.forEach { addRecursively(it, classes) }
+  }
+
+  /** A Node can be a package segment or a class name in the package trie. */
+  open class Node(val name: String, val qualifiedName: String) {
+
+    internal constructor() : this("", "")
 
     val children: MutableMap<String, Node> = mutableMapOf()
     var isClass = false
 
-    fun createChild(name: String): Node {
-      return children.computeIfAbsent(name) { Node(it) }
+    open fun createChild(name: String, qualifiedName: String): Node {
+      return children.computeIfAbsent(name) { Node(it, qualifiedName) }
+    }
+
+    open fun allClassNames(): Set<String> {
+      return this.allClassNodes().map { it.qualifiedName }.toSet()
+    }
+
+    open fun allClassNodes(): Set<Node> {
+      val all = mutableSetOf<Node>()
+
+      if (this.isClass) {
+        all.add(this)
+      }
+
+      if (children.isNotEmpty()) {
+        children.values.forEach { all.addAll(it.allClassNodes()) }
+      }
+      return all
     }
   }
 }

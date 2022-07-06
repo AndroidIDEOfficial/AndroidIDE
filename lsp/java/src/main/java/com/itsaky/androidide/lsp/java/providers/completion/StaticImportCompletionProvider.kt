@@ -55,11 +55,11 @@ class StaticImportCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
-    val list = mutableListOf<CompletionItem>()
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
+    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     val trees = Trees.instance(task.task)
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-    val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
+    val matchRatios: MutableMap<String, com.itsaky.androidide.lsp.models.MatchLevel> = mutableMapOf()
     val previousSize: Int = list.size
     outer@ for (i in root.imports) {
       if (!i.isStatic) {
@@ -111,7 +111,7 @@ class StaticImportCompletionProvider(
 
     log.info("...found " + (list.size - previousSize) + " static imports")
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
   private fun importMatchesPartial(staticImport: Name, partial: String): Boolean {

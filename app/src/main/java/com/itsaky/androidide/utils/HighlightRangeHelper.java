@@ -38,7 +38,7 @@ import static com.itsaky.androidide.lsp.models.HighlightTokenKind.TYPE_PARAMETER
 
 import com.itsaky.androidide.lsp.models.HighlightToken;
 import com.itsaky.androidide.lsp.models.HighlightTokenKind;
-import com.itsaky.androidide.lsp.models.Position;
+import com.itsaky.androidide.models.Position;
 
 import java.util.List;
 

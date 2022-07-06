@@ -19,8 +19,8 @@
  **************************************************************************************/
 package com.itsaky.androidide.utils;
 
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 
 import java.util.Comparator;
 import java.util.List;

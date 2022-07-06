@@ -49,7 +49,7 @@ class SwitchConstantCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val switchTree = path.leaf as SwitchTree
     val exprPath = TreePath(path, switchTree.expression)
     val type = Trees.instance(task.task).getTypeMirror(exprPath)
@@ -73,7 +73,7 @@ class SwitchConstantCompletionProvider(
 
     log.info("...complete constants of type $type")
 
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
     for (member in task.task.elements.getAllMembers(element)) {
       if (member.kind != ENUM_CONSTANT) {
         continue
@@ -87,7 +87,7 @@ class SwitchConstantCompletionProvider(
       list.add(item(task, member, matchLevel))
     }
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
   private fun completeIdentifier(

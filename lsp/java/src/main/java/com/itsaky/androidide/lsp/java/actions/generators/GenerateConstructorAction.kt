@@ -24,14 +24,15 @@ import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.ConstructorDeclaration
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.VariableTree
@@ -69,11 +70,12 @@ class GenerateConstructorAction : FieldBasedAction() {
   }
 
   private fun generateConstructor(data: ActionData, selected: MutableSet<String>) {
-    val server = data[JavaLanguageServer::class.java]!!
-    val range = data[Range::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+    val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = requirePath(data)
 
-    server.compiler.compile(file).run { task ->
+    compiler.compile(file).run { task ->
       val triple = findFields(task, file, range)
       val typeFinder = triple.first
       val type = triple.second

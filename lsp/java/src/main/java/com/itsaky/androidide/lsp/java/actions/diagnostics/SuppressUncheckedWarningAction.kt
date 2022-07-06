@@ -17,14 +17,15 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddSuppressWarningAnnotation
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
 import com.itsaky.androidide.lsp.models.DiagnosticItem
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class SuppressUncheckedWarningAction : BaseCodeAction() {
@@ -38,12 +39,12 @@ class SuppressUncheckedWarningAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data[DiagnosticItem::class.java]!!
+    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     if (diagnosticCode != diagnostic.code) {
       markInvisible()
       return
@@ -51,10 +52,11 @@ class SuppressUncheckedWarningAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val diagnostic = data[DiagnosticItem::class.java]!!
-    val server = data[JavaLanguageServer::class.java]!!
+    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
     val file = requirePath(data)
-    return server.compiler.compile(file).get { task ->
+    return compiler.compile(file).get { task ->
       val warnedMethod = CodeActionUtils.findMethod(task, diagnostic.range)
       return@get AddSuppressWarningAnnotation(
         warnedMethod.className,
@@ -70,10 +72,6 @@ class SuppressUncheckedWarningAction : BaseCodeAction() {
       return
     }
 
-    val server = data[JavaLanguageServer::class.java]!!
-    val client = server.client!!
-    val file = requireFile(data)
-
-    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+    performCodeAction(data, result)
   }
 }

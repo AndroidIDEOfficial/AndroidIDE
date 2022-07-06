@@ -31,9 +31,11 @@ android {
 dependencies {
     api project (path: ':build-tools:eventbus')
     api project (path: ':build-tools:eventbus-events')
+    api project (path: ':build-tools:tooling-api')
     
-    implementation project (path: ':build-tools:tooling-api')
     implementation project (path: ':common')
+    
+    implementation google.guava
     
     testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit

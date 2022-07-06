@@ -38,8 +38,8 @@ class IdentifierCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
-    val list = mutableListOf<CompletionItem>()
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
+    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
 
     val scopeMembers =
       ScopeCompletionProvider(completingFile, cursor, compiler, settings)
@@ -57,7 +57,7 @@ class IdentifierCompletionProvider(
         .complete(task, path, partial, endsWithParen)
     list.addAll(staticImports.items)
 
-    if (CompletionResult.TRIM_TO_MAX && list.size < CompletionResult.MAX_ITEMS) {
+    if (com.itsaky.androidide.lsp.models.CompletionResult.TRIM_TO_MAX && list.size < com.itsaky.androidide.lsp.models.CompletionResult.MAX_ITEMS) {
       val allLower: Boolean = settings.shouldMatchAllLowerCase()
       if (allLower || partial.isNotEmpty() && Character.isUpperCase(partial[0])) {
         val classNames =
@@ -78,6 +78,6 @@ class IdentifierCompletionProvider(
         .complete(task, path, partial, endsWithParen)
     list.addAll(keywords.items)
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 }

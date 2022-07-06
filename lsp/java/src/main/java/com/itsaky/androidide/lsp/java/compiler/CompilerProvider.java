@@ -34,13 +34,9 @@ import javax.tools.JavaFileObject;
 public interface CompilerProvider {
   Path NOT_FOUND = Paths.get("");
 
-  Set<String> imports();
-
   List<String> publicTopLevelTypes();
 
   List<String> packagePrivateTopLevelTypes(String packageName);
-
-  Iterable<Path> search(String query);
 
   Optional<JavaFileObject> findAnywhere(String className);
 

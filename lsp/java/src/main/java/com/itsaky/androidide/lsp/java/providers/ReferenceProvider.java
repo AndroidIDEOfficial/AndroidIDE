@@ -25,9 +25,9 @@ import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.lsp.java.utils.NavigationHelper;
 import com.itsaky.androidide.lsp.java.visitors.FindReferences;
-import com.itsaky.androidide.lsp.models.Location;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
+import com.itsaky.androidide.models.Location;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
 

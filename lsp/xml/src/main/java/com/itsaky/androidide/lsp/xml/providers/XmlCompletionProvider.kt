@@ -35,7 +35,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.lsp.models.Position
+import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -67,7 +67,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  override fun complete(params: CompletionParams): CompletionResult {
+  override fun complete(params: com.itsaky.androidide.lsp.models.CompletionParams): com.itsaky.androidide.lsp.models.CompletionResult {
     return try {
       // TODO When the completion will be namespace-aware, we will then need to use
       //   'params.module'
@@ -115,11 +115,11 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
     }
 
   private fun completeImpl(
-    params: CompletionParams,
+    params: com.itsaky.androidide.lsp.models.CompletionParams,
     document: DOMDocument,
     prefix: String,
     type: NodeType,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     return when (type) {
       TAG ->
         completeTags(
@@ -135,9 +135,9 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
     }
   }
 
-  private fun completeTags(prefix: String): CompletionResult {
+  private fun completeTags(prefix: String): com.itsaky.androidide.lsp.models.CompletionResult {
     val widgets = sdkInfo.widgetInfo.widgets
-    val result = mutableListOf<CompletionItem>()
+    val result = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
 
     for (widget in widgets) {
       val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
@@ -147,15 +147,15 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       }
 
       val matchLevel =
-        MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
+        com.itsaky.androidide.lsp.models.MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
 
       result.add(createTagCompletionItem(widget, matchLevel))
     }
 
-    return CompletionResult(result)
+    return com.itsaky.androidide.lsp.models.CompletionResult(result)
   }
 
-  private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
+  private fun completeAttributes(document: DOMDocument, position: com.itsaky.androidide.models.Position): com.itsaky.androidide.lsp.models.CompletionResult {
     // TODO Provide attributes based on current node and it's direct parent node
     //   For example, if the current node is a 'TextView', provide attributes applicable to
     //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
@@ -163,7 +163,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
     // TODO Provided attributes from declared namespaces only
     val attr = document.findAttrAt(position.requireIndex())
-    val list = mutableListOf<CompletionItem>()
+    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     for (attribute in sdkInfo.attrInfo.attributes.values) {
       val matchLevel = matchLevel(attribute.name, attr.name)
       if (matchLevel == NO_MATCH) {
@@ -173,14 +173,14 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       list.add(createAttrCompletionItem(attribute, matchLevel))
     }
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
   private fun completeAttributeValue(
     document: DOMDocument,
     prefix: String,
-    position: Position
-  ): CompletionResult {
+    position: com.itsaky.androidide.models.Position
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val attr = document.findAttrAt(position.requireIndex())
 
     // TODO Provide attribute values based on namespace URI
@@ -190,7 +190,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
     val name = attr.localName ?: return EMPTY
     val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
-    val items = mutableListOf<CompletionItem>()
+    val items = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     for (value in attribute.possibleValues) {
       val matchLevel = matchLevel(value, prefix)
 
@@ -204,21 +204,21 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       }
     }
 
-    return CompletionResult(items)
+    return com.itsaky.androidide.lsp.models.CompletionResult(items)
   }
 
-  private fun createTagCompletionItem(widget: Widget, matchLevel: MatchLevel): CompletionItem =
-    CompletionItem().apply {
+  private fun createTagCompletionItem(widget: Widget, matchLevel: com.itsaky.androidide.lsp.models.MatchLevel): com.itsaky.androidide.lsp.models.CompletionItem =
+    com.itsaky.androidide.lsp.models.CompletionItem().apply {
       this.label = widget.simpleName
       this.detail = widget.name
       this.sortText = label.toString()
       this.matchLevel = matchLevel
       this.kind = CLASS
-      this.data = CompletionData().apply { className = widget.name }
+      this.data = com.itsaky.androidide.lsp.models.CompletionData().apply { className = widget.name }
     }
 
-  private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
-    CompletionItem().apply {
+  private fun createAttrCompletionItem(attr: Attr, matchLevel: com.itsaky.androidide.lsp.models.MatchLevel): com.itsaky.androidide.lsp.models.CompletionItem =
+    com.itsaky.androidide.lsp.models.CompletionItem().apply {
       this.label = attr.name
       this.kind = FIELD
       this.detail = "From package '${attr.namespace.packageName}'"
@@ -226,15 +226,15 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       this.insertTextFormat = SNIPPET
       this.sortText = label.toString()
       this.matchLevel = matchLevel
-      this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
+      this.command = com.itsaky.androidide.lsp.models.Command("Trigger completion request", com.itsaky.androidide.lsp.models.Command.TRIGGER_COMPLETION)
     }
 
   private fun createAttrValueCompletionItem(
     attrName: String,
     value: String,
-    matchLevel: MatchLevel
-  ): CompletionItem {
-    return CompletionItem().apply {
+    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel
+  ): com.itsaky.androidide.lsp.models.CompletionItem {
+    return com.itsaky.androidide.lsp.models.CompletionItem().apply {
       this.label = value
       this.detail = "Value for '$attrName'"
       this.kind = VALUE

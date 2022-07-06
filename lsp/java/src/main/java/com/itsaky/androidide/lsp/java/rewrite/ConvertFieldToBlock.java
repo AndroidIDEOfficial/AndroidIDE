@@ -24,8 +24,8 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LineMap;

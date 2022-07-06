@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.api
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.androidide.lsp.models.DocumentChangeEvent
-import com.itsaky.androidide.lsp.models.Position
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.models.Range
 import io.github.rosemoe.sora.text.Content
 
 /**
@@ -46,14 +46,14 @@ abstract class CursorDependentTest : LoggingTest() {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    getServer().documentHandler.onContentChange(DocumentChangeEvent(file!!, contents!!.toString(), 1, NEW_TEXT, 0, Range.NONE))
+    getServer().documentHandler.onContentChange(com.itsaky.androidide.lsp.models.DocumentChangeEvent(file!!, contents!!.toString(), 1, NEW_TEXT, 0, com.itsaky.androidide.models.Range.NONE))
   }
   
-  fun cursorPosition(): Position {
+  fun cursorPosition(): com.itsaky.androidide.models.Position {
     return cursorPosition(true)
   }
 
-  fun cursorPosition(deleteCursorText: Boolean): Position {
+  fun cursorPosition(deleteCursorText: Boolean): com.itsaky.androidide.models.Position {
     requireCursor()
 
     if (deleteCursorText) {
@@ -61,6 +61,6 @@ abstract class CursorDependentTest : LoggingTest() {
     }
 
     val pos = Content(contents!!).indexer.getCharPosition(cursor)
-    return Position(pos.line, pos.column, pos.index)
+    return com.itsaky.androidide.models.Position(pos.line, pos.column, pos.index)
   }
 }

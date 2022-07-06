@@ -17,8 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
-import com.itsaky.androidide.lsp.java.FileStore;
-import com.itsaky.androidide.lsp.java.utils.StringSearch;
+import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.util.SourceClassTrie;
+import com.itsaky.androidide.projects.util.StringSearch;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -42,9 +45,19 @@ import javax.tools.StandardLocation;
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
   private static final Logger LOG = Logger.getLogger("main");
+  private ModuleProject module;
 
   public SourceFileManager() {
+    this(null);
+  }
+
+  public SourceFileManager(final ModuleProject module) {
     super(createDelegateFileManager());
+    this.module = module;
+  }
+
+  public void setModule(final ModuleProject module) {
+    this.module = module;
   }
 
   private static StandardJavaFileManager createDelegateFileManager() {
@@ -57,29 +70,36 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     LOG.warning(error.getMessage(null));
   }
 
+  private String packageNameOrEmpty(Path file) {
+    return this.module != null ? module.packageNameOrEmpty(file) : "";
+  }
+
   @Override
   public Iterable<JavaFileObject> list(
       Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse)
       throws IOException {
     if (location == StandardLocation.SOURCE_PATH) {
+      if (this.module == null) {
+        return Collections.emptyList();
+      }
       Stream<JavaFileObject> stream =
-          FileStore.list(packageName).stream().map(this::asJavaFileObject);
+          module.listClassesFromSourceDirs(packageName).stream().map(this::asJavaFileObject);
       return stream::iterator;
     } else {
       return super.list(location, packageName, kinds, recurse);
     }
   }
 
-  private JavaFileObject asJavaFileObject(Path file) {
+  private JavaFileObject asJavaFileObject(SourceClassTrie.SourceNode node) {
     // TODO erase method bodies of files that are not open
-    return new SourceFileObject(file);
+    return new SourceFileObject(node.getFile());
   }
 
   @Override
   public String inferBinaryName(Location location, JavaFileObject file) {
     if (location == StandardLocation.SOURCE_PATH) {
       SourceFileObject source = (SourceFileObject) file;
-      String packageName = FileStore.packageName(source.path);
+      String packageName = packageNameOrEmpty(source.path);
       String className = removeExtension(source.path.getFileName().toString());
       if (!packageName.isEmpty()) className = packageName + "." + className;
       return className;
@@ -105,9 +125,12 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     if (location == StandardLocation.SOURCE_PATH) {
       String packageName = StringSearch.mostName(className);
       String simpleClassName = StringSearch.lastName(className);
-      for (Path f : FileStore.list(packageName)) {
-        if (f.getFileName().toString().equals(simpleClassName + kind.extension)) {
-          return new SourceFileObject(f);
+      List<SourceClassTrie.SourceNode> classes =
+          module != null ? module.listClassesFromSourceDirs(packageName) : Collections.emptyList();
+      for (SourceClassTrie.SourceNode node : classes) {
+        final Path path = node.getFile();
+        if (path.getFileName().toString().equals(simpleClassName + kind.extension)) {
+          return new SourceFileObject(path);
         }
       }
       // Fall through to disk in case we have .jar or .zip files on the source path
@@ -128,7 +151,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   public boolean contains(Location location, FileObject file) throws IOException {
     if (location == StandardLocation.SOURCE_PATH) {
       SourceFileObject source = (SourceFileObject) file;
-      return FileStore.contains(source.path);
+      return module.compileJavaSourceClasses.findSource(source.path) != null;
     } else {
       return super.contains(location, file);
     }

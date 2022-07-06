@@ -49,8 +49,8 @@ class ClassNamesCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
-    val list = mutableListOf<CompletionItem>()
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
+    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     val packageName = Objects.toString(root.packageName, "")
     val uniques: MutableSet<String> = HashSet()
     val previousSize: Int = list.size
@@ -108,6 +108,6 @@ class ClassNamesCompletionProvider(
 
     log.info("...found " + (list.size - previousSize) + " class names")
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 }

@@ -41,19 +41,24 @@ class ProjectTransformer {
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   fun transform(project: IProject): Project? {
-    val path = project.projectPath.get()
-    val root =
-      Project(
-        name = project.name.get(),
-        description = project.description.get() ?: "",
-        path = path,
-        projectDir = project.projectDir.get(),
-        buildDir = project.buildDir.get(),
-        buildScript = project.buildScript.get(),
-        tasks = project.tasks.get() ?: listOf()
-      )
-    (root.subModules as MutableList).addAll(transform(project.listModules().get(), project))
-    return root
+    try {
+      val path = project.projectPath.get()
+      val root =
+        Project(
+          name = project.name.get(),
+          description = project.description.get() ?: "",
+          path = path,
+          projectDir = project.projectDir.get(),
+          buildDir = project.buildDir.get(),
+          buildScript = project.buildScript.get(),
+          tasks = project.tasks.get() ?: listOf()
+        )
+      (root.subModules as MutableList).addAll(transform(project.listModules().get(), project))
+      return root
+    } catch (error: Throwable) {
+      log.error("Unable to transform project", error)
+      return null
+    }
   }
 
   fun transform(project: com.itsaky.androidide.tooling.api.model.AndroidModule): AndroidModule {

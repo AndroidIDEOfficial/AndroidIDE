@@ -20,8 +20,7 @@ import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
@@ -33,8 +32,10 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
-import com.itsaky.androidide.lsp.models.Position
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
 import com.sun.source.tree.MethodTree
 import com.sun.source.util.Trees
@@ -64,7 +65,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
+    if (!visible || !hasRequiredData(data, com.itsaky.androidide.models.Range::class.java, CodeEditor::class.java)) {
       markInvisible()
       return
     }
@@ -74,11 +75,12 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val range = data[Range::class.java]!!
-    val server = data[JavaLanguageServer::class.java]!!
+    val range = data[com.itsaky.androidide.models.Range::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
     val file = requirePath(data)
 
-    return server.compiler.compile(file).get { task ->
+    return compiler.compile(file).get { task ->
       // 1-based line and column index
       val startLine = range.start.line + 1
       val startColumn = range.start.column + 1
@@ -190,10 +192,11 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
   }
 
   private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
-    val server = data[JavaLanguageServer::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
     val file = requirePath(data)
 
-    server.compiler.compile(file).run { task ->
+    compiler.compile(file).run { task ->
       val types = task.task.types
       val trees = Trees.instance(task.task)
       val sb = StringBuilder()
@@ -217,7 +220,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
 
         val thisDeclaredType = thisClass.asType() as DeclaredType
         val executableType = types.asMemberOf(thisDeclaredType, superMethod) as ExecutableType
-        val source = findSource(server.compiler, task, superMethod)
+        val source = findSource(compiler, task, superMethod)
         val method =
           if (source != null) {
             JavaParserUtils.printMethod(superMethod, executableType, source)
@@ -253,9 +256,10 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
     data: ActionData,
     sb: StringBuilder,
     imports: MutableSet<String>,
-    position: Position,
+    position: com.itsaky.androidide.models.Position,
   ) {
-    val server = data[JavaLanguageServer::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
     val editor = data[CodeEditor::class.java]!!
     val file = requirePath(data)
     val text = editor.text
@@ -266,7 +270,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
 
     for (name in imports) {
       val rewrite = AddImport(file, name)
-      val edits = rewrite.rewrite(server.compiler)[file]
+      val edits = rewrite.rewrite(compiler)[file]
       if (edits == null || edits.isEmpty()) {
         continue
       }

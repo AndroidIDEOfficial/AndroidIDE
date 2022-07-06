@@ -83,7 +83,6 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
-import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.NonEditableEditorFragment;
@@ -98,17 +97,16 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
-import com.itsaky.androidide.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.InitializeParams;
-import com.itsaky.androidide.lsp.models.Range;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.projects.ProjectManager;
@@ -135,7 +133,6 @@ import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.toaster.Toaster;
 
-import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -419,9 +416,9 @@ public class EditorActivity extends StudioActivity
     return openFile(file, null);
   }
 
-  public CodeEditorView openFile(File file, com.itsaky.androidide.lsp.models.Range selection) {
+  public CodeEditorView openFile(File file, com.itsaky.androidide.models.Range selection) {
     if (selection == null) {
-      selection = com.itsaky.androidide.lsp.models.Range.NONE;
+      selection = com.itsaky.androidide.models.Range.NONE;
     }
 
     int index = openFileAndGetIndex(file, selection);
@@ -446,7 +443,7 @@ public class EditorActivity extends StudioActivity
   }
 
   @SuppressLint("NotifyDataSetChanged")
-  public int openFileAndGetIndex(File file, com.itsaky.androidide.lsp.models.Range selection) {
+  public int openFileAndGetIndex(File file, com.itsaky.androidide.models.Range selection) {
     final var openedFileIndex = findIndexOfEditorByFile(file);
 
     if (openedFileIndex != -1) {
@@ -872,8 +869,6 @@ public class EditorActivity extends StudioActivity
     ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
     ProjectManager.INSTANCE.notifyProjectUpdate();
 
-    dispatchProjectInitialized();
-
     ThreadUtils.runOnUiThread(
         () -> {
           if (mBinding == null) {
@@ -890,12 +885,6 @@ public class EditorActivity extends StudioActivity
 
           mFindInProjectDialog = null; // Create the dialog again if needed
         });
-  }
-
-  protected void dispatchProjectInitialized() {
-    final var event = new ProjectInitializedEvent();
-    event.put(Project.class, ProjectManager.INSTANCE.getRootProject());
-    EventBus.getDefault().post(event);
   }
 
   private void initialSetup() {
@@ -1083,25 +1072,6 @@ public class EditorActivity extends StudioActivity
 
     ILanguageServerRegistry.getDefault().register(new JavaLanguageServer());
     ILanguageServerRegistry.getDefault().register(new XMLLanguageServer());
-    ProjectManager.INSTANCE.setProjectUpdateNotificationConsumer(
-        () -> {
-          try {
-            final var app = Objects.requireNonNull(ProjectManager.INSTANCE.getApp());
-            final var server =
-                ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID);
-            final var classPaths =
-                app.getClassPaths().stream()
-                    .filter(Objects::nonNull)
-                    .map(File::toPath)
-                    .collect(Collectors.toSet());
-            final var sourceDirs =
-                app.getSourceDirectories().stream().map(File::toPath).collect(Collectors.toSet());
-            final var configuration = new JavaServerConfiguration(classPaths, sourceDirs);
-            server.configurationChanged(configuration);
-          } catch (Throwable err) {
-            LOG.error("Unable to notify configuration change event", err);
-          }
-        });
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       ProjectManager.INSTANCE.setProjectPath(savedInstanceState.getString(KEY_PROJECT_PATH));
     }
@@ -1186,12 +1156,14 @@ public class EditorActivity extends StudioActivity
   protected void onStart() {
     super.onStart();
     mFileActionsHandler.register();
+    ProjectManager.INSTANCE.register();
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     mFileActionsHandler.unregister();
+    ProjectManager.INSTANCE.unregister();
   }
 
   @SuppressWarnings("deprecation")

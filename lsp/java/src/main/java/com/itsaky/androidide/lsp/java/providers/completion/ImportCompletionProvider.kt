@@ -46,11 +46,11 @@ class ImportCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     log.info("...complete import")
 
     val names: MutableSet<String> = HashSet()
-    val list = mutableListOf<CompletionItem>()
+    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     for (className in compiler.publicTopLevelTypes()) {
       val matchLevel = matchLevel(className, partial)
       if (matchLevel == NO_MATCH) {
@@ -79,6 +79,6 @@ class ImportCompletionProvider(
       }
     }
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 }

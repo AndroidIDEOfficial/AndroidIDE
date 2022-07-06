@@ -23,8 +23,8 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 
 import java.io.File;
 import java.io.FileFilter;

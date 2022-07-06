@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.api
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.lsp.api.FileProvider.Companion.resources
-import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.models.InitializeParams
 import org.jetbrains.annotations.Contract
 import java.io.File
@@ -53,7 +52,7 @@ abstract class LanguageServerProvider {
   }
 
   @Contract(" -> new")
-  private fun createInitParams(): InitializeParams {
-    return InitializeParams(mutableSetOf(resources()))
+  private fun createInitParams(): com.itsaky.androidide.lsp.models.InitializeParams {
+    return com.itsaky.androidide.lsp.models.InitializeParams(mutableSetOf(resources()))
   }
 }

@@ -36,6 +36,8 @@ package com.itsaky.androidide.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.androidide.lsp.models.CompletionParams;
+import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
@@ -43,12 +45,14 @@ import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
 import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.models.LSPFailure;
-import com.itsaky.androidide.lsp.models.Range;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.Project;
 
 import java.nio.file.Path;
 
@@ -131,12 +135,22 @@ public interface ILanguageServer {
   void configurationChanged(Object newConfiguration);
 
   /**
-   * Get the completion provider associated with this language server. Should never be null.
+   * Setup this language server with the given project. Servers are not expected to keep a reference
+   * to the provided project. Instead, use {@link ProjectManager#getRootProject()} to obtain the
+   * project instance.
    *
+   * @param project The initialized project.
+   */
+  void setupWithProject(@NonNull Project project);
+
+  /**
+   * Compute code completions for the given completion params.
+   *
+   * @param params The completion params.
    * @return The completion provider.
    */
   @NonNull
-  ICompletionProvider getCompletionProvider();
+  CompletionResult complete(CompletionParams params);
 
   /**
    * Find references using the given params.
@@ -194,14 +208,6 @@ public interface ILanguageServer {
   default CharSequence formatCode(FormatCodeParams params) {
     return params.getContent();
   }
-
-  /**
-   * The document handler associated with this language server instance.
-   *
-   * @return The document handler. Must not be null.
-   */
-  @NonNull
-  IDocumentHandler getDocumentHandler();
 
   /**
    * Handle failure caused by LSP

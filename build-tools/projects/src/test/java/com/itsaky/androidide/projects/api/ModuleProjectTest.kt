@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.util.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.ILogger
@@ -45,6 +46,8 @@ class ModuleProjectTest {
       )
       .get()
     ProjectManager.setupProject(project)
+
+    verifyProjectManagerAPIs()
 
     val root = ProjectManager.rootProject
     assertThat(root).isNotNull()
@@ -152,13 +155,38 @@ class ModuleProjectTest {
 
     app.indexSourcesAndClasspaths()
 
-    val classNames = app.compileSourceClasses.findClassNames("com.itsaky")
-    assertThat(classNames).isNotNull()
-    assertThat(classNames).isNotEmpty()
-    assertThat(classNames)
+    val classes = app.compileJavaSourceClasses.findInPackage("com.itsaky")
+    assertThat(classes).isNotNull()
+    assertThat(classes).isNotEmpty()
+    assertThat(classes.map { it.qualifiedName })
       .containsExactly(
         "com.itsaky.androidide.tooling.test.Main",
         "com.itsaky.test.app.MainActivity"
       )
+    assertThat(classes.map { it.isClass }).containsExactly(true, true)
+    assertThat(classes.map { it::class.java })
+      .containsExactly(SourceNode::class.java, SourceNode::class.java)
+  }
+
+  private fun verifyProjectManagerAPIs() {
+    val root = ProjectManager.rootProject
+    assertThat(root).isNotNull()
+    assertThat(root!!.path).isEqualTo(":")
+
+    val source =
+      root.projectDir.toPath().resolve("app/src/main/java/com/itsaky/test/app/MainActivity.java")
+    val moduleForFile = root.findModuleForFile(source)
+    assertThat(moduleForFile).isNotNull()
+    assertThat(moduleForFile!!.path).isEqualTo(":app")
+    assertThat(moduleForFile.projectDir.path).isEqualTo(File(root.projectDir, "app").path)
+
+    val sourceNode = moduleForFile.compileJavaSourceClasses.findSource(source)
+    assertThat(sourceNode).isNotNull()
+    assertThat(sourceNode!!.isClass).isTrue()
+    assertThat(sourceNode.name).isEqualTo("MainActivity")
+    assertThat(sourceNode.packageName).isEqualTo("com.itsaky.test.app")
+    assertThat(sourceNode.qualifiedName).isEqualTo("com.itsaky.test.app.MainActivity")
+    assertThat(sourceNode.children).isEmpty()
+    assertThat(Files.isSameFile(source, sourceNode.file)).isTrue()
   }
 }

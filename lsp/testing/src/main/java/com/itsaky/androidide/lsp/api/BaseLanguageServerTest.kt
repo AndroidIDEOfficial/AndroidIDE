@@ -18,7 +18,6 @@ package com.itsaky.androidide.lsp.api
 
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.models.DocumentOpenEvent
 import org.robolectric.RuntimeEnvironment
 import java.nio.file.Path
@@ -32,7 +31,7 @@ abstract class BaseLanguageServerTest {
     file = FileProvider.sourceFile(fileName)
     contents = FileProvider.contents(file!!)
 
-    getServer().documentHandler.onFileOpened(DocumentOpenEvent(file!!, contents.toString(), 0))
+    getServer().documentHandler.onFileOpened(com.itsaky.androidide.lsp.models.DocumentOpenEvent(file!!, contents.toString(), 0))
   }
 
   protected open fun createActionData(vararg values: Any): ActionData {

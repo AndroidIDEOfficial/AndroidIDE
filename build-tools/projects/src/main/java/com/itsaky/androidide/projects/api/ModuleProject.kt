@@ -17,12 +17,26 @@
 
 package com.itsaky.androidide.projects.api
 
-import com.itsaky.androidide.eventbus.events.EventReceiver
+import android.text.TextUtils
+import com.google.common.reflect.ClassPath
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
+import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
+import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.projects.util.ClassTrie
+import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.projects.util.SourceClassTrie
+import com.itsaky.androidide.projects.util.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
-import java.util.zip.*
+import java.io.IOException
+import java.net.MalformedURLException
+import java.net.URL
+import java.net.URLClassLoader
+import java.nio.file.Path
+import java.util.concurrent.*
 
 /**
  * A module project. Base class for [AndroidModule] and [JavaModule].
@@ -36,11 +50,10 @@ abstract class ModuleProject(
   projectDir: File,
   buildDir: File,
   buildScript: File,
-  tasks: List<GradleTask>
+  tasks: List<GradleTask>,
 ) :
   Project(name, description, path, projectDir, buildDir, buildScript, tasks),
-  com.itsaky.androidide.tooling.api.model.ModuleProject,
-  EventReceiver {
+  com.itsaky.androidide.tooling.api.model.ModuleProject {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -50,8 +63,14 @@ abstract class ModuleProject(
     const val USAGE_RUNTIME = "java-runtime"
   }
 
-  val compileSourceClasses = ClassTrie()
-  val compileClasspathClasses = ClassTrie()
+  @JvmField val compileJavaSourceClasses = SourceClassTrie()
+  @JvmField val compileClasspathClasses = ClassTrie()
+
+  /**
+   * Map of documents that are open in the editor. Keys here are the canonical paths of the
+   * documents.
+   */
+  val activeDocuments: MutableMap<Path, ActiveDocument> = ConcurrentHashMap<Path, ActiveDocument>()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -89,41 +108,172 @@ abstract class ModuleProject(
    */
   abstract fun getCompileModuleProjects(): List<ModuleProject>
 
-  /** Finds the source files from source directories and indexes them. */
+  /**
+   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is opened.
+   *
+   * @param event The event descriptor.
+   * @return `true` if this module consumed the event. `false` otherwise.
+   */
+  fun onDocumentOpen(event: DocumentOpenEvent): Boolean {
+    if (!isCacheable(event.openedFile) || !isFromThisModule(event.openedFile)) {
+      return false
+    }
+    log.debug("File ${event.file} opened from module:", path)
+    activeDocuments[event.openedFile.normalize()] = createDocument(event)
+    return true
+  }
+
+  /**
+   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is changed.
+   *
+   * @param event The event descriptor.
+   * @return `true` if this module consumed the event. `false` otherwise.
+   */
+  fun onDocumentChanged(event: DocumentChangeEvent): Boolean {
+    if (!isCacheable(event.changedFile) || !isFromThisModule(event.changedFile)) {
+      return false
+    }
+
+    activeDocuments[event.changedFile.normalize()] = createDocument(event)
+    return true
+  }
+
+  /**
+   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is closed.
+   *
+   * @param event The event descriptor.
+   * @return `true` if this module consumed the event. `false` otherwise.
+   */
+  fun onDocumentClose(event: DocumentCloseEvent): Boolean {
+    if (!isCacheable(event.closedFile) || !isFromThisModule(event.closedFile)) {
+      return false
+    }
+
+    activeDocuments.remove(event.closedFile.normalize())
+    return true
+  }
+
+  fun isActive(file: Path): Boolean {
+    return this.activeDocuments.containsKey(file.normalize())
+  }
+
+  fun getActiveDocument(file: Path): ActiveDocument? {
+    return this.activeDocuments[file.normalize()]
+  }
+
+  // TODO implement this as replacement of FileStore.javaSources
+  /** Finds the source files and classes from source directories and classpaths and indexes them. */
   fun indexSourcesAndClasspaths() {
+    log.debug("Starting to index sources and classpaths for project:", path)
     getCompileSourceDirectories().forEach {
-      val sourceDir = it
-      val sourceDirLength = sourceDir.absolutePath.length
+      val sourceDir = it.toPath()
       it
         .walk()
-        .filter { file -> file.isFile && file.exists() }
-        .forEach { file ->
-          // TODO Multiple classes can be defined in a single file
-          //  Also, their package names might be different
-          //  We need to handle these cases as well
-          val parentPath = file.parentFile!!.absolutePath
-          val path = parentPath.substring(sourceDirLength + 1) + "/" + file.nameWithoutExtension
-          val fullyQualifiedName = path.replace('/', '.')
-          this.compileSourceClasses.append(fullyQualifiedName)
-        }
+        .filter { file -> file.isFile && file.exists() && DocumentUtils.isJavaFile(file.toPath()) }
+        .map { file -> file.toPath() }
+        .forEach { file -> this.compileJavaSourceClasses.append(file, sourceDir) }
     }
-    getCompileClasspaths()
-      .filter { it.exists() }
-      .forEach { classpath ->
-        ZipFile(classpath).use { zip ->
-          for (entry in zip.entries()) {
-            if (!entry.name.endsWith(".class")) {
-              continue
-            }
+    log.debug("Sources indexed for project:", path)
+    val urls =
+      getCompileClasspaths().filter { it.exists() }.map { toUrl(it.toPath()) }.toTypedArray()
+    val loader = URLClassLoader(urls, null)
+    val scanner: ClassPath
+    try {
+      scanner = ClassPath.from(loader)
+    } catch (e: IOException) {
+      log.warn("Unable to read classpaths for project:", path)
+      throw RuntimeException(e)
+    }
+    log.debug("Classpaths indexed for project:", path)
+    var count = 0
+    scanner.topLevelClasses.forEach {
+      this.compileClasspathClasses.append(it.name)
+      count++
+    }
 
-            val name = entry.name.substringBeforeLast('.').replace('/', '.').replace('$', '.')
-            if (!compileClasspathClasses.contains(name)) {
-              compileClasspathClasses.append(name)
-            } else {
-              log.warn("Duplicate class '$name'")
-            }
-          }
+    log.debug("Found $count classes in classpath of project '${this.path}'")
+  }
+
+  fun getSourceFilesInDir(dir: Path): List<SourceNode> =
+    this.compileJavaSourceClasses.getSourceFilesInDir(dir)
+
+  fun packageNameOrEmpty(file: Path?): String {
+    if (file == null) {
+      return ""
+    }
+
+    val source = this.compileJavaSourceClasses.findSource(file)
+    if (source != null) {
+      return source.packageName
+    }
+
+    return ""
+  }
+
+  fun suggestPackageName(file: Path): String {
+    var dir = file.parent.normalize()
+    while (dir != null) {
+      for (sibling in getSourceFilesInDir(dir)) {
+        if (DocumentUtils.isSameFile(sibling.file, file)) {
+          continue
         }
+        var packageName: String = packageNameOrEmpty(sibling.file)
+        if (TextUtils.isEmpty(packageName.trim { it <= ' ' })) {
+          continue
+        }
+        val relativePath = dir.relativize(file.parent)
+        val relativePackage = relativePath.toString().replace(File.separatorChar, '.')
+        if (relativePackage.isNotEmpty()) {
+          packageName = "$packageName.$relativePackage"
+        }
+        return packageName
       }
+      dir = dir.parent.normalize()
+    }
+    return ""
+  }
+
+  fun listClassesFromSourceDirs(packageName: String): List<SourceNode> {
+    return compileJavaSourceClasses
+      .findInPackage(packageName)
+      .filterIsInstance(SourceNode::class.java)
+  }
+
+  protected open fun isCacheable(file: Path): Boolean {
+    // For now, we only cache Java files
+    return DocumentUtils.isJavaFile(file)
+  }
+
+  protected open fun isFromThisModule(file: Path): Boolean {
+    // TODO This can be probably improved
+    return file.startsWith(this.projectDir.toPath())
+  }
+
+  protected open fun createDocument(event: DocumentOpenEvent): ActiveDocument {
+    return ActiveDocument(
+      file = event.openedFile,
+      content = event.text,
+      changeRange = Range.NONE,
+      version = event.version,
+      changDelta = 0
+    )
+  }
+
+  protected open fun createDocument(event: DocumentChangeEvent): ActiveDocument {
+    return ActiveDocument(
+      file = event.changedFile,
+      content = event.newText,
+      changeRange = event.changeRange,
+      version = event.version,
+      changDelta = event.changeDelta
+    )
+  }
+
+  private fun toUrl(path: Path): URL {
+    try {
+      return path.toUri().toURL()
+    } catch (e: MalformedURLException) {
+      throw RuntimeException(e)
+    }
   }
 }

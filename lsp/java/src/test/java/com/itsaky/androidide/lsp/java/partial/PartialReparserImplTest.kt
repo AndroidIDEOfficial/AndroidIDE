@@ -26,7 +26,7 @@ import com.itsaky.androidide.lsp.java.models.PartialReparseRequest
 import com.itsaky.androidide.lsp.java.visitors.PrintingVisitor
 import com.itsaky.androidide.lsp.models.ChangeType.INSERT
 import com.itsaky.androidide.lsp.models.DocumentChangeEvent
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Range
 import com.sun.source.tree.ExpressionStatementTree
 import com.sun.source.tree.LiteralTree
 import com.sun.source.tree.Tree
@@ -35,17 +35,18 @@ import com.sun.tools.javac.tree.JCTree.JCMethodDecl
 import com.sun.tools.javac.tree.JCTree.JCMethodInvocation
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl
 import com.sun.tools.javac.tree.TreeScanner
-import javax.lang.model.type.ArrayType
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import javax.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class PartialReparserImplTest : BaseJavaTest() {
 
+  // TODO Move this to project ':build-tools:javac-utils'
   val jls = mServer as JavaLanguageServer
 
   @Test
@@ -68,13 +69,13 @@ class PartialReparserImplTest : BaseJavaTest() {
       )
       .run { PrintingVisitor().scan(it.root() as JCCompilationUnit) }
     jls.onContentChange(
-      DocumentChangeEvent(
+      com.itsaky.androidide.lsp.models.DocumentChangeEvent(
         file!!,
         contents!!.insert(192, "trim().").toString(),
         2,
         INSERT,
         "trim().".length,
-        Range.NONE
+        com.itsaky.androidide.models.Range.NONE
       )
     )
     jls.compiler.compile(

@@ -17,15 +17,15 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ConvertVariableToStatement
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.androidide.lsp.models.DiagnosticItem
-import java.io.File
+import com.itsaky.androidide.projects.ProjectManager
 
 /** @author Akash Yadav */
 class VariableToStatementAction : BaseCodeAction() {
@@ -44,12 +44,12 @@ class VariableToStatementAction : BaseCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    val diagnostic = data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!
     if (diagnosticCode != diagnostic.code) {
       markInvisible()
       return
@@ -60,9 +60,9 @@ class VariableToStatementAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val diagnostic = data[DiagnosticItem::class.java]!!
-    val server = data[JavaLanguageServer::class.java]!!
-    val compiler = server.compiler!!
+    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
     val path = requirePath(data)
 
     return compiler.compile(path).get {
@@ -75,10 +75,7 @@ class VariableToStatementAction : BaseCodeAction() {
       log.warn("Unable to convert variable to statement")
       return
     }
-
-    val file = data[File::class.java]
-    val server = data[JavaLanguageServer::class.java]!!
-    val client = server.client!!
-    client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+  
+    performCodeAction(data, result)
   }
 }

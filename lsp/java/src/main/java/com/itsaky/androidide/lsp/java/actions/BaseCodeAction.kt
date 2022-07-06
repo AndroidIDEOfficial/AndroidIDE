@@ -22,8 +22,13 @@ import android.graphics.drawable.Drawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
-import com.itsaky.androidide.lsp.java.FileStore
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.rewrite.Rewrite
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 import java.nio.file.Path
@@ -41,6 +46,8 @@ abstract class BaseCodeAction : ActionItem {
 
   protected abstract val titleTextRes: Int
 
+  private val log = ILogger.newInstance(javaClass.simpleName)
+
   override fun prepare(data: ActionData) {
 
     if (
@@ -55,7 +62,7 @@ abstract class BaseCodeAction : ActionItem {
     }
 
     val file = requireFile(data)
-    visible = FileStore.isJavaFile(file.toPath())
+    visible = DocumentUtils.isJavaFile(file.toPath())
     enabled = visible
   }
 
@@ -76,5 +83,16 @@ abstract class BaseCodeAction : ActionItem {
     val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
     val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
     return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
+  }
+
+  fun performCodeAction(data: ActionData, result: Rewrite) {
+    val server = ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)!!
+    val compiler =
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+    val client = server.client!!
+
+    val file = requireFile(data)
+
+    client.performCodeAction(file, result.asCodeActions(compiler, label))
   }
 }

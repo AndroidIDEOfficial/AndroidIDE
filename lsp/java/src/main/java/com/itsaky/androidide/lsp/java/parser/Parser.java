@@ -17,52 +17,36 @@
 
 package com.itsaky.androidide.lsp.java.parser;
 
-import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.lsp.java.FileStore;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileManager;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
-import com.itsaky.androidide.lsp.models.Position;
-import com.itsaky.androidide.lsp.models.Range;
-import com.itsaky.androidide.lsp.util.StringUtils;
-import com.sun.source.tree.BlockTree;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ErroneousTree;
-import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.StatementTree;
-import com.sun.source.tree.SwitchTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
-import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 
@@ -97,6 +81,7 @@ public class Parser {
 
   /** Create a task that compiles a single file */
   private static JavacTask singleFileTask(JavaFileObject file) {
+    FILE_MANAGER.setModule(ProjectManager.INSTANCE.findModuleForFile(Paths.get(file.toUri())));
     return (JavacTask)
         COMPILER.getTask(
             null,
@@ -250,60 +235,6 @@ public class Parser {
     return "";
   }
 
-  static String describeTree(Tree leaf) {
-    if (leaf instanceof MethodTree) {
-      MethodTree method = (MethodTree) leaf;
-      StringJoiner params = new StringJoiner(", ");
-      for (VariableTree p : method.getParameters()) {
-        params.add(p.getType() + " " + p.getName());
-      }
-      return method.getName() + "(" + params + ")";
-    }
-    if (leaf instanceof ClassTree) {
-      ClassTree cls = (ClassTree) leaf;
-      return "class " + cls.getSimpleName();
-    }
-    if (leaf instanceof BlockTree) {
-      BlockTree block = (BlockTree) leaf;
-      return String.format(Locale.ROOT, "{ ...%d lines... }", block.getStatements().size());
-    }
-    return leaf.toString();
-  }
-
-  static Optional<Path> declaringFile(Element e) {
-    // Find top-level type surrounding `to`
-    LOG.info(String.format("...looking up declaring file of `%s`...", e));
-    Optional<TypeElement> top = topLevelDeclaration(e);
-    if (!top.isPresent()) {
-      LOG.warn("...no top-level type!");
-      return Optional.empty();
-    }
-
-    // Find file by looking at package and class name
-    LOG.info(String.format("...top-level type is %s", top.get()));
-    Optional<Path> file = FileStore.findDeclaringFile(top.get());
-    if (!file.isPresent()) {
-      LOG.info("...couldn't find declaring file for type");
-      return Optional.empty();
-    }
-    return file;
-  }
-
-  private static Optional<TypeElement> topLevelDeclaration(Element e) {
-    if (e == null) {
-      return Optional.empty();
-    }
-    Element parent = e;
-    TypeElement result = null;
-    while (parent.getEnclosingElement() != null) {
-      if (parent instanceof TypeElement) {
-        result = (TypeElement) parent;
-      }
-      parent = parent.getEnclosingElement();
-    }
-    return Optional.ofNullable(result);
-  }
-
   public Set<Name> packagePrivateClasses() {
     Set<Name> result = new HashSet<>();
     for (Tree t : root.getTypeDecls()) {
@@ -316,161 +247,5 @@ public class Parser {
       }
     }
     return result;
-  }
-
-  public List<String> accessibleClasses(String partialName, String fromPackage) {
-    String toPackage = Objects.toString(root.getPackageName(), "");
-    boolean samePackage = fromPackage.equals(toPackage) || toPackage.isEmpty();
-    List<String> result = new ArrayList<String>();
-    for (Tree t : root.getTypeDecls()) {
-      if (!(t instanceof ClassTree)) {
-        continue;
-      }
-      ClassTree cls = (ClassTree) t;
-      // If class is not accessible, skip it
-      boolean isPublic = cls.getModifiers().getFlags().contains(Modifier.PUBLIC);
-      if (!samePackage && !isPublic) {
-        continue;
-      }
-      // If class doesn't match partialName, skip it
-      String name = cls.getSimpleName().toString();
-      if (!StringUtils.matchesPartialName(name, partialName)) {
-        continue;
-      }
-      if (root.getPackageName() != null) {
-        name = root.getPackageName() + "." + name;
-      }
-      result.add(name);
-    }
-    return result;
-  }
-
-  String prune(long cursor) {
-    SourcePositions pos = Trees.instance(task).getSourcePositions();
-    StringBuilder buffer = new StringBuilder(contents);
-    long[] cursors = {cursor};
-    return prune(root, pos, buffer, cursors, true);
-  }
-
-  private static String prune(
-      CompilationUnitTree root,
-      SourcePositions pos,
-      StringBuilder buffer,
-      long[] offsets,
-      boolean eraseAfterCursor) {
-    class Scan extends TreeScanner<Void, Void> {
-      boolean erasedAfterCursor = !eraseAfterCursor;
-
-      @Override
-      public Void visitImport(ImportTree node, Void __) {
-        // Erase 'static' keyword so autocomplete works better
-        if (containsCursor(node) && node.isStatic()) {
-          int start = (int) pos.getStartPosition(root, node);
-          start = buffer.indexOf("static", start);
-          int end = start + "static".length();
-          erase(buffer, start, end);
-        }
-        return super.visitImport(node, null);
-      }
-
-      @Override
-      public Void visitBlock(BlockTree node, Void __) {
-        if (containsCursor(node)) {
-          super.visitBlock(node, null);
-          // When we find the deepest block that includes the cursor
-          if (!erasedAfterCursor) {
-            long start = lastCursorIn(node);
-            long end = pos.getEndPosition(root, node);
-            if (end >= buffer.length()) {
-              end = buffer.length() - 1;
-            }
-            // Find the next line
-            while (start < end && buffer.charAt((int) start) != '\n') start++;
-            // Find the end of the block
-            while (end > start && buffer.charAt((int) end) != '}') end--;
-            // Erase from next line to end of block
-            erase(buffer, start, end - 1);
-            erasedAfterCursor = true;
-          }
-        } else if (!node.getStatements().isEmpty()) {
-          StatementTree first = node.getStatements().get(0);
-          StatementTree last = node.getStatements().get(node.getStatements().size() - 1);
-          long start = pos.getStartPosition(root, first);
-          long end = pos.getEndPosition(root, last);
-          if (end >= buffer.length()) {
-            end = buffer.length() - 1;
-          }
-          erase(buffer, start, end);
-        }
-        return null;
-      }
-
-      long lastCursorIn(Tree node) {
-        long start = pos.getStartPosition(root, node);
-        long end = pos.getEndPosition(root, node);
-        long last = -1;
-        for (long cursor : offsets) {
-          if (start <= cursor && cursor <= end) {
-            last = cursor;
-          }
-        }
-        if (last == -1) {
-          throw new RuntimeException(
-              String.format(
-                  "No cursor in %s is between %d and %d", Arrays.toString(offsets), start, end));
-        }
-        return last;
-      }
-
-      @Override
-      public Void visitSwitch(SwitchTree node, Void __) {
-        if (containsCursor(node)) {
-          // Prevent the enclosing block from erasing the closing } of the switch
-          erasedAfterCursor = true;
-        }
-        return super.visitSwitch(node, null);
-      }
-
-      @Override
-      public Void visitErroneous(ErroneousTree node, Void nothing) {
-        return super.scan(node.getErrorTrees(), nothing);
-      }
-
-      boolean anyContainsCursor(Collection<? extends Tree> nodes) {
-        for (Tree n : nodes) {
-          if (containsCursor(n)) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      boolean containsCursor(Tree node) {
-        long start = pos.getStartPosition(root, node);
-        long end = pos.getEndPosition(root, node);
-        for (long cursor : offsets) {
-          if (start <= cursor && cursor <= end) {
-            return true;
-          }
-        }
-        return false;
-      }
-    }
-
-    new Scan().scan(root, null);
-
-    return buffer.toString();
-  }
-
-  private static void erase(StringBuilder buffer, long start, long end) {
-    for (int i = (int) start; i < end; i++) {
-      switch (buffer.charAt(i)) {
-        case '\r':
-        case '\n':
-          break;
-        default:
-          buffer.setCharAt(i, ' ');
-      }
-    }
   }
 }

@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.lsp.java.edits
 
-import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.edits.IEditHandler
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.projects.ProjectManager
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
@@ -32,11 +32,10 @@ import java.nio.file.Path
  */
 abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
 
-  override fun performEdits(editor: CodeEditor, completionItem: CompletionItem) {
-    val languageServer =
-      ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
-    if (languageServer != null && languageServer is JavaLanguageServer) {
-      performEdits(languageServer.compiler, editor, completionItem)
+  override fun performEdits(editor: CodeEditor, completionItem: com.itsaky.androidide.lsp.models.CompletionItem) {
+    val compiler = JavaCompilerProvider.get(ProjectManager.findModuleForFile(file) ?: return)
+    if (compiler != null) {
+      performEdits(compiler, editor, completionItem)
     }
   }
 
@@ -51,6 +50,6 @@ abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
   abstract fun performEdits(
     compiler: JavaCompilerService,
     editor: CodeEditor,
-    completionItem: CompletionItem
+    completionItem: com.itsaky.androidide.lsp.models.CompletionItem
   )
 }

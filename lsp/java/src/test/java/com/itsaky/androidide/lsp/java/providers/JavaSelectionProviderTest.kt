@@ -21,8 +21,8 @@ import com.itsaky.androidide.lsp.java.BaseJavaTest
 import com.itsaky.androidide.lsp.models.ChangeType.NEW_TEXT
 import com.itsaky.androidide.lsp.models.DocumentChangeEvent
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams
-import com.itsaky.androidide.lsp.models.Position
-import com.itsaky.androidide.lsp.models.Range
+import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.models.Range
 import io.github.rosemoe.sora.text.Content
 import org.junit.Before
 import org.junit.Test
@@ -46,25 +46,25 @@ class JavaSelectionProviderTest : BaseJavaTest() {
     cursor = requireCursor()
     deleteCursorText()
     mServer.documentHandler.onContentChange(
-      DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, Range.NONE)
+      com.itsaky.androidide.lsp.models.DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, com.itsaky.androidide.models.Range.NONE)
     )
 
     val range = findRange()
-    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+    val expanded = mServer.expandSelection(com.itsaky.androidide.lsp.models.ExpandSelectionParams(file!!, range))
 
-    assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
+    assertThat(expanded).isEqualTo(com.itsaky.androidide.models.Range(com.itsaky.androidide.models.Position(4, 27), com.itsaky.androidide.models.Position(4, 41)))
   }
 
   @Test
   fun testMethodSelection() {
     openFile("MethodBodySelectionExpansionTest")
 
-    val start = Position(3, 43)
-    val end = Position(5, 5)
-    val range = Range(start, end)
+    val start = com.itsaky.androidide.models.Position(3, 43)
+    val end = com.itsaky.androidide.models.Position(5, 5)
+    val range = com.itsaky.androidide.models.Range(start, end)
 
-    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
+    val expanded = mServer.expandSelection(com.itsaky.androidide.lsp.models.ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(com.itsaky.androidide.models.Range(com.itsaky.androidide.models.Position(3, 4), end))
   }
 
   @Test
@@ -72,12 +72,12 @@ class JavaSelectionProviderTest : BaseJavaTest() {
     openFile("TrySelectionExpansionTest")
 
     // Test expand selection if catch block is selected
-    val start = Position(7, 10)
-    val end = Position(8, 9)
-    val range = Range(start, end)
+    val start = com.itsaky.androidide.models.Position(7, 10)
+    val end = com.itsaky.androidide.models.Position(8, 9)
+    val range = com.itsaky.androidide.models.Range(start, end)
 
-    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    val expanded = mServer.expandSelection(com.itsaky.androidide.lsp.models.ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(com.itsaky.androidide.models.Range(com.itsaky.androidide.models.Position(4, 8), com.itsaky.androidide.models.Position(10, 9)))
   }
 
   @Test
@@ -85,18 +85,18 @@ class JavaSelectionProviderTest : BaseJavaTest() {
     openFile("TrySelectionExpansionTest")
 
     // Test expand selection if catch block is selected
-    val start = Position(8, 18)
-    val end = Position(10, 9)
-    val range = Range(start, end)
+    val start = com.itsaky.androidide.models.Position(8, 18)
+    val end = com.itsaky.androidide.models.Position(10, 9)
+    val range = com.itsaky.androidide.models.Range(start, end)
 
-    val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    val expanded = mServer.expandSelection(com.itsaky.androidide.lsp.models.ExpandSelectionParams(file!!, range))
+    assertThat(expanded).isEqualTo(com.itsaky.androidide.models.Range(com.itsaky.androidide.models.Position(4, 8), com.itsaky.androidide.models.Position(10, 9)))
   }
 
-  private fun findRange(): Range {
+  private fun findRange(): com.itsaky.androidide.models.Range {
     val pos = Content(contents!!).indexer.getCharPosition(cursor)
-    val position = Position(pos.line, pos.column, pos.index)
-    return Range(position, position)
+    val position = com.itsaky.androidide.models.Position(pos.line, pos.column, pos.index)
+    return com.itsaky.androidide.models.Range(position, position)
   }
 
   override fun openFile(fileName: String) {

@@ -21,14 +21,16 @@ import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
+import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
+import com.itsaky.androidide.lsp.java.parser.Parser;
+import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-import com.itsaky.androidide.lsp.java.FileStore;
-import com.itsaky.androidide.lsp.java.parser.Parser;
-import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
-import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
-import com.itsaky.androidide.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;
@@ -180,7 +182,7 @@ public class CompileBatch implements AutoCloseable {
 
   private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
     Path file = Paths.get(err.getSource().toUri());
-    CharSequence contents = FileStore.contents(file);
+    CharSequence contents = ProjectManager.INSTANCE.getDocumentContents(file);
     int begin = (int) err.getStartPosition();
     int end = (int) err.getEndPosition();
     return substring(contents, begin, end);
@@ -210,11 +212,30 @@ public class CompileBatch implements AutoCloseable {
 
   private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
     Path file = Paths.get(err.getSource().toUri());
-    return FileStore.packageName(file);
+    ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(file);
+    if (module == null) {
+      return "";
+    }
+
+    SourceClassTrie.SourceNode node = module.compileJavaSourceClasses.findSource(file);
+    if (node == null) {
+      return "";
+    }
+
+    return node.getPackageName();
   }
 
   private Path findPackagePrivateClass(String packageName, String className) {
-    for (Path file : FileStore.list(packageName)) {
+    final List<SourceClassTrie.SourceNode> classes =
+        parent.module != null
+            ? parent.module.listClassesFromSourceDirs(packageName)
+            : Collections.emptyList();
+    if (classes.isEmpty()) {
+      return FILE_NOT_FOUND;
+    }
+
+    for (SourceClassTrie.SourceNode node : classes) {
+      final Path file = node.getFile();
       Parser parse = Parser.parseFile(file);
       for (Name candidate : parse.packagePrivateClasses()) {
         if (candidate.contentEquals(className)) {

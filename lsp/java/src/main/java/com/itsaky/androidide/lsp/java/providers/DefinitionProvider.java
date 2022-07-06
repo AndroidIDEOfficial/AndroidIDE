@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
@@ -28,7 +29,6 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.lsp.java.utils.NavigationHelper;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
-import com.itsaky.androidide.lsp.models.Location;
 import com.itsaky.androidide.lsp.util.PathUtils;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;

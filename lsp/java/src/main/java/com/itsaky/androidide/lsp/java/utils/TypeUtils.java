@@ -16,8 +16,8 @@
  */
 package com.itsaky.androidide.lsp.java.utils;
 
-import static com.itsaky.androidide.lsp.java.utils.StringSearch.containsClass;
-import static com.itsaky.androidide.lsp.java.utils.StringSearch.containsInterface;
+import static com.itsaky.androidide.projects.util.StringSearch.containsClass;
+import static com.itsaky.androidide.projects.util.StringSearch.containsInterface;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;

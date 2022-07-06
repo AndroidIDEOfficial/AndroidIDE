@@ -84,7 +84,6 @@ class XMLCompletionProviderTest : BaseXMLTest() {
   private fun createCompletionParams(): CompletionParams {
     val cursor = cursorPosition(true)
     val completionParams = CompletionParams(cursor, file!!)
-    completionParams.module = mockModuleProject()
     completionParams.position.index = this.cursor
     completionParams.content = contents
     return completionParams

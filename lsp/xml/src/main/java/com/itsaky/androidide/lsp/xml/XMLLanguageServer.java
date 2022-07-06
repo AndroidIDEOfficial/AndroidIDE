@@ -21,27 +21,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.lsp.api.ICompletionProvider;
-import com.itsaky.androidide.lsp.api.IDocumentHandler;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.IServerSettings;
+import com.itsaky.androidide.lsp.models.CompletionParams;
+import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
 import com.itsaky.androidide.lsp.models.InitializeParams;
-import com.itsaky.androidide.lsp.models.Range;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.NoCompletionsProvider;
-import com.itsaky.androidide.lsp.util.NoDocumentHandler;
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider;
+import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
@@ -55,8 +56,6 @@ import java.util.Collections;
  * @author Akash Yadav
  */
 public class XMLLanguageServer implements ILanguageServer {
-
-  private final IDocumentHandler documentHandler = new NoDocumentHandler();
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public SDKInfo sdkInfo;
@@ -131,14 +130,19 @@ public class XMLLanguageServer implements ILanguageServer {
   @Override
   public void configurationChanged(Object newConfiguration) {}
 
+  @Override
+  public void setupWithProject(@NonNull final Project project) {}
+
   @NonNull
   @Override
-  public ICompletionProvider getCompletionProvider() {
+  public CompletionResult complete(final CompletionParams params) {
+    final ICompletionProvider completionProvider;
     if (!getSettings().completionsEnabled() || !canProvideCompletions) {
-      return new NoCompletionsProvider();
+      completionProvider = new NoCompletionsProvider();
+    } else {
+      completionProvider = new XmlCompletionProvider(this.sdkInfo, this.getSettings());
     }
-
-    return new XmlCompletionProvider(this.sdkInfo, this.getSettings());
+    return completionProvider.complete(params);
   }
 
   @NonNull
@@ -184,11 +188,5 @@ public class XMLLanguageServer implements ILanguageServer {
   @Override
   public CharSequence formatCode(FormatCodeParams params) {
     return new CodeFormatProvider().format(params);
-  }
-
-  @NonNull
-  @Override
-  public IDocumentHandler getDocumentHandler() {
-    return this.documentHandler;
   }
 }

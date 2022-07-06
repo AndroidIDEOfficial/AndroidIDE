@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
-import com.itsaky.androidide.lsp.java.FileStore
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.edits.MultipleClassImportEditHandler
@@ -29,12 +28,9 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.print
 import com.itsaky.androidide.lsp.java.utils.ScopeHelper
-import com.itsaky.androidide.lsp.models.CompletionItem
-import com.itsaky.androidide.lsp.models.CompletionItemKind
-import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
-import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.projects.ProjectManager
 import com.squareup.javapoet.MethodSpec.Builder
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.MethodTree
@@ -70,9 +66,9 @@ class ScopeCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): CompletionResult {
+  ): com.itsaky.androidide.lsp.models.CompletionResult {
     val trees = Trees.instance(task.task)
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
     val scope = trees.getScope(path)
     val filter =
       Predicate<CharSequence?> {
@@ -107,7 +103,7 @@ class ScopeCompletionProvider(
 
     log.info("...found " + list.size + " scope members")
 
-    return CompletionResult(list)
+    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
   /**
@@ -124,8 +120,8 @@ class ScopeCompletionProvider(
     parentPath: TreePath,
     method: ExecutableElement,
     endsWithParen: Boolean,
-    matchLevel: MatchLevel,
-  ): CompletionItem {
+    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel,
+  ): com.itsaky.androidide.lsp.models.CompletionItem {
     if (parentPath.leaf.kind != CLASS) {
       // Can only override if the cursor is directly in a class declaration
       return method(task, listOf(method), !endsWithParen, matchLevel)
@@ -154,7 +150,8 @@ class ScopeCompletionProvider(
 
     // Print the method details and the annotations
     // Print the method details and the annotations
-    val indent = EditHelper.indent(FileStore.contents(completingFile), cursor.toInt())
+    val indent =
+      EditHelper.indent(ProjectManager.getDocumentContents(completingFile), cursor.toInt())
     val builder: Builder
     try {
       builder = buildMethod(method, types, type)
@@ -168,9 +165,9 @@ class ScopeCompletionProvider(
     var insertText = print(methodSpec, imports, false)
     insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
 
-    val item = CompletionItem()
+    val item = com.itsaky.androidide.lsp.models.CompletionItem()
     item.setLabel(methodSpec.name)
-    item.kind = CompletionItemKind.METHOD
+    item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method
     item.sortText = item.label.toString()
     item.insertText = insertText
@@ -182,10 +179,11 @@ class ScopeCompletionProvider(
     }
 
     imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
-    item.additionalEditHandler = MultipleClassImportEditHandler(imports, fileImports, completingFile)
+    item.additionalEditHandler =
+      MultipleClassImportEditHandler(imports, fileImports, completingFile)
     return item
   }
-  
+
   private fun findSource(
     compiler: CompilerProvider,
     task: CompileTask,

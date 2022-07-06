@@ -18,16 +18,19 @@ package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.google.common.collect.Iterables.toArray
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
+import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddImport
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
-import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.androidide.lsp.models.CodeActionItem
 import com.itsaky.androidide.lsp.models.DiagnosticItem
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
@@ -44,18 +47,26 @@ class AddImportAction() : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data.get(DiagnosticItem::class.java)!!
+    val diagnostic = data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!
     if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
       markInvisible()
       return
     }
 
-    val server = data.get(JavaLanguageServer::class.java)!!
+    val file = requireFile(data)
+    val module =
+      ProjectManager.findModuleForFile(file)
+        ?: run {
+          markInvisible()
+          return
+        }
+
+    val compiler = JavaCompilerProvider.get(module)
 
     @Suppress("UNCHECKED_CAST")
     val jcDiagnostic =
@@ -67,7 +78,7 @@ class AddImportAction() : BaseCodeAction() {
 
     var found = false
     val simpleName = jcDiagnostic.args[1]
-    for (name in server.compiler.publicTopLevelTypes()) {
+    for (name in compiler.publicTopLevelTypes()) {
       var klass = name
 
       // This will be true in a test environment
@@ -90,14 +101,22 @@ class AddImportAction() : BaseCodeAction() {
     @Suppress("UNCHECKED_CAST")
     val diagnostic =
       JavaDiagnosticUtils.asUnwrapper(
-        data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
+        data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
       )!!
-    val server = data.get(JavaLanguageServer::class.java)!!
+    val file = requireFile(data)
+    val module =
+      ProjectManager.findModuleForFile(file)
+        ?: run {
+          markInvisible()
+          return Any()
+        }
+
+    val compiler = JavaCompilerProvider.get(module)
 
     val titles = mutableListOf<String>()
     val rewrites = mutableListOf<AddImport>()
     val simpleName = diagnostic.d.args[1]
-    for (name in server.compiler.publicTopLevelTypes()) {
+    for (name in compiler.publicTopLevelTypes()) {
       var klass = name
       if (klass.contains('/')) {
         klass = klass.replace('/', '.')
@@ -125,17 +144,27 @@ class AddImportAction() : BaseCodeAction() {
       return
     }
 
-    val server = data.get(JavaLanguageServer::class.java)!!
-    val client = server.client ?: return
     val file = requireFile(data)
-    val actions = mutableListOf<CodeActionItem>()
+    val module =
+      ProjectManager.findModuleForFile(file)
+        ?: run {
+          markInvisible()
+          return
+        }
+
+    val compiler = JavaCompilerProvider.get(module)
+    val server =
+      ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
+        as JavaLanguageServer
+    val client = server.client ?: return
+    val actions = mutableListOf<com.itsaky.androidide.lsp.models.CodeActionItem>()
     val titles = result.first as List<String>
     val rewrites = result.second as List<Rewrite>
 
     for (index in rewrites.indices) {
       val name = titles[index]
       val rewrite = rewrites[index]
-      val action = rewrite.asCodeActions(server.compiler, name)
+      val action = rewrite.asCodeActions(compiler, name)
       actions.add(action)
     }
 

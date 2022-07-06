@@ -16,17 +16,13 @@
  */
 package com.itsaky.androidide.language
 
-import com.itsaky.androidide.projects.ProjectManager.findModuleForFile
-import com.itsaky.androidide.projects.api.Project
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.api.ILanguageServer
-import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.FailureType.COMPLETION
 import com.itsaky.androidide.lsp.models.LSPFailure
-import com.itsaky.androidide.lsp.models.Position
+import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.lang.completion.CompletionHelper
 import io.github.rosemoe.sora.text.CharPosition
@@ -56,31 +52,15 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
     file: Path,
     position: CharPosition,
     prefixMatcher: Predicate<Char?>
-  ): List<CompletionItem> {
+  ): List<com.itsaky.androidide.lsp.models.CompletionItem> {
     val completionResult =
       try {
-        val prefix =
-          CompletionHelper.computePrefix(content, position) { t: Char -> prefixMatcher.test(t) }
-        val completer = server.completionProvider
-        if (completer.canComplete(file)) {
-          var fileModule: Project? = null
-          try {
-            fileModule = findModuleForFile(file.toFile())
-          } catch (e: Throwable) {
-            if (e !is InterruptedException) {
-              // This can occur if the completion was cancelled
-              LOG.error("Unable to find module for current file", e)
-            }
-          }
-          val params =
-            CompletionParams(Position(position.line, position.column, position.index), file)
-          params.content = content
-          params.prefix = prefix
-          params.module = fileModule
-          completer.complete(params)
-        } else {
-          CompletionResult.EMPTY
-        }
+        val prefix = CompletionHelper.computePrefix(content, position) { prefixMatcher.test(it) }
+        val params =
+          CompletionParams(Position(position.line, position.column, position.index), file)
+        params.content = content
+        params.prefix = prefix
+        server.complete(params)
       } catch (e: Throwable) {
         // Do not log if completion was interrupted or cancelled
         if (!(e is InterruptedException || e is CompletionCancelledException)) {
