@@ -26,7 +26,7 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.models.ActiveDocument
-import com.itsaky.androidide.projects.util.BootstrapClassesProvider
+import com.itsaky.androidide.utils.BootstrapClassesProvider
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger

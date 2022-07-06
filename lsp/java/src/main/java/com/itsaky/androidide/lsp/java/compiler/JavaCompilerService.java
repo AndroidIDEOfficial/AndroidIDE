@@ -34,7 +34,7 @@ import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.models.ActiveDocument;
-import com.itsaky.androidide.projects.util.BootstrapClassesProvider;
+import com.itsaky.androidide.utils.BootstrapClassesProvider;
 import com.itsaky.androidide.projects.util.Cache;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
