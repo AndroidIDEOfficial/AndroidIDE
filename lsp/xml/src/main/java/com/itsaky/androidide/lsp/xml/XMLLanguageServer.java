@@ -128,9 +128,6 @@ public class XMLLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void configurationChanged(Object newConfiguration) {}
-
-  @Override
   public void setupWithProject(@NonNull final Project project) {}
 
   @NonNull

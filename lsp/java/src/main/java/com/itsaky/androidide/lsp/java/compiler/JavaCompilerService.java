@@ -21,11 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.javac.services.partial.CompilationInfo;
 import com.itsaky.androidide.javac.services.partial.PartialReparser;
 import com.itsaky.androidide.javac.services.partial.PartialReparserImpl;
 import com.itsaky.androidide.lsp.java.models.CompilationRequest;
+import com.itsaky.androidide.lsp.java.models.PartialReparseRequest;
 import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.utils.Extractors;
@@ -33,11 +35,10 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
-import com.itsaky.androidide.projects.models.ActiveDocument;
-import com.itsaky.androidide.utils.BootstrapClassesProvider;
 import com.itsaky.androidide.projects.util.Cache;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.utils.BootstrapClassesProvider;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
@@ -89,6 +90,7 @@ public class JavaCompilerService implements CompilerProvider {
   public ReusableCompiler compiler = new ReusableCompiler();
 
   private CompileBatch cachedCompile;
+  private int changeDelta = 0;
 
   // The module project must not be null
   // It is marked as nullable just for some special cases like tests
@@ -217,27 +219,6 @@ public class JavaCompilerService implements CompilerProvider {
     return candidates.toArray(new Path[0]);
   }
 
-  private boolean containsWord(Path file, String word) {
-    if (cacheContainsWord.needs(file, word)) {
-      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
-    }
-    return cacheContainsWord.get(file, word);
-  }
-
-  private boolean containsImport(Path file, String className) {
-    String packageName = Extractors.packageName(className);
-    if (packageNameOrEmpty(file).equals(packageName)) {
-      return true;
-    }
-    String star = packageName + ".*";
-    for (String i : readImports(file)) {
-      if (i.equals(className) || i.equals(star)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public Path[] findMemberReferences(String className, String memberName) {
     List<Path> candidates = new ArrayList<>();
@@ -267,6 +248,52 @@ public class JavaCompilerService implements CompilerProvider {
   @Override
   public SynchronizedTask compile(final CompilationRequest request) {
     return compileBatch(request);
+  }
+
+  public synchronized void close() {
+    if (cachedCompile != null) {
+      cachedCompile.close();
+      cachedCompile.borrow.close();
+    }
+  }
+
+  public void destroy() {
+    synchronizedTask.post(
+        () -> {
+          close();
+          cachedCompile = null;
+          cachedModified.clear();
+          compiler = new ReusableCompiler();
+        });
+  }
+
+  public SynchronizedTask getSynchronizedTask() {
+    return synchronizedTask;
+  }
+
+  public void onDocumentChange(@NonNull DocumentChangeEvent event) {
+    this.changeDelta += event.getChangeDelta();
+  }
+
+  private boolean containsWord(Path file, String word) {
+    if (cacheContainsWord.needs(file, word)) {
+      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
+    }
+    return cacheContainsWord.get(file, word);
+  }
+
+  private boolean containsImport(Path file, String className) {
+    String packageName = Extractors.packageName(className);
+    if (packageNameOrEmpty(file).equals(packageName)) {
+      return true;
+    }
+    String star = packageName + ".*";
+    for (String i : readImports(file)) {
+      if (i.equals(className) || i.equals(star)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private SynchronizedTask compileBatch(CompilationRequest request) {
@@ -321,7 +348,8 @@ public class JavaCompilerService implements CompilerProvider {
   private void tryReparse(@NonNull final CompilationRequest request) {
 
     // Satisfy lint
-    Objects.requireNonNull(request.partialRequest);
+    final PartialReparseRequest partialRequest = request.partialRequest;
+    Objects.requireNonNull(partialRequest);
 
     final StopWatch watch = new StopWatch("Method reparse");
     final File file = new File(request.sources.iterator().next().toUri());
@@ -334,7 +362,7 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     final Pair<Range, TreePath> currentMethod =
-        binarySearchCurrentMethod(positions, request.partialRequest.cursor);
+        binarySearchCurrentMethod(positions, partialRequest.cursor);
     if (currentMethod == null) {
       LOG.warn("Cannot perform reparse. Unable to find current method");
       recompile(request);
@@ -346,13 +374,6 @@ public class JavaCompilerService implements CompilerProvider {
     final MethodTree methodTree = (MethodTree) currentMethod.second.getLeaf();
     LOG.debug("Trying to reparse method:", methodTree.getName());
 
-    final int changeDelta;
-    final ActiveDocument document = ProjectManager.INSTANCE.getActiveDocument(file.toPath());
-    if (document != null) {
-      changeDelta = document.getChangDelta();
-    } else {
-      changeDelta = 0;
-    }
     final CompilationInfo info =
         new CompilationInfo(
             cachedCompile.task, cachedCompile.diagnosticListener, cachedCompile.roots.get(0));
@@ -360,26 +381,26 @@ public class JavaCompilerService implements CompilerProvider {
     final SourcePositions sourcePositions = Trees.instance(cachedCompile.task).getSourcePositions();
     final int start = (int) sourcePositions.getStartPosition(info.cu, methodTree.getBody());
     final int end =
-        (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + changeDelta;
+        (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + this.changeDelta;
     watch.lapFromLast("Found start and end positions of current method");
     final PartialReparser reparser = new PartialReparserImpl();
 
-    if (end < 0 || end > request.partialRequest.contents.length()) {
+    if (end < 0 || end > partialRequest.contents.length()) {
       LOG.warn(
           "Cannot reparse. Invalid change delta. end:",
           end,
           "changeDelta:",
-          changeDelta,
+          this.changeDelta,
           "content.length:",
-          request.partialRequest.contents.length());
+          partialRequest.contents.length());
       recompile(request);
       return;
     }
 
-    final String newBody = request.partialRequest.contents.substring(start, end);
+    final String newBody = partialRequest.contents.substring(start, end);
     final boolean reparsed =
         reparser.reparseMethod(
-            info, currentMethod.second, newBody, request.partialRequest.contents);
+            info, currentMethod.second, newBody, partialRequest.contents);
     if (!reparsed) {
       LOG.error("Failed to reparse");
       recompile(request);
@@ -390,10 +411,7 @@ public class JavaCompilerService implements CompilerProvider {
     LOG.info("Successfully reparsed method", methodTree.getName());
     updateModificationCache(request);
     cachedCompile.updatePositions(info.cu, true);
-
-    if (document != null) {
-      document.setChangDelta(0);
-    }
+    this.changeDelta = 0;
   }
 
   @Nullable
@@ -457,25 +475,6 @@ public class JavaCompilerService implements CompilerProvider {
     return new CompileBatch(this, moreSources);
   }
 
-  public synchronized void close() {
-    if (cachedCompile != null && !cachedCompile.closed) {
-      cachedCompile.close();
-      if (!cachedCompile.borrow.closed) {
-        cachedCompile.borrow.close();
-      }
-    }
-  }
-
-  public void destroy() {
-    synchronizedTask.post(
-        () -> {
-          close();
-          cachedCompile = null;
-          cachedModified.clear();
-          compiler = new ReusableCompiler();
-        });
-  }
-
   private boolean containsType(Path file, String className) {
     if (cacheContainsType.needs(file, null)) {
       CompilationUnitTree root = parse(file).root;
@@ -506,9 +505,5 @@ public class JavaCompilerService implements CompilerProvider {
       return NOT_FOUND;
     }
     return file;
-  }
-
-  public SynchronizedTask getSynchronizedTask() {
-    return synchronizedTask;
   }
 }

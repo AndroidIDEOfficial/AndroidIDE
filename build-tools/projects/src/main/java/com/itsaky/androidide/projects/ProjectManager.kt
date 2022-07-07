@@ -306,7 +306,7 @@ object ProjectManager : EventReceiver {
       if (subModule !is ModuleProject) {
         continue
       }
-
+      
       if (subModule.onDocumentChanged(event)) {
         break
       }

@@ -36,8 +36,8 @@ package com.itsaky.androidide.lsp.java.compiler;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.CompilationCancellationException;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
@@ -52,9 +52,16 @@ public class SynchronizedTask {
   private CompileTask task;
 
   public void run(@NonNull Consumer<CompileTask> taskConsumer) {
-    semaphore.acquireUninterruptibly();
+    try {
+      semaphore.acquire();
+    } catch (InterruptedException e) {
+      throw new CompilationCancellationException(e);
+    }
     try {
       taskConsumer.accept(this.task);
+    } catch (Throwable err) {
+      LOG.error("An error occurred while working with compilation task", err);
+      throw err;
     } finally {
       semaphore.release();
     }
@@ -69,6 +76,9 @@ public class SynchronizedTask {
 
     try {
       return function.invoke(this.task);
+    } catch (Throwable err) {
+      LOG.error("An error occurred while working with compilation task", err);
+      throw err;
     } finally {
       semaphore.release();
     }
@@ -88,6 +98,9 @@ public class SynchronizedTask {
         this.task.close();
       }
       run.run();
+    } catch (Throwable err) {
+      LOG.error("An error occurred", err);
+      throw err;
     } finally {
       semaphore.release();
       isCompiling = false;

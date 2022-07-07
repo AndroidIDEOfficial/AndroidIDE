@@ -154,7 +154,7 @@ public class JavaLanguageServer implements ILanguageServer {
     capabilities.setSmartSelectionsEnabled(true);
 
     LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-    if (EventBus.getDefault().isRegistered(this)) {
+    if (!EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().register(this);
     }
     initialized = true;
@@ -196,10 +196,12 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void configurationChanged(Object newConfiguration) {}
-
-  @Override
   public void setupWithProject(@NonNull final Project project) {
+    // Make sure we're registered with EventBus
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
+
     // Once we have project initialized
     // Destory the NO_MODULE_COMPILER instance
     JavaCompilerService.NO_MODULE_COMPILER.destroy();
@@ -306,6 +308,17 @@ public class JavaLanguageServer implements ILanguageServer {
   @Subscribe(threadMode = ThreadMode.ASYNC)
   @SuppressWarnings("unused")
   public void onContentChange(@NonNull DocumentChangeEvent event) {
+    if (!DocumentUtils.isJavaFile(event.getChangedFile())) {
+      return;
+    }
+
+    // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
+    JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event);
+    final JavaCompilerService compilerService =
+        JavaCompilerProvider.getInstance().getCompilerService();
+    if (compilerService != null) {
+      compilerService.onDocumentChange(event);
+    }
     startOrRestartAnalyzeTimer();
   }
 

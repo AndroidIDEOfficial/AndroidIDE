@@ -240,6 +240,7 @@ class PartialReparserImpl : PartialReparser {
         l.useSource(prevLogged)
       }
     } catch (err: Throwable) {
+      log.error("An error occurred while reparsing method", err)
       return false
     }
 

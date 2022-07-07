@@ -44,6 +44,11 @@ public class JavaCompilerProvider {
     return JavaCompilerProvider.getInstance().forModule(module);
   }
 
+  /** For internal use only. */
+  public JavaCompilerService getCompilerService() {
+    return compilerService;
+  }
+
   public synchronized JavaCompilerService forModule(ModuleProject module) {
     // A module instance is set to the compiler only in case the project is initialized or
     // this method was called with other mdoule instance.

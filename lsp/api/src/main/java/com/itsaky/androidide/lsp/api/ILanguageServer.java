@@ -126,15 +126,6 @@ public interface ILanguageServer {
   void applySettings(@Nullable IServerSettings settings);
 
   /**
-   * Notify the language server that the project's configuration was changed. Language servers
-   * decide what type of object they want to receive as configuration.
-   *
-   * @param newConfiguration The new configuration object. Only a specific type of object might be
-   *     accepted by observers.
-   */
-  void configurationChanged(Object newConfiguration);
-
-  /**
    * Setup this language server with the given project. Servers are not expected to keep a reference
    * to the provided project. Instead, use {@link ProjectManager#getRootProject()} to obtain the
    * project instance.
