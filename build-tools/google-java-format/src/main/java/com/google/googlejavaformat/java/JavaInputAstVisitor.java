@@ -179,6 +179,7 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
    * items with length less than or equal to this threshold.
    */
   private static final int MAX_ITEM_LENGTH_FOR_FILLING = 10;
+
   private static final Pattern FORMAT_SPECIFIER = Pattern.compile("%|\\{[0-9]\\}");
   static final ImmutableSet<String> LOG_METHODS =
       ImmutableSet.of(
@@ -2777,7 +2778,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
   }
 
   /** Collapse chains of {@code .} operators, across multiple {@link ASTNode} types. */
-
   private void formatAnnotationOrModifier(Deque<AnnotationOrModifier> modifiers) {
     AnnotationOrModifier modifier = modifiers.removeFirst();
     switch (modifier.getKind()) {

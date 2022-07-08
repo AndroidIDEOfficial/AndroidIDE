@@ -32,11 +32,12 @@ abstract class LanguageServerProvider {
 
   fun server(): ILanguageServer {
 
-    if (Environment.COMPILER_MODULE == null) {
-      val javaHome = System.getProperty("java.home")
-      assertThat(javaHome).isNotEmpty()
-      Environment.COMPILER_MODULE = File(javaHome)
-    }
+    // TODO replace with android.jar
+//    if (Environment.COMPILER_MODULE == null) {
+//      val javaHome = System.getProperty("java.home")
+//      assertThat(javaHome).isNotEmpty()
+//      Environment.COMPILER_MODULE = File(javaHome)
+//    }
 
     initIfNecessary()
 

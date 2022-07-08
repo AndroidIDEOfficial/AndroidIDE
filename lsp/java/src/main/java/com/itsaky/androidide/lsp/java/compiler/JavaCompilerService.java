@@ -38,7 +38,8 @@ import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.Cache;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
-import com.itsaky.androidide.utils.BootstrapClassesProvider;
+import com.itsaky.androidide.utils.BootClasspathProvider;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
@@ -79,7 +80,9 @@ public class JavaCompilerService implements CompilerProvider {
 
   protected final Set<Path> classPath;
   protected final Set<String> classPathClasses;
-  protected final Set<String> jdkClasses = BootstrapClassesProvider.bootstrapClasses();
+  protected final Set<String> bootClasspathClasses =
+      BootClasspathProvider.getTopLevelClasses(
+          Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
   protected final Cache<Void, List<String>> cacheFileImports = new Cache<>();
@@ -160,7 +163,7 @@ public class JavaCompilerService implements CompilerProvider {
       all.add(node.getQualifiedName());
     }
     all.addAll(classPathClasses);
-    all.addAll(jdkClasses);
+    all.addAll(bootClasspathClasses);
     return all;
   }
 
@@ -399,8 +402,7 @@ public class JavaCompilerService implements CompilerProvider {
 
     final String newBody = partialRequest.contents.substring(start, end);
     final boolean reparsed =
-        reparser.reparseMethod(
-            info, currentMethod.second, newBody, partialRequest.contents);
+        reparser.reparseMethod(info, currentMethod.second, newBody, partialRequest.contents);
     if (!reparsed) {
       LOG.error("Failed to reparse");
       recompile(request);

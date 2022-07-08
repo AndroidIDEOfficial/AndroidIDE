@@ -28,7 +28,8 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.utils.BootstrapClassesProvider
+import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedInputStream
 import java.io.BufferedReader
@@ -38,6 +39,7 @@ import java.io.StringReader
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -226,12 +228,12 @@ object ProjectManager : EventReceiver {
     if (!checkInit()) {
       return createFileReader(file)
     }
-  
+
     val document = getActiveDocument(file)
     if (document != null) {
       return BufferedReader(StringReader(document.content))
     }
-    
+
     return createFileReader(file)
   }
 
@@ -239,7 +241,7 @@ object ProjectManager : EventReceiver {
     if (!checkInit()) {
       return createFileInputStream(file)
     }
-  
+
     val document = getActiveDocument(file)
     if (document != null) {
       BufferedInputStream(document.content.byteInputStream())
@@ -256,7 +258,11 @@ object ProjectManager : EventReceiver {
     super.register()
 
     // Make sure we list and store the bootstrap classes
-    CompletableFuture.runAsync { BootstrapClassesProvider.bootstrapClasses() }
+    CompletableFuture.runAsync {
+      BootClasspathProvider.update(
+        Collections.singleton(Environment.ANDROID_JAR.absolutePath)
+      )
+    }
   }
 
   @Subscribe(threadMode = BACKGROUND)
@@ -306,7 +312,7 @@ object ProjectManager : EventReceiver {
       if (subModule !is ModuleProject) {
         continue
       }
-      
+
       if (subModule.onDocumentChanged(event)) {
         break
       }

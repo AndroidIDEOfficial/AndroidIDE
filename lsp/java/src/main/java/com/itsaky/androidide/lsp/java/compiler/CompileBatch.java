@@ -17,17 +17,23 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
+import com.itsaky.androidide.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
+import com.itsaky.androidide.tooling.api.IProject;
+import com.itsaky.androidide.utils.BootClasspathProvider;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
@@ -50,6 +56,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -117,13 +124,25 @@ public class CompileBatch implements AutoCloseable {
         parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
   }
 
+  @SuppressWarnings("Since15")
   @NonNull
-  private static List<String> options(Set<Path> classPath) {
+  private List<String> options(Set<Path> classPath) {
     List<String> list = new ArrayList<>();
 
+    // TODO Boot classpath must be different in java projects
+    //  Also, java modules must be enabled in java projects
+    System.setProperty(
+        JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, Environment.JAVA_HOME.getAbsolutePath());
+    JavacConfigProvider.setLatestSourceVersion(SourceVersion.RELEASE_8);
+    JavacConfigProvider.setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
+    JavacConfigProvider.disableModules();
+
+    final List<String> bootClasspaths = getAndUpdateBootclasspaths();
+
+    Collections.addAll(list, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
     Collections.addAll(list, "-classpath", joinPath(classPath));
     Collections.addAll(list, "-source", "11", "-target", "11");
-    Collections.addAll(list, "--system", Environment.COMPILER_MODULE.getAbsolutePath());
+    //    Collections.addAll(list, "--system", Environment.COMPILER_MODULE.getAbsolutePath());
     Collections.addAll(list, "-proc:none");
     Collections.addAll(list, "-g");
 
@@ -139,7 +158,29 @@ public class CompileBatch implements AutoCloseable {
         "-Xlint:varargs",
         "-Xlint:static");
 
+    LOG.debug("Compiler options:", TextUtils.join(" ", list));
+
     return list;
+  }
+
+  private List<String> getAndUpdateBootclasspaths() {
+    final List<String> bootClasspaths = new ArrayList<>(5);
+    if (parent.module == null) {
+      // Use default boot classpath if no module is available
+      bootClasspaths.add(Environment.ANDROID_JAR.getAbsolutePath());
+    } else if (parent.module.getType() == IProject.Type.Android) {
+      bootClasspaths.addAll(
+          ((AndroidModule) parent.module)
+              .getBootClassPaths().stream().map(File::getAbsolutePath).collect(Collectors.toSet()));
+    }
+
+    if (BootClasspathProvider.update(bootClasspaths)) {
+      this.parent.bootClasspathClasses.clear();
+      this.parent.bootClasspathClasses.addAll(
+          BootClasspathProvider.getTopLevelClasses(bootClasspaths));
+    }
+
+    return bootClasspaths;
   }
 
   /**

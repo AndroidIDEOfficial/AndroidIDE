@@ -18,7 +18,6 @@
 package com.itsaky.androidide.projects.api
 
 import android.text.TextUtils
-import com.google.common.reflect.ClassPath
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
@@ -29,12 +28,9 @@ import com.itsaky.androidide.projects.util.DocumentUtils
 import com.itsaky.androidide.projects.util.SourceClassTrie
 import com.itsaky.androidide.projects.util.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.utils.ClasspathReader
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
-import java.io.IOException
-import java.net.MalformedURLException
-import java.net.URL
-import java.net.URLClassLoader
 import java.nio.file.Path
 import java.time.Instant
 import java.util.concurrent.*
@@ -163,6 +159,7 @@ abstract class ModuleProject(
   }
 
   /** Finds the source files and classes from source directories and classpaths and indexes them. */
+  @Suppress("UnstableApiUsage")
   fun indexSourcesAndClasspaths() {
     log.info("Indexing sources and classpaths for project:", path)
 
@@ -180,26 +177,11 @@ abstract class ModuleProject(
     }
 
     log.debug("Sources indexed for project: '$path'. Found $count source files.")
-    count = 0
 
-    val urls =
-      getCompileClasspaths().filter { it.exists() }.map { toUrl(it.toPath()) }.toTypedArray()
-    val loader = URLClassLoader(urls, null)
-    val scanner: ClassPath
-    try {
-      scanner = ClassPath.from(loader)
-    } catch (e: IOException) {
-      log.warn("Unable to read classpaths for project:", path)
-      throw RuntimeException(e)
-    }
-
-    log.debug("Classpaths indexed for project:", path)
-    scanner.topLevelClasses.forEach {
-      this.compileClasspathClasses.append(it.name)
-      count++
-    }
-
-    log.debug("Classpaths indexed for project: '$path'. Found $count classpaths.")
+    val paths = getCompileClasspaths().filter { it.exists() }.map { it.toPath() }
+    val topLevelClasses = ClasspathReader.listClasses(paths).filter { it.isTopLevel }
+    topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
+    log.debug("Classpaths indexed for project: '$path'. Found ${topLevelClasses.size} classpaths.")
   }
 
   fun getSourceFilesInDir(dir: Path): List<SourceNode> =
@@ -277,13 +259,5 @@ abstract class ModuleProject(
       changDelta = event.changeDelta,
       modified = Instant.now()
     )
-  }
-
-  private fun toUrl(path: Path): URL {
-    try {
-      return path.toUri().toURL()
-    } catch (e: MalformedURLException) {
-      throw RuntimeException(e)
-    }
   }
 }
