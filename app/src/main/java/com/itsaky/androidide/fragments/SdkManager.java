@@ -125,8 +125,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 		String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
         .lines()
         .collect(Collectors.joining("\n"));
-	
-		runOnUiThread(()->{
+	requireActivity().runOnUiThread(()->{
 			FileIOUtils.writeFileFromString(DEFAULT_HOME+"/manifest.json",text);
 			All_URLS = new Gson().fromJson(text,new TypeToken<
                                                                 ArrayList<
@@ -219,8 +218,8 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
       break;
       case R.id.platformTools : handleCheck(isChecked,SdkHelper.PLATFORM_TOOLS);
       break;
-      case R.id.ndk : handleCheck(isChecked,SdkHelper.SdkHelper.NDK);
-                      handleCheck(isChecked,SdkHelper.SdkHelper.CMAKE);
+      case R.id.ndk : handleCheck(isChecked,SdkHelper.NDK);
+                      handleCheck(isChecked,SdkHelper.CMAKE);
       break;
     }
   }
