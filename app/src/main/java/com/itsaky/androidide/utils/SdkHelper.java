@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-class SdkHelper{
+public class SdkHelper{
 	public static final String SDK="android_sdk";
 		public static final String BUILD_TOOLS="build-tools";
 		public static final String PLATFORM_TOOLS="platform-tools";
