@@ -353,13 +353,12 @@ private File createExtractScript() throws SdkManager.InstallationException{
       progress.setMessage(getString(R.string.please_wait));
       progress.setSubMessage(getString(R.string.msg_reading_bootstrap));
       progress.setCancelable(false);
-      progress.show(getSupportFragmentManager(), "extract_bootstrap_progress");
+      progress.show(getParentFragmentManager(), "extract_bootstrap_progress");
       // Install bootstrap asynchronously
-      final var future =
-          requireActivity().BootstrapInstaller.doInstall(
+      final var future = BootstrapInstaller.doInstall(
               this, message -> requireActivity().runOnUiThread(() -> progress.setSubMessage(message)));
 
-      requireActivity().future.whenComplete(
+      future.whenComplete(
           (voidResult, throwable) -> {
 
             requireActivity().runOnUiThread(
