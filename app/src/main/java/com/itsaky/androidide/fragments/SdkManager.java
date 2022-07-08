@@ -375,11 +375,10 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                     }
                     progress.dismiss();
                     // Refreshing the Fragment
-                    getFragmentManager()
+                    requireActivity()
+                        .getSupportFragmentManager()
                         .beginTransaction()
-                        .detach(SdkManager.this)
-                        .attach(SdkManager.this)
-                        .addToBackStack(null)
+                        .replace(R.id.container, new SdkManager(), SdkManager.TAG)
                         .commit();
                   });
         });
