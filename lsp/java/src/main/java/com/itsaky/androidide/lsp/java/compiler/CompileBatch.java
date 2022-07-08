@@ -165,8 +165,6 @@ public class CompileBatch implements AutoCloseable {
         "-Xlint:varargs",
         "-Xlint:static");
 
-    LOG.debug("Compiler options:", TextUtils.join(" ", list));
-
     return list;
   }
 
