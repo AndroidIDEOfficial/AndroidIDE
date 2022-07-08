@@ -44,10 +44,32 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
 		android:layout_marginTop="4dp"
-		android:text="Command Line Tools "
+		android:text="Command Line Tools"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toBottomOf="@id/sdk32" />
+
+	<android.widget.CheckBox
+                android:id="@+id/buildTools"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginTop="4dp"
+                android:text="Build Tools(33.0.1)"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/cmdTools" />
+
+	<android.widget.CheckBox
+                android:id="@+id/platformTools" 
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginTop="4dp"
+                android:text="Platform Tools(33.0.1)"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/buildTools" />
 
 	<android.widget.CheckBox
 		android:id="@+id/jdk17"
@@ -57,7 +79,17 @@
 		android:text="OpenJDK-17(Java-17)"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/cmdTools" />
+		app:layout_constraintTop_toBottomOf="@id/platformTools" />
+
+	<android.widget.CheckBox
+                android:id="@+id/ndk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Ndk(24.0.8215888) with Cmake"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/jdk17" />
 
 	<Button
 		android:id="@+id/download"

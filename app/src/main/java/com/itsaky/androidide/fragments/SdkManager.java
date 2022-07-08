@@ -33,22 +33,36 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.InputStreamLineReader;
+import com.blankj.utilcode.util.FileUtils;
+import com.itsaky.androidide.utils.SdkHelper;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class SdkManager extends Fragment implements CompoundButton.OnCheckedChangeListener{
 	private FragmentSdkmanagerBinding binding;
   public static final String TAG="SDK Manager";
-  //Todo add links for ndk & ndk install method , buildtools link
-	public static final String AARCH_SDK="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/android-sdk-33.0.1-aarch64.tar.xz";
-	public static final String ARM_SDK="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/android-sdk-33.0.1-arm.tar.xz";
-	public static final String CMDLINE_TOOLS="https://github.com/itsaky/androidide-build-tools/releases/download/v33.0.1/cmdline-tools-all.tar.xz";
-	public static String Device_Arch;
 	ArrayList<String> download_list = new ArrayList<>();
+	//All Urls
+	private ArrayList<HashMap<String, Object>> All_URLS = new ArrayList<>();
+	//Device Specific Urls
+	Map<String,String> Device_Url=new HashMap<>();
 	private ProgressSheet progressSheet;
 	final StringBuilder sb = new StringBuilder();
 	private boolean install_jdk=false;
@@ -72,18 +86,61 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
       showDialogInstallBootStrap();
     }
     else {
-      Device_Arch = System.getProperty("os.arch");
+    processLinks();
+    String Device_Arch = System.getProperty("os.arch");
       binding.deviceType.setText("Your Device Type :" + Device_Arch);
       if (Device_Arch.equals("aarch64"))
         binding.sdk32.setEnabled(false);
-      else binding.sdk64.setEnabled(false);
+      else {
+      binding.sdk64.setEnabled(false);
+      binding.ndk.setEnabled(false);
+      }
       binding.sdk32.setOnCheckedChangeListener(this);
       binding.sdk64.setOnCheckedChangeListener(this);
       binding.cmdTools.setOnCheckedChangeListener(this);
+      binding.buildTools.setOnCheckedChangeListener(this);
+      binding.platformTools.setOnCheckedChangeListener(this);
+      binding.ndk.setOnCheckedChangeListener(this);
       binding.jdk17.setOnCheckedChangeListener(this);
       binding.download.setOnClickListener(v -> download_tools());
       binding.install.setOnClickListener(v -> installIools());
     }
+  }
+  public void processLinks(){
+    if(FileUtils.isFileExists(DEFAULT_HOME+"manifest.json")){
+		String urls = FileIOUtils.readFile2String(DEFAULT_HOME+"/manifest.json");
+		All_URLS = new Gson().fromJson(urls,new TypeToken<
+                                                                ArrayList<
+                                                                        HashMap<
+                                                                                String,
+                                                                                Object>>>() {}.getType());
+                                                                                
+        Device_Url = SdkHelper.getLinks(All_URLS);
+		}
+	else {
+		new Thread(()->{
+			try {
+		HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/dead8309/BuildTools/main/data.json").openConnection();
+		InputStream inputStream = connection.getInputStream();
+		String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        .lines()
+        .collect(Collectors.joining("\n"));
+	
+		runOnUiThread(()->{
+			FileIOUtils.writeFileFromString(DEFAULT_HOME+"/manifest.json",text);
+			All_URLS = new Gson().fromJson(text,new TypeToken<
+                                                                ArrayList<
+                                                                        HashMap<
+                                                                                String,
+                                                                                Object>>>() {}.getType());
+                                                                                
+        Device_Url = SdkHelper.getLinks(All_URLS);
+		});
+		
+		} catch (MalformedURLException e){}
+		catch (IOException e){}
+		}).start();
+		}
   }
 
   private void showDialogInstallBootStrap() {
@@ -104,8 +161,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
       File download_script = new File(DEFAULT_HOME, "download_tools.sh");
       StringBuilder dlScript = new StringBuilder();
       download_list.forEach(link -> {
-        dlScript.append("$BUSYBOX wget ").append(link);
-        joiner(dlScript);
+        dlScript.append("$BUSYBOX wget ").append(link).append("\n");
       });
       dlScript.append("echo 'Finished Downloading Tools'");
       FileIOUtils.writeFileFromString(download_script, dlScript.toString());
@@ -151,21 +207,29 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
   @Override
   public void onCheckedChanged(CompoundButton cbuttton, boolean isChecked) {
     switch (cbuttton.getId()){
-      case R.id.sdk32:handleCheck(isChecked,ARM_SDK);
+      case R.id.sdk32:handleCheck(isChecked,SdkHelper.SDK);
       break;
-      case R.id.sdk64: handleCheck(isChecked,AARCH_SDK);
+      case R.id.sdk64: handleCheck(isChecked,SdkHelper.SDK);
       break;
-      case R.id.cmdTools: handleCheck(isChecked,CMDLINE_TOOLS);
+      case R.id.cmdTools: handleCheck(isChecked,SdkHelper.CMDLINE_TOOLS);
       break;
       case R.id.jdk17: install_jdk= isChecked;
       break;
+      case R.id.buildTools : handleCheck(isChecked,SdkHelper.BUILD_TOOLS);
+      break;
+      case R.id.platformTools : handleCheck(isChecked,SdkHelper.PLATFORM_TOOLS);
+      break;
+      case R.id.ndk : handleCheck(isChecked,SdkHelper.SdkHelper.NDK);
+                      handleCheck(isChecked,SdkHelper.SdkHelper.CMAKE);
+      break;
     }
   }
+  
   public void handleCheck(boolean check, String link){
     if (check) {
-      download_list.add(link);
+      download_list.add(Device_Url.get(link)));
     } else {
-      download_list.remove(link);
+      download_list.remove(Device_Url.get(link)));
     }
   }
   private void onInstallationOutput(final String line) {
@@ -224,49 +288,21 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     } 
 
 private File createExtractScript() throws SdkManager.InstallationException{
-        sb.append("cd");
-        joiner(sb);
 	if(install_jdk){
-      sb.append("pkg install -y openjdk-17 && echo 'JAVA_HOME=/data/data/com.itsaky.androidide/files/usr/opt/openjdk' > $SYSROOT/etc/ide-environment.properties");
-    joiner(sb);
+      sb.append(SdkHelper.setupJDK());
 	}
 	File scriptPath = new File(DEFAULT_HOME);
-        File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
+    File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
 
         if (files == null || files.length <= 0) {
-            DialogUtils.newMaterialDialogBuilder(requireActivity())
-                .setTitle("No Zips Found")
-                .setMessage("No Downloaded zips found skipping extraction")
-                .setNeutralButton(android.R.string.ok,(d,w)->d.cancel())
-                .create()
-                .show();
+            getProgressSheet().setMessage("No Zips Files Found Skipping Extraction");
         }
         else {
           for (File f : files) {
-            if (f.getName().endsWith(".tar.xz")) {
-              if (f.getName().startsWith("cmdline-tools") || f.getName().startsWith("build-tools") || f.getName().startsWith("platform-tools")) {
-                sb.append("mkdir -p $HOME/android-sdk");
-                joiner(sb);
-                sb.append("$BUSYBOX tar xvJf ").append("$HOME/").append(f.getName()).append(" -C $HOME/android-sdk");
-              } else {
-                sb.append("$BUSYBOX tar xvJf ").append("$HOME/").append(f.getName());
-                joiner(sb);
-                sb.append("cd $HOME");
-              }
-              joiner(sb);
-            } else if (f.getName().endsWith(".zip")) {
-              sb.append("$BUSYBOX unzip ").append(f.getAbsolutePath());
-              joiner(sb);
-            }
+          sb.append(SdkHelper.setupZip(f));
           }
         }
-
-        sb.append("echo 'Running Post Install Process'");
-        joiner(sb);
-        sb.append("rm -rf *.tar* && rm -rf *.zip");
-        joiner(sb);
-        String DONE = "DONE";sb.append("echo ").append(DONE);
-        joiner(sb);
+        sb.append(SdkHelper.postInstall());
 
         final File script = new File(DEFAULT_HOME, "install_tools.sh");
         if (!FileIOUtils.writeFileFromString(script, sb.toString())) {
@@ -274,9 +310,6 @@ private File createExtractScript() throws SdkManager.InstallationException{
         }
 
         return script;
-    }
-	private void joiner(StringBuilder sb) {
-        sb.append("\n");
     }
 
 
@@ -313,3 +346,4 @@ private File createExtractScript() throws SdkManager.InstallationException{
     requireActivity().startActivity(new Intent(requireActivity(), TerminalActivity.class));
   }
 }
+
