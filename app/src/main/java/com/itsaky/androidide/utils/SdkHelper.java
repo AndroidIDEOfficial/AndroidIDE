@@ -26,12 +26,16 @@ public class SdkHelper{
 	StringBuilder sb = new StringBuilder();
 	if (f.getName().endsWith(".tar.xz")) {
 		//Tar Files Found
-              if (f.getName().startsWith("cmdline-tools") || f.getName().startsWith("build-tools") || f.getName().startsWith("platform-tools")) {
+              if (f.getName().startsWith("cmdline-tools")|| f.getName().startsWith("platform-tools")) {
                 sb.append("mkdir -p $HOME/android-sdk");
                 join(sb);
                 sb.append("$BUSYBOX tar xvJf ").append("$HOME/").append(f.getName()).append(" -C $HOME/android-sdk");
               } 
-
+	      else if(f.getName().startsWith("build-tools")){
+		      sb.append("mkdir -p $HOME/android-sdk/build-tools");
+		      join(sb);
+		      sb.append("$BUSYBOX tar xvJf ").append("$HOME/").append(f.getName()).append(" -C $HOME/android-sdk/build-tools");
+	      }
 	      else {
                 sb.append("$BUSYBOX tar xvJf ").append("$HOME/").append(f.getName());
                 join(sb);
