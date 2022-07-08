@@ -139,8 +139,15 @@ public class CompileBatch implements AutoCloseable {
 
     final List<String> bootClasspaths = getAndUpdateBootclasspaths();
 
-    Collections.addAll(list, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
-    Collections.addAll(list, "-classpath", joinPath(classPath));
+    if (!bootClasspaths.isEmpty()) {
+      Collections.addAll(
+          list, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
+    }
+
+    if (!classPath.isEmpty()) {
+      Collections.addAll(list, "-classpath", joinPath(classPath));
+    }
+
     Collections.addAll(list, "-source", "11", "-target", "11");
     //    Collections.addAll(list, "--system", Environment.COMPILER_MODULE.getAbsolutePath());
     Collections.addAll(list, "-proc:none");
