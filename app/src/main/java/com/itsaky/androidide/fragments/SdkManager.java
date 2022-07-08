@@ -227,9 +227,9 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
   
   public void handleCheck(boolean check, String link){
     if (check) {
-      download_list.add(Device_Url.get(link)));
+      download_list.add(Device_Url.get(link));
     } else {
-      download_list.remove(Device_Url.get(link)));
+      download_list.remove(Device_Url.get(link));
     }
   }
   private void onInstallationOutput(final String line) {
