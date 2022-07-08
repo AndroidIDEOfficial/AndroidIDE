@@ -35,6 +35,9 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.utils.SdkHelper;
+import com.itsaky.androidide.TerminalActivity;
+import com.itsaky.androidide.utils.BootstrapInstaller;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -151,7 +154,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     view.setMovementMethod(LinkMovementMethod.getInstance());
     builder.setView(view);
     builder.setCancelable(false);
-    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> installBootStrap());
     builder.show();
   }
 
@@ -341,8 +344,36 @@ private File createExtractScript() throws SdkManager.InstallationException{
         && bash.isFile()
         && bash.canExecute()));
   }
-  private void openTerminal() {
-    requireActivity().startActivity(new Intent(requireActivity(), TerminalActivity.class));
-  }
+  private void installBootStrap() {
+      // Show the progress sheet
+      final var progress = new ProgressSheet();
+      progress.setShowShadow(false);
+      progress.setSubMessageEnabled(true);
+      progress.setShowTitle(false);
+      progress.setMessage(getString(R.string.please_wait));
+      progress.setSubMessage(getString(R.string.msg_reading_bootstrap));
+      progress.setCancelable(false);
+      progress.show(getSupportFragmentManager(), "extract_bootstrap_progress");
+      // Install bootstrap asynchronously
+      final var future =
+          requireActivity().BootstrapInstaller.doInstall(
+              this, message -> requireActivity().runOnUiThread(() -> progress.setSubMessage(message)));
+
+      requireActivity().future.whenComplete(
+          (voidResult, throwable) -> {
+
+            requireActivity().runOnUiThread(
+                () -> {
+                  progress.dismissAllowingStateLoss();
+
+                  if (future.isCompletedExceptionally() || throwable != null) {
+                    //Future has been completed exceptionally
+                    TerminalActivity.showInstallationError(throwable);
+                    return;
+                  }
+progress.dismiss();
+                });
+          });
+    }
 }
 
