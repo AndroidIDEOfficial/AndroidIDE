@@ -22,7 +22,6 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.TerminalActivity;
 import com.itsaky.androidide.databinding.FragmentSdkmanagerBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.shell.IProcessExecutor;
@@ -371,6 +370,12 @@ private File createExtractScript() throws SdkManager.InstallationException{
                     return;
                   }
 progress.dismiss();
+getFragmentManager()
+      .beginTransaction()
+      .detach(SdkManager.this)
+      .attach(SdkManager.this)
+      .addToBackStack(null)
+      .commit();
                 });
           });
     }
