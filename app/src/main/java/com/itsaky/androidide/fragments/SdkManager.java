@@ -356,7 +356,7 @@ private File createExtractScript() throws SdkManager.InstallationException{
       progress.show(getParentFragmentManager(), "extract_bootstrap_progress");
       // Install bootstrap asynchronously
       final var future = BootstrapInstaller.doInstall(
-              this, message -> requireActivity().runOnUiThread(() -> progress.setSubMessage(message)));
+              requireActivity(), message -> requireActivity().runOnUiThread(() -> progress.setSubMessage(message)));
 
       future.whenComplete(
           (voidResult, throwable) -> {
@@ -367,7 +367,7 @@ private File createExtractScript() throws SdkManager.InstallationException{
 
                   if (future.isCompletedExceptionally() || throwable != null) {
                     //Future has been completed exceptionally
-                    TerminalActivity.showInstallationError(throwable);
+                    new TerminalActivity().showInstallationError(throwable);
                     return;
                   }
 progress.dismiss();

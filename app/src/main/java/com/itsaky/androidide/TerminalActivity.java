@@ -321,7 +321,7 @@ public class TerminalActivity extends StudioActivity
     return binding.getRoot();
   }
 
-  public static void showInstallationError(Throwable throwable) {
+  public void showInstallationError(Throwable throwable) {
 
     binding.virtualKeyTable.setVisibility(View.GONE);
 
