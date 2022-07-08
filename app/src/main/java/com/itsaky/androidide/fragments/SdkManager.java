@@ -59,18 +59,15 @@ import com.google.gson.reflect.TypeToken;
 
 public class SdkManager extends Fragment implements CompoundButton.OnCheckedChangeListener{
 	private FragmentSdkmanagerBinding binding;
-  public static final String TAG="SDK Manager";
-	ArrayList<String> download_list = new ArrayList<>();
-	//All Urls
-	private ArrayList<HashMap<String, Object>> All_URLS = new ArrayList<>();
-	//Device Specific Urls
-	Map<String,String> Device_Url=new HashMap<>();
+    public static final String TAG="SDK Manager";    
+	ArrayList<String> download_queue = new ArrayList<>(); 
+	private ArrayList<HashMap<String, Object>> Links = new ArrayList<>(); //Links for both aarch/arm
+	Map<String,String> Device_Url=new HashMap<>(); //Device Specific links
 	private ProgressSheet progressSheet;
 	final StringBuilder sb = new StringBuilder();
 	private boolean install_jdk=false;
-  private final FileFilter ARCHIVE_FILTER = p1 -> p1.isFile() && (p1.getName().endsWith(".tar.xz") || p1.getName().endsWith(".zip"));
-
-  private StringBuilder output = new StringBuilder();
+    private final FileFilter ARCHIVE_FILTER = p1 -> p1.isFile() && (p1.getName().endsWith(".tar.xz") || p1.getName().endsWith(".zip"));
+    private StringBuilder output = new StringBuilder();
 
   @Nullable
   @Override
@@ -84,16 +81,18 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    if (!checkBootstrapInstalled()) {
-      showDialogInstallBootStrap();
+    if (!checkBootstrapPackagesInstalled()) { //Check for bootstrapPackages
+      InstallBootStrapPackages();
     }
-    else {
-    processLinks();
+    else { 
+    //Packages are installed
+    getDeviceSpecificUrl();
     String Device_Arch = System.getProperty("os.arch");
       binding.deviceType.setText("Your Device Type :" + Device_Arch);
       if (Device_Arch.equals("aarch64"))
-        binding.sdk32.setEnabled(false);
+        binding.sdk32.setEnabled(false); //disabling 32bit options
       else {
+      //disabling 64bit options
       binding.sdk64.setEnabled(false);
       binding.ndk.setEnabled(false);
       }
@@ -108,18 +107,20 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
       binding.install.setOnClickListener(v -> installIools());
     }
   }
-  public void processLinks(){
+  public void getDeviceSpecificUrl(){
     if(FileUtils.isFileExists(DEFAULT_HOME+"manifest.json")){
+    //Read urls from manifest file
 		String urls = FileIOUtils.readFile2String(DEFAULT_HOME+"/manifest.json");
-		All_URLS = new Gson().fromJson(urls,new TypeToken<
+		Links = new Gson().fromJson(urls,new TypeToken<
                                                                 ArrayList<
                                                                         HashMap<
                                                                                 String,
                                                                                 Object>>>() {}.getType());
                                                                                 
-        Device_Url = SdkHelper.getLinks(All_URLS);
+        Device_Url = SdkHelper.getLinks(Links);
 		}
 	else {
+	//Download manifest file and read url
 		new Thread(()->{
 			try {
 		HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/dead8309/BuildTools/main/data.json").openConnection();
@@ -129,13 +130,13 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
         .collect(Collectors.joining("\n"));
 	requireActivity().runOnUiThread(()->{
 			FileIOUtils.writeFileFromString(DEFAULT_HOME+"/manifest.json",text);
-			All_URLS = new Gson().fromJson(text,new TypeToken<
+			Links = new Gson().fromJson(text,new TypeToken<
                                                                 ArrayList<
                                                                         HashMap<
                                                                                 String,
                                                                                 Object>>>() {}.getType());
                                                                                 
-        Device_Url = SdkHelper.getLinks(All_URLS);
+        Device_Url = SdkHelper.getLinks(Links);
 		});
 		
 		} catch (MalformedURLException e){}
@@ -144,7 +145,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 		}
   }
 
-  private void showDialogInstallBootStrap() {
+  private void InstallBootStrapPackages() {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(requireActivity());
     builder.setTitle(R.string.title_warning);
     TextView view = new TextView(requireActivity());
@@ -153,7 +154,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     view.setMovementMethod(LinkMovementMethod.getInstance());
     builder.setView(view);
     builder.setCancelable(false);
-    builder.setPositiveButton(android.R.string.ok, (d, w) -> installBootStrap());
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> install());
     builder.show();
   }
 
@@ -161,7 +162,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
     showProgress();
       File download_script = new File(DEFAULT_HOME, "download_tools.sh");
       StringBuilder dlScript = new StringBuilder();
-      download_list.forEach(link -> {
+      download_queue.forEach(link -> {
         dlScript.append("$BUSYBOX wget ").append(link).append("\n");
       });
       dlScript.append("echo 'Finished Downloading Tools'");
@@ -176,7 +177,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
 
     executor.execAsync(
         holder,
-        iProcessExitListener,
+        iProcessExitListener, //Redirect method after completing 
         true,
         Environment.BUSYBOX.getAbsolutePath(),
         "sh",
@@ -195,14 +196,35 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
   public void installIools(){
     showProgress();
     try {
-      final File script = createExtractScript();
-      ExecBash(script,this::onProcessExit);
-
+      final File script = createInstallScript();
+      ExecBash(script,this::onComplete);
     } catch (InstallationException e) {
       onFailed();
     }
-
   }
+  private File createInstallScript() throws SdkManager.InstallationException{
+	if(install_jdk){
+      sb.append(SdkHelper.setupJDK());
+	}
+	File scriptPath = new File(DEFAULT_HOME);
+    File[] files = scriptPath.listFiles(ARCHIVE_FILTER); //Check for archives
+
+        if (files == null || files.length <= 0) {
+            getProgressSheet().setMessage("No Zips Files Found Skipping Extraction");
+        }
+        else {
+          for (File f : files) {
+          sb.append(SdkHelper.setupZip(f)); //Installing archives
+          }
+        }
+        sb.append(SdkHelper.postInstall()); //deleting archives after installation finished
+
+        final File script = new File(DEFAULT_HOME, "install_tools.sh");
+        if (!FileIOUtils.writeFileFromString(script, sb.toString())) {
+            throw new InstallationException(2);
+        }
+        return script;
+    }
 
   @SuppressLint("NonConstantResourceId")
   @Override
@@ -228,16 +250,16 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
   
   public void handleCheck(boolean check, String link){
     if (check) {
-      download_list.add(Device_Url.get(link));
+      download_queue.add(Device_Url.get(link));
     } else {
-      download_list.remove(Device_Url.get(link));
+      download_queue.remove(Device_Url.get(link));
     }
   }
   private void onInstallationOutput(final String line) {
         ThreadUtils.runOnUiThread(() -> this.appendOut(line));
     }
 
-    private void onProcessExit(final int code) {
+  private void onComplete(final int code) {
         ThreadUtils.runOnUiThread(
                 () -> {
                     if (code == 0) {
@@ -274,7 +296,7 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
         });
   }
 
-    private void onFailed() {
+   private void onFailed() {
         if (getProgressSheet().isShowing()) {
             getProgressSheet().dismiss();
         }
@@ -288,54 +310,19 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                 .show(requireActivity().getSupportFragmentManager(), "progress_sheet");
     } 
 
-private File createExtractScript() throws SdkManager.InstallationException{
-	if(install_jdk){
-      sb.append(SdkHelper.setupJDK());
-	}
-	File scriptPath = new File(DEFAULT_HOME);
-    File[] files = scriptPath.listFiles(ARCHIVE_FILTER);
-
-        if (files == null || files.length <= 0) {
-            getProgressSheet().setMessage("No Zips Files Found Skipping Extraction");
-        }
-        else {
-          for (File f : files) {
-          sb.append(SdkHelper.setupZip(f));
-          }
-        }
-        sb.append(SdkHelper.postInstall());
-
-        final File script = new File(DEFAULT_HOME, "install_tools.sh");
-        if (!FileIOUtils.writeFileFromString(script, sb.toString())) {
-            throw new InstallationException(2);
-        }
-
-        return script;
-    }
-
-
-    private void appendOut(String line) {
+   private void appendOut(String line) {
         output.append(line.trim());
         output.append("\n");
         getProgressSheet().setSubMessage(line);
-        
     }
-    private ProgressSheet getProgressSheet() {
+    
+   private ProgressSheet getProgressSheet() {
         return progressSheet == null
                 ? progressSheet = new ProgressSheet().setMessage(getString(R.string.please_wait))
                 : progressSheet;
     }
-							
-	private static class InstallationException extends Exception {
-        private final int exitCode;
-
-        public InstallationException(int exitCode) {
-            this.exitCode = exitCode;
-        }
-    }
-
-
-  private boolean checkBootstrapInstalled() {
+	
+   private boolean checkBootstrapPackagesInstalled() {
     final var bash = new File(BIN_DIR, "bash");
     return ((PREFIX.exists()
         && PREFIX.isDirectory()
@@ -343,7 +330,7 @@ private File createExtractScript() throws SdkManager.InstallationException{
         && bash.isFile()
         && bash.canExecute()));
   }
-  private void installBootStrap() {
+  private void install() {
       // Show the progress sheet
       final var progress = new ProgressSheet();
       progress.setShowShadow(false);
@@ -360,24 +347,32 @@ private File createExtractScript() throws SdkManager.InstallationException{
       future.whenComplete(
           (voidResult, throwable) -> {
 
-            requireActivity().runOnUiThread(
-                () -> {
-                  progress.dismissAllowingStateLoss();
-
-                  if (future.isCompletedExceptionally() || throwable != null) {
-                    //Future has been completed exceptionally
-                    new TerminalActivity().showInstallationError(throwable);
-                    return;
-                  }
-progress.dismiss();
-getFragmentManager()
-      .beginTransaction()
-      .detach(SdkManager.this)
-      .attach(SdkManager.this)
-      .addToBackStack(null)
-      .commit();
-                });
+                         requireActivity().runOnUiThread(() -> {
+                            progress.dismissAllowingStateLoss();
+                            if (future.isCompletedExceptionally() || throwable != null) {
+                            //Future has been completed exceptionally
+                            new TerminalActivity().showInstallationError(throwable);
+                            return;
+                            }
+                            progress.dismiss();
+                            //Refreshing the Fragment
+                            getFragmentManager()
+                                .beginTransaction()
+                                .detach(SdkManager.this)
+                                .attach(SdkManager.this)
+                                .addToBackStack(null)
+                                .commit();
+                         });
+                  
           });
+    }
+    
+    private static class InstallationException extends Exception {
+        private final int exitCode;
+
+        public InstallationException(int exitCode) {
+            this.exitCode = exitCode;
+        }
     }
 }
 
