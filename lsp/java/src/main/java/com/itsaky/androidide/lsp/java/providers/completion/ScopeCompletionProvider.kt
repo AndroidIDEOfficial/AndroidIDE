@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.MultipleClassImportEditHandler
 import com.itsaky.androidide.lsp.java.parser.ParseTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
@@ -57,7 +58,7 @@ import javax.tools.JavaFileObject
 class ScopeCompletionProvider(
   completingFile: Path,
   cursor: Long,
-  compiler: CompilerProvider,
+  compiler: JavaCompilerService,
   settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
