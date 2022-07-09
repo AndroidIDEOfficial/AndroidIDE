@@ -18,11 +18,10 @@
 package com.itsaky.androidide.javac.services.partial
 
 import com.itsaky.androidide.javac.services.compiler.JavacFlowListener
+import com.itsaky.androidide.javac.services.util.ReparserUtils
 import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor
 import com.itsaky.androidide.javac.services.visitors.TranslateMethodPositionsVisitor
-import com.itsaky.androidide.javac.services.visitors.UnEnter
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.VMUtils
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
@@ -39,9 +38,8 @@ import com.sun.tools.javac.comp.AttrContext
 import com.sun.tools.javac.comp.Enter
 import com.sun.tools.javac.comp.Env
 import com.sun.tools.javac.comp.Flow
-import com.sun.tools.javac.comp.TypeEnter
 import com.sun.tools.javac.parser.JavacParser
-import com.sun.tools.javac.parser.LazyDocCommentTable
+import com.sun.tools.javac.parser.LazyDocCommentTable.Entry
 import com.sun.tools.javac.parser.ScannerFactory
 import com.sun.tools.javac.tree.DocCommentTable
 import com.sun.tools.javac.tree.EndPosTable
@@ -56,9 +54,6 @@ import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.List
 import com.sun.tools.javac.util.Log
 import com.sun.tools.javac.util.Names
-import com.sun.tools.javac.util.Position.LineMapImpl
-import java.lang.reflect.Field
-import java.lang.reflect.Method
 import java.nio.CharBuffer
 import java.util.*
 
@@ -70,62 +65,7 @@ import java.util.*
 class PartialReparserImpl : PartialReparser {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
-  private var unenter: Method? = null
-  private var lazyDocCommentsTable: Field? = null
-  private var parserDocComments: Field? = null
-  private var lineMapBuild: Method? = null
-  private var allowPartialReparse: Boolean = false
-  private var useUnEnterScanner: Boolean = true
-  private var isAndroid = VMUtils.isJvm().not()
-
-  init {
-    if (isAndroid) {
-      nullReflectors()
-      this.allowPartialReparse = true
-      this.useUnEnterScanner = false
-    } else {
-      initializeReflectors()
-    }
-  }
-
-  private fun nullReflectors() {
-    this.unenter = null
-    this.lazyDocCommentsTable = null
-    this.parserDocComments = null
-    this.lineMapBuild = null
-    this.allowPartialReparse = false
-    this.useUnEnterScanner = false
-  }
-
-  private fun initializeReflectors() {
-    try {
-      // These methods can be easily accessed without reflection in Android Runtime
-      // But not in JVM (for tests)
-      try {
-        this.unenter =
-          Enter::class
-            .java
-            .getDeclaredMethod("unenter", JCCompilationUnit::class.java, JCTree::class.java)
-        this.unenter!!.isAccessible = true
-        this.useUnEnterScanner = false
-      } catch (methodNotFound: NoSuchMethodException) {
-        this.unenter = null
-        this.useUnEnterScanner = true
-      }
-      this.lazyDocCommentsTable = LazyDocCommentTable::class.java.getDeclaredField("table")
-      this.lazyDocCommentsTable!!.isAccessible = true
-      this.parserDocComments = JavacParser::class.java.getDeclaredField("docComments")
-      this.parserDocComments!!.isAccessible = true
-      this.lineMapBuild =
-        Class.forName("com.sun.tools.javac.util.Position\$LineMapImpl")
-          .getDeclaredMethod("build", CharArray::class.java, Int::class.java)
-      this.lineMapBuild!!.isAccessible = true
-      this.allowPartialReparse = true
-    } catch (err: Throwable) {
-      log.error(err)
-      nullReflectors()
-    }
-  }
+  private var allowPartialReparse: Boolean = ReparserUtils.canReparse()
 
   override fun reparseMethod(
     ci: CompilationInfo,
@@ -181,7 +121,7 @@ class PartialReparserImpl : PartialReparser {
       try {
         val dl = ci.diagnosticListener as DiagnosticListenerImpl
         dl.startPartialReparse(origStartPos, origEndPos)
-        val docComments = HashMap<JCTree, Any>()
+        val docComments = HashMap<JCTree, Entry>()
         log.debug("Reparse method...")
         block = reparseMethodBody(context, cu, method, newBody, docComments)
         val endPosTable = (cu as JCCompilationUnit).endPositions
@@ -248,26 +188,15 @@ class PartialReparserImpl : PartialReparser {
   }
 
   private fun buildLineMap(cu: JCCompilationUnit, arr: CharArray) {
-    if (isAndroid) {
-      // We can acess this directly in Android Runtime
-      (cu.getLineMap() as LineMapImpl).build(arr, arr.size)
-      return
-    }
-
-    lineMapBuild!!.invoke(cu.getLineMap(), arr, arr.size)
+    ReparserUtils.buildLineMap(cu.getLineMap(), arr, arr.size)
   }
 
-  private fun getLazyDocCommentsTable(cu: JCCompilationUnit): MutableMap<JCTree, Any> {
+  private fun getLazyDocCommentsTable(cu: JCCompilationUnit): MutableMap<JCTree, Entry> {
     return getLazyDocCommentsTable(cu.docComments)
   }
 
-  private fun getLazyDocCommentsTable(docs: DocCommentTable): MutableMap<JCTree, Any> {
-    if (isAndroid) {
-      // We can acess this directly in Android Runtime
-      return (docs as LazyDocCommentTable).table as MutableMap<JCTree, Any>
-    }
-
-    return lazyDocCommentsTable!!.get(docs) as MutableMap<JCTree, Any>
+  private fun getLazyDocCommentsTable(docs: DocCommentTable): MutableMap<JCTree, Entry> {
+    return ReparserUtils.getLazyDocCommentsTable(docs)!!
   }
 
   private fun doUnenter(context: Context?, cu: CompilationUnitTree, method: JCMethodDecl) {
@@ -275,18 +204,7 @@ class PartialReparserImpl : PartialReparser {
       throw IllegalStateException()
     }
 
-    if (isAndroid) {
-      // We can acess this directly in Android Runtime
-      Enter.instance(context).unenter(cu, method)
-      return
-    }
-
-    val enter = Enter.instance(context)
-    if (this.unenter != null) {
-      this.unenter!!.invoke(enter, cu, method.body)
-    } else if (useUnEnterScanner) {
-      UnEnter(enter, cu.modle).scan(method)
-    }
+    ReparserUtils.unenter(context, cu, method.body)
   }
 
   private fun reparseMethodBody(
@@ -294,7 +212,7 @@ class PartialReparserImpl : PartialReparser {
     cu: CompilationUnitTree,
     method: JCMethodDecl,
     newBody: String,
-    docComments: MutableMap<JCTree, Any>,
+    docComments: MutableMap<JCTree, Entry>,
   ): JCBlock? {
     val startPos = method.body.pos
     val body = CharArray(startPos + newBody.length + 1)
@@ -304,7 +222,7 @@ class PartialReparserImpl : PartialReparser {
     }
     body[startPos + newBody.length] = '\u0000'
     val buf = CharBuffer.wrap(body, 0, body.size - 1)
-    val parser = newParser(context, buf, method.body.pos, (cu as JCCompilationUnit).endPositions)
+    val parser = newParser(context, buf, (cu as JCCompilationUnit).endPositions)
     val statement = parser.parseStatement()
     if (statement.kind == BLOCK) {
       docComments.putAll(getLazyDocCommentsTable(getParserDocComments(parser)))
@@ -316,17 +234,12 @@ class PartialReparserImpl : PartialReparser {
   }
 
   private fun getParserDocComments(parser: JavacParser): DocCommentTable {
-    if (isAndroid) {
-      return parser.docComments
-    }
-
-    return parserDocComments!!.get(parser) as DocCommentTable
+    return ReparserUtils.getDocComments(parser)!!
   }
 
   private fun newParser(
     context: Context,
     buf: CharBuffer?,
-    pos: Int,
     endPositions: EndPosTable?,
   ): JavacParser {
     val factory =
@@ -394,7 +307,6 @@ class PartialReparserImpl : PartialReparser {
     val attr = Attr.instance(context)
     val names: Names = Names.instance(context)
     val syms: Symtab = Symtab.instance(context)
-    val typeEnter: TypeEnter = TypeEnter.instance(context)
     val log: Log = Log.instance(context)
     val make: TreeMaker = TreeMaker.instance(context)
     val env: Env<AttrContext> = scope.env // this is a copy anyway...

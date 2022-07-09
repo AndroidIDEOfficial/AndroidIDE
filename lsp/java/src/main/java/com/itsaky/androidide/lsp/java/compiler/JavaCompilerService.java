@@ -439,6 +439,28 @@ public class JavaCompilerService implements CompilerProvider {
     return null;
   }
 
+  @Nullable
+  private Pair<Range, TreePath> binarySearchMethodForRange(
+      final List<Pair<Range, TreePath>> methods, final Range range) {
+    int left = 0;
+    int right = methods.size() - 1;
+    while (left <= right) {
+      final int mid = (left + right) / 2;
+      final Pair<Range, TreePath> method = methods.get(mid);
+      final int compareResult = method.first.containsForBinarySearch(range.getStart());
+      if (compareResult == 0) {
+        return method;
+      }
+
+      if (compareResult < 0) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return null;
+  }
+
   private synchronized void recompile(CompilationRequest request) {
     close();
     cachedCompile = performCompilation(request.sources);

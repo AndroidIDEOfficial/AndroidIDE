@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java.compiler;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.config.JavacConfigProvider;
@@ -31,6 +32,7 @@ import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.util.DocumentUtils;
 import com.itsaky.androidide.projects.util.SourceClassTrie;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.BootClasspathProvider;
@@ -95,6 +97,22 @@ public class CompileBatch implements AutoCloseable {
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();
     watch.log();
+  }
+
+  @Nullable
+  CompilationUnitTree compilationUnitFor(Path file) {
+    if (this.roots == null || this.roots.isEmpty()) {
+      return null;
+    }
+
+    for (final CompilationUnitTree root : this.roots) {
+      final Path cuFile = Paths.get(root.getSourceFile().toUri());
+      if (DocumentUtils.isSameFile(cuFile, file)) {
+        return root;
+      }
+    }
+
+    return null;
   }
 
   void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
