@@ -115,6 +115,8 @@
     <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
     <string name="template_cpp">Native C++</string>
     <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
+    <string name="template_flashlight">Flashlight App Project</string>
+    <string name="template_flashlight_description">Create a new basic flashlight app Template</string>
 
     <!-- Files -->
     <string name="save">Save</string>
