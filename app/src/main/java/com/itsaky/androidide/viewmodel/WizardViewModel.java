@@ -127,6 +127,16 @@ public class WizardViewModel extends AndroidViewModel {
                               getApplication().getApplicationContext(),
                               R.string.template_description_libgdx)
                           .setImageId(R.drawable.template_game_activity);
+                  flashlight =
+                      new ProjectTemplate()
+                          .setId(9)
+                          .setSupportJava(true)
+                          .setName(
+                              getApplication().getApplicationContext(), R.string.template_flaslight)
+                          .setDescription(
+                              getApplication().getApplicationContext(),
+                              R.string.template_flashlight_description)
+                          .setImageId(R.drawable.template_flaslight_activity);
 
               mTemplates.add(empty);
               mTemplates.add(basic);
@@ -137,6 +147,7 @@ public class WizardViewModel extends AndroidViewModel {
               mTemplates.add(cppWizard);
               mTemplates.add(compose);
               mTemplates.add(libgdx);
+              mTemplates.add(flashlight);
 
               mProjectTemplatesList.postValue(mTemplates);
               mLoadingState.postValue(false);
