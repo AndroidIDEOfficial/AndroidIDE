@@ -73,21 +73,7 @@ class ImportCompletionProvider(
       legacyImportPathCompletion(partial, names, list)
       return CompletionResult(list)
     }
-
-    val sourceNode =
-      if (pkgName.isEmpty()) module.compileJavaSourceClasses.root
-      else module.compileJavaSourceClasses.findNode(pkgName)
-    if (sourceNode != null) {
-      addDirectChildNodes(sourceNode, incomplete, list, names)
-    }
-
-    val classpathNode =
-      if (pkgName.isEmpty()) module.compileClasspathClasses.root
-      else module.compileClasspathClasses.findNode(pkgName)
-    if (classpathNode != null) {
-      addDirectChildNodes(classpathNode, incomplete, list, names)
-    }
-
+  
     BootClasspathProvider.getAllEntries().forEach {
       val node =
         if (pkgName.isEmpty()) {
@@ -96,6 +82,20 @@ class ImportCompletionProvider(
       if (node != null) {
         addDirectChildNodes(node, incomplete, list, names)
       }
+    }
+  
+    val classpathNode =
+      if (pkgName.isEmpty()) module.compileClasspathClasses.root
+      else module.compileClasspathClasses.findNode(pkgName)
+    if (classpathNode != null) {
+      addDirectChildNodes(classpathNode, incomplete, list, names)
+    }
+
+    val sourceNode =
+      if (pkgName.isEmpty()) module.compileJavaSourceClasses.root
+      else module.compileJavaSourceClasses.findNode(pkgName)
+    if (sourceNode != null) {
+      addDirectChildNodes(sourceNode, incomplete, list, names)
     }
 
     return CompletionResult(list)
