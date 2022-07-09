@@ -18,7 +18,7 @@
 package com.itsaky.androidide.lsp.internal.model
 
 import com.itsaky.androidide.lsp.models.CompletionParams
-import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Paths
 

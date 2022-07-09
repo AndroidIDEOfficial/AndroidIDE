@@ -18,7 +18,7 @@
 package com.itsaky.androidide.lsp.java.compiler;
 
 import com.itsaky.androidide.projects.api.ModuleProject;
-import com.itsaky.androidide.projects.util.SourceClassTrie;
+import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.sun.tools.javac.api.JavacTool;
 

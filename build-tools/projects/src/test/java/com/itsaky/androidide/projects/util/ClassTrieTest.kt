@@ -18,6 +18,7 @@
 package com.itsaky.androidide.projects.util
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.utils.ClassTrie
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

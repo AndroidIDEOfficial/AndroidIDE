@@ -25,7 +25,8 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.projects.util.ClassTrie.Node
+import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.utils.ClassTrie.Node
 import com.sun.source.util.TreePath
 import java.nio.file.Path
 
@@ -55,7 +56,7 @@ class ImportCompletionProvider(
     val list = mutableListOf<CompletionItem>()
 
     var pkgName = importPath
-    var incomplete: String = ""
+    val incomplete: String
     if (!pkgName.contains(".")) {
       pkgName = ""
       incomplete = importPath
@@ -87,7 +88,15 @@ class ImportCompletionProvider(
       addDirectChildNodes(classpathNode, incomplete, list, names)
     }
 
-    // TODO Add from bootstrap classes
+    BootClasspathProvider.getAllEntries().forEach {
+      val node =
+        if (pkgName.isEmpty()) {
+          it.root
+        } else it.findNode(pkgName)
+      if (node != null) {
+        addDirectChildNodes(node, incomplete, list, names)
+      }
+    }
 
     return CompletionResult(list)
   }

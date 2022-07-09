@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.java.compiler;
 
 import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.projects.util.DocumentUtils;
+import com.itsaky.androidide.utils.DocumentUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

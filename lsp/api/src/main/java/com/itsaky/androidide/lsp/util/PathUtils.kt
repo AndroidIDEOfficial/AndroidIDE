@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.lsp.util
 
-import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.utils.DocumentUtils
 import java.nio.file.Path
 
 /** @author Akash Yadav */

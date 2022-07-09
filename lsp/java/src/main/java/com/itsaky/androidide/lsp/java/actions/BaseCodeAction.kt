@@ -27,7 +27,7 @@ import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.util.DocumentUtils
+import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File

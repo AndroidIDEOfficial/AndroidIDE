@@ -15,10 +15,9 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.util;
+package com.itsaky.androidide.utils;
 
-import com.itsaky.androidide.projects.ProjectManager;
-
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;
@@ -29,7 +28,9 @@ import java.util.Objects;
  * Cache maps a file + an arbitrary key to a value. When the file is modified, the mapping expires.
  */
 public class Cache<K, V> {
-  private final Map<Key, Value> map = new HashMap<>();
+
+  private static final ILogger LOG = ILogger.newInstance("Cache");
+  private final Map<Key<K>, Value> map = new HashMap<>();
 
   public boolean has(Path file, K k) {
     return !needs(file, k);
@@ -37,29 +38,37 @@ public class Cache<K, V> {
 
   public boolean needs(Path file, K k) {
     // If key is not in map, it needs to be loaded
-    Key key = new Key<K>(file, k);
-    if (!map.containsKey(key)) return true;
+    Key<K> key = new Key<>(file, k);
+    if (!map.containsKey(key)) {
+      return true;
+    }
 
     // If key was loaded before file was last modified, it needs to be reloaded
     Value value = map.get(key);
-    Instant modified = ProjectManager.INSTANCE.getLastModified(file);
+    if (value == null) {
+      return true;
+    }
+
+    Instant modified = getLastModified(file);
     // TODO remove all keys associated with file when file changes
     return value.created.isBefore(modified);
   }
 
   public void load(Path file, K k, V v) {
     // TODO limit total size of cache
-    Key key = new Key<K>(file, k);
+    Key<K> key = new Key<>(file, k);
     Value value = new Value(v);
     map.put(key, value);
   }
 
   public V get(Path file, K k) {
-    Key key = new Key<K>(file, k);
-    if (!map.containsKey(key)) {
+    final Key<K> key = new Key<>(file, k);
+    final var val = map.get(key);
+    if (val == null) {
       throw new IllegalArgumentException(k + " is not in map " + map);
     }
-    return map.get(key).value;
+
+    return val.value;
   }
 
   private static class Key<K> {
@@ -76,6 +85,7 @@ public class Cache<K, V> {
       return Objects.hash(file, key);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object other) {
       if (other.getClass() != Cache.Key.class) return false;
@@ -90,6 +100,43 @@ public class Cache<K, V> {
 
     Value(V value) {
       this.value = value;
+    }
+  }
+
+  // Cannot access ProjectManager from this module
+  private static Object ProjectManager_INSTANCE;
+  private static Method ProjectManager_getLastModified;
+
+  private static Instant getLastModified(Path file) {
+    initProjectManagerInstance();
+
+    try {
+      return (Instant) ProjectManager_getLastModified.invoke(ProjectManager_INSTANCE, file);
+    } catch (Throwable err) {
+      LOG.error("Cannot get last modified from ProjectManager", err);
+      return Instant.now();
+    }
+  }
+
+  private static void initProjectManagerInstance() {
+    if (ProjectManager_INSTANCE == null) {
+      try {
+        final var klass = Class.forName("com.itsaky.androidide.projects.ProjectManager");
+        final var field = klass.getDeclaredField("INSTANCE");
+        if (!field.isAccessible()) {
+          field.setAccessible(true);
+        }
+
+        ProjectManager_INSTANCE = field.get(null);
+
+        ProjectManager_getLastModified = klass.getDeclaredMethod("getLastModified", Path.class);
+        if (!ProjectManager_getLastModified.isAccessible()) {
+          ProjectManager_getLastModified.setAccessible(true);
+        }
+      } catch (Throwable err) {
+        LOG.error("Cannot reflect ProjectManager INSTANCE", err);
+        throw new RuntimeException(err);
+      }
     }
   }
 }

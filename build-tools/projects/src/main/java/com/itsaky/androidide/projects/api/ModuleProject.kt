@@ -23,10 +23,10 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.models.ActiveDocument
-import com.itsaky.androidide.projects.util.ClassTrie
-import com.itsaky.androidide.projects.util.DocumentUtils
-import com.itsaky.androidide.projects.util.SourceClassTrie
-import com.itsaky.androidide.projects.util.SourceClassTrie.SourceNode
+import com.itsaky.androidide.utils.ClassTrie
+import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.utils.SourceClassTrie
+import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ClasspathReader
 import com.itsaky.androidide.utils.ILogger

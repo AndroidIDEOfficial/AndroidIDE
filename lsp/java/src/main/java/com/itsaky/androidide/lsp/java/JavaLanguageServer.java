@@ -57,7 +57,7 @@ import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
-import com.itsaky.androidide.projects.util.DocumentUtils;
+import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.greenrobot.eventbus.EventBus;

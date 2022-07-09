@@ -19,7 +19,7 @@ package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.util.SourceClassTrie.SourceNode
+import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.ILogger

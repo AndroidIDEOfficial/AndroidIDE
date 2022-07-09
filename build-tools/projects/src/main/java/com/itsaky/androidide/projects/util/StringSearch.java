@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects.util;
 
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.models.ActiveDocument;
+import com.itsaky.androidide.utils.Cache;
 
 import java.io.BufferedReader;
 import java.io.IOException;

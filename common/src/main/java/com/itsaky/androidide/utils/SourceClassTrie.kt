@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.projects.util
+package com.itsaky.androidide.utils
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,13 +30,26 @@ import kotlin.io.path.nameWithoutExtension
  */
 open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : ClassTrie(root) {
 
+  companion object {
+    @JvmStatic
+    private val pkgNameMethod by lazy {
+      Class.forName("com.itsaky.androidide.projects.util.StringSearch")
+        .getDeclaredMethod("packageName", Path::class.java)
+    }
+
+    @JvmStatic
+    private fun packageName(file: Path): String {
+      return pkgNameMethod.invoke(null, file) as String
+    }
+  }
+
   override fun append(name: String): Node {
     throw UnsupportedOperationException("Method not supported!")
   }
 
   open fun append(path: Path, sourceDir: Path): SourceNode {
     val modified = Files.getLastModifiedTime(path).toInstant()
-    val packageName = StringSearch.packageName(path)
+    val packageName = packageName(path)
     val segments = segments(packageName)
     var node: SourcePackageNode = root as SourcePackageNode
     var currentPath = sourceDir
@@ -56,10 +69,15 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
     node.children[name] = klass
     return klass
   }
-  
-  open fun createNode(dir: Path, node: SourcePackageNode, segment: String, segments: List<String>, index: Int) =
-    node.createChild(dir, segment, segments.subList(0, index + 1).joinToString(separator = "."))
-  
+
+  open fun createNode(
+    dir: Path,
+    node: SourcePackageNode,
+    segment: String,
+    segments: List<String>,
+    index: Int
+  ) = node.createChild(dir, segment, segments.subList(0, index + 1).joinToString(separator = "."))
+
   override fun createNode(node: Node, segment: String, segments: List<String>, index: Int): Node {
     throw UnsupportedOperationException("Method not supported")
   }

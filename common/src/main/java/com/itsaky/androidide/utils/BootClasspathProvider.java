@@ -17,9 +17,6 @@
 
 package com.itsaky.androidide.utils;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.reflect.ClassPath;
-
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,8 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("UnstableApiUsage")
 public class BootClasspathProvider {
 
-  private static final Map<String, ImmutableSet<ClassPath.ClassInfo>> bootClasspathClasses =
-      new ConcurrentHashMap<>();
+  private static final Map<String, ClassTrie> bootClasspathClasses = new ConcurrentHashMap<>();
   private static final ILogger LOG = ILogger.newInstance("BootClassProvider");
 
   /**
@@ -60,7 +56,16 @@ public class BootClasspathProvider {
       LOG.debug("Indexing boot classpath:", classpath);
       final var path = Paths.get(classpath);
       final var classes = ClasspathReader.listClasses(Collections.singleton(path));
-      bootClasspathClasses.put(classpath, classes);
+      final var trie = new ClassTrie();
+      for (final var info : classes) {
+        if (!info.isTopLevel()) {
+          continue;
+        }
+
+        trie.append(info.getName());
+      }
+
+      bootClasspathClasses.put(classpath, trie);
       count += classes.size();
     }
 
@@ -95,21 +100,28 @@ public class BootClasspathProvider {
    */
   public static synchronized Set<String> getTopLevelClasses(Collection<String> classpaths) {
     final var result = new TreeSet<String>();
-    if (classpaths == null) {
+    if (classpaths == null || classpaths.isEmpty()) {
       return result;
     }
 
-    for (final var classpath : classpaths) {
-      final var entry = bootClasspathClasses.get(classpath);
-      if (entry == null || entry.isEmpty()) {
+    for (final String classpath : classpaths) {
+      final var trie = bootClasspathClasses.get(classpath);
+      if (trie == null) {
         continue;
       }
 
-      entry.stream()
-          .filter(ClassPath.ClassInfo::isTopLevel)
-          .map(ClassPath.ClassInfo::getName)
-          .forEach(result::add);
+      result.addAll(trie.allClassNames());
     }
+
     return result;
+  }
+
+  /**
+   * Returns all the {@link ClassTrie} entries.
+   *
+   * @return All {@link ClassTrie} entries.
+   */
+  public static Collection<ClassTrie> getAllEntries() {
+    return bootClasspathClasses.values();
   }
 }
