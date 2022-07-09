@@ -17,10 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.providers.completion
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
@@ -36,10 +35,10 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
 import java.nio.file.Path
-import java.util.function.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.ANNOTATION_TYPE
 import javax.lang.model.element.ElementKind.CLASS
@@ -70,23 +69,23 @@ import javax.lang.model.element.VariableElement
 abstract class IJavaCompletionProvider(
   protected val completingFile: Path,
   protected val cursor: Long,
-  protected val compiler: CompilerProvider,
+  protected val compiler: JavaCompilerService,
   protected val settings: IServerSettings,
 ) {
   protected val log: ILogger = ILogger.newInstance(javaClass.name)
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
-  
+
   open fun complete(
     task: CompileTask,
     path: TreePath,
     partial: String,
     endsWithParen: Boolean
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val root = task.root(completingFile)
     filePackage = root.`package`.packageName.toString()
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
-    return doComplete(task, path, partial, endsWithParen);
+    return doComplete(task, path, partial, endsWithParen)
   }
 
   /**
@@ -104,10 +103,10 @@ abstract class IJavaCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult
+  ): CompletionResult
 
-  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): com.itsaky.androidide.lsp.models.MatchLevel {
-    return com.itsaky.androidide.lsp.models.CompletionItem.matchLevel(candidate.toString(), partial.toString())
+  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
+    return CompletionItem.matchLevel(candidate.toString(), partial.toString())
   }
 
   protected open fun putMethod(
@@ -125,13 +124,13 @@ abstract class IJavaCompletionProvider(
     keyword: String,
     partialName: CharSequence,
     matchRatio: Int,
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
-    val item = com.itsaky.androidide.lsp.models.CompletionItem()
+  ): CompletionItem {
+    val item = CompletionItem()
     item.setLabel(keyword)
     item.kind = KEYWORD
     item.detail = "keyword"
     item.sortText = keyword
-    item.matchLevel = com.itsaky.androidide.lsp.models.CompletionItem.matchLevel(keyword, partialName.toString())
+    item.matchLevel = CompletionItem.matchLevel(keyword, partialName.toString())
     return item
   }
 
@@ -139,12 +138,12 @@ abstract class IJavaCompletionProvider(
     task: CompileTask,
     overloads: List<ExecutableElement>,
     addParens: Boolean,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel,
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
+    matchLevel: MatchLevel,
+  ): CompletionItem {
     val first = overloads[0]
-    val item = com.itsaky.androidide.lsp.models.CompletionItem()
+    val item = CompletionItem()
     item.setLabel(first.simpleName.toString())
-    item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
+    item.kind = CompletionItemKind.METHOD
     item.detail = first.returnType.toString() + " " + first
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
@@ -155,7 +154,7 @@ abstract class IJavaCompletionProvider(
         item.insertText = first.simpleName.toString() + "()$0"
       } else {
         item.insertText = first.simpleName.toString() + "($0)"
-        item.command = com.itsaky.androidide.lsp.models.Command("Trigger Parameter Hints", com.itsaky.androidide.lsp.models.Command.TRIGGER_PARAMETER_HINTS)
+        item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
       }
       item.insertTextFormat = SNIPPET // Snippet
     }
@@ -165,10 +164,10 @@ abstract class IJavaCompletionProvider(
   protected open fun item(
     task: CompileTask,
     element: Element,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
+    matchLevel: MatchLevel
+  ): CompletionItem {
     if (element.kind == METHOD) throw RuntimeException("method")
-    val item = com.itsaky.androidide.lsp.models.CompletionItem()
+    val item = CompletionItem()
     item.setLabel(element.simpleName.toString())
     item.kind = kind(element)
     item.detail = element.toString()
@@ -181,8 +180,8 @@ abstract class IJavaCompletionProvider(
   protected open fun classItem(
     className: String,
     partialName: String,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
+    matchLevel: MatchLevel
+  ): CompletionItem {
     return classItem(emptySet(), null, className, partialName, matchLevel)
   }
 
@@ -191,15 +190,15 @@ abstract class IJavaCompletionProvider(
     file: Path?,
     className: String,
     partialName: String,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel,
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
-    val item = com.itsaky.androidide.lsp.models.CompletionItem()
+    matchLevel: MatchLevel,
+  ): CompletionItem {
+    val item = CompletionItem()
     item.setLabel(simpleName(className).toString())
-    item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
+    item.kind = CompletionItemKind.CLASS
     item.detail = className
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
-    val data = com.itsaky.androidide.lsp.models.CompletionData()
+    val data = CompletionData()
     data.className = className
     item.data = data
     item.additionalEditHandler = ClassImportEditHandler(imports, file!!)
@@ -214,40 +213,40 @@ abstract class IJavaCompletionProvider(
   protected open fun packageItem(
     name: String,
     partialName: String,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel
-  ): com.itsaky.androidide.lsp.models.CompletionItem =
-    com.itsaky.androidide.lsp.models.CompletionItem().apply {
+    matchLevel: MatchLevel
+  ): CompletionItem =
+    CompletionItem().apply {
       setLabel(name)
       this.kind = MODULE
       this.sortText = name
       this.matchLevel = matchLevel
     }
 
-  protected open fun kind(e: Element): com.itsaky.androidide.lsp.models.CompletionItemKind {
+  protected open fun kind(e: Element): CompletionItemKind {
     return when (e.kind) {
-      ANNOTATION_TYPE -> com.itsaky.androidide.lsp.models.CompletionItemKind.ANNOTATION_TYPE
-      CLASS -> com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
-      CONSTRUCTOR -> com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
-      ENUM -> com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
+      ANNOTATION_TYPE -> CompletionItemKind.ANNOTATION_TYPE
+      CLASS -> CompletionItemKind.CLASS
+      CONSTRUCTOR -> CompletionItemKind.CONSTRUCTOR
+      ENUM -> CompletionItemKind.ENUM
       ENUM_CONSTANT -> ENUM_MEMBER
       EXCEPTION_PARAMETER,
       PARAMETER, -> PROPERTY
-      FIELD -> com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
+      FIELD -> CompletionItemKind.FIELD
       STATIC_INIT,
       INSTANCE_INIT, -> FUNCTION
-      INTERFACE -> com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
+      INTERFACE -> CompletionItemKind.INTERFACE
       LOCAL_VARIABLE,
       RESOURCE_VARIABLE, -> VARIABLE
-      METHOD -> com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
+      METHOD -> CompletionItemKind.METHOD
       PACKAGE -> MODULE
-      TYPE_PARAMETER -> com.itsaky.androidide.lsp.models.CompletionItemKind.TYPE_PARAMETER
+      TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER
       OTHER -> NONE
       else -> NONE
     }
   }
 
-  protected open fun data(task: CompileTask, element: Element, overloads: Int): com.itsaky.androidide.lsp.models.CompletionData? {
-    val data = com.itsaky.androidide.lsp.models.CompletionData()
+  protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
+    val data = CompletionData()
     when {
       element is TypeElement -> data.className = element.qualifiedName.toString()
       element.kind == FIELD -> {
