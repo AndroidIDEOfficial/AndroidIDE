@@ -177,19 +177,14 @@ abstract class IJavaCompletionProvider(
     return item
   }
 
-  protected open fun classItem(
-    className: String,
-    partialName: String,
-    matchLevel: MatchLevel
-  ): CompletionItem {
-    return classItem(emptySet(), null, className, partialName, matchLevel)
+  protected open fun classItem(className: String, matchLevel: MatchLevel): CompletionItem {
+    return classItem(emptySet(), null, className, matchLevel)
   }
 
   protected open fun classItem(
     imports: Set<String>,
     file: Path?,
     className: String,
-    partialName: String,
     matchLevel: MatchLevel,
   ): CompletionItem {
     val item = CompletionItem()
@@ -201,7 +196,9 @@ abstract class IJavaCompletionProvider(
     val data = CompletionData()
     data.className = className
     item.data = data
-    item.additionalEditHandler = ClassImportEditHandler(imports, file!!)
+
+    // If file is not provided, we are probably completing an import path
+    item.additionalEditHandler = if (file == null) null else ClassImportEditHandler(imports, file)
     return item
   }
 
@@ -210,11 +207,7 @@ abstract class IJavaCompletionProvider(
     return if (dot == -1) className else className.subSequence(dot + 1, className.length)
   }
 
-  protected open fun packageItem(
-    name: String,
-    partialName: String,
-    matchLevel: MatchLevel
-  ): CompletionItem =
+  protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem =
     CompletionItem().apply {
       setLabel(name)
       this.kind = MODULE

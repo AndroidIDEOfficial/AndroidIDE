@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.CompilationUnitTree
@@ -42,7 +43,7 @@ import javax.lang.model.element.TypeElement
 class StaticImportCompletionProvider(
   completingFile: Path,
   cursor: Long,
-  compiler: CompilerProvider,
+  compiler: JavaCompilerService,
   settings: IServerSettings,
   val root: CompilationUnitTree,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {

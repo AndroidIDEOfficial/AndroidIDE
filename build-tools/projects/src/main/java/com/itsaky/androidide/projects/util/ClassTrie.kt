@@ -100,7 +100,6 @@ open class ClassTrie(val root: Node = Node()) {
 
       node = node.children[segment]
     }
-
     return node != null
   }
 
@@ -140,6 +139,24 @@ open class ClassTrie(val root: Node = Node()) {
    */
   open fun findClassNames(packageName: String): List<String> {
     return findInPackage(packageName).map { it.qualifiedName }
+  }
+
+  /**
+   * Finds node with the given qualified name. Or `null` if none was found.
+   *
+   * @param qualifiedName The fully qualified name of the node to find.
+   */
+  open fun findNode(qualifiedName: String): Node? {
+    val segments = segments(qualifiedName)
+    var node: Node? = root
+    for (segment in segments) {
+      if (node == null) {
+        break
+      }
+      node = node.children[segment]
+    }
+
+    return node
   }
 
   /** Returns all class nodes available in this trie. */

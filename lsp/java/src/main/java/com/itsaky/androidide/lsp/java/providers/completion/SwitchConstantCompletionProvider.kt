@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.SwitchTree
 import com.sun.source.util.TreePath
@@ -38,7 +39,7 @@ import javax.lang.model.type.DeclaredType
 class SwitchConstantCompletionProvider(
   completingFile: Path,
   cursor: Long,
-  compiler: CompilerProvider,
+  compiler: JavaCompilerService,
   settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 

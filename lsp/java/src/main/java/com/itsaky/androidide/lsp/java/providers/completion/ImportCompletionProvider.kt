@@ -19,12 +19,13 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider.MAX_COMPLETION_ITEMS
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.projects.util.ClassTrie.Node
 import com.sun.source.util.TreePath
 import java.nio.file.Path
 
@@ -48,10 +49,81 @@ class ImportCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
-    log.info("...complete import")
+    log.info("...complete import for path:", importPath)
 
     val names: MutableSet<String> = HashSet()
     val list = mutableListOf<CompletionItem>()
+
+    var pkgName = importPath
+    var incomplete: String = ""
+    if (!pkgName.contains(".")) {
+      pkgName = ""
+      incomplete = importPath
+    } else if (pkgName.endsWith(".")) {
+      pkgName = pkgName.substring(0, pkgName.lastIndex)
+      incomplete = ""
+    } else {
+      pkgName = pkgName.substringBeforeLast(delimiter = '.')
+      incomplete = pkgName.substringAfterLast(delimiter = '.')
+    }
+
+    val module = compiler.module
+    if (module == null) {
+      legacyImportPathCompletion(partial, names, list)
+      return CompletionResult(list)
+    }
+
+    val sourceNode =
+      if (pkgName.isEmpty()) module.compileJavaSourceClasses.root
+      else module.compileJavaSourceClasses.findNode(pkgName)
+    if (sourceNode != null) {
+      addDirectChildNodes(sourceNode, incomplete, list, names)
+    }
+
+    val classpathNode =
+      if (pkgName.isEmpty()) module.compileClasspathClasses.root
+      else module.compileClasspathClasses.findNode(pkgName)
+    if (classpathNode != null) {
+      addDirectChildNodes(classpathNode, incomplete, list, names)
+    }
+
+    // TODO Add from bootstrap classes
+
+    return CompletionResult(list)
+  }
+
+  private fun addDirectChildNodes(
+    sourceNode: Node,
+    incomplete: String,
+    list: MutableList<CompletionItem>,
+    names: MutableSet<String>
+  ) {
+    for (child in sourceNode.children.values) {
+      val match =
+        if (incomplete.isEmpty()) {
+          CASE_SENSITIVE_EQUAL
+        } else {
+          matchLevel(child.name, incomplete)
+        }
+
+      if (match == NO_MATCH || names.contains(child.name)) {
+        continue
+      }
+
+      if (child.isClass) {
+        list.add(classItem(child.qualifiedName, match))
+      } else {
+        list.add(packageItem(child.name, match))
+      }
+      names.add(child.name)
+    }
+  }
+
+  private fun legacyImportPathCompletion(
+    partial: String,
+    names: MutableSet<String>,
+    list: MutableList<CompletionItem>
+  ) {
     for (className in compiler.publicTopLevelTypes()) {
       val matchLevel = matchLevel(className, partial)
       if (matchLevel == NO_MATCH) {
@@ -70,16 +142,14 @@ class ImportCompletionProvider(
       names.add(segment)
       val isClass = end == importPath.length
       if (isClass) {
-        list.add(classItem(className, importPath, matchLevel))
+        list.add(classItem(className, matchLevel))
       } else {
-        list.add(packageItem(segment, importPath, matchLevel))
+        list.add(packageItem(segment, matchLevel))
       }
 
       if (list.size > MAX_COMPLETION_ITEMS) {
         break
       }
     }
-
-    return CompletionResult(list)
   }
 }
