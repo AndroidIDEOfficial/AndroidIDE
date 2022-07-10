@@ -71,13 +71,11 @@ public interface ILanguageServer {
   String getServerId();
 
   /**
-   * Initialize this language server with the given params. Subclasses are expected to throw {@link
-   * AlreadyInitializedException} if the language server was already initialized.
+   * Initialize this language server with the given params.
    *
    * @param params The params used to initialize the language server.
-   * @throws AlreadyInitializedException If the language server was already initialized.
    */
-  void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException;
+  void initialize(@NonNull InitializeParams params);
 
   /**
    * Checks if this language server has been initialized.
@@ -209,12 +207,4 @@ public interface ILanguageServer {
   default boolean handleFailure(LSPFailure failure) {
     return false;
   }
-
-  /**
-   * Thrown to indicate that a language server received an initialize notification but was already
-   * initialized.
-   *
-   * @author Akash Yadav
-   */
-  class AlreadyInitializedException extends IllegalStateException {}
 }

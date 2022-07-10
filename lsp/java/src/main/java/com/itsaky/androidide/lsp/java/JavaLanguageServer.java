@@ -140,10 +140,10 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+  public void initialize(@NonNull InitializeParams params) {
 
     if (initialized) {
-      throw new AlreadyInitializedException();
+      return;
     }
 
     capabilities = new ServerCapabilities();
