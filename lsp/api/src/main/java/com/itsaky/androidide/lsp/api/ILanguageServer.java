@@ -71,28 +71,6 @@ public interface ILanguageServer {
   String getServerId();
 
   /**
-   * Initialize this language server with the given params.
-   *
-   * @param params The params used to initialize the language server.
-   */
-  void initialize(@NonNull InitializeParams params);
-
-  /**
-   * Checks if this language server has been initialized.
-   *
-   * @return <code>true</code> if the server has been initialized, <code>false</code> otherwise.
-   */
-  boolean isInitialized();
-
-  /**
-   * Returns the capabilities that the LSP implementation provides.
-   *
-   * @return The capabilities of the server.
-   */
-  @NonNull
-  ServerCapabilities getCapabilities();
-
-  /**
    * Called by client to notify the server to shutdown. Language servers must release all the
    * resources in use.
    *

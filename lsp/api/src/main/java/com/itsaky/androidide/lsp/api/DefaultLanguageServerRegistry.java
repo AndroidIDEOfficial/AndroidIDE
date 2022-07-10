@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -55,6 +56,19 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
       }
     } finally {
       lock.writeLock().unlock();
+    }
+  }
+
+  @Override
+  public void connectClient(@NonNull final ILanguageClient client) {
+    Objects.requireNonNull(client);
+    lock.readLock().lock();
+    try {
+      for (final var server : mRegister.values()) {
+        server.connectClient(client);
+      }
+    } finally {
+      lock.readLock().unlock();
     }
   }
 

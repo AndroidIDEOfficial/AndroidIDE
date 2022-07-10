@@ -31,10 +31,8 @@ import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
-import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.NoCompletionsProvider;
@@ -64,9 +62,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
   private ILanguageClient client;
   private IServerSettings settings;
-  private boolean initialized = false;
   private boolean canProvideCompletions = false;
-  private ServerCapabilities capabilities;
 
   public XMLLanguageServer() {}
 
@@ -76,36 +72,8 @@ public class XMLLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void initialize(@NonNull InitializeParams params) {
-    if (initialized) {
-      return;
-    }
-
-    capabilities = new ServerCapabilities();
-    capabilities.setCompletionsAvailable(true);
-    capabilities.setCodeAnalysisAvailable(true);
-    capabilities.setSignatureHelpAvailable(false);
-    capabilities.setReferencesAvailable(false);
-    capabilities.setDefinitionsAvailable(false);
-    capabilities.setSmartSelectionsEnabled(false);
-
-    initialized = true;
-  }
-
-  @Override
   public String getServerId() {
     return SERVER_ID;
-  }
-
-  @Override
-  public boolean isInitialized() {
-    return initialized;
-  }
-
-  @NonNull
-  @Override
-  public ServerCapabilities getCapabilities() {
-    return capabilities;
   }
 
   @Override

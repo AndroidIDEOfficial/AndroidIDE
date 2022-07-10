@@ -47,6 +47,9 @@ public abstract class ILanguageServerRegistry {
    */
   public abstract void register(@NonNull ILanguageServer server);
 
+  /** Connects client to all the registered {@link ILanguageServer}s. */
+  public abstract void connectClient(@NonNull ILanguageClient client);
+
   /**
    * Unregister the given server. If any server is registered with the given server ID, a shutdown
    * request will be sent to that server.

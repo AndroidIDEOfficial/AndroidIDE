@@ -93,9 +93,7 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
-import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
-import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ApkMetadata;
@@ -115,7 +113,6 @@ import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
@@ -133,10 +130,8 @@ import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -1486,23 +1481,13 @@ public class EditorActivity extends StudioActivity
       IDELanguageClientImpl.initialize(this);
     }
 
-    initializeLanguageServers();
+    connectLSPClient();
   }
 
-  // TODO remove this
-  private void initializeLanguageServers() {
+  private void connectLSPClient() {
     final var client = IDELanguageClientImpl.getInstance();
-    final var javaLanguageServer = getApp().getJavaLanguageServer();
-    final var workspaceRoots = new HashSet<Path>();
-    workspaceRoots.add(
-        new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath())).toPath());
-    workspaceRoots.add(Environment.HOME.toPath().resolve("logsender"));
-
-    final var params = new InitializeParams(workspaceRoots);
-
-    javaLanguageServer.connectClient(client);
-    javaLanguageServer.applySettings(JavaServerSettings.getInstance());
-    javaLanguageServer.initialize(params);
+    final var registry = ILanguageServerRegistry.getDefault();
+    registry.connectClient(client);
   }
 
   private void stopServices() {

@@ -46,11 +46,9 @@ import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.models.LSPFailure;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
-import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.LSPEditorActions;
@@ -81,11 +79,8 @@ public class JavaLanguageServer implements ILanguageServer {
   private IServerSettings settings;
   private Path selectedFile;
   private CachedCompletion cachedCompletion;
-  private ServerCapabilities capabilities;
-  private boolean initialized;
 
   public JavaLanguageServer() {
-    this.initialized = false;
     this.completionProvider = new CompletionProvider();
     this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
     this.cachedCompletion = CachedCompletion.EMPTY;
@@ -140,45 +135,10 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void initialize(@NonNull InitializeParams params) {
-
-    if (initialized) {
-      return;
-    }
-
-    capabilities = new ServerCapabilities();
-    capabilities.setCompletionsAvailable(true);
-    capabilities.setCodeActionsAvailable(true);
-    capabilities.setDefinitionsAvailable(true);
-    capabilities.setReferencesAvailable(true);
-    capabilities.setSignatureHelpAvailable(true);
-    capabilities.setCodeAnalysisAvailable(true);
-    capabilities.setSmartSelectionsEnabled(true);
-
-    LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this);
-    }
-    initialized = true;
-  }
-
-  @Override
-  public boolean isInitialized() {
-    return initialized;
-  }
-
-  @NonNull
-  @Override
-  public ServerCapabilities getCapabilities() {
-    return capabilities;
-  }
-
-  @Override
   public void shutdown() {
     JavaCompilerProvider.getInstance().destory();
     EventBus.getDefault().unregister(this);
     timer.shutdown();
-    initialized = false;
   }
 
   @Override
@@ -199,7 +159,8 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @Override
   public void setupWithProject(@NonNull final Project project) {
-    // Make sure we're registered with EventBus
+
+    LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
     if (!EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().register(this);
     }
