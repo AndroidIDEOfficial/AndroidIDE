@@ -35,6 +35,8 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.utils.ClassTrie.Node
 import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
@@ -120,8 +122,8 @@ abstract class IJavaCompletionProvider(
     methods[name]!!.add(method)
   }
 
-  protected open fun keyword(keyword: String, partial: String, matchRatio: Int): CompletionItem =
-    keyword(keyword, partial, CompletionItem.matchLevel(keyword, partial))
+  protected open fun keyword(keyword: String, partial: CharSequence, matchRatio: Int): CompletionItem =
+    keyword(keyword, partial, CompletionItem.matchLevel(keyword, partial.toString()))
 
   protected open fun keyword(
     keyword: String,

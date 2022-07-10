@@ -184,17 +184,17 @@ open class ClassTrie(val root: Node = Node()) {
       node.children.forEach { print(it.value, indent + 2) }
     }
   }
-
-  protected open fun createNode(node: Node, segment: String, segments: List<String>, index: Int) =
-    node.createChild(segment, segments.subList(0, index + 1).joinToString(separator = "."))
-
-  protected open fun segments(name: String): List<String> {
+  
+  open fun segments(name: String): List<String> {
     return if (name.contains('.')) {
       name.split(".")
     } else {
       listOf(name)
     }
   }
+
+  protected open fun createNode(node: Node, segment: String, segments: List<String>, index: Int) =
+    node.createChild(segment, segments.subList(0, index + 1).joinToString(separator = "."))
 
   private fun addRecursively(node: Node, classes: MutableList<Node>) {
     if (node.isClass) {

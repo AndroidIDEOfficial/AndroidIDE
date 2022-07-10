@@ -21,11 +21,11 @@ import androidx.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.Formatter;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.Collection;
 

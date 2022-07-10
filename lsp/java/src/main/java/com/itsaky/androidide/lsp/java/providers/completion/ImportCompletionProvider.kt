@@ -27,6 +27,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.ClassTrie.Node
 import com.sun.source.util.TreePath
 import com.sun.tools.javac.api.JavacTrees
@@ -47,7 +48,6 @@ import javax.lang.model.element.ElementKind.INTERFACE
 import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.element.ElementKind.STATIC_INIT
 import javax.lang.model.element.Modifier.STATIC
-import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 
 /**
@@ -71,14 +71,14 @@ class ImportCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
-    
+
     val importTree = path.leaf
     if (importTree !is JCImport) {
       return CompletionResult.EMPTY
     }
-    
+
     log.info("...complete import for path:", importPath)
-    
+
     val names: MutableSet<String> = HashSet()
     val list = mutableListOf<CompletionItem>()
 
@@ -94,7 +94,7 @@ class ImportCompletionProvider(
       incomplete = pkgName.substringAfterLast(delimiter = '.')
       pkgName = pkgName.substringBeforeLast(delimiter = '.')
     }
-    
+
     run {
       val match = matchLevel("static", incomplete)
       if (match != NO_MATCH && !importTree.isStatic) {
@@ -116,117 +116,127 @@ class ImportCompletionProvider(
     }
 
     try {
-      // Try to complete with Javac APIS
-
-      // Check if pkgName is a package
-      val elements = task.task.elements
-      val pkg = elements.getAllPackageElements(pkgName)
-      val pkgItems = completeFromPackages(pkg, incomplete)
-      if (pkgItems.isNotEmpty()) {
-        // If any enclosed elements are found, then pkgName is an existing package name
-        // But enclosedElements returns only TypeElements, so we manally search and add nested
-        // package name segment in the given pkgName
-        list.addAll(pkgItems)
-        tryCompleteImport(pkgName, incomplete, list, names, module, packageOnly = true)
-        return CompletionResult(list)
+      val packages = collectPackageNodes(module, pkgName)
+      if (packages.isNotEmpty()) {
+        for (node in packages) {
+          addDirectChildNodes(node, incomplete, list, names, false)
+        }
       }
-
+    } catch (err: RequireMemberCompletionException) {
       // If pkgName is not an existing package name, check if it is a qualified classname
       // A user might be trying to acess members of a member class. So, we keep replacing last '.'
       // until we find a valid qualified name of a class
-      var typesForPkg: Set<TypeElement> = setOf()
-      val maybeInnerName = StringBuilder(pkgName)
-      while (true) {
-        val types = elements.getAllTypeElements(maybeInnerName)
-        if (types.isNotEmpty()) {
-          typesForPkg = types
-          break
-        }
-
-        if (!maybeInnerName.contains(".")) {
-          break
-        }
-        maybeInnerName.setCharAt(maybeInnerName.lastIndexOf('.'), '$')
-      }
-
-      if (typesForPkg.isNotEmpty()) {
-        // We found a valid class name
-        // Add the accessible class items
-        for (type in typesForPkg) {
-          val result = completeTypeMembers(task, type, path, incomplete)
-          if (result.isNotEmpty()) {
-            list.addAll(result)
-          }
-        }
+      if (completeTypeMembers(task, path, pkgName, incomplete, list)) {
         return CompletionResult(list)
       }
-
-      return CompletionResult(list)
-    } catch (completeMembers: RequireMemberCompletionException) {
-      val result = completeTypeMembers(task, path, pkgName, incomplete)
-      if (result.isNotEmpty()) {
-        list.addAll(result)
-      }
-    } catch (err: Throwable) {
-      log.error("Failed to complete import with Javac APIs", err)
     }
 
     try {
+      // This maybe reached only in some rare cases
       tryCompleteImport(pkgName, incomplete, list, names, module)
     } catch (e: RequireMemberCompletionException) {
       // User is trying to access members of a class
-      val result = completeTypeMembers(task, path, pkgName, incomplete)
-      if (result.isNotEmpty()) {
-        list.addAll(result)
+      if (completeTypeMembers(task, path, pkgName, incomplete, list)) {
+        return CompletionResult(list)
       }
     }
 
     return CompletionResult(list)
   }
 
-  private fun completeFromPackages(
-    packageElements: Set<PackageElement>,
-    incomplete: String
-  ): List<CompletionItem> {
-    val list = mutableListOf<CompletionItem>()
-    for (pkg in packageElements) {
-      for (element in pkg.enclosedElements) {
-        if (!isType(element)) {
-          continue
-        }
-
-        val match = matchLevel(element.simpleName, incomplete)
-        if (match == NO_MATCH) {
-          continue
-        }
-
-        element as TypeElement
-        list.add(classItem(element.qualifiedName.toString(), match))
-      }
-    }
-    return list
-  }
-
   private fun completeTypeMembers(
     task: CompileTask,
     path: TreePath,
     pkgName: String,
-    incomplete: String
-  ): MutableList<CompletionItem> {
-    log.info("..complete members of $pkgName")
-    val list = mutableListOf<CompletionItem>()
+    incomplete: String,
+    list: MutableList<CompletionItem>
+  ): Boolean {
     val elements = task.task.elements
-    val types = elements.getAllTypeElements(pkgName)
-    for (type in types) {
-      val result = completeTypeMembers(task, type, path, incomplete)
-      if (result.isEmpty()) {
-        continue
+    var typesForPkg: Set<TypeElement> = setOf()
+    val maybeInnerName = StringBuilder(pkgName)
+    while (true) {
+      val types = elements.getAllTypeElements(maybeInnerName)
+      if (types.isNotEmpty()) {
+        typesForPkg = types
+        break
       }
 
-      list.addAll(result)
+      if (!maybeInnerName.contains(".")) {
+        break
+      }
+      maybeInnerName.setCharAt(maybeInnerName.lastIndexOf('.'), '$')
     }
 
-    return list
+    if (typesForPkg.isNotEmpty()) {
+      // We found a valid class name
+      // Add the accessible class items
+      for (type in typesForPkg) {
+        val result = completeTypeMembers(task, type, path, incomplete)
+        if (result.isNotEmpty()) {
+          list.addAll(result)
+        }
+      }
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Collects package nodes for [pkgName] in source paths, classpaths and bootclasspaths. If any
+   * segment of [pkgName] is a class, [RequireMemberCompletionException] is thrown to indicate that
+   * class members must be completed.
+   *
+   * @param module The project module
+   * @param pkgName The package name to collect nodes for.
+   */
+  private fun collectPackageNodes(module: ModuleProject, pkgName: String): List<Node> {
+    val result = mutableListOf<Node>()
+    val fromSource = collectPackageNode(module.compileJavaSourceClasses, pkgName)
+    if (fromSource != null) {
+      result.add(fromSource)
+    }
+
+    val fromClasspath = collectPackageNode(module.compileClasspathClasses, pkgName)
+    if (fromClasspath != null) {
+      result.add(fromClasspath)
+    }
+
+    BootClasspathProvider.getAllEntries().forEach {
+      val fromBootclasspath = collectPackageNode(it, pkgName)
+      if (fromBootclasspath != null) {
+        result.add(fromBootclasspath)
+      }
+    }
+    return result
+  }
+
+  /**
+   * Collect package nodes from the [trie] for the given [pkgName]. If any segment of [pkgName] is a
+   * class, [RequireMemberCompletionException] is thrown to indicate that class members must be
+   * completed.
+   *
+   * @param trie The [ClassTrie] to find package names from.
+   * @param pkgName The package name of the package to find node for.
+   * @return The found package name. Or `null` if no package can be found.
+   */
+  private fun collectPackageNode(trie: ClassTrie, pkgName: String): Node? {
+    val segments = trie.segments(pkgName)
+    var node: Node? = trie.root
+    for (segment in segments) {
+      if (node == null) {
+        break
+      }
+
+      if (node.isClass) {
+        // If any of the segment in pkgName is a class
+        // We need to complete memebers of a class
+        throw RequireMemberCompletionException()
+      }
+
+      node = node.children[segment]
+    }
+
+    return node
   }
 
   private fun completeTypeMembers(
@@ -267,7 +277,7 @@ class ImportCompletionProvider(
       if (!isStatic) {
         continue
       }
-      
+
       val mods = member.modifiers
       if (!mods.contains(STATIC)) {
         continue
@@ -410,5 +420,9 @@ class ImportCompletionProvider(
     return kind == ANNOTATION_TYPE || kind == CLASS || kind == INTERFACE || kind == ENUM
   }
 
+  /**
+   * Internal exception to indicate that members of a class must be completed. This is thrown and
+   * caught internally when completing imports.
+   */
   internal class RequireMemberCompletionException : IllegalStateException()
 }
