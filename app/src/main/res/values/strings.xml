@@ -115,6 +115,8 @@
     <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
     <string name="template_cpp">Native C++</string>
     <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
+    <string name="template_login">Basic Login Activity</string>
+    <string name="template_login_description">Create a basic login activity</string>
 
     <!-- Files -->
     <string name="save">Save</string>
