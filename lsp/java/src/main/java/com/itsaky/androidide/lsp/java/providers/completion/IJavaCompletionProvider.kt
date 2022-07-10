@@ -213,6 +213,12 @@ abstract class IJavaCompletionProvider(
   protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem =
     CompletionItem().apply {
       setLabel(name)
+      this.detail =
+        if (name.contains('.')) {
+          name.substringBeforeLast(delimiter = '.')
+        } else {
+          "<root-package>"
+        }
       this.kind = MODULE
       this.sortText = name
       this.matchLevel = matchLevel
