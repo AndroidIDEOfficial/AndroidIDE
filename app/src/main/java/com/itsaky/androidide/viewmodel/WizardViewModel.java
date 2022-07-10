@@ -127,6 +127,17 @@ public class WizardViewModel extends AndroidViewModel {
                               getApplication().getApplicationContext(),
                               R.string.template_description_libgdx)
                           .setImageId(R.drawable.template_game_activity);
+                  login =
+                      new ProjectTemplate()
+                          .setId(9)
+                          .setSupportJava(true)
+                          .setSupportKotlin(true)
+                          .setName(
+                              getApplication().getApplicationContext(), R.string.template_login)
+                          .setDescription(
+                              getApplication().getApplicationContext(),
+                              R.string.template_login_description)
+                          .setImageId(R.drawable.template_login_activity);
 
               mTemplates.add(empty);
               mTemplates.add(basic);
@@ -137,6 +148,7 @@ public class WizardViewModel extends AndroidViewModel {
               mTemplates.add(cppWizard);
               mTemplates.add(compose);
               mTemplates.add(libgdx);
+              mTemplates.add(login)
 
               mProjectTemplatesList.postValue(mTemplates);
               mLoadingState.postValue(false);
