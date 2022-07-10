@@ -35,8 +35,6 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
-import com.itsaky.androidide.projects.api.ModuleProject
-import com.itsaky.androidide.utils.ClassTrie.Node
 import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
@@ -122,7 +120,11 @@ abstract class IJavaCompletionProvider(
     methods[name]!!.add(method)
   }
 
-  protected open fun keyword(keyword: String, partial: CharSequence, matchRatio: Int): CompletionItem =
+  protected open fun keyword(
+    keyword: String,
+    partial: CharSequence,
+    matchRatio: Int
+  ): CompletionItem =
     keyword(keyword, partial, CompletionItem.matchLevel(keyword, partial.toString()))
 
   protected open fun keyword(
@@ -207,24 +209,33 @@ abstract class IJavaCompletionProvider(
     return item
   }
 
-  protected open fun simpleName(className: String): CharSequence {
-    val dot = className.lastIndexOf('.')
-    return if (dot == -1) className else className.subSequence(dot + 1, className.length)
+  protected open fun simpleName(name: String): CharSequence {
+    return if (name.contains(".")) {
+      name.subSequence(name.lastIndexOf('.') + 1, name.length)
+    } else name
   }
 
-  protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem =
-    CompletionItem().apply {
-      setLabel(name)
-      this.detail =
-        if (name.contains('.')) {
-          name.substringBeforeLast(delimiter = '.')
-        } else {
-          "<root-package>"
-        }
+  private fun packageName(name: CharSequence): CharSequence {
+    return if (name.contains(".")) {
+      name.subSequence(0, name.lastIndexOf('.'))
+    } else name
+  }
+
+  protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem {
+    val simpleName = simpleName(name).toString()
+    var packageName = packageName(name).toString()
+    if (packageName == name) {
+      packageName = " "
+    }
+    return CompletionItem().apply {
+      setLabel(simpleName)
+      this.detail = packageName
+      this.insertText = simpleName
       this.kind = MODULE
       this.sortText = name
       this.matchLevel = matchLevel
     }
+  }
 
   protected open fun kind(e: Element): CompletionItemKind {
     return when (e.kind) {

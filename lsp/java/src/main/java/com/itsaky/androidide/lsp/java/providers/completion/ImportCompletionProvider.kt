@@ -371,7 +371,7 @@ class ImportCompletionProvider(
       if (child.isClass) {
         list.add(classItem(child.qualifiedName, match))
       } else {
-        list.add(packageItem(child.name, match))
+        list.add(packageItem(child.qualifiedName, match))
       }
 
       names.add(child.name)
