@@ -97,7 +97,7 @@ class ImportCompletionProvider(
 
     run {
       val match = matchLevel("static", incomplete)
-      if (match != NO_MATCH && !importTree.isStatic) {
+      if (match != NO_MATCH && !importTree.isStatic && pkgName.isEmpty()) {
         list.add(keyword("static", incomplete, match))
       }
     }

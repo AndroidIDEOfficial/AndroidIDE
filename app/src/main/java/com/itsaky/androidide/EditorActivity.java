@@ -1489,6 +1489,7 @@ public class EditorActivity extends StudioActivity
     initializeLanguageServers();
   }
 
+  // TODO remove this
   private void initializeLanguageServers() {
     final var client = IDELanguageClientImpl.getInstance();
     final var javaLanguageServer = getApp().getJavaLanguageServer();
