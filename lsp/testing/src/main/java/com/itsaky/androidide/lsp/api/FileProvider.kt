@@ -35,8 +35,7 @@ class FileProvider {
       val file = File(".").canonicalFile
       when (file.name) {
         "xml" -> "xml" // Testing in ':lsp:xml' module
-        "java" -> "java" // Testing in ':lsp:java' module
-        else -> ""
+        else -> "java" // Testing in ':lsp:java' or ':lsp:testing' module
       }
     }
 
@@ -63,7 +62,7 @@ class FileProvider {
      */
     @JvmStatic
     fun sourceFile(name: String): Path {
-      return resources().resolve("${name}_template.$extension")
+      return resources().resolve("${name}_template.$extension").normalize()
     }
 
     @JvmStatic fun contents(file: Path): StringBuilder = StringBuilder(file.readText())

@@ -19,28 +19,30 @@ package com.itsaky.androidide.lsp.xml;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.projects.api.AndroidModule;
-import com.itsaky.androidide.lsp.api.CursorDependentTest;
-import com.itsaky.androidide.lsp.api.ILanguageServer;
-
-import org.mockito.Mockito;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.api.LSPTest;
+import com.itsaky.androidide.lsp.xml.providers.XMLCompletionProviderTester;
 
 /**
  * @author Akash Yadav
  */
-public class BaseXMLTest extends CursorDependentTest {
+public class XMLLSPTest extends LSPTest {
 
-  protected final ILanguageServer mServer = XmlLanguageServerProvider.INSTANCE.server();
+  protected static final XMLLanguageServer server = new XMLLanguageServer();
 
-  protected AndroidModule mockModuleProject() {
-    final var mocked = Mockito.mock(AndroidModule.class);
-    Mockito.when(mocked.getPackageName()).thenReturn("com.itsaky.androidide.test");
-    return mocked;
+  @Override
+  public void test() {
+    new XMLCompletionProviderTester().test();
+  }
+
+  @Override
+  protected void registerServer() {
+    ILanguageServerRegistry.getDefault().register(server);
   }
 
   @NonNull
   @Override
-  protected ILanguageServer getServer() {
-    return mServer;
+  protected String getServerId() {
+    return XMLLanguageServer.SERVER_ID;
   }
 }

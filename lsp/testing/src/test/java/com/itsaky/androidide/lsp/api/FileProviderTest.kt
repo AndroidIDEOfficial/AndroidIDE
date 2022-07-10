@@ -34,14 +34,14 @@ class FileProviderTest {
   fun testPath() {
     val path = FileProvider.sourceFile("SourceFileTest")
     Truth.assertThat(Files.exists(path)).isTrue()
-    Truth.assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
+    Truth.assertThat(path.fileName.toString()).isEqualTo("SourceFileTest_template.java")
   }
 
   @Test
   fun testNested() {
     val path = FileProvider.sourceFile("package/SourceFileTest")
     Truth.assertThat(Files.exists(path)).isTrue()
-    Truth.assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
+    Truth.assertThat(path.fileName.toString()).isEqualTo("SourceFileTest_template.java")
   }
 
   @Test
@@ -53,8 +53,7 @@ class FileProviderTest {
       .isEqualTo(
         when (folder.name) {
           "xml" -> "xml"
-          "java" -> "java"
-          else -> ""
+          else -> "java"
         }
       )
   }

@@ -19,19 +19,18 @@ package com.itsaky.androidide.lsp.xml.providers
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.models.CompletionParams
-import com.itsaky.androidide.lsp.xml.BaseXMLTest
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import com.itsaky.androidide.lsp.xml.XMLLSPTest
 
 /** @author Akash Yadav */
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
-class XMLCompletionProviderTest : BaseXMLTest() {
+class XMLCompletionProviderTester : XMLLSPTest() {
 
-  @Test
-  fun testTagCompletion() {
+  override fun test() {
+    testTagCompletion()
+    testAttrCompletion()
+    testAttrValueCompletion()
+  }
+
+  private fun testTagCompletion() {
     openFile("TagCompletion")
 
     val (isIncomplete, items) = complete()
@@ -42,8 +41,7 @@ class XMLCompletionProviderTest : BaseXMLTest() {
     assertThat(items).containsAtLeast("ImageView", "ImageButton")
   }
 
-  @Test
-  fun testAttrValueCompletion() {
+  private fun testAttrValueCompletion() {
     openFile("AttributeValueCompletion")
 
     val (isIncomplete, items) = complete()
@@ -54,8 +52,7 @@ class XMLCompletionProviderTest : BaseXMLTest() {
     assertThat(items).containsAtLeast("center", "fitCenter", "fitXY", "matrix")
   }
 
-  @Test
-  fun testAttrCompletion() {
+  private fun testAttrCompletion() {
     openFile("AttributeCompletion")
 
     val (isIncomplete, items) = complete()
@@ -72,7 +69,7 @@ class XMLCompletionProviderTest : BaseXMLTest() {
 
   private fun complete(): Pair<Boolean, List<String>> {
     val createCompletionParams = createCompletionParams()
-    val result = mServer.complete(createCompletionParams)
+    val result = server.complete(createCompletionParams)
     return result.isIncomplete to
       result.items
         .filter { it.label != null }
