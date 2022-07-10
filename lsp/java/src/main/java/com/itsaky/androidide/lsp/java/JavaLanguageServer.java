@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
@@ -114,7 +115,8 @@ public class JavaLanguageServer implements ILanguageServer {
     return settings;
   }
 
-  protected JavaCompilerService getCompiler(Path file) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public JavaCompilerService getCompiler(Path file) {
     if (!DocumentUtils.isJavaFile(file)) {
       return JavaCompilerService.NO_MODULE_COMPILER;
     }

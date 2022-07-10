@@ -42,7 +42,10 @@ import java.util.concurrent.*
  */
 class ToolingApiTestLauncher {
 
-  fun launchServer(client: IToolingApiClient = TestClient()): Pair<IToolingApiServer, IProject> {
+  fun launchServer(
+    client: IToolingApiClient = TestClient(),
+    implDir: String = "../tooling-api-impl"
+  ): Pair<IToolingApiServer, IProject> {
     val builder =
       ProcessBuilder(
         "java",
@@ -53,7 +56,7 @@ class ToolingApiTestLauncher {
         "--add-opens",
         "java.base/java.io=ALL-UNNAMED",
         "-jar",
-        "../tooling-api-impl/build/libs/tooling-api-all.jar"
+        "$implDir/build/libs/tooling-api-all.jar"
       )
     val androidHome = findAndroidHome()
     println("ANDROID_HOME=$androidHome")

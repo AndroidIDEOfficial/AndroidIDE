@@ -18,8 +18,6 @@
 package com.itsaky.androidide.lsp.xml
 
 import com.itsaky.androidide.lsp.api.ILanguageServer
-import com.itsaky.androidide.lsp.api.LanguageServerProvider
-import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.sdk.SDKInfo
 import org.robolectric.RuntimeEnvironment
 

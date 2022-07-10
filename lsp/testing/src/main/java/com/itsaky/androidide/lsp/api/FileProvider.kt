@@ -16,10 +16,7 @@
  */
 package com.itsaky.androidide.lsp.api
 
-import com.google.common.truth.Truth.assertThat
-import org.junit.Test
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.readText
@@ -30,34 +27,6 @@ import kotlin.io.path.readText
  * @author Akash Yadav
  */
 class FileProvider {
-  @Test
-  fun testPath() {
-    val path = sourceFile("SourceFileTest")
-    assertThat(Files.exists(path)).isTrue()
-    assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
-  }
-
-  @Test
-  fun testNested() {
-    val path = sourceFile("package/SourceFileTest")
-    assertThat(Files.exists(path)).isTrue()
-    assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
-  }
-
-  @Test
-  fun testExtension() {
-    val folder = File(".").canonicalFile
-
-    assertThat(extension).isNotEmpty()
-    assertThat(extension)
-      .isEqualTo(
-        when (folder.name) {
-          "xml" -> "xml"
-          "java" -> "java"
-          else -> ""
-        }
-      )
-  }
 
   companion object {
 
@@ -71,6 +40,11 @@ class FileProvider {
       }
     }
 
+    @JvmStatic
+    fun implModule(): Path =
+      Paths.get(System.getProperty("user.dir")!!).resolve("../../build-tools/tooling-api-impl")
+    @JvmStatic fun projectRoot(): Path = implModule().resolve("src/test/test-project")
+
     /**
      * Get the path to the 'resources' directory.
      *
@@ -78,7 +52,7 @@ class FileProvider {
      */
     @JvmStatic
     fun resources(): Path {
-      return Paths.get(".", "src", "test", "resources")
+      return projectRoot().resolve("app/src/main/resources")
     }
 
     /**

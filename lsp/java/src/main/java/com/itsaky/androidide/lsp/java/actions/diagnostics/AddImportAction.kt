@@ -47,12 +47,12 @@ class AddImportAction() : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!
+    val diagnostic = data.get(DiagnosticItem::class.java)!!
     if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
       markInvisible()
       return
@@ -101,7 +101,7 @@ class AddImportAction() : BaseCodeAction() {
     @Suppress("UNCHECKED_CAST")
     val diagnostic =
       JavaDiagnosticUtils.asUnwrapper(
-        data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
+        data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
       )!!
     val file = requireFile(data)
     val module =

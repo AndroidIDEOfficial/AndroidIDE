@@ -72,7 +72,7 @@ class XMLCompletionProviderTest : BaseXMLTest() {
 
   private fun complete(): Pair<Boolean, List<String>> {
     val createCompletionParams = createCompletionParams()
-    val result = mServer.completionProvider.complete(createCompletionParams)
+    val result = mServer.complete(createCompletionParams)
     return result.isIncomplete to
       result.items
         .filter { it.label != null }
