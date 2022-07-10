@@ -71,7 +71,14 @@ class ImportCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
+    
+    val importTree = path.leaf
+    if (importTree !is JCImport) {
+      return CompletionResult.EMPTY
+    }
+    
     log.info("...complete import for path:", importPath)
+    
     val names: MutableSet<String> = HashSet()
     val list = mutableListOf<CompletionItem>()
 
@@ -86,6 +93,13 @@ class ImportCompletionProvider(
     } else {
       incomplete = pkgName.substringAfterLast(delimiter = '.')
       pkgName = pkgName.substringBeforeLast(delimiter = '.')
+    }
+    
+    run {
+      val match = matchLevel("static", incomplete)
+      if (match != NO_MATCH && !importTree.isStatic) {
+        list.add(keyword("static", incomplete, match))
+      }
     }
 
     val module = compiler.module

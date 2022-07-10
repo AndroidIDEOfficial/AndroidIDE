@@ -120,10 +120,13 @@ abstract class IJavaCompletionProvider(
     methods[name]!!.add(method)
   }
 
+  protected open fun keyword(keyword: String, partial: String, matchRatio: Int): CompletionItem =
+    keyword(keyword, partial, CompletionItem.matchLevel(keyword, partial))
+
   protected open fun keyword(
     keyword: String,
     partialName: CharSequence,
-    matchRatio: Int,
+    matchLevel: MatchLevel,
   ): CompletionItem {
     val item = CompletionItem()
     item.setLabel(keyword)
