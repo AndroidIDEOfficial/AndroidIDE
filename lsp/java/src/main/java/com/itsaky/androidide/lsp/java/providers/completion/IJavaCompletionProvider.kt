@@ -21,6 +21,7 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
+import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -137,7 +138,7 @@ abstract class IJavaCompletionProvider(
     item.kind = KEYWORD
     item.detail = "keyword"
     item.sortText = keyword
-    item.matchLevel = CompletionItem.matchLevel(keyword, partialName.toString())
+    item.matchLevel = matchLevel
     return item
   }
 
@@ -151,9 +152,10 @@ abstract class IJavaCompletionProvider(
     val item = CompletionItem()
     item.setLabel(first.simpleName.toString())
     item.kind = CompletionItemKind.METHOD
-    item.detail = first.returnType.toString() + " " + first
+    item.detail = printMethodDetail(first)
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
+    item.overrideTypeText = EditHelper.printType(first.returnType)
     val data = data(task, first, overloads.size)
     item.data = data
     if (addParens) {
@@ -166,6 +168,23 @@ abstract class IJavaCompletionProvider(
       item.insertTextFormat = SNIPPET // Snippet
     }
     return item
+  }
+
+  protected open fun printMethodDetail(first: ExecutableElement): String {
+    val sb = StringBuilder()
+    sb.append(first.simpleName)
+    sb.append("(")
+    if (first.parameters.isNotEmpty()) {
+      for (index in first.parameters.indices) {
+        val parameter = first.parameters[index]
+        sb.append(EditHelper.printType(parameter.asType()))
+        if (index != first.parameters.lastIndex) {
+          sb.append(", ")
+        }
+      }
+    }
+    sb.append(")")
+    return sb.toString()
   }
 
   protected open fun item(
@@ -181,6 +200,14 @@ abstract class IJavaCompletionProvider(
     item.data = data(task, element, 1)
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
+
+    if (element is VariableElement) {
+      if (element.constantValue != null) {
+        item.detail = "Constant: ${element.constantValue}"
+      }
+      item.overrideTypeText = EditHelper.printType(element.asType())
+    }
+
     return item
   }
 
@@ -197,7 +224,7 @@ abstract class IJavaCompletionProvider(
     val item = CompletionItem()
     item.setLabel(simpleName(className).toString())
     item.kind = CompletionItemKind.CLASS
-    item.detail = className
+    item.detail = packageName(className).toString()
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
     val data = CompletionData()

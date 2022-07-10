@@ -144,6 +144,7 @@ open class CompletionItem(
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
   var additionalEditHandler: IEditHandler? = null
+  var overrideTypeText: String? = null
 
   constructor() :
     this(
