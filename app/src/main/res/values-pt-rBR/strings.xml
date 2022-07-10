@@ -105,6 +105,8 @@
     <string name="template_navigation_drawer">Projeto navigation drawer</string>
     <string name="template_libgdx">Jogo LibGDX</string>
     <string name="template_description_libgdx">Projeto de jogo LibGDX configurado para renderizar uma imagem como exemplo.</string>
+    <string name="template_login">Projeto Tela de login</string>
+    <string name="template_login_description">Um projeto básico com uma tela de Login pré-construida</string>
 
     <!-- Files -->
     <string name="save">Salvar</string>
