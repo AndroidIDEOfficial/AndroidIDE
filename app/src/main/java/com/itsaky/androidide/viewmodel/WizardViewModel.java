@@ -148,7 +148,7 @@ public class WizardViewModel extends AndroidViewModel {
               mTemplates.add(cppWizard);
               mTemplates.add(compose);
               mTemplates.add(libgdx);
-              mTemplates.add(login)
+              mTemplates.add(login);
 
               mProjectTemplatesList.postValue(mTemplates);
               mLoadingState.postValue(false);
