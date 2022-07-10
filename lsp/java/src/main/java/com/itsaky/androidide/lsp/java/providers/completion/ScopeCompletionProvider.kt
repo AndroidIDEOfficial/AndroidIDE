@@ -29,6 +29,8 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.print
 import com.itsaky.androidide.lsp.java.utils.ScopeHelper
+import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.projects.ProjectManager
@@ -67,9 +69,9 @@ class ScopeCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val trees = Trees.instance(task.task)
-    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
+    val list: MutableList<CompletionItem> = ArrayList()
     val scope = trees.getScope(path)
     val filter =
       Predicate<CharSequence?> {
@@ -104,7 +106,7 @@ class ScopeCompletionProvider(
 
     log.info("...found " + list.size + " scope members")
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 
   /**
@@ -122,7 +124,7 @@ class ScopeCompletionProvider(
     method: ExecutableElement,
     endsWithParen: Boolean,
     matchLevel: com.itsaky.androidide.lsp.models.MatchLevel,
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
+  ): CompletionItem {
     if (parentPath.leaf.kind != CLASS) {
       // Can only override if the cursor is directly in a class declaration
       return method(task, listOf(method), !endsWithParen, matchLevel)
@@ -166,7 +168,7 @@ class ScopeCompletionProvider(
     var insertText = print(methodSpec, imports, false)
     insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
 
-    val item = com.itsaky.androidide.lsp.models.CompletionItem()
+    val item = CompletionItem()
     item.setLabel(methodSpec.name)
     item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method

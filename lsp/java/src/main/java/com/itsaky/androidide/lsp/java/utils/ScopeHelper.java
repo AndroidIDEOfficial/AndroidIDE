@@ -81,7 +81,7 @@ public class ScopeHelper {
 
   // TODO is this still necessary? Test speed. We could get rid of the extra static-imports step.
   public static List<Scope> fastScopes(Scope start) {
-    List<Scope> scopes = new ArrayList<Scope>();
+    List<Scope> scopes = new ArrayList<>();
     for (Scope s = start; s != null; s = s.getEnclosingScope()) {
       scopes.add(s);
     }
