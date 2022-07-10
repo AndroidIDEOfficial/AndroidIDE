@@ -43,7 +43,7 @@ class ToolingApiImplTest {
   fun testProjectInit() {
     val client = TestClient()
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectMessage(File("./src/test/test-project").absolutePath)).get()
+    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
     verifyProjectProps(project, server)
   }
 

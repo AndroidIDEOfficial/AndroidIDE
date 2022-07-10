@@ -39,10 +39,10 @@ class FileProvider {
       }
     }
 
-    @JvmStatic
-    fun implModule(): Path =
-      Paths.get(System.getProperty("user.dir")!!).resolve("../../build-tools/tooling-api-impl")
-    @JvmStatic fun projectRoot(): Path = implModule().resolve("src/test/test-project")
+    @JvmStatic fun currentDir(): Path = Paths.get(System.getProperty("user.dir")!!)
+
+    @JvmStatic fun implModule(): Path = currentDir().resolve("../../build-tools/tooling-api-impl")
+    @JvmStatic fun projectRoot(): Path = currentDir().resolve("../../tests/test-project")
 
     /**
      * Get the path to the 'resources' directory.

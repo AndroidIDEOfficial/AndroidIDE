@@ -47,7 +47,7 @@ gradlePlugin {
 
 task copyToTestDir (type: Copy) {
     from "$project.buildDir.absolutePath/libs/tooling-api-plugin-${version}.jar"
-    into "${project.rootProject.findProject (":build-tools:tooling-api-impl").file ("src/test/test-home/.androidide/init").absolutePath}/"
+    into "${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/"
     rename {
         "plugin.jar"
     }

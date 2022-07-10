@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+dependencies {
+    implementation 'io.github.itsaky:nb-javac-android:17.0.0.0'
+    implementation project(path: ':another-java-library')
+}
+
+repositories {
+    mavenCentral ()
+}

@@ -42,7 +42,7 @@ class ModuleProjectTest {
     val (server, project) = ToolingApiTestLauncher().launchServer()
     server
       .initialize(
-        InitializeProjectMessage(File("../tooling-api-impl/src/test/test-project").absolutePath)
+        InitializeProjectMessage(File("../../tests/test-project").absolutePath)
       )
       .get()
     ProjectManager.setupProject(project)
@@ -58,7 +58,7 @@ class ModuleProjectTest {
     assertThat(
         Files.isSameFile(
           rootDir.toPath(),
-          File("../tooling-api-impl/src/test/test-project").toPath()
+          File("../../tests/test-project").toPath()
         )
       )
       .isTrue()
