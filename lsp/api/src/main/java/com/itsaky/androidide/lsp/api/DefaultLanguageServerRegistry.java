@@ -52,7 +52,6 @@ public class DefaultLanguageServerRegistry extends ILanguageServerRegistry {
       final var old = mRegister.put(server.getServerId(), server);
       if (old != null) {
         mRegister.put(old.getServerId(), old);
-        throw new IllegalStateException("A language server with the same ID is already registered");
       }
     } finally {
       lock.writeLock().unlock();
