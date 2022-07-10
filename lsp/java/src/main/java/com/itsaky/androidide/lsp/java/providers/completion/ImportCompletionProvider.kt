@@ -72,7 +72,6 @@ class ImportCompletionProvider(
     endsWithParen: Boolean,
   ): CompletionResult {
     log.info("...complete import for path:", importPath)
-
     val names: MutableSet<String> = HashSet()
     val list = mutableListOf<CompletionItem>()
 
@@ -85,8 +84,8 @@ class ImportCompletionProvider(
       pkgName = pkgName.substring(0, pkgName.lastIndex)
       incomplete = ""
     } else {
-      pkgName = pkgName.substringBeforeLast(delimiter = '.')
       incomplete = pkgName.substringAfterLast(delimiter = '.')
+      pkgName = pkgName.substringBeforeLast(delimiter = '.')
     }
 
     val module = compiler.module
@@ -230,7 +229,6 @@ class ImportCompletionProvider(
     val isStatic = (path.leaf as JCImport).isStatic
     if (!trees.isAccessible(scope, type)) {
       // Type not accessible
-      log.debug("Type ${type.qualifiedName} is not acessible from import scope")
       return list
     }
 
@@ -252,26 +250,26 @@ class ImportCompletionProvider(
         continue
       }
 
-      if (isStatic) {
-        val mods = member.modifiers
-        if (!mods.contains(STATIC)) {
-          continue
-        }
+      if (!isStatic) {
+        continue
+      }
+      
+      val mods = member.modifiers
+      if (!mods.contains(STATIC)) {
+        continue
+      }
 
-        if (!trees.isAccessible(scope, member, jcTypes.getDeclaredType(type))) {
-          log.debug("Member ${member.simpleName} is not accessible")
-          continue
-        }
+      if (!trees.isAccessible(scope, member, jcTypes.getDeclaredType(type))) {
+        continue
+      }
 
-        if (member.kind == METHOD) {
-          list.add(method(task, listOf(member as MethodSymbol), false, match))
-          continue
-        }
+      if (member.kind == METHOD) {
+        list.add(method(task, listOf(member as MethodSymbol), false, match))
+        continue
+      }
 
-        if (member.kind == FIELD || member.kind == ENUM_CONSTANT) {
-          list.add(item(task, member, match))
-          continue
-        }
+      if (member.kind == FIELD || member.kind == ENUM_CONSTANT) {
+        list.add(item(task, member, match))
       }
     }
 
