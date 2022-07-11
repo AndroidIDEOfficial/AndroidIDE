@@ -36,8 +36,16 @@ import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
+import com.itsaky.androidide.lsp.api.ILanguageClient;
+import com.itsaky.androidide.lsp.models.CodeActionItem;
+import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.DiagnosticResult;
+import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.lsp.util.DiagnosticUtil;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.Location;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -45,18 +53,11 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
-import com.itsaky.androidide.lsp.api.ILanguageClient;
-import com.itsaky.androidide.lsp.models.CodeActionItem;
-import com.itsaky.androidide.lsp.models.Command;
-import com.itsaky.androidide.lsp.models.DiagnosticItem;
-import com.itsaky.androidide.lsp.models.DiagnosticResult;
-import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,7 @@ import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
 import io.github.rosemoe.sora.text.Content;
+import kotlin.Unit;
 
 /** AndroidIDE specific implementation of the LanguageClient */
 public class IDELanguageClientImpl implements ILanguageClient {
@@ -408,7 +410,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
     activity().handleSearchResultVisibility(error);
 
     if (error) {
-      activity().setSearchResultAdapter(new SearchListAdapter(null, null, null));
+      activity()
+          .setSearchResultAdapter(
+              new SearchListAdapter(Collections.emptyMap(), this::noOp, this::noOp));
       return;
     }
 
@@ -489,6 +493,10 @@ public class IDELanguageClientImpl implements ILanguageClient {
       arr[i] = actions.get(i).getTitle();
     }
     return arr;
+  }
+
+  private Unit noOp(final Object obj) {
+    return Unit.INSTANCE;
   }
 
   private void execCommand(IDEEditor editor, Command command) {

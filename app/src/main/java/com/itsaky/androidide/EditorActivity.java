@@ -144,6 +144,7 @@ import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
+import kotlin.Unit;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
@@ -264,16 +265,22 @@ public class EditorActivity extends StudioActivity
   }
 
   public void handleSearchResults(Map<File, List<SearchResult>> results) {
+    if (results == null) {
+      results = Collections.emptyMap();
+    }
+
     setSearchResultAdapter(
-        new com.itsaky.androidide.adapters.SearchListAdapter(
+        new SearchListAdapter(
             results,
             file -> {
               openFile(file);
               hideViewOptions();
+              return Unit.INSTANCE;
             },
             match -> {
               openFileAndSelect(match.file, match);
               hideViewOptions();
+              return Unit.INSTANCE;
             }));
 
     showSearchResults();
