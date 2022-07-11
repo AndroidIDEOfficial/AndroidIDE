@@ -21,6 +21,8 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
+import com.itsaky.androidide.progress.ProcessCancelledException
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
@@ -259,9 +261,7 @@ object ProjectManager : EventReceiver {
 
     // Make sure we list and store the bootstrap classes
     CompletableFuture.runAsync {
-      BootClasspathProvider.update(
-        Collections.singleton(Environment.ANDROID_JAR.absolutePath)
-      )
+      BootClasspathProvider.update(Collections.singleton(Environment.ANDROID_JAR.absolutePath))
     }
   }
 
@@ -337,7 +337,7 @@ object ProjectManager : EventReceiver {
       log.warn("No such file", noFile)
       BufferedReader(StringReader(""))
     } catch (other: Throwable) {
-      throw RuntimeException(other)
+      throw other
     }
   }
 
@@ -348,7 +348,7 @@ object ProjectManager : EventReceiver {
       log.warn("No such file", noFile)
       "".byteInputStream()
     } catch (other: Throwable) {
-      throw RuntimeException(other)
+      throw other
     }
   }
 
@@ -358,12 +358,27 @@ object ProjectManager : EventReceiver {
 
   private fun getFileContents(file: Path): String {
     return try {
-      Files.readAllLines(file).joinToString(separator = "\n")
+      val sb = StringBuilder()
+      createFileReader(file).use {
+        var line: String?
+        while (true) {
+          abortIfCancelled()
+          line = it.readLine()
+          if (line == null) {
+            break
+          }
+
+          sb.append(line)
+          sb.append("\n")
+        }
+      }
+
+      sb.toString()
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
       return ""
     } catch (other: Throwable) {
-      throw RuntimeException(other)
+      throw other
     }
   }
 }

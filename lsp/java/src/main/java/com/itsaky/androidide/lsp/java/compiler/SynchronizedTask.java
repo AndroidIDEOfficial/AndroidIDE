@@ -37,6 +37,7 @@ package com.itsaky.androidide.lsp.java.compiler;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lsp.java.CompilationCancellationException;
+import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.utils.ILogger;
 
 import java.util.concurrent.Semaphore;
@@ -60,7 +61,9 @@ public class SynchronizedTask {
     try {
       taskConsumer.accept(this.task);
     } catch (Throwable err) {
-      LOG.error("An error occurred while working with compilation task", err);
+      if (!CancelChecker.isCancelled(err)) {
+        LOG.error("An error occurred while working with compilation task", err);
+      }
       throw err;
     } finally {
       semaphore.release();
@@ -77,7 +80,9 @@ public class SynchronizedTask {
     try {
       return function.invoke(this.task);
     } catch (Throwable err) {
-      LOG.error("An error occurred while working with compilation task", err);
+      if (!CancelChecker.isCancelled(err)) {
+        LOG.error("An error occurred while working with compilation task", err);
+      }
       throw err;
     } finally {
       semaphore.release();
@@ -99,7 +104,9 @@ public class SynchronizedTask {
       }
       run.run();
     } catch (Throwable err) {
-      LOG.error("An error occurred", err);
+      if(!CancelChecker.isCancelled(err)) {
+        LOG.error("An error occurred", err);
+      }
       throw err;
     } finally {
       semaphore.release();
