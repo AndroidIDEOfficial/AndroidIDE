@@ -35,12 +35,12 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
-import com.itsaky.androidide.utils.Cache;
-import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.BootClasspathProvider;
+import com.itsaky.androidide.utils.Cache;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.MethodTree;
@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -155,8 +156,8 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   @Override
-  public List<String> publicTopLevelTypes() {
-    List<String> all = new ArrayList<>();
+  public TreeSet<String> publicTopLevelTypes() {
+    TreeSet<String> all = new TreeSet<>();
     List<SourceClassTrie.SourceNode> sourceClasses =
         module != null ? module.compileJavaSourceClasses.allSources() : Collections.emptyList();
     for (SourceClassTrie.SourceNode node : sourceClasses) {
@@ -168,8 +169,8 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   @Override
-  public List<String> packagePrivateTopLevelTypes(String packageName) {
-    return Collections.emptyList();
+  public TreeSet<String> packagePrivateTopLevelTypes(String packageName) {
+    return new TreeSet<>();
   }
 
   @Override

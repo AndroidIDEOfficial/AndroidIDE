@@ -19,8 +19,10 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
+import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.util.TreePath
 import java.nio.file.Path
 
@@ -37,14 +39,16 @@ class IdentifierCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
-    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
+  ): CompletionResult {
+    val list = mutableListOf<CompletionItem>()
 
+    abortIfCancelled()
     val scopeMembers =
       ScopeCompletionProvider(completingFile, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
     list.addAll(scopeMembers.items)
 
+    abortIfCancelled()
     val staticImports =
       StaticImportCompletionProvider(
           completingFile,
@@ -56,9 +60,10 @@ class IdentifierCompletionProvider(
         .complete(task, path, partial, endsWithParen)
     list.addAll(staticImports.items)
 
-    if (com.itsaky.androidide.lsp.models.CompletionResult.TRIM_TO_MAX && list.size < com.itsaky.androidide.lsp.models.CompletionResult.MAX_ITEMS) {
+    if (CompletionResult.TRIM_TO_MAX && list.size < CompletionResult.MAX_ITEMS) {
       val allLower: Boolean = settings.shouldMatchAllLowerCase()
       if (allLower || partial.isNotEmpty() && Character.isUpperCase(partial[0])) {
+        abortIfCancelled()
         val classNames =
           ClassNamesCompletionProvider(
               completingFile,
@@ -72,11 +77,12 @@ class IdentifierCompletionProvider(
       }
     }
 
+    abortIfCancelled()
     val keywords =
       KeywordCompletionProvider(completingFile, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
     list.addAll(keywords.items)
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 }

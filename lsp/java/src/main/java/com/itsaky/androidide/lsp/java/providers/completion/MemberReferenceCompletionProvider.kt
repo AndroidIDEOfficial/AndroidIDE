@@ -21,7 +21,13 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
+import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager
+import com.itsaky.androidide.progress.ProgressManager.Companion
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.MemberReferenceTree
 import com.sun.source.tree.Scope
 import com.sun.source.util.TreePath
@@ -52,7 +58,7 @@ class MemberReferenceCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val trees = Trees.instance(task.task)
     val select = path.leaf as MemberReferenceTree
     log.info("...complete methods of " + select.qualifierExpression)
@@ -61,24 +67,27 @@ class MemberReferenceCompletionProvider(
     val element = trees.getElement(exprPath)
     val isStatic = element is TypeElement
     val scope = trees.getScope(exprPath)
+    
+    abortIfCancelled()
     return when (val type = trees.getTypeMirror(exprPath)) {
       is ArrayType -> completeArrayMemberReference(isStatic, partial)
       is TypeVariable -> completeTypeVariableMemberReference(task, scope, type, isStatic, partial)
       is DeclaredType -> completeDeclaredTypeMemberReference(task, scope, type, isStatic, partial)
-      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
+      else -> CompletionResult.EMPTY
     }
   }
 
   private fun completeArrayMemberReference(
     isStatic: Boolean,
     partialName: CharSequence,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
+    abortIfCancelled()
     return if (isStatic) {
-      val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
+      val list = mutableListOf<CompletionItem>()
       list.add(keyword("new", partialName, 100))
-      com.itsaky.androidide.lsp.models.CompletionResult(list)
+      CompletionResult(list)
     } else {
-      com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
+      CompletionResult.EMPTY
     }
   }
 
@@ -88,7 +97,8 @@ class MemberReferenceCompletionProvider(
     type: TypeVariable,
     isStatic: Boolean,
     partial: String,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
+    abortIfCancelled()
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberReference(
@@ -106,7 +116,7 @@ class MemberReferenceCompletionProvider(
           isStatic,
           partial
         )
-      else -> com.itsaky.androidide.lsp.models.CompletionResult.EMPTY
+      else -> CompletionResult.EMPTY
     }
   }
 
@@ -116,12 +126,13 @@ class MemberReferenceCompletionProvider(
     type: DeclaredType,
     isStatic: Boolean,
     partial: String,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
+    abortIfCancelled()
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
-    val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
+    val list: MutableList<CompletionItem> = ArrayList()
     val methods: MutableMap<String, MutableList<ExecutableElement>> = mutableMapOf()
-    val matchLevels: MutableMap<String, com.itsaky.androidide.lsp.models.MatchLevel> = HashMap()
+    val matchLevels: MutableMap<String, MatchLevel> = HashMap()
     for (member in task.task.elements.getAllMembers(typeElement)) {
       val matchLevel = matchLevel(member.simpleName, partial)
       if (matchLevel == NO_MATCH) {
@@ -147,7 +158,8 @@ class MemberReferenceCompletionProvider(
         list.add(item(task, member, matchLevel))
       }
     }
-
+  
+    abortIfCancelled()
     for ((key, value) in methods) {
       val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
       if (matchLevel == NO_MATCH) {
@@ -161,6 +173,6 @@ class MemberReferenceCompletionProvider(
       list.add(keyword("new", partial, 100))
     }
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 }

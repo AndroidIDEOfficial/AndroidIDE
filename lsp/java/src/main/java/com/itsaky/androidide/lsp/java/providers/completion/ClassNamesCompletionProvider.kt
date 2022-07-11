@@ -21,7 +21,9 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider
+import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.util.TreePath
@@ -39,7 +41,7 @@ class ClassNamesCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings,
-  val root: CompilationUnitTree
+  val root: CompilationUnitTree,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
   override fun doComplete(
@@ -47,16 +49,16 @@ class ClassNamesCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     val packageName = Objects.toString(root.packageName, "")
     val uniques: MutableSet<String> = HashSet()
-    val previousSize: Int = list.size
-
+  
     val file: Path = Paths.get(root.sourceFile.toUri())
     val imports: Set<String> =
       root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
 
+    abortIfCancelled()
     for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
       val matchLevel = matchLevel(className, partial)
       if (matchLevel == NO_MATCH) {
@@ -67,6 +69,7 @@ class ClassNamesCompletionProvider(
       uniques.add(className)
     }
 
+    abortIfCancelled()
     for (className in compiler.publicTopLevelTypes()) {
       val matchLevel = matchLevel(simpleName(className), partial)
       if (matchLevel == NO_MATCH) {
@@ -85,6 +88,7 @@ class ClassNamesCompletionProvider(
       uniques.add(className)
     }
 
+    abortIfCancelled()
     for (t in root.typeDecls) {
       if (t !is ClassTree) {
         continue
@@ -104,8 +108,8 @@ class ClassNamesCompletionProvider(
       }
     }
 
-    log.info("...found " + (list.size - previousSize) + " class names")
+    log.info("...found " + list.size + " class names")
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 }

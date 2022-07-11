@@ -36,6 +36,7 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
@@ -81,11 +82,12 @@ abstract class IJavaCompletionProvider(
     task: CompileTask,
     path: TreePath,
     partial: String,
-    endsWithParen: Boolean
+    endsWithParen: Boolean,
   ): CompletionResult {
     val root = task.root(completingFile)
     filePackage = root.`package`.packageName.toString()
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
+    abortIfCancelled()
     return doComplete(task, path, partial, endsWithParen)
   }
 
@@ -107,6 +109,7 @@ abstract class IJavaCompletionProvider(
   ): CompletionResult
 
   protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
+    abortIfCancelled()
     return CompletionItem.matchLevel(candidate.toString(), partial.toString())
   }
 
@@ -114,6 +117,7 @@ abstract class IJavaCompletionProvider(
     method: ExecutableElement,
     methods: MutableMap<String, MutableList<ExecutableElement>>,
   ) {
+    abortIfCancelled()
     val name = method.simpleName.toString()
     if (!methods.containsKey(name)) {
       methods[name] = ArrayList()
@@ -124,7 +128,7 @@ abstract class IJavaCompletionProvider(
   protected open fun keyword(
     keyword: String,
     partial: CharSequence,
-    matchRatio: Int
+    matchRatio: Int,
   ): CompletionItem =
     keyword(keyword, partial, CompletionItem.matchLevel(keyword, partial.toString()))
 
@@ -133,6 +137,7 @@ abstract class IJavaCompletionProvider(
     partialName: CharSequence,
     matchLevel: MatchLevel,
   ): CompletionItem {
+    abortIfCancelled()
     val item = CompletionItem()
     item.setLabel(keyword)
     item.kind = KEYWORD
@@ -148,6 +153,7 @@ abstract class IJavaCompletionProvider(
     addParens: Boolean,
     matchLevel: MatchLevel,
   ): CompletionItem {
+    abortIfCancelled()
     val first = overloads[0]
     val item = CompletionItem()
     item.setLabel(first.simpleName.toString())
@@ -158,6 +164,8 @@ abstract class IJavaCompletionProvider(
     item.overrideTypeText = EditHelper.printType(first.returnType)
     val data = data(task, first, overloads.size)
     item.data = data
+  
+    abortIfCancelled()
     if (addParens) {
       if (overloads.size == 1 && first.parameters.isEmpty()) {
         item.insertText = first.simpleName.toString() + "()$0"
@@ -190,9 +198,11 @@ abstract class IJavaCompletionProvider(
   protected open fun item(
     task: CompileTask,
     element: Element,
-    matchLevel: MatchLevel
+    matchLevel: MatchLevel,
   ): CompletionItem {
     if (element.kind == METHOD) throw RuntimeException("method")
+  
+    abortIfCancelled()
     val item = CompletionItem()
     item.setLabel(element.simpleName.toString())
     item.kind = kind(element)
@@ -221,15 +231,14 @@ abstract class IJavaCompletionProvider(
     className: String,
     matchLevel: MatchLevel,
   ): CompletionItem {
+    abortIfCancelled()
     val item = CompletionItem()
     item.setLabel(simpleName(className).toString())
     item.kind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
-    val data = CompletionData()
-    data.className = className
-    item.data = data
+    item.data = CompletionData().apply { this.className = className }
 
     // If file is not provided, we are probably completing an import path
     item.additionalEditHandler = if (file == null) null else ClassImportEditHandler(imports, file)
@@ -249,6 +258,7 @@ abstract class IJavaCompletionProvider(
   }
 
   protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem {
+    abortIfCancelled()
     val simpleName = simpleName(name).toString()
     var packageName = packageName(name).toString()
     if (packageName == name) {
@@ -265,6 +275,7 @@ abstract class IJavaCompletionProvider(
   }
 
   protected open fun kind(e: Element): CompletionItemKind {
+    abortIfCancelled()
     return when (e.kind) {
       ANNOTATION_TYPE -> CompletionItemKind.ANNOTATION_TYPE
       CLASS -> CompletionItemKind.CLASS
@@ -272,13 +283,16 @@ abstract class IJavaCompletionProvider(
       ENUM -> CompletionItemKind.ENUM
       ENUM_CONSTANT -> ENUM_MEMBER
       EXCEPTION_PARAMETER,
-      PARAMETER, -> PROPERTY
+      PARAMETER,
+      -> PROPERTY
       FIELD -> CompletionItemKind.FIELD
       STATIC_INIT,
-      INSTANCE_INIT, -> FUNCTION
+      INSTANCE_INIT,
+      -> FUNCTION
       INTERFACE -> CompletionItemKind.INTERFACE
       LOCAL_VARIABLE,
-      RESOURCE_VARIABLE, -> VARIABLE
+      RESOURCE_VARIABLE,
+      -> VARIABLE
       METHOD -> CompletionItemKind.METHOD
       PACKAGE -> MODULE
       TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER
@@ -288,6 +302,7 @@ abstract class IJavaCompletionProvider(
   }
 
   protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
+    abortIfCancelled()
     val data = CompletionData()
     when {
       element is TypeElement -> data.className = element.qualifiedName.toString()

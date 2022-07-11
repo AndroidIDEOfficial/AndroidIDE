@@ -91,7 +91,6 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
     this.binding.editor.setHighlightCurrentBlock(true);
     this.binding.editor.getProps().autoCompletionOnComposing = true;
-    this.binding.editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
     this.binding.editor.setDividerWidth(SizeUtils.dp2px(1));
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.subscribeEvent(

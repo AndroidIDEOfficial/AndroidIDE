@@ -33,6 +33,7 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.ProjectManager
 import com.squareup.javapoet.MethodSpec.Builder
 import com.sun.source.tree.ClassTree
@@ -87,6 +88,7 @@ class ScopeCompletionProvider(
         return@Predicate matchLevel(name, partial) != NO_MATCH
       }
 
+    abortIfCancelled()
     for (member in ScopeHelper.scopeMembers(task, scope, filter)) {
       var name = member.simpleName.toString()
       if (name.contains('(')) {
@@ -129,6 +131,9 @@ class ScopeCompletionProvider(
       // Can only override if the cursor is directly in a class declaration
       return method(task, listOf(method), !endsWithParen, matchLevel)
     }
+
+    abortIfCancelled()
+
     val types = task.task.types
     val parentElement =
       Trees.instance(task.task).getElement(parentPath)
@@ -167,6 +172,8 @@ class ScopeCompletionProvider(
     val methodSpec = builder.build()
     var insertText = print(methodSpec, imports, false)
     insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
+
+    abortIfCancelled()
 
     val item = CompletionItem()
     item.setLabel(methodSpec.name)

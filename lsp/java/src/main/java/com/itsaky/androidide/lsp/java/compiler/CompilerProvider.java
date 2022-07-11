@@ -24,9 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.tools.JavaFileObject;
@@ -34,9 +33,9 @@ import javax.tools.JavaFileObject;
 public interface CompilerProvider {
   Path NOT_FOUND = Paths.get("");
 
-  List<String> publicTopLevelTypes();
+  TreeSet<String> publicTopLevelTypes();
 
-  List<String> packagePrivateTopLevelTypes(String packageName);
+  TreeSet<String> packagePrivateTopLevelTypes(String packageName);
 
   Optional<JavaFileObject> findAnywhere(String className);
 

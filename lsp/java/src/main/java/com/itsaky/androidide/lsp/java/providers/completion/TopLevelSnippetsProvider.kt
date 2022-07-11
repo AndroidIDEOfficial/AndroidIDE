@@ -23,6 +23,9 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.SNIPPET
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
+import com.itsaky.androidide.progress.ProgressManager
+import com.itsaky.androidide.progress.ProgressManager.Companion
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.ProjectManager
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.Tree.Kind.ERRONEOUS
@@ -32,6 +35,7 @@ import java.nio.file.Paths
 /** @author Akash Yadav */
 class TopLevelSnippetsProvider {
   fun complete(task: ParseTask, result: CompletionResult) {
+    abortIfCancelled()
     val file = Paths.get(task.root.sourceFile.toUri())
     if (!hasTypeDeclaration(task.root)) {
       result.add(classSnippet(file))
@@ -54,18 +58,21 @@ class TopLevelSnippetsProvider {
   }
 
   private fun classSnippet(file: Path): CompletionItem {
+    abortIfCancelled()
     var name = file.fileName.toString()
     name = name.substring(0, name.length - ".java".length)
     return snippetItem("class $name", "class $name {\n    $0\n}")
   }
 
   private fun packageSnippet(file: Path): CompletionItem? {
+    abortIfCancelled()
     val module = ProjectManager.findModuleForFile(file) ?: return null
     val name = module.suggestPackageName(file)
     return snippetItem("package $name", "package $name;\n\n")
   }
 
   private fun snippetItem(label: String, snippet: String): CompletionItem {
+    abortIfCancelled()
     val item = CompletionItem()
     item.setLabel(label)
     item.kind = SNIPPET

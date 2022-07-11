@@ -19,10 +19,13 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider
+import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MemberSelectTree
 import com.sun.source.util.TreePath
@@ -53,12 +56,14 @@ class StaticImportCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
-    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
+  ): CompletionResult {
+    val list = mutableListOf<CompletionItem>()
     val trees = Trees.instance(task.task)
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-    val matchRatios: MutableMap<String, com.itsaky.androidide.lsp.models.MatchLevel> = mutableMapOf()
-    val previousSize: Int = list.size
+    val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
+
+    abortIfCancelled()
+
     outer@ for (i in root.imports) {
       if (!i.isStatic) {
         continue
@@ -107,9 +112,9 @@ class StaticImportCompletionProvider(
       list.add(method(task, value, !endsWithParen, matchLevel))
     }
 
-    log.info("...found " + (list.size - previousSize) + " static imports")
+    log.info("...found " + list.size + " static imports")
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 
   private fun importMatchesPartial(staticImport: Name, partial: String): Boolean {

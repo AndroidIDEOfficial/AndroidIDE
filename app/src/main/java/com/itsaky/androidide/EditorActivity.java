@@ -1522,11 +1522,10 @@ public class EditorActivity extends StudioActivity
     stopServices();
 
     // Make sure we close files
-    // This fill further make sure that file contents are not erased.
+    // This will make sure that file contents are not erased.
     closeAll(
         () -> {
           getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
-
           if (manualFinish) {
             finish();
           }

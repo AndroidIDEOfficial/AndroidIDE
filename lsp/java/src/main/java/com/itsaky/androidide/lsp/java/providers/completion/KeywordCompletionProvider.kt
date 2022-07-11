@@ -19,9 +19,13 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
+import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager
+import com.itsaky.androidide.progress.ProgressManager.Companion
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MethodTree
@@ -46,7 +50,7 @@ class KeywordCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val level: Tree = findKeywordLevel(path)
     var keywords = arrayOf<String>()
     when (level) {
@@ -54,8 +58,9 @@ class KeywordCompletionProvider(
       is ClassTree -> keywords = CLASS_BODY_KEYWORDS
       is MethodTree -> keywords = METHOD_BODY_KEYWORDS
     }
-
-    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
+  
+    abortIfCancelled()
+    val list = mutableListOf<CompletionItem>()
     for (k in keywords) {
       val matchLevel = matchLevel(k, partial)
       if (matchLevel == NO_MATCH) {
@@ -65,7 +70,7 @@ class KeywordCompletionProvider(
       list.add(keyword(k, partial, 100))
     }
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 
   private fun findKeywordLevel(treePath: TreePath): Tree {

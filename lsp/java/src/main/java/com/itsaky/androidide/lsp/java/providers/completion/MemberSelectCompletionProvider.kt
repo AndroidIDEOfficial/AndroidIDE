@@ -25,6 +25,9 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager
+import com.itsaky.androidide.progress.ProgressManager.Companion
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.MemberSelectTree
 import com.sun.source.tree.Scope
 import com.sun.source.util.TreePath
@@ -64,6 +67,8 @@ class MemberSelectCompletionProvider(
     val exprPath = TreePath(path, select.expression)
     val isStatic = trees.getElement(exprPath) is TypeElement
     val scope = trees.getScope(exprPath)
+  
+    abortIfCancelled()
     return when (val type = trees.getTypeMirror(exprPath)) {
       is ArrayType -> completeArrayMemberSelect(isStatic, partial)
       is TypeVariable ->
@@ -79,6 +84,7 @@ class MemberSelectCompletionProvider(
     partialName: CharSequence
   ): CompletionResult {
     return if (isStatic) {
+      abortIfCancelled()
       CompletionResult.EMPTY
     } else {
       val list = mutableListOf<CompletionItem>()
@@ -95,6 +101,7 @@ class MemberSelectCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
+    abortIfCancelled()
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberSelect(
@@ -132,6 +139,8 @@ class MemberSelectCompletionProvider(
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
     val matchLevels: MutableMap<String, MatchLevel> =
       mutableMapOf()
+  
+    abortIfCancelled()
     for (member in task.task.elements.getAllMembers(typeElement)) {
       if (member.kind == CONSTRUCTOR) {
         continue
@@ -156,6 +165,8 @@ class MemberSelectCompletionProvider(
         list.add(item(task, member, matchLevel))
       }
     }
+  
+    abortIfCancelled()
     for ((key, value) in methods) {
       val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
       if (matchLevel == NO_MATCH) {

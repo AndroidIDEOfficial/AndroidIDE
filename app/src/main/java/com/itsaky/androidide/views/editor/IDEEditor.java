@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
@@ -100,6 +101,10 @@ public class IDEEditor extends CodeEditor {
 
     mActionsPopup = new EditorActionsMenu(this);
     mActionsPopup.init();
+
+    final var window = new EditorCompletionWindow(this);
+    window.setAdapter(new CompletionListAdapter());
+    replaceComponent(EditorAutoCompletion.class, window);
 
     setColorScheme(new SchemeAndroidIDE());
     setSearcher(new IDEEditorSearcher(this));

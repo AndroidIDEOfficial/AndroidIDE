@@ -19,9 +19,10 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
-import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
+import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.SwitchTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
@@ -48,7 +49,7 @@ class SwitchConstantCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  ): CompletionResult {
     val switchTree = path.leaf as SwitchTree
     val exprPath = TreePath(path, switchTree.expression)
     val type = Trees.instance(task.task).getTypeMirror(exprPath)
@@ -73,6 +74,9 @@ class SwitchConstantCompletionProvider(
     log.info("...complete constants of type $type")
 
     val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
+
+    abortIfCancelled()
+
     for (member in task.task.elements.getAllMembers(element)) {
       if (member.kind != ENUM_CONSTANT) {
         continue
@@ -86,7 +90,7 @@ class SwitchConstantCompletionProvider(
       list.add(item(task, member, matchLevel))
     }
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
+    return CompletionResult(list)
   }
 
   private fun completeIdentifier(
@@ -94,7 +98,9 @@ class SwitchConstantCompletionProvider(
     path: TreePath,
     partial: String,
     endsWithParen: Boolean
-  ) =
-    IdentifierCompletionProvider(completingFile, cursor, compiler, settings)
+  ): CompletionResult {
+    abortIfCancelled()
+    return IdentifierCompletionProvider(completingFile, cursor, compiler, settings)
       .complete(task, path, partial, endsWithParen)
+  }
 }
