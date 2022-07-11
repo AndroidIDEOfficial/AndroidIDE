@@ -23,8 +23,6 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.progress.ProgressManager.Companion
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
@@ -51,6 +49,11 @@ class KeywordCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
+
+    if (partial.isBlank()) {
+      return CompletionResult.EMPTY
+    }
+
     val level: Tree = findKeywordLevel(path)
     var keywords = arrayOf<String>()
     when (level) {
@@ -58,7 +61,7 @@ class KeywordCompletionProvider(
       is ClassTree -> keywords = CLASS_BODY_KEYWORDS
       is MethodTree -> keywords = METHOD_BODY_KEYWORDS
     }
-  
+
     abortIfCancelled()
     val list = mutableListOf<CompletionItem>()
     for (k in keywords) {
