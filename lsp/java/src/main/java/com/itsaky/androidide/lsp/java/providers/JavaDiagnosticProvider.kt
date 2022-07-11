@@ -16,10 +16,10 @@
  */
 package com.itsaky.androidide.lsp.java.providers
 
-import com.itsaky.androidide.lsp.java.CompilationCancellationException.Companion.isCancelled
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.DiagnosticsProvider.findDiagnostics
+import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
@@ -70,7 +70,7 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
         compiler.compile(file).get { task -> doAnalyze(file, task) }
       } catch (err: Throwable) {
 
-        if (isCancelled(err) || com.itsaky.androidide.javac.services.CancelAbort.isCancelled(err)) {
+        if (CancelChecker.isCancelled(err)) {
           throw err
         }
 

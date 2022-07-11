@@ -15,21 +15,27 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java
+package com.itsaky.androidide.lsp.java.utils
 
-/**
- * Thrown when a compilation process is cancelled.
- * @author Akash Yadav
- */
-class CompilationCancellationException : java.lang.RuntimeException {
-  constructor() : super()
-  constructor(message: String?) : super(message)
-  constructor(message: String?, cause: Throwable?) : super(message, cause)
-  constructor(cause: Throwable?) : super(cause)
-  constructor(
-    message: String?,
-    cause: Throwable?,
-    enableSuppression: Boolean,
-    writableStackTrace: Boolean
-  ) : super(message, cause, enableSuppression, writableStackTrace)
+import com.itsaky.androidide.javac.services.CancelAbort
+import com.itsaky.androidide.lsp.java.CompilationCancellationException
+import com.itsaky.androidide.progress.ProcessCancelledException
+
+/** @author Akash Yadav */
+class CancelChecker {
+
+  companion object {
+
+    @JvmStatic
+    fun isCancelled(err: Throwable?): Boolean {
+      if (err == null) {
+        return false
+      }
+
+      return err is CancelAbort ||
+        err is CompilationCancellationException ||
+        err is ProcessCancelledException ||
+        isCancelled(err.cause)
+    }
+  }
 }

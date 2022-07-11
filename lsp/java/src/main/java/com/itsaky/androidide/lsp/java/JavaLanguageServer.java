@@ -23,7 +23,6 @@ import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
-import com.itsaky.androidide.javac.services.CancelAbort;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.IServerSettings;
@@ -39,6 +38,7 @@ import com.itsaky.androidide.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.androidide.lsp.java.providers.ReferenceProvider;
 import com.itsaky.androidide.lsp.java.providers.SignatureProvider;
 import com.itsaky.androidide.lsp.java.utils.AnalyzeTimer;
+import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
@@ -256,8 +256,7 @@ public class JavaLanguageServer implements ILanguageServer {
     //noinspection SwitchStatementWithTooFewBranches
     switch (failure.getType()) {
       case COMPLETION:
-        if (CancelAbort.isCancelled(failure.getError())
-            || CompilationCancellationException.isCancelled(failure.getError())) {
+        if (CancelChecker.isCancelled(failure.getError())) {
           return true;
         }
 
