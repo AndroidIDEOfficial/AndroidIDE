@@ -1607,7 +1607,7 @@ public class EditorActivity extends StudioActivity
           }
 
           final List<File> searchDirs = new ArrayList<>();
-          for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+          for (int i = 0; i < binding.modulesContainer.getChildCount(); i++) {
             CheckBox check = (CheckBox) binding.modulesContainer.getChildAt(i);
             if (check.isChecked()) {
               searchDirs.add(srcDirs.get(i));
