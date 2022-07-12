@@ -29,6 +29,7 @@ import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
@@ -246,7 +247,7 @@ public class CompileBatch implements AutoCloseable {
 
   private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
     Path file = Paths.get(err.getSource().toUri());
-    CharSequence contents = ProjectManager.INSTANCE.getDocumentContents(file);
+    CharSequence contents = FileManager.INSTANCE.getDocumentContents(file);
     int begin = (int) err.getStartPosition();
     int end = (int) err.getEndPosition();
     return substring(contents, begin, end);

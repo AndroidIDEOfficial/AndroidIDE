@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.projects.util;
 
-import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.models.ActiveDocument;
 import com.itsaky.androidide.utils.Cache;
 
@@ -201,13 +201,8 @@ public class StringSearch {
   private static final ByteBuffer SEARCH_BUFFER = ByteBuffer.allocateDirect(1024 * 1024);
 
   private static String tryGetActiveDocContent(Path file) {
-    if (ProjectManager.INSTANCE.isDocumentActive(file)) {
-      final ActiveDocument document = ProjectManager.INSTANCE.getActiveDocument(file);
-
-      if (document == null) {
-        return null;
-      }
-
+    final ActiveDocument document = FileManager.INSTANCE.getActiveDocument(file);
+    if (document != null) {
       return document.getContent();
     }
 
@@ -378,7 +373,7 @@ public class StringSearch {
   public static String packageName(Path file) {
     Pattern packagePattern = Pattern.compile("^package +(.*);");
     Pattern startOfClass = Pattern.compile("^[\\w ]*class +\\w+");
-    try (BufferedReader lines = ProjectManager.INSTANCE.getReader(file)) {
+    try (BufferedReader lines = FileManager.INSTANCE.getReader(file)) {
       for (String line = lines.readLine(); line != null; line = lines.readLine()) {
         if (startOfClass.matcher(line).find()) return "";
         Matcher matchPackage = packagePattern.matcher(line);

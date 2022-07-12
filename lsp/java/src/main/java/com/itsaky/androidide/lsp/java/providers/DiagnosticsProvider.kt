@@ -26,6 +26,7 @@ import com.itsaky.androidide.lsp.models.DiagnosticSeverity
 import com.itsaky.androidide.lsp.models.DiagnosticSeverity.WARNING
 import com.itsaky.androidide.lsp.util.PathUtils.Companion.isSameFile
 import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
@@ -192,7 +193,7 @@ object DiagnosticsProvider {
       }
     }
     val file = Paths.get(root.sourceFile.toUri())
-    val contents = ProjectManager.getDocumentContents(file)
+    val contents = FileManager.getDocumentContents(file)
     var name = unusedEl.simpleName
     if (name.contentEquals("<init>")) {
       name = unusedEl.enclosingElement.simpleName

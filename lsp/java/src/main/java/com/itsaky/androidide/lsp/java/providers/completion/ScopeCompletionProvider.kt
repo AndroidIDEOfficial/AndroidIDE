@@ -34,6 +34,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.squareup.javapoet.MethodSpec.Builder
 import com.sun.source.tree.ClassTree
@@ -159,7 +160,7 @@ class ScopeCompletionProvider(
     // Print the method details and the annotations
     // Print the method details and the annotations
     val indent =
-      EditHelper.indent(ProjectManager.getDocumentContents(completingFile), cursor.toInt())
+      EditHelper.indent(FileManager.getDocumentContents(completingFile), cursor.toInt())
     val builder: Builder
     try {
       builder = buildMethod(method, types, type)

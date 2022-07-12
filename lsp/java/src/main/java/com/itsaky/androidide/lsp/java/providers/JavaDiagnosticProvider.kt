@@ -20,6 +20,7 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.DiagnosticsProvider.findDiagnostics
 import com.itsaky.androidide.lsp.java.utils.CancelChecker
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
@@ -51,7 +52,7 @@ class JavaDiagnosticProvider(private val completionChecker: Supplier<Boolean>) {
       return com.itsaky.androidide.lsp.models.DiagnosticResult.NO_UPDATE
     }
 
-    val modifiedAt = ProjectManager.getLastModified(file)
+    val modifiedAt = FileManager.getLastModified(file)
     val analyzedAt = analyzeTimestamps[file]
 
     if (analyzedAt?.isAfter(modifiedAt) == true) {

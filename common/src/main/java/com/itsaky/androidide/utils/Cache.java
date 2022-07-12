@@ -30,6 +30,9 @@ import java.util.Objects;
 public class Cache<K, V> {
 
   private static final ILogger LOG = ILogger.newInstance("Cache");
+  // Cannot access FileManager from this module
+  private static Object FileManager_INSTANCE;
+  private static Method FileManager_getLastModified;
   private final Map<Key<K>, Value> map = new HashMap<>();
 
   public boolean has(Path file, K k) {
@@ -52,6 +55,39 @@ public class Cache<K, V> {
     Instant modified = getLastModified(file);
     // TODO remove all keys associated with file when file changes
     return value.created.isBefore(modified);
+  }
+
+  private static Instant getLastModified(Path file) {
+    initProjectManagerInstance();
+
+    try {
+      return (Instant) FileManager_getLastModified.invoke(FileManager_INSTANCE, file);
+    } catch (Throwable err) {
+      LOG.error("Cannot get last modified from ProjectManager", err);
+      return Instant.now();
+    }
+  }
+
+  private static void initProjectManagerInstance() {
+    if (FileManager_INSTANCE == null) {
+      try {
+        final var klass = Class.forName("com.itsaky.androidide.projects.FileManager");
+        final var field = klass.getDeclaredField("INSTANCE");
+        if (!field.isAccessible()) {
+          field.setAccessible(true);
+        }
+
+        FileManager_INSTANCE = field.get(null);
+
+        FileManager_getLastModified = klass.getDeclaredMethod("getLastModified", Path.class);
+        if (!FileManager_getLastModified.isAccessible()) {
+          FileManager_getLastModified.setAccessible(true);
+        }
+      } catch (Throwable err) {
+        LOG.error("Cannot reflect ProjectManager INSTANCE", err);
+        throw new RuntimeException(err);
+      }
+    }
   }
 
   public void load(Path file, K k, V v) {
@@ -100,43 +136,6 @@ public class Cache<K, V> {
 
     Value(V value) {
       this.value = value;
-    }
-  }
-
-  // Cannot access ProjectManager from this module
-  private static Object ProjectManager_INSTANCE;
-  private static Method ProjectManager_getLastModified;
-
-  private static Instant getLastModified(Path file) {
-    initProjectManagerInstance();
-
-    try {
-      return (Instant) ProjectManager_getLastModified.invoke(ProjectManager_INSTANCE, file);
-    } catch (Throwable err) {
-      LOG.error("Cannot get last modified from ProjectManager", err);
-      return Instant.now();
-    }
-  }
-
-  private static void initProjectManagerInstance() {
-    if (ProjectManager_INSTANCE == null) {
-      try {
-        final var klass = Class.forName("com.itsaky.androidide.projects.ProjectManager");
-        final var field = klass.getDeclaredField("INSTANCE");
-        if (!field.isAccessible()) {
-          field.setAccessible(true);
-        }
-
-        ProjectManager_INSTANCE = field.get(null);
-
-        ProjectManager_getLastModified = klass.getDeclaredMethod("getLastModified", Path.class);
-        if (!ProjectManager_getLastModified.isAccessible()) {
-          ProjectManager_getLastModified.setAccessible(true);
-        }
-      } catch (Throwable err) {
-        LOG.error("Cannot reflect ProjectManager INSTANCE", err);
-        throw new RuntimeException(err);
-      }
     }
   }
 }

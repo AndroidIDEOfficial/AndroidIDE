@@ -18,22 +18,15 @@
 package com.itsaky.androidide.projects.api
 
 import android.text.TextUtils
-import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
-import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
-import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
-import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.projects.models.ActiveDocument
+import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ClassTrie
+import com.itsaky.androidide.utils.ClasspathReader
 import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SourceClassTrie
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
-import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.utils.ClasspathReader
-import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.nio.file.Path
-import java.time.Instant
-import java.util.concurrent.*
 
 /**
  * A module project. Base class for [AndroidModule] and [JavaModule].
@@ -62,12 +55,6 @@ abstract class ModuleProject(
 
   @JvmField val compileJavaSourceClasses = SourceClassTrie()
   @JvmField val compileClasspathClasses = ClassTrie()
-
-  /**
-   * Map of documents that are open in the editor. Keys here are the canonical paths of the
-   * documents.
-   */
-  val activeDocuments: MutableMap<Path, ActiveDocument> = ConcurrentHashMap<Path, ActiveDocument>()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -104,59 +91,6 @@ abstract class ModuleProject(
    * well.
    */
   abstract fun getCompileModuleProjects(): List<ModuleProject>
-
-  /**
-   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is opened.
-   *
-   * @param event The event descriptor.
-   * @return `true` if this module consumed the event. `false` otherwise.
-   */
-  fun onDocumentOpen(event: DocumentOpenEvent): Boolean {
-    if (!isCacheable(event.openedFile) || !isFromThisModule(event.openedFile)) {
-      return false
-    }
-
-    activeDocuments[event.openedFile.normalize()] = createDocument(event)
-    return true
-  }
-
-  /**
-   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is changed.
-   *
-   * @param event The event descriptor.
-   * @return `true` if this module consumed the event. `false` otherwise.
-   */
-  fun onDocumentChanged(event: DocumentChangeEvent): Boolean {
-    if (!isCacheable(event.changedFile) || !isFromThisModule(event.changedFile)) {
-      return false
-    }
-
-    activeDocuments[event.changedFile.normalize()] = createDocument(event)
-    return true
-  }
-
-  /**
-   * Called by [com.itsaky.androidide.projects.ProjectManager] when a document is closed.
-   *
-   * @param event The event descriptor.
-   * @return `true` if this module consumed the event. `false` otherwise.
-   */
-  fun onDocumentClose(event: DocumentCloseEvent): Boolean {
-    if (!isCacheable(event.closedFile) || !isFromThisModule(event.closedFile)) {
-      return false
-    }
-
-    activeDocuments.remove(event.closedFile.normalize())
-    return true
-  }
-
-  fun isActive(file: Path): Boolean {
-    return this.activeDocuments.containsKey(file.normalize())
-  }
-
-  fun getActiveDocument(file: Path): ActiveDocument? {
-    return this.activeDocuments[file.normalize()]
-  }
 
   /** Finds the source files and classes from source directories and classpaths and indexes them. */
   @Suppress("UnstableApiUsage")
@@ -229,35 +163,8 @@ abstract class ModuleProject(
       .filterIsInstance(SourceNode::class.java)
   }
 
-  protected open fun isCacheable(file: Path): Boolean {
-    // For now, we only cache Java files
-    return DocumentUtils.isJavaFile(file)
-  }
-
-  protected open fun isFromThisModule(file: Path): Boolean {
+  open fun isFromThisModule(file: Path): Boolean {
     // TODO This can be probably improved
     return file.startsWith(this.projectDir.toPath())
-  }
-
-  protected open fun createDocument(event: DocumentOpenEvent): ActiveDocument {
-    return ActiveDocument(
-      file = event.openedFile,
-      content = event.text,
-      changeRange = Range.NONE,
-      version = event.version,
-      changDelta = 0,
-      modified = Instant.now()
-    )
-  }
-
-  protected open fun createDocument(event: DocumentChangeEvent): ActiveDocument {
-    return ActiveDocument(
-      file = event.changedFile,
-      content = event.newText,
-      changeRange = event.changeRange,
-      version = event.version,
-      changDelta = event.changeDelta,
-      modified = Instant.now()
-    )
   }
 }

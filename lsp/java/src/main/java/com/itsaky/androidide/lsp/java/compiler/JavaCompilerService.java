@@ -33,6 +33,7 @@ import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.utils.Extractors;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
@@ -131,7 +132,7 @@ public class JavaCompilerService implements CompilerProvider {
     List<String> list = new ArrayList<>();
     Pattern importClass = Pattern.compile("^import +([\\w.]+\\.\\w+);");
     Pattern importStar = Pattern.compile("^import +([\\w.]+\\.\\*);");
-    try (BufferedReader lines = ProjectManager.INSTANCE.getReader(file)) {
+    try (BufferedReader lines = FileManager.INSTANCE.getReader(file)) {
       for (String line = lines.readLine(); line != null; line = lines.readLine()) {
         // If we reach a class declaration, stop looking for imports
         // TODO This could be a little more specific

@@ -18,7 +18,7 @@
 package com.itsaky.androidide.lsp.java.compiler;
 
 import com.itsaky.androidide.lsp.util.PathUtils;
-import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.utils.DocumentUtils;
 
 import java.io.ByteArrayInputStream;
@@ -117,7 +117,7 @@ public class SourceFileObject implements JavaFileObject {
       byte[] bytes = contents.getBytes();
       return new ByteArrayInputStream(bytes);
     }
-    return ProjectManager.INSTANCE.getInputStream(path);
+    return FileManager.INSTANCE.getInputStream(path);
   }
 
   @Override
@@ -130,7 +130,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return new StringReader(contents);
     }
-    return ProjectManager.INSTANCE.getReader(path);
+    return FileManager.INSTANCE.getReader(path);
   }
 
   @Override
@@ -138,7 +138,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return contents;
     }
-    return ProjectManager.INSTANCE.getDocumentContents(this.path);
+    return FileManager.INSTANCE.getDocumentContents(this.path);
   }
 
   @Override
@@ -151,7 +151,7 @@ public class SourceFileObject implements JavaFileObject {
     if (contents != null) {
       return modified.toEpochMilli();
     }
-    return ProjectManager.INSTANCE.getLastModified(this.path).toEpochMilli();
+    return FileManager.INSTANCE.getLastModified(this.path).toEpochMilli();
   }
 
   @Override

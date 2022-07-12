@@ -26,6 +26,7 @@ import com.itsaky.androidide.lsp.models.HighlightToken;
 import com.itsaky.androidide.lsp.models.HighlightTokenKind;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.ClassTree;
@@ -213,7 +214,7 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
     }
     // Find name inside expression
     Path file = Paths.get(root.getSourceFile().toUri());
-    CharSequence contents = ProjectManager.INSTANCE.getDocumentContents(file);
+    CharSequence contents = FileManager.INSTANCE.getDocumentContents(file);
     String region = substring(contents, start, end);
     start += region.indexOf(name.toString());
     end = start + name.length();

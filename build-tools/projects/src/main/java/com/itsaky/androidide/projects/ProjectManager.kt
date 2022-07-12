@@ -16,45 +16,24 @@
  */
 package com.itsaky.androidide.projects
 
-import com.itsaky.androidide.eventbus.events.EventReceiver
-import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
-import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
-import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
-import com.itsaky.androidide.progress.ProcessCancelledException
-import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.utils.BootClasspathProvider
-import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
-import java.io.BufferedInputStream
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStream
-import java.io.StringReader
-import java.nio.charset.Charset
-import java.nio.file.Files
 import java.nio.file.Path
-import java.time.Instant
-import java.util.*
-import java.util.concurrent.*
-import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages projects in AndroidIDE.
  *
  * @author Akash Yadav
  */
-object ProjectManager : EventReceiver {
+object ProjectManager {
   private val log = ILogger.newInstance(javaClass.simpleName)
   lateinit var projectPath: String
 
@@ -146,24 +125,6 @@ object ProjectManager : EventReceiver {
     return findModuleForFile(file.toFile())
   }
 
-  fun isDocumentActive(file: Path): Boolean {
-    if (!checkInit()) {
-      return false
-    }
-
-    for (module in this.rootProject!!.subModules) {
-      if (module !is ModuleProject) {
-        continue
-      }
-
-      if (module.isActive(file)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
   fun containsSourceFile(file: Path): Boolean {
     if (!checkInit()) {
       return false
@@ -183,143 +144,9 @@ object ProjectManager : EventReceiver {
     return false
   }
 
-  fun getActiveDocument(file: Path): ActiveDocument? {
-    if (!checkInit()) {
-      return null
-    }
-
-    for (module in this.rootProject!!.subModules) {
-      if (module !is ModuleProject) {
-        continue
-      }
-
-      val document = module.getActiveDocument(file)
-      if (document != null) {
-        return document
-      }
-    }
-
-    return null
-  }
-
-  fun getLastModified(file: Path): Instant {
-    if (!checkInit()) {
-      return getLastModifiedFromDisk(file)
-    }
-
-    val document = getActiveDocument(file)
-    if (document != null) {
-      return document.modified
-    }
-
-    return getLastModifiedFromDisk(file)
-  }
-
-  fun getDocumentContents(file: Path): String {
-    if (!checkInit()) {
-      return getFileContents(file)
-    }
-
-    val document = getActiveDocument(file)
-    if (document != null) {
-      return document.content
-    }
-
-    return getFileContents(file)
-  }
-
-  fun getReader(file: Path): BufferedReader {
-    if (!checkInit()) {
-      return createFileReader(file)
-    }
-
-    val document = getActiveDocument(file)
-    if (document != null) {
-      return BufferedReader(StringReader(document.content))
-    }
-
-    return createFileReader(file)
-  }
-
-  fun getInputStream(file: Path): InputStream {
-    if (!checkInit()) {
-      return createFileInputStream(file)
-    }
-
-    val document = getActiveDocument(file)
-    if (document != null) {
-      BufferedInputStream(document.content.byteInputStream())
-    }
-
-    return createFileInputStream(file)
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////
   ////// TODO Subscribe to file creation/deletion/rename events and update source map //////
   //////////////////////////////////////////////////////////////////////////////////////////
-
-  override fun register() {
-    super.register()
-
-    // Make sure we list and store the bootstrap classes
-    CompletableFuture.runAsync {
-      BootClasspathProvider.update(Collections.singleton(Environment.ANDROID_JAR.absolutePath))
-    }
-  }
-
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
-  fun onDocumentOpen(event: DocumentOpenEvent) {
-    if (!checkInit()) {
-      return
-    }
-
-    for (subModule in this.rootProject!!.subModules) {
-      if (subModule !is ModuleProject) {
-        continue
-      }
-
-      if (subModule.onDocumentOpen(event)) {
-        break
-      }
-    }
-  }
-
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
-  fun onDocumentClose(event: DocumentCloseEvent) {
-    if (!checkInit()) {
-      return
-    }
-
-    for (subModule in this.rootProject!!.subModules) {
-      if (subModule !is ModuleProject) {
-        continue
-      }
-
-      if (subModule.onDocumentClose(event)) {
-        break
-      }
-    }
-  }
-
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
-  fun onDocumentContentChange(event: DocumentChangeEvent) {
-    if (!checkInit()) {
-      return
-    }
-
-    for (subModule in this.rootProject!!.subModules) {
-      if (subModule !is ModuleProject) {
-        continue
-      }
-
-      if (subModule.onDocumentChanged(event)) {
-        break
-      }
-    }
-  }
 
   private fun isInitialized() = rootProject != null
 
@@ -330,46 +157,5 @@ object ProjectManager : EventReceiver {
 
     log.warn("Project is not initialized yet!")
     return false
-  }
-
-  private fun createFileReader(file: Path): BufferedReader {
-    return try {
-      Files.newBufferedReader(file)
-    } catch (noFile: java.nio.file.NoSuchFileException) {
-      log.warn("No such file", noFile)
-      "".reader().buffered()
-    } catch (cancelled: ProcessCancelledException) {
-      log.debug("createFileReader(): cancelled")
-      "".reader().buffered()
-    }
-  }
-
-  private fun createFileInputStream(file: Path): InputStream {
-    return try {
-      Files.newInputStream(file)
-    } catch (noFile: java.nio.file.NoSuchFileException) {
-      log.warn("No such file", noFile)
-      "".byteInputStream()
-    } catch (cancelled: ProcessCancelledException) {
-      log.debug("createFileInputStream(): cancelled")
-      "".byteInputStream()
-    }
-  }
-
-  private fun getLastModifiedFromDisk(file: Path): Instant {
-    return Files.getLastModifiedTime(file).toInstant()
-  }
-
-  private fun getFileContents(file: Path): String {
-    return try {
-      abortIfCancelled()
-      FileUtils.readFileToString(file.toFile(), Charset.defaultCharset())
-    } catch (noFile: java.nio.file.NoSuchFileException) {
-      log.warn("No such file", noFile)
-      ""
-    } catch (cancelled: ProcessCancelledException) {
-      log.debug("getFileContents(): cancelled")
-      ""
-    }
   }
 }
