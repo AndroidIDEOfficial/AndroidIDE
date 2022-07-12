@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - partial-reparser
+  workflow_dispatch: {}
 
 jobs:
   build:
