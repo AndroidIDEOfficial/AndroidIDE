@@ -36,7 +36,9 @@ package com.itsaky.androidide.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 /**
  * Logger for the IDE.
@@ -48,20 +50,25 @@ import java.util.Objects;
  */
 public abstract class ILogger {
 
+  public static final String DEFAULT_TAG = "AndroidIDE";
   public static final String MSG_SEPARATOR = " "; // Separate messages with a space.
+
   private static final List<LogListener> logListeners = new ArrayList<>();
+  private static final Map<String, ILogger> cachedLoggers = new WeakHashMap<>();
+
   private static ILogger instance;
   protected final String TAG;
+
   protected ILogger(String tag) {
     TAG = tag;
   }
 
   public static ILogger instance() {
-    return instance == null ? instance = createInstance("AndroidIDE") : instance;
+    return cachedLoggers.computeIfAbsent(DEFAULT_TAG, ILogger::createInstance);
   }
 
   private static ILogger createInstance(String tag) {
-    return newPlatformDependentLogger(tag);
+    return cachedLoggers.computeIfAbsent(tag, ILogger::newPlatformDependentLogger);
   }
 
   private static ILogger newPlatformDependentLogger(String tag) {
