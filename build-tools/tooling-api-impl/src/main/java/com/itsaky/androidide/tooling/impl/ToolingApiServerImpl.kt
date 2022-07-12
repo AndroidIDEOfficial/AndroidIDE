@@ -101,6 +101,8 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
             )
           )
         }
+        
+        notifyBeforeBuild()
 
         val connection = this.connector!!.connect()
         stopWatch.lapFromLast("Project connection established")
