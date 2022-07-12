@@ -38,11 +38,13 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.StringReader
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.*
+import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.BACKGROUND
@@ -335,9 +337,10 @@ object ProjectManager : EventReceiver {
       Files.newBufferedReader(file)
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
-      BufferedReader(StringReader(""))
-    } catch (other: Throwable) {
-      throw other
+      "".reader().buffered()
+    } catch (cancelled: ProcessCancelledException) {
+      log.debug("createFileReader(): cancelled")
+      "".reader().buffered()
     }
   }
 
@@ -347,8 +350,9 @@ object ProjectManager : EventReceiver {
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
       "".byteInputStream()
-    } catch (other: Throwable) {
-      throw other
+    } catch (cancelled: ProcessCancelledException) {
+      log.debug("createFileInputStream(): cancelled")
+      "".byteInputStream()
     }
   }
 
@@ -358,27 +362,14 @@ object ProjectManager : EventReceiver {
 
   private fun getFileContents(file: Path): String {
     return try {
-      val sb = StringBuilder()
-      createFileReader(file).use {
-        var line: String?
-        while (true) {
-          abortIfCancelled()
-          line = it.readLine()
-          if (line == null) {
-            break
-          }
-
-          sb.append(line)
-          sb.append("\n")
-        }
-      }
-
-      sb.toString()
+      abortIfCancelled()
+      FileUtils.readFileToString(file.toFile(), Charset.defaultCharset())
     } catch (noFile: java.nio.file.NoSuchFileException) {
       log.warn("No such file", noFile)
-      return ""
-    } catch (other: Throwable) {
-      throw other
+      ""
+    } catch (cancelled: ProcessCancelledException) {
+      log.debug("getFileContents(): cancelled")
+      ""
     }
   }
 }

@@ -35,6 +35,7 @@ dependencies {
     
     implementation project (path: ':common')
     
+    implementation common.io
     implementation google.guava
     
     testImplementation project (path: ':build-tools:tooling-api-testing')
