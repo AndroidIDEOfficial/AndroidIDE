@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 
@@ -104,16 +103,12 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   private void createNotificationChannels() {
-    NotificationChannel updateChannel =
+    NotificationChannel buildNotificationChannel =
         new NotificationChannel(
             NOTIFICATION_GRADLE_BUILD_SERVICE,
             getString(R.string.title_gradle_service_notification_channel),
-            NotificationManager.IMPORTANCE_HIGH);
-    updateChannel.enableLights(true);
-    updateChannel.enableVibration(true);
-    updateChannel.setLightColor(Color.RED);
-    updateChannel.setVibrationPattern(new long[] {10, 50, 10});
-    NotificationManagerCompat.from(this).createNotificationChannel(updateChannel);
+            NotificationManager.IMPORTANCE_LOW);
+    NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
 
   public ShellServer newShell(ShellServer.Callback callback) {
