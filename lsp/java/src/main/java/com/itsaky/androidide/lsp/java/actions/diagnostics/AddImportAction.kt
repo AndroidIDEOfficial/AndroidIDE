@@ -35,7 +35,7 @@ import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
-class AddImportAction() : BaseCodeAction() {
+class AddImportAction : BaseCodeAction() {
 
   override val id: String = "lsp_java_addImport"
   override var label: String = ""
@@ -157,7 +157,7 @@ class AddImportAction() : BaseCodeAction() {
       ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
         as JavaLanguageServer
     val client = server.client ?: return
-    val actions = mutableListOf<com.itsaky.androidide.lsp.models.CodeActionItem>()
+    val actions = mutableListOf<CodeActionItem>()
     val titles = result.first as List<String>
     val rewrites = result.second as List<Rewrite>
 

@@ -20,11 +20,12 @@ package com.itsaky.androidide.lsp.api
 import android.content.Context
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.eventbus.events.editor.ChangeType.NEW_TEXT
+import com.itsaky.androidide.eventbus.events.editor.ChangeType.DELETE
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
-import com.itsaky.androidide.lsp.api.util.ReflectiveLogListener
+import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
@@ -32,17 +33,15 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.ILogger.Priority
 import io.github.rosemoe.sora.text.Content
+import java.io.File
 import java.nio.file.Path
-import java.util.*
 import kotlin.io.path.pathString
 import org.greenrobot.eventbus.EventBus
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import java.io.File
 
 /**
  * Runs tests for a language server.
@@ -52,7 +51,7 @@ import java.io.File
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
 abstract class LSPTest {
-  
+
   protected lateinit var toolingServer: IToolingApiServer
   protected lateinit var toolingProject: IProject
   protected var cursor: Int = -1
@@ -63,8 +62,7 @@ abstract class LSPTest {
   protected val log = ILogger.newInstance(javaClass.simpleName)
 
   companion object {
-    @JvmStatic
-    protected var isInitialized: Boolean = false
+    @JvmStatic protected var isInitialized: Boolean = false
   }
 
   protected open fun initProjectIfNeeded() {
@@ -84,6 +82,7 @@ abstract class LSPTest {
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
     Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
     registerServer()
+    FileManager.register()
     ProjectManager.register()
     ProjectManager.setupProject(project)
     ProjectManager.notifyProjectUpdate()
@@ -106,14 +105,14 @@ abstract class LSPTest {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, Range.NONE))
+    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), 1, DELETE, 0, Range.NONE))
   }
 
-  protected fun cursorPosition(): com.itsaky.androidide.models.Position {
+  protected fun cursorPosition(): Position {
     return cursorPosition(true)
   }
 
-  protected fun cursorPosition(deleteCursorText: Boolean): com.itsaky.androidide.models.Position {
+  protected fun cursorPosition(deleteCursorText: Boolean): Position {
     requireCursor()
 
     if (deleteCursorText) {
@@ -121,7 +120,7 @@ abstract class LSPTest {
     }
 
     val pos = Content(contents!!).indexer.getCharPosition(cursor)
-    return com.itsaky.androidide.models.Position(pos.line, pos.column, pos.index)
+    return Position(pos.line, pos.column, pos.index)
   }
 
   protected open fun openFile(fileName: String) {

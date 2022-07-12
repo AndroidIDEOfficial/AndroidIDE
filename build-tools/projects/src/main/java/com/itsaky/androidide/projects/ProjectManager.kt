@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.projects
 
+import com.itsaky.androidide.eventbus.events.Event
+import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -27,13 +29,15 @@ import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.nio.file.Path
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Manages projects in AndroidIDE.
  *
  * @author Akash Yadav
  */
-object ProjectManager {
+object ProjectManager : EventReceiver {
   private val log = ILogger.newInstance(javaClass.simpleName)
   lateinit var projectPath: String
 
@@ -157,5 +161,12 @@ object ProjectManager {
 
     log.warn("Project is not initialized yet!")
     return false
+  }
+
+  // No-op subscriber method
+  @Suppress("unused")
+  @Subscribe(threadMode = MAIN)
+  fun noOp(obj: Event) {
+    throw UnsupportedOperationException("No-op")
   }
 }

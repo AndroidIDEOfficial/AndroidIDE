@@ -30,7 +30,7 @@ class JavaCompletionProviderTester : JavaLSPTest() {
     lambdaVariableMemberAccess()
   }
 
-  fun locals() {
+  private fun locals() {
     openFile("LocalsCompletionTest")
 
     val pos = cursorPosition()
@@ -38,7 +38,7 @@ class JavaCompletionProviderTester : JavaLSPTest() {
     assertThat(items).containsAtLeast("aaString", "aaInt", "aaFloat", "aaDouble", "args")
   }
 
-  fun members() {
+  private fun members() {
     // Complete members of String
     openFile("MembersCompletionTest")
 
@@ -48,7 +48,7 @@ class JavaCompletionProviderTester : JavaLSPTest() {
       .containsAtLeast("getClass", "toLowerCase", "toUpperCase", "substring", "charAt")
   }
 
-  fun lambdaVariableMemberAccess() {
+  private fun lambdaVariableMemberAccess() {
     // Complete members of Throwable
     openFile("LambdaMembersCompletionTest")
 
@@ -57,7 +57,7 @@ class JavaCompletionProviderTester : JavaLSPTest() {
     assertThat(items).containsAtLeast("getMessage", "getCause", "getStackTrace", "printStackTrace")
   }
 
-  fun staticAccess() {
+  private fun staticAccess() {
     // Complete static members of String
     openFile("StaticMembersCompletionTest")
 

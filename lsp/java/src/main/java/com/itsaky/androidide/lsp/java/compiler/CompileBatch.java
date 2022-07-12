@@ -72,11 +72,10 @@ public class CompileBatch implements AutoCloseable {
   final ReusableCompiler.Borrow borrow;
   final JavacTaskImpl task;
   final List<CompilationUnitTree> roots;
+  final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
   DiagnosticListenerImpl diagnosticListener;
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
-
-  final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
 
   CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
     this.parent = parent;
@@ -98,22 +97,6 @@ public class CompileBatch implements AutoCloseable {
     // You can get at `Element` values using `Trees`
     borrow.task.analyze();
     watch.log();
-  }
-
-  @Nullable
-  CompilationUnitTree compilationUnitFor(Path file) {
-    if (this.roots == null || this.roots.isEmpty()) {
-      return null;
-    }
-
-    for (final CompilationUnitTree root : this.roots) {
-      final Path cuFile = Paths.get(root.getSourceFile().toUri());
-      if (DocumentUtils.isSameFile(cuFile, file)) {
-        return root;
-      }
-    }
-
-    return null;
   }
 
   void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
@@ -195,7 +178,7 @@ public class CompileBatch implements AutoCloseable {
     } else if (parent.module.getType() == IProject.Type.Android) {
       bootClasspaths.addAll(
           ((AndroidModule) parent.module)
-              .getBootClassPaths().stream().map(File::getAbsolutePath).collect(Collectors.toSet()));
+              .getBootClassPaths().stream().map(File::getPath).collect(Collectors.toSet()));
     }
 
     if (BootClasspathProvider.update(bootClasspaths)) {
@@ -219,6 +202,22 @@ public class CompileBatch implements AutoCloseable {
   @Override
   public void close() {
     closed = true;
+  }
+
+  @Nullable
+  CompilationUnitTree compilationUnitFor(Path file) {
+    if (this.roots == null || this.roots.isEmpty()) {
+      return null;
+    }
+
+    for (final CompilationUnitTree root : this.roots) {
+      final Path cuFile = Paths.get(root.getSourceFile().toUri());
+      if (DocumentUtils.isSameFile(cuFile, file)) {
+        return root;
+      }
+    }
+
+    return null;
   }
 
   /**
