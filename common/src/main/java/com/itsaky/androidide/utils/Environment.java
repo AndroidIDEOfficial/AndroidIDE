@@ -58,11 +58,9 @@ public final class Environment {
   public static File PROJECTS_DIR;
   public static File IDE_PROPS_FILE;
   public static File LIB_HOOK;
-  /**
-   * JDK modules used by the java language server for completions. This version of JDK modules
-   * contains only the classes included in android.jar
-   */
-  public static File COMPILER_MODULE;
+
+  /** Used by Java LSP until the project is initialized. */
+  public static File ANDROID_JAR;
 
   public static File TOOLING_API_JAR;
 
@@ -87,7 +85,7 @@ public final class Environment {
     BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
     LIB_DIR = mkdirIfNotExits(new File(PREFIX, "lib"));
     PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
-    COMPILER_MODULE = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "compiler-module"));
+    ANDROID_JAR = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "android.jar"));
     TOOLING_API_JAR =
         new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")), "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
@@ -268,15 +266,7 @@ public final class Environment {
     if (blacklist.isEmpty()) {
       blacklist.add("HOME");
       blacklist.add("SYSROOT");
-      blacklist.add("JLS_HOME");
     }
     return blacklist;
-  }
-
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-  public static boolean isCompilerModuleInstalled() {
-    final var modules = new File(COMPILER_MODULE, "lib/modules");
-    final var release = new File(COMPILER_MODULE, "release");
-    return modules.exists() && modules.isFile() && release.exists() && release.isFile();
   }
 }

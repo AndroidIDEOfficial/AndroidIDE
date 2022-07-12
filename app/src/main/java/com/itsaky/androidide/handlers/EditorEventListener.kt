@@ -111,14 +111,14 @@ class EditorEventListener : GradleBuildService.EventListener {
 
   private fun installApks(apks: Set<File>?) {
     if (apks == null || apks.isEmpty()) {
-      IDEHandler.LOG.error("Cannot install APKs: $apks")
+      log.error("Cannot install APKs: $apks")
       return
     }
 
     if (apks.size == 1) {
       activity().install(apks.iterator().next())
     } else {
-      IDEHandler.LOG.info("Multiple APKs found. Let the user select...")
+      log.info("Multiple APKs found. Let the user select...")
       val files: List<File> = ArrayList(apks)
       val builder = DialogUtils.newMaterialDialogBuilder(activity())
       builder.setTitle(activity().getString(string.title_install_apks))

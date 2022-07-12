@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
  *
  * @author Akash Yadav
  */
-class LogUtils {
+public class LogUtils {
   private static final String LINE_SEP = System.getProperty("line.separator");
 
   /**

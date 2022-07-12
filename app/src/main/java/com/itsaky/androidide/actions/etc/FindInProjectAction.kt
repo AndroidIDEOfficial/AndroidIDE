@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
+import com.itsaky.androidide.projects.ProjectManager
 
 /** @author Akash Yadav */
 class FindInProjectAction() : EditorActivityAction() {
@@ -38,10 +39,15 @@ class FindInProjectAction() : EditorActivityAction() {
   override fun prepare(data: ActionData) {
     getActivity(data)
       ?: run {
-        visible = false
-        enabled = false
+        markInvisible()
         return
       }
+    
+    val root = ProjectManager.rootProject
+    if (root == null || root.subModules.isEmpty()) {
+      markInvisible()
+      return
+    }
 
     visible = true
     enabled = true

@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.models.SignatureHelp;
-import com.itsaky.lsp.models.SignatureInformation;
+import com.itsaky.androidide.lsp.models.SignatureHelp;
+import com.itsaky.androidide.lsp.models.SignatureInformation;
 
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;

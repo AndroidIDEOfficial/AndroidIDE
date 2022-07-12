@@ -25,7 +25,6 @@ import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultVariant
-import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
@@ -79,13 +78,7 @@ open class AndroidModule(
   var bootClassPaths: Collection<File> = emptyList()
   var mainSourceSet: DefaultSourceSetContainer? = null
 
-  @Deprecated(
-    "We do not keep references to all variant dependencies (to cut down memory usage)." +
-      " Use debugLibraries instead."
-  )
-  var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
-
-  var debugLibraries: List<DefaultLibrary> = emptyList()
+  var libraries: List<DefaultLibrary> = emptyList()
 
   @Suppress("unused")
   companion object {
@@ -191,7 +184,7 @@ open class AndroidModule(
       shouldLookupPackage = false
       return
     }
-    
+
     val manifestFile = mainSourceSet!!.sourceProvider.manifestFile
     if (manifestFile == DefaultSourceProvider.NoFile) {
       shouldLookupPackage = false

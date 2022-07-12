@@ -28,7 +28,7 @@ buildscript {
         mavenLocal ()
         mavenCentral ()
         maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
         }
         maven {
             url 'https://jitpack.io'
@@ -115,6 +115,9 @@ allprojects {
         mavenCentral ()
         maven {
             url 'https://jitpack.io'
+        }
+        maven {
+            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
         }
     }
 }

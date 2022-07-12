@@ -29,8 +29,8 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_L
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
-import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
-import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
+import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
+import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

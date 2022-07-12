@@ -30,7 +30,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.itsaky.androidide.adapters.OptionsSheetAdapter;
+import com.itsaky.androidide.events.FileContextMenuItemClickEvent;
 import com.itsaky.androidide.models.SheetOption;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +43,6 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
   private final List<SheetOption> mOptions = new ArrayList<>();
   protected boolean dismissOnItemClick = true;
   private RecyclerView mList;
-  private OnOptionsClickListener listener;
 
   @Override
   public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -49,11 +51,11 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
     mList.setAdapter(
         new OptionsSheetAdapter(
             mOptions,
-            __ -> {
+            option -> {
               if (dismissOnItemClick) dismiss();
-              if (listener != null) {
-                listener.onOptionsClick(__);
-              }
+              final var event = new FileContextMenuItemClickEvent(option);
+              event.put(Context.class, requireContext());
+              EventBus.getDefault().post(event);
             }));
   }
 
@@ -67,12 +69,6 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
     mList = new RecyclerView(requireContext());
     container.removeAllViews();
     container.addView(mList, new LinearLayout.LayoutParams(-1, -1));
-  }
-
-  @Override
-  public void onAttach(@NonNull Context context) {
-    super.onAttach(context);
-    this.listener = (OnOptionsClickListener) context;
   }
 
   public void addOption(SheetOption option) {
@@ -93,9 +89,5 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
   public OptionsListFragment setDismissOnItemClick(boolean dissmiss) {
     this.dismissOnItemClick = dissmiss;
     return this;
-  }
-
-  public static interface OnOptionsClickListener {
-    void onOptionsClick(SheetOption option);
   }
 }

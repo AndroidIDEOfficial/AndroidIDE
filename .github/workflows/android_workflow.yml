@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - partial-reparser
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.5.0
+        uses: styfle/cancel-workflow-action@0.10.0
         with:
           access_token: ${{ github.token }}
 
@@ -25,7 +25,7 @@ jobs:
           java-version: 11 # DO NOT CHANGE. Project must be built with JDK 11.
 
       - name: Build project
-        uses: eskatos/gradle-command-action@v1
+        uses: eskatos/gradle-command-action@v2
         with:
           arguments: clean build
           distributions-cache-enabled: true
@@ -33,7 +33,7 @@ jobs:
           configuration-cache-enabled: true
 
       - name: Run tests
-        uses: eskatos/gradle-command-action@v1
+        uses: eskatos/gradle-command-action@v2
         with:
           arguments: test
           distributions-cache-enabled: true
@@ -41,22 +41,28 @@ jobs:
           configuration-cache-enabled: true
 
       - name: Generate translation report
-        uses: eskatos/gradle-command-action@v1
+        uses: eskatos/gradle-command-action@v2
         with:
           arguments: :app:checkTranslations
           distributions-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
 
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "build/test-results/**/*.xml"
+
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload translation report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
           name: translation-report

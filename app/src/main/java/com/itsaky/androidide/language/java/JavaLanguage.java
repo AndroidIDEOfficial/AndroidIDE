@@ -28,7 +28,7 @@ import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
-import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;

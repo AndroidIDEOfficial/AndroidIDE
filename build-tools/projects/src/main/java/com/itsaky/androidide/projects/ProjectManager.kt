@@ -16,49 +16,47 @@
  */
 package com.itsaky.androidide.projects
 
+import com.itsaky.androidide.eventbus.events.Event
+import com.itsaky.androidide.eventbus.events.EventReceiver
+import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
+import java.nio.file.Path
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Manages projects in AndroidIDE.
  *
  * @author Akash Yadav
  */
-object ProjectManager {
+object ProjectManager : EventReceiver {
   private val log = ILogger.newInstance(javaClass.simpleName)
   lateinit var projectPath: String
 
   var rootProject: Project? = null
   var app: AndroidModule? = null
 
-  var projectUpdateNotificationConsumer: Runnable? = null
-
   fun setupProject(project: IProject) {
     val caching = CachingProject(project)
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
+      this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
+        it.indexSourcesAndClasspaths()
+      }
     }
-  }
-
-  private fun isInitialized() = rootProject != null
-
-  private fun checkInit(): Boolean {
-    if (isInitialized()) {
-      return true
-    }
-
-    log.warn("Project is not initialized yet!")
-    return false
   }
 
   fun getProjectDir(): File {
-      return File(getProjectDirPath())
+    return File(getProjectDirPath())
   }
 
   fun getProjectDirPath(): String {
@@ -114,39 +112,61 @@ object ProjectManager {
   }
 
   fun notifyProjectUpdate() {
-    log.debug("Notifying language servers about configuration change...")
-    if (app == null) {
-      log.warn("Cannot find application module. Skipping configuration update...")
-      return
-    }
-
-    // TODO Remove this when Events API has been implemented
-    if (projectUpdateNotificationConsumer != null) {
-      projectUpdateNotificationConsumer!!.run()
-    }
+    val event = ProjectInitializedEvent()
+    event.put(Project::class.java, rootProject)
+    EventBus.getDefault().post(event)
   }
 
-  fun findModuleForFile(file: File): Project? {
+  fun findModuleForFile(file: File): ModuleProject? {
     if (!checkInit()) {
       return null
     }
 
-    val path = file.canonicalPath
-    var longestPath = ""
-    var moduleWithLongestPath: Project? = null
+    return this.rootProject!!.findModuleForFile(file)
+  }
 
-    for (module in rootProject!!.subModules) {
-      val moduleDir = module.projectDir.canonicalPath
-      if (path.startsWith(moduleDir) && longestPath.length < moduleDir.length) {
-        longestPath = moduleDir
-        moduleWithLongestPath = module
+  fun findModuleForFile(file: Path): ModuleProject? {
+    return findModuleForFile(file.toFile())
+  }
+
+  fun containsSourceFile(file: Path): Boolean {
+    if (!checkInit()) {
+      return false
+    }
+
+    for (module in this.rootProject!!.subModules) {
+      if (module !is ModuleProject) {
+        continue
+      }
+
+      val source = module.compileJavaSourceClasses.findSource(file)
+      if (source != null) {
+        return true
       }
     }
 
-    if (longestPath.isEmpty() || moduleWithLongestPath == null) {
-      return null
+    return false
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+  ////// TODO Subscribe to file creation/deletion/rename events and update source map //////
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  private fun isInitialized() = rootProject != null
+
+  private fun checkInit(): Boolean {
+    if (isInitialized()) {
+      return true
     }
 
-    return moduleWithLongestPath
+    log.warn("Project is not initialized yet!")
+    return false
+  }
+
+  // No-op subscriber method
+  @Suppress("unused")
+  @Subscribe(threadMode = MAIN)
+  fun noOp(obj: Event) {
+    throw UnsupportedOperationException("No-op")
   }
 }
