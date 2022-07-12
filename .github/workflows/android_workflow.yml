@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - partial-reparser
   workflow_dispatch: {}
 
 jobs:
