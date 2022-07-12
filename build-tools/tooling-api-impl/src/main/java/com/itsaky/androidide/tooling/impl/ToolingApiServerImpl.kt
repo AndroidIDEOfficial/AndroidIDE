@@ -117,10 +117,12 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         this.forwardingProject.project = this.project
 
         initialized = true
-
+        
+        notifyBuildSuccess(emptyList())
         return@computeAsync InitializeResult(issues)
       } catch (err: Throwable) {
         log.error(err)
+        notifyBuildFailure(emptyList())
       }
 
       return@computeAsync InitializeResult(emptyMap())
