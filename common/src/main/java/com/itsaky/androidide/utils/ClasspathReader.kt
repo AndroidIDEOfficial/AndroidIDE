@@ -28,7 +28,7 @@ import java.util.zip.*
  */
 class ClasspathReader {
   companion object {
-    
+
     @JvmStatic
     fun listClasses(paths: Collection<File>): ImmutableSet<ClassInfo> {
 
@@ -57,7 +57,7 @@ class ClasspathReader {
               name = name.replace('/', '.')
             }
 
-            classes.add(ClassInfo(name))
+            classes.add(ClassInfo.create(name))
           }
         }
       }

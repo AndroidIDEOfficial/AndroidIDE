@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.DEFAULT_VALUE_STRING)
 class ModuleProjectTest {
 
   private val log = ILogger.newInstance(javaClass.simpleName)

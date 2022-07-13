@@ -24,27 +24,49 @@ import androidx.core.text.isDigitsOnly
  *
  * @author Akash Yadav
  */
-data class ClassInfo(val name: String) {
+@Suppress("DataClassPrivateConstructor")
+data class ClassInfo
+private constructor(
+  val name: String,
+  val simpleName: String,
+  val packageName: String,
+  val isTopLevel: Boolean,
+  val isAnonymous: Boolean,
+  val isLocal: Boolean,
+  val isInner: Boolean
+) {
 
-  val isTopLevel: Boolean = name.indexOf('$') == -1
+  companion object {
 
-  val simpleName: String =
-    if (!isTopLevel) {
-      name.substringAfterLast('$')
-    } else if (name.indexOf('.') != -1) {
-      name.substringAfterLast('.')
-    } else {
-      name
+    @JvmStatic
+    fun create(name: String): ClassInfo {
+      val isTopLevel = name.indexOf('$') == -1
+
+      val simpleName =
+        if (!isTopLevel) {
+          name.substringAfterLast('$')
+        } else if (name.indexOf('.') != -1) {
+          name.substringAfterLast('.')
+        } else {
+          name
+        }
+
+      val packageName =
+        if (name.contains('.')) {
+          name.substringBeforeLast('.')
+        } else {
+          name
+        }
+
+      if (name == "com.itsaky.androidide.zipfs.ZipCoder") {
+        println()
+      }
+
+      val isAnonymous = simpleName.isDigitsOnly()
+      val isLocal = simpleName[0].isDigit() && simpleName.contains(Regex("[A-Za-z]"))
+      val isInner = !isTopLevel && !isLocal && !isAnonymous
+
+      return ClassInfo(name, simpleName, packageName, isTopLevel, isAnonymous, isLocal, isInner)
     }
-
-  val packageName: String =
-    if (name.contains('.')) {
-      name.substringBeforeLast('.')
-    } else {
-      name
-    }
-
-  val isAnonymous: Boolean = simpleName.isDigitsOnly()
-  val isLocal: Boolean = simpleName[0].isDigit() && simpleName.contains(Regex("[A-Za-z]"))
-  val isInner: Boolean = !isTopLevel && !isLocal && !isAnonymous
+  }
 }
