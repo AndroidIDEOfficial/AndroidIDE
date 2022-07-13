@@ -164,7 +164,7 @@ abstract class IJavaCompletionProvider(
     item.overrideTypeText = EditHelper.printType(first.returnType)
     val data = data(task, first, overloads.size)
     item.data = data
-  
+
     abortIfCancelled()
     if (addParens) {
       if (overloads.size == 1 && first.parameters.isEmpty()) {
@@ -201,7 +201,7 @@ abstract class IJavaCompletionProvider(
     matchLevel: MatchLevel,
   ): CompletionItem {
     if (element.kind == METHOD) throw RuntimeException("method")
-  
+
     abortIfCancelled()
     val item = CompletionItem()
     item.setLabel(element.simpleName.toString())

@@ -42,7 +42,7 @@ class FindInProjectAction() : EditorActivityAction() {
         markInvisible()
         return
       }
-    
+
     val root = ProjectManager.rootProject
     if (root == null || root.subModules.isEmpty()) {
       markInvisible()

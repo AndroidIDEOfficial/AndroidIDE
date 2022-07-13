@@ -67,7 +67,7 @@ class RemoveClassAction : BaseCodeAction() {
       log.warn("Unable to remove class")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

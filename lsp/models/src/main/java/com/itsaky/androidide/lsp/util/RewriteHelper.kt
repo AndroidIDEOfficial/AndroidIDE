@@ -30,7 +30,7 @@ class RewriteHelper {
       if (edits.isEmpty()) {
         return
       }
-      
+
       edits.forEach {
         val s = it.range.start
         val e = it.range.end

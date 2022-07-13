@@ -67,7 +67,7 @@ class MemberReferenceCompletionProvider(
     val element = trees.getElement(exprPath)
     val isStatic = element is TypeElement
     val scope = trees.getScope(exprPath)
-    
+
     abortIfCancelled()
     return when (val type = trees.getTypeMirror(exprPath)) {
       is ArrayType -> completeArrayMemberReference(isStatic, partial)
@@ -158,7 +158,7 @@ class MemberReferenceCompletionProvider(
         list.add(item(task, member, matchLevel))
       }
     }
-  
+
     abortIfCancelled()
     for ((key, value) in methods) {
       val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)

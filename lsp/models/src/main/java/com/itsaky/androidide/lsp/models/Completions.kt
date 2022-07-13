@@ -206,7 +206,7 @@ open class CompletionItem(
 
     val start = getIdentifierStart(text.getLine(line), column)
     val shift = insertText.contains("$0")
-    
+
     text.delete(line, start, line, column)
 
     if (text.contains("\n")) {
@@ -234,7 +234,7 @@ open class CompletionItem(
         editor.text.delete(l, c, l, c + 2)
       }
     }
-  
+
     text.beginBatchEdit()
     if (additionalEditHandler != null) {
       additionalEditHandler!!.performEdits(editor, this)

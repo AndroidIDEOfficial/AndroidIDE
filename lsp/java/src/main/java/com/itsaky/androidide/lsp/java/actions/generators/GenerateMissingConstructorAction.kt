@@ -67,7 +67,7 @@ class GenerateMissingConstructorAction : BaseCodeAction() {
       log.warn("Unable to generate constructor")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

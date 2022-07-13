@@ -53,7 +53,7 @@ class ClassNamesCompletionProvider(
     val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
     val packageName = Objects.toString(root.packageName, "")
     val uniques: MutableSet<String> = HashSet()
-  
+
     val file: Path = Paths.get(root.sourceFile.toUri())
     val imports: Set<String> =
       root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
