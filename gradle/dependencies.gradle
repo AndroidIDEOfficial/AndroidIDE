@@ -1,4 +1,8 @@
 ext {
+    agp_version = '7.2.1'
+    kotlin_version = '1.7.0'
+    google_java_format_version = '1.15.0'
+    
     androidide = [
             javac: 'io.github.itsaky:nb-javac-android:17.0.0.3-SNAPSHOT'
     ]
@@ -8,6 +12,7 @@ ext {
             utilcode   : 'com.blankj:utilcodex:1.30.6',
             file_picker: 'com.github.abhishekti7:UnicornFilePicker:1.0.2',
             glide      : 'com.github.bumptech.glide:glide:4.12.0',
+            glide_ap   : 'com.github.bumptech.glide:compiler:4.13.1',
             quickaction: 'com.github.piruin:quickaction:2.4.3',
             bll        : 'com.github.Rosemoe:BlockLinkedList:1.0.0',
             xml2json   : 'com.github.smart-fun:XmlToJson:1.5.1',
@@ -34,14 +39,26 @@ ext {
             vectors          : 'androidx.vectordrawable:vectordrawable:1.1.0',
             animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
             multidex         : 'androidx.multidex:multidex:2.0.1',
-            ktx              : 'androidx.core:core-ktx:1.8.0'
+            ktx              : 'androidx.core:core-ktx:1.8.0',
+            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.1.5'
     ]
     
     google = [
-            material : 'com.google.android.material:material:1.5.0',
-            gson     : 'com.google.code.gson:gson:2.8.8',
-            guava    : 'com.google.guava:guava:31.0.1-android',
-            guava_jre: 'com.google.guava:guava:31.0.1-jre'
+            material            : 'com.google.android.material:material:1.5.0',
+            gson                : 'com.google.code.gson:gson:2.8.9',
+            guava               : 'com.google.guava:guava:31.1-android',
+            guava_jre           : 'com.google.guava:guava:31.1-jre',
+            auto_val_annotations: 'com.google.auto.value:auto-value-annotations:1.9',
+            auto_val_ap         : 'com.google.auto.value:auto-value:1.9'
+    ]
+    
+    xml = [
+            xercesImpl: 'xerces:xercesImpl:2.12.2',
+            apis      : 'xml-apis:xml-apis:1.4.01',
+            remark    : 'com.kotcrab.remark:remark:1.0.0',
+            resolver  : 'xml-resolver:xml-resolver:1.2',
+            lsp4j: 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0',
+            jb_annotations: 'org.jetbrains:annotations:23.0.0'
     ]
     
     tests = [

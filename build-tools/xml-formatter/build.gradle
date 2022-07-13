@@ -26,5 +26,5 @@ java {
 
 dependencies {
     implementation google.guava_jre
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation xml.jb_annotations
 }

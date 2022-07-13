@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    ext.kotlin_version = '1.7.0'
+    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
     
     project.ext {
         compileSdk = 31
@@ -36,14 +36,14 @@ buildscript {
     }
     
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath "com.android.tools.build:gradle:$agp_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.googlejavaformat:google-java-format:1.15.0'
+        classpath "com.google.googlejavaformat:google-java-format:$google_java_format_version"
     }
 }
 
 subprojects {
-    apply from: "${rootDir}/gradle/dependencies.gradle"
+    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
     
     project.afterEvaluate {
         tasks.register ("checkTranslations", task -> {
