@@ -325,4 +325,8 @@
     <string name="idepref_visiblePassword_summary">Quando ativado, nenhuma dica de senha será mostrada pelo teclado.</string>
     <string name="previous">Anterior</string>
     <string name="msg_replacing">Substituindo…</string>
+    <string name="build_status_idle">Nenhuma compilação em andamento</string>
+    <string name="build_status_in_progress">Compilação em andamento…</string>
+    <string name="build_status_failed">Falha na construção. Consulte a saída da compilação para obter mais detalhes.</string>
+    <string name="build_status_sucess">Construido com sucesso</string>
 </resources>
