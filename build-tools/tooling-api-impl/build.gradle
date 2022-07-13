@@ -68,7 +68,7 @@ dependencies {
     implementation project (path: ':build-tools:tooling-api')
     
     implementation common.jkotlin
-    implementation 'org.gradle:gradle-tooling-api:7.5-rc-3'
+    implementation 'org.gradle:gradle-tooling-api:7.5-rc-5'
     
     testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
