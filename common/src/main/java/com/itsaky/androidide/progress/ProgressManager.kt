@@ -24,21 +24,21 @@ import java.util.WeakHashMap
  * @author Akash Yadav
  */
 class ProgressManager {
-  
+
   private val threads = WeakHashMap<Thread, ICancelChecker>()
-  
+
   companion object {
-    
+
     val instance by lazy {
       ProgressManager()
     }
-    
+
     @JvmStatic
     fun abortIfCancelled() {
       instance.abortIfCancelled()
     }
   }
-  
+
   fun cancel(thread: Thread) {
     var checker = threads[thread]
     if (checker == null) {
@@ -47,7 +47,7 @@ class ProgressManager {
     checker.cancel()
     threads[thread] = checker
   }
-  
+
   @JvmName("internalAbortIfCancelled")
   private fun abortIfCancelled() {
     val checker = threads[Thread.currentThread()]

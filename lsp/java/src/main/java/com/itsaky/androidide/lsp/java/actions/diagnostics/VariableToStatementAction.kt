@@ -75,7 +75,7 @@ class VariableToStatementAction : BaseCodeAction() {
       log.warn("Unable to convert variable to statement")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

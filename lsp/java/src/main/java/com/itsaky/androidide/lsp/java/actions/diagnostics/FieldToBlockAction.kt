@@ -72,7 +72,7 @@ class FieldToBlockAction : BaseCodeAction() {
       log.warn("Unable to convert field to block")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

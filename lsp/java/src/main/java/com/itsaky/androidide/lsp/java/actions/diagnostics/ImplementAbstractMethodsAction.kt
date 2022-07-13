@@ -79,7 +79,7 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
       log.warn("Unable to perform action. Invalid result from execAction(..)")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

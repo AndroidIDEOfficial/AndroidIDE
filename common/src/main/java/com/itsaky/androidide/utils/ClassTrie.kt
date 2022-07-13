@@ -184,7 +184,7 @@ open class ClassTrie(val root: Node = Node()) {
       node.children.forEach { print(it.value, indent + 2) }
     }
   }
-  
+
   open fun segments(name: String): List<String> {
     return if (name.contains('.')) {
       name.split(".")

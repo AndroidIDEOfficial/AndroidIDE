@@ -101,7 +101,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
             )
           )
         }
-        
+
         notifyBeforeBuild()
 
         val connection = this.connector!!.connect()
@@ -117,7 +117,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         this.forwardingProject.project = this.project
 
         initialized = true
-        
+
         notifyBuildSuccess(emptyList())
         return@computeAsync InitializeResult(issues)
       } catch (err: Throwable) {

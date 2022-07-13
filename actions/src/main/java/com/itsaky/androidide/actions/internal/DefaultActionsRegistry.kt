@@ -102,19 +102,19 @@ class DefaultActionsRegistry : ActionsRegistry() {
     val item: MenuItem =
       if (action is ActionMenu) {
         val sub = menu.addSubMenu(action.label)
-        
+
         var shouldBeEnabled = false
         for (subItem in action.children) {
           subItem.prepare(data)
           if (subItem.visible) {
             addActionToMenu(sub, subItem, data)
           }
-          
+
           if (action.enabled && subItem.enabled && !shouldBeEnabled) {
             shouldBeEnabled = true
           }
         }
-        
+
         action.enabled = shouldBeEnabled
         sub.item
       } else {

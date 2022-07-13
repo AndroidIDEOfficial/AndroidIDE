@@ -74,7 +74,7 @@ class RemoveUnusedThrowsAction : BaseCodeAction() {
       log.warn("Unable to remove unused throws")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

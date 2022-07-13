@@ -66,7 +66,7 @@ class CreateMissingMethodAction : BaseCodeAction() {
       log.warn("Unable to create missing method")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }

@@ -72,7 +72,7 @@ class RemoveMethodAction : BaseCodeAction() {
       log.warn("Unable to remove method")
       return
     }
-  
+
     performCodeAction(data, result)
   }
 }
