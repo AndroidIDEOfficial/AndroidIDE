@@ -25,8 +25,6 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.progress.ProgressManager.Companion
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.utils.BootClasspathProvider
@@ -63,7 +61,7 @@ class ImportCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings,
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   lateinit var importPath: String
 
@@ -97,7 +95,7 @@ class ImportCompletionProvider(
       incomplete = pkgName.substringAfterLast(delimiter = '.')
       pkgName = pkgName.substringBeforeLast(delimiter = '.')
     }
-  
+
     abortIfCancelled()
     run {
       val match = matchLevel("static", incomplete)
@@ -105,7 +103,7 @@ class ImportCompletionProvider(
         list.add(keyword("static", incomplete, match))
       }
     }
-  
+
     abortIfCancelled()
     val module = compiler.module
     if (module == null) {
@@ -173,7 +171,7 @@ class ImportCompletionProvider(
       }
       maybeInnerName.setCharAt(maybeInnerName.lastIndexOf('.'), '$')
     }
-  
+
     abortIfCancelled()
     if (typesForPkg.isNotEmpty()) {
       // We found a valid class name
@@ -204,13 +202,13 @@ class ImportCompletionProvider(
     if (fromSource != null) {
       result.add(fromSource)
     }
-  
+
     abortIfCancelled()
     val fromClasspath = collectPackageNode(module.compileClasspathClasses, pkgName)
     if (fromClasspath != null) {
       result.add(fromClasspath)
     }
-    
+
     BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
       val fromBootclasspath = collectPackageNode(it, pkgName)
@@ -257,9 +255,9 @@ class ImportCompletionProvider(
     path: TreePath,
     incomplete: String
   ): MutableList<CompletionItem> {
-  
+
     abortIfCancelled()
-    
+
     val list = mutableListOf<CompletionItem>()
     val elements = task.task.elements
     val trees = JavacTrees.instance(task.task.context)
@@ -336,7 +334,7 @@ class ImportCompletionProvider(
 
       addDirectChildNodes(sourceNode, incomplete, list, names, packageOnly)
     }
-  
+
     abortIfCancelled()
     val classpathNode =
       if (pkgName.isEmpty()) module.compileClasspathClasses.root

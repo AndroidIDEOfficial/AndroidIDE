@@ -26,6 +26,12 @@ android {
             minifyEnabled true
         }
     }
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -46,4 +52,8 @@ dependencies {
     api androidx.multidex
     
     api project (path: ':build-tools:logger')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
 }

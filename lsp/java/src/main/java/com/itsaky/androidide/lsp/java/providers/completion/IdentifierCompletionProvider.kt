@@ -32,7 +32,7 @@ class IdentifierCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   override fun doComplete(
     task: CompileTask,
@@ -44,14 +44,14 @@ class IdentifierCompletionProvider(
 
     abortIfCancelled()
     val scopeMembers =
-      ScopeCompletionProvider(completingFile, cursor, compiler, settings)
+      ScopeCompletionProvider(file, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
     list.addAll(scopeMembers.items)
 
     abortIfCancelled()
     val staticImports =
       StaticImportCompletionProvider(
-          completingFile,
+          file,
           cursor,
           compiler,
           settings,
@@ -66,7 +66,7 @@ class IdentifierCompletionProvider(
         abortIfCancelled()
         val classNames =
           ClassNamesCompletionProvider(
-              completingFile,
+              file,
               cursor,
               compiler,
               settings,
@@ -79,7 +79,7 @@ class IdentifierCompletionProvider(
 
     abortIfCancelled()
     val keywords =
-      KeywordCompletionProvider(completingFile, cursor, compiler, settings)
+      KeywordCompletionProvider(file, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
     list.addAll(keywords.items)
 

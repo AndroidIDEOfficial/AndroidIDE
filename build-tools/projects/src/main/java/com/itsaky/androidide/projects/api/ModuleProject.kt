@@ -112,7 +112,7 @@ abstract class ModuleProject(
 
     log.debug("Sources indexed for project: '$path'. Found $count source files.")
 
-    val paths = getCompileClasspaths().filter { it.exists() }.map { it.toPath() }
+    val paths = getCompileClasspaths().filter { it.exists() }
     val topLevelClasses = ClasspathReader.listClasses(paths).filter { it.isTopLevel }
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
     log.debug("Classpaths indexed for project: '$path'. Found ${topLevelClasses.size} classpaths.")

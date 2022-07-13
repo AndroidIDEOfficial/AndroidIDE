@@ -42,7 +42,7 @@ class SwitchConstantCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings,
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   override fun doComplete(
     task: CompileTask,
@@ -100,7 +100,7 @@ class SwitchConstantCompletionProvider(
     endsWithParen: Boolean
   ): CompletionResult {
     abortIfCancelled()
-    return IdentifierCompletionProvider(completingFile, cursor, compiler, settings)
+    return IdentifierCompletionProvider(file, cursor, compiler, settings)
       .complete(task, path, partial, endsWithParen)
   }
 }

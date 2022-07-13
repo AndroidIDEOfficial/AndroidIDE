@@ -41,7 +41,7 @@ class KeywordCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   override fun doComplete(
     task: CompileTask,

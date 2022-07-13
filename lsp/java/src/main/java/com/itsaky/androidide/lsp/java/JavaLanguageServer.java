@@ -70,14 +70,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer {
 
-  private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
   public static final String SERVER_ID = "java";
-  private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
+  private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
   private final CompletionProvider completionProvider;
   private final JavaDiagnosticProvider diagnosticProvider;
   private ILanguageClient client;
   private IServerSettings settings;
   private Path selectedFile;
+  private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
   private CachedCompletion cachedCompletion;
 
   public JavaLanguageServer() {
@@ -88,45 +88,12 @@ public class JavaLanguageServer implements ILanguageServer {
     applySettings(getSettings());
   }
 
-  private void analyzeSelected() {
-    if (this.selectedFile == null) {
-      return;
-    }
-
-    CompletableFuture.supplyAsync(() -> analyze(selectedFile))
-        .whenComplete(
-            ((diagnostics, throwable) -> {
-              if (client != null) {
-                client.publishDiagnostics(diagnostics);
-              }
-            }));
-  }
-
   public IServerSettings getSettings() {
     if (settings == null) {
       settings = JavaServerSettings.getInstance();
     }
 
     return settings;
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public JavaCompilerService getCompiler(Path file) {
-    if (!DocumentUtils.isJavaFile(file)) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    final Project root = ProjectManager.INSTANCE.getRootProject();
-    if (root == null) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    final ModuleProject module = root.findModuleForFile(file);
-    if (module == null) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    return JavaCompilerProvider.get(module);
   }
 
   @Override
@@ -204,7 +171,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return new DefinitionResult(Collections.emptyList());
     }
 
-    return new DefinitionProvider(compiler).findDefinition(params);
+    return new DefinitionProvider(compiler, getSettings()).findDefinition(params);
   }
 
   @NonNull
@@ -240,15 +207,29 @@ public class JavaLanguageServer implements ILanguageServer {
     return this.diagnosticProvider.analyze(compiler, file);
   }
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public JavaCompilerService getCompiler(Path file) {
+    if (!DocumentUtils.isJavaFile(file)) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    final Project root = ProjectManager.INSTANCE.getRootProject();
+    if (root == null) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    final ModuleProject module = root.findModuleForFile(file);
+    if (module == null) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    return JavaCompilerProvider.get(module);
+  }
+
   @NonNull
   @Override
   public CharSequence formatCode(FormatCodeParams params) {
     return new CodeFormatProvider(getSettings()).format(params);
-  }
-
-  private void updateCachedCompletion(CachedCompletion cachedCompletion) {
-    Objects.requireNonNull(cachedCompletion);
-    this.cachedCompletion = cachedCompletion;
   }
 
   @Override
@@ -265,6 +246,11 @@ public class JavaLanguageServer implements ILanguageServer {
     }
 
     return false;
+  }
+
+  private void updateCachedCompletion(CachedCompletion cachedCompletion) {
+    Objects.requireNonNull(cachedCompletion);
+    this.cachedCompletion = cachedCompletion;
   }
 
   @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -284,17 +270,31 @@ public class JavaLanguageServer implements ILanguageServer {
     startOrRestartAnalyzeTimer();
   }
 
-  @Subscribe(threadMode = ThreadMode.ASYNC)
-  @SuppressWarnings("unused")
-  public void onFileSelected(@NonNull DocumentSelectedEvent event) {
-    this.selectedFile = event.getSelectedFile();
-  }
-
   private void startOrRestartAnalyzeTimer() {
     if (!this.timer.isStarted()) {
       this.timer.start();
     } else {
       this.timer.restart();
     }
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileSelected(@NonNull DocumentSelectedEvent event) {
+    this.selectedFile = event.getSelectedFile();
+  }
+
+  private void analyzeSelected() {
+    if (this.selectedFile == null) {
+      return;
+    }
+
+    CompletableFuture.supplyAsync(() -> analyze(selectedFile))
+        .whenComplete(
+            ((diagnostics, throwable) -> {
+              if (client != null) {
+                client.publishDiagnostics(diagnostics);
+              }
+            }));
   }
 }

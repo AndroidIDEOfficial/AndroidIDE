@@ -27,7 +27,7 @@ interface ICancelChecker {
   fun isCancelled(): Boolean
 
   companion object {
-    
+
     internal class Default(private var cancelled: Boolean = false) : ICancelChecker {
 
       override fun cancel() {

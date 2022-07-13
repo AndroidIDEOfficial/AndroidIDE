@@ -20,29 +20,27 @@ package com.itsaky.androidide.lsp.java.compiler;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
-import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.projects.FileManager;
-import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.AndroidModule;
-import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.BootClasspathProvider;
-import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
+import com.sun.tools.javac.api.ClientCodeWrapper;
 import com.sun.tools.javac.api.JavacTaskImpl;
+import com.sun.tools.javac.code.Kinds;
+import com.sun.tools.javac.util.JCDiagnostic;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -53,27 +51,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
-  private static final ILogger LOG = ILogger.newInstance("CompileBatch");
-  private static final Path FILE_NOT_FOUND = Paths.get("");
-  final JavaCompilerService parent;
-  final ReusableCompiler.Borrow borrow;
-  final JavacTaskImpl task;
-  final List<CompilationUnitTree> roots;
-  final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
-  DiagnosticListenerImpl diagnosticListener;
+  protected final JavaCompilerService parent;
+  protected final ReusableCompiler.Borrow borrow;
+  protected final JavacTaskImpl task;
+  protected final List<CompilationUnitTree> roots;
+  protected final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
+  protected DiagnosticListenerImpl diagnosticListener;
+
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
@@ -151,7 +146,6 @@ public class CompileBatch implements AutoCloseable {
     }
 
     Collections.addAll(list, "-source", "11", "-target", "11");
-    //    Collections.addAll(list, "--system", Environment.COMPILER_MODULE.getAbsolutePath());
     Collections.addAll(list, "-proc:none");
     Collections.addAll(list, "-g");
 
@@ -204,27 +198,16 @@ public class CompileBatch implements AutoCloseable {
     closed = true;
   }
 
-  @Nullable
-  CompilationUnitTree compilationUnitFor(Path file) {
-    if (this.roots == null || this.roots.isEmpty()) {
-      return null;
-    }
-
-    for (final CompilationUnitTree root : this.roots) {
-      final Path cuFile = Paths.get(root.getSourceFile().toUri());
-      if (DocumentUtils.isSameFile(cuFile, file)) {
-        return root;
-      }
-    }
-
-    return null;
-  }
-
   /**
    * If the compilation failed because javac didn't find some package-private files in source files
    * with different names, list those source files.
    */
   Set<Path> needsAdditionalSources() {
+
+    if (parent.getModule() == null) {
+      return Collections.emptySet();
+    }
+
     // Check for "class not found errors" that refer to package private classes
     Set<Path> addFiles = new HashSet<>();
     for (Diagnostic<? extends JavaFileObject> err : parent.diagnostics) {
@@ -234,80 +217,30 @@ public class CompileBatch implements AutoCloseable {
       if (!isValidFileRange(err)) {
         continue;
       }
-      String className = errorText(err);
+
       String packageName = packageName(err);
-      Path location = findPackagePrivateClass(packageName, className);
-      if (location != FILE_NOT_FOUND) {
-        addFiles.add(location);
+      ClassTrie.Node node = parent.getModule().compileJavaSourceClasses.findNode(packageName);
+      if (node != null && node.isClass() && node instanceof SourceClassTrie.SourceNode) {
+        addFiles.add(((SourceClassTrie.SourceNode) node).getFile());
       }
     }
     return addFiles;
   }
 
-  private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-    Path file = Paths.get(err.getSource().toUri());
-    CharSequence contents = FileManager.INSTANCE.getDocumentContents(file);
-    int begin = (int) err.getStartPosition();
-    int end = (int) err.getEndPosition();
-    return substring(contents, begin, end);
-  }
-
-  private String substring(CharSequence source, int start, int end) {
-    final StringBuilder sb = new StringBuilder();
-    if (source == null) {
-      return sb.toString();
-    }
-
-    if (start > end || start < 0 || end >= source.length()) {
-      throw new IndexOutOfBoundsException(
-          String.format(Locale.ROOT, "length=%d, start=%d, end=%d", source.length(), start, end));
-    }
-
-    if (source instanceof String) {
-      return ((String) source).substring(start, end);
-    }
-
-    for (int i = start; i < end; i++) {
-      sb.append(source.charAt(i));
-    }
-
-    return sb.toString();
-  }
-
   private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-    Path file = Paths.get(err.getSource().toUri());
-    ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(file);
-    if (module == null) {
-      return "";
-    }
-
-    SourceClassTrie.SourceNode node = module.compileJavaSourceClasses.findSource(file);
-    if (node == null) {
-      return "";
-    }
-
-    return node.getPackageName();
-  }
-
-  private Path findPackagePrivateClass(String packageName, String className) {
-    final List<SourceClassTrie.SourceNode> classes =
-        parent.module != null
-            ? parent.module.listClassesFromSourceDirs(packageName)
-            : Collections.emptyList();
-    if (classes.isEmpty()) {
-      return FILE_NOT_FOUND;
-    }
-
-    for (SourceClassTrie.SourceNode node : classes) {
-      final Path file = node.getFile();
-      Parser parse = Parser.parseFile(file);
-      for (Name candidate : parse.packagePrivateClasses()) {
-        if (candidate.contentEquals(className)) {
-          return file;
+    if (err instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
+      JCDiagnostic diagnostic = ((ClientCodeWrapper.DiagnosticSourceUnwrapper) err).d;
+      JCDiagnostic.DiagnosticPosition pos = diagnostic.getDiagnosticPosition();
+      Object[] args = diagnostic.getArgs();
+      Kinds.KindName kind = (Kinds.KindName) args[0];
+      if (kind == Kinds.KindName.CLASS) {
+        if (pos.toString().contains(".")) {
+          return pos.toString().substring(0, pos.toString().lastIndexOf('.'));
         }
       }
     }
-    return FILE_NOT_FOUND;
+    Path file = Paths.get(err.getSource().toUri());
+    return StringSearch.packageName(file);
   }
 
   private boolean isValidFileRange(javax.tools.Diagnostic<? extends JavaFileObject> d) {

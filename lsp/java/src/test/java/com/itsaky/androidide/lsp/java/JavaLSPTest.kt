@@ -52,11 +52,11 @@ open class JavaLSPTest : LSPTest() {
   }
 
   override fun getServerId() = JavaLanguageServer.SERVER_ID
-  
+
   protected fun getCompiler() : JavaCompilerService {
     return JavaCompilerProvider.get(ProjectManager.app)
   }
-  
+
   @Test
   override fun test() {
     AddImportTester().test()

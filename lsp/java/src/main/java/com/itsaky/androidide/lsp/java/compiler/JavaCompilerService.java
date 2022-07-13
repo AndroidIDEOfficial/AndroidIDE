@@ -34,7 +34,6 @@ import com.itsaky.androidide.lsp.java.utils.Extractors;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.FileManager;
-import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.BootClasspathProvider;
@@ -74,12 +73,10 @@ import javax.tools.StandardLocation;
 
 public class JavaCompilerService implements CompilerProvider {
 
-  public static JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
-
   private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
-
+  public static JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
   protected final Set<Path> classPath;
   protected final Set<String> classPathClasses;
   protected final Set<String> bootClasspathClasses =
@@ -115,45 +112,6 @@ public class JavaCompilerService implements CompilerProvider {
 
   public ModuleProject getModule() {
     return module;
-  }
-
-  private List<String> readImports(Path file) {
-    if (cacheFileImports.needs(file, null)) {
-      loadImports(file);
-    }
-    return cacheFileImports.get(file, null);
-  }
-
-  private String packageNameOrEmpty(Path file) {
-    return module != null ? module.packageNameOrEmpty(file) : "";
-  }
-
-  private void loadImports(Path file) {
-    List<String> list = new ArrayList<>();
-    Pattern importClass = Pattern.compile("^import +([\\w.]+\\.\\w+);");
-    Pattern importStar = Pattern.compile("^import +([\\w.]+\\.\\*);");
-    try (BufferedReader lines = FileManager.INSTANCE.getReader(file)) {
-      for (String line = lines.readLine(); line != null; line = lines.readLine()) {
-        // If we reach a class declaration, stop looking for imports
-        // TODO This could be a little more specific
-        if (line.contains("class")) {
-          break;
-        }
-        // import foo.bar.Doh;
-        Matcher matchesClass = importClass.matcher(line);
-        if (matchesClass.matches()) {
-          list.add(matchesClass.group(1));
-        }
-        // import foo.bar.*
-        Matcher matchesStar = importStar.matcher(line);
-        if (matchesStar.matches()) {
-          list.add(matchesStar.group(1));
-        }
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    cacheFileImports.load(file, null, list);
   }
 
   @Override
@@ -255,52 +213,6 @@ public class JavaCompilerService implements CompilerProvider {
     return compileBatch(request);
   }
 
-  public synchronized void close() {
-    if (cachedCompile != null) {
-      cachedCompile.close();
-      cachedCompile.borrow.close();
-    }
-  }
-
-  public void destroy() {
-    synchronizedTask.post(
-        () -> {
-          close();
-          cachedCompile = null;
-          cachedModified.clear();
-          compiler = new ReusableCompiler();
-        });
-  }
-
-  public SynchronizedTask getSynchronizedTask() {
-    return synchronizedTask;
-  }
-
-  public void onDocumentChange(@NonNull DocumentChangeEvent event) {
-    this.changeDelta += event.getChangeDelta();
-  }
-
-  private boolean containsWord(Path file, String word) {
-    if (cacheContainsWord.needs(file, word)) {
-      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
-    }
-    return cacheContainsWord.get(file, word);
-  }
-
-  private boolean containsImport(Path file, String className) {
-    String packageName = Extractors.packageName(className);
-    if (packageNameOrEmpty(file).equals(packageName)) {
-      return true;
-    }
-    String star = packageName + ".*";
-    for (String i : readImports(file)) {
-      if (i.equals(className) || i.equals(star)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private SynchronizedTask compileBatch(CompilationRequest request) {
     synchronizedTask.post(
         () -> {
@@ -387,10 +299,8 @@ public class JavaCompilerService implements CompilerProvider {
     final int start = (int) sourcePositions.getStartPosition(info.cu, methodTree.getBody());
     final int end =
         (int) sourcePositions.getEndPosition(info.cu, methodTree.getBody()) + this.changeDelta;
-    watch.lapFromLast("Found start and end positions of current method");
-    final PartialReparser reparser = new PartialReparserImpl();
 
-    if (end < 0 || end > partialRequest.contents.length()) {
+    if (start < 0 || end < 0 || start > end || end >= partialRequest.contents.length()) {
       LOG.warn(
           "Cannot reparse. Invalid change delta. end:",
           end,
@@ -401,6 +311,9 @@ public class JavaCompilerService implements CompilerProvider {
       recompile(request);
       return;
     }
+
+    watch.lapFromLast("Found start and end positions of current method");
+    final PartialReparser reparser = new PartialReparserImpl();
 
     final String newBody = partialRequest.contents.substring(start, end);
     final boolean reparsed =
@@ -441,32 +354,18 @@ public class JavaCompilerService implements CompilerProvider {
     return null;
   }
 
-  @Nullable
-  private Pair<Range, TreePath> binarySearchMethodForRange(
-      final List<Pair<Range, TreePath>> methods, final Range range) {
-    int left = 0;
-    int right = methods.size() - 1;
-    while (left <= right) {
-      final int mid = (left + right) / 2;
-      final Pair<Range, TreePath> method = methods.get(mid);
-      final int compareResult = method.first.containsForBinarySearch(range.getStart());
-      if (compareResult == 0) {
-        return method;
-      }
-
-      if (compareResult < 0) {
-        right = mid - 1;
-      } else {
-        left = mid + 1;
-      }
-    }
-    return null;
-  }
-
   private synchronized void recompile(CompilationRequest request) {
     close();
     cachedCompile = performCompilation(request.sources);
     updateModificationCache(request);
+    this.changeDelta = 0;
+  }
+
+  public synchronized void close() {
+    if (cachedCompile != null) {
+      cachedCompile.close();
+      cachedCompile.borrow.close();
+    }
   }
 
   private void updateModificationCache(final CompilationRequest request) {
@@ -499,6 +398,106 @@ public class JavaCompilerService implements CompilerProvider {
     }
 
     return new CompileBatch(this, moreSources);
+  }
+
+  private boolean containsWord(Path file, String word) {
+    if (cacheContainsWord.needs(file, word)) {
+      cacheContainsWord.load(file, word, StringSearch.containsWord(file, word));
+    }
+    return cacheContainsWord.get(file, word);
+  }
+
+  private boolean containsImport(Path file, String className) {
+    String packageName = Extractors.packageName(className);
+    if (packageNameOrEmpty(file).equals(packageName)) {
+      return true;
+    }
+    String star = packageName + ".*";
+    for (String i : readImports(file)) {
+      if (i.equals(className) || i.equals(star)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private List<String> readImports(Path file) {
+    if (cacheFileImports.needs(file, null)) {
+      loadImports(file);
+    }
+    return cacheFileImports.get(file, null);
+  }
+
+  private void loadImports(Path file) {
+    List<String> list = new ArrayList<>();
+    Pattern importClass = Pattern.compile("^import +([\\w.]+\\.\\w+);");
+    Pattern importStar = Pattern.compile("^import +([\\w.]+\\.\\*);");
+    try (BufferedReader lines = FileManager.INSTANCE.getReader(file)) {
+      for (String line = lines.readLine(); line != null; line = lines.readLine()) {
+        // If we reach a class declaration, stop looking for imports
+        // TODO This could be a little more specific
+        if (line.contains("class")) {
+          break;
+        }
+        // import foo.bar.Doh;
+        Matcher matchesClass = importClass.matcher(line);
+        if (matchesClass.matches()) {
+          list.add(matchesClass.group(1));
+        }
+        // import foo.bar.*
+        Matcher matchesStar = importStar.matcher(line);
+        if (matchesStar.matches()) {
+          list.add(matchesStar.group(1));
+        }
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    cacheFileImports.load(file, null, list);
+  }
+
+  private String packageNameOrEmpty(Path file) {
+    return module != null ? module.packageNameOrEmpty(file) : "";
+  }
+
+  public void destroy() {
+    synchronizedTask.post(
+        () -> {
+          close();
+          cachedCompile = null;
+          cachedModified.clear();
+          compiler = new ReusableCompiler();
+        });
+  }
+
+  public SynchronizedTask getSynchronizedTask() {
+    return synchronizedTask;
+  }
+
+  public void onDocumentChange(@NonNull DocumentChangeEvent event) {
+    this.changeDelta += event.getChangeDelta();
+  }
+
+  @Nullable
+  private Pair<Range, TreePath> binarySearchMethodForRange(
+      final List<Pair<Range, TreePath>> methods, final Range range) {
+    int left = 0;
+    int right = methods.size() - 1;
+    while (left <= right) {
+      final int mid = (left + right) / 2;
+      final Pair<Range, TreePath> method = methods.get(mid);
+      final int compareResult = method.first.containsForBinarySearch(range.getStart());
+      if (compareResult == 0) {
+        return method;
+      }
+
+      if (compareResult < 0) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return null;
   }
 
   private boolean containsType(Path file, String className) {
