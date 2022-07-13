@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
+    apply from: "${project.rootProject.rootDir}/dependencies.gradle"
     
     project.ext {
         compileSdk = 31
@@ -43,7 +43,7 @@ buildscript {
 }
 
 subprojects {
-    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
+    apply from: "${project.rootProject.rootDir}/dependencies.gradle"
     
     project.afterEvaluate {
         tasks.register ("checkTranslations", task -> {
