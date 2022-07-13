@@ -86,7 +86,7 @@ android {
 dependencies {
     
     // Annotation processors
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.1'
+    annotationProcessor common.glide_ap
     
     implementation common.editor
     implementation common.utilcode
@@ -136,7 +136,7 @@ dependencies {
     
     implementation fileTree (dir: 'libs', include: ['*.jar'])
     
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring androidx.lib_desugaring
     
     // This is to build the tooling-api-impl project before the app is built
     // So we always copy the latest JAR file to assets
