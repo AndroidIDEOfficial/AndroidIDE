@@ -14,6 +14,7 @@
   <img alt="Minimum required Android version" src="https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252" alt="Minimum SDK"/>
   <img alt="Size of AndroidIDE repo" src="https://img.shields.io/github/repo-size/itsaky/androidide">
   <img alt="CI Build Status" src="https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg"/>
+  <a href="https://www.codefactor.io/repository/github/itsaky/androidide/overview/main"><img src="https://www.codefactor.io/repository/github/itsaky/androidide/badge/main" alt="CodeFactor Rating" /></a>
   <a href="./LICENSE"><img alt="GPL v3 License" src="https://img.shields.io/badge/License-GPLv3-blue.svg"/></a>
   <a alt="Join us on Telegram" href="https://t.me/androidide_discussions"><img src="https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white"/></a>
 </p><br>
