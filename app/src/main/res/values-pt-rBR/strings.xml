@@ -105,6 +105,10 @@
     <string name="template_navigation_drawer">Projeto navigation drawer</string>
     <string name="template_libgdx">Jogo LibGDX</string>
     <string name="template_description_libgdx">Projeto de jogo LibGDX configurado para renderizar uma imagem como exemplo.</string>
+    <string name="template_login_activity">Projeto Tela de login</string>
+    <string name="template_login_description">Um projeto básico que contem uma tela de Login pré-construido</string>
+    <string name="template_cpp">C++ Nativo</string>
+    <string name="template_cpp_description">Cria um novo projeto com uma atividade vazia configurada para usar JNI</string>
 
     <!-- Files -->
     <string name="save">Salvar</string>
@@ -269,15 +273,38 @@
     <string name="idepref_editor_category_common">Comum</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Arquivos não salvos</string>
+    <string name="title_cancel_build">Cancelar Compilação</string>
+    <string name="title_sync_project">Sincronizar projeto</string>
     <string name="msg_files_unsaved">Alguns arquivos não foram salvos.  Gostaria de salvá-los antes de fechar?  Os arquivos não salvos são: \n%s</string>
     <string name="idepref_editor_autoSave_title">Salvar antes de fechar os arquivos</string>
     <string name="idepref_editor_autoSave_summary">Salve os arquivos antes de fechá-los. Este é um recurso EXPERIMENTAL. Ele espera que você mesmo salve os arquivos.</string>
     <string name="idepref_java_matchLower_summary">Se ativado, a digitação em letras minúsculas sugerirá classes e variáveis.</string>
     <string name="idepref_editor_ligatures_title">Ligaduras de fonte</string>
+    <string name="idepref_title_customGradleInstallation">Instalação personalizada do Gradle</string>
+    <string name="idepref_msg_customGradleInstallation">Especifique uma instalação personalizada do Gradle a ser usada para compilação. Isso SUBSTITUI a versão especificada em gradle-wrapper.properties.</string>
     <string name="idepref_editor_ligatures_summary">Ativar/desativar ligaduras de fonte</string>
+    <string name="title_gradle_service_notification_ticker">Serviço de compilação Gradle iniciado</string>
+    <string name="title_gradle_service_notification">Serviço de compilação Gradle</string>
+    <string name="msg_gradle_service_notification">AndroidIDE\'s O serviço de compilação Gradle está sendo executado em segundo plano.</string>
+    <string name="msg_running_task">Executando Tarefas: \'%1$s\'</string>
+    <string name="msg_initializing_project">Iniciando Projeto</string>
+    <string name="msg_project_initialized">Projeto Iniciado</string>
+    <string name="msg_project_initialization_failed">Falha na inicialização do projeto</string>
+    <string name="msg_project_not_initialized">O projeto não foi inicializado</string>
+    <string name="msg_ndk_currently_unsupported">Atualmente, o NDK não é oficialmente suportado. Este modelo funciona somente após a configuração do NDK</string>
+    <string name="msg_require_install_jdk_and_android_sdk">Você precisa instalar o JDK e o SDK do Android para que o IDE funcione. Para instalar pressione \'Sim\' e siga as instruções <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
+    <string name="msg_gradle_installation_path">Caminho de instalação do Gradle</string>
+    <string name="msg_gradle_installation_input_help">Deixe vazio para usar o wrapper Gradle.</string>
+    <string name="wizard_error_name_empty">O nome não pode ser vazio.</string>
+    <string name="wizard_error_name_illegal">O nome não pode conter caracteres ilegais</string>
+    <string name="wizard_save_location">Local para salvar</string>
+    <string name="wizard_language">Linguagem do projeto</string>
+    <string name="wizard_loading">Carregando Modelos…</string>
 
     <string name="yes">Sim</string>
     <string name="no">Não</string>
+    <string name="next">Próximo</string>
+    <string name="exit">Sair</string>
     <string name="msg_apk_install_intent_failed">Não foi possível iniciar a intenção de instalação do APK</string>
     <string name="msg_viewaction_add_attr">Adicionar atributo</string>
     <string name="msg_search_attrs">Pesquisar atributos…</string>
