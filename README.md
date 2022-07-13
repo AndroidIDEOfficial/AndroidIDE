@@ -13,6 +13,7 @@
   <img alt="Number of downloads (from website)" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php"/>
   <br>
   <a href="https://www.codefactor.io/repository/github/itsaky/androidide/overview/main"><img src="https://www.codefactor.io/repository/github/itsaky/androidide/badge/main" alt="CodeFactor Rating" /></a>
+  <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/itsaky/AndroidIDE">
   <img alt="CI Build Status" src="https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg"/>
   <a href="./LICENSE"><img alt="GPL v3 License" src="https://img.shields.io/badge/License-GPLv3-blue.svg"/></a><br>
   <a alt="Join us on Telegram" href="https://t.me/androidide_discussions"><img src="https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white"/></a>
