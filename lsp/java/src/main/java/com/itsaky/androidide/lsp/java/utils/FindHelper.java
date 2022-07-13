@@ -136,6 +136,7 @@ public class FindHelper {
       start = FindHelper.findNameIn(path.getCompilationUnit(), name, start, end);
       end = start + name.length();
     }
+
     int startLine = (int) lines.getLineNumber(start);
     int startColumn = (int) lines.getColumnNumber(start);
     Position startPos = new Position(startLine - 1, startColumn - 1);

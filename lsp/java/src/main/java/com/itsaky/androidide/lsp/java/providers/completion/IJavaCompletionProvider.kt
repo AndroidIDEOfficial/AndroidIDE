@@ -21,6 +21,7 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
+import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
@@ -69,11 +70,11 @@ import javax.lang.model.element.VariableElement
  * @author Akash Yadav
  */
 abstract class IJavaCompletionProvider(
-  protected val completingFile: Path,
   protected val cursor: Long,
-  protected val compiler: JavaCompilerService,
-  protected val settings: IServerSettings,
-) {
+  completingFile: Path,
+  compiler: JavaCompilerService,
+  settings: IServerSettings,
+) : BaseJavaServiceProvider(completingFile, compiler, settings) {
   protected val log: ILogger = ILogger.newInstance(javaClass.name)
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
@@ -84,7 +85,7 @@ abstract class IJavaCompletionProvider(
     partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
-    val root = task.root(completingFile)
+    val root = task.root(file)
     filePackage = root.`package`.packageName.toString()
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
     abortIfCancelled()
@@ -283,16 +284,13 @@ abstract class IJavaCompletionProvider(
       ENUM -> CompletionItemKind.ENUM
       ENUM_CONSTANT -> ENUM_MEMBER
       EXCEPTION_PARAMETER,
-      PARAMETER,
-      -> PROPERTY
+      PARAMETER, -> PROPERTY
       FIELD -> CompletionItemKind.FIELD
       STATIC_INIT,
-      INSTANCE_INIT,
-      -> FUNCTION
+      INSTANCE_INIT, -> FUNCTION
       INTERFACE -> CompletionItemKind.INTERFACE
       LOCAL_VARIABLE,
-      RESOURCE_VARIABLE,
-      -> VARIABLE
+      RESOURCE_VARIABLE, -> VARIABLE
       METHOD -> CompletionItemKind.METHOD
       PACKAGE -> MODULE
       TYPE_PARAMETER -> CompletionItemKind.TYPE_PARAMETER

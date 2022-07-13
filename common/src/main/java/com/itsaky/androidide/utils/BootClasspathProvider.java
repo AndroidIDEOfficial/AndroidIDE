@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.utils;
 
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Akash Yadav
  */
-@SuppressWarnings("UnstableApiUsage")
 public class BootClasspathProvider {
 
   private static final Map<String, ClassTrie> bootClasspathClasses = new ConcurrentHashMap<>();
@@ -54,8 +53,7 @@ public class BootClasspathProvider {
       }
 
       LOG.debug("Indexing boot classpath:", classpath);
-      final var path = Paths.get(classpath);
-      final var classes = ClasspathReader.listClasses(Collections.singleton(path));
+      final var classes = ClasspathReader.listClasses(Collections.singleton(new File(classpath)));
       final var trie = new ClassTrie();
       for (final var info : classes) {
         if (!info.isTopLevel()) {
@@ -75,21 +73,21 @@ public class BootClasspathProvider {
   }
 
   /**
-   * Drops the entry for the given classpath from the cache.
-   *
-   * @param classpath The classpath to drop entry for.
-   */
-  public static synchronized void drop(String classpath) {
-    bootClasspathClasses.remove(classpath);
-  }
-
-  /**
    * Drops entries for all the given classpaths from the cache.
    *
    * @param classpaths The classpaths to drop entry for.
    */
   public static synchronized void dropAll(Collection<String> classpaths) {
     classpaths.forEach(BootClasspathProvider::drop);
+  }
+
+  /**
+   * Drops the entry for the given classpath from the cache.
+   *
+   * @param classpath The classpath to drop entry for.
+   */
+  public static synchronized void drop(String classpath) {
+    bootClasspathClasses.remove(classpath);
   }
 
   /**

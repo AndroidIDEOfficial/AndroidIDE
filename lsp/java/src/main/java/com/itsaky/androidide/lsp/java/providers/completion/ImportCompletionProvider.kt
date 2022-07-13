@@ -25,8 +25,6 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.progress.ProgressManager.Companion
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.utils.BootClasspathProvider
@@ -63,7 +61,7 @@ class ImportCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings,
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   lateinit var importPath: String
 

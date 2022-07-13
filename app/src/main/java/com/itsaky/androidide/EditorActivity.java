@@ -370,9 +370,9 @@ public class EditorActivity extends StudioActivity
     final var opened = getEditorForFile(file);
     if (opened != null && opened.getEditor() != null) {
       final var editor = opened.getEditor();
-      final var range = editor.validateRange(selection);
       editor.post(
           () -> {
+            final var range = editor.validateRange(selection);
             if (LSPUtils.isEqual(range.getStart(), range.getEnd())) {
               editor.setSelection(range.getStart().getLine(), range.getEnd().getColumn());
             } else {

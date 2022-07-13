@@ -25,8 +25,6 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.progress.ProgressManager.Companion
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.sun.source.tree.MemberSelectTree
 import com.sun.source.tree.Scope
@@ -52,7 +50,7 @@ class MemberSelectCompletionProvider(
   cursor: Long,
   compiler: JavaCompilerService,
   settings: IServerSettings,
-) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
+) : IJavaCompletionProvider(cursor, completingFile, compiler, settings) {
 
   override fun doComplete(
     task: CompileTask,

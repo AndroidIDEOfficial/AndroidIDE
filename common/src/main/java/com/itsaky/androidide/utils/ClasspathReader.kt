@@ -18,12 +18,8 @@
 package com.itsaky.androidide.utils
 
 import com.google.common.collect.ImmutableSet
-import com.google.common.reflect.ClassPath
-import java.io.IOException
-import java.net.MalformedURLException
-import java.net.URL
-import java.net.URLClassLoader
-import java.nio.file.Path
+import java.io.File
+import java.util.zip.*
 
 /**
  * Lists all classes from classpath(s).
@@ -32,32 +28,41 @@ import java.nio.file.Path
  */
 class ClasspathReader {
   companion object {
-
-    private val log = ILogger.newInstance(ClasspathReader::class.java.simpleName)
-
-    @Suppress("UnstableApiUsage")
+    
     @JvmStatic
-    fun listClasses(paths: Collection<Path>): ImmutableSet<ClassPath.ClassInfo> {
-      val urls = paths.map { toUrl(it) }.toTypedArray()
-      val classLoader = URLClassLoader(urls, null)
+    fun listClasses(paths: Collection<File>): ImmutableSet<ClassInfo> {
 
-      val scanner: ClassPath
-      try {
-        scanner = ClassPath.from(classLoader)
-      } catch (e: IOException) {
-        log.warn("Unable to read classpaths for project:", paths)
-        throw RuntimeException(e)
+      val classes = ImmutableSet.builder<ClassInfo>()
+      paths.forEach {
+        if (!it.exists()) {
+          return@forEach
+        }
+
+        ZipFile(it).use { zipFile ->
+          for (entry in zipFile.entries()) {
+            if (!entry.name.endsWith(".class")) {
+              continue
+            }
+
+            var name = entry.name.substringBeforeLast(".class")
+            if (name.length <= 1) {
+              continue
+            }
+
+            if (name.startsWith('/')) {
+              name = name.substring(1)
+            }
+
+            if (name.contains('/')) {
+              name = name.replace('/', '.')
+            }
+
+            classes.add(ClassInfo(name))
+          }
+        }
       }
 
-      return scanner.allClasses
-    }
-
-    private fun toUrl(path: Path): URL {
-      try {
-        return path.toUri().toURL()
-      } catch (e: MalformedURLException) {
-        throw RuntimeException(e)
-      }
+      return classes.build()
     }
   }
 }
