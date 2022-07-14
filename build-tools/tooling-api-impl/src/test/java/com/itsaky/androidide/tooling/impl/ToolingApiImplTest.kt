@@ -28,12 +28,10 @@ import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
-import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.TestClient
-import com.itsaky.androidide.utils.ILogger
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -111,10 +109,11 @@ class ToolingApiImplTest {
     assertThat(
         (javaLibrary as JavaModule).javaDependencies.firstOrNull {
           it is JavaModuleExternalDependency &&
+            it.gradleArtifact != null &&
             it.run {
-              gradleArtifact.group == "io.github.itsaky" &&
-                gradleArtifact.name == "nb-javac-android" &&
-                gradleArtifact.version == "17.0.0.0"
+              gradleArtifact!!.group == "io.github.itsaky" &&
+                gradleArtifact!!.name == "nb-javac-android" &&
+                gradleArtifact!!.version == "17.0.0.0"
             }
         }
       )
