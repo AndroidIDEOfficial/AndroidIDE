@@ -56,6 +56,7 @@ import org.gradle.tooling.model.idea.IdeaModule;
 import org.gradle.tooling.model.idea.IdeaModuleDependency;
 import org.gradle.tooling.model.idea.IdeaProject;
 import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,15 +180,12 @@ public class ProjectReader {
     final var gradle = ideaModule.getGradleProject();
 
     try {
-      log("");
-      log("Trying to create model for Android project...");
       final var info = createAndroidModelInfo(gradle, controller);
       if (info == null) {
         throw new UnknownModelException(
             "Project " + gradle.getName() + " is not an AndroidProject");
       }
 
-      log("ModelInfoContainer created for project:", gradle.getName(), info.getSyncIssues());
       outIssues.put(gradle.getPath(), info.getSyncIssues());
       return info.getProject();
     } catch (Throwable error) {
@@ -233,7 +231,7 @@ public class ProjectReader {
 
     final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
 
-    log("Fetching project model...");
+    log("Fetching Android project model...");
     final var android = controller.findModel(gradle, AndroidProject.class);
     final var module = buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
     module.setBootClassPaths(basicAndroid.getBootClasspath());
@@ -293,17 +291,16 @@ public class ProjectReader {
       // TODO There might be unresolved dependencies here. We need to handle them too.
       if (dependency instanceof IdeaSingleEntryLibraryDependency) {
         final var external = (IdeaSingleEntryLibraryDependency) dependency;
-        final var moduleVersion = external.getGradleModuleVersion();
         final var file = external.getFile();
         final var source = external.getSource();
         final var javadoc = external.getJavadoc();
+        final GradleArtifact artifact = getGradleArtifact(external);
         list.add(
             new JavaModuleExternalDependency(
                 file,
                 source,
                 javadoc,
-                new GradleArtifact(
-                    moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion()),
+                artifact,
                 dependency.getScope().getScope(),
                 dependency.getExported()));
       } else if (dependency instanceof IdeaModuleDependency) {
@@ -318,6 +315,17 @@ public class ProjectReader {
       }
     }
     return list;
+  }
+
+  @Nullable
+  private static GradleArtifact getGradleArtifact(final IdeaSingleEntryLibraryDependency external) {
+    final var moduleVersion = external.getGradleModuleVersion();
+    if (moduleVersion == null) {
+      return null;
+    }
+
+    return new GradleArtifact(
+        moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion());
   }
 
   private static String findModulePathByName(final String moduleName) {
