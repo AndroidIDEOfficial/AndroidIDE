@@ -19,7 +19,6 @@ package com.itsaky.androidide.handlers
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.OnCreateEvent
@@ -31,7 +30,10 @@ import com.itsaky.androidide.eventbus.events.editor.OnStopEvent
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.utils.EditorActivityActions
+import com.itsaky.androidide.utils.Environment
 import java.util.concurrent.*
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Observes lifecycle events if [com.itsaky.androidide.EditorActivity].
@@ -41,32 +43,33 @@ import java.util.concurrent.*
 class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
 
   private val fileActionsHandler = FileTreeActionHandler()
-  
+
   override fun onCreate(owner: LifecycleOwner) {
     dispatchEvent(OnCreateEvent())
   }
-  
+
   override fun onStart(owner: LifecycleOwner) {
-    CompletableFuture.runAsync(BootClasspathProvider::init)
+    CompletableFuture.runAsync(this::initBootclasspathProvider)
     register(fileActionsHandler, FileManager, ProjectManager)
-    
+
     dispatchEvent(OnStartEvent())
   }
-  
+
   override fun onResume(owner: LifecycleOwner) {
     dispatchEvent(OnResumeEvent())
   }
-  
+
   override fun onPause(owner: LifecycleOwner) {
+    EditorActivityActions.clear()
     dispatchEvent(OnPauseEvent())
   }
 
   override fun onStop(owner: LifecycleOwner) {
     unregister(fileActionsHandler, FileManager, ProjectManager)
-  
+
     dispatchEvent(OnStopEvent())
   }
-  
+
   override fun onDestroy(owner: LifecycleOwner) {
     dispatchEvent(OnDestroyEvent())
   }
@@ -79,5 +82,11 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
     receivers.forEach { it.unregister() }
   }
 
-  private fun dispatchEvent(event: Event) {}
+  private fun dispatchEvent(event: Event) {
+    EventBus.getDefault().post(event)
+  }
+
+  private fun initBootclasspathProvider() {
+    BootClasspathProvider.update(listOf(Environment.ANDROID_JAR.absolutePath))
+  }
 }

@@ -34,30 +34,8 @@ android {
     }
 }
 
-kapt {
-    arguments {
-        arg ('eventBusIndex', 'com.itsaky.androidide.events.ProjectsApiEventsIndex')
-    }
-}
-
 dependencies {
-    
-    kapt common.eventbus_ap
-    
-    api project (path: ':build-tools:eventbus')
-    api project (path: ':build-tools:eventbus-events')
-    api project (path: ':build-tools:tooling-api')
-    
-    implementation project (path: ':shared')
-    
-    implementation common.io
     implementation google.guava
     
-    testImplementation project (path: ':build-tools:tooling-api-testing')
-    testImplementation tests.junit
-    testImplementation tests.google_truth
-    testImplementation tests.robolectric
-    androidTestImplementation tests.androidx_junit
-    androidTestImplementation tests.androidx_espresso
-    androidTestImplementation tests.google_truth
+    implementation project(path: ':build-tools:logger')
 }

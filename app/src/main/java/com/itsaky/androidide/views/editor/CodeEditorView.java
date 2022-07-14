@@ -388,10 +388,6 @@ public class CodeEditorView extends FrameLayout {
     return binding.editor.getText().toString();
   }
 
-  public void onPause() {
-    // unimplemented
-  }
-
   public void onResume() {
     configureEditorIfNeeded();
   }

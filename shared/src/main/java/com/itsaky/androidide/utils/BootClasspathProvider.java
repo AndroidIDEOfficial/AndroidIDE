@@ -35,11 +35,6 @@ public class BootClasspathProvider {
   private static final Map<String, ClassTrie> bootClasspathClasses = new ConcurrentHashMap<>();
   private static final ILogger LOG = ILogger.newInstance("BootClassProvider");
 
-  /** Initializes the classpath provider with the default boot classpath. */
-  public static synchronized void init() {
-    update(Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));
-  }
-
   /**
    * Updates the boot classpath cache. If a classpath is already indexed, it is skipped.
    *

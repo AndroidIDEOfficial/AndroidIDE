@@ -33,7 +33,7 @@ class OrganizeImportsAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val watch = StopWatch("Organize imports")
+    val watch = com.itsaky.androidide.utils.StopWatch("Organize imports")
     return try {
       val editor = requireEditor(data)
       val content = editor.text

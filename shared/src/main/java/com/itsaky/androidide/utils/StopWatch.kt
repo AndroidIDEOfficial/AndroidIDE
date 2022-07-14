@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.utils.ILogger
-
 /**
  * A stop watch helps to log duration between the time when the instance of the stopwatch instance
  * was created and the time when [StopWatch.log] or [StopWatch.lap] method is called.

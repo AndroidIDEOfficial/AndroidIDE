@@ -1050,8 +1050,6 @@ public class EditorActivity extends StudioActivity
   @Override
   protected void onPause() {
     super.onPause();
-    dispatchOnPauseToEditors();
-    EditorActivityActions.clear();
 
     if (mFileTreeFragment != null) {
       mFileTreeFragment.saveTreeState();
@@ -1084,18 +1082,6 @@ public class EditorActivity extends StudioActivity
             final var editor = getEditorAtIndex(i);
             if (editor != null) {
               editor.onResume();
-            }
-          }
-        });
-  }
-
-  private void dispatchOnPauseToEditors() {
-    CompletableFuture.runAsync(
-        () -> {
-          for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            final var editor = getEditorAtIndex(i);
-            if (editor != null) {
-              editor.onPause();
             }
           }
         });

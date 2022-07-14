@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.utils
 
-import androidx.core.text.isDigitsOnly
-
 /**
  * Information about a class in a JAR file.
  *
@@ -67,6 +65,16 @@ private constructor(
       val isInner = !isTopLevel && !isLocal && !isAnonymous
 
       return ClassInfo(name, simpleName, packageName, isTopLevel, isAnonymous, isLocal, isInner)
+    }
+
+    private fun CharSequence.isDigitsOnly(): Boolean {
+      for (char in this) {
+        if (!char.isDigit()) {
+          return false
+        }
+      }
+
+      return true
     }
   }
 }
