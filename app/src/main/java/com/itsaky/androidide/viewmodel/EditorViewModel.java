@@ -33,9 +33,10 @@ import java.util.Objects;
 /** ViewModel for data used in {@link com.itsaky.androidide.EditorActivity} */
 public class EditorViewModel extends ViewModel {
 
-  private final MutableLiveData<List<File>> mFiles = new MutableLiveData<>(new ArrayList<>());
-  private final MutableLiveData<Boolean> mFilesModified = new MutableLiveData<>(false);
-
+  public final MutableLiveData<Boolean> progressBarVisible = new MutableLiveData<>(false);
+  public final MutableLiveData<Boolean> isInitializing = new MutableLiveData<>(false);
+  private final MutableLiveData<List<File>> files = new MutableLiveData<>(new ArrayList<>());
+  private final MutableLiveData<Boolean> fileModified = new MutableLiveData<>(false);
   /**
    * Holds information about the currently selected editor fragment. First value in the pair is the
    * index of the editor opened. Second value is the file that is opened.
@@ -48,9 +49,9 @@ public class EditorViewModel extends ViewModel {
    * @param file The file that has been opened.
    */
   public void addFile(final File file) {
-    final var files = mFiles.getValue();
+    final var files = this.files.getValue();
     Objects.requireNonNull(files).add(file);
-    mFiles.setValue(files);
+    this.files.setValue(files);
   }
 
   /**
@@ -59,13 +60,13 @@ public class EditorViewModel extends ViewModel {
    * @param index The index of the closed file.
    */
   public void removeFile(int index) {
-    final var files = mFiles.getValue();
+    final var files = this.files.getValue();
     Objects.requireNonNull(files).remove(index);
-    mFiles.setValue(files);
+    this.files.setValue(files);
   }
 
   public void removeAllFiles() {
-    mFiles.setValue(new ArrayList<>());
+    files.setValue(new ArrayList<>());
     setCurrentFile(-1, null);
   }
 
@@ -80,7 +81,7 @@ public class EditorViewModel extends ViewModel {
    * @return The file at the given index.
    */
   public File getOpenedFile(final int index) {
-    return Objects.requireNonNull(mFiles.getValue()).get(index);
+    return Objects.requireNonNull(files.getValue()).get(index);
   }
 
   /**
@@ -89,7 +90,7 @@ public class EditorViewModel extends ViewModel {
    * @return The number of files opened.
    */
   public int getOpenedFileCount() {
-    return Objects.requireNonNull(mFiles.getValue()).size();
+    return Objects.requireNonNull(files.getValue()).size();
   }
 
   /**
@@ -99,7 +100,7 @@ public class EditorViewModel extends ViewModel {
    */
   @NonNull
   public List<File> getOpenedFiles() {
-    return mFiles.getValue() == null ? new ArrayList<>() : mFiles.getValue();
+    return files.getValue() == null ? new ArrayList<>() : files.getValue();
   }
 
   /**
@@ -109,7 +110,7 @@ public class EditorViewModel extends ViewModel {
    * @param observer The observer.
    */
   public void observeFiles(LifecycleOwner lifecycleOwner, Observer<List<File>> observer) {
-    this.mFiles.observe(lifecycleOwner, observer);
+    this.files.observe(lifecycleOwner, observer);
   }
 
   public int getCurrentFileIndex() {
@@ -129,11 +130,11 @@ public class EditorViewModel extends ViewModel {
   }
 
   public void setFilesModified(boolean modified) {
-    this.mFilesModified.setValue(modified);
+    this.fileModified.setValue(modified);
   }
 
   public boolean areFilesModified() {
-    final var modified = this.mFilesModified.getValue();
+    final var modified = this.fileModified.getValue();
     return modified != null && modified;
   }
 }

@@ -160,6 +160,7 @@ public class EditorActivity extends StudioActivity
   private static final int ACTION_ID_OTHERS = 101;
   private static final int ACTION_ID_ALL = 102;
   private static final ILogger LOG = ILogger.newInstance("EditorActivity");
+
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
   private final EditorActivityLifecyclerObserver mLifecycleObserver =
       new EditorActivityLifecyclerObserver();
@@ -177,6 +178,7 @@ public class EditorActivity extends StudioActivity
   private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
   private GradleBuildService mBuildService;
+
   private final ServiceConnection mGradleServiceConnection =
       new ServiceConnection() {
         @Override
@@ -984,14 +986,14 @@ public class EditorActivity extends StudioActivity
   }
 
   protected void postProjectInit() {
-    if (mBinding == null) {
+    if (mBinding == null || mViewModel == null) {
       // Activity has been destroyed
       return;
     }
 
     initialSetup();
     setStatus(getString(R.string.msg_project_initialized));
-    mBinding.buildProgressIndicator.setVisibility(View.GONE);
+    mViewModel.isInitializing.setValue(false);
 
     if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
       mFindInProjectDialog.dismiss();
@@ -1026,7 +1028,7 @@ public class EditorActivity extends StudioActivity
     mBinding.bottomSheet.textContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
     mBinding.tabs.addOnTabSelectedListener(this);
 
-    setupEditorBottomSheet();
+    setupViews();
     createQuickActions();
 
     mBuildEventListener.setActivity(this);
@@ -1114,7 +1116,7 @@ public class EditorActivity extends StudioActivity
 
   private void preProjectInit() {
     setStatus(getString(R.string.msg_initializing_project));
-    mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
+    mViewModel.isInitializing.setValue(true);
   }
 
   private void initialSetup() {
@@ -1172,97 +1174,48 @@ public class EditorActivity extends StudioActivity
     toggle.syncState();
   }
 
-  private void setupEditorBottomSheet() {
-    bottomSheetTabAdapter = new EditorBottomSheetTabAdapter(this);
-    mBinding.bottomSheet.pager.setAdapter(bottomSheetTabAdapter);
+  private void toggleProgressBarVisibility(final boolean visible) {
+    if (mBinding == null) {
+      return;
+    }
 
-    final var mediator =
-        new TabLayoutMediator(
-            mBinding.bottomSheet.tabs,
-            mBinding.bottomSheet.pager,
-            true,
-            true,
-            (tab, position) -> tab.setText(bottomSheetTabAdapter.getTitle(position)));
+    mBinding.buildProgressIndicator.setVisibility(visible ? View.VISIBLE : View.GONE);
+  }
 
-    mediator.attach();
-    mBinding.bottomSheet.pager.setUserInputEnabled(false);
-    mBinding.bottomSheet.pager.setOffscreenPageLimit(
-        bottomSheetTabAdapter.getItemCount() - 1); // DO not remove any views
+  private void setupViews() {
 
-    mEditorBottomSheet =
-        (EditorBottomSheetBehavior<? extends View>)
-            EditorBottomSheetBehavior.from(mBinding.bottomSheet.getRoot());
-    mEditorBottomSheet.setBinding(mBinding.bottomSheet);
-    mEditorBottomSheet.addBottomSheetCallback(
-        new BottomSheetBehavior.BottomSheetCallback() {
-          @Override
-          public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            mBinding.bottomSheet.textContainer.setVisibility(
-                newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
+    mViewModel.progressBarVisible.observe(
+        this,
+        visible ->
+            toggleProgressBarVisibility(
+                visible || Boolean.TRUE.equals(mViewModel.isInitializing.getValue())));
 
-            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-              final var editor = getCurrentEditor();
-              if (editor != null && editor.getEditor() != null) {
-                editor.getEditor().ensureWindowsDismissed();
-              }
-            }
-          }
+    mViewModel.isInitializing.observe(
+        this,
+        initializing ->
+            toggleProgressBarVisibility(
+                initializing || Boolean.TRUE.equals(mViewModel.progressBarVisible.getValue())));
 
-          @Override
-          public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            mBinding.bottomSheet.textContainer.setAlpha(1f - slideOffset);
-          }
-        });
+    setupBottomSheetPager();
+    setupBottomSheet();
+    setupBottomSheetTabs();
+    setupBottomSheetClearFAB();
+    setupBottomSheetShareOutputFAB();
 
-    mBinding.bottomSheet.tabs.addOnTabSelectedListener(
-        new TabLayout.OnTabSelectedListener() {
+    if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
+        && mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+      mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+      new Handler(Looper.getMainLooper())
+          .postDelayed(
+              () -> {
+                mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                getApp().getPrefManager().putBoolean(KEY_BOTTOM_SHEET_SHOWN, true);
+              },
+              1500);
+    }
+  }
 
-          @Override
-          public void onTabSelected(TabLayout.Tab tab) {
-            final var fragment = bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
-            if (fragment instanceof NonEditableEditorFragment
-                || fragment instanceof LogViewFragment) {
-              mBinding.bottomSheet.clearFab.show();
-              mBinding.bottomSheet.shareOutputFab.show();
-            } else {
-              mBinding.bottomSheet.clearFab.hide();
-              mBinding.bottomSheet.shareOutputFab.hide();
-            }
-          }
-
-          @Override
-          public void onTabUnselected(TabLayout.Tab tab) {}
-
-          @Override
-          public void onTabReselected(TabLayout.Tab tab) {}
-        });
-
-    TooltipCompat.setTooltipText(
-        mBinding.bottomSheet.clearFab, getString(R.string.title_clear_output));
-    mBinding.bottomSheet.clearFab.setOnClickListener(
-        v -> {
-          final var fragment =
-              bottomSheetTabAdapter.getFragmentAtIndex(
-                  mBinding.bottomSheet.tabs.getSelectedTabPosition());
-          if (fragment instanceof NonEditableEditorFragment) {
-            final var editor = (NonEditableEditorFragment) fragment;
-            if (editor.getEditor() != null) {
-              editor.getEditor().setText("");
-            }
-          } else if (fragment instanceof LogViewFragment) {
-            final LogViewFragment logFrag = (LogViewFragment) fragment;
-            final var binding = logFrag.getBinding();
-            if (binding != null) {
-              binding.editor.setText("");
-            } else {
-              LOG.error(
-                  "Cannot clear contents. Binding in LogViewFragment("
-                      + logFrag.getLogType()
-                      + ") is null.");
-            }
-          }
-        });
-
+  private void setupBottomSheetShareOutputFAB() {
     mBinding.bottomSheet.shareOutputFab.setOnClickListener(
         v -> {
           final var fragment =
@@ -1303,18 +1256,104 @@ public class EditorActivity extends StudioActivity
 
           LOG.error("Unknown fragment:", fragment);
         });
+  }
 
-    if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
-        && mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-      mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
-      new Handler(Looper.getMainLooper())
-          .postDelayed(
-              () -> {
-                mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                getApp().getPrefManager().putBoolean(KEY_BOTTOM_SHEET_SHOWN, true);
-              },
-              1500);
-    }
+  private void setupBottomSheetClearFAB() {
+    TooltipCompat.setTooltipText(
+        mBinding.bottomSheet.clearFab, getString(R.string.title_clear_output));
+    mBinding.bottomSheet.clearFab.setOnClickListener(
+        v -> {
+          final var fragment =
+              bottomSheetTabAdapter.getFragmentAtIndex(
+                  mBinding.bottomSheet.tabs.getSelectedTabPosition());
+          if (fragment instanceof NonEditableEditorFragment) {
+            final var editor = (NonEditableEditorFragment) fragment;
+            if (editor.getEditor() != null) {
+              editor.getEditor().setText("");
+            }
+          } else if (fragment instanceof LogViewFragment) {
+            final LogViewFragment logFrag = (LogViewFragment) fragment;
+            final var binding = logFrag.getBinding();
+            if (binding != null) {
+              binding.editor.setText("");
+            } else {
+              LOG.error(
+                  "Cannot clear contents. Binding in LogViewFragment("
+                      + logFrag.getLogType()
+                      + ") is null.");
+            }
+          }
+        });
+  }
+
+  private void setupBottomSheetTabs() {
+    mBinding.bottomSheet.tabs.addOnTabSelectedListener(
+        new TabLayout.OnTabSelectedListener() {
+
+          @Override
+          public void onTabSelected(TabLayout.Tab tab) {
+            final var fragment = bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
+            if (fragment instanceof NonEditableEditorFragment
+                || fragment instanceof LogViewFragment) {
+              mBinding.bottomSheet.clearFab.show();
+              mBinding.bottomSheet.shareOutputFab.show();
+            } else {
+              mBinding.bottomSheet.clearFab.hide();
+              mBinding.bottomSheet.shareOutputFab.hide();
+            }
+          }
+
+          @Override
+          public void onTabUnselected(TabLayout.Tab tab) {}
+
+          @Override
+          public void onTabReselected(TabLayout.Tab tab) {}
+        });
+  }
+
+  private void setupBottomSheet() {
+    mEditorBottomSheet =
+        (EditorBottomSheetBehavior<? extends View>)
+            EditorBottomSheetBehavior.from(mBinding.bottomSheet.getRoot());
+    mEditorBottomSheet.setBinding(mBinding.bottomSheet);
+    mEditorBottomSheet.addBottomSheetCallback(
+        new BottomSheetBehavior.BottomSheetCallback() {
+          @Override
+          public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            mBinding.bottomSheet.textContainer.setVisibility(
+                newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
+
+            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+              final var editor = getCurrentEditor();
+              if (editor != null && editor.getEditor() != null) {
+                editor.getEditor().ensureWindowsDismissed();
+              }
+            }
+          }
+
+          @Override
+          public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            mBinding.bottomSheet.textContainer.setAlpha(1f - slideOffset);
+          }
+        });
+  }
+
+  private void setupBottomSheetPager() {
+    bottomSheetTabAdapter = new EditorBottomSheetTabAdapter(this);
+    mBinding.bottomSheet.pager.setAdapter(bottomSheetTabAdapter);
+
+    final var mediator =
+        new TabLayoutMediator(
+            mBinding.bottomSheet.tabs,
+            mBinding.bottomSheet.pager,
+            true,
+            true,
+            (tab, position) -> tab.setText(bottomSheetTabAdapter.getTitle(position)));
+
+    mediator.attach();
+    mBinding.bottomSheet.pager.setUserInputEnabled(false);
+    mBinding.bottomSheet.pager.setOffscreenPageLimit(
+        bottomSheetTabAdapter.getItemCount() - 1); // DO not remove any views
   }
 
   @SuppressWarnings("deprecation")
