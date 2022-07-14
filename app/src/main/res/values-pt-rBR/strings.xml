@@ -105,8 +105,6 @@
     <string name="template_navigation_drawer">Projeto navigation drawer</string>
     <string name="template_libgdx">Jogo LibGDX</string>
     <string name="template_description_libgdx">Projeto de jogo LibGDX configurado para renderizar uma imagem como exemplo.</string>
-    <string name="template_login_activity">Projeto Tela de login</string>
-    <string name="template_login_description">Um projeto básico que contem uma tela de Login pré-construido</string>
     <string name="template_cpp">C++ Nativo</string>
     <string name="template_cpp_description">Cria um novo projeto com uma atividade vazia configurada para usar JNI</string>
 
