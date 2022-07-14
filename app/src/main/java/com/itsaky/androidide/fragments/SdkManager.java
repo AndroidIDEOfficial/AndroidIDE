@@ -139,7 +139,9 @@ public class SdkManager extends Fragment implements CompoundButton.OnCheckedChan
                           });
 
                 } catch (MalformedURLException e) {
+                   e.printStackTrace();
                 } catch (IOException e) {
+                   e.printStackTrace();
                 }
               })
           .start();
