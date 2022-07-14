@@ -90,10 +90,9 @@ public class PreferenceManager {
     return prefs.getInt(key, 0);
   }
 
-  public PreferenceManager putFloat(String key, float val) {
+  public void putFloat(String key, float val) {
     prefs.edit().putFloat(key, val).apply();
     dispatchChangeEvent(key, val);
-    return this;
   }
 
   public float getFloat(String key) {
@@ -146,58 +145,57 @@ public class PreferenceManager {
     return getBoolean(KEY_GRADLE_CMD_INFO, true);
   }
 
-  public PreferenceManager setGradleInfoEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_INFO, enabled);
+  public void setGradleInfoEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_INFO, enabled);
   }
 
-  public PreferenceManager putBoolean(String key, boolean value) {
+  public void putBoolean(String key, boolean value) {
     prefs.edit().putBoolean(key, value).apply();
     dispatchChangeEvent(key, value);
-    return this;
   }
 
   public boolean isGradleDebugEnabled() {
     return getBoolean(KEY_GRADLE_CMD_DEBUG);
   }
 
-  public PreferenceManager setGradleDebugEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_DEBUG, enabled);
+  public void setGradleDebugEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_DEBUG, enabled);
   }
 
   public boolean isGradleScanEnabled() {
     return getBoolean(KEY_GRADLE_CMD_SCAN);
   }
 
-  public PreferenceManager setGradleScanEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_SCAN, enabled);
+  public void setGradleScanEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_SCAN, enabled);
   }
 
   public boolean isGradleWarningEnabled() {
     return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
   }
 
-  public PreferenceManager setGradleWarningEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
+  public void setGradleWarningEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
   }
 
   public boolean isGradleBuildCacheEnabled() {
     return getBoolean(KEY_GRADLE_CMD_BUILD_CACHE);
   }
 
-  public PreferenceManager setGradleBuildCacheEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_BUILD_CACHE, enabled);
+  public void setGradleBuildCacheEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_BUILD_CACHE, enabled);
   }
 
   public boolean isGradleOfflineModeEnabled() {
     return getBoolean(KEY_GRADLE_CMD_OFFLINE_MODE);
   }
 
-  public PreferenceManager setGradleOfflineModeEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_OFFLINE_MODE, enabled);
+  public void setGradleOfflineModeEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_OFFLINE_MODE, enabled);
   }
 
-  public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
-    return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
+  public void setGradleStacktraceEnabled(boolean enabled) {
+    putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
   }
 
   public int getEditorTabSize() {
