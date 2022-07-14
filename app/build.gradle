@@ -14,6 +14,12 @@ android {
         
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+    
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ eventBusIndex : 'com.itsaky.androidide.events.AndroidIDEEventBusIndex' ]
+            }
+        }
     }
     
     compileOptions {
@@ -87,6 +93,7 @@ dependencies {
     
     // Annotation processors
     annotationProcessor common.glide_ap
+    annotationProcessor common.eventbus_ap
     
     implementation common.editor
     implementation common.utilcode

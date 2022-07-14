@@ -87,7 +87,6 @@ import com.itsaky.androidide.fragments.SimpleOutputFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.EditorEventListener;
-import com.itsaky.androidide.handlers.FileTreeActionHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
@@ -102,7 +101,6 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.services.GradleBuildService;
@@ -110,12 +108,10 @@ import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.utils.BootClasspathProvider;
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
@@ -164,7 +160,6 @@ public class EditorActivity extends StudioActivity
   private static final int ACTION_ID_ALL = 102;
   private static final ILogger LOG = ILogger.newInstance("EditorActivity");
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
-  private final FileTreeActionHandler mFileActionsHandler = new FileTreeActionHandler();
   private ActivityEditorBinding mBinding;
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
   private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
@@ -1125,27 +1120,6 @@ public class EditorActivity extends StudioActivity
     } else {
       confirmProjectClose();
     }
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-
-    // Make sure we list and store the bootstrap classes
-    CompletableFuture.runAsync(
-        () ->
-            BootClasspathProvider.update(
-                Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath())));
-
-    mFileActionsHandler.register();
-    FileManager.INSTANCE.register();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mFileActionsHandler.unregister();
-    FileManager.INSTANCE.unregister();
   }
 
   @Override

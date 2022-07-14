@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.eventbus.events.Event;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.apiinfo.ApiInfo;
@@ -37,6 +38,8 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Objects;
@@ -62,6 +65,7 @@ public class StudioApp extends BaseApplication {
     this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
     super.onCreate();
+
     getApiInformation();
   }
 
