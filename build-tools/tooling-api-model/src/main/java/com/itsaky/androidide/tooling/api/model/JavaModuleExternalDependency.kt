@@ -35,7 +35,7 @@ class JavaModuleExternalDependency(
   val javadoc: File? = null,
 
   /** The Gradle dependency artifact for this dependency. */
-  val gradleArtifact: GradleArtifact,
+  val gradleArtifact: GradleArtifact?,
 
   /** Scope of this dependency. */
   scope: String,

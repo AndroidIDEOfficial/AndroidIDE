@@ -30,7 +30,6 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
-import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.GradleArtifact;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
@@ -57,14 +56,13 @@ import org.gradle.tooling.model.idea.IdeaModule;
 import org.gradle.tooling.model.idea.IdeaModuleDependency;
 import org.gradle.tooling.model.idea.IdeaProject;
 import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Akash Yadav
@@ -75,7 +73,8 @@ public class ProjectReader {
   private static final Map<String, IdeaModule> allModules = new ConcurrentHashMap<>();
 
   public static IdeGradleProject read(
-      ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
+      ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues)
+      throws ExecutionException, InterruptedException {
     final var buildActionExecutor =
         connection.action(
             controller -> {
@@ -94,7 +93,30 @@ public class ProjectReader {
       Main.client.logOutput("Starting build...");
     }
 
-    return buildActionExecutor.run();
+    final var project = buildActionExecutor.run();
+
+    // Fetch java module dependencies
+    final var ideaProject = connection.model(IdeaProject.class).get();
+    final var modules = ideaProject.getModules();
+
+    for (var module : modules) {
+      allModules.put(module.getName(), module);
+    }
+
+    for (final var module : modules) {
+      final var moduleProject = project.findByPath(module.getGradleProject().getPath()).get();
+      if (!(moduleProject instanceof JavaModule)) {
+        continue;
+      }
+
+      final var dependencies = ((JavaModule) moduleProject).getJavaDependencies();
+      dependencies.clear();
+      dependencies.addAll(collectJavaDependencies(module));
+    }
+
+    allModules.clear();
+
+    return project;
   }
 
   public static AndroidModule buildAndroidModuleProject(
@@ -158,15 +180,12 @@ public class ProjectReader {
     final var gradle = ideaModule.getGradleProject();
 
     try {
-      log("");
-      log("Trying to create model for Android project...");
       final var info = createAndroidModelInfo(gradle, controller);
       if (info == null) {
         throw new UnknownModelException(
             "Project " + gradle.getName() + " is not an AndroidProject");
       }
 
-      log("ModelInfoContainer created for project:", gradle.getName(), info.getSyncIssues());
       outIssues.put(gradle.getPath(), info.getSyncIssues());
       return info.getProject();
     } catch (Throwable error) {
@@ -212,7 +231,7 @@ public class ProjectReader {
 
     final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
 
-    log("Fetching project model...");
+    log("Fetching Android project model...");
     final var android = controller.findModel(gradle, AndroidProject.class);
     final var module = buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
     module.setBootClassPaths(basicAndroid.getBootClasspath());
@@ -259,7 +278,7 @@ public class ProjectReader {
     builder.setBuildDir(gradle.getBuildDirectory());
     builder.setBuildScript(gradle.getBuildScript().getSourceFile());
     builder.setContentRoots(collectContentRoots(idea));
-    builder.setJavaDependencies(collectJavaDependencies(idea));
+    //    builder.setJavaDependencies(collectJavaDependencies(idea));
 
     final var project = builder.buildJavaModule();
     addTasks(gradle, project);
@@ -270,24 +289,18 @@ public class ProjectReader {
     final var list = new ArrayList<JavaModuleDependency>();
     for (IdeaDependency dependency : idea.getDependencies()) {
       // TODO There might be unresolved dependencies here. We need to handle them too.
-      final var reflected = reflectIdeaDependency(dependency);
-      if (reflected != null) {
-        dependency = reflected;
-      }
-
       if (dependency instanceof IdeaSingleEntryLibraryDependency) {
         final var external = (IdeaSingleEntryLibraryDependency) dependency;
-        final var moduleVersion = external.getGradleModuleVersion();
         final var file = external.getFile();
         final var source = external.getSource();
         final var javadoc = external.getJavadoc();
+        final GradleArtifact artifact = getGradleArtifact(external);
         list.add(
             new JavaModuleExternalDependency(
                 file,
                 source,
                 javadoc,
-                new GradleArtifact(
-                    moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion()),
+                artifact,
                 dependency.getScope().getScope(),
                 dependency.getExported()));
       } else if (dependency instanceof IdeaModuleDependency) {
@@ -302,6 +315,17 @@ public class ProjectReader {
       }
     }
     return list;
+  }
+
+  @Nullable
+  private static GradleArtifact getGradleArtifact(final IdeaSingleEntryLibraryDependency external) {
+    final var moduleVersion = external.getGradleModuleVersion();
+    if (moduleVersion == null) {
+      return null;
+    }
+
+    return new GradleArtifact(
+        moduleVersion.getGroup(), moduleVersion.getName(), moduleVersion.getVersion());
   }
 
   private static String findModulePathByName(final String moduleName) {
@@ -347,11 +371,6 @@ public class ProjectReader {
       IdeaProject ideaProject,
       BuildController controller,
       Map<String, DefaultProjectSyncIssues> outIssues) {
-
-    for (final IdeaModule module : ideaProject.getModules()) {
-      allModules.put(module.getName(), module);
-    }
-
     final var rootModule =
         ideaProject.getModules().stream()
             .filter(it -> it.getGradleProject().getPath().equals(":"))
@@ -385,8 +404,6 @@ public class ProjectReader {
 
     addModules(ideaProject, project, controller, outIssues);
 
-    allModules.clear();
-
     return project;
   }
 
@@ -410,9 +427,7 @@ public class ProjectReader {
   }
 
   private static void log(Object... messages) {
-    final var line =
-        new LogLine(ILogger.Priority.DEBUG, "BuildActionExecutor", generateMessage(messages));
-    System.err.println(line.toSimpleString());
+    System.err.println(generateMessage(messages));
   }
 
   private static String generateMessage(Object... messages) {
@@ -429,75 +444,4 @@ public class ProjectReader {
 
     return sb.toString();
   }
-
-  private static IdeaDependency reflectIdeaDependency(final IdeaDependency dependency) {
-    log("Creating Proxy for IdeaDependency...");
-    try {
-      final InvocationHandler invocationHandler = Proxy.getInvocationHandler(dependency);
-      final var klass = invocationHandler.getClass();
-      final var sourceObjectField = klass.getDeclaredField("sourceObject");
-      sourceObjectField.setAccessible(true);
-      return createProxy(sourceObjectField.get(invocationHandler));
-    } catch (Throwable err) {
-      log("Unable to reflect IdeaDependency", err);
-      return null;
-    }
-  }
-
-  private static IdeaDependency createProxy(final Object dependency) {
-    final var className = dependency.getClass().getName();
-    Class<?>[] proxyTypes;
-    if (className.equals(SINGLE_ENTRY_IMPL)) {
-      proxyTypes = new Class[] {IdeaSingleEntryLibraryDependency.class};
-    } else if (className.equals(MODULE_IMPL)) {
-      proxyTypes = new Class[] {IdeaModuleDependency.class};
-    } else {
-      return null;
-    }
-
-    return (IdeaDependency)
-        Proxy.newProxyInstance(
-            ProjectReader.class.getClassLoader(),
-            proxyTypes,
-            new IdeaDependencyMethodInvocationHandler(dependency));
-  }
-
-  private static class IdeaDependencyMethodInvocationHandler implements InvocationHandler {
-    private final Object object;
-    private final Class<?> targetType;
-
-    private final List<String> innerProxyClasses =
-        List.of(
-            "org.gradle.tooling.model.idea.IdeaDependencyScope",
-            "org.gradle.tooling.model.GradleModuleVersion");
-
-    private IdeaDependencyMethodInvocationHandler(final Object object) {
-      this.object = object;
-      this.targetType = object.getClass();
-    }
-
-    @Override
-    public Object invoke(final Object target, final Method invokedMethod, final Object[] objects)
-        throws Throwable {
-      if (innerProxyClasses.contains(invokedMethod.getReturnType().getName())) {
-        final Object inner =
-            targetType
-                .getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes())
-                .invoke(object, objects);
-        return Proxy.newProxyInstance(
-            IdeaDependencyMethodInvocationHandler.class.getClassLoader(),
-            new Class<?>[] {invokedMethod.getReturnType()},
-            new IdeaDependencyMethodInvocationHandler(inner));
-      }
-
-      final var method =
-          targetType.getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes());
-      return method.invoke(object, objects);
-    }
-  }
-
-  private static final String SINGLE_ENTRY_IMPL =
-      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaSingleEntryLibraryDependency";
-  private static final String MODULE_IMPL =
-      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaModuleDependency";
 }

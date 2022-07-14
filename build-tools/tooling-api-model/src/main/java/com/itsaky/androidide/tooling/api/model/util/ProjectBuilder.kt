@@ -23,10 +23,10 @@ import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.tooling.api.model.JavaModule
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
+import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
 import java.io.File
 
@@ -54,7 +54,7 @@ class ProjectBuilder {
   var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
   var lintChecksJars: List<File> = mutableListOf()
   var contentRoots: List<JavaContentRoot> = mutableListOf()
-  var javaDependencies: List<JavaModuleDependency> = mutableListOf()
+  var javaDependencies: MutableList<JavaModuleDependency> = mutableListOf()
   var projectType: ProjectType? = null
   var simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
 
