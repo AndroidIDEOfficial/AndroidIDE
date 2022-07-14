@@ -43,6 +43,12 @@ android {
     }
 }
 
+kapt {
+    arguments {
+        arg ('eventBusIndex', 'com.itsaky.androidide.events.LspApiEventsIndex')
+    }
+}
+
 dependencies {
     implementation common.editor
     implementation project (':build-tools:fuzzysearch')

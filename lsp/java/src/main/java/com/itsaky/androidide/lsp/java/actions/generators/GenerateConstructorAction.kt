@@ -110,7 +110,7 @@ class GenerateConstructorAction : FieldBasedAction() {
       return
     }
 
-    val stopWatch = StopWatch("generateConstructorForFields()")
+    val stopWatch = com.itsaky.androidide.utils.StopWatch("generateConstructorForFields()")
     val constructor =
       newConstructor(type.simpleName.toString(), varTypes.toTypedArray(), varNames.toTypedArray())
     val body = constructor.createBody()

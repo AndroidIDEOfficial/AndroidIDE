@@ -45,7 +45,8 @@ android {
 
 dependencies {
     implementation common.jkotlin
-    implementation project (path: ':common')
+    implementation project (path: ':shared')
+    implementation project (path: ':build-tools:logger')
     
     api project (path: ':build-tools:eventbus')
 }

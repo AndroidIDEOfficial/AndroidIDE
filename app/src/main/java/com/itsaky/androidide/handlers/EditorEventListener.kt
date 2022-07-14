@@ -18,7 +18,6 @@
 package com.itsaky.androidide.handlers
 
 import android.content.DialogInterface
-import android.view.View
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.managers.PreferenceManager
@@ -55,8 +54,8 @@ class EditorEventListener : GradleBuildService.EventListener {
     if (isFirstBuild) {
       activity().showFirstBuildNotice()
     }
-
-    activity().binding.buildProgressIndicator.visibility = View.VISIBLE
+  
+    activity().viewModel.progressBarVisible.value = false
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {
@@ -64,7 +63,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
-    activity().binding.buildProgressIndicator.visibility = View.GONE
+    activity().viewModel.progressBarVisible.value = false
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
@@ -84,7 +83,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
-    activity().binding.buildProgressIndicator.visibility = View.GONE
+    activity().viewModel.progressBarVisible.value = false
   }
 
   override fun onOutput(line: String?) {

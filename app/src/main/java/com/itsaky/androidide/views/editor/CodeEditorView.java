@@ -16,6 +16,17 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_PASSWORD;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_INNER;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_LIGATURES;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_MAGNIFER;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_WORD_WRAP;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -29,9 +40,9 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.language.cpp.CppLanguage;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
@@ -40,7 +51,6 @@ import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
@@ -51,6 +61,9 @@ import com.itsaky.inflater.values.ValuesTableFactory;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,14 +91,12 @@ public class CodeEditorView extends FrameLayout {
   private final File file;
   private final LayoutCodeEditorBinding binding;
   private boolean isModified;
-  private boolean isFirstCreate;
 
   public CodeEditorView(
       @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
     this.isModified = false;
-    this.isFirstCreate = true;
 
     this.binding = LayoutCodeEditorBinding.inflate(LayoutInflater.from(context));
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
@@ -262,85 +273,100 @@ public class CodeEditorView extends FrameLayout {
   }
 
   private void configureEditorIfNeeded() {
-    boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_SIZE_CHANGED;
-    boolean ligaturesChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED;
-    boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED;
-    boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
-    boolean inputFlagsChanged =
-        isFirstCreate || ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED;
-    boolean wordWrapChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED;
-    boolean magnifierChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED;
+    final var prefs = StudioApp.getInstance().getPrefManager();
+    onFontSizePrefChanged(prefs);
+    onFontLigaturesPrefChanged(prefs);
+    onPrintingFlagsPrefChanged(prefs);
+    onInputTypePrefChanged();
+    onWordwrapPrefChanged(prefs);
+    onMagnifierPrefChanged(prefs);
+  }
 
-    final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
+  protected void onMagnifierPrefChanged(final PreferenceManager prefs) {
+    var enabled = prefs.getBoolean(KEY_EDITOR_USE_MAGNIFER, true);
+    binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
+  }
 
-    if (sizeChanged) {
-      float textSize = prefs.getFloat(PreferenceManager.KEY_EDITOR_FONT_SIZE);
-      if (textSize < 6 || textSize > 32) {
-        textSize = 14;
-      }
+  protected void onWordwrapPrefChanged(final PreferenceManager prefs) {
+    var enabled = prefs.getBoolean(KEY_EDITOR_WORD_WRAP, false);
+    binding.editor.setWordwrap(enabled);
+  }
 
-      binding.editor.setTextSize(textSize);
-      ConstantsBridge.EDITOR_PREF_SIZE_CHANGED = false;
+  protected void onInputTypePrefChanged() {
+    binding.editor.setInputType(IDEEditor.createInputFlags());
+  }
+
+  protected void onPrintingFlagsPrefChanged(final PreferenceManager prefs) {
+    int flags = 0;
+    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_LEADING, true)) {
+      flags |= IDEEditor.FLAG_DRAW_WHITESPACE_LEADING;
     }
 
-    if (ligaturesChanged) {
-      var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_FONT_LIGATURES, true);
-      binding.editor.setLigatureEnabled(enabled);
-      ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = false;
+    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_TRAILING, false)) {
+      flags |= IDEEditor.FLAG_DRAW_WHITESPACE_TRAILING;
     }
 
-    if (flagsChanged) {
-      int flags = 0;
-      if (prefs.getBoolean(PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING, true)) {
-        flags |= IDEEditor.FLAG_DRAW_WHITESPACE_LEADING;
-      }
-
-      if (prefs.getBoolean(PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING, false)) {
-        flags |= IDEEditor.FLAG_DRAW_WHITESPACE_TRAILING;
-      }
-
-      if (prefs.getBoolean(PreferenceManager.KEY_EDITOR_FLAG_WS_INNER, true)) {
-        flags |= IDEEditor.FLAG_DRAW_WHITESPACE_INNER;
-      }
-
-      if (prefs.getBoolean(PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE, true)) {
-        flags |= IDEEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE;
-      }
-
-      if (prefs.getBoolean(PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK, true)) {
-        flags |= IDEEditor.FLAG_DRAW_LINE_SEPARATOR;
-      }
-
-      binding.editor.setNonPrintablePaintingFlags(flags);
-      ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = false;
+    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_INNER, true)) {
+      flags |= IDEEditor.FLAG_DRAW_WHITESPACE_INNER;
     }
 
-    if (inputFlagsChanged) {
-      binding.editor.setInputType(IDEEditor.createInputFlags());
-      ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED = false;
+    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, true)) {
+      flags |= IDEEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE;
     }
 
-    if (drawHexChanged) {
-      // TODO Do something about this
-      //     Maybe use spans...
-      //            binding.editor.setLineColorsEnabled (prefs.getBoolean
-      // (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
-      ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = false;
+    if (prefs.getBoolean(KEY_EDITOR_FLAG_LINE_BREAK, true)) {
+      flags |= IDEEditor.FLAG_DRAW_LINE_SEPARATOR;
     }
 
-    if (wordWrapChanged) {
-      var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false);
-      binding.editor.setWordwrap(enabled);
-      ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = false;
+    binding.editor.setNonPrintablePaintingFlags(flags);
+  }
+
+  protected void onFontLigaturesPrefChanged(final PreferenceManager prefs) {
+    var enabled = prefs.getBoolean(KEY_EDITOR_FONT_LIGATURES, true);
+    binding.editor.setLigatureEnabled(enabled);
+  }
+
+  protected void onFontSizePrefChanged(final PreferenceManager prefs) {
+    float textSize = prefs.getFloat(KEY_EDITOR_FONT_SIZE);
+    if (textSize < 6 || textSize > 32) {
+      textSize = 14;
     }
 
-    if (magnifierChanged) {
-      var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true);
-      binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
-      ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
+    binding.editor.setTextSize(textSize);
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  @SuppressWarnings("unused")
+  public void onPreferenceChanged(PreferenceChangeEvent event) {
+    if (binding == null) {
+      return;
     }
 
-    isFirstCreate = false;
+    final var prefs = StudioApp.getInstance().getPrefManager();
+    switch (event.getKey()) {
+      case KEY_EDITOR_FONT_SIZE:
+        onFontSizePrefChanged(prefs);
+        break;
+      case KEY_EDITOR_FONT_LIGATURES:
+        onFontLigaturesPrefChanged(prefs);
+        break;
+      case KEY_EDITOR_FLAG_LINE_BREAK:
+      case KEY_EDITOR_FLAG_WS_INNER:
+      case KEY_EDITOR_FLAG_WS_EMPTY_LINE:
+      case KEY_EDITOR_FLAG_WS_LEADING:
+      case KEY_EDITOR_FLAG_WS_TRAILING:
+        onPrintingFlagsPrefChanged(prefs);
+        break;
+      case KEY_EDITOR_FLAG_PASSWORD:
+        onInputTypePrefChanged();
+        break;
+      case KEY_EDITOR_WORD_WRAP:
+        onWordwrapPrefChanged(prefs);
+        break;
+      case KEY_EDITOR_USE_MAGNIFER:
+        onMagnifierPrefChanged(prefs);
+        break;
+    }
   }
 
   public boolean save() {
@@ -388,10 +414,6 @@ public class CodeEditorView extends FrameLayout {
     return binding.editor.getText().toString();
   }
 
-  public void onPause() {
-    // unimplemented
-  }
-
   public void onResume() {
     configureEditorIfNeeded();
   }
@@ -423,6 +445,20 @@ public class CodeEditorView extends FrameLayout {
   public void markAsSaved() {
     isModified = false;
     notifySaved();
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    EventBus.getDefault().unregister(this);
   }
 
   @NonNull

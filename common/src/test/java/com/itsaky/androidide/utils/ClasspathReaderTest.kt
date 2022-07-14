@@ -32,7 +32,7 @@ class ClasspathReaderTest {
   @Test
   fun testListClasses() {
     val classes =
-      ClasspathReader.listClasses(
+      com.itsaky.androidide.utils.ClasspathReader.listClasses(
         listOf(File("../tests/test-project/app/src/main/resources/android.jar"))
       )
   

@@ -34,12 +34,22 @@ android {
     }
 }
 
+kapt {
+    arguments {
+        arg ('eventBusIndex', 'com.itsaky.androidide.events.ProjectsApiEventsIndex')
+    }
+}
+
 dependencies {
+    
+    kapt common.eventbus_ap
+    
     api project (path: ':build-tools:eventbus')
     api project (path: ':build-tools:eventbus-events')
     api project (path: ':build-tools:tooling-api')
     
-    implementation project (path: ':common')
+    implementation project (path: ':shared')
+    implementation project (path: ':build-tools:logger')
     
     implementation common.io
     implementation google.guava

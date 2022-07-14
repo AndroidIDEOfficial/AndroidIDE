@@ -39,6 +39,7 @@ import java.util.function.*
  * @author Akash Yadav
  */
 class CommonCompletionProvider(private val server: ILanguageServer) {
+
   /**
    * Computes completion items using the provided language server instance.
    *

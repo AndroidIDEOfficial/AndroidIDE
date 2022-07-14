@@ -209,7 +209,7 @@ class ImportCompletionProvider(
       result.add(fromClasspath)
     }
 
-    BootClasspathProvider.getAllEntries().forEach {
+    com.itsaky.androidide.utils.BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
       val fromBootclasspath = collectPackageNode(it, pkgName)
       if (fromBootclasspath != null) {
@@ -228,7 +228,7 @@ class ImportCompletionProvider(
    * @param pkgName The package name of the package to find node for.
    * @return The found package name. Or `null` if no package can be found.
    */
-  private fun collectPackageNode(trie: ClassTrie, pkgName: String): Node? {
+  private fun collectPackageNode(trie: com.itsaky.androidide.utils.ClassTrie, pkgName: String): Node? {
     val segments = trie.segments(pkgName)
     var node: Node? = trie.root
     for (segment in segments) {
@@ -347,7 +347,7 @@ class ImportCompletionProvider(
       addDirectChildNodes(classpathNode, incomplete, list, names, packageOnly)
     }
 
-    BootClasspathProvider.getAllEntries().forEach {
+    com.itsaky.androidide.utils.BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
       val node =
         if (pkgName.isEmpty()) {
