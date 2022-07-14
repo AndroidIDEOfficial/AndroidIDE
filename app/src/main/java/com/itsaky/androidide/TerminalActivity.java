@@ -41,7 +41,7 @@ import com.itsaky.androidide.databinding.ActivityTerminalBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.utils.BootstrapInstaller;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
@@ -356,7 +356,7 @@ public class TerminalActivity extends StudioActivity
       binding.virtualKeyTable.setVirtualKeysViewClient(getKeyListener());
       binding.virtualKeyTable.reload(
           new VirtualKeysInfo(
-              ConstantsBridge.VIRTUAL_KEYS, "", VirtualKeysConstants.CONTROL_CHARS_ALIASES));
+              Constants.VIRTUAL_KEYS, "", VirtualKeysConstants.CONTROL_CHARS_ALIASES));
     } catch (JSONException e) {
       LOG.error("Unable to parse terminal virtual keys json data", e);
     }

@@ -17,7 +17,7 @@
  */
 package com.itsaky.androidide.models;
 
-public class ConstantsBridge {
+public class Constants {
 
   public static final String VIRTUAL_KEYS =
       "["
@@ -46,14 +46,5 @@ public class ConstantsBridge {
           + "\n    \"PGDN\""
           + "\n  ]"
           + "\n]";
-  public static boolean EDITOR_PREF_SIZE_CHANGED = false;
-  public static boolean EDITOR_PREF_LIGATURES_CHANGED = false;
-  public static boolean EDITOR_PREF_FLAGS_CHANGED = false;
-  public static boolean EDITOR_PREF_DRAW_HEX_CHANGED = false;
-  public static boolean EDITOR_PREF_VISIBLE_PASSWORD_CHANGED = false;
-  public static boolean EDITOR_PREF_WORD_WRAP_CHANGED = false;
-  public static boolean EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
-
-  public static boolean CLASS_LOAD_SUCCESS = true;
   public static boolean SPLASH_TO_MAIN = false;
 }
