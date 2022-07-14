@@ -339,6 +339,10 @@ public class CodeEditorView extends FrameLayout {
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
   public void onPreferenceChanged(PreferenceChangeEvent event) {
+    if (binding == null) {
+      return;
+    }
+
     final var prefs = StudioApp.getInstance().getPrefManager();
     switch (event.getKey()) {
       case KEY_EDITOR_FONT_SIZE:
