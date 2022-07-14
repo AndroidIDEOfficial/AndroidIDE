@@ -42,6 +42,8 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.eventbus.events.editor.OnPauseEvent;
+import com.itsaky.androidide.eventbus.events.editor.OnStartEvent;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.language.cpp.CppLanguage;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
@@ -61,6 +63,7 @@ import com.itsaky.inflater.values.ValuesTableFactory;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -107,6 +110,8 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.subscribeEvent(
         ContentChangeEvent.class, ((event, unsubscribe) -> handleContentChange(event)));
+
+    EventBus.getDefault().register(this);
 
     this.binding.diagnosticTextContainer.setVisibility(GONE);
 
@@ -334,6 +339,20 @@ public class CodeEditorView extends FrameLayout {
     }
 
     binding.editor.setTextSize(textSize);
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  @SuppressWarnings("unused")
+  public void onActivityStarted(OnStartEvent event) {
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  @SuppressWarnings("unused")
+  public void onActivityPaused(OnPauseEvent event) {
+    EventBus.getDefault().unregister(this);
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
