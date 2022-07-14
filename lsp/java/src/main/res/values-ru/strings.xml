@@ -26,7 +26,7 @@
     <string name="action_implement_abstract_methods">Реализовать абстрактный метод(ы)</string>
     <string name="action_remove_class">Удалить класс</string>
     <string name="action_remove_method">Удалить метод</string>
-    <string name="action_remove_unused_throws">Удалить неиспользованные throws</string>
+    <string name="action_remove_unused_throws">Удалить неиспользуемые throws</string>
     <string name="action_suppress_unchecked_warning">Подавить \'непроверенное\' предупреждение</string>
     <string name="action_uncomment_line">Раскомментировать строку</string>
     <string name="action_convert_to_statement">Преобразовать в оператор</string>

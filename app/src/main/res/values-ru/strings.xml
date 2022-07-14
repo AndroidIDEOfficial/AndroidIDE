@@ -36,10 +36,10 @@
     <string name="msg_api_info_since">Начиная с API %d</string>
     <string name="msg_api_info_removed">Удалено в API %d</string>
     <string name="msg_api_info_deprecated">Устаревшее с API %d</string>
-    <string name="msg_finding_references">Поиск референсов&#8230;</string>
+    <string name="msg_finding_references">Поиск ссылок&#8230;</string>
     <string name="msg_finding_definition">Поиск дефиниций&#8230;</string>
     <string name="msg_no_definition">Дефиниций не найдено</string>
-    <string name="msg_no_references">Референсов не найдено</string>
+    <string name="msg_no_references">Ссылок не найдено</string>
     <string name="view_diags">Диагностика</string>
 
     <!-- Build Tools Installation -->
@@ -65,7 +65,7 @@
     <string name="create_aab">Создать AAB</string>
     <string name="build_tasks">Сценарии сборки</string>
     <string name="quick_run_debug">Быстрая сборка</string>
-    <string name="msg_sync_needed">Файлы Gradle были изменены. Пожалуйста пересоберите проект, чтобы синхронизировать зависимости и конфигурации.</string>
+    <string name="msg_sync_needed">Файлы Gradle были изменены. Пожалуйста пересоберите свой проект, чтобы синхронизировать зависимости и конфигурации.</string>
     <string name="preparing">Подготовка</string>
     <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
     <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.4 будет скачан, если это необходимо.</string>
@@ -154,7 +154,7 @@
     <string name="new_name">Новое имя</string>
     <string name="new_file">Новый файл</string>
     <string name="new_java_class">Новый Java класс</string>
-    <string name="new_xml_resource">Новый ресурс XML</string>
+    <string name="new_xml_resource">Новый XML ресурс</string>
     <string name="new_folder">Новая папка</string>
     <string name="title_confirm_delete">Подтвердите удаление</string>
     <string name="msg_confirm_delete">Уверены, что хотите удалить:\n%s?</string>
@@ -191,7 +191,7 @@
     <string name="redo">Повтор действия</string>
     <item name="copy" type="string" tools:override="true">Копировать</item>
     <item name="next" type="string">Далее</item>
-    <item name="text_to_search" type="string">Искать текст</item>
+    <item name="text_to_search" type="string">Текст для поиска</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Размер шрифта редактора</string>
@@ -266,7 +266,7 @@
     <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
     <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
     <string name="msg_copy_report_action">Копировать и сообщить</string>
-    <string name="msg_reading_bootstrap">Чтение архива Bootstrap…</string>
+    <string name="msg_reading_bootstrap">Чтение архива bootstrap…</string>
     <string name="msg_bootstrap_installation_error">Установка Bootstrap не удалась, вызвав следующее исключение.</string>
     <string name="title_translations">Переводчики</string>
     <string name="title_compiler_module_install">Установка модуля компилятора</string>
@@ -288,11 +288,11 @@
 
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="wizard_error_name_empty">Имя не дожно быть пустым.</string>
+    <string name="wizard_error_name_empty">Имя не может быть пустым.</string>
     <string name="wizard_error_name_illegal">Имя не может содержать недопустимых символов</string>
     <string name="wizard_save_location">Место сохранения</string>
     <string name="wizard_language">Язык проекта</string>
-    <string name="wizard_loading">Загрузка шаблонов…</string>
+    <string name="wizard_loading">Загрузка шаблонов&#8230;</string>
     <string name="exit">Выход</string>
     <string name="idepref_title_tpFix">Исправление указателей тегов JDK 11</string>
     <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочитаемо использовать JDK 17].</string>
@@ -306,7 +306,7 @@
     <string name="idepref_editor_use_magnifier_summary">Увеличьте текст в положении курсора при выделении текста в редакторе</string>
     <string name="msg_apk_install_intent_failed">Не удается запустить намерение для установки APK</string>
     <string name="msg_viewaction_add_attr">Добавить атрибут</string>
-    <string name="msg_search_attrs">Поиск атрибутов…</string>
+    <string name="msg_search_attrs">Поиск атрибутов&#8230;</string>
     <string name="hint_dimension_val">Значение измерения</string>
     <string name="hint_dimension_res">Ресурс измерения</string>
     <string name="hint_boolean_res">Логический ресурс</string>
@@ -321,8 +321,8 @@
     <string name="idepref_java_useGoogleStyle_summary">Используйте конфигурацию форматирования кода в стиле Google Java для форматирования исходного кода Java.</string>
     <string name="idepref_visiblePassword_title">Флаг видимого пароля</string>
     <string name="idepref_visiblePassword_summary">Используйте флаг для видимого типа ввода пароля в редакторе. Это гарантирует, что программная клавиатура не предложит никаких предложений.</string>
-    <string name="previous">Предыдущий</string>
-    <string name="msg_replacing">Замена…</string>
+    <string name="previous">Назад</string>
+    <string name="msg_replacing">Замена&#8230;</string>
     <string name="title_gradle_service_notification_ticker">Запущена служба сборки Gradle</string>
     <string name="title_gradle_service_notification">Служба сборки Gradle</string>
     <string name="msg_gradle_service_notification">Служба сборки Gradle для AndroidIDE работает в фоновом режиме.</string>
@@ -331,9 +331,13 @@
     <string name="msg_project_initialized">Проект инициализирован</string>
     <string name="msg_project_initialization_failed">Сбой инициализации проекта</string>
     <string name="msg_project_not_initialized">Проект не инициализирован</string>
-    <string name="msg_running_task">Запущенная задача: \'%1$s\'</string>
+    <string name="msg_running_task">Запущена задача: \'%1$s\'</string>
     <string name="msg_replacement">Замена</string>
     <string name="title_sync_project">Синхронизация проекта</string>
     <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
-    <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
+    <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь</a>]]></string>
+    <string name="build_status_idle">Сборки не выполняются</string>
+    <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
+    <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
+    <string name="build_status_sucess">Сборка прошла успешно</string>
 </resources>
