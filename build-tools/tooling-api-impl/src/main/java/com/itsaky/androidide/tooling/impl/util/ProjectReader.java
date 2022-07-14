@@ -58,9 +58,6 @@ import org.gradle.tooling.model.idea.IdeaModuleDependency;
 import org.gradle.tooling.model.idea.IdeaProject;
 import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +71,6 @@ public class ProjectReader {
 
   /** All modules mapped by their names (not paths). */
   private static final Map<String, IdeaModule> allModules = new ConcurrentHashMap<>();
-
-  private static final String SINGLE_ENTRY_IMPL =
-      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaSingleEntryLibraryDependency";
-  private static final String MODULE_IMPL =
-      "org.gradle.plugins.ide.internal.tooling.idea.DefaultIdeaModuleDependency";
 
   public static IdeGradleProject read(
       ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues)
@@ -427,20 +419,6 @@ public class ProjectReader {
     }
   }
 
-  private static IdeaDependency reflectIdeaDependency(final IdeaDependency dependency) {
-    log("Creating Proxy for IdeaDependency...");
-    try {
-      final InvocationHandler invocationHandler = Proxy.getInvocationHandler(dependency);
-      final var klass = invocationHandler.getClass();
-      final var sourceObjectField = klass.getDeclaredField("sourceObject");
-      sourceObjectField.setAccessible(true);
-      return createProxy(sourceObjectField.get(invocationHandler));
-    } catch (Throwable err) {
-      log("Unable to reflect IdeaDependency", err);
-      return null;
-    }
-  }
-
   private static void log(Object... messages) {
     final var line =
         new LogLine(ILogger.Priority.DEBUG, "BuildActionExecutor", generateMessage(messages));
@@ -460,57 +438,5 @@ public class ProjectReader {
     }
 
     return sb.toString();
-  }
-
-  private static IdeaDependency createProxy(final Object dependency) {
-    final var className = dependency.getClass().getName();
-    Class<?>[] proxyTypes;
-    if (className.equals(SINGLE_ENTRY_IMPL)) {
-      proxyTypes = new Class[] {IdeaSingleEntryLibraryDependency.class};
-    } else if (className.equals(MODULE_IMPL)) {
-      proxyTypes = new Class[] {IdeaModuleDependency.class};
-    } else {
-      return null;
-    }
-
-    return (IdeaDependency)
-        Proxy.newProxyInstance(
-            ProjectReader.class.getClassLoader(),
-            proxyTypes,
-            new IdeaDependencyMethodInvocationHandler(dependency));
-  }
-
-  private static class IdeaDependencyMethodInvocationHandler implements InvocationHandler {
-    private final Object object;
-    private final Class<?> targetType;
-
-    private final List<String> innerProxyClasses =
-        List.of(
-            "org.gradle.tooling.model.idea.IdeaDependencyScope",
-            "org.gradle.tooling.model.GradleModuleVersion");
-
-    private IdeaDependencyMethodInvocationHandler(final Object object) {
-      this.object = object;
-      this.targetType = object.getClass();
-    }
-
-    @Override
-    public Object invoke(final Object target, final Method invokedMethod, final Object[] objects)
-        throws Throwable {
-      if (innerProxyClasses.contains(invokedMethod.getReturnType().getName())) {
-        final Object inner =
-            targetType
-                .getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes())
-                .invoke(object, objects);
-        return Proxy.newProxyInstance(
-            IdeaDependencyMethodInvocationHandler.class.getClassLoader(),
-            new Class<?>[] {invokedMethod.getReturnType()},
-            new IdeaDependencyMethodInvocationHandler(inner));
-      }
-
-      final var method =
-          targetType.getMethod(invokedMethod.getName(), invokedMethod.getParameterTypes());
-      return method.invoke(object, objects);
-    }
   }
 }
