@@ -56,9 +56,9 @@ public class ToolsManager {
               copyBusyboxIfNeeded();
               extractLogsenderIfNeeded();
               extractAapt2();
-              //              extractLibHooks();
               extractGradlePlugin();
               extractToolingApi();
+              extractAndroidJar();
               extractIdeEnv();
               writeInitScript();
             })
@@ -72,6 +72,13 @@ public class ToolsManager {
                 onFinish.run();
               }
             });
+  }
+
+  private static void extractAndroidJar() {
+    if (!Environment.ANDROID_JAR.exists()) {
+      ResourceUtils.copyFileFromAssets(
+          getCommonAsset("android.jar"), Environment.ANDROID_JAR.getAbsolutePath());
+    }
   }
 
   private static void extractIdeEnv() {

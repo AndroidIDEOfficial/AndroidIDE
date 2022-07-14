@@ -60,6 +60,7 @@ dependencies {
     
     implementation project (path: ':lsp:api')
     implementation project (path: ':build-tools:javac')
+    implementation project (path: ':build-tools:javac-services')
     implementation project (path: ':build-tools:google-java-format')
     
     implementation androidx.ktx

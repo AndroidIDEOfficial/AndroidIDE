@@ -28,8 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticSeverity;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.DiagnosticSeverity;
 
 import java.io.File;
 import java.util.List;

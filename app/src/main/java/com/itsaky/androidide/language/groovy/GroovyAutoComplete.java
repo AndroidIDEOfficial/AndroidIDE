@@ -21,9 +21,9 @@ package com.itsaky.androidide.language.groovy;
 
 import android.os.Bundle;
 
-import com.itsaky.lsp.models.CompletionItem;
-import com.itsaky.lsp.models.CompletionItemKind;
-import com.itsaky.lsp.models.InsertTextFormat;
+import com.itsaky.androidide.lsp.models.CompletionItem;
+import com.itsaky.androidide.lsp.models.CompletionItemKind;
+import com.itsaky.androidide.lsp.models.InsertTextFormat;
 
 import java.util.ArrayList;
 import java.util.List;

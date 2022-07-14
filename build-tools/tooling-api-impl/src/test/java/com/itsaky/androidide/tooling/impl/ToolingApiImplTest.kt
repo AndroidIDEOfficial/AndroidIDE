@@ -20,41 +20,27 @@ package com.itsaky.androidide.tooling.impl
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.GsonBuilder
-import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
-import com.itsaky.androidide.tooling.api.messages.result.BuildResult
-import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.JavaModule
-import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
-import com.itsaky.androidide.tooling.events.ProgressEvent
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.util.concurrent.*
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
 class ToolingApiImplTest {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
   @Test
   fun testProjectInit() {
-    val client = TestClient()
-    val (server, project) = launchServer(client)
-
-    server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
-
+    val (server, project) = ToolingApiTestLauncher().launchServer()
+    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
     verifyProjectProps(project, server)
   }
 
@@ -87,112 +73,67 @@ class ToolingApiImplTest {
     assertThat(app.tasks.size).isAtLeast(100)
     assertThat(app.tasks.first { it.path == "${app.projectPath}:thisIsATestTask" }).isNotNull()
 
-    // This is not expected to be filled. Instead debugLibraries must be filled
-    @Suppress("DEPRECATION") assertThat(app.variantDependencies).isEmpty()
-
-    assertThat(app.debugLibraries).isNotEmpty()
+    assertThat(app.libraries).isNotEmpty()
     // At least one project library
-    assertThat(app.debugLibraries.filter { it.type == PROJECT }).isNotEmpty()
+    assertThat(app.libraries.filter { it.type == PROJECT }).isNotEmpty()
+
+    // :app module includes :java-library as a dependency. But it is not transitive
+    assertThat(
+        app.libraries.firstOrNull {
+          it.type == PROJECT &&
+            it.projectInfo!!.projectPath == ":another-java-library" &&
+            it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
+        }
+      )
+      .isNull()
+
+    val androidLib = project.findByPath(":android-library").get()
+    assertThat(androidLib).isNotNull()
+    assertThat(androidLib).isInstanceOf(AndroidModule::class.java)
+    // Make sure that transitive dependencies are included here because :android-library includes
+    // :java-library project which further includes :another-java-libraries project with 'api'
+    // configuration
+    assertThat(
+        (androidLib as AndroidModule).libraries.firstOrNull {
+          it.type == PROJECT &&
+            it.projectInfo!!.projectPath == ":another-java-library" &&
+            it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
+        }
+      )
+      .isNotNull()
 
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
     assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
 
-    assertThat(project.findByPath(":does-not-exist").get()).isNull()
-  }
-
-  private fun launchServer(client: IToolingApiClient): Pair<IToolingApiServer, IProject> {
-    val builder =
-      ProcessBuilder(
-        "java",
-        "--add-opens",
-        "java.base/java.lang=ALL-UNNAMED",
-        "--add-opens",
-        "java.base/java.util=ALL-UNNAMED",
-        "--add-opens",
-        "java.base/java.io=ALL-UNNAMED",
-        "-jar",
-        "./build/libs/tooling-api-all.jar"
-      )
-    val androidHome = findAndroidHome()
-    println("ANDROID_HOME=$androidHome")
-    builder.environment()["ANDROID_SDK_ROOT"] = androidHome
-    builder.environment()["ANDROID_HOME"] = androidHome
-    val proc = builder.start()
-
-    Thread(Reader(proc.errorStream)).start()
-    val launcher = ToolingApiLauncher.newClientLauncher(client, proc.inputStream, proc.outputStream)
-
-    launcher.startListening()
-
-    return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
-  }
-
-  private fun findAndroidHome(): String {
-    var androidHome = System.getenv("ANDROID_HOME")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    androidHome = System.getenv("ANDROID_SDK_ROOT")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    val os = System.getProperty("os.name")
-    val home = System.getProperty("user.home")
-    return if (os.contains("Linux")) {
-      "$home/Android/Sdk"
-    } else {
-      "$home\\AppData\\Local\\Android\\Sdk"
-    }
-  }
-
-  private class TestClient : IToolingApiClient {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    override fun logMessage(line: LogLine) {
-      log.log(line.priority, line.formattedTagAndMessage())
-    }
-
-    override fun logOutput(line: String) {
-      log.debug(line.trim())
-    }
-
-    override fun prepareBuild() {}
-    override fun onBuildSuccessful(result: BuildResult) {}
-    override fun onBuildFailed(result: BuildResult) {}
-
-    override fun onProgressEvent(event: ProgressEvent) {}
-
-    override fun getBuildArguments(): CompletableFuture<List<String>> {
-      return CompletableFuture.completedFuture(listOf("--stacktrace", "--info"))
-    }
-
-    override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
-      CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
-  }
-
-  private class Reader(val input: InputStream) : Runnable {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    override fun run() {
-      try {
-        val reader = BufferedReader(InputStreamReader(input))
-        var line = reader.readLine()
-        while (line != null) {
-          log.debug(line)
-          line = reader.readLine()
+    assertThat(
+        (javaLibrary as JavaModule).javaDependencies.firstOrNull {
+          it is JavaModuleExternalDependency &&
+            it.gradleArtifact != null &&
+            it.run {
+              gradleArtifact!!.group == "io.github.itsaky" &&
+                gradleArtifact!!.name == "nb-javac-android" &&
+                gradleArtifact!!.version == "17.0.0.0"
+            }
         }
-      } catch (error: Throwable) {
-        log.error(error)
-      }
-    }
-  }
+      )
+      .isNotNull()
 
-  fun Any.getTestProject(): File = File("./src/test/test-project")
+    assertThat(
+        javaLibrary.javaDependencies.first {
+          it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
+        }
+      )
+      .isNotNull()
 
-  fun Any.asJson(): String {
-    val builder = GsonBuilder()
-    ToolingApiLauncher.configureGson(builder)
-    return builder.create().toJson(this)
+    // In case we have multiple dependencies with same name but different path
+    val nested =
+      javaLibrary.javaDependencies
+        .filterIsInstance(JavaModuleProjectDependency::class.java)
+        .filter { it.moduleName.endsWith("nested-java-library") }
+    assertThat(nested).hasSize(2)
+    assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
+
+    assertThat(project.findByPath(":does-not-exist").get()).isNull()
   }
 }

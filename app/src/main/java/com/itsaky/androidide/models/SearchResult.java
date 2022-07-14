@@ -17,7 +17,7 @@
  **************************************************************************************/
 package com.itsaky.androidide.models;
 
-import com.itsaky.lsp.models.Range;
+import com.itsaky.androidide.models.Range;
 
 import java.io.File;
 

@@ -46,6 +46,7 @@ android {
 dependencies {
     implementation common.editor
     implementation project (':build-tools:fuzzysearch')
+    implementation project (':build-tools:eventbus-events')
     
     implementation androidx.appcompat
     implementation androidx.ktx
@@ -53,7 +54,9 @@ dependencies {
     implementation common.utilcode
     implementation google.material
     
-    compileOnly project (':build-tools:projects')
+    api project (':build-tools:projects')
+    api project (':lsp:models')
+    
     compileOnly project (':xml-inflater')
     compileOnly project (':actions')
     compileOnly project (':common')

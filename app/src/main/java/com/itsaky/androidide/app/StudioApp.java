@@ -31,10 +31,10 @@ import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
-import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.api.ILanguageServerRegistry;
-import com.itsaky.lsp.java.JavaLanguageServer;
-import com.itsaky.lsp.xml.XMLLanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
 

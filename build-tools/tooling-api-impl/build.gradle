@@ -68,12 +68,13 @@ dependencies {
     implementation project (path: ':build-tools:tooling-api')
     
     implementation common.jkotlin
-    implementation 'org.gradle:gradle-tooling-api:7.4.2'
+    implementation 'org.gradle:gradle-tooling-api:7.5-rc-5'
     
+    testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
     testImplementation tests.google_truth
     
-    runtimeOnly 'org.slf4j:slf4j-api:1.7.30'
+    runtimeOnly 'org.slf4j:slf4j-api:1.7.36'
 }
 
 compileKotlin {

@@ -23,6 +23,7 @@ import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import java.io.File
+import java.nio.file.Path
 import java.util.concurrent.*
 
 /**
@@ -117,5 +118,33 @@ open class Project(
       androidModules.add(0, this)
     }
     return androidModules
+  }
+
+  fun findModuleForFile(file: Path): ModuleProject? {
+    return findModuleForFile(file.toFile())
+  }
+
+  fun findModuleForFile(file: File): ModuleProject? {
+    val path = file.path
+    var longestPath = ""
+    var moduleWithLongestPath: ModuleProject? = null
+
+    for (module in subModules) {
+      if (module !is ModuleProject) {
+        continue
+      }
+
+      val moduleDir = module.projectDir.path
+      if (path.startsWith(moduleDir) && longestPath.length < moduleDir.length) {
+        longestPath = moduleDir
+        moduleWithLongestPath = module
+      }
+    }
+
+    if (longestPath.isEmpty() || moduleWithLongestPath == null) {
+      return null
+    }
+
+    return moduleWithLongestPath
   }
 }

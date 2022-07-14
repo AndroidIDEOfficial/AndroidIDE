@@ -335,6 +335,12 @@
     <string name="idepref_msg_customGradleInstallation">Specify a custom Gradle installation to use for build. This OVERRIDES the version specified in gradle-wrapper.properties.</string>
     <string name="msg_gradle_installation_path">Gradle installation path</string>
     <string name="msg_gradle_installation_input_help">Leave empty to use Gradle wrapper.</string>
+
     <string name="msg_require_install_jdk_and_android_sdk">You need to install the JDK and Android SDK for the IDE to work. To open SDK Manager click \'Yes\'</string>
     <string name="msg_require_install_bootstrap_packages">You need to install the BootStrap Packages for the SDK Manager to work</string>
+
+    <string name="build_status_idle">No builds in progress</string>
+    <string name="build_status_in_progress">Build in progress…</string>
+    <string name="build_status_failed">Build failed. See build output for more details.</string>
+    <string name="build_status_sucess">Build successful</string>
 </resources>

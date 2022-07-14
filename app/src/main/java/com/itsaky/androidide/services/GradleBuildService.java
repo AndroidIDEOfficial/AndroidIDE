@@ -86,41 +86,43 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
   private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
   private final IBinder mBinder = new GradleServiceBinder();
+  public IProject projectProxy;
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
   private Thread toolingServerThread;
   private NotificationManager notificationManager;
   private IToolingApiServer server;
-  public IProject projectProxy;
   private EventListener eventListener;
 
   @Override
   public void onCreate() {
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    showNotification();
+    showNotification(getString(R.string.build_status_idle));
   }
 
-  private void showNotification() {
+  private void showNotification(final String message) {
+    LOG.info("Showing notification to user...");
+    startForeground(NOTIFICATION_ID, buildNotification(message));
+  }
+
+  private Notification buildNotification(final String message) {
     final var ticker = getString(R.string.title_gradle_service_notification_ticker);
     final var title = getString(R.string.title_gradle_service_notification);
-    final var message = getString(R.string.msg_gradle_service_notification);
 
     final var launch = getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
 
     final var intent =
         PendingIntent.getActivity(this, 0, launch, PendingIntent.FLAG_UPDATE_CURRENT);
-    final var notification =
+    final Notification.Builder builder =
         new Notification.Builder(this, BaseApplication.NOTIFICATION_GRADLE_BUILD_SERVICE)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setTicker(ticker)
             .setWhen(System.currentTimeMillis())
             .setContentTitle(title)
             .setContentText(message)
-            .setContentIntent(intent)
-            .build();
+            .setContentIntent(intent);
 
-    LOG.info("Showing notification to user...");
-    startForeground(NOTIFICATION_ID, notification);
+    return builder.build();
   }
 
   @Override
@@ -166,6 +168,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void prepareBuild() {
+    updateNotification(getString(R.string.build_status_in_progress));
     if (eventListener != null) {
       eventListener.prepareBuild();
     }
@@ -173,6 +176,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onBuildSuccessful(@NonNull BuildResult result) {
+    updateNotification(getString(R.string.build_status_sucess));
     if (eventListener != null) {
       eventListener.onBuildSuccessful(result.getTasks());
     }
@@ -180,6 +184,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onBuildFailed(@NonNull BuildResult result) {
+    updateNotification(getString(R.string.build_status_failed));
     if (eventListener != null) {
       eventListener.onBuildFailed(result.getTasks());
     }
@@ -241,7 +246,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   public boolean isGradleWrapperAvailable() {
     final var projectDir = ProjectManager.INSTANCE.getProjectDirPath();
-    if (projectDir == null || TextUtils.isEmpty(projectDir)) {
+    if (TextUtils.isEmpty(projectDir)) {
       return false;
     }
 
@@ -286,6 +291,14 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
           return new GradleWrapperCheckResult(isAvailable);
         });
+  }
+
+  @SuppressWarnings("ConstantConditions")
+  private void updateNotification(final String message) {
+    ThreadUtils.runOnUiThread(
+        () ->
+            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+                .notify(NOTIFICATION_ID, buildNotification(message)));
   }
 
   @NonNull

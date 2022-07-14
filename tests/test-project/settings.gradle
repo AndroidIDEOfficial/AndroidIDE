@@ -1,0 +1,9 @@
+include ':app'
+include ':java-library'
+include ':java-library:nested-java-library'
+include ':android-library'
+include ':other-java-library'
+include ':another-java-library'
+include ':another-java-library:nested-java-library'
+include ':another-android-library'
+rootProject.name = "TestApp"

@@ -25,30 +25,31 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.FileIOUtils;
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.IntentUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutEditorFileTreeBinding;
+import com.itsaky.androidide.eventbus.events.filetree.FileClickEvent;
+import com.itsaky.androidide.eventbus.events.filetree.FileLongClickEvent;
+import com.itsaky.androidide.events.ExpandTreeNodeRequestEvent;
+import com.itsaky.androidide.events.ListProjectFilesRequestEvent;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.views.editor.CodeEditorView;
-import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.Arrays;
@@ -62,7 +63,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   private static final ILogger LOG = ILogger.newInstance("FileTreeFragment");
   private LayoutEditorFileTreeBinding binding;
   private AndroidTreeView mFileTreeView;
-  private FileActionListener mFileActionListener;
   private TreeNode mRoot;
   private String mTreeState;
 
@@ -74,25 +74,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   }
 
   @Override
-  public void onAttach(@NonNull Context context) {
-    super.onAttach(context);
-    mFileActionListener = (FileActionListener) context;
-  }
-
-  @Override
   public void onSaveInstanceState(@NonNull Bundle outState) {
     super.onSaveInstanceState(outState);
     saveTreeState();
     outState.putString(KEY_STORED_TREE_STATE, mTreeState);
-  }
-
-  public void saveTreeState() {
-    if (mFileTreeView != null) {
-      mTreeState = mFileTreeView.getSaveState();
-    } else {
-      LOG.error("Unable to save tree state. TreeView is null.");
-      mTreeState = null;
-    }
   }
 
   @Override
@@ -100,7 +85,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     super.onDestroyView();
     binding = null;
     mFileTreeView = null;
-    mFileActionListener = null;
   }
 
   @Override
@@ -108,6 +92,20 @@ public class FileTreeFragment extends BottomSheetDialogFragment
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false);
     return binding.getRoot();
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    EventBus.getDefault().unregister(this);
   }
 
   @Override
@@ -128,19 +126,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
       return;
     }
 
-    if (f.isFile()) {
-      if (f.getName().endsWith(".apk")) {
-        final var intent = IntentUtils.getInstallAppIntent(f);
-        if (intent != null) {
-          requireContext().startActivity(intent);
-        } else {
-          StudioApp.getInstance()
-              .toast(getString(R.string.msg_apk_install_intent_failed), Toaster.Type.ERROR);
-        }
-      } else if (mFileActionListener != null && (FileUtils.isUtf8(f) || f.length() == 0)) {
-        mFileActionListener.openFile(f);
-      }
-    } else if (f.isDirectory() && f.exists()) {
+    if (f.isDirectory()) {
       if (node.isExpanded()) {
         collapseNode(node);
       } else if (f.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath())
@@ -156,6 +142,48 @@ public class FileTreeFragment extends BottomSheetDialogFragment
             });
       }
     }
+
+    final var event = new FileClickEvent(f);
+    event.put(Context.class, requireContext());
+    EventBus.getDefault().post(event);
+  }
+
+  @Override
+  public boolean onLongClick(TreeNode node, Object value) {
+    final var event = new FileLongClickEvent((File) value);
+    event.put(Context.class, requireContext());
+    event.put(TreeNode.class, node);
+    EventBus.getDefault().post(event);
+    return true;
+  }
+
+  public void saveTreeState() {
+    if (mFileTreeView != null) {
+      mTreeState = mFileTreeView.getSaveState();
+    } else {
+      LOG.error("Unable to save tree state. TreeView is null.");
+      mTreeState = null;
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onGetListFilesRequeste(ListProjectFilesRequestEvent event) {
+    if (!isVisible() || getContext() == null) {
+      return;
+    }
+
+    listProjectFiles();
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onGetExpandTreeNodeRequest(ExpandTreeNodeRequestEvent event) {
+    if (!isVisible() || getContext() == null || event.getNode() == null) {
+      return;
+    }
+
+    expandNode(event.getNode());
   }
 
   public void collapseNode(TreeNode node) {
@@ -174,6 +202,71 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeBounds());
     mFileTreeView.expandNode(node);
+  }
+
+  public void listProjectFiles() {
+    if (binding == null) {
+      // Fragment has been destroyed
+      return;
+    }
+    final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
+    final File gradleProps = Environment.GRADLE_PROPS;
+    final File gradleHome = Environment.GRADLE_USER_HOME;
+    File projectDir = new File(projectDirPath);
+    mRoot = TreeNode.root(projectDir);
+    if (gradleHome.exists() && gradleHome.isDirectory()) {
+      if (!gradleProps.exists()) {
+        FileIOUtils.writeFileFromString(
+            gradleProps,
+            "# Specify global Gradle properties in this file\n"
+                + "# These properties will be applicable for every project you build"
+                + " with Gradle.");
+      }
+      TreeNode home = new TreeNode(gradleHome);
+      home.setViewHolder(new FileTreeViewHolder(getContext()));
+      TreeNode prop = new TreeNode(gradleProps);
+      prop.setViewHolder(new FileTreeViewHolder(getContext()));
+      home.addChild(prop);
+      mRoot.addChild(home);
+    }
+    mRoot.setViewHolder(new FileTreeViewHolder(getContext()));
+
+    binding.filetreeHorizontalScrollView.setVisibility(View.GONE);
+    binding.fileTreeLoadingProgress.setVisibility(View.VISIBLE);
+    new TaskExecutor()
+        .executeAsync(
+            new FileTreeCallable(getContext(), mRoot, projectDir),
+            (result) -> {
+              binding.filetreeHorizontalScrollView.setVisibility(View.VISIBLE);
+              binding.fileTreeLoadingProgress.setVisibility(View.GONE);
+              AndroidTreeView tree = createTreeView(mRoot);
+              if (tree != null) {
+                tree.setUseAutoToggle(false);
+                tree.setDefaultNodeClickListener(FileTreeFragment.this);
+                tree.setDefaultNodeLongClickListener(FileTreeFragment.this);
+                binding.filetreeHorizontalScrollView.removeAllViews();
+
+                final var view = tree.getView();
+                binding.filetreeHorizontalScrollView.addView(view);
+
+                view.post(this::tryRestoreState);
+              }
+            });
+  }
+
+  public AndroidTreeView createTreeView(TreeNode node) {
+    Context ctx = null;
+    if (getActivity() != null) {
+      ctx = getActivity();
+    } else if (getContext() != null) {
+      ctx = getContext();
+    }
+
+    if (ctx == null) {
+      return null;
+    }
+
+    return mFileTreeView = new AndroidTreeView(ctx, node, R.drawable.bg_ripple);
   }
 
   private void setLoading(@NonNull TreeNode node) {
@@ -225,87 +318,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     }
   }
 
-  @Override
-  public boolean onLongClick(TreeNode node, Object value) {
-    if (mFileActionListener != null) {
-      mFileActionListener.showFileOptions((File) value, node);
-    }
-    return true;
-  }
-
-  public void listProjectFiles() {
-    final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
-    if (projectDirPath == null) {
-      return;
-    }
-
-    final File gradleProps = Environment.GRADLE_PROPS;
-    final File gradleHome = Environment.GRADLE_USER_HOME;
-    File projectDir = new File(projectDirPath);
-    mRoot = TreeNode.root(projectDir);
-    if (gradleHome.exists() && gradleHome.isDirectory()) {
-      if (!gradleProps.exists()) {
-        FileIOUtils.writeFileFromString(
-            gradleProps,
-            "# Specify global Gradle properties in this file\n"
-                + "# These properties will be applicable for every project you build"
-                + " with Gradle.");
-      }
-      TreeNode home = new TreeNode(gradleHome);
-      home.setViewHolder(new FileTreeViewHolder(getContext()));
-      TreeNode prop = new TreeNode(gradleProps);
-      prop.setViewHolder(new FileTreeViewHolder(getContext()));
-      home.addChild(prop);
-      mRoot.addChild(home);
-    }
-    mRoot.setViewHolder(new FileTreeViewHolder(getContext()));
-
-    getScrollView().setVisibility(View.GONE);
-    getLoadingProgress().setVisibility(View.VISIBLE);
-    new TaskExecutor()
-        .executeAsync(
-            new FileTreeCallable(getContext(), mRoot, projectDir),
-            (result) -> {
-              getScrollView().setVisibility(View.VISIBLE);
-              getLoadingProgress().setVisibility(View.GONE);
-              AndroidTreeView tree = createTreeView(mRoot);
-              if (tree != null) {
-                tree.setUseAutoToggle(false);
-                tree.setDefaultNodeClickListener(FileTreeFragment.this);
-                tree.setDefaultNodeLongClickListener(FileTreeFragment.this);
-                getScrollView().removeAllViews();
-
-                final var view = tree.getView();
-                getScrollView().addView(view);
-
-                view.post(this::tryRestoreState);
-              }
-            });
-  }
-
-  public AndroidTreeView createTreeView(TreeNode node) {
-    Context ctx = null;
-    if (getActivity() != null) {
-      ctx = getActivity();
-    } else if (getContext() != null) {
-      ctx = getContext();
-    }
-
-    if (ctx == null) {
-      return null;
-    }
-
-    return mFileTreeView = new AndroidTreeView(ctx, node, R.drawable.bg_ripple);
-  }
-
-  public HorizontalScrollView getScrollView() {
-    return binding.filetreeHorizontalScrollView;
-  }
-
-  public ProgressBar getLoadingProgress() {
-    return binding.fileTreeLoadingProgress;
-  }
-
   private void tryRestoreState() {
     tryRestoreState(mTreeState);
   }
@@ -338,11 +350,5 @@ public class FileTreeFragment extends BottomSheetDialogFragment
             });
       }
     }
-  }
-
-  public interface FileActionListener {
-    CodeEditorView openFile(File file);
-
-    void showFileOptions(File file, TreeNode node);
   }
 }

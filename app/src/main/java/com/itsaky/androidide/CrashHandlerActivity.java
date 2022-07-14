@@ -57,6 +57,11 @@ public class CrashHandlerActivity extends StudioActivity {
   }
 
   @Override
+  public void onBackPressed() {
+    finishAffinity();
+  }
+
+  @Override
   protected void onDestroy() {
     super.onDestroy();
     binding = null;

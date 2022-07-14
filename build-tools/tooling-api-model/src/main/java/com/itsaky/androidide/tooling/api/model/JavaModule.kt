@@ -43,7 +43,7 @@ open class JavaModule(
   val contentRoots: List<JavaContentRoot>,
 
   /** Dependencies of this project. */
-  val javaDependencies: List<JavaModuleDependency>
+  val javaDependencies: MutableList<JavaModuleDependency>
 ) :
   IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
   ModuleProject,

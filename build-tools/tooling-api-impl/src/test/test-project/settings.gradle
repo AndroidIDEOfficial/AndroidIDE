@@ -1,4 +1,0 @@
-include ':app'
-include ':java-library'
-include ':android-library'
-rootProject.name = "TestApp"

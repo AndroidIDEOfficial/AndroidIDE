@@ -32,6 +32,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.views.EmptyView;
 
+import java.util.Collections;
+
+import kotlin.Unit;
+
 public class SearchResultFragment extends Fragment {
 
   private RecyclerView list;
@@ -64,7 +68,9 @@ public class SearchResultFragment extends Fragment {
 
     list.setLayoutManager(new LinearLayoutManager(list.getContext()));
     list.setAdapter(
-        unsavedAdapter != null ? unsavedAdapter : new SearchListAdapter(null, null, null));
+        unsavedAdapter != null
+            ? unsavedAdapter
+            : new SearchListAdapter(Collections.emptyMap(), this::noOp, this::noOp));
     unsavedAdapter = null;
   }
 
@@ -89,5 +95,9 @@ public class SearchResultFragment extends Fragment {
       emptyView.setVisibility(error ? View.VISIBLE : View.GONE);
       list.setVisibility(error ? View.GONE : View.VISIBLE);
     }
+  }
+
+  private Unit noOp(Object obj) {
+    return Unit.INSTANCE;
   }
 }

@@ -1,0 +1,43 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+dependencies {
+    implementation common.editor
+    implementation project (':common')
+    implementation project (':build-tools:fuzzysearch')
+    
+    implementation androidx.appcompat
+    implementation androidx.ktx
+    implementation common.kotlin
+    implementation common.utilcode
+}
+
+repositories {
+    mavenCentral ()
+}

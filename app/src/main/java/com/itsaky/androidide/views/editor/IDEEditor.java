@@ -28,32 +28,36 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.eventbus.events.editor.ChangeType;
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DefinitionResult;
+import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
+import com.itsaky.androidide.lsp.models.ReferenceParams;
+import com.itsaky.androidide.lsp.models.ReferenceResult;
+import com.itsaky.androidide.lsp.models.ShowDocumentParams;
+import com.itsaky.androidide.lsp.models.SignatureHelp;
+import com.itsaky.androidide.lsp.models.SignatureHelpParams;
+import com.itsaky.androidide.lsp.util.DiagnosticUtil;
+import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.models.Position;
+import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.ChangeType;
-import com.itsaky.lsp.models.Command;
-import com.itsaky.lsp.models.DefinitionResult;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DocumentChangeEvent;
-import com.itsaky.lsp.models.DocumentCloseEvent;
-import com.itsaky.lsp.models.DocumentOpenEvent;
-import com.itsaky.lsp.models.DocumentSaveEvent;
-import com.itsaky.lsp.models.ExpandSelectionParams;
-import com.itsaky.lsp.models.Position;
-import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.ReferenceParams;
-import com.itsaky.lsp.models.ReferenceResult;
-import com.itsaky.lsp.models.ShowDocumentParams;
-import com.itsaky.lsp.models.SignatureHelp;
-import com.itsaky.lsp.models.SignatureHelpParams;
-import com.itsaky.lsp.util.DiagnosticUtil;
-import com.itsaky.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.List;
@@ -97,6 +101,10 @@ public class IDEEditor extends CodeEditor {
 
     mActionsPopup = new EditorActionsMenu(this);
     mActionsPopup.init();
+
+    final var window = new EditorCompletionWindow(this);
+    window.setAdapter(new CompletionListAdapter());
+    replaceComponent(EditorAutoCompletion.class, window);
 
     setColorScheme(new SchemeAndroidIDE());
     setSearcher(new IDEEditorSearcher(this));
@@ -146,13 +154,8 @@ public class IDEEditor extends CodeEditor {
   public void setFile(File file) {
     this.file = file;
 
-    if (file != null && mLanguageServer != null) {
-      final var documentHandler = mLanguageServer.getDocumentHandler();
-      if (documentHandler.accepts(file.toPath())) {
-        final var text = getText().toString();
-        final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
-        documentHandler.onFileOpened(event);
-      }
+    if (file != null) {
+      dispatchDocumentOpenEvent();
     }
 
     if (file != null) {
@@ -188,32 +191,7 @@ public class IDEEditor extends CodeEditor {
 
     CompletableFuture.runAsync(
         () -> {
-          final var documentHandler = mLanguageServer.getDocumentHandler();
-          final var file = getFile().toPath();
-          if (documentHandler.accepts(file)) {
-            var type = ChangeType.INSERT;
-            if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
-              type = ChangeType.DELETE;
-            } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-              type = ChangeType.NEW_TEXT;
-            }
-
-            var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
-            if (type == ChangeType.DELETE) {
-              changeDelta = -changeDelta;
-            }
-
-            final var start = event.getChangeStart();
-            final var end = event.getChangeEnd();
-            final var changeRange =
-                new Range(
-                    new Position(start.line, start.column, start.index),
-                    new Position(end.line, end.column, end.index));
-            documentHandler.onContentChange(
-                new DocumentChangeEvent(
-                    file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange));
-          }
-
+          dispatchDocumentChangeEvent(event);
           checkForSignatureHelp(event);
         });
   }
@@ -265,6 +243,7 @@ public class IDEEditor extends CodeEditor {
               return;
             }
 
+            //noinspection ConstantConditions
             ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
           });
     }
@@ -437,9 +416,9 @@ public class IDEEditor extends CodeEditor {
           CompletableFuture.supplyAsync(
               () -> {
                 final var params =
-                    new com.itsaky.lsp.models.DefinitionParams(
+                    new com.itsaky.androidide.lsp.models.DefinitionParams(
                         getFile().toPath(),
-                        new com.itsaky.lsp.models.Position(
+                        new com.itsaky.androidide.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()));
 
                 return mLanguageServer.findDefinition(params);
@@ -463,6 +442,7 @@ public class IDEEditor extends CodeEditor {
               return;
             }
 
+            //noinspection ConstantConditions
             ThreadUtils.runOnUiThread(
                 () -> {
                   if (locations.size() == 1) {
@@ -493,6 +473,7 @@ public class IDEEditor extends CodeEditor {
    */
   @SuppressWarnings("deprecation")
   private void showDefinitionNotFound(final ProgressDialog pd) {
+    //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
           StudioApp.getInstance().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
@@ -576,6 +557,7 @@ public class IDEEditor extends CodeEditor {
    * @param dialog The dialog to dismiss.
    */
   private void dismissOnUiThread(@NonNull final Dialog dialog) {
+    //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(dialog::dismiss);
   }
 
@@ -603,7 +585,7 @@ public class IDEEditor extends CodeEditor {
                 final var referenceParams =
                     new ReferenceParams(
                         getFile().toPath(),
-                        new com.itsaky.lsp.models.Position(
+                        new com.itsaky.androidide.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()),
                         true);
                 return mLanguageServer.findReferences(referenceParams);
@@ -650,6 +632,7 @@ public class IDEEditor extends CodeEditor {
    */
   @SuppressWarnings("deprecation")
   private void showReferencesNotFound(final ProgressDialog pd) {
+    //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
           StudioApp.getInstance().toast(R.string.msg_no_references, Toaster.Type.ERROR);
@@ -657,29 +640,14 @@ public class IDEEditor extends CodeEditor {
         });
   }
 
-  /** If any language server is set, notify the server that the file in this editor was saved. */
-  public void didSave() {
-    if (mLanguageServer != null && getFile() != null) {
-      final var documentHandler = mLanguageServer.getDocumentHandler();
-      final var file = getFile().toPath();
-      if (documentHandler.accepts(file)) {
-        documentHandler.onFileSaved(new DocumentSaveEvent(file));
-      }
-    }
-  }
-
   /** Notify the language server that the file in this editor is about to be closed. */
   public void close() {
-    if (mLanguageServer != null && getFile() != null) {
-      final var documentHandler = mLanguageServer.getDocumentHandler();
-      final var file = getFile().toPath();
-      if (documentHandler.accepts(file)) {
-        documentHandler.onFileClosed(new DocumentCloseEvent(file));
-      }
-      LOG.info("'textDocument/didClose' was sent to the language server.");
-    } else {
+    if (getFile() == null) {
       LOG.info("No language server is available for this file");
+      return;
     }
+
+    dispatchDocumentCloseEvent();
 
     mActionsPopup.unsubscribeEvents();
     ensureWindowsDismissed();
@@ -707,10 +675,7 @@ public class IDEEditor extends CodeEditor {
       return;
     }
 
-    final var path = getFile().toPath();
-    if (mLanguageServer != null) {
-      mLanguageServer.getDocumentHandler().onFileSelected(path);
-    }
+    dispatchDocumentSelectedEvent();
   }
 
   @SuppressWarnings("unused")
@@ -764,6 +729,7 @@ public class IDEEditor extends CodeEditor {
             return;
           }
 
+          //noinspection ConstantConditions
           ThreadUtils.runOnUiThread(() -> setSelection(range));
         }));
   }
@@ -839,6 +805,74 @@ public class IDEEditor extends CodeEditor {
     }
 
     return new Range(start, end);
+  }
+
+  protected void dispatchDocumentOpenEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var openEvent =
+        new DocumentOpenEvent(getFile().toPath(), getText().toString(), mFileVersion = 0);
+    EventBus.getDefault().post(openEvent);
+  }
+
+  protected void dispatchDocumentSelectedEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var selectedEvent = new DocumentSelectedEvent(getFile().toPath());
+    EventBus.getDefault().post(selectedEvent);
+  }
+
+  protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var file = getFile().toPath();
+    var type = ChangeType.INSERT;
+    if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
+      type = ChangeType.DELETE;
+    } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+      type = ChangeType.NEW_TEXT;
+    }
+
+    var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
+    if (type == ChangeType.DELETE) {
+      changeDelta = -changeDelta;
+    }
+
+    final var start = event.getChangeStart();
+    final var end = event.getChangeEnd();
+    final var changeRange =
+        new Range(
+            new Position(start.line, start.column, start.index),
+            new Position(end.line, end.column, end.index));
+
+    final var changeEvent =
+        new DocumentChangeEvent(
+            file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange);
+    EventBus.getDefault().post(changeEvent);
+  }
+
+  protected void dispatchDocumentSaveEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var saveEvent = new DocumentSaveEvent(getFile().toPath());
+    EventBus.getDefault().post(saveEvent);
+  }
+
+  protected void dispatchDocumentCloseEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var closeEvent = new DocumentCloseEvent(getFile().toPath());
+    EventBus.getDefault().post(closeEvent);
   }
 
   @Override
