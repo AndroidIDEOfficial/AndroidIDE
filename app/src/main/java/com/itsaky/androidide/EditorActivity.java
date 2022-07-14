@@ -86,6 +86,7 @@ import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.SimpleOutputFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
+import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver;
 import com.itsaky.androidide.handlers.EditorEventListener;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
@@ -160,6 +161,8 @@ public class EditorActivity extends StudioActivity
   private static final int ACTION_ID_ALL = 102;
   private static final ILogger LOG = ILogger.newInstance("EditorActivity");
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
+  private final EditorActivityLifecyclerObserver mLifecycleObserver =
+      new EditorActivityLifecyclerObserver();
   private ActivityEditorBinding mBinding;
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
   private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
@@ -1007,6 +1010,8 @@ public class EditorActivity extends StudioActivity
       ProjectManager.INSTANCE.setProjectPath(savedInstanceState.getString(KEY_PROJECT_PATH));
     }
 
+    getLifecycle().addObserver(mLifecycleObserver);
+
     setSupportActionBar(mBinding.editorToolbar);
 
     mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
@@ -1063,8 +1068,6 @@ public class EditorActivity extends StudioActivity
     EditorActivityActions.register(this);
 
     try {
-      dispatchOnResumeToEditors();
-
       if (mFileTreeFragment != null) {
         mFileTreeFragment.listProjectFiles();
       }
@@ -1072,19 +1075,6 @@ public class EditorActivity extends StudioActivity
       LOG.error("Failed to update files list", th);
       getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);
     }
-  }
-
-  // TODO Replace with events
-  private void dispatchOnResumeToEditors() {
-    CompletableFuture.runAsync(
-        () -> {
-          for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            final var editor = getEditorAtIndex(i);
-            if (editor != null) {
-              editor.onResume();
-            }
-          }
-        });
   }
 
   @Override

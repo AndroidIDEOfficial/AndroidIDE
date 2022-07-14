@@ -42,8 +42,6 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.eventbus.events.editor.OnPauseEvent;
-import com.itsaky.androidide.eventbus.events.editor.OnStartEvent;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.language.cpp.CppLanguage;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
@@ -93,14 +91,12 @@ public class CodeEditorView extends FrameLayout {
   private final File file;
   private final LayoutCodeEditorBinding binding;
   private boolean isModified;
-  private boolean isFirstCreate;
 
   public CodeEditorView(
       @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
     this.isModified = false;
-    this.isFirstCreate = true;
 
     this.binding = LayoutCodeEditorBinding.inflate(LayoutInflater.from(context));
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
@@ -110,8 +106,6 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.subscribeEvent(
         ContentChangeEvent.class, ((event, unsubscribe) -> handleContentChange(event)));
-
-    EventBus.getDefault().register(this);
 
     this.binding.diagnosticTextContainer.setVisibility(GONE);
 
@@ -343,20 +337,6 @@ public class CodeEditorView extends FrameLayout {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
-  public void onActivityStarted(OnStartEvent event) {
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this);
-    }
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  @SuppressWarnings("unused")
-  public void onActivityPaused(OnPauseEvent event) {
-    EventBus.getDefault().unregister(this);
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  @SuppressWarnings("unused")
   public void onPreferenceChanged(PreferenceChangeEvent event) {
     if (binding == null) {
       return;
@@ -465,6 +445,20 @@ public class CodeEditorView extends FrameLayout {
   public void markAsSaved() {
     isModified = false;
     notifySaved();
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    EventBus.getDefault().unregister(this);
   }
 
   @NonNull
