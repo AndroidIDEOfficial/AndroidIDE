@@ -43,9 +43,10 @@ buildscript {
 }
 
 subprojects {
+    apply plugin: 'kotlin-kapt'
     apply from: "${project.rootProject.rootDir}/dependencies.gradle"
     
-    project.afterEvaluate {
+    afterEvaluate {
         tasks.register ("checkTranslations", task -> {
             doLast {
                 checkTranslations (project)
@@ -54,7 +55,7 @@ subprojects {
     }
 }
 
-private void checkTranslations (def project) {
+private void checkTranslations (Project project) {
     def php = new File ("/usr/bin/php")
     if (!php.exists ()) {
         project.logger.lifecycle ("'${php.absolutePath}' not found. Skipping translation check.")

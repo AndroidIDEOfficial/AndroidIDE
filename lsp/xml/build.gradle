@@ -52,7 +52,16 @@ android {
     }
 }
 
+kapt {
+    arguments {
+        arg ('eventBusIndex', 'com.itsaky.androidide.events.LspXmlEventsIndex')
+    }
+}
+
 dependencies {
+    
+    kapt common.eventbus_ap
+    
     implementation common.editor
     implementation common.utilcode
     
