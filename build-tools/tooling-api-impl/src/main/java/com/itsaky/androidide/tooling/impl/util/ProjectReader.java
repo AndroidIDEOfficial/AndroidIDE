@@ -30,7 +30,6 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
-import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.GradleArtifact;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
@@ -420,9 +419,7 @@ public class ProjectReader {
   }
 
   private static void log(Object... messages) {
-    final var line =
-        new LogLine(ILogger.Priority.DEBUG, "BuildActionExecutor", generateMessage(messages));
-    System.err.println(line.toSimpleString());
+    System.err.println(generateMessage(messages));
   }
 
   private static String generateMessage(Object... messages) {
