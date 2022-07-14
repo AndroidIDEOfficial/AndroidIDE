@@ -812,11 +812,8 @@ public class EditorActivity extends StudioActivity
       return;
     }
 
-    ThreadUtils.runOnUiThread(
-        () -> {
-          setStatus(getString(R.string.msg_initializing_project));
-          mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
-        });
+    //noinspection ConstantConditions
+    ThreadUtils.runOnUiThread(this::preProjectInit);
 
     final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
     future.whenCompleteAsync(
@@ -845,70 +842,6 @@ public class EditorActivity extends StudioActivity
     } catch (Throwable th) {
       LOG.error("Failed to update status text", th);
     }
-  }
-
-  protected void onProjectInitialized() {
-    ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
-    ProjectManager.INSTANCE.notifyProjectUpdate();
-
-    ThreadUtils.runOnUiThread(
-        () -> {
-          if (mBinding == null) {
-            // Activity has been destroyed
-            return;
-          }
-          initialSetup();
-          setStatus(getString(R.string.msg_project_initialized));
-          mBinding.buildProgressIndicator.setVisibility(View.GONE);
-
-          if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
-            mFindInProjectDialog.dismiss();
-          }
-
-          mFindInProjectDialog = null; // Create the dialog again if needed
-        });
-  }
-
-  private void initialSetup() {
-    getApp()
-        .getPrefManager()
-        .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
-
-    try {
-      final var rootProject = ProjectManager.INSTANCE.getRootProject();
-      if (rootProject == null) {
-        LOG.warn("Project not initialized. Skipping initial setup...");
-        return;
-      }
-
-      var projectName = rootProject.getName();
-      if (projectName.isEmpty()) {
-        projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
-      }
-
-      getSupportActionBar().setSubtitle(projectName);
-    } catch (Throwable th) {
-      // ignored
-    }
-
-    CompletableFuture.runAsync(
-        () -> {
-          final var resDirs = getResourceDirs();
-          resDirs.removeIf(Objects::isNull);
-          ValuesTableFactory.setupWithResDirectories(resDirs.toArray(new File[0]));
-        });
-  }
-
-  private Set<File> getResourceDirs() {
-    return ProjectManager.INSTANCE.getApplicationResDirectories();
-  }
-
-  @NonNull
-  private ArrayList<String> getResourceDirPaths() {
-    return getResourceDirs().stream()
-        .filter(Objects::nonNull)
-        .map(File::getAbsolutePath)
-        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public void assembleDebug(boolean installApk) {
@@ -1042,6 +975,31 @@ public class EditorActivity extends StudioActivity
 
   public GradleBuildService getBuildService() {
     return mBuildService;
+  }
+
+  protected void onProjectInitialized() {
+    ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
+    ProjectManager.INSTANCE.notifyProjectUpdate();
+
+    //noinspection ConstantConditions
+    ThreadUtils.runOnUiThread(this::postProjectInit);
+  }
+
+  protected void postProjectInit() {
+    if (mBinding == null) {
+      // Activity has been destroyed
+      return;
+    }
+
+    initialSetup();
+    setStatus(getString(R.string.msg_project_initialized));
+    mBinding.buildProgressIndicator.setVisibility(View.GONE);
+
+    if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
+      mFindInProjectDialog.dismiss();
+    }
+
+    mFindInProjectDialog = null; // Create the dialog again if needed
   }
 
   @Override
@@ -1202,6 +1160,53 @@ public class EditorActivity extends StudioActivity
     super.onDestroy();
     mBinding = null;
     mViewModel = null;
+  }
+
+  private void preProjectInit() {
+    setStatus(getString(R.string.msg_initializing_project));
+    mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
+  }
+
+  private void initialSetup() {
+    getApp()
+        .getPrefManager()
+        .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
+
+    try {
+      final var rootProject = ProjectManager.INSTANCE.getRootProject();
+      if (rootProject == null) {
+        LOG.warn("Project not initialized. Skipping initial setup...");
+        return;
+      }
+
+      var projectName = rootProject.getName();
+      if (projectName.isEmpty()) {
+        projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
+      }
+
+      getSupportActionBar().setSubtitle(projectName);
+    } catch (Throwable th) {
+      // ignored
+    }
+
+    CompletableFuture.runAsync(
+        () -> {
+          final var resDirs = getResourceDirs();
+          resDirs.removeIf(Objects::isNull);
+          ValuesTableFactory.setupWithResDirectories(resDirs.toArray(new File[0]));
+        });
+  }
+
+  private Set<File> getResourceDirs() {
+    return ProjectManager.INSTANCE.getApplicationResDirectories();
+  }
+
+  @NonNull
+  private ArrayList<String> getResourceDirPaths() {
+    return getResourceDirs().stream()
+        .filter(Objects::nonNull)
+        .map(File::getAbsolutePath)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   private void setupDrawerToggle() {
