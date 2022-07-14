@@ -49,8 +49,11 @@ dependencies {
     implementation androidx.ktx
     implementation common.kotlin
     
+    implementation project (path: ':build-tools:eventbus-events')
+    
     api androidx.multidex
     
+    api project (path: ':shared')
     api project (path: ':build-tools:logger')
     
     testImplementation tests.junit

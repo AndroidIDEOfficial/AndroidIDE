@@ -32,7 +32,7 @@ class RemoveUnusedImportsAction : BaseCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val watch = StopWatch("Remove unused imports")
+    val watch = com.itsaky.androidide.utils.StopWatch("Remove unused imports")
     return try {
       val editor = requireEditor(data)
       val content = editor.text

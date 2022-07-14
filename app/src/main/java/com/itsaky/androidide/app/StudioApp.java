@@ -24,6 +24,13 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.events.AppEventsIndex;
+import com.itsaky.androidide.events.LspJavaEventsIndex;
+import com.itsaky.androidide.events.ProjectsApiEventsIndex;
+import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.apiinfo.ApiInfo;
@@ -31,12 +38,10 @@ import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
-import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
-import com.itsaky.androidide.lsp.java.JavaLanguageServer;
-import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.Objects;
@@ -62,6 +67,13 @@ public class StudioApp extends BaseApplication {
     this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
     super.onCreate();
+
+    EventBus.builder()
+        .addIndex(new AppEventsIndex())
+        .addIndex(new ProjectsApiEventsIndex())
+        .addIndex(new LspJavaEventsIndex())
+        .installDefaultEventBus();
+
     getApiInformation();
   }
 
@@ -102,15 +114,15 @@ public class StudioApp extends BaseApplication {
   }
 
   @NonNull
-  public ILanguageServer getJavaLanguageServer() {
-    return Objects.requireNonNull(
-        ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID));
-  }
-
-  @NonNull
   public ILanguageServer getXMLLanguageServer() {
     return Objects.requireNonNull(
         ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID));
+  }
+
+  @NonNull
+  public ILanguageServer getJavaLanguageServer() {
+    return Objects.requireNonNull(
+        ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID));
   }
 
   public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(

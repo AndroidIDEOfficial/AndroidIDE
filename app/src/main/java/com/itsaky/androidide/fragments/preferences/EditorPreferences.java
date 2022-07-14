@@ -17,6 +17,8 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
+import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
+import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_AUTO_SAVE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_DRAW_HEX;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
@@ -29,8 +31,6 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_L
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
-import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
-import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,7 +44,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class EditorPreferences extends BasePreferenceFragment
@@ -178,27 +177,7 @@ public class EditorPreferences extends BasePreferenceFragment
   @Override
   public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
     final boolean value = (boolean) newValue;
-
-    switch (preference.getKey()) {
-      case KEY_EDITOR_FLAG_PASSWORD:
-        ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED = true;
-        break;
-      case KEY_EDITOR_DRAW_HEX:
-        ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
-        break;
-      case KEY_EDITOR_FONT_LIGATURES:
-        ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = true;
-        break;
-      case PreferenceManager.KEY_EDITOR_WORD_WRAP:
-        ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = true;
-        break;
-      case PreferenceManager.KEY_EDITOR_USE_MAGNIFER:
-        ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = true;
-        break;
-    }
-
     getPrefManager().putBoolean(preference.getKey(), value);
-
     return true;
   }
 
@@ -274,7 +253,6 @@ public class EditorPreferences extends BasePreferenceFragment
   private void changeTextSize(LayoutTextSizeSliderBinding binding, float size) {
     getPrefManager().putFloat(KEY_EDITOR_FONT_SIZE, size);
     binding.slider.setValue(size);
-    ConstantsBridge.EDITOR_PREF_SIZE_CHANGED = true;
   }
 
   private void showPrintableCharsDialog() {
@@ -309,8 +287,6 @@ public class EditorPreferences extends BasePreferenceFragment
           } else if (which == 4) {
             getPrefManager().putBoolean(KEY_EDITOR_FLAG_LINE_BREAK, isChecked);
           }
-
-          ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = true;
         });
     builder.setPositiveButton(android.R.string.ok, null);
     builder.setCancelable(false);

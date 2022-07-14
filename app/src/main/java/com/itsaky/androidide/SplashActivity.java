@@ -29,14 +29,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivitySplashBinding;
-import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class SplashActivity extends StudioActivity {
   private static final Handler mHandler = new Handler();
   private final Runnable mRunnable =
       () -> {
-        ConstantsBridge.SPLASH_TO_MAIN = true;
+        Constants.SPLASH_TO_MAIN = true;
         startActivity(new Intent(SplashActivity.this, MainActivity.class));
         finish();
       };

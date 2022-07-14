@@ -270,90 +270,63 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       eventListener.onOutput("----------------------------------------------");
     }
 
-    return CompletableFuture.supplyAsync(
-        () -> {
-          boolean isAvailable = false;
-          final File extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
-          if (ResourceUtils.copyFileFromAssets(
-              getCommonAsset("gradle-wrapper.zip"), extracted.getAbsolutePath())) {
-            try {
-              final List<File> files =
-                  ZipUtils.unzipFile(extracted, ProjectManager.INSTANCE.getProjectDir());
-              if (files != null && !files.isEmpty()) {
-                isAvailable = true;
-              }
-            } catch (IOException e) {
-              LOG.error("An error occurred while extracting Gradle wrapper", e);
-            }
-          } else {
-            LOG.error("Unable to extract gradle-plugin.zip from IDE resources.");
-          }
+    return CompletableFuture.supplyAsync(this::doInstallWrapper);
+  }
 
-          return new GradleWrapperCheckResult(isAvailable);
-        });
+  @NonNull
+  private GradleWrapperCheckResult doInstallWrapper() {
+    final var extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
+    if (!ResourceUtils.copyFileFromAssets(
+        getCommonAsset("gradle-wrapper.zip"), extracted.getAbsolutePath())) {
+      LOG.error("Unable to extract gradle-plugin.zip from IDE resources.");
+      return new GradleWrapperCheckResult(false);
+    }
+
+    try {
+      final var projectDir = ProjectManager.INSTANCE.getProjectDir();
+      final var files = ZipUtils.unzipFile(extracted, projectDir);
+      if (files != null && !files.isEmpty()) {
+        return new GradleWrapperCheckResult(true);
+      }
+    } catch (IOException e) {
+      LOG.error("An error occurred while extracting Gradle wrapper", e);
+    }
+
+    return new GradleWrapperCheckResult(false);
   }
 
   @SuppressWarnings("ConstantConditions")
-  private void updateNotification(final String message) {
-    ThreadUtils.runOnUiThread(
-        () ->
-            ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
-                .notify(NOTIFICATION_ID, buildNotification(message)));
+  protected void updateNotification(final String message) {
+    ThreadUtils.runOnUiThread(() -> doUpdateNotification(message));
+  }
+
+  protected void doUpdateNotification(final String message) {
+    ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
+        .notify(NOTIFICATION_ID, buildNotification(message));
   }
 
   @NonNull
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
-    checkServerStarted();
-    ensureTmpdir();
-
-    if (isBuildInProgress) {
-      logBuildInProgress();
-      return failedFutureForBuildInProgress();
-    }
-
-    isBuildInProgress = true;
-    return server
-        .initialize(new InitializeProjectMessage(rootDir, getGradleInstallationPath()))
-        .thenApply(this::markBuildAsFinished);
+    final var message = new InitializeProjectMessage(rootDir, getGradleInstallationPath());
+    return performBuildTasks(server.initialize(message));
   }
 
   @NonNull
   @Override
   public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
-    checkServerStarted();
-    ensureTmpdir();
-
-    if (isBuildInProgress) {
-      logBuildInProgress();
-      return failedFutureForBuildInProgress();
-    }
-
-    isBuildInProgress = true;
-    return server
-        .executeTasks(
-            new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath()))
-        .thenApply(this::markBuildAsFinished);
+    final var message =
+        new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath());
+    return performBuildTasks(server.executeTasks(message));
   }
 
   @NonNull
   @Override
   public CompletableFuture<TaskExecutionResult> executeProjectTasks(
       @NonNull String projectPath, @NonNull String... tasks) {
-    checkServerStarted();
-    ensureTmpdir();
-
-    if (isBuildInProgress) {
-      logBuildInProgress();
-      return failedFutureForBuildInProgress();
-    }
-
-    isBuildInProgress = true;
-    return server
-        .executeTasks(
-            new TaskExecutionMessage(
-                projectPath, Arrays.asList(tasks), getGradleInstallationPath()))
-        .thenApply(this::markBuildAsFinished);
+    final var message =
+        new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationPath());
+    return performBuildTasks(server.executeTasks(message));
   }
 
   @NonNull
@@ -362,15 +335,34 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     return server.cancelCurrentBuild();
   }
 
-  private String getGradleInstallationPath() {
-    return StudioApp.getInstance()
-        .getPrefManager()
-        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
+  protected <T> CompletableFuture<T> performBuildTasks(CompletableFuture<T> future) {
+    return CompletableFuture.runAsync(this::onPrepareBuildRequest)
+        .handle(
+            (__, err) -> {
+              try {
+                return future.get();
+              } catch (Throwable e) {
+                throw new CompletionException(e);
+              }
+            })
+        .handle(this::markBuildAsFinished);
+  }
+
+  protected void onPrepareBuildRequest() {
+    checkServerStarted();
+    ensureTmpdir();
+
+    if (isBuildInProgress) {
+      logBuildInProgress();
+      throw new BuildInProgressException();
+    }
+
+    isBuildInProgress = true;
   }
 
   private void checkServerStarted() {
     if (!isToolingServerStarted) {
-      throw new IllegalStateException("Tooling API server has not been started");
+      throw new ToolingServerNotStartedException();
     }
   }
 
@@ -382,17 +374,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     LOG.warn("A build is already in progress!");
   }
 
-  @NonNull
-  private <T> CompletableFuture<T> failedFutureForBuildInProgress() {
-    final var future = new CompletableFuture<T>();
-    future.completeExceptionally(
-        new CompletionException(new IllegalStateException("A build is already running!")));
-    return future;
+  protected <T> T markBuildAsFinished(final T result, final Throwable throwable) {
+    isBuildInProgress = false;
+    return result;
   }
 
-  protected <T> T markBuildAsFinished(T t) {
-    isBuildInProgress = false;
-    return t;
+  private String getGradleInstallationPath() {
+    return StudioApp.getInstance()
+        .getPrefManager()
+        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
   }
 
   public boolean isBuildInProgress() {
@@ -401,7 +391,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   public void startToolingServer(@Nullable OnServerStartListener listener) {
     if (toolingServerThread != null && toolingServerThread.isAlive()) {
-      throw new IllegalStateException("Tooling API server is already started!");
+      throw new ToolingServerAlreadyStartedException();
     }
 
     toolingServerThread = new Thread(new ToolingServerRunner(listener));

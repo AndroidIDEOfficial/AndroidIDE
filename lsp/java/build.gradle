@@ -45,7 +45,16 @@ android {
     }
 }
 
+kapt {
+    arguments {
+        arg ('eventBusIndex', 'com.itsaky.androidide.events.LspJavaEventsIndex')
+    }
+}
+
 dependencies {
+    
+    kapt common.eventbus_ap
+    
     implementation common.editor
     implementation common.javaparser
     implementation common.utilcode

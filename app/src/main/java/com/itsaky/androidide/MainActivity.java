@@ -35,7 +35,7 @@ import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
@@ -69,7 +69,7 @@ public class MainActivity extends StudioActivity {
               PreferenceManager manager = getApp().getPrefManager();
               if (manager.autoOpenProject()
                   && manager.wasProjectOpened()
-                  && ConstantsBridge.SPLASH_TO_MAIN) {
+                  && Constants.SPLASH_TO_MAIN) {
                 String path = manager.getOpenedProject();
                 if (path == null || path.trim().isEmpty()) {
                   getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
@@ -87,7 +87,7 @@ public class MainActivity extends StudioActivity {
                 }
               }
 
-              ConstantsBridge.SPLASH_TO_MAIN = false;
+              Constants.SPLASH_TO_MAIN = false;
             });
   }
 

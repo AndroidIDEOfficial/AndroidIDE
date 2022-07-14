@@ -53,8 +53,8 @@ abstract class ModuleProject(
     const val USAGE_RUNTIME = "java-runtime"
   }
 
-  @JvmField val compileJavaSourceClasses = SourceClassTrie()
-  @JvmField val compileClasspathClasses = ClassTrie()
+  @JvmField val compileJavaSourceClasses = com.itsaky.androidide.utils.SourceClassTrie()
+  @JvmField val compileClasspathClasses = com.itsaky.androidide.utils.ClassTrie()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -113,7 +113,7 @@ abstract class ModuleProject(
     log.debug("Sources indexed for project: '$path'. Found $count source files.")
 
     val paths = getCompileClasspaths().filter { it.exists() }
-    val topLevelClasses = ClasspathReader.listClasses(paths).filter { it.isTopLevel }
+    val topLevelClasses = com.itsaky.androidide.utils.ClasspathReader.listClasses(paths).filter { it.isTopLevel }
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
     log.debug("Classpaths indexed for project: '$path'. Found ${topLevelClasses.size} classpaths.")
   }
