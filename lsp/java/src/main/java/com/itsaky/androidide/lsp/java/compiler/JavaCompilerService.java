@@ -34,6 +34,7 @@ import com.itsaky.androidide.lsp.java.utils.Extractors;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.FileManager;
+import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.BootClasspathProvider;
@@ -79,18 +80,16 @@ public class JavaCompilerService implements CompilerProvider {
   public static JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
   protected final Set<Path> classPath;
   protected final Set<String> classPathClasses;
-  protected final Set<String> bootClasspathClasses =
-      BootClasspathProvider.getTopLevelClasses(
-          Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
   protected final Cache<Void, List<String>> cacheFileImports = new Cache<>();
   protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final SourceFileManager fileManager;
   protected final ModuleProject module;
-
   public ReusableCompiler compiler = new ReusableCompiler();
-
+  protected Set<String> bootClasspathClasses =
+      BootClasspathProvider.getTopLevelClasses(
+          Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));
   private CompileBatch cachedCompile;
   private int changeDelta = 0;
 
@@ -107,7 +106,19 @@ public class JavaCompilerService implements CompilerProvider {
           Collections.unmodifiableSet(
               module.getCompileClasspaths().stream().map(File::toPath).collect(Collectors.toSet()));
       this.classPathClasses = module.compileClasspathClasses.allClassNames();
+      this.bootClasspathClasses = getBootclasspathClasses();
     }
+  }
+
+  private Set<String> getBootclasspathClasses() {
+    if (module != null && module instanceof AndroidModule) {
+      final List<String> classpaths =
+          ((AndroidModule) module)
+              .getBootClassPaths().stream().map(File::getPath).collect(Collectors.toList());
+      BootClasspathProvider.update(classpaths);
+      this.bootClasspathClasses = BootClasspathProvider.getTopLevelClasses(classpaths);
+    }
+    return bootClasspathClasses;
   }
 
   public ModuleProject getModule() {
