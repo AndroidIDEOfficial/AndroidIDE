@@ -29,11 +29,11 @@ import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.*
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Default implementation of [AndroidProject].
@@ -180,6 +180,13 @@ open class AndroidModule(
     }
 
   private fun findPackageName() {
+
+    if (this.namespace.isNotBlank()) {
+      this.packageName = namespace
+      this.shouldLookupPackage = false
+      return
+    }
+
     if (mainSourceSet == null) {
       shouldLookupPackage = false
       return
@@ -197,10 +204,14 @@ open class AndroidModule(
     val manifest = document.children.first { it.nodeName == "manifest" }
     if (manifest == null) {
       shouldLookupPackage = false
+      return
     }
 
     val packageAttr = manifest.attributes.getNamedItem("package")
-    this.packageName = packageAttr.nodeValue
+    if (packageAttr != null) {
+      this.packageName = packageAttr.nodeValue
+    }
+
     this.shouldLookupPackage = false
   }
 

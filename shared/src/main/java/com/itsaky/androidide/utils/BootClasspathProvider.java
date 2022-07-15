@@ -44,7 +44,7 @@ public class BootClasspathProvider {
    *     the cache.
    */
   public static synchronized boolean update(Collection<String> classpaths) {
-    final var start = System.currentTimeMillis();
+    final var watch = new StopWatch("Indexing " + classpaths.size() + " bootclasspaths");
     var count = 0;
     for (final var classpath : classpaths) {
       if (bootClasspathClasses.containsKey(classpath)) {
@@ -67,8 +67,7 @@ public class BootClasspathProvider {
       count += classes.size();
     }
 
-    LOG.info(
-        "Indexed", count, "boot classpath classes in", System.currentTimeMillis() - start, "ms");
+    watch.log();
     return count > 0;
   }
 

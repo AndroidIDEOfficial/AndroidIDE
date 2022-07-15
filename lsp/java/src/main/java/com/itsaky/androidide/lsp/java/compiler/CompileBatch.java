@@ -95,7 +95,7 @@ public class CompileBatch implements AutoCloseable {
   }
 
   void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
-    final StopWatch positionWatch = new StopWatch("Scan method positions");
+    final StopWatch watch = new StopWatch("Scan method positions");
     final List<Pair<Range, TreePath>> positions = new ArrayList<>();
     new MethodRangeScanner(this.task).scan(tree, positions);
     final String path = new File(tree.getSourceFile().toUri()).getAbsolutePath();
@@ -105,7 +105,7 @@ public class CompileBatch implements AutoCloseable {
           "Duplicate CompilationUnitTree for file:" + tree.getSourceFile().toUri());
     }
 
-    positionWatch.log();
+    watch.log();
   }
 
   private ReusableCompiler.Borrow batchTask(

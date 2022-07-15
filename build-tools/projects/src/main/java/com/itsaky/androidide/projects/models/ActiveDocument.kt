@@ -18,6 +18,9 @@
 package com.itsaky.androidide.projects.models
 
 import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.utils.DocumentUtils
+import java.io.BufferedInputStream
+import java.io.BufferedReader
 import java.nio.file.Path
 import java.time.Instant
 
@@ -33,4 +36,32 @@ open class ActiveDocument(
   var changDelta: Int,
   val version: Int,
   val modified: Instant
-)
+) {
+
+  companion object {
+
+    @JvmStatic
+    fun create(
+      file: Path,
+      content: String,
+      changeRange: Range,
+      changDelta: Int,
+      version: Int,
+      modified: Instant
+    ): ActiveDocument {
+      if (DocumentUtils.isJavaFile(file)) {
+        return ActiveJavaDocument(file, content, changeRange, changDelta, version, modified)
+      }
+
+      return ActiveDocument(file, content, changeRange, changDelta, version, modified)
+    }
+  }
+
+  fun inputStream(): BufferedInputStream {
+    return content.byteInputStream().buffered()
+  }
+
+  fun reader(): BufferedReader {
+    return content.reader().buffered()
+  }
+}

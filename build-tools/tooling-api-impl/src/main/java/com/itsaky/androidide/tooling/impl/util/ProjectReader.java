@@ -141,9 +141,20 @@ public class ProjectReader {
     builder.setProjectType(type);
 
     final var module = builder.buildAndroidModule();
+    tryFillNamespaces(android, module);
     addTasks(gradle, module);
 
     return module;
+  }
+
+  private static void tryFillNamespaces(final AndroidProject android, final AndroidModule module) {
+    try {
+      module.setNamespace(android.getNamespace());
+      module.setAndroidTestNamespace(android.getAndroidTestNamespace());
+      module.setTestFixturesNamespace(android.getTestFixturesNamespace());
+    } catch (Throwable err) {
+      log("Unable to get namespaces of module: '" + module.projectPath + "'.", err.getMessage());
+    }
   }
 
   private static void addTasks(GradleProject gradle, IdeGradleProject project) {

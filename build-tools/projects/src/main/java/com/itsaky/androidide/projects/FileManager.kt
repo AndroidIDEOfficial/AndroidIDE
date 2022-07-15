@@ -75,7 +75,7 @@ object FileManager : EventReceiver {
   fun getReader(file: Path): BufferedReader {
     val document = getActiveDocument(file)
     if (document != null) {
-      return document.content.reader().buffered()
+      return document.reader()
     }
 
     return createFileReader(file)
@@ -84,7 +84,7 @@ object FileManager : EventReceiver {
   fun getInputStream(file: Path): InputStream {
     val document = getActiveDocument(file)
     if (document != null) {
-      return document.content.byteInputStream().buffered()
+      return document.inputStream()
     }
 
     return createFileInputStream(file)
