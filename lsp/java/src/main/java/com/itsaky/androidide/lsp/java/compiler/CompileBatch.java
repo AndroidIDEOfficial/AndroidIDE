@@ -33,6 +33,7 @@ import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.BootClasspathProvider;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
@@ -62,13 +63,13 @@ import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
+  private static final ILogger LOG = ILogger.newInstance("CompileBatch");
   protected final JavaCompilerService parent;
   protected final ReusableCompiler.Borrow borrow;
   protected final JavacTaskImpl task;
   protected final List<CompilationUnitTree> roots;
   protected final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
   protected DiagnosticListenerImpl diagnosticListener;
-
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
 
@@ -79,7 +80,6 @@ public class CompileBatch implements AutoCloseable {
     this.roots = new ArrayList<>();
 
     final StopWatch watch = new StopWatch("Create CompileBatch");
-
     final Iterable<? extends CompilationUnitTree> trees = borrow.task.parse();
     watch.lap("CompilationUnitTree(s) parsed");
 
@@ -87,10 +87,13 @@ public class CompileBatch implements AutoCloseable {
       roots.add(t);
       updatePositions(t, false);
     }
+    watch.lapFromLast("Indexed method positions");
 
     // The results of borrow.task.analyze() are unreliable when errors are present
     // You can get at `Element` values using `Trees`
+    LOG.debug("Analyzing sources...");
     borrow.task.analyze();
+    watch.lapFromLast("Sources analyzed");
     watch.log();
   }
 
@@ -124,7 +127,7 @@ public class CompileBatch implements AutoCloseable {
   @SuppressWarnings("Since15")
   @NonNull
   private List<String> options(Set<Path> classPath) {
-    List<String> list = new ArrayList<>();
+    List<String> options = new ArrayList<>();
 
     // TODO Boot classpath must be different in java projects
     //  Also, java modules must be enabled in java projects
@@ -138,19 +141,29 @@ public class CompileBatch implements AutoCloseable {
 
     if (!bootClasspaths.isEmpty()) {
       Collections.addAll(
-          list, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
+          options, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
     }
 
     if (!classPath.isEmpty()) {
-      Collections.addAll(list, "-classpath", joinPath(classPath));
+      Collections.addAll(options, "-classpath", joinPath(classPath));
     }
 
-    Collections.addAll(list, "-source", "11", "-target", "11");
-    Collections.addAll(list, "-proc:none");
-    Collections.addAll(list, "-g");
+    // TODO Replace with actual versions received from module project
+    Collections.addAll(options, "-source", "11", "-target", "11");
+    Collections.addAll(options, "-proc:none");
+    Collections.addAll(options, "-g");
+
+    options.add("-XDcompilePolicy=byfile");
+    options.add("-XD-Xprefer=source");
+    options.add("-XDide");
+    options.add("-XDsuppressAbortOnBadClassFile");
+    options.add("-XDshould-stop.at=GENERATE");
+    options.add("-XDdiags.formatterOptions=-source");
+    options.add("-XDdiags.layout=%L%m|%L%m|%L%m");
+    options.add("-XDbreakDocCommentParsingOnError=false");
 
     Collections.addAll(
-        list,
+        options,
         "-Xlint:cast",
         "-Xlint:deprecation",
         "-Xlint:empty",
@@ -161,7 +174,7 @@ public class CompileBatch implements AutoCloseable {
         "-Xlint:varargs",
         "-Xlint:static");
 
-    return list;
+    return options;
   }
 
   private List<String> getAndUpdateBootclasspaths() {

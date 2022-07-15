@@ -109,12 +109,11 @@ public class NBClassReader extends ClassReader {
             }
             data[6] = (byte) (maxMajor >> 8);
             data[7] = (byte) (maxMajor & 0xFF);
-            byte[] dataFin = data;
             c.classfile =
                 new ForwardingJavaFileObject(origFile) {
                   @Override
                   public InputStream openInputStream() throws IOException {
-                    return new ByteArrayInputStream(dataFin);
+                    return new ByteArrayInputStream(data);
                   }
                 };
             super.readClassFile(c);

@@ -76,14 +76,6 @@ public class NBLog extends Log {
     return (NBLog) log;
   }
 
-  public static void preRegister(
-      Context context,
-      final PrintWriter errWriter,
-      final PrintWriter warnWriter,
-      final PrintWriter noticeWriter) {
-    context.put(logKey, (Context.Factory<Log>) c -> new NBLog(c, errWriter));
-  }
-
   public static void preRegister(Context context, final PrintWriter output) {
     context.put(logKey, (Context.Factory<Log>) c -> new NBLog(c, output));
   }
@@ -125,11 +117,8 @@ public class NBLog extends Log {
       if (currentFile != null) {
         final URI uri = currentFile.toUri();
         Symbol.ClassSymbol type = (Symbol.ClassSymbol) diagnostic.getArgs()[0];
-        Collection<Symbol.ClassSymbol> types = notInProfiles.get(uri);
-        if (types == null) {
-          types = new ArrayList<>();
-          notInProfiles.put(uri, types);
-        }
+        Collection<Symbol.ClassSymbol> types =
+            notInProfiles.computeIfAbsent(uri, k -> new ArrayList<>());
         types.add(type);
       }
     }

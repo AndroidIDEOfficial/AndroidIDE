@@ -54,7 +54,7 @@ class MethodRangeScanner(val task: JavacTaskImpl) :
 
   override fun visitMethod(node: MethodTree?, list: MutableList<Pair<Range, TreePath>>) {
     // Do not call super.visitMethod
-    // We only wnat methods defined directly in declared (not anonymous) classes.
+    // We only want methods defined directly in declared (not anonymous) classes.
     if (node == null || this.root == null) {
       return
     }

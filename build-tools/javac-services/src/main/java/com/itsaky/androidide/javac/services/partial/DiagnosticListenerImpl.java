@@ -98,8 +98,11 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
     return errors;
   }
 
+  private boolean isIncompleteClassPath() {
+    return false;
+  }
+
   public final boolean hasPartialReparseErrors() {
-    // #236654: warnings should not stop processing of the reparsed method
     return this.partialReparseErrors != null && partialReparseRealErrors;
   }
 
@@ -108,25 +111,14 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
       partialReparseErrors = new ArrayList<>();
       Diagnostics errors = getErrors(jfo);
       SortedMap<Integer, Collection<DiagNode>> subMap = errors.subMap(from, to);
-      subMap
-          .values()
-          .forEach(
-              (value) -> {
-                value.forEach(
-                    (node) -> {
-                      errors.unlink(node);
-                    });
-              });
+      subMap.values().forEach(value -> value.forEach(errors::unlink));
       subMap.clear(); // Remove errors in changed method durring the partial reparse
       Map<Integer, Collection<DiagNode>> tail = errors.tailMap(to);
       this.affectedErrors = new ArrayList<>(tail.size());
       HashSet<DiagNode> tailNodes = new HashSet<>();
       for (Iterator<Map.Entry<Integer, Collection<DiagNode>>> it = tail.entrySet().iterator();
           it.hasNext(); ) {
-        Map.Entry<Integer, Collection<DiagNode>> e = it.next();
-        for (DiagNode d : e.getValue()) {
-          tailNodes.add(d);
-        }
+        tailNodes.addAll(it.next().getValue());
         it.remove();
       }
       DiagNode node = errors.first;
@@ -141,8 +133,7 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
           }
           if (diagnostic == null) {
             throw new IllegalStateException(
-                "#184910: diagnostic == null "
-                    + mapArraysToLists(Thread.getAllStackTraces())); // NOI18N
+                "diagnostic == null " + mapArraysToLists(Thread.getAllStackTraces())); // NOI18N
           }
           this.affectedErrors.add(new D(diagnostic));
         }
@@ -154,24 +145,19 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
     partialReparseRealErrors = false;
   }
 
-  public final void endPartialReparse(final int delta) {
-    this.currentDelta += delta;
-  }
-
   private static <A, B> Map<A, List<B>> mapArraysToLists(final Map<? extends A, B[]> map) {
-    final Map<A, List<B>> result = new HashMap<A, List<B>>();
+    final Map<A, List<B>> result = new HashMap<>();
     for (Map.Entry<? extends A, B[]> entry : map.entrySet()) {
       result.put(entry.getKey(), Arrays.asList(entry.getValue()));
     }
     return result;
   }
 
-  private boolean isIncompleteClassPath() {
-    // TODO Implement this
-    return false;
+  public final void endPartialReparse(final int delta) {
+    this.currentDelta += delta;
   }
 
-  private final class D implements Diagnostic {
+  private static final class D implements Diagnostic {
 
     private final JCDiagnostic delegate;
 
@@ -192,20 +178,17 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
 
     @Override
     public long getPosition() {
-      long ret = this.delegate.getPosition();
-      return ret;
+      return this.delegate.getPosition();
     }
 
     @Override
     public long getStartPosition() {
-      long ret = this.delegate.getStartPosition();
-      return ret;
+      return this.delegate.getStartPosition();
     }
 
     @Override
     public long getEndPosition() {
-      long ret = this.delegate.getEndPosition();
-      return ret;
+      return this.delegate.getEndPosition();
     }
 
     @Override
@@ -318,7 +301,7 @@ public class DiagnosticListenerImpl implements DiagnosticListener<JavaFileObject
   }
 
   private static final class DiagNode {
-    private Diagnostic<? extends JavaFileObject> diag;
+    private final Diagnostic<? extends JavaFileObject> diag;
     private DiagNode next;
     private DiagNode prev;
 
