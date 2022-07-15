@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    apply from: "dependencies.gradle"
+    apply from: "gradle/dependencies.gradle"
     
     project.ext {
         compileSdk = 31
