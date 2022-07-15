@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 buildscript {
-    apply from: '../dependencies.gradle'
+    apply from: '../gradle/dependencies.gradle'
 }
 
 android {

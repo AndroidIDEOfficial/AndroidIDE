@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    apply from: "${project.rootProject.rootDir}/dependencies.gradle"
+    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
     
     project.ext {
         compileSdk = 31
@@ -44,7 +44,7 @@ buildscript {
 
 subprojects {
     apply plugin: 'kotlin-kapt'
-    apply from: "${project.rootProject.rootDir}/dependencies.gradle"
+    apply from: "${project.rootProject.rootDir}/gradle/dependencies.gradle"
     
     afterEvaluate {
         tasks.register ("checkTranslations", task -> {
