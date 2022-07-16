@@ -49,6 +49,7 @@ buildscript {
         classpath classpaths.agp
         classpath classpaths.kotlin_gradle_plugin
         classpath classpaths.google_java_format
+        classpath google.guava_jre
     }
 }
 

@@ -1,5 +1,5 @@
 ext {
-    agp_version = '7.3.0-beta05'
+    agp_version = '7.2.1'
     kotlin_version = '1.7.10'
     google_java_format_version = '1.15.0'
     
@@ -47,7 +47,7 @@ ext {
             animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
             multidex         : 'androidx.multidex:multidex:2.0.1',
             ktx              : 'androidx.core:core-ktx:1.8.0',
-            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.2.0'
+            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.1.6'
     ]
     
     google = [
