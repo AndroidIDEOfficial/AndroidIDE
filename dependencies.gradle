@@ -17,7 +17,7 @@ ext {
             editor     : 'io.github.Rosemoe.sora-editor:editor:0.12.0',
             utilcode   : 'com.blankj:utilcodex:1.30.6',
             file_picker: 'com.github.abhishekti7:UnicornFilePicker:1.0.2',
-            glide      : 'com.github.bumptech.glide:glide:4.12.0',
+            glide      : 'com.github.bumptech.glide:glide:4.13.2',
             glide_ap   : 'com.github.bumptech.glide:compiler:4.13.1',
             quickaction: 'com.github.piruin:quickaction:2.4.3',
             bll        : 'com.github.Rosemoe:BlockLinkedList:1.0.0',
