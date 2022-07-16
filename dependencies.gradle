@@ -1,6 +1,6 @@
 ext {
     agp_version = '7.2.1'
-    kotlin_version = '1.7.0'
+    kotlin_version = '1.7.10'
     google_java_format_version = '1.15.0'
     
     classpaths = [
