@@ -185,7 +185,7 @@ public class CompileBatch implements AutoCloseable {
           options,
           "-source",
           DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION,
-          "target",
+          "-target",
           DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION);
       return;
     }
