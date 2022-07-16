@@ -26,6 +26,7 @@ import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultVariant
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
@@ -50,13 +51,13 @@ open class AndroidModule(
   parent: IdeGradleProject?,
   tasks: List<GradleTask>,
   val projectType: ProjectType?,
-  override var dynamicFeatures: Collection<String>?,
-  override var flags: DefaultAndroidGradlePluginProjectFlags,
-  override var javaCompileOptions: DefaultJavaCompileOptions,
-  override var resourcePrefix: String?,
+  override val dynamicFeatures: Collection<String>?,
+  override val flags: DefaultAndroidGradlePluginProjectFlags,
+  final override val javaCompileOptions: DefaultJavaCompileOptions,
+  override val resourcePrefix: String?,
   @Deprecated("This is resource intensive. Use AndroidModule.simpleVariants instead.")
   override val variants: Collection<DefaultVariant> = emptyList(),
-  override var viewBindingOptions: DefaultViewBindingOptions?,
+  override val viewBindingOptions: DefaultViewBindingOptions?,
   override val lintChecksJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
   val simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
@@ -77,8 +78,9 @@ open class AndroidModule(
     }
   var bootClassPaths: Collection<File> = emptyList()
   var mainSourceSet: DefaultSourceSetContainer? = null
-
   var libraries: List<DefaultLibrary> = emptyList()
+  
+  override var compilerSettings: IJavaCompilerSettings = javaCompileOptions
 
   @Suppress("unused")
   companion object {

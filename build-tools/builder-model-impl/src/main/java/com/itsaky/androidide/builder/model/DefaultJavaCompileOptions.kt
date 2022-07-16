@@ -21,10 +21,23 @@ import com.android.builder.model.v2.ide.JavaCompileOptions
 import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultJavaCompileOptions : JavaCompileOptions, Serializable {
+class DefaultJavaCompileOptions : IJavaCompilerSettings(), JavaCompileOptions, Serializable {
   private val serialVersionUID = 1L
   override var encoding: String = ""
   override var isCoreLibraryDesugaringEnabled: Boolean = false
+
   override var sourceCompatibility: String = ""
+    set(value) {
+      field = value
+      javaSourceVersion = value
+    }
+
   override var targetCompatibility: String = ""
+    set(value) {
+      field = value
+      javaBytecodeVersion = value
+    }
+
+  override var javaSourceVersion: String = sourceCompatibility
+  override var javaBytecodeVersion: String = targetCompatibility
 }

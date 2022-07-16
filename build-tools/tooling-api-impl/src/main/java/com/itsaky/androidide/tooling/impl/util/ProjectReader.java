@@ -30,12 +30,14 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
 import com.itsaky.androidide.tooling.api.model.GradleArtifact;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot;
 import com.itsaky.androidide.tooling.api.model.JavaModule;
+import com.itsaky.androidide.tooling.api.model.JavaModuleCompilerSettings;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
@@ -46,6 +48,7 @@ import com.itsaky.androidide.tooling.impl.Main;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LogUtils;
 
+import org.gradle.api.JavaVersion;
 import org.gradle.tooling.BuildController;
 import org.gradle.tooling.ConfigurableLauncher;
 import org.gradle.tooling.ProjectConnection;
@@ -177,13 +180,15 @@ public class ProjectReader {
 
   private static IdeGradleProject buildModuleProject(
       BuildController controller,
+      final IdeaProject ideaProject,
       IdeaModule ideaModule,
       Map<String, DefaultProjectSyncIssues> outIssues) {
-    return buildModuleProject(controller, ideaModule, outIssues, false);
+    return buildModuleProject(controller, ideaProject, ideaModule, outIssues, false);
   }
 
   private static IdeGradleProject buildModuleProject(
       BuildController controller,
+      final IdeaProject ideaProject,
       IdeaModule ideaModule,
       Map<String, DefaultProjectSyncIssues> outIssues,
       boolean androidOnly) {
@@ -213,7 +218,7 @@ public class ProjectReader {
           error.printStackTrace();
         }
 
-        return buildJavaModuleProject(gradle, ideaModule);
+        return buildJavaModuleProject(gradle, ideaProject, ideaModule);
       } catch (Throwable e) {
         log("Unable to create model for project");
         e.printStackTrace();
@@ -280,7 +285,8 @@ public class ProjectReader {
     return new ModelInfoContainer(module, syncIssues);
   }
 
-  private static JavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
+  private static JavaModule buildJavaModuleProject(
+      GradleProject gradle, final IdeaProject ideaProject, IdeaModule idea) {
     final var builder = new ProjectBuilder();
     builder.setName(gradle.getName());
     builder.setDescription(gradle.getDescription());
@@ -289,11 +295,64 @@ public class ProjectReader {
     builder.setBuildDir(gradle.getBuildDirectory());
     builder.setBuildScript(gradle.getBuildScript().getSourceFile());
     builder.setContentRoots(collectContentRoots(idea));
-    //    builder.setJavaDependencies(collectJavaDependencies(idea));
+    builder.setJavaCompilerSettings(createCompilerSettings(ideaProject, idea));
 
     final var project = builder.buildJavaModule();
     addTasks(gradle, project);
     return project;
+  }
+
+  private static IJavaCompilerSettings createCompilerSettings(
+      final IdeaProject ideaProject, final IdeaModule module) {
+    final var javaLanguageSettings = module.getJavaLanguageSettings();
+    if (javaLanguageSettings == null) {
+      return createCompilerSettings(ideaProject);
+    }
+
+    JavaVersion languageLevel = javaLanguageSettings.getLanguageLevel();
+    JavaVersion targetBytecodeVersion = javaLanguageSettings.getTargetBytecodeVersion();
+
+    if (languageLevel == null || targetBytecodeVersion == null) {
+      return createCompilerSettings(ideaProject);
+    }
+
+    final var source = languageLevel.toString();
+    final var target = targetBytecodeVersion.toString();
+    return new JavaModuleCompilerSettings(source, target);
+  }
+
+  private static IJavaCompilerSettings createCompilerSettings(final IdeaProject ideaProject) {
+    final var settings = ideaProject.getJavaLanguageSettings();
+    if (settings == null) {
+      return new JavaModuleCompilerSettings();
+    }
+
+    final var source = settings.getLanguageLevel();
+    final var target = settings.getTargetBytecodeVersion();
+    if (source == null || target == null) {
+      return new JavaModuleCompilerSettings();
+    }
+
+    return new JavaModuleCompilerSettings(source.toString(), target.toString());
+  }
+
+  private static void log(Object... messages) {
+    System.err.println(generateMessage(messages));
+  }
+
+  private static String generateMessage(Object... messages) {
+    StringBuilder sb = new StringBuilder();
+    if (messages == null) {
+      return "null";
+    }
+
+    for (Object msg : messages) {
+      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
+      sb.append(msg instanceof Throwable ? LogUtils.getFullStackTrace(((Throwable) msg)) : msg);
+      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
+    }
+
+    return sb.toString();
   }
 
   private static List<? extends JavaModuleDependency> collectJavaDependencies(IdeaModule idea) {
@@ -392,7 +451,8 @@ public class ProjectReader {
           "No GradleProject model is associated with project path: " + "':'");
     }
 
-    IdeGradleProject project = buildModuleProject(controller, rootModule.get(), outIssues, true);
+    IdeGradleProject project =
+        buildModuleProject(controller, ideaProject, rootModule.get(), outIssues, true);
     final var gradle = rootModule.get().getGradleProject();
     if (project == null) {
       final var builder = new ProjectBuilder();
@@ -430,29 +490,10 @@ public class ProjectReader {
         continue;
       }
 
-      final var sub = buildModuleProject(controller, module, outIssues);
+      final var sub = buildModuleProject(controller, ideaProject, module, outIssues);
       if (sub != null) {
         project.moduleProjects.add(sub);
       }
     }
-  }
-
-  private static void log(Object... messages) {
-    System.err.println(generateMessage(messages));
-  }
-
-  private static String generateMessage(Object... messages) {
-    StringBuilder sb = new StringBuilder();
-    if (messages == null) {
-      return "null";
-    }
-
-    for (Object msg : messages) {
-      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-      sb.append(msg instanceof Throwable ? LogUtils.getFullStackTrace(((Throwable) msg)) : msg);
-      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-    }
-
-    return sb.toString();
   }
 }

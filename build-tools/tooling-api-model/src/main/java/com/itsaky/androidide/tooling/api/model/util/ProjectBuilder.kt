@@ -21,12 +21,14 @@ import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlag
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModule
+import com.itsaky.androidide.tooling.api.model.JavaModuleCompilerSettings
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
 import java.io.File
 
@@ -48,7 +50,13 @@ class ProjectBuilder {
   var dynamicFeatures: Collection<String>? = mutableListOf()
   var flags: DefaultAndroidGradlePluginProjectFlags =
     DefaultAndroidGradlePluginProjectFlags(emptyMap())
+
+  // For Android modules only
   var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
+
+  // For Java modules
+  var javaCompilerSettings: IJavaCompilerSettings = JavaModuleCompilerSettings()
+
   var resourcePrefix: String? = ""
   var viewBindingOptions: DefaultViewBindingOptions? = null
   var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
@@ -81,6 +89,7 @@ class ProjectBuilder {
       buildScript,
       parent,
       tasks,
+      javaCompilerSettings,
       contentRoots,
       javaDependencies
     )

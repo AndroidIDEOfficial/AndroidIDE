@@ -18,14 +18,17 @@
 package com.itsaky.androidide.tooling.api.util;
 
 import com.google.gson.GsonBuilder;
+import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions;
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.model.AndroidModule;
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.GradleTask;
-import com.itsaky.androidide.tooling.api.model.JavaModule;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
+import com.itsaky.androidide.tooling.api.model.JavaModule;
+import com.itsaky.androidide.tooling.api.model.JavaModuleCompilerSettings;
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
@@ -114,6 +117,13 @@ public class ToolingApiLauncher {
                 JavaModuleExternalDependency.class, JavaModuleExternalDependency.class.getName())
             .registerSubtype(
                 JavaModuleProjectDependency.class, JavaModuleProjectDependency.class.getName()));
+
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(IJavaCompilerSettings.class)
+            .registerSubtype(
+                DefaultJavaCompileOptions.class, DefaultJavaCompileOptions.class.getName())
+            .registerSubtype(
+                JavaModuleCompilerSettings.class, JavaModuleCompilerSettings.class.getName()));
 
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(ProgressEvent.class, "gsonType", true)

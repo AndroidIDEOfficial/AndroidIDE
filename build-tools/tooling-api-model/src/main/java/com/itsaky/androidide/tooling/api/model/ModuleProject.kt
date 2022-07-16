@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.tooling.api.model
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import java.io.File
 
 /**
@@ -25,6 +26,9 @@ import java.io.File
  * @author Akash Yadav
  */
 interface ModuleProject {
+
+  /** Compiler settings for this module. */
+  val compilerSettings: IJavaCompilerSettings
 
   /**
    * Get the generated JAR file for this module.

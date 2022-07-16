@@ -28,10 +28,10 @@ import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -60,6 +60,8 @@ class ToolingApiImplTest {
     assertThat((app as AndroidModule).javaCompileOptions).isNotNull()
     assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
     assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
+    assertThat(app.javaCompileOptions.javaSourceVersion).isEqualTo("11")
+    assertThat(app.javaCompileOptions.javaBytecodeVersion).isEqualTo("11")
     assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
 
     assertThat(app.projectType).isEqualTo(APPLICATION)
@@ -102,12 +104,17 @@ class ToolingApiImplTest {
       )
       .isNotNull()
 
+    assertThat(androidLib.javaCompileOptions.javaSourceVersion).isEqualTo("11")
+    assertThat(androidLib.javaCompileOptions.javaBytecodeVersion).isEqualTo("11")
+
     val javaLibrary = project.findByPath(":java-library").get()
     assertThat(javaLibrary).isNotNull()
     assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
+    assertThat((javaLibrary as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("11")
+    assertThat(javaLibrary.compilerSettings.javaBytecodeVersion).isEqualTo("11")
 
     assertThat(
-        (javaLibrary as JavaModule).javaDependencies.firstOrNull {
+        javaLibrary.javaDependencies.firstOrNull {
           it is JavaModuleExternalDependency &&
             it.gradleArtifact != null &&
             it.run {
@@ -120,7 +127,7 @@ class ToolingApiImplTest {
       .isNotNull()
 
     assertThat(
-        javaLibrary.javaDependencies.first {
+        javaLibrary.javaDependencies.firstOrNull {
           it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
         }
       )
@@ -135,5 +142,11 @@ class ToolingApiImplTest {
     assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
 
     assertThat(project.findByPath(":does-not-exist").get()).isNull()
+
+    val anotherJavaLib = project.findByPath(":another-java-library").get()
+    assertThat(anotherJavaLib).isNotNull()
+    assertThat(anotherJavaLib).isInstanceOf(JavaModule::class.java)
+    assertThat((anotherJavaLib as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("1.8")
+    assertThat(anotherJavaLib.compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
   }
 }

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.tooling.api.model
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import java.io.File
@@ -38,6 +39,9 @@ open class JavaModule(
   buildScript: File,
   parent: IdeGradleProject?,
   tasks: List<GradleTask>,
+
+  /** Compiler settings for this module. */
+  override val compilerSettings: IJavaCompilerSettings,
 
   /** * Source directories of this project. */
   val contentRoots: List<JavaContentRoot>,
