@@ -27,7 +27,7 @@ jobs:
       - name: Build project
         uses: eskatos/gradle-command-action@v2
         with:
-          arguments: clean build
+          arguments: clean build --stacktrace
 
       - name: Run tests
         uses: eskatos/gradle-command-action@v2
