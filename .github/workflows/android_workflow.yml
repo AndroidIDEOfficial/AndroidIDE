@@ -28,16 +28,19 @@ jobs:
         uses: eskatos/gradle-command-action@v2
         with:
           arguments: clean build --stacktrace
+          cache-disabled: true
 
       - name: Run tests
         uses: eskatos/gradle-command-action@v2
         with:
           arguments: test
+          cache-disabled: true
 
       - name: Generate translation report
         uses: eskatos/gradle-command-action@v2
         with:
           arguments: :app:checkTranslations
+          cache-disabled: true
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
