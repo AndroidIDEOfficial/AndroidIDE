@@ -22,12 +22,14 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.api.AndroidModule;
+import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.BootClasspathProvider;
@@ -63,6 +65,7 @@ import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
+  public static final String DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION = "11";
   private static final ILogger LOG = ILogger.newInstance("CompileBatch");
   protected final JavaCompilerService parent;
   protected final ReusableCompiler.Borrow borrow;
@@ -148,8 +151,7 @@ public class CompileBatch implements AutoCloseable {
       Collections.addAll(options, "-classpath", joinPath(classPath));
     }
 
-    // TODO Replace with actual versions received from module project
-    Collections.addAll(options, "-source", "11", "-target", "11");
+    setupCompileOptions(parent.module, options);
     Collections.addAll(options, "-proc:none");
     Collections.addAll(options, "-g");
 
@@ -175,6 +177,24 @@ public class CompileBatch implements AutoCloseable {
         "-Xlint:static");
 
     return options;
+  }
+
+  protected void setupCompileOptions(final ModuleProject module, final List<String> options) {
+    if (module == null) {
+      Collections.addAll(
+          options,
+          "-source",
+          DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION,
+          "target",
+          DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION);
+      return;
+    }
+
+    final IJavaCompilerSettings compilerSettings = module.getCompilerSettings();
+    options.add("-source");
+    options.add(compilerSettings.getJavaSourceVersion());
+    options.add("-target");
+    options.add(compilerSettings.getJavaBytecodeVersion());
   }
 
   private List<String> getAndUpdateBootclasspaths() {
