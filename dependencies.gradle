@@ -3,7 +3,11 @@ ext {
     kotlin_version = '1.7.0'
     google_java_format_version = '1.15.0'
     
-    appcompat = '1.4.1'
+    classpaths = [
+            agp: "com.android.tools.build:gradle:$agp_version",
+            kotlin_gradle_plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
+            google_java_format: "com.google.googlejavaformat:google-java-format:$google_java_format_version"
+    ]
     
     androidide = [
             javac: 'io.github.itsaky:nb-javac-android:17.0.0.3-SNAPSHOT'
@@ -31,7 +35,7 @@ ext {
     
     androidx = [
             annotation       : 'androidx.annotation:annotation:1.3.0',
-            appcompat        : "androidx.appcompat:appcompat:$appcompat",
+            appcompat        : 'androidx.appcompat:appcompat:1.4.1',
             cardview         : 'androidx.cardview:cardview:1.0.0',
             constraintlayout : 'androidx.constraintlayout:constraintlayout:2.1.3',
             coordinatorlayout: 'androidx.coordinatorlayout:coordinatorlayout:1.1.0',

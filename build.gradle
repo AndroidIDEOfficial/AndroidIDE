@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    apply from: "gradle/dependencies.gradle"
+    apply from: "dependencies.gradle"
     
     project.ext {
         compileSdk = 31
@@ -24,21 +24,31 @@ buildscript {
     }
     
     repositories {
-        google ()
-        mavenLocal ()
-        mavenCentral ()
+        mavenLocal()
+        
+        // Do not use mavenCentral()
+        maven {
+            url 'https://repo1.maven.org/maven2'
+        }
+    
+        // Do not use google()
+        maven {
+            url 'https://maven.google.com'
+        }
+        
         maven {
             url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
         }
+        
         maven {
             url 'https://jitpack.io'
         }
     }
     
     dependencies {
-        classpath "com.android.tools.build:gradle:$agp_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.google.googlejavaformat:google-java-format:$google_java_format_version"
+        classpath classpaths.agp
+        classpath classpaths.kotlin_gradle_plugin
+        classpath classpaths.google_java_format
     }
 }
 
@@ -51,6 +61,37 @@ subprojects {
                 checkTranslations (project)
             }
         })
+    }
+}
+
+allprojects {
+    
+    tasks.withType (org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            freeCompilerArgs += '-Xjvm-default=all'
+        }
+    }
+    
+    repositories {
+        mavenLocal()
+        
+        // Do not use mavenCentral()
+        maven {
+            url 'https://repo1.maven.org/maven2'
+        }
+        
+        // Do not use google()
+        maven {
+            url 'https://maven.google.com'
+        }
+        
+        maven {
+            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+        }
+        
+        maven {
+            url 'https://jitpack.io'
+        }
     }
 }
 
@@ -106,27 +147,6 @@ private void checkTranslations (Project project) {
             out.delete ()
         } else {
             project.logger.lifecycle ("Translation report for '${project.path}/${dir.name}' is written to '${out.absolutePath}'")
-        }
-    }
-}
-
-allprojects {
-    
-    tasks.withType (org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            freeCompilerArgs += '-Xjvm-default=all'
-        }
-    }
-    
-    repositories {
-        google ()
-        mavenLocal ()
-        mavenCentral ()
-        maven {
-            url 'https://jitpack.io'
-        }
-        maven {
-            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
         }
     }
 }
