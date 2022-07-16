@@ -1,5 +1,5 @@
 ext {
-    agp_version = '7.2.1'
+    agp_version = '7.3.0-beta05'
     kotlin_version = '1.7.10'
     google_java_format_version = '1.15.0'
     
@@ -18,7 +18,7 @@ ext {
             utilcode   : 'com.blankj:utilcodex:1.31.0',
             file_picker: 'com.github.abhishekti7:UnicornFilePicker:1.0.2',
             glide      : 'com.github.bumptech.glide:glide:4.13.2',
-            glide_ap   : 'com.github.bumptech.glide:compiler:4.13.1',
+            glide_ap   : 'com.github.bumptech.glide:compiler:4.13.2',
             quickaction: 'com.github.piruin:quickaction:2.4.3',
             bll        : 'com.github.Rosemoe:BlockLinkedList:1.0.0',
             xml2json   : 'com.github.smart-fun:XmlToJson:1.5.1',
@@ -47,7 +47,7 @@ ext {
             animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
             multidex         : 'androidx.multidex:multidex:2.0.1',
             ktx              : 'androidx.core:core-ktx:1.8.0',
-            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.1.6'
+            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.2.0'
     ]
     
     google = [
