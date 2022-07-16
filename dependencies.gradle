@@ -41,7 +41,7 @@ ext {
             coordinatorlayout: 'androidx.coordinatorlayout:coordinatorlayout:1.1.0',
             drawer           : 'androidx.drawerlayout:drawerlayout:1.1.1',
             grid             : 'androidx.gridlayout:gridlayout:1.0.0',
-            preference       : 'androidx.preference:preference:1.1.1',
+            preference       : 'androidx.preference:preference:1.2.0',
             recyclerview     : 'androidx.recyclerview:recyclerview:1.2.1',
             vectors          : 'androidx.vectordrawable:vectordrawable:1.1.0',
             animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
