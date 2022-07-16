@@ -18,21 +18,42 @@
 package com.itsaky.androidide.lsp.xml;
 
 import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.api.LSPTest;
 import com.itsaky.androidide.lsp.xml.providers.XMLCompletionProviderTester;
+import com.itsaky.sdk.SDKInfo;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 /**
  * @author Akash Yadav
  */
+@RunWith(RobolectricTestRunner.class)
+@Config
 public class XMLLSPTest extends LSPTest {
 
   protected static final XMLLanguageServer server = new XMLLanguageServer();
 
   @Override
-  public void test() {
-    new XMLCompletionProviderTester().test();
+  @Before
+  public void initProjectIfNeeded() {
+    if (isInitialized()) {
+      return;
+    }
+
+    super.initProjectIfNeeded();
+
+    try {
+      server.setupSDK(new SDKInfo(ApplicationProvider.getApplicationContext()));
+    } catch (Throwable e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -44,5 +65,11 @@ public class XMLLSPTest extends LSPTest {
   @Override
   protected String getServerId() {
     return XMLLanguageServer.SERVER_ID;
+  }
+
+  @Test
+  @Override
+  public void test() {
+    new XMLCompletionProviderTester().test();
   }
 }

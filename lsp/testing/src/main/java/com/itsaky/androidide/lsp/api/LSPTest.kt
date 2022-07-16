@@ -38,6 +38,7 @@ import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.pathString
 import org.greenrobot.eventbus.EventBus
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -65,7 +66,8 @@ abstract class LSPTest {
     @JvmStatic protected var isInitialized: Boolean = false
   }
 
-  protected open fun initProjectIfNeeded() {
+  @Before
+  open fun initProjectIfNeeded() {
     if (isInitialized) {
       return
     }

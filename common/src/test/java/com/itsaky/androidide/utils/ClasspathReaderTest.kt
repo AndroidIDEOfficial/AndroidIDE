@@ -18,8 +18,8 @@
 package com.itsaky.androidide.utils
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Test
 import java.io.File
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -32,10 +32,10 @@ class ClasspathReaderTest {
   @Test
   fun testListClasses() {
     val classes =
-      com.itsaky.androidide.utils.ClasspathReader.listClasses(
+      ClasspathReader.listClasses(
         listOf(File("../tests/test-project/app/src/main/resources/android.jar"))
       )
-  
+
     val context = classes.firstOrNull { it.name == "android.content.Context" }
     assertThat(context).isNotNull()
     assertThat(context!!.isTopLevel).isTrue()
@@ -44,7 +44,7 @@ class ClasspathReaderTest {
     assertThat(context.isInner).isFalse()
     assertThat(context.simpleName).isEqualTo("Context")
     assertThat(context.packageName).isEqualTo("android.content")
-    
+
     val clickListener = classes.firstOrNull { it.name == "android.view.View\$OnClickListener" }
     assertThat(clickListener).isNotNull()
     assertThat(clickListener!!.isTopLevel).isFalse()

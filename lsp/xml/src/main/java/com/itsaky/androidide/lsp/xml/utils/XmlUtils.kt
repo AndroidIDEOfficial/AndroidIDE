@@ -16,15 +16,14 @@
  */
 package com.itsaky.androidide.lsp.xml.utils
 
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
 import com.itsaky.androidide.lexers.xml.XMLLexer
-import com.itsaky.androidide.utils.CharSequenceReader
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
+import com.itsaky.androidide.utils.CharSequenceReader
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.xml.INamespace.Resolver
+import java.util.*
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.eclipse.lemminx.dom.DOMDocument
@@ -33,7 +32,6 @@ import org.eclipse.lemminx.dom.DOMNode
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
-import java.util.*
 
 /** @author Akash Yadav */
 object XmlUtils {
@@ -137,8 +135,7 @@ object XmlUtils {
     }
   }
 
-  @Nullable
-  fun getRootElement(@NonNull document: DOMDocument): DOMElement? {
+  fun getRootElement(document: DOMDocument): DOMElement? {
     val roots = document.roots
     for (root in roots) {
       if (root is DOMElement) {
@@ -157,11 +154,11 @@ object XmlUtils {
 
     val resolver: Resolver =
       object : Resolver {
-        override fun findPrefix(@NonNull namespaceUri: String?): String? {
+        override fun findPrefix(namespaceUri: String?): String? {
           return rootElement.getPrefix(namespaceUri)
         }
 
-        override fun findUri(@NonNull prefix: String?): String? {
+        override fun findUri(prefix: String?): String? {
           val xmlns = rootElement.getAttributeNode("xmlns", prefix)
           return xmlns?.value
         }
@@ -176,7 +173,7 @@ object XmlUtils {
     return map[key]
   }
 
-  private fun updateCache(@NonNull node: DOMNode?, @NonNull key: String, value: Any) {
+  private fun updateCache(node: DOMNode?, key: String, value: Any) {
     caches.computeIfAbsent(node) { HashMap() }
     val map: MutableMap<String, Any>? = caches[node]
     if (map != null) {

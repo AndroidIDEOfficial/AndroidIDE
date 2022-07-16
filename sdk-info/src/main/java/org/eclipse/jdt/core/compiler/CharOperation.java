@@ -2222,13 +2222,21 @@ public final class CharOperation {
     int max = fragment.length;
     if (name.length < max + startIndex) return false;
     if (isCaseSensitive) {
-      for (int i = max; --i >= 0; ) // assumes the prefix is not larger than the name
-      if (fragment[i] != name[i + startIndex]) return false;
+      for (int i = max; --i >= 0; ) {
+        // assumes the prefix is not larger than the name
+        if (fragment[i] != name[i + startIndex]) {
+          return false;
+        }
+      }
       return true;
     }
-    for (int i = max; --i >= 0; ) // assumes the prefix is not larger than the name
-    if (ScannerHelper.toLowerCase(fragment[i]) != ScannerHelper.toLowerCase(name[i + startIndex]))
+    for (int i = max; --i >= 0; ) {
+      // assumes the prefix is not larger than the name
+      if (ScannerHelper.toLowerCase(fragment[i])
+          != ScannerHelper.toLowerCase(name[i + startIndex])) {
         return false;
+      }
+    }
     return true;
   }
 
@@ -3184,9 +3192,15 @@ public final class CharOperation {
   public static final boolean prefixEquals(char[] prefix, char[] name) {
 
     int max = prefix.length;
-    if (name.length < max) return false;
-    for (int i = max; --i >= 0; ) // assumes the prefix is not larger than the name
-    if (prefix[i] != name[i]) return false;
+    if (name.length < max) {
+      return false;
+    }
+    for (int i = max; --i >= 0; ) {
+      // assumes the prefix is not larger than the name
+      if (prefix[i] != name[i]) {
+        return false;
+      }
+    }
     return true;
   }
 
@@ -3263,14 +3277,21 @@ public final class CharOperation {
     int max = prefix.length;
     if (name.length - startIndex < max) return false;
     if (isCaseSensitive) {
-      for (int i = max; --i >= 0; ) // assumes the prefix is not larger than the name
-      if (prefix[i] != name[startIndex + i]) return false;
+      for (int i = max; --i >= 0; ) {
+        // assumes the prefix is not larger than the name
+        if (prefix[i] != name[startIndex + i]) {
+          return false;
+        }
+      }
       return true;
     }
 
-    for (int i = max; --i >= 0; ) // assumes the prefix is not larger than the name
-    if (ScannerHelper.toLowerCase(prefix[i]) != ScannerHelper.toLowerCase(name[startIndex + i]))
+    for (int i = max; --i >= 0; ) {
+      // assumes the prefix is not larger than the name
+      if (ScannerHelper.toLowerCase(prefix[i]) != ScannerHelper.toLowerCase(name[startIndex + i])) {
         return false;
+      }
+    }
     return true;
   }
 
@@ -3697,8 +3718,10 @@ public final class CharOperation {
     if (enclCount == 0) return CharOperation.splitOn(divider, array, start, end);
 
     int nesting = 0;
-    if (openEncl == divider || closeEncl == divider) // divider should be distinct
-    return CharOperation.NO_CHAR_CHAR;
+    if (openEncl == divider || closeEncl == divider) {
+      // divider should be distinct
+      return CharOperation.NO_CHAR_CHAR;
+    }
 
     int[][] splitOffsets = new int[wordCount][2]; // maximum
     int last = start, currentWord = 0, prevOffset = start;

@@ -384,6 +384,7 @@ public final class Signature {
    * @since 3.1
    */
   public static final int WILDCARD_TYPE_SIGNATURE = 5;
+
   private static final char[] BOOLEAN = "boolean".toCharArray(); // $NON-NLS-1$
   private static final char[] BYTE = "byte".toCharArray(); // $NON-NLS-1$
   private static final char[] CAPTURE = "capture-of".toCharArray(); // $NON-NLS-1$
@@ -1546,8 +1547,10 @@ public final class Signature {
           break;
       }
     }
-    if (start < 0) // invalid number of generic start/end
-    throw new IllegalArgumentException(String.valueOf(parameterizedTypeSignature));
+    if (start < 0) {
+      // invalid number of generic start/end
+      throw new IllegalArgumentException(String.valueOf(parameterizedTypeSignature));
+    }
     ArrayList args = new ArrayList();
     int p = start + 1;
     while (true) {
@@ -3019,8 +3022,10 @@ public final class Signature {
       buffer.append(C_NAME_END);
       checkPos = checkNextChar(typeName, '&', pos, length, true);
       if (checkPos > 0) {
-        if (buffer.charAt(0) != C_UNION) // the constant name is wrong, its value is correct :-X
-        buffer.insert(0, C_UNION);
+        if (buffer.charAt(0) != C_UNION) {
+          // the constant name is wrong, its value is correct :-X
+          buffer.insert(0, C_UNION);
+        }
         buffer.append(C_COLON);
         pos = encodeTypeSignature(typeName, checkPos, isResolved, length, buffer);
         if (pos == length) {
