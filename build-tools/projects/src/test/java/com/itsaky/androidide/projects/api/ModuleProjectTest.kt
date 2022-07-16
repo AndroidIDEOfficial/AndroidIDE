@@ -19,16 +19,16 @@ package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
-import java.nio.file.Files
+import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.File
+import java.nio.file.Files
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -40,11 +40,7 @@ class ModuleProjectTest {
   @Test
   fun test() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server
-      .initialize(
-        InitializeProjectMessage(File("../../tests/test-project").absolutePath)
-      )
-      .get()
+    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
     ProjectManager.setupProject(project)
 
     verifyProjectManagerAPIs()
@@ -55,12 +51,7 @@ class ModuleProjectTest {
 
     val rootDir = root.projectDir
     assertThat(rootDir).isNotNull()
-    assertThat(
-        Files.isSameFile(
-          rootDir.toPath(),
-          File("../../tests/test-project").toPath()
-        )
-      )
+    assertThat(Files.isSameFile(rootDir.toPath(), File("../../tests/test-project").toPath()))
       .isTrue()
 
     val app = root.findByPath(":app")
@@ -72,6 +63,12 @@ class ModuleProjectTest {
     assertThat(appSourceDirs)
       .containsAtLeast(File(rootDir, "app/src/main/java"), File(rootDir, "app/src/main/kotlin"))
     assertThat(appSourceDirs).doesNotContain(File(rootDir, "other-java-library/src/main/java"))
+    assertThat(app.compilerSettings.javaSourceVersion).isEqualTo("11")
+    assertThat(app.compilerSettings.javaBytecodeVersion).isEqualTo("11")
+    assertThat(app.compilerSettings.javaSourceVersion)
+      .isEqualTo(app.javaCompileOptions.sourceCompatibility)
+    assertThat(app.compilerSettings.javaBytecodeVersion)
+      .isEqualTo(app.javaCompileOptions.targetCompatibility)
 
     val anotherAndroidLib = root.findByPath(":another-android-library")
     assertThat(anotherAndroidLib).isNotNull()
@@ -108,6 +105,9 @@ class ModuleProjectTest {
         File(anotherAndroidLibDir, "src/main/kotlin"),
         File(rootDir, "other-java-library/src/main/java")
       )
+
+    assertThat(anotherAndroidLib.compilerSettings.javaSourceVersion).isEqualTo("11")
+    assertThat(anotherAndroidLib.compilerSettings.javaBytecodeVersion).isEqualTo("11")
 
     val appCompileSourceDirs = app.getCompileSourceDirectories()
     assertThat(appCompileSourceDirs).isNotEmpty()
@@ -166,6 +166,13 @@ class ModuleProjectTest {
     assertThat(classes.map { it.isClass }).containsExactly(true, true)
     assertThat(classes.map { it::class.java })
       .containsExactly(SourceNode::class.java, SourceNode::class.java)
+
+    root.findByPath(":another-java-library").run {
+      assertThat(this).isInstanceOf(JavaModule::class.java)
+      assertThat((this as JavaModule).compilerSettings).isNotNull()
+      assertThat(compilerSettings.javaSourceVersion).isEqualTo("1.8")
+      assertThat(compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
+    }
   }
 
   private fun verifyProjectManagerAPIs() {

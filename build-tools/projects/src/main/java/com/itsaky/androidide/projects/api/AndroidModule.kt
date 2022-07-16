@@ -20,7 +20,6 @@ package com.itsaky.androidide.projects.api
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
-import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.android.builder.model.v2.ide.ProjectType
 import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
@@ -93,7 +92,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val modelSyncFiles: List<DefaultModelSyncFile>,
   val variants: List<SimpleVariantData> = listOf()
 ) :
-  ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks), WithModuleData {
+  ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks, javaCompileOptions), WithModuleData {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private var cachedLibraries: Map<String, List<DefaultLibrary>> = mutableMapOf()

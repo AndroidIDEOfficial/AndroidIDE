@@ -18,6 +18,7 @@
 package com.itsaky.androidide.projects.api
 
 import android.text.TextUtils
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.BootClasspathProvider
 import com.itsaky.androidide.utils.ClasspathReader
@@ -41,6 +42,8 @@ abstract class ModuleProject(
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
+  
+  override val compilerSettings: IJavaCompilerSettings
 ) :
   Project(name, description, path, projectDir, buildDir, buildScript, tasks),
   com.itsaky.androidide.tooling.api.model.ModuleProject {

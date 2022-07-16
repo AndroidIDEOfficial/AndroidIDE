@@ -102,7 +102,8 @@ class ProjectTransformer {
       buildScript = project.buildScript,
       tasks = project.tasks,
       contentRoots = project.contentRoots,
-      dependencies = project.javaDependencies
+      dependencies = project.javaDependencies,
+      compilerSettings = project.compilerSettings
     )
   }
 

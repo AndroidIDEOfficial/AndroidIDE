@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
@@ -49,9 +50,20 @@ class JavaModule(
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
+  compilerSettings: IJavaCompilerSettings,
   val contentRoots: List<JavaContentRoot>,
-  val dependencies: List<JavaModuleDependency>
-) : ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks) {
+  val dependencies: List<JavaModuleDependency>,
+) :
+  ModuleProject(
+    name,
+    description,
+    path,
+    projectDir,
+    buildDir,
+    buildScript,
+    tasks,
+    compilerSettings
+  ) {
 
   companion object {
     const val SCOPE_COMPILE = "COMPILE"
