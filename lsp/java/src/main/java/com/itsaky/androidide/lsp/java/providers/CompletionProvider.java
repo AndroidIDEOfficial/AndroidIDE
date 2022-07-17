@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.providers;
 
+import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.analyze;
+import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.enterTrees;
+import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.parse;
 import static com.itsaky.androidide.progress.ProgressManager.abortIfCancelled;
 
 import androidx.annotation.NonNull;
@@ -332,7 +335,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         throws IOException {
 
       final StopWatch watch = new StopWatch("Process compilation task for completion");
-      final Iterable<? extends CompilationUnitTree> trees = task.parse(file);
+      final Iterable<? extends CompilationUnitTree> trees = parse(task, file);
       watch.lapFromLast("Parsed");
       trees.forEach(processCompilationUnit);
       watch.lapFromLast("Processed");
@@ -345,10 +348,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       //   Also, perform a fake compilation with the file manager instance at the initialization
       //   phase of project so that, at least some of the data is already cached and the
       //   first-time-completion request after initialization could be faster
-      final Iterable<? extends Element> elements = task.enterTrees(trees);
+      final Iterable<? extends Element> elements = enterTrees(task, trees);
       watch.lapFromLast("Entered trees");
 
-      final Iterable<? extends Element> analyzed = task.analyze(elements);
+      final Iterable<? extends Element> analyzed = analyze(task, elements);
       watch.lapFromLast("Analyzed");
     }
   }
