@@ -17,9 +17,13 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
+import android.text.TextUtils;
+
 import com.itsaky.androidide.projects.api.ModuleProject;
-import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.SourceClassTrie;
+import com.itsaky.androidide.utils.StopWatch;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
@@ -30,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
@@ -44,7 +47,7 @@ import javax.tools.StandardLocation;
 @SuppressWarnings("Since15")
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
-  private static final Logger LOG = Logger.getLogger("main");
+  private static final ILogger LOG = ILogger.newInstance("SourceFileManager");
   private ModuleProject module;
 
   public SourceFileManager() {
@@ -56,10 +59,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     this.module = module;
   }
 
-  public void setModule(final ModuleProject module) {
-    this.module = module;
-  }
-
   private static StandardJavaFileManager createDelegateFileManager() {
     JavaCompiler compiler = JavacTool.create();
     return compiler.getStandardFileManager(
@@ -67,11 +66,11 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   }
 
   private static void logError(Diagnostic<?> error) {
-    LOG.warning(error.getMessage(null));
+    LOG.warn(error.getMessage(null));
   }
 
-  private String packageNameOrEmpty(Path file) {
-    return this.module != null ? module.packageNameOrEmpty(file) : "";
+  public void setModule(final ModuleProject module) {
+    this.module = module;
   }
 
   @Override
@@ -83,7 +82,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
         return Collections.emptyList();
       }
       Stream<JavaFileObject> stream =
-          module.listClassesFromSourceDirs(packageName).stream().map(this::asJavaFileObject);
+        module.listClassesFromSourceDirs(packageName).stream().map(this::asJavaFileObject);
       return stream::iterator;
     } else {
       return super.list(location, packageName, kinds, recurse);
@@ -108,6 +107,10 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     }
   }
 
+  private String packageNameOrEmpty(Path file) {
+    return this.module != null ? module.packageNameOrEmpty(file) : "";
+  }
+
   private String removeExtension(String fileName) {
     int lastDot = fileName.lastIndexOf(".");
     return (lastDot == -1 ? fileName : fileName.substring(0, lastDot));
@@ -121,7 +124,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   @Override
   public JavaFileObject getJavaFileForInput(
       Location location, String className, JavaFileObject.Kind kind) throws IOException {
-    // FileStore shadows disk
     if (location == StandardLocation.SOURCE_PATH) {
       String packageName = StringSearch.mostName(className);
       String simpleClassName = StringSearch.lastName(className);

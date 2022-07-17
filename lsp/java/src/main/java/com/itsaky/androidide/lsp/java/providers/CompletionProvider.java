@@ -26,6 +26,7 @@ import com.itsaky.androidide.lsp.api.AbstractServiceProvider;
 import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.internal.model.CachedCompletion;
+import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
@@ -47,10 +48,13 @@ import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
+import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -59,14 +63,17 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import javax.lang.model.element.Element;
+import javax.tools.JavaFileObject;
+
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
   public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
   private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
+  private final AtomicBoolean completing = new AtomicBoolean(false);
   private JavaCompilerService compiler;
   private CachedCompletion cache;
   private Consumer<CachedCompletion> nextCacheConsumer;
-  private final AtomicBoolean completing = new AtomicBoolean(false);
 
   public CompletionProvider() {
     super();
@@ -218,13 +225,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     abortIfCancelled();
 
-    SynchronizedTask synchronizedTask =
-        compiler.compile(new CompilationRequest(Collections.singletonList(source), partialRequest));
+    final CompilationTaskProcessor taskProcessor = new CompletionTaskProcesor(source);
+    final CompilationRequest request =
+        new CompilationRequest(Collections.singletonList(source), partialRequest, taskProcessor);
+    SynchronizedTask synchronizedTask = compiler.compile(request);
     return synchronizedTask.get(
         task -> {
-          if (task == null
-              || task.task == null
-              || ((JavacTaskImpl) task.task).getContext() == null) {
+          if (task == null || task.task == null || task.task.getContext() == null) {
             return CompletionResult.EMPTY;
           }
           abortIfCancelled();
@@ -308,5 +315,41 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
   private boolean isQualifiedIdentifierChar(char c) {
     return c == '.' || Character.isJavaIdentifierPart(c);
+  }
+
+  private static class CompletionTaskProcesor implements CompilationTaskProcessor {
+
+    private final JavaFileObject file;
+
+    private CompletionTaskProcesor(final JavaFileObject file) {
+      this.file = file;
+    }
+
+    @Override
+    public void process(
+        @NonNull final JavacTaskImpl task,
+        @NonNull final Consumer<CompilationUnitTree> processCompilationUnit)
+        throws IOException {
+
+      final StopWatch watch = new StopWatch("Process compilation task for completion");
+      final Iterable<? extends CompilationUnitTree> trees = task.parse(file);
+      watch.lapFromLast("Parsed");
+      trees.forEach(processCompilationUnit);
+      watch.lapFromLast("Processed");
+
+      // The enter call takes a lot of time
+      // Consumes around 60s for sora-editor's CodeEditor.java
+      // This is because of the JAR files that are read and when entering the trees
+      // TODO The data read from the JAR files are cached anyways
+      //   Make all the instances of JavaCompilerService use the same instance of SourceFileManager
+      //   Also, perform a fake compilation with the file manager instance at the initialization
+      //   phase of project so that, at least some of the data is already cached and the
+      //   first-time-completion request after initialization could be faster
+      final Iterable<? extends Element> elements = task.enterTrees(trees);
+      watch.lapFromLast("Entered trees");
+
+      final Iterable<? extends Element> analyzed = task.analyze(elements);
+      watch.lapFromLast("Analyzed");
+    }
   }
 }

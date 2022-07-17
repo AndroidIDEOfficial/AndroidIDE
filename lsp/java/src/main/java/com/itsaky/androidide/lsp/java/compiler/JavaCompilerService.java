@@ -367,7 +367,7 @@ public class JavaCompilerService implements CompilerProvider {
 
   private synchronized void recompile(CompilationRequest request) {
     close();
-    cachedCompile = performCompilation(request.sources);
+    cachedCompile = performCompilation(request);
     updateModificationCache(request);
     this.changeDelta = 0;
   }
@@ -386,12 +386,13 @@ public class JavaCompilerService implements CompilerProvider {
     }
   }
 
-  private CompileBatch performCompilation(Collection<? extends JavaFileObject> sources) {
+  private CompileBatch performCompilation(CompilationRequest request) {
+    final Collection<? extends JavaFileObject> sources = request.sources;
     if (sources.isEmpty()) {
       throw new RuntimeException("empty sources");
     }
 
-    CompileBatch firstAttempt = new CompileBatch(this, sources);
+    CompileBatch firstAttempt = new CompileBatch(this, sources, request.compilationTaskProcessor);
     Set<Path> addFiles = firstAttempt.needsAdditionalSources();
 
     if (addFiles.isEmpty()) {
@@ -408,7 +409,7 @@ public class JavaCompilerService implements CompilerProvider {
       moreSources.add(new SourceFileObject(add));
     }
 
-    return new CompileBatch(this, moreSources);
+    return new CompileBatch(this, moreSources, request.compilationTaskProcessor);
   }
 
   private boolean containsWord(Path file, String word) {

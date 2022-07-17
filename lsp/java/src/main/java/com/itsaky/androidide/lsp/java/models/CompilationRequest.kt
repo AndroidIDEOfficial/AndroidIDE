@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.models
 
+import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor
+import com.itsaky.androidide.lsp.java.compiler.DefaultCompilationTaskProcessor
 import javax.tools.JavaFileObject
 
 /**
@@ -28,7 +30,13 @@ import javax.tools.JavaFileObject
  */
 data class CompilationRequest(
   @JvmField val sources: Collection<JavaFileObject>,
-  @JvmField val partialRequest: PartialReparseRequest?
+  @JvmField val partialRequest: PartialReparseRequest?,
+  @JvmField val compilationTaskProcessor: CompilationTaskProcessor
 ) {
   constructor(files: Collection<JavaFileObject>) : this(files, null)
+
+  constructor(
+    files: Collection<JavaFileObject>,
+    partialRequest: PartialReparseRequest?
+  ) : this(files, partialRequest, DefaultCompilationTaskProcessor())
 }
