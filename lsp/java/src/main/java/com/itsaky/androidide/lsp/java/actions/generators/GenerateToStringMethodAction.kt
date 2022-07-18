@@ -31,7 +31,6 @@ import com.itsaky.androidide.lsp.java.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.toaster.Toaster
 import com.itsaky.toaster.Toaster.Type.ERROR

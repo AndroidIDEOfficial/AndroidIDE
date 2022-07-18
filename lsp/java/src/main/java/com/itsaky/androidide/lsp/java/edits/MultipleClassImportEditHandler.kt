@@ -20,9 +20,6 @@ package com.itsaky.androidide.lsp.java.edits
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.utils.EditHelper
-import com.itsaky.androidide.lsp.models.CompletionItem
-import com.itsaky.androidide.lsp.models.TextEdit
-import com.itsaky.androidide.lsp.util.RewriteHelper
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 

@@ -27,7 +27,6 @@ import com.itsaky.androidide.lsp.models.HighlightTokenKind;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.FileManager;
-import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;

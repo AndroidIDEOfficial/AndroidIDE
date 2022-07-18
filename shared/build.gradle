@@ -37,5 +37,5 @@ android {
 dependencies {
     implementation google.guava
     
-    implementation project(path: ':build-tools:logger')
+    implementation project(path: ':logger')
 }

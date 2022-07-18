@@ -49,7 +49,7 @@ dependencies {
     api project (path: ':build-tools:tooling-api')
     
     implementation project (path: ':shared')
-    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':logger')
     
     implementation common.io
     implementation google.guava

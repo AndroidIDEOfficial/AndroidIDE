@@ -35,7 +35,7 @@ dependencies {
     implementation common.kotlin
     implementation common.utilcode
     implementation project (':common')
-    implementation project(path: ':build-tools:logger')
+    implementation project(path: ':logger')
     
     api project(path: ':build-tools:javac')
 }

@@ -32,8 +32,6 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
-import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster

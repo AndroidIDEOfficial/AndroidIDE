@@ -26,7 +26,7 @@ java {
 }
 
 dependencies {
-    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':logger')
     api project (path: ':build-tools:jsonrpc')
     api project (path: ':build-tools:tooling-api-model')
     api project (path: ':build-tools:tooling-api-events')

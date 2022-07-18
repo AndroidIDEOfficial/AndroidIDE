@@ -24,7 +24,6 @@ import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.GenerateRecordConstructor
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
-import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
 
 /** @author Akash Yadav */

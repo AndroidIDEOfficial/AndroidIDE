@@ -23,7 +23,6 @@ import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.RemoveException
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
-import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 

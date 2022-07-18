@@ -22,7 +22,6 @@ import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods
-import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.utils.ILogger
 import javax.tools.Diagnostic
 import javax.tools.JavaFileObject

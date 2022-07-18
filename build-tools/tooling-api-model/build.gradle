@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':logger')
     implementation project (path: ':build-tools:jsonrpc')
     implementation project (path: ':build-tools:xml-dom')
     api project (path: ':build-tools:builder-model-impl')

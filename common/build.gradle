@@ -54,7 +54,7 @@ dependencies {
     api androidx.multidex
     
     api project (path: ':shared')
-    api project (path: ':build-tools:logger')
+    api project (path: ':logger')
     
     testImplementation tests.junit
     testImplementation tests.google_truth

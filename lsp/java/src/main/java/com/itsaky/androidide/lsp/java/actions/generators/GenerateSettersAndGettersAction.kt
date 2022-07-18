@@ -32,7 +32,6 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.toaster.Toaster
 import com.sun.source.tree.ClassTree

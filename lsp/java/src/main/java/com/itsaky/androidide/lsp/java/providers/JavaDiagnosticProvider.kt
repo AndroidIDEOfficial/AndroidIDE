@@ -21,7 +21,6 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.DiagnosticsProvider.findDiagnostics
 import com.itsaky.androidide.lsp.java.utils.CancelChecker
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
 import java.time.Instant
