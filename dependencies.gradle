@@ -1,5 +1,5 @@
 ext {
-    agp_version = '7.3.0-beta05'
+    agp_version = '7.4.0-alpha08'
     kotlin_version = '1.7.10'
     google_java_format_version = '1.15.0'
     
