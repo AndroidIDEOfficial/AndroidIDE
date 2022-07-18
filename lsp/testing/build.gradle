@@ -51,7 +51,7 @@ dependencies {
     implementation project (':lsp:api')
     implementation project (':actions')
     implementation project (':common')
-    implementation project (':build-tools:eventbus-android')
+    implementation project (':eventbus-android')
     implementation project (':build-tools:tooling-api-testing')
     implementation common.editor
     implementation tests.junit

@@ -48,5 +48,5 @@ dependencies {
     implementation project (path: ':shared')
     implementation project (path: ':build-tools:logger')
     
-    api project (path: ':build-tools:eventbus')
+    api project (path: ':eventbus')
 }

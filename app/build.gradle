@@ -126,8 +126,8 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
-    implementation project (':build-tools:eventbus-android')
-    implementation project (':build-tools:eventbus-events')
+    implementation project (':eventbus-android')
+    implementation project (':eventbus-events')
     implementation project (':build-tools:projects')
     implementation project (':build-tools:tooling-api')
     implementation project (':treeview')

@@ -44,8 +44,8 @@ dependencies {
     
     kapt common.eventbus_ap
     
-    api project (path: ':build-tools:eventbus')
-    api project (path: ':build-tools:eventbus-events')
+    api project (path: ':eventbus')
+    api project (path: ':eventbus-events')
     api project (path: ':build-tools:tooling-api')
     
     implementation project (path: ':shared')

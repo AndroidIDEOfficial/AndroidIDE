@@ -49,7 +49,7 @@ dependencies {
     implementation androidx.ktx
     implementation common.kotlin
     
-    implementation project (path: ':build-tools:eventbus-events')
+    implementation project (path: ':eventbus-events')
     
     api androidx.multidex
     

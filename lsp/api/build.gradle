@@ -52,7 +52,7 @@ kapt {
 dependencies {
     implementation common.editor
     implementation project (':build-tools:fuzzysearch')
-    implementation project (':build-tools:eventbus-events')
+    implementation project (':eventbus-events')
     
     implementation androidx.appcompat
     implementation androidx.ktx
