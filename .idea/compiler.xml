@@ -31,9 +31,7 @@
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
       <module name="AndroidIDE.javac" target="1.8" />
-      <module name="AndroidIDE.logger" target="11" />
-      <module name="AndroidIDE.logger.main" target="11" />
-      <module name="AndroidIDE.logger.test" target="11" />
+      <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
