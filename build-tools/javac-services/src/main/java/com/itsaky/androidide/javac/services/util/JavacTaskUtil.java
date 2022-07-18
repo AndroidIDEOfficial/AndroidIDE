@@ -60,7 +60,6 @@ public class JavacTaskUtil {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static Iterable<? extends CompilationUnitTree> parse(
       JavacTaskImpl task, JavaFileObject... sources) throws IOException {
 

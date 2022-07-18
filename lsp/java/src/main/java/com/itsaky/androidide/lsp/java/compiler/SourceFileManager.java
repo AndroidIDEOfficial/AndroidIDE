@@ -17,13 +17,10 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
-import android.text.TextUtils;
-
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
-import com.itsaky.androidide.utils.StopWatch;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
@@ -66,7 +63,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   }
 
   private static void logError(Diagnostic<?> error) {
-    LOG.warn(error.getMessage(null));
+    LOG.warn("SourceFileManager DiagnosticErr:", error.getMessage(null));
   }
 
   public void setModule(final ModuleProject module) {
@@ -82,7 +79,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
         return Collections.emptyList();
       }
       Stream<JavaFileObject> stream =
-        module.listClassesFromSourceDirs(packageName).stream().map(this::asJavaFileObject);
+          module.listClassesFromSourceDirs(packageName).stream().map(this::asJavaFileObject);
       return stream::iterator;
     } else {
       return super.list(location, packageName, kinds, recurse);

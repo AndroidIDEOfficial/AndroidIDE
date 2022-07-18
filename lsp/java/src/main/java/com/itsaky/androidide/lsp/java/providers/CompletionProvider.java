@@ -152,11 +152,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     abortIfCancelled();
+    final StopWatch watch = new StopWatch("Prune method bodies");
     ParseTask task = compiler.parse(file);
 
     abortIfCancelled();
     long cursor = task.root.getLineMap().getPosition(line, column);
     StringBuilder pruned = new PruneMethodBodies(task.task).scan(task.root, cursor);
+    watch.log();
     int endOfLine = endOfLine(pruned, (int) cursor);
     pruned.insert(endOfLine, ';');
 
