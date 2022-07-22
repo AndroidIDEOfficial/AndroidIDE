@@ -390,7 +390,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   public void startToolingServer(@Nullable OnServerStartListener listener) {
-    if (toolingServerThread.isAlive() == null) {
+    if (toolingServerThread == null && !toolingServerThread.isAlive()) {
       toolingServerThread = new Thread(new ToolingServerRunner(listener));
       toolingServerThread.start();
     }
