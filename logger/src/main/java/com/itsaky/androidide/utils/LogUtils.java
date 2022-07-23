@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for {@link ILogger}.
@@ -49,6 +50,16 @@ public class LogUtils {
     } catch (ClassNotFoundException e) {
       return true;
     }
+  }
+  
+  public static String preProcessLogTag(String tag) {
+    final var regex = "[^a-z-A-Z0-9_.]";
+    final var matcher = Pattern.compile(regex).matcher(tag);
+    if (matcher.find()) {
+      tag = tag.replaceAll(regex, "_");
+    }
+    
+    return tag;
   }
 
   public static String getFullStackTrace(Throwable throwable) {

@@ -34,6 +34,8 @@
  */
 package com.itsaky.androidide.utils;
 
+import static com.itsaky.androidide.utils.LogUtils.preProcessLogTag;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,7 @@ public abstract class ILogger {
   protected final String TAG;
 
   protected ILogger(String tag) {
-    TAG = tag;
+    TAG = preProcessLogTag(tag);
   }
 
   public static ILogger instance() {

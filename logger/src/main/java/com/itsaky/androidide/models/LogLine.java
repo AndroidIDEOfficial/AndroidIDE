@@ -17,6 +17,8 @@
  */
 package com.itsaky.androidide.models;
 
+import static com.itsaky.androidide.utils.LogUtils.preProcessLogTag;
+
 import com.itsaky.androidide.utils.ILogger;
 
 import java.util.Objects;
@@ -65,7 +67,7 @@ public class LogLine {
     this.time = time;
     this.pid = pid;
     this.tid = tid;
-    this.tag = tag;
+    this.tag = preProcessLogTag(tag);
     this.message = message;
     this.priority = priority;
     this.formatted = formatted;
@@ -85,7 +87,6 @@ public class LogLine {
           split[1], // time
           split[2], // process id
           split[3], // thread id
-          // priority
           split[5], // tag
           split[6] // message
           );
@@ -122,7 +123,7 @@ public class LogLine {
 
   public String formattedTagAndMessage() {
     return this.formatted
-        ? String.format("%-25s %s", trimIfNeeded(tag, 25), message)
+        ? String.format("%-25s %-2s", trimIfNeeded(tag, 25), message)
         : this.unformatted;
   }
 
@@ -155,8 +156,8 @@ public class LogLine {
   public String toString() {
     return this.formatted
         ? String.format(
-            "%s %s %s/%s %s/%s %s",
-            date, time, pid, tid, ILogger.priorityChar(priority), tag, message)
+            "%s %s %s/%s %-25s %-2s %s",
+            date, time, pid, tid, trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
         : this.unformatted;
   }
 }
