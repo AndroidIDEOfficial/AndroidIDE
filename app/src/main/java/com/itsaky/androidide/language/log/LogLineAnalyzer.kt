@@ -140,7 +140,7 @@ class LogLineAnalyzer : AsyncIncrementalAnalyzeManager<LogLineState, LogToken>()
     }
 
     if (spans.isEmpty()) {
-      spans.add(Span.obtain(0, get(TEXT_NORMAL)))
+      spans.add(Span.obtain(0, get(LOG_TEXT_DEBUG)))
     }
 
     return spans

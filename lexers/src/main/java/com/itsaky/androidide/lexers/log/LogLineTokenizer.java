@@ -99,6 +99,13 @@ public class LogLineTokenizer {
       final var whitespace = parseWhitespace(text);
 
       return skipWs ? next() : whitespace;
+    } else if (c == '-' && index == 0) {
+      // Lines like these must be handled as well
+      // --------- beginning of system
+      // --------- beginning of main
+
+      index = input.length;
+      return createToken(new StringBuilder().append(input), 0, MESSAGE);
     }
 
     if (parseSimple) {
@@ -296,10 +303,10 @@ public class LogLineTokenizer {
           return false;
         });
     final var token = createToken(text, start, PID);
-  
+
     // Skip the '/'
     ++index;
-    
+
     return token;
   }
 
