@@ -24,6 +24,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.databinding.FragmentLogBinding
+import com.itsaky.androidide.language.log.LogLanguage
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.ILogger
@@ -89,6 +90,7 @@ abstract class LogViewFragment : Fragment() {
     editor.setTextSize(12f)
     editor.typefaceText = TypefaceUtils.jetbrainsMono()
     editor.colorScheme = SchemeAndroidIDE()
+    editor.setEditorLanguage(LogLanguage())
   }
 
   override fun onDestroy() {

@@ -32,10 +32,21 @@ public class SchemeAndroidIDE extends EditorColorScheme {
 
   private static int current = EditorColorScheme.END_COLOR_ID;
 
-  public static final int LOG_INFO = current++;
-  public static final int LOG_DEBUG = current++;
-  public static final int LOG_ERROR = current++;
-  public static final int LOG_WARNING = current++;
+  public static final int LOG_TEXT_INFO = current++;
+  public static final int LOG_TEXT_DEBUG = current++;
+  public static final int LOG_TEXT_VERBOSE = current++;
+  public static final int LOG_TEXT_ERROR = current++;
+  public static final int LOG_TEXT_WARNING = current++;
+  public static final int LOG_PRIORITY_FG_INFO = current++;
+  public static final int LOG_PRIORITY_FG_DEBUG = current++;
+  public static final int LOG_PRIORITY_FG_VERBOSE = current++;
+  public static final int LOG_PRIORITY_FG_ERROR = current++;
+  public static final int LOG_PRIORITY_FG_WARNING = current++;
+  public static final int LOG_PRIORITY_BG_INFO = current++;
+  public static final int LOG_PRIORITY_BG_DEBUG = current++;
+  public static final int LOG_PRIORITY_BG_VERBOSE = current++;
+  public static final int LOG_PRIORITY_BG_ERROR = current++;
+  public static final int LOG_PRIORITY_BG_WARNING = current++;
   public static final int DIAGNOSTIC_ERROR = current++;
   public static final int DIAGNOSTIC_WARNING = current++;
   public static final int DIAGNOSTIC_HINT = current++;
@@ -168,10 +179,20 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
     setColor(DIAGNOSTIC_HINT, 0xffffffff);
 
-    setColor(LOG_ERROR, 0xfff44336);
-    setColor(LOG_WARNING, 0xffFFEB3B);
-    setColor(LOG_INFO, 0xff4CAF50);
-    setColor(LOG_DEBUG, 0xfff5f5f5);
+    setColor(LOG_TEXT_ERROR, 0xfff44336);
+    setColor(LOG_TEXT_WARNING, 0xffFFEB3B);
+    setColor(LOG_TEXT_INFO, 0xff4CAF50);
+    setColor(LOG_TEXT_DEBUG, 0xfff5f5f5);
+    setColor(LOG_PRIORITY_FG_ERROR, 0xff000000);
+    setColor(LOG_PRIORITY_FG_WARNING, 0xff000000);
+    setColor(LOG_PRIORITY_FG_INFO, 0xffffffff);
+    setColor(LOG_PRIORITY_FG_DEBUG, 0xffffffff);
+    setColor(LOG_PRIORITY_FG_VERBOSE, 0xff000000);
+    setColor(LOG_PRIORITY_BG_ERROR, 0xfff44336);
+    setColor(LOG_PRIORITY_BG_WARNING, 0xffFFEB3B);
+    setColor(LOG_PRIORITY_BG_INFO, 0xff1f65c0);
+    setColor(LOG_PRIORITY_BG_DEBUG, 0xff9e9d24);
+    setColor(LOG_PRIORITY_BG_VERBOSE, 0xffffffff);
 
     setColor(STDERR, 0xfff44336);
     setColor(STDOUT, 0xff4CAF50);

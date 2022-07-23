@@ -27,11 +27,10 @@ import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.widget.SymbolPairMatch.DefaultSymbolPairs
 
 /** @author Akash Yadav */
-class LogLanguage : IDELanguage() {
+class LogLanguage @JvmOverloads constructor(val analyzer: LogLineAnalyzer = LogLineAnalyzer()) :
+  IDELanguage() {
 
-  override fun getAnalyzeManager(): AnalyzeManager {
-    TODO("Not yet implemented")
-  }
+  override fun getAnalyzeManager() = analyzer
 
   override fun requireAutoComplete(
     content: ContentReference,
@@ -39,9 +38,9 @@ class LogLanguage : IDELanguage() {
     publisher: CompletionPublisher,
     extraArguments: Bundle
   ) {}
-  
+
   override fun destroy() {}
-  
+
   override fun getInterruptionLevel() = INTERRUPTION_LEVEL_NONE
   override fun getIndentAdvance(content: ContentReference, line: Int, column: Int) = 0
   override fun getSymbolPairs() = DefaultSymbolPairs()
