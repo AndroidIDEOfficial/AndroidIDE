@@ -84,6 +84,11 @@ public class ImplementAbstractMethods extends Rewrite {
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final Path file = compiler.findTypeDeclaration(this.classFile);
+    if (file == CompilerProvider.NOT_FOUND) {
+      LOG.warn("Unable to find source file for class:", this.className, "classFile=", this.classFile);
+      return CANCELLED;
+    }
+    
     final SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {

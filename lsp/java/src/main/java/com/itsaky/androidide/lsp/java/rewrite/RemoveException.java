@@ -23,6 +23,7 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LineMap;
@@ -49,6 +50,8 @@ public class RemoveException extends Rewrite {
   final String className, methodName;
   final String[] erasedParameterTypes;
   final String exceptionType;
+  
+  private static final ILogger LOG = ILogger.newInstance("RemoveException");
 
   public RemoveException(
       String className, String methodName, String[] erasedParameterTypes, String exceptionType) {
@@ -61,6 +64,12 @@ public class RemoveException extends Rewrite {
   @Override
   public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
+  
+    if (file == CompilerProvider.NOT_FOUND) {
+      LOG.warn("Unable to find source file for class:", this.className);
+      return CANCELLED;
+    }
+    
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {
