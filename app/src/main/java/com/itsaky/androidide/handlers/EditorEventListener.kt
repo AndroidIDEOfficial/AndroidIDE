@@ -64,6 +64,7 @@ class EditorEventListener : GradleBuildService.EventListener {
 
     activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
     activity().viewModel.progressBarVisible.value = false
+    activity().invalidateOptionsMenu()
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
@@ -84,6 +85,7 @@ class EditorEventListener : GradleBuildService.EventListener {
 
     activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
     activity().viewModel.progressBarVisible.value = false
+    activity().invalidateOptionsMenu()
   }
 
   override fun onOutput(line: String?) {
