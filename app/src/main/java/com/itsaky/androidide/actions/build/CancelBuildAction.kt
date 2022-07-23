@@ -37,8 +37,20 @@ class CancelBuildAction() : EditorActivityAction() {
   override val id: String = "editor_stopGradleDaemons"
 
   override fun prepare(data: ActionData) {
+    super.prepare(data)
+    
+    if (!visible) {
+      return
+    }
+    
+    val context = getActivity(data)
+    if (context == null || context.buildService == null) {
+      markInvisible()
+      return
+    }
+    
     visible = true
-    enabled = true
+    enabled = context.buildService.isBuildInProgress
   }
 
   override fun execAction(data: ActionData): Boolean {
