@@ -34,6 +34,7 @@ android {
 dependencies {
     implementation common.kotlin
     implementation common.utilcode
+    implementation google.guava
     implementation project (':common')
     implementation project(path: ':logger')
     

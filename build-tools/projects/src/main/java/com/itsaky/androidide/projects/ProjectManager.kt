@@ -166,7 +166,7 @@ object ProjectManager : EventReceiver {
   // No-op subscriber method
   @Suppress("unused")
   @Subscribe(threadMode = MAIN)
-  fun noOp(obj: Event) {
+  fun noOp(obj: Throwable) {
     throw UnsupportedOperationException("No-op")
   }
 }

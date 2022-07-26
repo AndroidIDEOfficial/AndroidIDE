@@ -22,6 +22,7 @@ import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -53,7 +54,7 @@ import javax.tools.JavaFileObject;
 public class Parser {
 
   private static final JavaCompiler COMPILER = JavacTool.create();
-  private static final SourceFileManager FILE_MANAGER = new SourceFileManager();
+  private static SourceFileManager FILE_MANAGER = SourceFileManager.NO_MODULE;
   private static final ILogger LOG = ILogger.newInstance("JavaParser");
   private static Parser cachedParse;
   private static long cachedModified = -1;
@@ -81,7 +82,11 @@ public class Parser {
 
   /** Create a task that compiles a single file */
   private static JavacTask singleFileTask(JavaFileObject file) {
-    FILE_MANAGER.setModule(ProjectManager.INSTANCE.findModuleForFile(Paths.get(file.toUri())));
+    final ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(Paths.get(file.toUri()));
+    if (module != null) {
+      FILE_MANAGER = SourceFileManager.forModule(module);
+    }
+    
     return (JavacTask)
         COMPILER.getTask(
             null,

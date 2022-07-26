@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
@@ -121,12 +120,6 @@ public class MainActivity extends StudioActivity {
     return binding.getRoot();
   }
 
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    binding = null;
-  }
-
   private void showDialogInstallJdkSdk() {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
     builder.setTitle(R.string.title_warning);
@@ -144,11 +137,17 @@ public class MainActivity extends StudioActivity {
     builder.show();
   }
 
+  private void openTerminal() {
+    startActivity(new Intent(this, TerminalActivity.class));
+  }
+
   private boolean checkToolsIsInstalled() {
     return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists();
   }
 
-  private void openTerminal() {
-    startActivity(new Intent(this, TerminalActivity.class));
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
   }
 }

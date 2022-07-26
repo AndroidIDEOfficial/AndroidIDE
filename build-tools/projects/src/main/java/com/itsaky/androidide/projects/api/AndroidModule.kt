@@ -94,6 +94,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 ) :
   ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks, javaCompileOptions), WithModuleData {
 
+  companion object {
+    const val UNKNOWN_PACKAGE = com.itsaky.androidide.tooling.api.model.AndroidModule.UNKNOWN_PACKAGE;
+  }
+  
   private val log = ILogger.newInstance(javaClass.simpleName)
   private var cachedLibraries: Map<String, List<DefaultLibrary>> = mutableMapOf()
   override var moduleData: SimpleModuleData? = null

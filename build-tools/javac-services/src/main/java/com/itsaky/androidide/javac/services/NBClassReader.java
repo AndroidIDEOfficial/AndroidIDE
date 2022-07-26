@@ -35,6 +35,8 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import static com.sun.tools.javac.jvm.ClassFile.Version.V45_3;
+
 import com.sun.tools.javac.code.ClassFinder.BadClassFile;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
@@ -80,7 +82,7 @@ public class NBClassReader extends ClassReader {
 
     NBAttributeReader[] readers = {
       new NBAttributeReader(
-          nbNames._org_netbeans_EnclosingMethod, Version.V45_3, CLASS_OR_MEMBER_ATTRIBUTE) {
+          nbNames._org_netbeans_EnclosingMethod, V45_3, CLASS_OR_MEMBER_ATTRIBUTE) {
         public void read(Symbol sym, int attrLen) {
           int newbp = bp + attrLen;
           readEnclosingMethodAttr(sym);
@@ -89,7 +91,9 @@ public class NBClassReader extends ClassReader {
       },
     };
 
-    for (NBAttributeReader r : readers) attributeReaders.put(r.getName(), r);
+    for (NBAttributeReader r : readers) {
+      attributeReaders.put(r.getName(), r);
+    }
   }
 
   @Override

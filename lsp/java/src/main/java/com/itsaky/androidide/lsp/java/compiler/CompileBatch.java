@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
@@ -63,6 +61,7 @@ import java.util.stream.Collectors;
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 
 public class CompileBatch implements AutoCloseable {
 
@@ -76,7 +75,7 @@ public class CompileBatch implements AutoCloseable {
   protected DiagnosticListenerImpl diagnosticListener;
   /** Indicates the task that requested the compilation is finished with it. */
   boolean closed;
-  
+
   CompileBatch(
       JavaCompilerService parent,
       Collection<? extends JavaFileObject> files,
@@ -118,7 +117,7 @@ public class CompileBatch implements AutoCloseable {
       @NonNull JavaCompilerService parent, @NonNull Collection<? extends JavaFileObject> sources) {
 
     parent.diagnostics.clear();
-    final Iterable<String> options = options(parent.classPath);
+    final Iterable<String> options = options();
 
     diagnosticListener =
         new DiagnosticListenerWrapper(parent.diagnostics::add, sources.iterator().next());
@@ -129,7 +128,7 @@ public class CompileBatch implements AutoCloseable {
 
   @SuppressWarnings("Since15")
   @NonNull
-  private List<String> options(Set<Path> classPath) {
+  private List<String> options() {
     List<String> options = new ArrayList<>();
 
     // TODO Boot classpath must be different in java projects
@@ -139,17 +138,6 @@ public class CompileBatch implements AutoCloseable {
     JavacConfigProvider.setLatestSourceVersion(SourceVersion.RELEASE_8);
     JavacConfigProvider.setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
     JavacConfigProvider.disableModules();
-
-    final List<String> bootClasspaths = getAndUpdateBootclasspaths();
-
-    if (!bootClasspaths.isEmpty()) {
-      Collections.addAll(
-          options, "-bootclasspath", TextUtils.join(File.pathSeparator, bootClasspaths));
-    }
-
-    if (!classPath.isEmpty()) {
-      Collections.addAll(options, "-classpath", joinPath(classPath));
-    }
 
     setupCompileOptions(parent.module, options);
     Collections.addAll(options, "-proc:none");
@@ -195,26 +183,6 @@ public class CompileBatch implements AutoCloseable {
     options.add(compilerSettings.getJavaSourceVersion());
     options.add("-target");
     options.add(compilerSettings.getJavaBytecodeVersion());
-  }
-
-  private List<String> getAndUpdateBootclasspaths() {
-    final List<String> bootClasspaths = new ArrayList<>(5);
-    if (parent.module == null) {
-      // Use default boot classpath if no module is available
-      bootClasspaths.add(Environment.ANDROID_JAR.getAbsolutePath());
-    } else if (parent.module.getType() == IProject.Type.Android) {
-      bootClasspaths.addAll(
-          ((AndroidModule) parent.module)
-              .getBootClassPaths().stream().map(File::getPath).collect(Collectors.toSet()));
-    }
-
-    if (BootClasspathProvider.update(bootClasspaths)) {
-      this.parent.bootClasspathClasses.clear();
-      this.parent.bootClasspathClasses.addAll(
-          BootClasspathProvider.getTopLevelClasses(bootClasspaths));
-    }
-
-    return bootClasspaths;
   }
 
   /**

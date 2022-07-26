@@ -74,11 +74,10 @@ import javax.tools.StandardLocation;
 
 public class JavaCompilerService implements CompilerProvider {
 
+  public static final JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
   private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
   private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
   private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
-  public static JavaCompilerService NO_MODULE_COMPILER = new JavaCompilerService(null);
-  protected final Set<Path> classPath;
   protected final Set<String> classPathClasses;
   protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
   protected final Map<JavaFileObject, Long> cachedModified = new HashMap<>();
@@ -97,14 +96,11 @@ public class JavaCompilerService implements CompilerProvider {
   // It is marked as nullable just for some special cases like tests
   public JavaCompilerService(@Nullable ModuleProject module) {
     this.module = module;
-    this.fileManager = new SourceFileManager(module);
     if (module == null) {
-      this.classPath = Collections.unmodifiableSet(Collections.emptySet());
+      this.fileManager = SourceFileManager.NO_MODULE;
       this.classPathClasses = Collections.emptySet();
     } else {
-      this.classPath =
-          Collections.unmodifiableSet(
-              module.getCompileClasspaths().stream().map(File::toPath).collect(Collectors.toSet()));
+      this.fileManager = SourceFileManager.forModule(module);
       this.classPathClasses = module.compileClasspathClasses.allClassNames();
       this.bootClasspathClasses = getBootclasspathClasses();
     }

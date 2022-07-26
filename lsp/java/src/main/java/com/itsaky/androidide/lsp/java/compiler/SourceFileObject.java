@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
+import com.google.common.base.MoreObjects;
 import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.utils.DocumentUtils;
@@ -68,7 +69,7 @@ public class SourceFileObject implements JavaFileObject {
 
   @Override
   public String toString() {
-    return path.toString();
+    return MoreObjects.toStringHelper(this).add("path", this.path.toString()).toString();
   }
 
   @Override

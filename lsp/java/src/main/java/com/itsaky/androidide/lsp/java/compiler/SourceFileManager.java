@@ -17,8 +17,14 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
+import androidx.annotation.NonNull;
+
+import com.blankj.utilcode.util.CloseUtils;
+import com.google.common.collect.Iterables;
+import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.sun.tools.javac.api.JavacTool;
@@ -29,7 +35,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -44,16 +53,34 @@ import javax.tools.StandardLocation;
 @SuppressWarnings("Since15")
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 
+  public static final SourceFileManager NO_MODULE = new SourceFileManager(null);
   private static final ILogger LOG = ILogger.newInstance("SourceFileManager");
-  private ModuleProject module;
+  private static final Map<ModuleProject, SourceFileManager> cachedFileManagers = new HashMap<>();
+  private final ModuleProject module;
 
-  public SourceFileManager() {
-    this(null);
-  }
-
-  public SourceFileManager(final ModuleProject module) {
+  private SourceFileManager(final ModuleProject module) {
     super(createDelegateFileManager());
     this.module = module;
+
+    if (module != null) {
+      setLocation(StandardLocation.CLASS_PATH, module.getCompileClasspaths());
+      setLocation(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
+
+      if (module instanceof AndroidModule) {
+        final AndroidModule android = ((AndroidModule) module);
+        setLocation(StandardLocation.PLATFORM_CLASS_PATH, android.getBootClassPaths());
+      } else {
+        setFallbackPlatformClasspath();
+      }
+    } else {
+      setFallbackPlatformClasspath();
+    }
+  }
+
+  protected void setFallbackPlatformClasspath() {
+    // TODO Module system must be enabled for Java modules instead of setting Platform Classpath
+    setLocation(
+        StandardLocation.PLATFORM_CLASS_PATH, Collections.singleton(Environment.ANDROID_JAR));
   }
 
   private static StandardJavaFileManager createDelegateFileManager() {
@@ -66,10 +93,32 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     LOG.warn("SourceFileManager DiagnosticErr:", error.getMessage(null));
   }
 
-  public void setModule(final ModuleProject module) {
-    this.module = module;
+  void setLocation(Location location, Iterable<? extends File> files) {
+    try {
+      fileManager.setLocation(location, files);
+    } catch (IOException e) {
+      LOG.error("Failed to update location", location, "with files", Iterables.toString(files), e);
+    }
   }
 
+  public static void clearCache() {
+    for (final SourceFileManager fileManager : cachedFileManagers.values()) {
+      CloseUtils.closeIO(fileManager);
+    }
+
+    cachedFileManagers.clear();
+  }
+
+  public static SourceFileManager forModule(@NonNull ModuleProject project) {
+    Objects.requireNonNull(project);
+    return cachedFileManagers.computeIfAbsent(project, SourceFileManager::createForModule);
+  }
+
+  private static SourceFileManager createForModule(@NonNull ModuleProject project) {
+    LOG.info("Creating source file manager instance for module:", project);
+    return new SourceFileManager(project);
+  }
+  
   @Override
   public Iterable<JavaFileObject> list(
       Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse)
@@ -154,10 +203,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     } else {
       return super.contains(location, file);
     }
-  }
-
-  void setLocation(Location location, Iterable<? extends File> files) throws IOException {
-    fileManager.setLocation(location, files);
   }
 
   void setLocationFromPaths(Location location, Collection<? extends Path> searchpath)

@@ -29,6 +29,7 @@ import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.internal.model.CachedCompletion;
 import com.itsaky.androidide.lsp.java.actions.JavaCodeActionsMenu;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
+import com.itsaky.androidide.lsp.java.compiler.SourceFileManager;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.lsp.java.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.java.providers.CompletionProvider;
@@ -104,7 +105,9 @@ public class JavaLanguageServer implements ILanguageServer {
   @Override
   public void shutdown() {
     JavaCompilerProvider.getInstance().destory();
+    SourceFileManager.clearCache();
     EventBus.getDefault().unregister(this);
+
     timer.shutdown();
   }
 
@@ -135,6 +138,18 @@ public class JavaLanguageServer implements ILanguageServer {
     // Once we have project initialized
     // Destory the NO_MODULE_COMPILER instance
     JavaCompilerService.NO_MODULE_COMPILER.destroy();
+
+    // Clear cached file managers
+    SourceFileManager.clearCache();
+    
+    // Cache classpath locations
+    for (final Project subModule : project.getSubModules()) {
+      if (!(subModule instanceof ModuleProject)) {
+        continue;
+      }
+      
+      SourceFileManager.forModule(((ModuleProject)subModule));
+    }
   }
 
   @NonNull
@@ -207,25 +222,6 @@ public class JavaLanguageServer implements ILanguageServer {
     return this.diagnosticProvider.analyze(compiler, file);
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public JavaCompilerService getCompiler(Path file) {
-    if (!DocumentUtils.isJavaFile(file)) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    final Project root = ProjectManager.INSTANCE.getRootProject();
-    if (root == null) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    final ModuleProject module = root.findModuleForFile(file);
-    if (module == null) {
-      return JavaCompilerService.NO_MODULE_COMPILER;
-    }
-
-    return JavaCompilerProvider.get(module);
-  }
-
   @NonNull
   @Override
   public CharSequence formatCode(FormatCodeParams params) {
@@ -246,6 +242,25 @@ public class JavaLanguageServer implements ILanguageServer {
     }
 
     return false;
+  }
+
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public JavaCompilerService getCompiler(Path file) {
+    if (!DocumentUtils.isJavaFile(file)) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    final Project root = ProjectManager.INSTANCE.getRootProject();
+    if (root == null) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    final ModuleProject module = root.findModuleForFile(file);
+    if (module == null) {
+      return JavaCompilerService.NO_MODULE_COMPILER;
+    }
+
+    return JavaCompilerProvider.get(module);
   }
 
   private void updateCachedCompletion(CachedCompletion cachedCompletion) {

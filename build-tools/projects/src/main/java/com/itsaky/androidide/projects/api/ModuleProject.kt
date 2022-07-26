@@ -42,7 +42,6 @@ abstract class ModuleProject(
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
-  
   override val compilerSettings: IJavaCompilerSettings
 ) :
   Project(name, description, path, projectDir, buildDir, buildScript, tasks),
@@ -179,4 +178,6 @@ abstract class ModuleProject(
     // TODO This can be probably improved
     return file.startsWith(this.projectDir.toPath())
   }
+
+  override fun toString() = "${javaClass.simpleName}: ${this.path}"
 }
