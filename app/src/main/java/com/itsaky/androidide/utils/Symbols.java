@@ -32,7 +32,7 @@ public class Symbols {
     }
 
     if (file.isFile()) {
-      if (file.getName().endsWith(".java") || file.getName().endsWith(".gradle"))
+      if (file.getName().endsWith(".java") || file.getName().endsWith(".gradle") || file.getName().endsWith(".kt"))
         return javaSymbols();
 
       if (file.getName().endsWith(".xml")) return xmlSymbols();
