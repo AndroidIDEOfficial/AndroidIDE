@@ -73,7 +73,7 @@ public class Symbols {
       new Symbol("↹", "\t"),
       new Symbol("<", "<>"),
       new Symbol(">"),
-      new Symbol("/"),
+      new Symbol("/", "/>"),
       new Symbol("="),
       new Symbol("\"", "\"\""),
       new Symbol(":"),
