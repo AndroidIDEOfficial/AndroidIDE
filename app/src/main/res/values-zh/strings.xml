@@ -2,7 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE使用了以GPL v2.0开源的JDK的修改版构建版本。你可以在此处找到它的源代码和许可证： </string>
+    <string name="license_jdk">AndroidIDE使用了以GPL v3.0开源的JDK的修改版构建版本。你可以在此处找到它的源代码和许可证： </string>
     <string name="title_open_source_licenses">开源许可证</string>
     <string name="msg_open_source_licenses">AndroidIDE使用开源库项目。你可以点击下面的链接找到他们的许可证和源代码。 </string>
     <string name="msg_about_licensed_under">许可证: </string>

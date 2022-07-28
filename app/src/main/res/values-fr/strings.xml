@@ -3,7 +3,7 @@
     <!-- AndroidIDE -->
 
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
+    <string name="license_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v3.0. Le code source et la licence du JDK sont disponibles ici : </string>
     <string name="title_open_source_licenses">licence Open Source</string>
     <string name="msg_open_source_licenses">AndroidIDE utilise des librairies open sources. vous pouvez trouver la source et les licences des librairies utilisées en cliquant sur les liens suivant ci-dessous.</string>
     <string name="msg_about_licensed_under">licence sous:&#x20;</string>
@@ -13,7 +13,7 @@
     <string name="about_footer">AndroidIDE %1$s pour %2$s</string>
     <string name="about_subtitle">Simplement, un IDE pour android.</string>
     <string name="msg_get_package_failed">Impossible d\'extraire le nom du package !</string>
-    <string name="msg_share_app">AndroidIDE est un Environnement de développement integré (IDE) pour la création d\'application Android sur votre appareil android. Il support :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Complétation Java automatique \n4. Complétation XML Auto \n5. Support Kotlin et bien plus.\n\nTélecharger AndroidIDE sur https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE est un Environnement de développement integré (IDE) pour la création d\'application Android sur votre appareil android. Il support :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Complétation Java automatique \n4. Complétation XML Auto \n5. Support Kotlin et bien plus.\n\nTélecharger AndroidIDE sur https://androidide.com</string>
     <string name="msg_need_help">Si vous rencontrez des problémes lorsque vous utilisez AndroidIDE (ex: pendant la compilation d\'une application), vous pouvez demandez de l\'aide sur le groupe Telegram (Anglais).\n\nVous pouvez également demander de l\'aide sur notre émail.</string>
     <string name="discuss_amp_help">Discussions &amp; Aides</string>
     <string name="title_github">GitHub</string>

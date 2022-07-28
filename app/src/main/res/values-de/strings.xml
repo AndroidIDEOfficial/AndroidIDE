@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v2.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
+    <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v3.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
     <string name="title_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="msg_open_source_licenses">AndroidIDE verwendet Open-Source-Bibliotheken. Sie k&#xF6;nnen den Quellcode und die Lizenz der verwendeten Bibliotheken finden, indem Sie auf die folgenden Links klicken.</string>
     <string name="msg_about_licensed_under">Lizenziert unter:</string>
@@ -12,7 +12,7 @@
     <string name="about_footer">AndroidIDE %1$s f&#xFC;r %2$s</string>
     <string name="about_subtitle">Die IDE f&#xFC;r Android Ger&#xE4;te</string>
     <string name="msg_get_package_failed">Fehler beim Extrahieren des Paketnamens!</string>
-    <string name="msg_share_app">AndroidIDE ist eine integrierte Entwicklungsumgebung zum Erstellen von Android-Apps auf Ihrem Android-Smartphone. Es unterst&#xFC;tzt:\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Erweiterte automatische Java-Vervollst&#xE4;ndigung\n4. Automatische XML-Vervollst&#xE4;ndigung \n5. Kotlin-Support und vieles mehr.\n\nLaden sie AndroidIDE unter https://androidide.com herunter</string>
+    <string name="msg_share_app">AndroidIDE ist eine integrierte Entwicklungsumgebung zum Erstellen von Android-Apps auf Ihrem Android-Smartphone. Es unterst&#xFC;tzt:\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Erweiterte automatische Java-Vervollst&#xE4;ndigung\n4. Automatische XML-Vervollst&#xE4;ndigung \n5. Kotlin-Support und vieles mehr.\n\nLaden sie AndroidIDE unter https://androidide.com herunter</string>
     <string name="msg_need_help">Wenn Sie bei der Verwendung von AndroidIDE oder beim Erstellen von Android-Apps auf Probleme sto&#xDF;en, k&#xF6;nnen Sie unserer Telegram-Gruppe beitreten und dort um Hilfe bitten.\n\nSie k&#xF6;nnen uns auch Vorschl&#xE4;ge per E-Mail senden.</string>
     <string name="discuss_amp_help">Diskutieren &amp; Hilfe</string>
     <string name="title_github">GitHub</string>

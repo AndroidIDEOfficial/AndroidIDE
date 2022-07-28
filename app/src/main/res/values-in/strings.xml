@@ -2,7 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
+    <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v3.0. The source code and the license of the JDK is available at : </string>
     <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
     <string name="msg_open_source_licenses">AndroidIDE menggunakan sumber pustaka terbuka. Anda dapat menemukan lisensi dan sumber dari pustaka yang digunakan dengan menekan link dibawah.</string>
     <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
@@ -12,7 +12,7 @@
     <string name="about_footer">AndroidIDE %1$s untuk %2$s</string>
     <string name="about_subtitle">Simpel, sebuah IDE untuk Android</string>
     <string name="msg_get_package_failed">Gagal mengekstrak nama paket!</string>
-    <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
     <string name="msg_need_help">Jika anda mengalami masalah ketika menggunakan AndroidIDE atau dengan pembuatan Aplikasi Android, anda dapat bergabung ke Grup Telegram dan bertanya disana.\n\nAnda juga dapat mengirim saran pada Email kami.</string>
     <string name="discuss_amp_help">Diskusi &amp; bantuan</string>
     <string name="title_github">GitHub</string>
