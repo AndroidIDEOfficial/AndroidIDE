@@ -2,7 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v3.0. Исходный код JDK и лицензия доступны здесь: </string>
+    <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
     <string name="title_open_source_licenses">Лицензирование открытого кода</string>
     <string name="msg_open_source_licenses">AndroidIDE использует открытые библиотеки. Вы можете найти исходный код и лицензии использованных библиотек, перейдя по ссылкам ниже.</string>
     <string name="msg_about_licensed_under">"Лицензия: "</string>

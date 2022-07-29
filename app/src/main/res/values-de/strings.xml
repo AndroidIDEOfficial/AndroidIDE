@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v3.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
+    <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v2.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
     <string name="title_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="msg_open_source_licenses">AndroidIDE verwendet Open-Source-Bibliotheken. Sie k&#xF6;nnen den Quellcode und die Lizenz der verwendeten Bibliotheken finden, indem Sie auf die folgenden Links klicken.</string>
     <string name="msg_about_licensed_under">Lizenziert unter:</string>
