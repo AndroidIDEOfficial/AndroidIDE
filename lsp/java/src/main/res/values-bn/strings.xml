@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="action_import_classes">শ্রেণী(গুলি) ইমপোর্ট করুন</string>
+    <string name="action_generate_setters_getters">সেটার/গেটার তৈরি করুন</string>
+    <string name="action_add_throws">\'throws\' যোগ করুন</string>
+    <string name="action_comment_line">কমেন্ট লাইন</string>
+    <string name="action_create_missing_method">অনুপস্থিত পদ্ধতি তৈরি করুন</string>
+    <string name="action_convert_to_block">ব্লকে রূপান্তর করুন</string>
+    <string name="action_generate_constructor">কন্সট্রাক্টর তৈরি করুন</string>
+    <string name="action_implement_abstract_methods">abstract  পদ্ধতি(গুলি) প্রয়োগ করুন</string>
+    <string name="action_remove_class">শ্রেণী সরান</string>
+    <string name="action_remove_method">পদ্ধতি সরান</string>
+    <string name="action_remove_unused_throws">অব্যবহৃত throws গুলি সরান</string>
+    <string name="action_suppress_unchecked_warning">\'unchecked\' সতর্কতা দমন করুন</string>
+    <string name="action_uncomment_line">আনকমেন্ট লাইন</string>
+    <string name="action_convert_to_statement">বিবৃতিতে রূপান্তর করুন</string>
+    <string name="msg_select_fields">ক্ষেত্র নির্বাচন করুন</string>
+    <string name="msg_no_fields_selected">কোন ক্ষেত্র নির্বাচিত হয়নি</string>
+    <string name="msg_no_fields_found">কোন ক্ষেত্র পাওয়া যায়নি</string>
+    <string name="action_override_superclass_methods">সুপারক্লাস পদ্ধতি ওভাররাইড করুন</string>
+    <string name="msg_no_methods_selected">কোন পদ্ধতি নির্বাচন করা হয়নি</string>
+    <string name="msg_cannot_override_methods">পদ্ধতি ওভাররাইড করতে অক্ষম</string>
+    <string name="msg_cannot_generate_setters_getters">সেটার এবং গেটার তৈরি করতে অক্ষম</string>
+    <string name="msg_select_methods">ওভাররাইড করার পদ্ধতি নির্বাচন করুন</string>
+    <string name="msg_no_overridable_methods">কোনো ওভাররিডেবল পদ্ধতি খুঁজে পাওয়া যায়নি</string>
+    <string name="action_goto_definition">সংজ্ঞায় যান</string>
+    <string name="action_find_references">রেফারেন্স খুঁজুন</string>
+    <string name="action_generate_toString">toString() তৈরি করুন</string>
+    <string name="action_remove_unused_imports">অব্যবহৃত ইমপোর্ট সরান</string>
+    <string name="action_organize_imports">ইমপোর্ট সংগঠিত করুন</string>
+    <string name="msg_cannot_generate_toString">toString() তৈরি করতে অক্ষম</string>
+    <string name="msg_toString_overridden">toString() ইতিমধ্যেই ওভাররাইড করা হয়েছে</string>
+    <string name="action_generate_missing_constructor">অনুপস্থিত কন্সট্রাক্টর তৈরি করুন</string>
+    <string name="msg_cannot_generate_constructor">কন্সট্রাক্টর তৈরি করতে অক্ষম</string>
+    <string name="msg_constructor_available">একই ধরনের প্যারামিটার সহ একটি কনস্ট্রাক্টর ইতিমধ্যেই উপলব্ধ</string>
+</resources>
+
