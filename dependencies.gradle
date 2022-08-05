@@ -52,7 +52,7 @@ ext {
     
     google = [
             material            : 'com.google.android.material:material:1.6.1',
-            gson                : 'com.google.code.gson:gson:2.9.0',
+            gson                : 'com.google.code.gson:gson:2.9.1',
             guava               : 'com.google.guava:guava:31.1-android',
             guava_jre           : 'com.google.guava:guava:31.1-jre',
             auto_val_annotations: 'com.google.auto.value:auto-value-annotations:1.9',
