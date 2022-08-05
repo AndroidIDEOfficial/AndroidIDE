@@ -2,7 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v3.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
+    <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
     <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस </string>
     <string name="msg_open_source_licenses">AndroidIDE ओपन सोर्स लाइब्रेरी का उपयोग करता है। आप नीचे दिए गए लिंक पर क्लिक करके उपयोग किए गए लाइब्रेरी के स्रोत और लाइसेंस प्राप्त कर सकते हैं ।</string>
     <string name="msg_about_licensed_under">लाइसेंस</string>
@@ -12,7 +12,7 @@
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">बस, एक आईडीई एंड्रॉयड के लिए</string>
     <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
-    <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 11.0.1.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
+    <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
     <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
     <string name="discuss_amp_help">चर्चा और मदद</string>
     <string name="title_github">GitHub</string>
