@@ -27,6 +27,7 @@ import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
+import com.itsaky.androidide.utils.VMUtils;
 import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 
@@ -36,11 +37,11 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
@@ -56,7 +57,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
 
   public static final SourceFileManager NO_MODULE = new SourceFileManager(null);
   private static final ILogger LOG = ILogger.newInstance("SourceFileManager");
-  private static final Map<ModuleProject, SourceFileManager> cachedFileManagers = new HashMap<>();
+  private static final Map<ModuleProject, SourceFileManager> cachedFileManagers = new ConcurrentHashMap<>();
   private final ModuleProject module;
 
   private SourceFileManager(final ModuleProject module) {
@@ -74,7 +75,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
         setFallbackPlatformClasspath();
       }
 
-      if (fileManager instanceof JavacFileManager) { // Always true
+      if (fileManager instanceof JavacFileManager && !VMUtils.isJvm()) {
         final JavacFileManager javac = ((JavacFileManager) fileManager);
         javac.cacheLocation(StandardLocation.CLASS_PATH);
         javac.cacheLocation(StandardLocation.PLATFORM_CLASS_PATH);
