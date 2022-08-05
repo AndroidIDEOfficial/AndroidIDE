@@ -27,9 +27,7 @@ import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
-import com.itsaky.androidide.utils.VMUtils;
 import com.sun.tools.javac.api.JavacTool;
-import com.sun.tools.javac.file.JavacFileManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,7 +55,8 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
 
   public static final SourceFileManager NO_MODULE = new SourceFileManager(null);
   private static final ILogger LOG = ILogger.newInstance("SourceFileManager");
-  private static final Map<ModuleProject, SourceFileManager> cachedFileManagers = new ConcurrentHashMap<>();
+  private static final Map<ModuleProject, SourceFileManager> cachedFileManagers =
+      new ConcurrentHashMap<>();
   private final ModuleProject module;
 
   private SourceFileManager(final ModuleProject module) {
@@ -73,12 +72,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
         setLocation(StandardLocation.PLATFORM_CLASS_PATH, android.getBootClassPaths());
       } else {
         setFallbackPlatformClasspath();
-      }
-
-      if (fileManager instanceof JavacFileManager && !VMUtils.isJvm()) {
-        final JavacFileManager javac = ((JavacFileManager) fileManager);
-        javac.cacheLocation(StandardLocation.CLASS_PATH);
-        javac.cacheLocation(StandardLocation.PLATFORM_CLASS_PATH);
       }
     } else {
       setFallbackPlatformClasspath();
