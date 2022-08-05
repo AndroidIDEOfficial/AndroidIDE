@@ -230,7 +230,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     abortIfCancelled();
 
-    final CompilationTaskProcessor taskProcessor = new CompletionTaskProcesor(source);
+    final CompilationTaskProcessor taskProcessor = new CompletionTaskProcesor(source, cursor);
     final CompilationRequest request =
         new CompilationRequest(Collections.singletonList(source), partialRequest, taskProcessor);
     SynchronizedTask synchronizedTask = compiler.compile(request);
@@ -325,9 +325,11 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   private static class CompletionTaskProcesor implements CompilationTaskProcessor {
 
     private final JavaFileObject file;
+    private final long cursor;
 
-    private CompletionTaskProcesor(final JavaFileObject file) {
+    private CompletionTaskProcesor(final JavaFileObject file, final long cursor) {
       this.file = file;
+      this.cursor = cursor;
     }
 
     @Override

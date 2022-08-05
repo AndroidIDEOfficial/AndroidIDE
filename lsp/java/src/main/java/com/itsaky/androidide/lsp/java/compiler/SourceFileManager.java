@@ -28,6 +28,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.sun.tools.javac.api.JavacTool;
+import com.sun.tools.javac.file.JavacFileManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +72,12 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
         setLocation(StandardLocation.PLATFORM_CLASS_PATH, android.getBootClassPaths());
       } else {
         setFallbackPlatformClasspath();
+      }
+
+      if (fileManager instanceof JavacFileManager) { // Always true
+        final JavacFileManager javac = ((JavacFileManager) fileManager);
+        javac.cacheLocation(StandardLocation.CLASS_PATH);
+        javac.cacheLocation(StandardLocation.PLATFORM_CLASS_PATH);
       }
     } else {
       setFallbackPlatformClasspath();
@@ -118,7 +125,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     LOG.info("Creating source file manager instance for module:", project);
     return new SourceFileManager(project);
   }
-  
+
   @Override
   public Iterable<JavaFileObject> list(
       Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse)
