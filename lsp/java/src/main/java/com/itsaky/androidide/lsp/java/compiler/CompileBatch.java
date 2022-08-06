@@ -22,15 +22,12 @@ import androidx.core.util.Pair;
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.config.JavacConfigProvider;
-import com.itsaky.androidide.javac.services.compiler.ReusableCompiler;
+import com.itsaky.androidide.javac.services.compiler.ReusableBorrow;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
-import com.itsaky.androidide.tooling.api.IProject;
-import com.itsaky.androidide.utils.BootClasspathProvider;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
@@ -61,14 +58,13 @@ import java.util.stream.Collectors;
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
 
 public class CompileBatch implements AutoCloseable {
 
   public static final String DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION = "11";
   private static final ILogger LOG = ILogger.newInstance("CompileBatch");
   protected final JavaCompilerService parent;
-  protected final ReusableCompiler.Borrow borrow;
+  protected final ReusableBorrow borrow;
   protected final JavacTaskImpl task;
   protected final List<CompilationUnitTree> roots;
   protected final Map<String, List<Pair<Range, TreePath>>> methodPositions = new HashMap<>();
@@ -113,7 +109,7 @@ public class CompileBatch implements AutoCloseable {
     watch.log();
   }
 
-  private ReusableCompiler.Borrow batchTask(
+  private ReusableBorrow batchTask(
       @NonNull JavaCompilerService parent, @NonNull Collection<? extends JavaFileObject> sources) {
 
     parent.diagnostics.clear();
