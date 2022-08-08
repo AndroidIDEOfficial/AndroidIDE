@@ -28,10 +28,10 @@ public class AndroidTreeView {
 
   public static final String NODES_PATH_SEPARATOR = ";";
   private final Context mContext;
+  private final int nodeViewBackground;
   protected TreeNode mRoot;
   private boolean applyForRoot;
   private int containerStyle = 0;
-  private int nodeViewBackground = 0;
   private TreeNode.BaseNodeViewHolder defaultViewHolder;
   private TreeNode.TreeNodeClickListener nodeClickListener;
   private TreeNode.TreeNodeLongClickListener nodeLongClickListener;
@@ -173,6 +173,8 @@ public class AndroidTreeView {
     viewTreeItems.setOrientation(LinearLayout.VERTICAL);
     view.addView(viewTreeItems);
 
+    view.setNestedScrollingEnabled(false);
+
     mRoot.setViewHolder(
         new TreeNode.BaseNodeViewHolder(mContext) {
           @Override
@@ -245,7 +247,7 @@ public class AndroidTreeView {
       List<TreeNode> children = node.getChildren();
       for (int i = 0; i < children.size(); i++) {
         TreeNode n = children.get(i);
-        collapseNode(n, includeSubnodes);
+        collapseNode(n, true);
       }
     }
   }
@@ -269,6 +271,7 @@ public class AndroidTreeView {
     parentViewHolder.getNodeItemsView().setVisibility(View.VISIBLE);
   }
 
+  @SuppressWarnings("unchecked")
   public <E> List<E> getSelectedValues(Class<E> clazz) {
     List<E> result = new ArrayList<>();
     List<TreeNode> selected = getSelected();
@@ -408,7 +411,7 @@ public class AndroidTreeView {
     }
     container.addView(nodeView);
     if (mSelectionModeEnabled) {
-      viewHolder.toggleSelectionMode(mSelectionModeEnabled);
+      viewHolder.toggleSelectionMode(true);
     }
 
     nodeView.setOnClickListener(
