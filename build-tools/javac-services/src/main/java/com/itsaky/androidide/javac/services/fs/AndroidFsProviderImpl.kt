@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.javac.services.fs
 
-import com.sun.tools.javac.file.AndroidFsProvider
+import com.itsaky.androidide.zipfs2.AndroidFsProvider
 import java.nio.file.spi.FileSystemProvider
 
 /** @author Akash Yadav */

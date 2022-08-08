@@ -15,10 +15,9 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.utils
+package com.itsaky.androidide.projects.classpath
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader
 import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,8 +32,8 @@ class ZipFileClasspathReaderTest {
   @Test
   fun testListClasses() {
     val classes =
-      com.itsaky.androidide.projects.classpath.ZipFileClasspathReader.listClasses(
-        listOf(File("../tests/test-project/app/src/main/resources/android.jar"))
+      ZipFileClasspathReader().listClasses(
+        listOf(File("../../tests/test-project/app/src/main/resources/android.jar"))
       )
 
     val context = classes.firstOrNull { it.name == "android.content.Context" }

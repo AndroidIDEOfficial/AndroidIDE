@@ -23,6 +23,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+configurations.all {
+    resolutionStrategy {
+        cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+
 dependencies {
-    api androidide.javac
+    api (androidide.javac) {
+        changing = true
+    }
 }

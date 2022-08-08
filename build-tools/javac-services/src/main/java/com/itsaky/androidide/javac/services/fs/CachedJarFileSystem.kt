@@ -19,8 +19,6 @@ package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.zipfs2.ZipFileSystem
 import com.itsaky.androidide.zipfs2.ZipFileSystemProvider
-import com.sun.tools.javac.file.RelativePath
-import com.sun.tools.javac.file.RelativePath.RelativeDirectory
 import java.nio.file.Path
 import javax.lang.model.SourceVersion
 
@@ -32,7 +30,7 @@ import javax.lang.model.SourceVersion
 class CachedJarFileSystem(provider: ZipFileSystemProvider?, zfpath: Path?, env: MutableMap<String, *>?) :
   ZipFileSystem(provider, zfpath, env) {
   
-  internal val packages = mutableMapOf<RelativeDirectory, Path>()
+  internal val packages = mutableMapOf<String, Path>()
   
   override fun close() {
     // Do nothing
@@ -45,7 +43,7 @@ class CachedJarFileSystem(provider: ZipFileSystemProvider?, zfpath: Path?, env: 
   
   fun storeJARPackageDir(dir: Path?) : Boolean {
     if (isValid(dir?.fileName)) {
-      packages[RelativeDirectory(rootDir.relativize(dir!!).toString())] = dir
+      packages[rootDir.relativize(dir!!).toString()] = dir
       return true
     }
     

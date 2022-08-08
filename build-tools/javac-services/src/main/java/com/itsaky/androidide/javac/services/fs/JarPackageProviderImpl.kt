@@ -18,8 +18,7 @@
 package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.utils.ILogger
-import com.sun.tools.javac.file.JarPackageProvider
-import com.sun.tools.javac.file.RelativePath.RelativeDirectory
+import com.itsaky.androidide.zipfs2.JarPackageProvider
 import java.nio.file.Path
 
 /**
@@ -27,11 +26,11 @@ import java.nio.file.Path
  *
  * @author Akash Yadav
  */
-object JarPackageProviderImpl : JarPackageProvider() {
+object JarPackageProviderImpl : JarPackageProvider {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   
-  override fun getPackages(archivePath: Path): MutableMap<RelativeDirectory, Path> {
+  override fun getPackages(archivePath: Path): MutableMap<String, Path> {
     val fs = CachingJarFileSystemProvider.newFileSystem(archivePath) as CachedJarFileSystem
     return fs.packages
   }

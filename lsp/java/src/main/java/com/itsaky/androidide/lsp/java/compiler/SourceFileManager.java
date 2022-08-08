@@ -65,9 +65,9 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   private SourceFileManager(final ModuleProject module) {
     super(createDelegateFileManager());
     this.module = module;
-  
-    AndroidFsProviderImpl.INSTANCE.init();
     
+    AndroidFsProviderImpl.INSTANCE.init();
+
     if (module != null) {
       setLocation(StandardLocation.CLASS_PATH, module.getCompileClasspaths());
       setLocation(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
@@ -201,20 +201,20 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
       return super.contains(location, file);
     }
   }
-  
-  public void setContext(Context context) {
-    if (fileManager instanceof JavacFileManager) {
-      ((JavacFileManager)fileManager).setContext(context);
-    }
-  }
-  
+
   private String packageNameOrEmpty(Path file) {
     return this.module != null ? module.packageNameOrEmpty(file) : "";
   }
-  
+
   private String removeExtension(String fileName) {
     int lastDot = fileName.lastIndexOf(".");
     return (lastDot == -1 ? fileName : fileName.substring(0, lastDot));
+  }
+
+  public void setContext(Context context) {
+    if (fileManager instanceof JavacFileManager) {
+      ((JavacFileManager) fileManager).setContext(context);
+    }
   }
 
   void setLocationFromPaths(Location location, Collection<? extends Path> searchpath)
