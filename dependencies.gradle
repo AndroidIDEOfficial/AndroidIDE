@@ -24,7 +24,7 @@ ext {
             xml2json   : 'com.github.smart-fun:XmlToJson:1.5.1',
             jsoup      : 'org.jsoup:jsoup:1.15.2',
             antlr4     : 'org.antlr:antlr4-runtime:4.9.3',
-            javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.2',
+            javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.4',
             jsonrpc    : 'org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.14.0',
             lang3      : 'org.apache.commons:commons-lang3:3.12.0',
             io         : 'commons-io:commons-io:2.11.0',
