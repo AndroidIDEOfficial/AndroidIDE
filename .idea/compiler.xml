@@ -13,6 +13,9 @@
     <bytecodeTargetLevel target="1.8">
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
+      <module name="AndroidIDE.build-tools.caching-jar-fs" target="11" />
+      <module name="AndroidIDE.build-tools.caching-jar-fs.main" target="1.7" />
+      <module name="AndroidIDE.build-tools.caching-jar-fs.test" target="1.7" />
       <module name="AndroidIDE.build-tools.eventbus" target="11" />
       <module name="AndroidIDE.build-tools.eventbus-android" target="11" />
       <module name="AndroidIDE.build-tools.eventbus-events" target="11" />

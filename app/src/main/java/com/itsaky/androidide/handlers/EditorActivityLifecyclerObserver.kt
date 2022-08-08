@@ -29,7 +29,7 @@ import com.itsaky.androidide.eventbus.events.editor.OnStartEvent
 import com.itsaky.androidide.eventbus.events.editor.OnStopEvent
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.EditorActivityActions
 import com.itsaky.androidide.utils.Environment
 import java.util.concurrent.*

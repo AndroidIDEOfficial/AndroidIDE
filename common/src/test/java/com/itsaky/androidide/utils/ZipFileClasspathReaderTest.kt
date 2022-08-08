@@ -18,6 +18,7 @@
 package com.itsaky.androidide.utils
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader
 import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,12 +28,12 @@ import org.robolectric.annotation.Config
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
-class ClasspathReaderTest {
+class ZipFileClasspathReaderTest {
 
   @Test
   fun testListClasses() {
     val classes =
-      ClasspathReader.listClasses(
+      com.itsaky.androidide.projects.classpath.ZipFileClasspathReader.listClasses(
         listOf(File("../tests/test-project/app/src/main/resources/android.jar"))
       )
 

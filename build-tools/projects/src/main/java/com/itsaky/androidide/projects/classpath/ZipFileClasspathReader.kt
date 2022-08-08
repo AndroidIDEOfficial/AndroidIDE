@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.utils
+package com.itsaky.androidide.projects.classpath
 
 import com.google.common.collect.ImmutableSet
 import java.io.File
@@ -26,43 +26,39 @@ import java.util.zip.*
  *
  * @author Akash Yadav
  */
-class ClasspathReader {
-  companion object {
-
-    @JvmStatic
-    fun listClasses(paths: Collection<File>): ImmutableSet<ClassInfo> {
-
-      val classes = ImmutableSet.builder<ClassInfo>()
-      paths.forEach {
-        if (!it.exists()) {
-          return@forEach
-        }
-
-        ZipFile(it).use { zipFile ->
-          for (entry in zipFile.entries()) {
-            if (!entry.name.endsWith(".class")) {
-              continue
-            }
-
-            var name = entry.name.substringBeforeLast(".class")
-            if (name.length <= 1) {
-              continue
-            }
-
-            if (name.startsWith('/')) {
-              name = name.substring(1)
-            }
-
-            if (name.contains('/')) {
-              name = name.replace('/', '.')
-            }
-
-            classes.add(ClassInfo.create(name))
+class ZipFileClasspathReader : IClasspathReader {
+  
+  override fun listClasses(files: Collection<File>): ImmutableSet<ClassInfo> {
+    val classes = ImmutableSet.builder<ClassInfo>()
+    files.forEach {
+      if (!it.exists()) {
+        return@forEach
+      }
+    
+      ZipFile(it).use { zipFile ->
+        for (entry in zipFile.entries()) {
+          if (!entry.name.endsWith(".class")) {
+            continue
           }
+        
+          var name = entry.name.substringBeforeLast(".class")
+          if (name.length <= 1) {
+            continue
+          }
+        
+          if (name.startsWith('/')) {
+            name = name.substring(1)
+          }
+        
+          if (name.contains('/')) {
+            name = name.replace('/', '.')
+          }
+        
+          classes.add(ClassInfo.create(name))
         }
       }
-
-      return classes.build()
     }
+  
+    return classes.build()
   }
 }

@@ -27,7 +27,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.api.ModuleProject
-import com.itsaky.androidide.utils.BootClasspathProvider
+import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.ClassTrie.Node
 import com.sun.source.util.TreePath
@@ -209,7 +209,7 @@ class ImportCompletionProvider(
       result.add(fromClasspath)
     }
 
-    com.itsaky.androidide.utils.BootClasspathProvider.getAllEntries().forEach {
+    BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
       val fromBootclasspath = collectPackageNode(it, pkgName)
       if (fromBootclasspath != null) {
@@ -347,7 +347,7 @@ class ImportCompletionProvider(
       addDirectChildNodes(classpathNode, incomplete, list, names, packageOnly)
     }
 
-    com.itsaky.androidide.utils.BootClasspathProvider.getAllEntries().forEach {
+    BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
       val node =
         if (pkgName.isEmpty()) {

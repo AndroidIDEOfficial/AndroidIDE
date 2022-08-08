@@ -50,6 +50,7 @@ dependencies {
     
     implementation project (path: ':shared')
     implementation project (path: ':logger')
+    implementation project (path: ':build-tools:javac-services')
     
     implementation common.io
     implementation google.guava

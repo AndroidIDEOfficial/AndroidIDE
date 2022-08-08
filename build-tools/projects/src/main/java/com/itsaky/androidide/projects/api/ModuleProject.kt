@@ -19,9 +19,10 @@ package com.itsaky.androidide.projects.api
 
 import android.text.TextUtils
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
+import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
+import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader
 import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.utils.BootClasspathProvider
-import com.itsaky.androidide.utils.ClasspathReader
+import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
@@ -118,7 +119,7 @@ abstract class ModuleProject(
 
     watch = StopWatch("Indexing classpaths")
     val paths = getCompileClasspaths().filter { it.exists() }
-    val topLevelClasses = ClasspathReader.listClasses(paths).filter { it.isTopLevel }
+    val topLevelClasses = JarFsClasspathReader().listClasses(paths).filter { it.isTopLevel }
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
 
     watch.log()

@@ -15,7 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.utils;
+package com.itsaky.androidide.projects.util;
+
+import com.itsaky.androidide.projects.classpath.JarFsClasspathReader;
+import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader;
+import com.itsaky.androidide.utils.ClassTrie;
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 
 import java.io.File;
 import java.util.Collection;
@@ -53,7 +59,8 @@ public class BootClasspathProvider {
       }
 
       LOG.debug("Indexing boot classpath:", classpath);
-      final var classes = ClasspathReader.listClasses(Collections.singleton(new File(classpath)));
+      final var classes =
+          new JarFsClasspathReader().listClasses(Collections.singleton(new File(classpath)));
       final var trie = new ClassTrie();
       for (final var info : classes) {
         if (!info.isTopLevel()) {

@@ -118,8 +118,15 @@ public class CompileBatch implements AutoCloseable {
     diagnosticListener =
         new DiagnosticListenerWrapper(parent.diagnostics::add, sources.iterator().next());
 
-    return parent.compiler.getTask(
-        parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
+    final ReusableBorrow borrow =
+        parent.compiler.getTask(
+            parent.fileManager, diagnosticListener, options, Collections.emptyList(), sources);
+
+    if (parent.fileManager != null) {
+      parent.fileManager.setContext(borrow.task.getContext());
+    }
+
+    return borrow;
   }
 
   @SuppressWarnings("Since15")

@@ -37,7 +37,7 @@ import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
-import com.itsaky.androidide.utils.BootClasspathProvider;
+import com.itsaky.androidide.projects.util.BootClasspathProvider;
 import com.itsaky.androidide.utils.Cache;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;

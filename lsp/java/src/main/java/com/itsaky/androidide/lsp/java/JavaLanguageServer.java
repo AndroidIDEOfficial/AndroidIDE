@@ -23,6 +23,7 @@ import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
+import com.itsaky.androidide.javac.services.fs.CachingJarFileSystemProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.IServerSettings;
@@ -106,6 +107,7 @@ public class JavaLanguageServer implements ILanguageServer {
   public void shutdown() {
     JavaCompilerProvider.getInstance().destory();
     SourceFileManager.clearCache();
+    CachingJarFileSystemProvider.INSTANCE.clearCache();
     EventBus.getDefault().unregister(this);
 
     timer.shutdown();
@@ -141,14 +143,14 @@ public class JavaLanguageServer implements ILanguageServer {
 
     // Clear cached file managers
     SourceFileManager.clearCache();
-    
+
     // Cache classpath locations
     for (final Project subModule : project.getSubModules()) {
       if (!(subModule instanceof ModuleProject)) {
         continue;
       }
-      
-      SourceFileManager.forModule(((ModuleProject)subModule));
+
+      SourceFileManager.forModule(((ModuleProject) subModule));
     }
   }
 
