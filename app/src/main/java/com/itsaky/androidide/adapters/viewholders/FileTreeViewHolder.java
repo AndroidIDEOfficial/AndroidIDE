@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.SizeUtils;
@@ -75,7 +76,8 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     } else {
       chevronIcon = R.drawable.ic_chevron_right;
     }
-
+  
+    TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeImageTransform());
     binding.filetreeChevron.setImageResource(chevronIcon);
     binding
         .filetreeChevron
@@ -95,7 +97,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
   }
 
   protected int getIconForFile(final File file) {
-    int icon;
+    final int icon;
     if (file.isDirectory()) icon = R.drawable.ic_folder;
     else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
     else if (file.getName().endsWith(".kt")) icon = R.drawable.ic_language_kotlin;
@@ -106,15 +108,9 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     return icon;
   }
 
-  public void updateChevron(boolean isExpanded) {
-    TransitionManager.beginDelayedTransition(binding.getRoot());
+  public void updateChevron(boolean expanded) {
     setLoading(false);
-    binding.filetreeChevron.setImageResource(
-        isExpanded ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_right);
-    binding
-        .filetreeChevron
-        .getDrawable()
-        .setColorFilter(getColor(context, R.color.secondaryLightColor), SRC_ATOP);
+    updateChevronIcon(expanded);
   }
 
   public void setLoading(boolean loading) {
