@@ -67,7 +67,7 @@
 
         <include
             android:id="@+id/bottom_sheet"
-            layout="@layout/layout_editor_bottom_sheet"/>
+            layout="@layout/layout_editor_bottom_sheet" />
 
         <include
             android:id="@+id/diagnosticInfo"

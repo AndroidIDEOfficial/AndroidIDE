@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/title"
-        style="@style/Widget.MaterialComponents.Button.Icon"
+        style="@style/Widget.Material3.Button.Icon"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/primaryDarkColor"

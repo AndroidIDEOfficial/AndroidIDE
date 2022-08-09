@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="actionOverflowButtonStyle">@style/AppTheme.Toolbar.OverflowButton</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
@@ -20,7 +20,7 @@
         <item name="android:fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.MaterialComponents.Chip.Choice">
+    <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.Material3.Chip.Filter">
         <item name="chipIconTint">@color/primaryIconColor</item>
         <item name="chipBackgroundColor">@color/primaryColor</item>
         <item name="chipStrokeColor">@color/secondaryColor</item>
@@ -40,7 +40,7 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <style name="AppTheme.ProjectCreator.TextInput" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+    <style name="AppTheme.ProjectCreator.TextInput" parent="Widget.Material3.TextInputLayout.FilledBox.Dense">
         <item name="colorAccent">@color/primaryTextColor</item>
         <item name="android:textColorHint">@color/secondaryTextColor</item>
         <item name="colorControlActivated">@color/secondaryTextColor_light</item>
@@ -53,8 +53,14 @@
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
+
+    <style name="AppTheme.ShapeAppearance.MainFragment.Logo" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">25dp</item>
+    </style>
+
     <!-- Alert Dialog -->
-    <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialDialog.Title.Text</item>
         <item name="materialAlertDialogBodyTextStyle">@style/MaterialDialog.Body.Text</item>
@@ -72,36 +78,36 @@
         <item name="cornerSize">10dp</item>
     </style>
 
-    <style name="MaterialDialog.Title.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+    <style name="MaterialDialog.Title.Text" parent="@style/MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:textStyle">bold</item>
         <item name="fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="MaterialDialog.Body.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
+    <style name="MaterialDialog.Body.Text" parent="@style/MaterialAlertDialog.Material3.Body.Text">
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="MaterialAlertDialog.PositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="MaterialAlertDialog.PositiveButtonStyle" parent="@style/Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="MaterialAlertDialog.NegativeButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="MaterialAlertDialog.NegativeButtonStyle" parent="@style/Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="MaterialAlertDialog.NeutralButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="MaterialAlertDialog.NeutralButtonStyle" parent="@style/Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="fontFamily">@font/josefin_sans</item>
     </style>
 
-    <style name="AppTheme.FilePicker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme.FilePicker" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryDarkColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
@@ -129,12 +135,12 @@
         <item name="android:windowExitAnimation">@anim/popup_out</item>
     </style>
 
-    <style name="AppTheme.SheetAboveKeyboard" parent="Theme.MaterialComponents.BottomSheetDialog">
+    <style name="AppTheme.SheetAboveKeyboard" parent="Theme.Material3.Dark.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="AppTheme.TextInputLayout.Outlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="AppTheme.TextInputLayout.Outlined" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="hintTextColor">@color/secondaryColor</item>
         <item name="boxStrokeColor">@color/text_input_box_stroke_selector</item>
     </style>

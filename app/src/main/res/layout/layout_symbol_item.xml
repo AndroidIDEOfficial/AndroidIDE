@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Button xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/symbol"
-    style="@style/Widget.MaterialComponents.Button.TextButton"
+    style="@style/Widget.Material3.Button.TextButton"
     android:layout_width="32dp"
     android:layout_height="40dp"
     android:background="@color/symbolInput_background"

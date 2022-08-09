@@ -7,12 +7,13 @@
     app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/main_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="16dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/ic_launcher_main"
+        app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +24,10 @@
         android:id="@+id/getStarted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
         android:text="@string/get_started"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/primaryTextColor"
@@ -46,7 +50,7 @@
 
     <Button
         android:id="@+id/create_project"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
@@ -72,7 +76,7 @@
 
     <Button
         android:id="@+id/open_project"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_marginEnd="8dp"
@@ -95,7 +99,7 @@
 
     <Button
         android:id="@+id/open_terminal"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_marginEnd="8dp"
@@ -118,7 +122,7 @@
 
     <Button
         android:id="@+id/goto_preferences"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+        style="@style/Widget.Material3.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
         android:layout_marginEnd="8dp"
