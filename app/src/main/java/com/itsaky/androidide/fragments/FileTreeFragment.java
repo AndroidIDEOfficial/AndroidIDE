@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.FileIOUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
@@ -42,7 +41,6 @@ import com.itsaky.androidide.events.ListProjectFilesRequestEvent;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -121,29 +119,23 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
   @Override
   public void onClick(TreeNode node, Object p2) {
-    final File f = (File) p2;
-    if (!f.exists()) {
+    final File file = (File) p2;
+    if (!file.exists()) {
       return;
     }
 
-    if (f.isDirectory()) {
+    if (file.isDirectory()) {
       if (node.isExpanded()) {
         collapseNode(node);
-      } else if (f.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath())
-          && !node.isExpanded()) {
-        expandNode(node);
       } else {
         setLoading(node);
         listNode(
             node,
-            () -> {
-              updateChevron(node);
-              expandNode(node);
-            });
+            () -> expandNode(node));
       }
     }
 
-    final var event = new FileClickEvent(f);
+    final var event = new FileClickEvent(file);
     event.put(Context.class, requireContext());
     EventBus.getDefault().post(event);
   }
@@ -168,7 +160,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
   @SuppressWarnings("unused")
   @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onGetListFilesRequeste(ListProjectFilesRequestEvent event) {
+  public void onGetListFilesRequested(ListProjectFilesRequestEvent event) {
     if (!isVisible() || getContext() == null) {
       return;
     }
@@ -179,10 +171,12 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   @SuppressWarnings("unused")
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void onGetExpandTreeNodeRequest(ExpandTreeNodeRequestEvent event) {
-    if (!isVisible() || getContext() == null || event.getNode() == null) {
+    if (!isVisible() || getContext() == null) {
       return;
+    } else {
+      event.getNode();
     }
-
+  
     expandNode(event.getNode());
   }
 
@@ -193,6 +187,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeBounds());
     mFileTreeView.collapseNode(node);
+    updateChevron(node);
   }
 
   public void expandNode(TreeNode node) {
@@ -202,6 +197,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeBounds());
     mFileTreeView.expandNode(node);
+    updateChevron(node);
   }
 
   public void listProjectFiles() {
@@ -210,25 +206,8 @@ public class FileTreeFragment extends BottomSheetDialogFragment
       return;
     }
     final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
-    final File gradleProps = Environment.GRADLE_PROPS;
-    final File gradleHome = Environment.GRADLE_USER_HOME;
-    File projectDir = new File(projectDirPath);
+    final var projectDir = new File(projectDirPath);
     mRoot = TreeNode.root(projectDir);
-    if (gradleHome.exists() && gradleHome.isDirectory()) {
-      if (!gradleProps.exists()) {
-        FileIOUtils.writeFileFromString(
-            gradleProps,
-            "# Specify global Gradle properties in this file\n"
-                + "# These properties will be applicable for every project you build"
-                + " with Gradle.");
-      }
-      TreeNode home = new TreeNode(gradleHome);
-      home.setViewHolder(new FileTreeViewHolder(getContext()));
-      TreeNode prop = new TreeNode(gradleProps);
-      prop.setViewHolder(new FileTreeViewHolder(getContext()));
-      home.addChild(prop);
-      mRoot.addChild(home);
-    }
     mRoot.setViewHolder(new FileTreeViewHolder(getContext()));
 
     binding.filetreeHorizontalScrollView.setVisibility(View.GONE);
@@ -287,14 +266,14 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     final var finalWhenDone = whenDone;
     TaskExecutor.execAsync(
         () -> {
-          getNodeFromFiles(node.getValue().listFiles(), node);
+          listFilesForNode(node.getValue().listFiles(), node);
           TreeNode temp = node;
           while (temp.size() == 1) {
             temp = temp.childAt(0);
             if (!temp.getValue().isDirectory()) {
               break;
             }
-            getNodeFromFiles(temp.getValue().listFiles(), temp);
+            listFilesForNode(temp.getValue().listFiles(), temp);
             temp.setExpanded(true);
           }
           return null;
@@ -302,7 +281,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         __ -> finalWhenDone.run());
   }
 
-  private void getNodeFromFiles(File[] files, TreeNode parent) {
+  private void listFilesForNode(File[] files, TreeNode parent) {
     Arrays.sort(files, new FileTreeCallable.SortFileName());
     Arrays.sort(files, new FileTreeCallable.SortFolder());
     for (File file : files) {
@@ -314,7 +293,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
   private void updateChevron(@NonNull TreeNode node) {
     if (node.getViewHolder() instanceof FileTreeViewHolder) {
-      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(!node.isExpanded());
+      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(node.isExpanded());
     }
   }
 
@@ -324,15 +303,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
   private void tryRestoreState(String state) {
     if (!TextUtils.isEmpty(state) && mFileTreeView != null) {
-
-      LOG.debug("Restoring tree view state:", "'" + state + "'");
-
       mFileTreeView.collapseAll();
       final var openNodesArray = state.split(NODES_PATH_SEPARATOR);
       final var openNodes = new HashSet<>(Arrays.asList(openNodesArray));
       restoreNodeState(mRoot, openNodes);
-    } else {
-      LOG.error("Unable to restore tree state", "treeState=" + state, "treeView=" + mFileTreeView);
     }
   }
 
@@ -344,7 +318,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         listNode(
             node,
             () -> {
-              updateChevron(node);
               expandNode(node);
               restoreNodeState(node, openNodes);
             });

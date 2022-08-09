@@ -66,7 +66,6 @@ public final class Environment {
 
   public static File INIT_SCRIPT;
   public static File PROJECT_DATA_FILE;
-  public static File GRADLE_PROPS;
   public static File GRADLE_USER_HOME;
   public static File AAPT2;
   public static File JAVA;
@@ -97,7 +96,6 @@ public final class Environment {
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
     BOOTCLASSPATH = new File("");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
-    GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
 
     IDE_PROPS.putAll(readProperties());
     ANDROID_HOME = new File(readProp("ANDROID_HOME", DEFAULT_ANDROID_HOME));

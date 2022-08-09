@@ -33,8 +33,8 @@ import java.util.concurrent.Callable;
 
 public class FileTreeCallable implements Callable<Boolean> {
   private final Context ctx;
-  private TreeNode parent;
-  private File file;
+  private final TreeNode parent;
+  private final File file;
 
   public FileTreeCallable(Context ctx, TreeNode parent, File file) {
     this.ctx = ctx;

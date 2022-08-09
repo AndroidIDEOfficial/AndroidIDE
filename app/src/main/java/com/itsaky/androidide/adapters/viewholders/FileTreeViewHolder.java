@@ -57,7 +57,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
             : (int)
                 (TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, 15, context.getResources().getDisplayMetrics()));
-    int icon = 0;
+    int icon;
     if (file.isDirectory()) icon = R.drawable.ic_folder;
     else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
     else if (file.getName().endsWith(".kt")) icon = R.drawable.ic_language_kotlin;
