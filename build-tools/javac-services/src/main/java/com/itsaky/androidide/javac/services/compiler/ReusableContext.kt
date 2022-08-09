@@ -28,6 +28,7 @@ import com.itsaky.androidide.javac.services.NBResolve
 import com.itsaky.androidide.javac.services.NBTreeMaker
 import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.javac.services.fs.JarPackageProviderImpl
+import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.zipfs2.JarPackageProvider
 import com.sun.source.util.JavacTask
 import com.sun.source.util.TaskEvent
@@ -41,6 +42,7 @@ import com.sun.tools.javac.comp.Check
 import com.sun.tools.javac.comp.CompileStates
 import com.sun.tools.javac.comp.Enter
 import com.sun.tools.javac.comp.Modules
+import com.sun.tools.javac.file.CacheFSInfo
 import com.sun.tools.javac.file.FSInfo
 import com.sun.tools.javac.main.Arguments
 import com.sun.tools.javac.main.JavaCompiler
@@ -65,7 +67,7 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
 
   init {
     put(Log.logKey, ReusableLog.factory)
-    put(FSInfo::class.java, CacheFSInfoSingleton)
+    put(FSInfo::class.java, if (VMUtils.isJvm()) CacheFSInfo() else CacheFSInfoSingleton)
     put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory)
     put(JavacFlowListener.flowListenerKey, JavacFlowListener { this.hasFlowCompleted(it) })
     put(JarPackageProvider::class.java, JarPackageProviderImpl)

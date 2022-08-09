@@ -16,7 +16,6 @@
  */
 package com.itsaky.androidide.projects
 
-import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -49,9 +48,10 @@ object ProjectManager : EventReceiver {
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
-      this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
-        it.indexSourcesAndClasspaths()
-      }
+      this.rootProject!!
+        .subModules
+        .filterIsInstance(ModuleProject::class.java)
+        .forEach(ModuleProject::indexSourcesAndClasspaths)
     }
   }
 

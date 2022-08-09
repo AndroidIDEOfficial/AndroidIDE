@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.javac.services.fs
 
+import com.itsaky.androidide.utils.VMUtils
 import com.sun.tools.javac.file.CacheFSInfo
 import java.nio.file.Path
 
@@ -32,6 +33,11 @@ object CacheFSInfoSingleton : CacheFSInfo() {
    */
   @JvmOverloads
   fun cache(file: Path, cacheJarClasspath: Boolean = true) {
+    
+    if (VMUtils.isJvm()) {
+      return
+    }
+    
     // Cache canonical path
     getCanonicalFile(file)
     

@@ -87,7 +87,13 @@ abstract class LSPTest {
     FileManager.register()
     ProjectManager.register()
     ProjectManager.setupProject(project)
-    ProjectManager.notifyProjectUpdate()
+
+    // We need to manually setup the language server with the project here
+    // ProjectManager.notifyProjectUpdate()
+    ILanguageServerRegistry.getDefault()
+      .getServer(getServerId())!!
+      .setupWithProject(ProjectManager.rootProject!!)
+
     isInitialized = true
   }
 
@@ -110,11 +116,8 @@ abstract class LSPTest {
     dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), 1, DELETE, 0, Range.NONE))
   }
 
-  protected fun cursorPosition(): Position {
-    return cursorPosition(true)
-  }
-
-  protected fun cursorPosition(deleteCursorText: Boolean): Position {
+  @JvmOverloads
+  protected fun cursorPosition(deleteCursorText: Boolean = true): Position {
     requireCursor()
 
     if (deleteCursorText) {
