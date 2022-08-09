@@ -1,12 +1,9 @@
 package com.unnamed.b.atv.model;
 
-import static com.itsaky.androidide.utils.ILogger.newInstance;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.itsaky.androidide.utils.ILogger;
 import com.unnamed.b.atv.R;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import com.unnamed.b.atv.view.TreeNodeWrapperView;
@@ -22,7 +19,6 @@ import java.util.List;
 public class TreeNode {
 
   public static final String NODES_ID_SEPARATOR = ":";
-  private static final ILogger LOG = newInstance("TreeNode");
   private final List<TreeNode> children;
   private int mId;
   private int mLastId;
@@ -125,7 +121,6 @@ public class TreeNode {
   }
 
   public TreeNode setExpanded(boolean expanded) {
-    LOG.debug("TreeNode expanded state changed. New state:", expanded, new RuntimeException());
     mExpanded = expanded;
     return this;
   }

@@ -24,6 +24,4 @@ android {
 dependencies {
     implementation fileTree (dir: 'libs', include: ['*.jar'])
     implementation androidx.appcompat
-    
-    implementation project (path: ':logger')
 }
