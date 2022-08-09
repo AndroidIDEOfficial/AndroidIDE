@@ -1,102 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.itsaky.androidide.views.InterceptableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/editor_drawerLayout"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/editor_drawerLayout"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:animateLayoutChanges="true"
+  tools:ignore="DuplicateIncludedIds"
+  tools:openDrawer="start">
+
+  <androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/realContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    tools:ignore="DuplicateIncludedIds">
+    android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/realContainer"
+    <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/editor_appBarLayout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+
+      <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/editor_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="@color/primaryDarkColor"
+        android:elevation="10dp" />
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/editor_appBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+      <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/build_progress_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/secondaryColor" />
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/editor_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primaryDarkColor"
-                android:elevation="10dp" />
+      <com.itsaky.androidide.views.MaterialBanner
+        android:id="@+id/syncBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
-            <com.google.android.material.progressindicator.LinearProgressIndicator
-                android:id="@+id/build_progress_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                app:indicatorColor="@color/secondaryColor" />
+      <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/file_tab_height"
+        android:background="@color/primaryDarkColor"
+        app:tabGravity="start"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/secondaryColor"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorGravity="bottom"
+        app:tabIndicatorHeight="3dp"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/secondaryColor"
+        app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
+        app:tabTextColor="@color/secondaryTextColor_light" />
 
-            <com.itsaky.androidide.views.MaterialBanner
-                android:id="@+id/syncBanner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/file_tab_height"
-                android:background="@color/primaryDarkColor"
-                app:tabGravity="start"
-                app:tabIndicatorAnimationMode="elastic"
-                app:tabIndicatorColor="@color/secondaryColor"
-                app:tabIndicatorFullWidth="false"
-                app:tabIndicatorGravity="bottom"
-                app:tabIndicatorHeight="3dp"
-                app:tabMode="scrollable"
-                app:tabSelectedTextColor="@color/secondaryColor"
-                app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
-                app:tabTextColor="@color/secondaryTextColor_light" />
+    <ViewFlipper
+      android:id="@+id/editor_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="@dimen/editor_sheet_peek_height"
+      android:background="@color/content_background"
+      app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
-        </com.google.android.material.appbar.AppBarLayout>
+    <include
+      android:id="@+id/bottom_sheet"
+      layout="@layout/layout_editor_bottom_sheet" />
 
-        <ViewFlipper
-            android:id="@+id/editor_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/editor_sheet_peek_height"
-            android:background="@color/content_background"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+    <include
+      android:id="@+id/diagnosticInfo"
+      layout="@layout/layout_diagnostic_info" />
 
-        <include
-            android:id="@+id/bottom_sheet"
-            layout="@layout/layout_editor_bottom_sheet" />
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        <include
-            android:id="@+id/diagnosticInfo"
-            layout="@layout/layout_diagnostic_info" />
+  <com.google.android.material.navigation.NavigationView
+    android:id="@+id/startNav"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    app:headerLayout="@layout/layout_nav_header"
+    app:itemIconTint="@color/primaryIconColor"
+    app:itemTextColor="@color/primaryTextColor"
+    app:menu="@menu/menu_editor_nav" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+  <com.google.android.material.navigation.NavigationView
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="end">
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/startNav"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:background="@color/primaryColor"
-        app:headerLayout="@layout/layout_nav_header"
-        app:menu="@menu/menu_editor_nav">
+    <FrameLayout
+      android:id="@+id/editor_frameLayout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
 
-    </com.google.android.material.navigation.NavigationView>
-
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        android:background="@color/primaryColor">
-
-        <FrameLayout
-            android:id="@+id/editor_frameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.google.android.material.navigation.NavigationView>
+  </com.google.android.material.navigation.NavigationView>
 
 </com.itsaky.androidide.views.InterceptableDrawerLayout>

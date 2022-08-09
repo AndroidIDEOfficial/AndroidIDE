@@ -15,85 +15,83 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  app:behavior_hideable="false"
+  app:behavior_peekHeight="@dimen/editor_sheet_peek_height"
+  app:layout_behavior="com.itsaky.androidide.utils.EditorBottomSheetBehavior">
+
+  <LinearLayout
+    android:id="@+id/text_container"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginBottom="12dp"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/statusText"
+      android:layout_width="match_parent"
+      android:layout_height="20dp"
+      android:gravity="center"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:singleLine="true"
+      android:textColor="@color/primaryTextColor"
+      android:textSize="14sp" />
+
+    <TextView
+      android:id="@+id/swipe_hint"
+      android:layout_width="match_parent"
+      android:layout_height="18dp"
+      android:gravity="center"
+      android:text="@string/msg_swipe_up"
+      android:textColor="@color/secondaryTextColor"
+      android:textSize="11sp" />
+
+  </LinearLayout>
+
+  <com.google.android.material.tabs.TabLayout
+    android:id="@+id/tabs"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:layout_below="@id/text_container"
+    android:background="@android:color/black"
+    app:tabGravity="fill"
+    app:tabIndicatorAnimationMode="elastic"
+    app:tabIndicatorColor="@color/secondaryColor"
+    app:tabIndicatorGravity="bottom"
+    app:tabIndicatorHeight="4dp"
+    app:tabMode="scrollable"
+    app:tabSelectedTextColor="@color/primaryTextColor"
+    app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
+
+  <androidx.viewpager2.widget.ViewPager2
+    android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp"
-    android:elevation="8dp"
-    android:orientation="vertical"
-    app:behavior_hideable="false"
-    app:behavior_peekHeight="@dimen/editor_sheet_peek_height"
-    app:layout_behavior="com.itsaky.androidide.utils.EditorBottomSheetBehavior">
+    android:layout_below="@id/tabs"
+    android:background="@color/content_background" />
 
-    <LinearLayout
-        android:id="@+id/text_container"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="@android:color/black"
-        android:orientation="vertical">
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/clear_fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_margin="16dp"
+    android:src="@drawable/ic_close"
+    app:backgroundTint="@color/secondaryColor" />
 
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:singleLine="true"
-            android:textColor="@color/primaryTextColor"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/swipe_hint"
-            android:layout_width="match_parent"
-            android:layout_height="18dp"
-            android:gravity="center"
-            android:text="@string/msg_swipe_up"
-            android:textColor="@color/secondaryTextColor"
-            android:textSize="11sp" />
-
-    </LinearLayout>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_below="@id/text_container"
-        android:background="@android:color/black"
-        app:tabGravity="fill"
-        app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorColor="@color/secondaryColor"
-        app:tabIndicatorGravity="bottom"
-        app:tabIndicatorHeight="4dp"
-        app:tabMode="scrollable"
-        app:tabSelectedTextColor="@color/primaryTextColor"
-        app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tabs"
-        android:background="@color/content_background" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/clear_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_close"
-        app:backgroundTint="@color/secondaryColor" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/share_output_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/clear_fab"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_share"
-        app:backgroundTint="@color/secondaryColor" />
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/share_output_fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_above="@id/clear_fab"
+    android:layout_alignParentEnd="true"
+    android:layout_margin="16dp"
+    android:src="@drawable/ic_share"
+    app:backgroundTint="@color/secondaryColor" />
 
 </RelativeLayout>
