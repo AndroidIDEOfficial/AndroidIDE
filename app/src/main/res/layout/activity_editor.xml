@@ -49,7 +49,7 @@
                 app:tabIndicatorColor="@color/secondaryColor"
                 app:tabIndicatorFullWidth="false"
                 app:tabIndicatorGravity="bottom"
-                app:tabIndicatorHeight="4dp"
+                app:tabIndicatorHeight="3dp"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/secondaryColor"
                 app:tabTextAppearance="@style/AppTheme.TabLayout.Title"

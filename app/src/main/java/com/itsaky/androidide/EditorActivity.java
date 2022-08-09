@@ -1210,7 +1210,7 @@ public class EditorActivity extends StudioActivity
           if (files == null || files.isEmpty()) {
             mBinding.tabs.setVisibility(View.GONE);
           } else {
-            mBinding.tabs.setVisibility(View.GONE);
+            mBinding.tabs.setVisibility(View.VISIBLE);
           }
         });
 

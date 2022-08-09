@@ -61,9 +61,10 @@
         android:layout_below="@id/text_container"
         android:background="@android:color/black"
         app:tabGravity="fill"
+        app:tabIndicatorAnimationMode="elastic"
         app:tabIndicatorColor="@color/secondaryColor"
-        app:tabIndicatorGravity="stretch"
-        app:tabIndicatorHeight="36dp"
+        app:tabIndicatorGravity="bottom"
+        app:tabIndicatorHeight="4dp"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="@color/primaryTextColor"
         app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
