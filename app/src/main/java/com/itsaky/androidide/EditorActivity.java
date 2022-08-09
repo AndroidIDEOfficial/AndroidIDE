@@ -839,7 +839,7 @@ public class EditorActivity extends StudioActivity
             if (mBinding == null) {
               return;
             }
-            
+
             mBinding.bottomSheet.statusText.setGravity(gravity);
             mBinding.bottomSheet.statusText.setText(text);
           });
@@ -1199,6 +1199,20 @@ public class EditorActivity extends StudioActivity
         initializing ->
             toggleProgressBarVisibility(
                 initializing || Boolean.TRUE.equals(mViewModel.progressBarVisible.getValue())));
+
+    mViewModel.observeFiles(
+        this,
+        files -> {
+          if (mBinding == null) {
+            return;
+          }
+
+          if (files == null || files.isEmpty()) {
+            mBinding.tabs.setVisibility(View.GONE);
+          } else {
+            mBinding.tabs.setVisibility(View.GONE);
+          }
+        });
 
     setupBottomSheetPager();
     setupBottomSheet();
