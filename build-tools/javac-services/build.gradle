@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace "com.itsaky.androidide.javac.services"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     

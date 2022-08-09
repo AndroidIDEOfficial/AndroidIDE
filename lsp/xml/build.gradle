@@ -21,6 +21,7 @@ plugins {
 }
 
 android {
+    namespace "com.itsaky.androidide.lsp.xml"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     

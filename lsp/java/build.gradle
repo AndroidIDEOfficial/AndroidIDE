@@ -18,6 +18,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "com.itsaky.androidide.lsp.java"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     

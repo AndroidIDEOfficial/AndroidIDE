@@ -20,6 +20,7 @@ plugins {
 }
 
 android {
+    namespace "com.itsaky.androidide.eventbus.android"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     
