@@ -23,6 +23,7 @@ import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
+import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton;
 import com.itsaky.androidide.javac.services.fs.CachingJarFileSystemProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
@@ -59,7 +60,6 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
-import com.itsaky.androidide.utils.ILogger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,7 +73,6 @@ import java.util.concurrent.CompletableFuture;
 public class JavaLanguageServer implements ILanguageServer {
 
   public static final String SERVER_ID = "java";
-  private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
   private final CompletionProvider completionProvider;
   private final JavaDiagnosticProvider diagnosticProvider;
   private ILanguageClient client;
@@ -107,6 +106,7 @@ public class JavaLanguageServer implements ILanguageServer {
   public void shutdown() {
     JavaCompilerProvider.getInstance().destory();
     SourceFileManager.clearCache();
+    CacheFSInfoSingleton.INSTANCE.clearCache();
     CachingJarFileSystemProvider.INSTANCE.clearCache();
     EventBus.getDefault().unregister(this);
 

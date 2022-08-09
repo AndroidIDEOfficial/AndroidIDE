@@ -26,8 +26,8 @@ import com.itsaky.androidide.javac.services.NBMemberEnter
 import com.itsaky.androidide.javac.services.NBParserFactory
 import com.itsaky.androidide.javac.services.NBResolve
 import com.itsaky.androidide.javac.services.NBTreeMaker
+import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.javac.services.fs.JarPackageProviderImpl
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.zipfs2.JarPackageProvider
 import com.sun.source.util.JavacTask
 import com.sun.source.util.TaskEvent
@@ -41,6 +41,7 @@ import com.sun.tools.javac.comp.Check
 import com.sun.tools.javac.comp.CompileStates
 import com.sun.tools.javac.comp.Enter
 import com.sun.tools.javac.comp.Modules
+import com.sun.tools.javac.file.FSInfo
 import com.sun.tools.javac.main.Arguments
 import com.sun.tools.javac.main.JavaCompiler
 import com.sun.tools.javac.model.JavacElements
@@ -59,24 +60,24 @@ import javax.tools.JavaFileObject
  * @author Akash Yadav
  */
 class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
-  
+
   private val flowCompleted = mutableSetOf<URI>()
-  private val log = ILogger.newInstance(javaClass.simpleName)
-  
+
   init {
     put(Log.logKey, ReusableLog.factory)
+    put(FSInfo::class.java, CacheFSInfoSingleton)
     put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory)
     put(JavacFlowListener.flowListenerKey, JavacFlowListener { this.hasFlowCompleted(it) })
     put(JarPackageProvider::class.java, JarPackageProviderImpl)
     registerNBServices(cancelService)
   }
-  
+
   @DefinedBy(COMPILER_TREE)
   override fun started(e: TaskEvent) {
-    log.debug("Started: $e")
+    //    log.debug("Started: $e")
     // Do nothing
   }
-  
+
   @DefinedBy(COMPILER_TREE)
   override fun finished(e: TaskEvent) {
     if (e.kind == ANALYZE) {
@@ -86,7 +87,7 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
       }
     }
   }
-  
+
   fun clear() {
     drop(Arguments.argsKey)
     drop(DiagnosticListener::class.java)
@@ -96,7 +97,7 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
     drop(JavacTask::class.java)
     drop(JavacTrees::class.java)
     drop(JavacElements::class.java)
-    
+
     if (ht[Log.logKey] is ReusableLog) {
       // log already init-ed - not first round
       (Log.instance(this) as ReusableLog).clear()
@@ -110,15 +111,15 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
       MultiTaskListener.instance(this).clear()
     }
   }
-  
+
   private fun <T> drop(k: Key<T>?) {
     ht.remove(k)
   }
-  
+
   private fun <T> drop(c: Class<T>?) {
     ht.remove(key(c))
   }
-  
+
   private fun hasFlowCompleted(fo: JavaFileObject?): Boolean {
     return if (fo == null) {
       false
@@ -130,7 +131,7 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
       }
     }
   }
-  
+
   private fun registerNBServices(cancelService: CancelService) {
     NBAttr.preRegister(this)
     NBParserFactory.preRegister(this)

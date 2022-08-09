@@ -19,16 +19,19 @@ package com.itsaky.androidide.projects.api
 
 import android.text.TextUtils
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
+import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
-import com.itsaky.androidide.projects.classpath.ZipFileClasspathReader
-import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.projects.util.BootClasspathProvider
+import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.SourceClassTrie
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
 import com.itsaky.androidide.utils.StopWatch
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.pathString
 
 /**
  * A module project. Base class for [AndroidModule] and [JavaModule].
@@ -56,8 +59,8 @@ abstract class ModuleProject(
     const val USAGE_RUNTIME = "java-runtime"
   }
 
-  @JvmField val compileJavaSourceClasses = com.itsaky.androidide.utils.SourceClassTrie()
-  @JvmField val compileClasspathClasses = com.itsaky.androidide.utils.ClassTrie()
+  @JvmField val compileJavaSourceClasses = SourceClassTrie()
+  @JvmField val compileClasspathClasses = ClassTrie()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -119,6 +122,13 @@ abstract class ModuleProject(
 
     watch = StopWatch("Indexing classpaths")
     val paths = getCompileClasspaths().filter { it.exists() }
+
+    for (path in paths) {
+      // Use 'getCanonicalFile' just to be sure that caches are stored with correct keys
+      // See JavacFileManager.getContainer(Path) for more details
+      CacheFSInfoSingleton.cache(CacheFSInfoSingleton.getCanonicalFile(path.toPath()))
+    }
+
     val topLevelClasses = JarFsClasspathReader().listClasses(paths).filter { it.isTopLevel }
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
 
@@ -138,12 +148,32 @@ abstract class ModuleProject(
       return ""
     }
 
-    val source = this.compileJavaSourceClasses.findSource(file)
-    if (source != null) {
-      return source.packageName
+    val sourceNode = searchSourceFileRelatively(file)
+    if (sourceNode != null) {
+      return sourceNode.packageName
     }
 
     return ""
+  }
+
+  private fun searchSourceFileRelatively(file: Path?): SourceNode? {
+    for (source in getCompileSourceDirectories().map(File::toPath)) {
+      val relative = source.relativize(file)
+      if (relative.pathString.contains("..")) {
+        // This is most probably not the one we're expecting
+        continue
+      }
+
+      var name = relative.pathString.substringBeforeLast(".java")
+      name = name.replace('/', '.')
+
+      val node = this.compileJavaSourceClasses.findNode(name)
+      if (node != null && node is SourceNode) {
+        return node
+      }
+    }
+
+    return null
   }
 
   fun suggestPackageName(file: Path): String {

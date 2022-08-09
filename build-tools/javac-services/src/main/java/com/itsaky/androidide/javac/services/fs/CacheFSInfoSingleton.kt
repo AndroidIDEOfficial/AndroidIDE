@@ -17,19 +17,30 @@
 
 package com.itsaky.androidide.javac.services.fs
 
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.zipfs2.JarPackageProvider
-import com.sun.tools.javac.file.RelativePath.RelativeDirectory
+import com.sun.tools.javac.file.CacheFSInfo
 import java.nio.file.Path
 
 /**
- * Provides cached packages from arhives.
+ * Singleton class for [CacheFSInfo] to avoid reading attributes of same file multiple times.
  *
  * @author Akash Yadav
  */
-object JarPackageProviderImpl : JarPackageProvider {
-  override fun getPackages(archivePath: Path): MutableMap<RelativeDirectory, Path> {
-    val fs = CachingJarFileSystemProvider.newFileSystem(archivePath) as CachedJarFileSystem
-    return fs.packages
+object CacheFSInfoSingleton : CacheFSInfo() {
+  
+  /**
+   * Caches information about the given [Path].
+   */
+  @JvmOverloads
+  fun cache(file: Path, cacheJarClasspath: Boolean = true) {
+    // Cache canonical path
+    getCanonicalFile(file)
+    
+    // Cache attributes
+    getAttributes(file)
+    
+    // Cache jar classpath if requested
+    if (cacheJarClasspath) {
+      getJarClassPath(file)
+    }
   }
 }

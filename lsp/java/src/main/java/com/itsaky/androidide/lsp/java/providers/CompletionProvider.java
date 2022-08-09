@@ -22,10 +22,6 @@ import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.enterTrees
 import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.parse;
 import static com.itsaky.androidide.progress.ProgressManager.abortIfCancelled;
 
-import android.os.Debug;
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ReflectUtils;

@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.compiler;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.CloseUtils;
-import com.google.common.collect.Iterables;
 import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
@@ -35,9 +34,10 @@ import com.sun.tools.javac.util.Context;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,34 +47,54 @@ import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 
-@SuppressWarnings("Since15")
-public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
+public class SourceFileManager extends JavacFileManager {
+
+  public static final String ANDROIDIDE_CACHE_LOCATION = "ANDROIDIDE_CACHE_LOCATION";
 
   public static final SourceFileManager NO_MODULE = new SourceFileManager(null);
   private static final ILogger LOG = ILogger.newInstance("SourceFileManager");
   private static final Map<ModuleProject, SourceFileManager> cachedFileManagers =
       new ConcurrentHashMap<>();
   private final ModuleProject module;
-
-  private SourceFileManager(final ModuleProject module) {
-    super(createDelegateFileManager());
-    this.module = module;
+  
+  public static SourceFileManager forModule(@NonNull ModuleProject project) {
+    Objects.requireNonNull(project);
+    return cachedFileManagers.computeIfAbsent(project, SourceFileManager::createForModule);
+  }
+  
+  public static void clearCache() {
+    for (final SourceFileManager fileManager : cachedFileManagers.values()) {
+      CloseUtils.closeIO(fileManager);
+    }
     
+    cachedFileManagers.clear();
+  }
+  
+  private static SourceFileManager createForModule(@NonNull ModuleProject project) {
+    LOG.info("Creating source file manager instance for module:", project);
+    return new SourceFileManager(project);
+  }
+  
+  private SourceFileManager(final ModuleProject module) {
+    super(new Context(), false, Charset.defaultCharset());
+    this.module = module;
+
     AndroidFsProviderImpl.INSTANCE.init();
 
+    listLocations(EnumSet.of(StandardLocation.CLASS_PATH, StandardLocation.PLATFORM_CLASS_PATH));
+
     if (module != null) {
-      setLocation(StandardLocation.CLASS_PATH, module.getCompileClasspaths());
-      setLocation(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
+      setLocationLogError(StandardLocation.CLASS_PATH, module.getCompileClasspaths());
+      setLocationLogError(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
 
       if (module instanceof AndroidModule) {
         final AndroidModule android = ((AndroidModule) module);
-        setLocation(StandardLocation.PLATFORM_CLASS_PATH, android.getBootClassPaths());
+        setLocationLogError(StandardLocation.PLATFORM_CLASS_PATH, android.getBootClassPaths());
       } else {
         setFallbackPlatformClasspath();
       }
@@ -85,46 +105,10 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
 
   protected void setFallbackPlatformClasspath() {
     // TODO Module system must be enabled for Java modules instead of setting Platform Classpath
-    setLocation(
+    setLocationLogError(
         StandardLocation.PLATFORM_CLASS_PATH, Collections.singleton(Environment.ANDROID_JAR));
   }
-
-  private static StandardJavaFileManager createDelegateFileManager() {
-    JavaCompiler compiler = JavacTool.create();
-    return compiler.getStandardFileManager(
-        SourceFileManager::logError, null, Charset.defaultCharset());
-  }
-
-  private static void logError(Diagnostic<?> error) {
-    LOG.warn("SourceFileManager DiagnosticErr:", error.getMessage(null));
-  }
-
-  void setLocation(Location location, Iterable<? extends File> files) {
-    try {
-      fileManager.setLocation(location, files);
-    } catch (IOException e) {
-      LOG.error("Failed to update location", location, "with files", Iterables.toString(files), e);
-    }
-  }
-
-  public static void clearCache() {
-    for (final SourceFileManager fileManager : cachedFileManagers.values()) {
-      CloseUtils.closeIO(fileManager);
-    }
-
-    cachedFileManagers.clear();
-  }
-
-  public static SourceFileManager forModule(@NonNull ModuleProject project) {
-    Objects.requireNonNull(project);
-    return cachedFileManagers.computeIfAbsent(project, SourceFileManager::createForModule);
-  }
-
-  private static SourceFileManager createForModule(@NonNull ModuleProject project) {
-    LOG.info("Creating source file manager instance for module:", project);
-    return new SourceFileManager(project);
-  }
-
+  
   @Override
   public Iterable<JavaFileObject> list(
       Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse)
@@ -139,11 +123,6 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
     } else {
       return super.list(location, packageName, kinds, recurse);
     }
-  }
-
-  private JavaFileObject asJavaFileObject(SourceClassTrie.SourceNode node) {
-    // TODO erase method bodies of files that are not open
-    return new SourceFileObject(node.getFile());
   }
 
   @Override
@@ -201,6 +180,38 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
       return super.contains(location, file);
     }
   }
+  
+  public void setLocationLogError(Location location, Iterable<File> searchPath) {
+    try {
+      setLocation(location, searchPath);
+    } catch (IOException e) {
+      LOG.error("Unable to set location");
+    }
+  }
+  
+  private void listLocations(final EnumSet<StandardLocation> locations) {
+    for (StandardLocation location : locations) {
+      try {
+        list(
+          location,
+          ANDROIDIDE_CACHE_LOCATION,
+          EnumSet.of(
+            JavaFileObject.Kind.CLASS,
+            JavaFileObject.Kind.SOURCE,
+            JavaFileObject.Kind.HTML,
+            JavaFileObject.Kind.OTHER),
+          true);
+      } catch (IOException e) {
+        // Ignored
+        LOG.debug("Failed to list location:", location, e);
+      }
+    }
+  }
+  
+  private JavaFileObject asJavaFileObject(SourceClassTrie.SourceNode node) {
+    // TODO erase method bodies of files that are not open
+    return new SourceFileObject(node.getFile());
+  }
 
   private String packageNameOrEmpty(Path file) {
     return this.module != null ? module.packageNameOrEmpty(file) : "";
@@ -209,16 +220,5 @@ public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFil
   private String removeExtension(String fileName) {
     int lastDot = fileName.lastIndexOf(".");
     return (lastDot == -1 ? fileName : fileName.substring(0, lastDot));
-  }
-
-  public void setContext(Context context) {
-    if (fileManager instanceof JavacFileManager) {
-      ((JavacFileManager) fileManager).setContext(context);
-    }
-  }
-
-  void setLocationFromPaths(Location location, Collection<? extends Path> searchpath)
-      throws IOException {
-    fileManager.setLocationFromPaths(location, searchpath);
   }
 }
