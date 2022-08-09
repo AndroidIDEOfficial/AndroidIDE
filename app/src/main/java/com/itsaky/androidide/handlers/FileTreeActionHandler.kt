@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.handlers
 
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -42,18 +43,19 @@ import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
+import com.itsaky.androidide.tasks.TaskExecutor
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.SUCCESS
 import com.unnamed.b.atv.model.TreeNode
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.*
 import java.util.regex.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Handles events related to files in filetree.
@@ -399,26 +401,31 @@ class FileTreeActionHandler : BaseEventHandler() {
       .setNegativeButton(string.no, null)
       .setPositiveButton(string.yes) { dialogInterface, _ ->
         dialogInterface.dismiss()
-        val deleted = FileUtils.delete(file)
-        app.toast(
-          if (deleted) string.deleted else string.delete_failed,
-          if (deleted) SUCCESS else ERROR
-        )
-        if (deleted) {
-          notifyFileDeleted(file)
-          // TODO Notify language servers about file delete event
-          if (lastHeld != null) {
-            val parent = lastHeld!!.parent
-            parent.deleteChild(lastHeld)
-            requestExpandHeldNode()
-          } else {
-            requestFileListing()
-          }
+        @Suppress("DEPRECATION")
+        val progressDialog =
+          ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
+        TaskExecutor().executeAsync({ FileUtils.delete(file) }) { deleted ->
+          progressDialog.dismiss()
+          app.toast(
+            if (deleted) string.deleted else string.delete_failed,
+            if (deleted) SUCCESS else ERROR
+          )
+          if (deleted) {
+            notifyFileDeleted(file)
+            // TODO Notify language servers about file delete event
+            if (lastHeld != null) {
+              val parent = lastHeld!!.parent
+              parent.deleteChild(lastHeld)
+              requestExpandNode(parent)
+            } else {
+              requestFileListing()
+            }
 
-          if (context is EditorActivity) {
-            val frag = context.getEditorForFile(file)
-            if (frag != null) {
-              context.closeFile(context.findIndexOfEditorByFile(frag.file))
+            if (context is EditorActivity) {
+              val frag = context.getEditorForFile(file)
+              if (frag != null) {
+                context.closeFile(context.findIndexOfEditorByFile(frag.file))
+              }
             }
           }
         }
@@ -463,7 +470,7 @@ class FileTreeActionHandler : BaseEventHandler() {
           val node = TreeNode(File(file.parentFile, name))
           node.viewHolder = FileTreeViewHolder(context)
           parent.addChild(node)
-          requestExpandHeldNode()
+          requestExpandNode(parent)
         } else {
           requestFileListing()
         }
@@ -477,7 +484,11 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun requestExpandHeldNode() {
-    EventBus.getDefault().post(ExpandTreeNodeRequestEvent(lastHeld!!))
+    requestExpandNode(lastHeld!!)
+  }
+
+  private fun requestExpandNode(node: TreeNode) {
+    EventBus.getDefault().post(ExpandTreeNodeRequestEvent(node))
   }
 
   private fun notifyFileRenamed(file: File) {
