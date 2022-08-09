@@ -836,6 +836,10 @@ public class EditorActivity extends StudioActivity
     try {
       runOnUiThread(
           () -> {
+            if (mBinding == null) {
+              return;
+            }
+            
             mBinding.bottomSheet.statusText.setGravity(gravity);
             mBinding.bottomSheet.statusText.setText(text);
           });
