@@ -71,12 +71,6 @@ public abstract class StudioActivity extends AppCompatActivity {
     return getTypedValueForAttr(R.attr.colorAccent).data;
   }
 
-  public int dpToPx(int dp) {
-    return (int)
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
-  }
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

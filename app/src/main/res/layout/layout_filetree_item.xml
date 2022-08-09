@@ -6,12 +6,25 @@
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/filetree_chevron"
+    <ViewFlipper
+        android:id="@+id/chevronLoadingSwitcher"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_chevron_right" />
+        android:layout_marginEnd="8dp">
+
+        <ImageView
+            android:id="@+id/filetree_chevron"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_chevron_right" />
+
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+    </ViewFlipper>
 
     <ImageView
         android:id="@+id/filetree_icon"

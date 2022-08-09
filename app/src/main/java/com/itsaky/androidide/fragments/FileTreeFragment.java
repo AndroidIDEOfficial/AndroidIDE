@@ -250,7 +250,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
   private void setLoading(@NonNull TreeNode node) {
     if (node.getViewHolder() instanceof FileTreeViewHolder) {
-      ((FileTreeViewHolder) node.getViewHolder()).setLoading();
+      ((FileTreeViewHolder) node.getViewHolder()).setLoading(true);
     }
   }
 
