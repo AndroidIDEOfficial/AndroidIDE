@@ -229,10 +229,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final boolean endsWithParen = endsWithParen(contents, (int) cursor);
 
     abortIfCancelled();
-
-    final CompilationTaskProcessor taskProcessor = new CompletionTaskProcesor(source, cursor);
+    
     final CompilationRequest request =
-        new CompilationRequest(Collections.singletonList(source), partialRequest, taskProcessor);
+        new CompilationRequest(Collections.singletonList(source), partialRequest);
     SynchronizedTask synchronizedTask = compiler.compile(request);
     return synchronizedTask.get(
         task -> {

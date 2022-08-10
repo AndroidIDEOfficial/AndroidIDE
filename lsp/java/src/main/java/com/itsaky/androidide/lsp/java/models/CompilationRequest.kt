@@ -28,15 +28,11 @@ import javax.tools.JavaFileObject
  * @param sources The source files to compile.
  * @param partialRequest Data that will be used to a partial reparse.
  */
-data class CompilationRequest(
+data class CompilationRequest
+@JvmOverloads
+constructor(
   @JvmField val sources: Collection<JavaFileObject>,
-  @JvmField val partialRequest: PartialReparseRequest?,
-  @JvmField val compilationTaskProcessor: CompilationTaskProcessor
-) {
-  constructor(files: Collection<JavaFileObject>) : this(files, null)
-
-  constructor(
-    files: Collection<JavaFileObject>,
-    partialRequest: PartialReparseRequest?
-  ) : this(files, partialRequest, DefaultCompilationTaskProcessor())
-}
+  @JvmField val partialRequest: PartialReparseRequest? = null,
+  @JvmField
+  val compilationTaskProcessor: CompilationTaskProcessor = DefaultCompilationTaskProcessor()
+)

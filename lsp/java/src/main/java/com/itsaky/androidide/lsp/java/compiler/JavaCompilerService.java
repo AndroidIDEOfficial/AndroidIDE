@@ -32,12 +32,13 @@ import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.parser.Parser;
 import com.itsaky.androidide.lsp.java.utils.Extractors;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarations;
+import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
-import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.projects.util.BootClasspathProvider;
+import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.utils.Cache;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
@@ -91,6 +92,9 @@ public class JavaCompilerService implements CompilerProvider {
           Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));
   private CompileBatch cachedCompile;
   private int changeDelta = 0;
+
+  private Position lastReparsePosition = Position.NONE;
+  private Position newCursorPosition = Position.NONE;
 
   // The module project must not be null
   // It is marked as nullable just for some special cases like tests
@@ -266,7 +270,14 @@ public class JavaCompilerService implements CompilerProvider {
         || this.cachedCompile.closed
         || request.partialRequest == null
         || request.partialRequest.cursor < 0
+        || !isChangeValidForReparse()
         || request.sources.size() != 1; // Cannot perform a reparse if there are multiple files
+  }
+
+  private boolean isChangeValidForReparse() {
+    return this.lastReparsePosition == Position.NONE
+        || (this.newCursorPosition != Position.NONE
+            && this.lastReparsePosition.getLine() == this.newCursorPosition.getLine());
   }
 
   private void tryReparse(@NonNull final CompilationRequest request) {
@@ -336,6 +347,7 @@ public class JavaCompilerService implements CompilerProvider {
     updateModificationCache(request);
     cachedCompile.updatePositions(info.cu, true);
     this.changeDelta = 0;
+    this.lastReparsePosition = this.newCursorPosition;
   }
 
   @Nullable
@@ -363,9 +375,9 @@ public class JavaCompilerService implements CompilerProvider {
 
   private synchronized void recompile(CompilationRequest request) {
     close();
-    cachedCompile = performCompilation(request);
-    updateModificationCache(request);
+    this.cachedCompile = performCompilation(request);
     this.changeDelta = 0;
+    updateModificationCache(request);
   }
 
   public synchronized void close() {
@@ -484,6 +496,7 @@ public class JavaCompilerService implements CompilerProvider {
 
   public void onDocumentChange(@NonNull DocumentChangeEvent event) {
     this.changeDelta += event.getChangeDelta();
+    this.newCursorPosition = event.getChangeRange().getEnd();
   }
 
   @Nullable
