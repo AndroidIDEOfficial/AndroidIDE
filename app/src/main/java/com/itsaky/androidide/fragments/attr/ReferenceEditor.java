@@ -44,10 +44,10 @@ public class ReferenceEditor extends AbstractReferenceEditor {
 
   @Nullable
   @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  protected View createView(
+      @NonNull final LayoutInflater inflater,
+      @Nullable final ViewGroup container,
+      @Nullable final Bundle savedInstanceState) {
     this.binding = LayoutReferenceAttrEditorBinding.inflate(inflater, container, false);
     return this.binding.getRoot();
   }

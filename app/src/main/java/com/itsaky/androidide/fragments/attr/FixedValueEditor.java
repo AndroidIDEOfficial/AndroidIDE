@@ -42,10 +42,10 @@ public abstract class FixedValueEditor extends BaseValueEditorFragment {
 
   @Nullable
   @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  protected View createView(
+      @NonNull final LayoutInflater inflater,
+      @Nullable final ViewGroup container,
+      @Nullable final Bundle savedInstanceState) {
     this.chipGroup = new ChipGroup(inflater.getContext());
     this.chipGroup.setLayoutParams(
         new ViewGroup.LayoutParams(

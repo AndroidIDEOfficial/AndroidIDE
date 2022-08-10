@@ -47,12 +47,11 @@ public class ColorEditor extends AbstractReferenceEditor {
   private LayoutColorAttrEditorBinding binding;
   private Dialog colorPickerDialog;
 
-  @Nullable
   @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  protected @Nullable View createView(
+      @NonNull final LayoutInflater inflater,
+      @Nullable final ViewGroup container,
+      @Nullable final Bundle savedInstanceState) {
     this.binding = LayoutColorAttrEditorBinding.inflate(inflater, container, false);
     return this.binding.getRoot();
   }

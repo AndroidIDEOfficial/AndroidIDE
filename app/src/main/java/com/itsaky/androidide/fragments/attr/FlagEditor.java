@@ -19,7 +19,9 @@ package com.itsaky.androidide.fragments.attr;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
@@ -38,7 +40,7 @@ import java.util.Arrays;
 public class FlagEditor extends FixedValueEditor {
 
   private static final ILogger LOG = ILogger.newInstance("FlagEditor");
-
+  
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);

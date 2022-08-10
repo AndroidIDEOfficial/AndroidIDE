@@ -15,9 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.fragments.attr;
+package com.itsaky.androidide.fragments.attr
 
-/**
- * @author Akash Yadav
- */
-public class FractionEditor extends UnimplementedEditorFragment {}
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+
+/** @author Akash Yadav */
+open class UnimplementedEditorFragment : BaseValueEditorFragment() {
+  override fun createView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
+    return super.onCreateView(inflater, container, savedInstanceState)
+  }
+}

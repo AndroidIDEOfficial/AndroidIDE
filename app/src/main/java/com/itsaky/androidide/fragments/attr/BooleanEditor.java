@@ -43,12 +43,11 @@ public class BooleanEditor extends AbstractReferenceEditor {
 
   private LayoutBooleanAttrEditorBinding binding;
 
-  @Nullable
   @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  protected @Nullable View createView(
+      @NonNull final LayoutInflater inflater,
+      @Nullable final ViewGroup container,
+      @Nullable final Bundle savedInstanceState) {
     this.binding = LayoutBooleanAttrEditorBinding.inflate(inflater, container, false);
     return this.binding.getRoot();
   }

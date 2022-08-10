@@ -53,12 +53,11 @@ public class DimensionEditor extends AbstractReferenceEditor {
   private LayoutDimensionAttrEditorBinding binding;
   private String[] dimensionUnits;
 
-  @Nullable
   @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+  protected @Nullable View createView(
+      @NonNull final LayoutInflater inflater,
+      @Nullable final ViewGroup container,
+      @Nullable final Bundle savedInstanceState) {
     this.binding = LayoutDimensionAttrEditorBinding.inflate(inflater, container, false);
     return this.binding.getRoot();
   }
