@@ -341,4 +341,5 @@
     <string name="build_status_in_progress">Build in progress…</string>
     <string name="build_status_failed">Build failed. See build output for more details.</string>
     <string name="build_status_sucess">Build successful</string>
+  <string name="msg_output_text_extraction_failed">Failed to get text from editor</string>
 </resources>

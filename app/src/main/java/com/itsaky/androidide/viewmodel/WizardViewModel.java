@@ -22,125 +22,127 @@ import java.util.concurrent.Executors;
 
 public class WizardViewModel extends AndroidViewModel {
 
-  private MutableLiveData<List<ProjectTemplate>> mProjectTemplatesList =
+  private final MutableLiveData<List<ProjectTemplate>> mProjectTemplatesList =
       new MutableLiveData<>(CollectionUtils.newArrayList());
-  private MutableLiveData<Boolean> mLoadingState = new MutableLiveData<>(true);
-  private MutableLiveData<String> mErrorMessageState = new MutableLiveData<>();
-  private MutableLiveData<String> mMessageState = new MutableLiveData<>();
-  private MutableLiveData<File> mCreatedProject = new MutableLiveData<>(null);
+  private final MutableLiveData<Boolean> mLoadingState = new MutableLiveData<>(true);
+  private final MutableLiveData<String> mErrorMessageState = new MutableLiveData<>();
+  private final MutableLiveData<String> mMessageState = new MutableLiveData<>();
+  private final MutableLiveData<File> mCreatedProject = new MutableLiveData<>(null);
 
   public WizardViewModel(@NonNull Application application) {
     super(application);
   }
 
   public void createTemplatesList() {
-    Executors.newSingleThreadExecutor()
-        .execute(
-            () -> {
-              List<ProjectTemplate> mTemplates = new ArrayList<>();
+    TaskExecutor.executeAsync(this::createTemplates);
+  }
+  
+  private Void createTemplates() {
+    List<ProjectTemplate> mTemplates = new ArrayList<>();
+  
+    ProjectTemplate
+      empty =
+      new ProjectTemplate()
+        .setId(0)
+        .setSupportJava(true)
+        .setSupportKotlin(true)
+        .setName(
+          getApplication().getApplicationContext(), R.string.template_empty)
+        .setDescription(
+          getApplication().getApplicationContext(),
+          R.string.template_description_empty)
+        .setImageId(R.drawable.template_empty_activity),
+      basic =
+        new ProjectTemplate()
+          .setId(1)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setName(
+            getApplication().getApplicationContext(), R.string.template_basic)
+          .setDescription(
+            getApplication().getApplicationContext(),
+            R.string.template_description_basic)
+          .setImageId(R.drawable.template_basic_activity),
+      drawer =
+        new ProjectTemplate()
+          .setId(2)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setName(
+            getApplication().getApplicationContext(),
+            R.string.template_navigation_drawer)
+          .setDescription(
+            getApplication().getApplicationContext(),
+            R.string.template_description_navigation_drawer)
+          .setImageId(R.drawable.template_blank_activity_drawer),
+      bottomTabs =
+        new ProjectTemplate()
+          .setId(3)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setName(
+            getApplication().getApplicationContext(),
+            R.string.template_navigation_tabs)
+          .setImageId(R.drawable.template_bottom_navigation_activity),
+      tabs =
+        new ProjectTemplate()
+          .setId(4)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setName(getApplication().getApplicationContext(), R.string.template_tabs)
+          .setImageId(R.drawable.template_blank_activity_tabs),
+      fragmentViewModel =
+        new ProjectTemplate()
+          .setId(5)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setName(
+            getApplication().getApplicationContext(),
+            R.string.template_fragment_and_viewmodel)
+          .setImageId(R.drawable.template_empty_activity),
+      cppWizard =
+        new ProjectTemplate()
+          .setId(6)
+          .setSupportJava(true)
+          .setSupportKotlin(true)
+          .setIsCpp(true)
+          .setName(getApplication().getApplicationContext(), R.string.template_cpp)
+          .setImageId(R.drawable.template_cpp_configure),
+      compose =
+        new ProjectTemplate()
+          .setId(7)
+          .setSupportKotlin(true)
+          .setName(
+            getApplication().getApplicationContext(), R.string.template_compose)
+          .setDescription(
+            getApplication().getApplicationContext(),
+            R.string.template_description_compose)
+          .setImageId(R.drawable.template_compose_empty_activity),
+      libgdx =
+        new ProjectTemplate()
+          .setId(8)
+          .setSupportJava(true)
+          .setName(
+            getApplication().getApplicationContext(), R.string.template_libgdx)
+          .setDescription(
+            getApplication().getApplicationContext(),
+            R.string.template_description_libgdx)
+          .setImageId(R.drawable.template_game_activity);
+  
+    mTemplates.add(empty);
+    mTemplates.add(basic);
+    mTemplates.add(drawer);
+    mTemplates.add(bottomTabs);
+    mTemplates.add(tabs);
+    mTemplates.add(fragmentViewModel);
+    mTemplates.add(cppWizard);
+    mTemplates.add(compose);
+    mTemplates.add(libgdx);
+  
+    mProjectTemplatesList.postValue(mTemplates);
+    mLoadingState.postValue(false);
 
-              ProjectTemplate
-                  empty =
-                      new ProjectTemplate()
-                          .setId(0)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(), R.string.template_empty)
-                          .setDescription(
-                              getApplication().getApplicationContext(),
-                              R.string.template_description_empty)
-                          .setImageId(R.drawable.template_empty_activity),
-                  basic =
-                      new ProjectTemplate()
-                          .setId(1)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(), R.string.template_basic)
-                          .setDescription(
-                              getApplication().getApplicationContext(),
-                              R.string.template_description_basic)
-                          .setImageId(R.drawable.template_basic_activity),
-                  drawer =
-                      new ProjectTemplate()
-                          .setId(2)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(),
-                              R.string.template_navigation_drawer)
-                          .setDescription(
-                              getApplication().getApplicationContext(),
-                              R.string.template_description_navigation_drawer)
-                          .setImageId(R.drawable.template_blank_activity_drawer),
-                  bottomTabs =
-                      new ProjectTemplate()
-                          .setId(3)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(),
-                              R.string.template_navigation_tabs)
-                          .setImageId(R.drawable.template_bottom_navigation_activity),
-                  tabs =
-                      new ProjectTemplate()
-                          .setId(4)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(getApplication().getApplicationContext(), R.string.template_tabs)
-                          .setImageId(R.drawable.template_blank_activity_tabs),
-                  fragmentViewModel =
-                      new ProjectTemplate()
-                          .setId(5)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(),
-                              R.string.template_fragment_and_viewmodel)
-                          .setImageId(R.drawable.template_empty_activity),
-                  cppWizard =
-                      new ProjectTemplate()
-                          .setId(6)
-                          .setSupportJava(true)
-                          .setSupportKotlin(true)
-                          .setIsCpp(true)
-                          .setName(getApplication().getApplicationContext(), R.string.template_cpp)
-                          .setImageId(R.drawable.template_cpp_configure),
-                  compose =
-                      new ProjectTemplate()
-                          .setId(7)
-                          .setSupportKotlin(true)
-                          .setName(
-                              getApplication().getApplicationContext(), R.string.template_compose)
-                          .setDescription(
-                              getApplication().getApplicationContext(),
-                              R.string.template_description_compose)
-                          .setImageId(R.drawable.template_compose_empty_activity),
-                  libgdx =
-                      new ProjectTemplate()
-                          .setId(8)
-                          .setSupportJava(true)
-                          .setName(
-                              getApplication().getApplicationContext(), R.string.template_libgdx)
-                          .setDescription(
-                              getApplication().getApplicationContext(),
-                              R.string.template_description_libgdx)
-                          .setImageId(R.drawable.template_game_activity);
-
-              mTemplates.add(empty);
-              mTemplates.add(basic);
-              mTemplates.add(drawer);
-              mTemplates.add(bottomTabs);
-              mTemplates.add(tabs);
-              mTemplates.add(fragmentViewModel);
-              mTemplates.add(cppWizard);
-              mTemplates.add(compose);
-              mTemplates.add(libgdx);
-
-              mProjectTemplatesList.postValue(mTemplates);
-              mLoadingState.postValue(false);
-            });
+    return null;
   }
 
   public LiveData<List<ProjectTemplate>> getProjects() {
@@ -172,35 +174,35 @@ public class WizardViewModel extends AndroidViewModel {
       String language,
       String cppFlags,
       String savePath) {
-    new TaskExecutor()
-        .executeAsync(
-            new ProjectCreatorCallable(
-                currentTemplate,
-                new NewProjectDetails(
-                    appName, packageName, minSdk, targetSdk, language, cppFlags, savePath),
-                new ProjectWriterCallback() {
+    final var details =
+        new NewProjectDetails(
+            appName, packageName, minSdk, targetSdk, language, cppFlags, savePath);
+    final var callable = new ProjectCreatorCallable(currentTemplate, details, createCallback());
+    TaskExecutor.executeAsync(callable);
+  }
 
-                  @Override
-                  public void beforeBegin() {
-                    mMessageState.setValue(
-                        getApplication().getString(R.string.msg_begin_project_write));
-                  }
+  private ProjectWriterCallback createCallback() {
+    return new ProjectWriterCallback() {
 
-                  @Override
-                  public void onProcessTask(String arg0) {
-                    mMessageState.setValue(arg0);
-                  }
+      @Override
+      public void beforeBegin() {
+        mMessageState.setValue(getApplication().getString(R.string.msg_begin_project_write));
+      }
 
-                  @Override
-                  public void onSuccess(File arg0) {
-                    mCreatedProject.setValue(arg0);
-                  }
+      @Override
+      public void onProcessTask(String taskName) {
+        mMessageState.setValue(taskName);
+      }
 
-                  @Override
-                  public void onFailed(String arg0) {
-                    mErrorMessageState.setValue(arg0);
-                  }
-                }),
-            r -> {});
+      @Override
+      public void onSuccess(File rootDir) {
+        mCreatedProject.setValue(rootDir);
+      }
+
+      @Override
+      public void onFailed(String reason) {
+        mErrorMessageState.setValue(reason);
+      }
+    };
   }
 }

@@ -34,7 +34,8 @@ import com.itsaky.androidide.views.editor.IDEEditor;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
-public abstract class NonEditableEditorFragment extends Fragment {
+public abstract class NonEditableEditorFragment extends Fragment
+    implements ShareableOutputFragment {
 
   private static final ILogger LOG = ILogger.newInstance("NonEditableEditorFragment");
   private FragmentNonEditableEditorBinding binding;
@@ -70,11 +71,38 @@ public abstract class NonEditableEditorFragment extends Fragment {
     binding = null;
   }
 
+  @NonNull
+  @Override
+  public String getContent() {
+    final var editor = getEditor();
+    if (editor == null) {
+      return "";
+    }
+
+    return editor.getText().toString();
+  }
+
   @Nullable
   public IDEEditor getEditor() {
     if (binding == null) {
       return null;
     }
     return binding.editor;
+  }
+
+  @NonNull
+  @Override
+  public String getFilename() {
+    return "build_output";
+  }
+
+  @Override
+  public void clearOutput() {
+    final var editor = getEditor();
+    if (editor == null) {
+      return;
+    }
+
+    editor.setText("");
   }
 }

@@ -72,38 +72,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   }
 
   @Override
-  public void onSaveInstanceState(@NonNull Bundle outState) {
-    super.onSaveInstanceState(outState);
-    saveTreeState();
-    outState.putString(KEY_STORED_TREE_STATE, mTreeState);
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    binding = null;
-    mFileTreeView = null;
-  }
-
-  @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false);
     return binding.getRoot();
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this);
-    }
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    EventBus.getDefault().unregister(this);
   }
 
   @Override
@@ -118,35 +90,31 @@ public class FileTreeFragment extends BottomSheetDialogFragment
   }
 
   @Override
-  public void onClick(TreeNode node, Object p2) {
-    final File file = (File) p2;
-    if (!file.exists()) {
-      return;
+  public void onStart() {
+    super.onStart();
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
     }
-
-    if (file.isDirectory()) {
-      if (node.isExpanded()) {
-        collapseNode(node);
-      } else {
-        setLoading(node);
-        listNode(
-            node,
-            () -> expandNode(node));
-      }
-    }
-
-    final var event = new FileClickEvent(file);
-    event.put(Context.class, requireContext());
-    EventBus.getDefault().post(event);
   }
 
   @Override
-  public boolean onLongClick(TreeNode node, Object value) {
-    final var event = new FileLongClickEvent((File) value);
-    event.put(Context.class, requireContext());
-    event.put(TreeNode.class, node);
-    EventBus.getDefault().post(event);
-    return true;
+  public void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+    saveTreeState();
+    outState.putString(KEY_STORED_TREE_STATE, mTreeState);
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    EventBus.getDefault().unregister(this);
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    binding = null;
+    mFileTreeView = null;
   }
 
   public void saveTreeState() {
@@ -158,26 +126,25 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     }
   }
 
-  @SuppressWarnings("unused")
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onGetListFilesRequested(ListProjectFilesRequestEvent event) {
-    if (!isVisible() || getContext() == null) {
+  @Override
+  public void onClick(TreeNode node, Object p2) {
+    final File file = (File) p2;
+    if (!file.exists()) {
       return;
     }
 
-    listProjectFiles();
-  }
-
-  @SuppressWarnings("unused")
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onGetExpandTreeNodeRequest(ExpandTreeNodeRequestEvent event) {
-    if (!isVisible() || getContext() == null) {
-      return;
-    } else {
-      event.getNode();
+    if (file.isDirectory()) {
+      if (node.isExpanded()) {
+        collapseNode(node);
+      } else {
+        setLoading(node);
+        listNode(node, () -> expandNode(node));
+      }
     }
-  
-    expandNode(event.getNode());
+
+    final var event = new FileClickEvent(file);
+    event.put(Context.class, requireContext());
+    EventBus.getDefault().post(event);
   }
 
   public void collapseNode(TreeNode node) {
@@ -190,6 +157,12 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     updateChevron(node);
   }
 
+  private void updateChevron(@NonNull TreeNode node) {
+    if (node.getViewHolder() instanceof FileTreeViewHolder) {
+      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(node.isExpanded());
+    }
+  }
+
   public void expandNode(TreeNode node) {
     if (mFileTreeView == null) {
       return;
@@ -198,54 +171,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeBounds());
     mFileTreeView.expandNode(node);
     updateChevron(node);
-  }
-
-  public void listProjectFiles() {
-    if (binding == null) {
-      // Fragment has been destroyed
-      return;
-    }
-    final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
-    final var projectDir = new File(projectDirPath);
-    mRoot = TreeNode.root(projectDir);
-    mRoot.setViewHolder(new FileTreeViewHolder(getContext()));
-
-    binding.filetreeHorizontalScrollView.setVisibility(View.GONE);
-    binding.fileTreeLoadingProgress.setVisibility(View.VISIBLE);
-    new TaskExecutor()
-        .executeAsync(
-            new FileTreeCallable(getContext(), mRoot, projectDir),
-            (result) -> {
-              binding.filetreeHorizontalScrollView.setVisibility(View.VISIBLE);
-              binding.fileTreeLoadingProgress.setVisibility(View.GONE);
-              AndroidTreeView tree = createTreeView(mRoot);
-              if (tree != null) {
-                tree.setUseAutoToggle(false);
-                tree.setDefaultNodeClickListener(FileTreeFragment.this);
-                tree.setDefaultNodeLongClickListener(FileTreeFragment.this);
-                binding.filetreeHorizontalScrollView.removeAllViews();
-
-                final var view = tree.getView();
-                binding.filetreeHorizontalScrollView.addView(view);
-
-                view.post(this::tryRestoreState);
-              }
-            });
-  }
-
-  public AndroidTreeView createTreeView(TreeNode node) {
-    Context ctx = null;
-    if (getActivity() != null) {
-      ctx = getActivity();
-    } else if (getContext() != null) {
-      ctx = getContext();
-    }
-
-    if (ctx == null) {
-      return null;
-    }
-
-    return mFileTreeView = new AndroidTreeView(ctx, node, R.drawable.bg_ripple);
   }
 
   private void setLoading(@NonNull TreeNode node) {
@@ -264,7 +189,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     node.setExpanded(false);
 
     final var finalWhenDone = whenDone;
-    TaskExecutor.execAsync(
+    TaskExecutor.executeAsync(
         () -> {
           listFilesForNode(node.getValue().listFiles(), node);
           TreeNode temp = node;
@@ -291,10 +216,82 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     }
   }
 
-  private void updateChevron(@NonNull TreeNode node) {
-    if (node.getViewHolder() instanceof FileTreeViewHolder) {
-      ((FileTreeViewHolder) node.getViewHolder()).updateChevron(node.isExpanded());
+  @Override
+  public boolean onLongClick(TreeNode node, Object value) {
+    final var event = new FileLongClickEvent((File) value);
+    event.put(Context.class, requireContext());
+    event.put(TreeNode.class, node);
+    EventBus.getDefault().post(event);
+    return true;
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onGetListFilesRequested(ListProjectFilesRequestEvent event) {
+    if (!isVisible() || getContext() == null) {
+      return;
     }
+
+    listProjectFiles();
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onGetExpandTreeNodeRequest(ExpandTreeNodeRequestEvent event) {
+    if (!isVisible() || getContext() == null) {
+      return;
+    } else {
+      event.getNode();
+    }
+
+    expandNode(event.getNode());
+  }
+
+  public void listProjectFiles() {
+    if (binding == null) {
+      // Fragment has been destroyed
+      return;
+    }
+    final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath();
+    final var projectDir = new File(projectDirPath);
+    mRoot = TreeNode.root(projectDir);
+    mRoot.setViewHolder(new FileTreeViewHolder(getContext()));
+
+    binding.filetreeHorizontalScrollView.setVisibility(View.GONE);
+    binding.fileTreeLoadingProgress.setVisibility(View.VISIBLE);
+    TaskExecutor.executeAsync(
+        new FileTreeCallable(getContext(), mRoot, projectDir),
+        (result) -> {
+          binding.filetreeHorizontalScrollView.setVisibility(View.VISIBLE);
+          binding.fileTreeLoadingProgress.setVisibility(View.GONE);
+          AndroidTreeView tree = createTreeView(mRoot);
+          if (tree != null) {
+            tree.setUseAutoToggle(false);
+            tree.setDefaultNodeClickListener(FileTreeFragment.this);
+            tree.setDefaultNodeLongClickListener(FileTreeFragment.this);
+            binding.filetreeHorizontalScrollView.removeAllViews();
+
+            final var view = tree.getView();
+            binding.filetreeHorizontalScrollView.addView(view);
+
+            view.post(this::tryRestoreState);
+          }
+        });
+  }
+
+  public AndroidTreeView createTreeView(TreeNode node) {
+    Context ctx = null;
+    if (getActivity() != null) {
+      ctx = getActivity();
+    } else if (getContext() != null) {
+      ctx = getContext();
+    }
+
+    if (ctx == null) {
+      return null;
+    }
+
+    return mFileTreeView = new AndroidTreeView(ctx, node, R.drawable.bg_ripple);
   }
 
   private void tryRestoreState() {

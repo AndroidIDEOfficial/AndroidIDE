@@ -35,7 +35,7 @@ import com.itsaky.androidide.utils.TypefaceUtils
  * Fragment to show logs in a [androidx.recyclerview.widget.RecyclerView].
  * @author Akash Yadav
  */
-abstract class LogViewFragment : Fragment() {
+abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   var binding: FragmentLogBinding? = null
@@ -59,8 +59,6 @@ abstract class LogViewFragment : Fragment() {
 
     ThreadUtils.runOnUiThread { this.binding!!.editor.append(lineString) }
   }
-
-  abstract fun getLogType(): String
 
   abstract fun isSimpleFormattingEnabled(): Boolean
 
@@ -96,5 +94,17 @@ abstract class LogViewFragment : Fragment() {
   override fun onDestroy() {
     super.onDestroy()
     this.binding = null
+  }
+  
+  override fun getContent(): String {
+    if (this.binding == null) {
+      return ""
+    }
+    
+    return this.binding!!.editor.text.toString()
+  }
+  
+  override fun clearOutput() {
+    binding?.editor?.setText("")
   }
 }

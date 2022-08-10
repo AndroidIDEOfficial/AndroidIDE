@@ -21,10 +21,10 @@ package com.itsaky.androidide.utils;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.models.SearchResult;
+import com.itsaky.androidide.tasks.TaskExecutor;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -73,8 +73,7 @@ public class RecursiveFileSearcher {
       return;
     }
 
-    new TaskExecutor()
-        .executeAsync(new Searcher(text, exts, searchDirs), result -> callback.onResult(result));
+    TaskExecutor.executeAsync(new Searcher(text, exts, searchDirs), callback::onResult);
   }
 
   private static class Searcher implements Callable<Map<File, List<SearchResult>>> {

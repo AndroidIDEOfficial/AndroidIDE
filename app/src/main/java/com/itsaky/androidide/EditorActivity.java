@@ -50,6 +50,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
@@ -58,7 +59,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -80,10 +80,8 @@ import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.FileTreeFragment;
-import com.itsaky.androidide.fragments.LogViewFragment;
-import com.itsaky.androidide.fragments.NonEditableEditorFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
-import com.itsaky.androidide.fragments.SimpleOutputFragment;
+import com.itsaky.androidide.fragments.ShareableOutputFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver;
@@ -107,9 +105,9 @@ import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
@@ -130,6 +128,8 @@ import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -1240,39 +1240,23 @@ public class EditorActivity extends StudioActivity
               bottomSheetTabAdapter.getFragmentAtIndex(
                   mBinding.bottomSheet.tabs.getSelectedTabPosition());
 
-          if (fragment instanceof LogViewFragment) {
-            final var logFrag = (LogViewFragment) fragment;
-            final var type = logFrag.getLogType();
-            final var binding = logFrag.getBinding();
-            if (binding != null) {
-
-              //noinspection deprecation
-              final var progress =
-                  ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
-              CompletableFuture.runAsync(
-                  () -> {
-                    final var text = binding.editor.getText();
-                    ThreadUtils.runOnUiThread(
-                        () -> {
-                          progress.dismiss();
-                          shareText(text, type);
-                        });
-                  });
-            } else {
-              LOG.error("Binding in LogViewFragment(" + type + ") is null");
-            }
+          if (!(fragment instanceof ShareableOutputFragment)) {
+            LOG.error("Unknown fragment:", fragment);
             return;
           }
 
-          if (fragment instanceof SimpleOutputFragment) {
-            final var editor = (SimpleOutputFragment) fragment;
-            final var text = Objects.requireNonNull(editor.getEditor()).getText();
-            final var type = "build_output";
-            shareText(text, type);
-            return;
-          }
+          final var outputFragment = (ShareableOutputFragment) fragment;
 
-          LOG.error("Unknown fragment:", fragment);
+          final var filename = outputFragment.getFilename();
+          //noinspection deprecation
+          final var progress =
+              ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
+          TaskExecutor.executeAsync(
+              outputFragment::getContent,
+              text -> {
+                progress.dismiss();
+                shareText(text, filename);
+              });
         });
   }
 
@@ -1284,23 +1268,13 @@ public class EditorActivity extends StudioActivity
           final var fragment =
               bottomSheetTabAdapter.getFragmentAtIndex(
                   mBinding.bottomSheet.tabs.getSelectedTabPosition());
-          if (fragment instanceof NonEditableEditorFragment) {
-            final var editor = (NonEditableEditorFragment) fragment;
-            if (editor.getEditor() != null) {
-              editor.getEditor().setText("");
-            }
-          } else if (fragment instanceof LogViewFragment) {
-            final LogViewFragment logFrag = (LogViewFragment) fragment;
-            final var binding = logFrag.getBinding();
-            if (binding != null) {
-              binding.editor.setText("");
-            } else {
-              LOG.error(
-                  "Cannot clear contents. Binding in LogViewFragment("
-                      + logFrag.getLogType()
-                      + ") is null.");
-            }
+
+          if (!(fragment instanceof ShareableOutputFragment)) {
+            LOG.error("Unknown fragment:", fragment);
+            return;
           }
+
+          ((ShareableOutputFragment) fragment).clearOutput();
         });
   }
 
@@ -1311,8 +1285,7 @@ public class EditorActivity extends StudioActivity
           @Override
           public void onTabSelected(TabLayout.Tab tab) {
             final var fragment = bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
-            if (fragment instanceof NonEditableEditorFragment
-                || fragment instanceof LogViewFragment) {
+            if (fragment instanceof ShareableOutputFragment) {
               mBinding.bottomSheet.clearFab.show();
               mBinding.bottomSheet.shareOutputFab.show();
             } else {
@@ -1375,44 +1348,53 @@ public class EditorActivity extends StudioActivity
   }
 
   @SuppressWarnings("deprecation")
-  private void shareText(CharSequence text, String type) {
-    final var pd = ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
-    CompletableFuture.supplyAsync(() -> writeTempFile(text, type))
-        .whenComplete(
-            (result, error) -> {
-              ThreadUtils.runOnUiThread(pd::dismiss);
-              if (result == null || error != null) {
-                LOG.warn("Unable to share output", error);
-                return;
-              }
+  private void shareText(String text, String type) {
+    if (TextUtils.isEmpty(text)) {
+      getApp().toast(getString(R.string.msg_output_text_extraction_failed), Toaster.Type.ERROR);
+      return;
+    }
 
-              ThreadUtils.runOnUiThread(() -> shareFile(result));
-            });
+    final var pd = ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
+    TaskExecutor.executeAsyncProvideError(
+        () -> writeTempFile(text, type),
+        (result, error) -> {
+          pd.dismiss();
+          if (result == null || error != null) {
+            LOG.warn("Unable to share output", error);
+            return;
+          }
+
+          shareFile(result);
+        });
   }
 
   private void shareFile(File file) {
-    final var uri =
-        FileProvider.getUriForFile(
-            this, BuildConfig.APPLICATION_ID + ".utilcode.fileprovider", file);
-    final var intent = new Intent(Intent.ACTION_SEND);
-    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    intent.setType("text/plain");
-    intent.putExtra(Intent.EXTRA_STREAM, uri);
-
+    final var uri = FileProvider.getUriForFile(this, getPackageName().concat(".providers.fileprovider"), file);
+    final var intent =
+        new ShareCompat.IntentBuilder(this)
+            .setStream(uri)
+            .setType("text/plain")
+            .getIntent()
+            .setAction(Intent.ACTION_SEND)
+            .setDataAndType(uri, "text/*")
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     startActivity(Intent.createChooser(intent, null));
   }
 
   @NonNull
-  private File writeTempFile(CharSequence text, String type) {
-    final var in = new CharSequenceInputStream(text, StandardCharsets.UTF_8);
-    final var file =
-        new File(getFilesDir(), type + ".txt"); // use a common name to avoid multiple files
-    if (!FileIOUtils.writeFileFromIS(file, in)) {
-      LOG.error("Unable to write output of type", type, "to temporary file", file);
-      throw new RuntimeException(new IOException("Cannot write output to temp file"));
+  private File writeTempFile(String text, String type) {
+    // use a common name to avoid multiple files
+    final var file = getFilesDir().toPath().resolve(type + ".txt");
+    try {
+      Files.write(
+          file,
+          text.getBytes(StandardCharsets.UTF_8),
+          StandardOpenOption.CREATE,
+          StandardOpenOption.WRITE);
+    } catch (IOException e) {
+      LOG.error("Unable to write output to file", e);
     }
-
-    return file;
+    return file.toFile();
   }
 
   private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {

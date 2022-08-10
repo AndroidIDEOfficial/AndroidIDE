@@ -200,7 +200,7 @@ public class BuildPreferences extends BasePreferenceFragment
         (p1, p2) -> {
           p1.dismiss();
           getProgressSheet().show(getChildFragmentManager(), "progress_sheet");
-          new TaskExecutor().executeAsync(this::deleteCaches, __ -> getProgressSheet().dismiss());
+          TaskExecutor.executeAsync(this::deleteCaches, __ -> getProgressSheet().dismiss());
         });
     builder.setNegativeButton(R.string.no, null);
     builder.create().show();

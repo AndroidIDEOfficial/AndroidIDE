@@ -206,19 +206,18 @@ public class IDELanguageClientImpl implements ILanguageClient {
     progress.setMessage(activity().getString(R.string.msg_performing_actions));
     progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
 
-    new TaskExecutor()
-        .executeAsyncProvideError(
-            () -> performCodeActionAsync(editor, action),
-            (result, throwable) -> {
-              ThreadUtils.runOnUiThread(progress::dismiss);
-              if (result == null || throwable != null || !result) {
-                LOG.error(
-                    "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-                StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
-              } else {
-                editor.executeCommand(action.getCommand());
-              }
-            });
+    TaskExecutor.executeAsyncProvideError(
+        () -> performCodeActionAsync(editor, action),
+        (result, throwable) -> {
+          progress.dismiss();
+          if (result == null || throwable != null || !result) {
+            LOG.error(
+                "Unable to perform code action", "result=" + result, "throwable=" + throwable);
+            StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+          } else {
+            editor.executeCommand(action.getCommand());
+          }
+        });
   }
 
   private Boolean performCodeActionAsync(final IDEEditor editor, final CodeActionItem action) {

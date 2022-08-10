@@ -43,7 +43,7 @@ import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
-import com.itsaky.androidide.tasks.TaskExecutor
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ProjectWriter
@@ -404,12 +404,16 @@ class FileTreeActionHandler : BaseEventHandler() {
         @Suppress("DEPRECATION")
         val progressDialog =
           ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
-        TaskExecutor().executeAsync({ FileUtils.delete(file) }) { deleted ->
+        executeAsync({ FileUtils.delete(file) }) {
           progressDialog.dismiss()
+          
+          val deleted = it ?: false
+          
           app.toast(
             if (deleted) string.deleted else string.delete_failed,
             if (deleted) SUCCESS else ERROR
           )
+          
           if (deleted) {
             notifyFileDeleted(file)
             // TODO Notify language servers about file delete event

@@ -68,7 +68,7 @@
             android:name=".services.GradleBuildService"
             android:exported="false" />
         <provider
-            android:name=".filepicker.IDEDocumentsProvider"
+            android:name=".provider.IDEDocumentsProvider"
             android:authorities="com.itsaky.androidide.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -76,6 +76,15 @@
             <intent-filter>
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
+        </provider>
+        <provider
+          android:authorities="${applicationId}.providers.fileprovider"
+          android:exported="false"
+          android:grantUriPermissions="true"
+          android:name=".provider.IDEFileProvider">
+            <meta-data
+              android:name="android.support.FILE_PROVIDER_PATHS"
+              android:resource="@xml/ide_file_provider_paths" />
         </provider>
         <receiver
             android:name=".services.LogReceiver"

@@ -41,7 +41,7 @@ class IDELogFragment : LogViewFragment() {
   }
 
   override fun isSimpleFormattingEnabled() = true
-  override fun getLogType() = "ide_logs"
+  override fun getFilename() = "ide_logs"
 
   override fun onDestroy() {
     super.onDestroy()
@@ -56,5 +56,5 @@ class IDELogFragment : LogViewFragment() {
  */
 class AppLogFragment : LogViewFragment() {
   override fun isSimpleFormattingEnabled() = false
-  override fun getLogType() = "app_logs"
+  override fun getFilename() = "app_logs"
 }

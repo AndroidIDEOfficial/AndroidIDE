@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.filepicker;
+package com.itsaky.androidide.provider;
 
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
