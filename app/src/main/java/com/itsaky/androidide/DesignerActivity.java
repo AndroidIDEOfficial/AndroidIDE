@@ -53,8 +53,6 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.blankj.utilcode.util.DeviceUtils;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
@@ -63,6 +61,7 @@ import com.itsaky.androidide.fragments.sheets.AttrEditorSheet;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
+import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.ui.WidgetDragData;
 import com.itsaky.androidide.ui.WidgetDragListener;
 import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
@@ -257,21 +256,21 @@ public class DesignerActivity extends StudioActivity
 
       //noinspection deprecation
       final var pd = ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
-      getApp()
-          .createInflaterConfig(this, resDirs.stream().map(File::new).collect(Collectors.toSet()))
-          .whenComplete(
-              (config, throwable) -> {
-                if (config == null || throwable != null) {
-                  LOG.error("Unable to create inflater configuration", throwable);
-                  return;
-                }
+      final var dirs = resDirs.stream().map(File::new).collect(Collectors.toSet());
+      final var future = getApp().createInflaterConfig(this, dirs);
 
-                ThreadUtils.runOnUiThread(
-                    () -> {
-                      pd.dismiss();
-                      inflatePath(path, config);
-                    });
-              });
+      TaskExecutor.executeAsyncProvideError(
+          future::get,
+          (config, throwable) -> {
+            pd.dismiss();
+
+            if (config == null || throwable != null) {
+              LOG.error("Unable to create inflater configuration", throwable);
+              return;
+            }
+
+            inflatePath(path, config);
+          });
     } catch (Throwable th) {
       onLayoutInflationFailed(th);
     }
@@ -480,19 +479,40 @@ public class DesignerActivity extends StudioActivity
     TransitionManager.beginDelayedTransition(
         mBinding.navigation,
         new TransitionSet().addTransition(new Slide(Gravity.END)).addTransition(new Fade()));
-
-    //noinspection ConstantConditions
+  
     this.mBinding.groupItems.getAdapter().notifyDataSetChanged();
   }
 
   @NonNull
   private TextView createErrorText(Throwable th) {
     final TextView error = new TextView(this);
-    error.setText(ThrowableUtils.getFullStackTrace(th));
-    error.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+    error.setText(createErrorMessage(th));
+    error.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
     error.setTextColor(ContextCompat.getColor(this, android.R.color.black));
     error.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+    error.setGravity(Gravity.CENTER);
     return error;
+  }
+
+  private CharSequence createErrorMessage(final Throwable th) {
+    final var sb = new StringBuilder();
+
+    if (th == null) {
+      sb.append("Unknown error");
+      return sb;
+    }
+
+    var err = th;
+    var first = true;
+    while (err != null) {
+      if (!first) {
+        sb.append("\n");
+      }
+      sb.append(err.getMessage());
+      err = err.getCause();
+    }
+
+    return sb;
   }
 
   @NonNull
