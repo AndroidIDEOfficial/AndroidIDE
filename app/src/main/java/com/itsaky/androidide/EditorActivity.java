@@ -19,6 +19,9 @@
  */
 package com.itsaky.androidide;
 
+import static com.blankj.utilcode.util.IntentUtils.getInstallAppIntent;
+import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
+
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -50,9 +53,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.TooltipCompat;
-import androidx.core.app.ShareCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -60,7 +61,7 @@ import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.IntentUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -112,6 +113,7 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.IntentUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
@@ -398,9 +400,15 @@ public class EditorActivity extends StudioActivity
     return openFile(file, null);
   }
 
+  @Nullable
   public CodeEditorView openFile(File file, com.itsaky.androidide.models.Range selection) {
     if (selection == null) {
       selection = com.itsaky.androidide.models.Range.NONE;
+    }
+
+    if (ImageUtils.isImage(file)) {
+      IntentUtils.openImage(this, file);
+      return null;
     }
 
     int index = openFileAndGetIndex(file, selection);
@@ -536,7 +544,7 @@ public class EditorActivity extends StudioActivity
     } else if (id == R.id.editornav_settings) {
       startActivity(new Intent(this, PreferencesActivity.class));
     } else if (id == R.id.editornav_share) {
-      startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
+      startActivity(getShareTextIntent(getString(R.string.msg_share_app)));
     } else if (id == R.id.editornav_close_project) {
       confirmProjectClose();
     } else if (id == R.id.editornav_terminal) {
@@ -929,7 +937,7 @@ public class EditorActivity extends StudioActivity
         () -> {
           LOG.debug("Installing APK:", apk);
           if (apk.exists()) {
-            Intent i = IntentUtils.getInstallAppIntent(apk);
+            Intent i = getInstallAppIntent(apk);
             if (i != null) {
               startActivity(i);
             } else {
@@ -1369,16 +1377,7 @@ public class EditorActivity extends StudioActivity
   }
 
   private void shareFile(File file) {
-    final var uri = FileProvider.getUriForFile(this, getPackageName().concat(".providers.fileprovider"), file);
-    final var intent =
-        new ShareCompat.IntentBuilder(this)
-            .setStream(uri)
-            .setType("text/plain")
-            .getIntent()
-            .setAction(Intent.ACTION_SEND)
-            .setDataAndType(uri, "text/*")
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-    startActivity(Intent.createChooser(intent, null));
+    IntentUtils.shareFile(this, file, "text/plain");
   }
 
   @NonNull
