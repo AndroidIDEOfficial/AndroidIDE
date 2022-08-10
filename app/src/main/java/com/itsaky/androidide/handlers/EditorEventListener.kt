@@ -55,7 +55,7 @@ class EditorEventListener : GradleBuildService.EventListener {
       activity().showFirstBuildNotice()
     }
   
-    activity().viewModel.progressBarVisible.value = false
+    activity().viewModel.progressBarVisible.value = true
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {

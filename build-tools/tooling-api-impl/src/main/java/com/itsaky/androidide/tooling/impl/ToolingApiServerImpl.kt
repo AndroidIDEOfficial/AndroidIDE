@@ -75,7 +75,6 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     forwardingProject.projectPath = params.directory
     return CompletableFutures.computeAsync {
       try {
-
         if (initialized && connector != null) {
           connector?.disconnect()
           connector = null
