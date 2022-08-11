@@ -114,9 +114,9 @@
     <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
     <string name="template_tabs">Проект с вкладками</string>
     <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
-    <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
     <string name="template_cpp">Нативный проект на C++</string>
     <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
+    <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
 
     <!-- Files -->
     <string name="save">Сохранить</string>
@@ -124,7 +124,7 @@
     <string name="menu_find_file">Найти в файле</string>
     <string name="menu_find_project">Найти в проекте</string>
     <string name="msg_search_modules">Искать в модулях</string>
-    <string name="msg_no_modules">Модулей в проекте не найдено</string>
+    <string name="msg_no_modules">В проекте не найдено модулей</string>
     <string name="hint_find_project_filter">Фильтровать файлы по расширению (необязательно)</string>
     <string name="msg_find_project_filter">Разделять при помощи \'|\'</string>
     <string name="msg_empty_search_query">Пожалуйста, введите текст</string>
@@ -146,7 +146,7 @@
     <string name="msg_file_created">Файл создан успешно!</string>
     <string name="msg_folder_exists">Папка уже существует!</string>
     <string name="msg_file_exists">Файл уже существует!</string>
-    <string name="msg_invalid_name">Неподходящее имя!</string>
+    <string name="msg_invalid_name">Неверное имя!</string>
     <string name="text_create">Создать</string>
     <string name="msg_can_contain_slashes">Если путь содержит разделительные символы (\'/\'), необходимые (родительские) директории будут созданы, если их ещё не существует.</string>
     <string name="folder_name">Имя папки</string>
