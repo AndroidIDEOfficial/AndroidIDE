@@ -20,23 +20,28 @@ package com.itsaky.androidide.eventbus.events.file
 import com.itsaky.androidide.eventbus.events.Event
 import java.io.File
 
+/** Base class for file events. */
+abstract class FileEvent : Event() {
+  abstract val file: File
+}
+
 /**
  * Event dispatched when a new file is created in the file tree.
  *
  * @author Akash Yadav
  */
-data class FileCreationEvent(val file: File) : Event()
+data class FileCreationEvent(override val file: File) : FileEvent()
 
 /**
  * Event dispatched when a file is deleted in the file tree.
  *
  * @author Akash Yadav
  */
-data class FileDeletionEvent(val file: File) : Event()
+data class FileDeletionEvent(override val file: File) : FileEvent()
 
 /**
  * Event dispatched when a file is renamed in the file tree.
  *
  * @author Akash Yadav
  */
-class FileRenameEvent(val file: File) : Event()
+class FileRenameEvent(override val file: File) : FileEvent()

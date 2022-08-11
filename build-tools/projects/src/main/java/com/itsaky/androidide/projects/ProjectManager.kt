@@ -16,7 +16,12 @@
  */
 package com.itsaky.androidide.projects
 
+import android.content.Context
 import com.itsaky.androidide.eventbus.events.EventReceiver
+import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
+import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.eventbus.events.file.FileEvent
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -29,7 +34,7 @@ import java.io.File
 import java.nio.file.Path
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
+import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages projects in AndroidIDE.
@@ -173,10 +178,39 @@ object ProjectManager : EventReceiver {
     return false
   }
 
-  // No-op subscriber method
   @Suppress("unused")
-  @Subscribe(threadMode = MAIN)
-  fun noOp(obj: Throwable) {
-    throw UnsupportedOperationException("No-op")
+  @Subscribe(threadMode = BACKGROUND)
+  fun onFileCreated(event: FileCreationEvent) {
+    generateSourcesIfNecessary(event)
+  }
+
+  @Suppress("unused")
+  @Subscribe(threadMode = BACKGROUND)
+  fun onFileDeleted(event: FileDeletionEvent) {
+    generateSourcesIfNecessary(event)
+  }
+
+  @Suppress("unused")
+  @Subscribe(threadMode = BACKGROUND)
+  fun onFileRenamed(event: FileRenameEvent) {
+    generateSourcesIfNecessary(event)
+  }
+
+  private fun generateSourcesIfNecessary(event: FileEvent) {
+    val builder = event[BuildService::class.java] ?: return
+    val file = event.file
+    if (!isResource(file)) {
+      return
+    }
+    
+    generateSources(builder)
+  }
+
+  private fun isResource(file: File): Boolean {
+    val module = findModuleForFile(file) ?: return false
+    if (module is AndroidModule) {
+      return module.getResourceDirectories().find { file.path.startsWith(it.path) } != null
+    }
+    return true
   }
 }

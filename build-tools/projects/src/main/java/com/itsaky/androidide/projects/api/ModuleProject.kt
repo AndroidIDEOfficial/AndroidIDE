@@ -216,7 +216,11 @@ abstract class ModuleProject(
       .findInPackage(packageName)
       .filterIsInstance(SourceNode::class.java)
   }
-
+  
+  open fun isFromThisModule(file: File) : Boolean {
+    return isFromThisModule(file.toPath())
+  }
+  
   open fun isFromThisModule(file: Path): Boolean {
     // TODO This can be probably improved
     return file.startsWith(this.projectDir.toPath())
