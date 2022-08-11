@@ -24,8 +24,8 @@
     <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
     <string name="btn_terminal">Терминал</string>
     <string name="reset">Сброс</string>
-    <string name="app_logs">Лог приложения</string>
-    <string name="ide_logs">Лог IDE</string>
+    <string name="app_logs">Логи приложения</string>
+    <string name="ide_logs">Логи IDE</string>
     <string name="label_splash_image">Splash image</string>
     <string name="get_started">Давайте начнём!</string>
 
@@ -76,7 +76,7 @@
     <string name="run">Запустить</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">Первая сборка</string>
-    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, в зависимости от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
+    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, в зависимости от производительности вашего устройства.\n\nПожалуйста, подождите&#8230;</string>
 
     <!-- Project -->
     <string name="create_project">Создать проект</string>
@@ -230,7 +230,7 @@
     <string name="idepref_java_useGoogleStyle_title">Используйте форматирование кода в стиле Google Java</string>
     <string name="idepref_java_useGoogleStyle_summary">Используйте конфигурацию форматирования кода в стиле Google Java для форматирования исходного кода Java.</string>
     <string name="idepref_visiblePassword_title">Флаг видимого пароля</string>
-    <string name="idepref_visiblePassword_summary">Используйте флаг для видимого типа ввода пароля в редакторе. Это гарантирует, что программная клавиатура не предложит никаких предложений.</string>
+    <string name="idepref_visiblePassword_summary">Используйте флаг видимого типа ввода пароля в редакторе. Это гарантирует, что программная клавиатура не предложит никаких предложений.</string>
     <string name="idepref_title_tpFix">Исправление указателей тегов JDK 11</string>
     <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочитаемо использовать JDK 17].</string>
     <string name="idepref_title_customGradleInstallation">Пользовательская установка Gradle</string>
@@ -244,7 +244,7 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_init_sdkinfo">Ошибка инициализации информации о SDK</string>
-    <string name="err_cannot_preview_layout">Невозможно воспроизвести предпросмотр разметки</string>
+    <string name="err_cannot_preview_layout">Предпросмотр разметки невозможен</string>
     <string name="err_cannot_inflate_layout">Ошибка создания (inflate) разметки</string>
 
     <!-- Layout preview and designer -->
@@ -269,7 +269,7 @@
     <string name="msg_applicable_attrs">Применимые атрибуты</string>
     <string name="msg_attr_editor_actions">Действия</string>
     <string name="title_viewaction_delete">Удалить</string>
-    <string name="msg_viewaction_select_parent">Выберите родительский элемент</string>
+    <string name="msg_viewaction_select_parent">Выбрать родительский элемент</string>
     <string name="msg_no_view_parent">Этот элемент не имеет родительских элементов</string>
     <string name="msg_yesno_def_title">Пожалуйста, подтвердите</string>
     <string name="msg_yesno_def_message">Вы уверены?</string>
