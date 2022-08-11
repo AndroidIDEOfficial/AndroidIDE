@@ -11,6 +11,7 @@
     <item name="colorControlHighlight">@color/rippleHighlightColor</item>
     <item name="fontFamily">@font/josefin_sans</item>
     <item name="hintTextColor">@color/secondaryColor</item>
+    <item name="android:textColorLink">@color/secondaryColor</item>
     <item name="android:textCursorDrawable">@drawable/textfield_cursor</item>
     <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
     <item name="chipStyle">@style/AppTheme.UIDesigner.WidgetGroupChip</item>
