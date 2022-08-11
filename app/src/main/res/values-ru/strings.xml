@@ -181,8 +181,8 @@
     <string name="classtype_activity">Активность</string>
     <string name="classtype_interface">Интерфейс</string>
     <string name="classtype_enum">Перечисление (Enum)</string>
-    <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
     <string name="msg_failed_list_files">Не удалось получить список проектов!</string>
+    <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
     <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
     <string name="msg_storage_granted">Разрешение на взаимодействие с памятью получено!</string>
 
@@ -300,7 +300,13 @@
     <string name="title_files_unsaved">Несохраненные файлы</string>
     <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>
 
-
+    <!-- Build status -->
+    <string name="build_status_idle">Сборки не выполняются</string>
+    <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
+    <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
+    <string name="build_status_sucess">Сборка прошла успешно</string>
+    
+    <!-- Other -->
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="wizard_error_name_empty">Имя не может быть пустым.</string>
@@ -336,9 +342,4 @@
     <string name="msg_running_task">Запущена задача: \'%1$s\'</string>
     <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
     <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь</a>]]></string>
-
-    <string name="build_status_idle">Сборки не выполняются</string>
-    <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
-    <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
-    <string name="build_status_sucess">Сборка прошла успешно</string>
 </resources>
