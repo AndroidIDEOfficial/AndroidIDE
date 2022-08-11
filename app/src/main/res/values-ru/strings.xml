@@ -12,7 +12,7 @@
     <string name="about_footer">AndroidIDE %1$s для %2$s</string>
     <string name="about_subtitle">Просто IDE для Android</string>
     <string name="msg_get_package_failed">Ошибка распаковки имени пакета!</string>
-    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает:\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment - интегрированная среда разработки) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает:\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
     <string name="msg_need_help">Если вы столкнулись с какими-либо проблемами при использовании AndroidIDE или при сборке Android приложений, вы можете присоединиться к нашей группе в Telegram и попросить о помощи там.\n\nВы также можете присылать нам свои пожелания и предложения на наш электронный адрес.</string>
     <string name="discuss_amp_help">Обсуждение и помощь</string>
     <string name="title_github">GitHub</string>
