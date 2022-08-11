@@ -36,7 +36,8 @@ internal class BaseIncrementalAnalyzeManagerTest {
     val result =
       analyzer.tokenizeLine(
         "public static final String THIS_IS_A_STRING = \"This is a string...!\";",
-        analyzer.initialState
+        analyzer.initialState,
+        0
       )
     println("New state: ${result.state}")
     ensureTokenSequence(
@@ -64,7 +65,7 @@ internal class BaseIncrementalAnalyzeManagerTest {
   fun testCompleteCommentTokenization() {
     val analyzer = JavaAnalyzer()
     val result =
-      analyzer.tokenizeLine("/*This is a */complete multiline comment", analyzer.initialState)
+      analyzer.tokenizeLine("/*This is a */complete multiline comment", analyzer.initialState, 0)
     assertThat(result.state.state).isEqualTo(LineState.NORMAL)
     ensureTokenSequence(
       result,
@@ -83,17 +84,21 @@ internal class BaseIncrementalAnalyzeManagerTest {
   fun testIncompleteCommentTokenization() {
     val analyzer = JavaAnalyzer()
     var result =
-      analyzer.tokenizeLine("/*This is an incomplete multiline comment", analyzer.initialState)
+      analyzer.tokenizeLine("/*This is an incomplete multiline comment", analyzer.initialState, 0)
     println(result.state)
     assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
 
     result =
-      analyzer.tokenizeLine("/*This is an incomplete*//* multiline comment", analyzer.initialState)
+      analyzer.tokenizeLine(
+        "/*This is an incomplete*//* multiline comment",
+        analyzer.initialState,
+        0
+      )
     println(result.state)
     assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
 
     result =
-      analyzer.tokenizeLine("This is an incomplete multiline comment/*", analyzer.initialState)
+      analyzer.tokenizeLine("This is an incomplete multiline comment/*", analyzer.initialState, 0)
     println(result.state)
     assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
   }
@@ -104,21 +109,21 @@ internal class BaseIncrementalAnalyzeManagerTest {
 
     // Test a simple multiline comment
     run {
-      var result = analyzer.tokenizeLine("/** This is an", analyzer.initialState)
+      var result = analyzer.tokenizeLine("/** This is an", analyzer.initialState, 0)
       assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
 
-      result = analyzer.tokenizeLine(" incomplete comment*/", result.state)
+      result = analyzer.tokenizeLine(" incomplete comment*/", result.state, 0)
       assertThat(result.state.state).isEqualTo(LineState.NORMAL)
     }
 
     // Test a multiline comment which is directly followed by tokens of other types.
     run {
-      var result = analyzer.tokenizeLine("/** This is an", analyzer.initialState)
+      var result = analyzer.tokenizeLine("/** This is an", analyzer.initialState, 0)
       assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
       assertThat(result.tokens.size).isEqualTo(1)
       assertThat(result.tokens.first().type).isEqualTo(JavaLexer.BLOCK_COMMENT)
 
-      result = analyzer.tokenizeLine(" incomplete comment*/ public static void", result.state)
+      result = analyzer.tokenizeLine(" incomplete comment*/ public static void", result.state, 0)
       assertThat(result.state.state).isEqualTo(LineState.NORMAL)
       assertThat(result.tokens.last().type).isEqualTo(JavaLexer.VOID)
       assertThat(result.tokens[result.tokens.lastIndex - 1].type).isEqualTo(JavaLexer.WS)
