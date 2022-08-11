@@ -68,6 +68,8 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 class FileTreeActionHandler : BaseEventHandler() {
 
   private var lastHeld: TreeNode? = null
+  private var packageName: String = ""
+  private var autoLayout: Boolean = false
 
   companion object {
     const val TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment"
@@ -214,10 +216,12 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.setPositiveButton(string.text_create) { dialogInterface, _ ->
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
+      autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
         StudioApp.getInstance().toast(string.msg_get_package_failed, ERROR)
       } else {
+        packageName = pkgName.toString().replace(".", "/")
         val id: Int = binding.typeGroup.checkedButtonId
         val javaName = if (name.endsWith(".java")) name else "$name.java"
         val className = if (!name.contains(".")) name else name.substring(0, name.lastIndexOf("."))
@@ -251,6 +255,22 @@ class FileTreeActionHandler : BaseEventHandler() {
       ProjectWriter.createLayout(),
       ".xml"
     )
+  }
+
+  private fun createAutoLayout(directory: File, fileName: String) {
+    val app = StudioApp.getInstance()
+    val projectDir = directory.toString().replace("java/$packageName", "res/layout/")
+    val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
+    val newFileLayout = File(projectDir, layoutName)
+    if (newFileLayout.exists()) {
+      app.toast(string.msg_file_exists, ERROR)
+    } else {
+      if (FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
+        notifyFileCreated(newFileLayout)
+      } else {
+        app.toast(string.msg_file_creation_failed, ERROR)
+      }
+    }
   }
 
   private fun createMenuRes(context: Context, file: File) {
@@ -336,6 +356,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       if (newFile.exists()) {
         app.toast(string.msg_file_exists, ERROR)
       } else {
+        if (autoLayout) createAutoLayout(directory, name)
         if (FileIOUtils.writeFileFromString(newFile, content)) {
           notifyFileCreated(newFile, context)
           // TODO Notify language servers about file created event
