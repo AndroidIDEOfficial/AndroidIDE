@@ -151,6 +151,7 @@
     <string name="file_name">File Name</string>
     <string name="new_name">New name</string>
     <string name="new_file">New file</string>
+    <string name="create_auto_layout">Create Layout File Automatically</string>
     <string name="new_java_class">New Java class</string>
     <string name="new_xml_resource">New XML resource</string>
     <string name="new_folder">New folder</string>
