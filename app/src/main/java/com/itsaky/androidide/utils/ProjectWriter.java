@@ -73,6 +73,22 @@ public class ProjectWriter {
     return ResourceUtils.readAssets2String(XML_TEMPLATE_PATH + "/layout.xml");
   }
 
+  @NonNull
+  public static String createLayoutName(String name) {
+    String formatedName = "layout";
+
+    for (int index=0; index < name.length(); index++) {
+      if (Character.isUpperCase(name.charAt(index))) {
+        formatedName += "_";
+        formatedName += name.charAt(index);
+      } else {
+        formatedName += name.charAt(index);
+      }
+    }
+    formatedName.replace(" ", "_");
+    return formatedName.toLowerCase();
+  }
+
   public static String getPackageName(File parentPath) {
     Matcher pkgMatcher = Pattern.compile(SOURCE_PATH_REGEX).matcher(parentPath.getAbsolutePath());
     if (pkgMatcher.find()) {
