@@ -39,7 +39,7 @@ import org.junit.Test
 import javax.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
-class PartialReparserImplTester  {
+class PartialReparserImplTest  {
 
   @Before
   fun setup() {

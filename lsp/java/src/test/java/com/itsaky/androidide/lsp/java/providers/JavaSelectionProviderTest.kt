@@ -28,7 +28,7 @@ import org.junit.Before
 import org.junit.Test
 
 /** @author Akash Yadav */
-class JavaSelectionProviderTester {
+class JavaSelectionProviderTest {
 
   @Before
   fun setup() {

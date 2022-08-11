@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 
 /** @author Akash Yadav */
-class JavaCompletionProviderTester {
+class JavaCompletionProviderTest {
 
   @Before
   fun setup() {
