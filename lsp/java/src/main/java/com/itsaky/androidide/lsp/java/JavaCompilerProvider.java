@@ -20,17 +20,24 @@ package com.itsaky.androidide.lsp.java;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.androidide.projects.api.ModuleProject;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Provides {@link JavaCompilerService} instances for different {@link ModuleProject}s.
  *
  * @author Akash Yadav
  */
 public class JavaCompilerProvider {
-
+  
+  private final Map<ModuleProject, JavaCompilerService> mCompilers = new ConcurrentHashMap<>();
   private static JavaCompilerProvider sInstance;
-  private volatile JavaCompilerService compilerService;
-
+  
   private JavaCompilerProvider() {}
+
+  public static JavaCompilerService get(ModuleProject module) {
+    return JavaCompilerProvider.getInstance().forModule(module);
+  }
 
   public static JavaCompilerProvider getInstance() {
     if (sInstance == null) {
@@ -40,29 +47,24 @@ public class JavaCompilerProvider {
     return sInstance;
   }
 
-  public static JavaCompilerService get(ModuleProject module) {
-    return JavaCompilerProvider.getInstance().forModule(module);
-  }
-
-  /** For internal use only. */
-  public JavaCompilerService getCompilerService() {
-    return compilerService;
-  }
-
   public synchronized JavaCompilerService forModule(ModuleProject module) {
     // A module instance is set to the compiler only in case the project is initialized or
     // this method was called with other mdoule instance.
-    if (compilerService == null || compilerService.getModule() != module) {
-      compilerService = new JavaCompilerService(module);
+    final JavaCompilerService cached = mCompilers.get(module);
+    if (cached != null && cached.getModule() != null) {
+      return cached;
     }
-
-    return compilerService;
+    
+    final JavaCompilerService newInstance = new JavaCompilerService(module);
+    mCompilers.put(module, newInstance);
+  
+    return newInstance;
   }
-
+  
   public synchronized void destory() {
-    if (compilerService != null) {
-      compilerService.destroy();
+    for (final JavaCompilerService compiler : mCompilers.values()) {
+      compiler.destroy();
     }
-    compilerService = null;
+    mCompilers.clear();
   }
 }

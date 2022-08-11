@@ -145,6 +145,9 @@ public class JavaLanguageServer implements ILanguageServer {
     // Clear cached file managers
     SourceFileManager.clearCache();
 
+    // Clear cached module-specific compilers
+    JavaCompilerProvider.getInstance().destory();
+
     // Cache classpath locations
     for (final Project subModule : project.getSubModules()) {
       if (!(subModule instanceof ModuleProject)) {
@@ -280,11 +283,13 @@ public class JavaLanguageServer implements ILanguageServer {
 
     // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
     JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event);
-    final JavaCompilerService compilerService =
-        JavaCompilerProvider.getInstance().getCompilerService();
-    if (compilerService != null) {
-      compilerService.onDocumentChange(event);
+
+    final ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(event.getChangedFile());
+    if (module != null) {
+      final JavaCompilerService compiler = JavaCompilerProvider.get(module);
+      compiler.onDocumentChange(event);
     }
+
     startOrRestartAnalyzeTimer();
   }
 
