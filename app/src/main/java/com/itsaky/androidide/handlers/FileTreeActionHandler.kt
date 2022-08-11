@@ -257,7 +257,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     )
   }
 
-  private fun createAutoLayout(directory: File, fileName: String) {
+  private fun createAutoLayout(context: Context, directory: File, fileName: String) {
     val app = StudioApp.getInstance()
     val projectDir = directory.toString().replace("java/$packageName", "res/layout/")
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
@@ -266,7 +266,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       app.toast(string.msg_file_exists, ERROR)
     } else {
       if (FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
-        notifyFileCreated(newFileLayout)
+        notifyFileCreated(newFileLayout, context)
       } else {
         app.toast(string.msg_file_creation_failed, ERROR)
       }
@@ -356,7 +356,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       if (newFile.exists()) {
         app.toast(string.msg_file_exists, ERROR)
       } else {
-        if (autoLayout) createAutoLayout(directory, name)
+        if (autoLayout) createAutoLayout(context, directory, name)
         if (FileIOUtils.writeFileFromString(newFile, content)) {
           notifyFileCreated(newFile, context)
           // TODO Notify language servers about file created event
