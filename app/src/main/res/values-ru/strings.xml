@@ -286,8 +286,8 @@
     <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже:</string>
     <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
     <string name="msg_copy_report_action">Копировать и сообщить</string>
-    <string name="msg_reading_bootstrap">Чтение архива bootstrap&#8230;</string>
-    <string name="msg_bootstrap_installation_error">Установка bootstrap не удалась, вызвав следующее исключение.</string>
+    <string name="msg_reading_bootstrap">Чтение архива Bootstrap&#8230;</string>
+    <string name="msg_bootstrap_installation_error">Установка Bootstrap не удалась, вызвав следующее исключение.</string>
     <string name="title_translations">Переводчики</string>
     <string name="title_compiler_module_install">Установка модуля компилятора</string>
     <string name="msg_compiler_module_install">Установка модуля компилятора в процессе, пожалуйста, подождите&#8230;</string>
@@ -305,7 +305,7 @@
     <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
     <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
     <string name="build_status_sucess">Сборка прошла успешно</string>
-    
+
     <!-- Other -->
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -341,5 +341,5 @@
     <string name="msg_project_not_initialized">Проект не инициализирован</string>
     <string name="msg_running_task">Запущена задача: \'%1$s\'</string>
     <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
-    <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь</a>]]></string>
+    <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь.</a>]]></string>
 </resources>
