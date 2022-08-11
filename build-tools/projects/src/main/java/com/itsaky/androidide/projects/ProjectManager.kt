@@ -112,6 +112,16 @@ object ProjectManager : EventReceiver {
   }
 
   fun notifyProjectUpdate() {
+
+    if (rootProject != null) {
+      // Update the source file index
+      rootProject!!.subModules.forEach {
+        if (it is ModuleProject) {
+          it.indexSources()
+        }
+      }
+    }
+
     val event = ProjectInitializedEvent()
     event.put(Project::class.java, rootProject)
     EventBus.getDefault().post(event)
