@@ -15,70 +15,71 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:padding="16dp">
+
+  <RadioGroup
+    android:id="@+id/choice_group"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:padding="16dp">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-    <RadioGroup
-        android:id="@+id/choice_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <RadioButton
+      android:id="@+id/bool_true"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="4dp"
+      android:padding="2dp"
+      android:text="true"
+      tools:ignore="HardcodedText" />
 
-        <RadioButton
-            android:id="@+id/bool_true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp"
-            android:padding="2dp"
-            android:text="true"
-            tools:ignore="HardcodedText" />
+    <RadioButton
+      android:id="@+id/bool_false"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:layout_marginBottom="8dp"
+      android:padding="2dp"
+      android:text="false"
+      tools:ignore="HardcodedText" />
 
-        <RadioButton
-            android:id="@+id/bool_false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
-            android:padding="2dp"
-            android:text="false"
-            tools:ignore="HardcodedText" />
+  </RadioGroup>
 
-    </RadioGroup>
+  <View
+    android:id="@+id/divider1"
+    android:layout_width="0dp"
+    android:layout_height="1dp"
+    android:layout_margin="16dp"
+    android:background="@color/primaryLightColor"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/choice_group" />
 
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_margin="16dp"
-        android:background="@color/primaryLightColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/choice_group" />
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/boolean_res_input"
+    style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:hint="@string/hint_boolean_res"
+    android:theme="@style/AppTheme.TextInputLayout"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/divider1">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/boolean_res_input"
-        style="@style/AppTheme.TextInputLayout.Outlined"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/hint_boolean_res"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider1">
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+      android:layout_width="match_parent"
+      android:layout_height="56dp"
+      android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
+      android:padding="16dp" />
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
-            android:padding="16dp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+  </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

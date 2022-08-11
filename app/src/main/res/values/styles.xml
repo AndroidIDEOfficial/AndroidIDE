@@ -43,7 +43,7 @@
     <item name="android:textAllCaps">false</item>
   </style>
 
-  <style name="AppTheme.ProjectCreator.TextInput" parent="">
+  <style name="AppTheme.TextInputLayout" parent="">
     <item name="colorPrimary">@color/secondaryColor</item>
     <item name="boxStrokeColor">@color/textfield_stroke_color</item>
     <item name="android:textColorHint">@color/textfield_label_color</item>
@@ -139,10 +139,5 @@
   <style name="AppTheme.SheetAboveKeyboard" parent="Theme.Material3.Dark.BottomSheetDialog">
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowSoftInputMode">adjustResize</item>
-  </style>
-
-  <style name="AppTheme.TextInputLayout.Outlined" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-    <item name="hintTextColor">@color/secondaryColor</item>
-    <item name="boxStrokeColor">@color/text_input_box_stroke_selector</item>
   </style>
 </resources>

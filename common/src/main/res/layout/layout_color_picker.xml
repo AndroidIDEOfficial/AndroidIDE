@@ -15,123 +15,123 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:paddingBottom="16dp">
+
+  <View
+    android:id="@+id/color_preview"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="horizontal"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <com.google.android.material.slider.Slider
+    android:id="@+id/alpha_slider"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="16dp">
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    android:stepSize="1"
+    android:valueFrom="0"
+    android:valueTo="255"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/color_preview"
+    app:thumbColor="@android:color/white"
+    app:tickVisible="false"
+    app:trackColorActive="@android:color/white" />
 
-    <View
-        android:id="@+id/color_preview"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+  <com.google.android.material.slider.Slider
+    android:id="@+id/red_slider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:stepSize="1"
+    android:valueFrom="0"
+    android:valueTo="255"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/alpha_slider"
+    app:thumbColor="@android:color/holo_red_light"
+    app:tickVisible="false"
+    app:trackColorActive="@android:color/holo_red_light" />
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/alpha_slider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:stepSize="1"
-        android:valueFrom="0"
-        android:valueTo="255"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/color_preview"
-        app:thumbColor="@android:color/white"
-        app:tickVisible="false"
-        app:trackColorActive="@android:color/white" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/red_slider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:stepSize="1"
-        android:valueFrom="0"
-        android:valueTo="255"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/alpha_slider"
-        app:thumbColor="@android:color/holo_red_light"
-        app:tickVisible="false"
-        app:trackColorActive="@android:color/holo_red_light" />
-
-    <com.google.android.material.slider.Slider
-        android:id="@+id/green_slider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:stepSize="1"
-        android:valueFrom="0"
-        android:valueTo="255"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/red_slider"
-        app:thumbColor="@android:color/holo_green_light"
-        app:tickVisible="false"
-        app:trackColorActive="@android:color/holo_green_light" />
+  <com.google.android.material.slider.Slider
+    android:id="@+id/green_slider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:stepSize="1"
+    android:valueFrom="0"
+    android:valueTo="255"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/red_slider"
+    app:thumbColor="@android:color/holo_green_light"
+    app:tickVisible="false"
+    app:trackColorActive="@android:color/holo_green_light" />
 
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/blue_slider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:stepSize="1"
-        android:valueFrom="0"
-        android:valueTo="255"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/green_slider"
-        app:thumbColor="@android:color/holo_blue_dark"
-        app:tickVisible="false"
-        app:trackColorActive="@android:color/holo_blue_dark" />
+  <com.google.android.material.slider.Slider
+    android:id="@+id/blue_slider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:stepSize="1"
+    android:valueFrom="0"
+    android:valueTo="255"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/green_slider"
+    app:thumbColor="@android:color/holo_blue_dark"
+    app:tickVisible="false"
+    app:trackColorActive="@android:color/holo_blue_dark" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/pick"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/msg_color_picker_pick"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/blue_slider"
-        app:rippleColor="?attr/colorAccent" />
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/pick"
+    style="@style/Widget.Material3.Button.OutlinedButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:text="@string/msg_color_picker_pick"
+    android:textColor="@android:color/white"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/blue_slider"
+    app:rippleColor="?attr/colorAccent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/hex_field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:hint="@string/msg_hex_color_code"
-        android:minWidth="100dp"
-        app:layout_constraintEnd_toStartOf="@id/pick"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/blue_slider"
-        app:startIconDrawable="@drawable/ic_hex_icon">
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/hex_field"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:hint="@string/msg_hex_color_code"
+    android:minWidth="100dp"
+    app:layout_constraintEnd_toStartOf="@id/pick"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/blue_slider"
+    app:startIconDrawable="@drawable/ic_hex_icon">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="abcdef0123456789"
-            android:maxLength="8" />
+    <com.google.android.material.textfield.TextInputEditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:digits="abcdef0123456789"
+      android:maxLength="8" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+  </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

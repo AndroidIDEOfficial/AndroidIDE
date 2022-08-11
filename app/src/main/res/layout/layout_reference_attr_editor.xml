@@ -15,23 +15,22 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <com.google.android.material.textfield.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/res_input"
-    style="@style/AppTheme.TextInputLayout.Outlined"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:hint="@string/hint_resource_reference"
-    app:hintEnabled="true"
-    app:hintTextColor="@color/secondaryColor"
-    tools:layout_margin="16dp">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/res_input"
+  style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_marginTop="16dp"
+  android:hint="@string/hint_resource_reference"
+  android:theme="@style/AppTheme.TextInputLayout"
+  app:hintEnabled="true"
+  app:hintTextColor="@color/secondaryColor">
 
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
-        android:inputType="textNoSuggestions"
-        android:padding="16dp" />
+  <com.google.android.material.textfield.MaterialAutoCompleteTextView
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
+    android:inputType="textNoSuggestions"
+    android:padding="16dp" />
 
 </com.google.android.material.textfield.TextInputLayout>
