@@ -83,5 +83,15 @@
 
   </com.google.android.material.textfield.TextInputLayout>
 
+  <CheckBox
+        android:id="@+id/checkButton"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="12dp"
+        android:layout_width="wrap_content"
+        android:text="@string/create_auto_layout"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
 </LinearLayout>
 
