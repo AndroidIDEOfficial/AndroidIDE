@@ -31,6 +31,8 @@ import io.github.rosemoe.sora.lang.format.Formatter;
  */
 public abstract class IDELanguage implements Language {
 
+  private Formatter formatter;
+  
   @Override
   public boolean useTab() {
     return false;
@@ -39,7 +41,11 @@ public abstract class IDELanguage implements Language {
   @NonNull
   @Override
   public Formatter getFormatter() {
-    return new LSPFormatter(getLanguageServer());
+    if (formatter != null) {
+      return formatter;
+    }
+    
+    return formatter = new LSPFormatter(getLanguageServer());
   }
 
   protected ILanguageServer getLanguageServer() {

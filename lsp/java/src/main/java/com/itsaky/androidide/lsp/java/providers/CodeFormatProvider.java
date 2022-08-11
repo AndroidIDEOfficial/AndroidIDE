@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.Replacement;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
@@ -58,7 +59,14 @@ public class CodeFormatProvider {
       final Formatter formatter = new Formatter(settings.getFormatterOptions());
       
       if (params.getRange() == Range.NONE) {
-        return CodeFormatResult.forWholeContent(content, formatter.formatSource(content));
+        String formatted;
+        try {
+          formatted = formatter.formatSource(content);
+        } catch (FormatterException e) {
+          e.printStackTrace();
+          formatted = content;
+        }
+        return CodeFormatResult.forWholeContent(content, formatted);
       }
 
       final Collection<com.google.common.collect.Range<Integer>> ranges =

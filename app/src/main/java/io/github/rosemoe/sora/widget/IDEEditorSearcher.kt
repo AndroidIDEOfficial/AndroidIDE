@@ -68,11 +68,11 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
       return
     }
 
-    val res = mLastResults
+    val res = lastResults
     try {
       val sb = getEditor().text.toStringBuilder()
       val newLength = replacement.length
-      if (mOptions.useRegex) {
+      if (searchOptions.useRegex) {
         var delta = 0
         for (i in 0 until res.size()) {
           val region = res[i]
@@ -86,11 +86,11 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
         var fromIndex = 0
         var foundIndex: Int
         while (
-          TextUtils.indexOf(sb, mPattern, mOptions.ignoreCase, fromIndex).also {
+          TextUtils.indexOf(sb, currentPattern, searchOptions.ignoreCase, fromIndex).also {
             foundIndex = it
           } != -1
         ) {
-          sb.replace(foundIndex, foundIndex + mPattern.length, replacement)
+          sb.replace(foundIndex, foundIndex + currentPattern.length, replacement)
           fromIndex = foundIndex + newLength
         }
       }

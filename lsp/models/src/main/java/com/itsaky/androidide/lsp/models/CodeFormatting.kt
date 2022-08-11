@@ -41,11 +41,9 @@ constructor(val replacements: MutableList<IndexedTextEdit> = mutableListOf()) {
     /** Create a [CodeFormatResult] which replaces the whole [content] with the [formatted] text. */
     @JvmStatic
     fun forWholeContent(content: CharSequence, formatted: CharSequence): CodeFormatResult {
-      return CodeFormatResult(
-        mutableListOf<IndexedTextEdit>().apply {
-          add(IndexedTextEdit(0, content.length - 1, formatted))
-        }
-      )
+      val replacements = mutableListOf<IndexedTextEdit>()
+      replacements.add(IndexedTextEdit(0, content.length - 1, formatted))
+      return CodeFormatResult(replacements)
     }
   }
 }
