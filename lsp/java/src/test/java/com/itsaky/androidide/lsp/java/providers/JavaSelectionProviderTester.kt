@@ -24,71 +24,79 @@ import com.itsaky.androidide.lsp.models.ExpandSelectionParams
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import io.github.rosemoe.sora.text.Content
+import org.junit.Before
+import org.junit.Test
 
 /** @author Akash Yadav */
-class JavaSelectionProviderTester : JavaLSPTest() {
+class JavaSelectionProviderTester {
 
-  override fun test() {
-    testSimpleSelectionExpansion()
-    testMethodSelection()
-    testTryCatchSelection()
-    testTryFinallySelection()
+  @Before
+  fun setup() {
+    JavaLSPTest.setup()
+  }
+  
+  @Test
+  fun testSimpleSelectionExpansion() {
+    JavaLSPTest.apply {
+      openFile("selection/SimpleSelectionExpansionTest")
+      cursor = requireCursor()
+      deleteCursorText()
+      dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, Range.NONE))
+
+      val range = findRange()
+      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+
+      assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
+    }
   }
 
-  private fun testSimpleSelectionExpansion() {
-    openFile("SimpleSelectionExpansionTest")
-    cursor = requireCursor()
-    deleteCursorText()
-    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), 1, NEW_TEXT, 0, Range.NONE))
+  @Test
+  fun testMethodSelection() {
+    JavaLSPTest.apply {
+      openFile("selection/MethodBodySelectionExpansionTest")
 
-    val range = findRange()
-    val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      val start = Position(3, 43)
+      val end = Position(5, 5)
+      val range = Range(start, end)
 
-    assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
+      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
+    }
   }
 
-  private fun testMethodSelection() {
-    openFile("MethodBodySelectionExpansionTest")
+  @Test
+  fun testTryCatchSelection() {
+    JavaLSPTest.apply {
+      openFile("selection/TrySelectionExpansionTest")
 
-    val start = Position(3, 43)
-    val end = Position(5, 5)
-    val range = Range(start, end)
+      // Test expand selection if catch block is selected
+      val start = Position(7, 10)
+      val end = Position(8, 9)
+      val range = Range(start, end)
 
-    val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
+      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    }
   }
 
-  private fun testTryCatchSelection() {
-    openFile("TrySelectionExpansionTest")
+  @Test
+  fun testTryFinallySelection() {
+    JavaLSPTest.apply {
+      openFile("selection/TrySelectionExpansionTest")
 
-    // Test expand selection if catch block is selected
-    val start = Position(7, 10)
-    val end = Position(8, 9)
-    val range = Range(start, end)
+      // Test expand selection if catch block is selected
+      val start = Position(8, 18)
+      val end = Position(10, 9)
+      val range = Range(start, end)
 
-    val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
-  }
-
-  private fun testTryFinallySelection() {
-    openFile("TrySelectionExpansionTest")
-
-    // Test expand selection if catch block is selected
-    val start = Position(8, 18)
-    val end = Position(10, 9)
-    val range = Range(start, end)
-
-    val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
-    assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    }
   }
 
   private fun findRange(): Range {
-    val pos = Content(contents!!).indexer.getCharPosition(cursor)
+    val pos = Content(JavaLSPTest.contents!!).indexer.getCharPosition(JavaLSPTest.cursor)
     val position = Position(pos.line, pos.column, pos.index)
     return Range(position, position)
-  }
-
-  override fun openFile(fileName: String) {
-    super.openFile("selection/${fileName}")
   }
 }

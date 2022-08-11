@@ -19,25 +19,16 @@ package com.itsaky.androidide.lsp.java
 
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.api.LSPTest
-import com.itsaky.androidide.lsp.java.actions.AddImportTester
-import com.itsaky.androidide.lsp.java.compiler.CompilerTest
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.lsp.java.partial.PartialReparserImplTester
-import com.itsaky.androidide.lsp.java.providers.JavaCompletionProviderTester
-import com.itsaky.androidide.lsp.java.providers.JavaSelectionProviderTester
 import com.itsaky.androidide.projects.ProjectManager
 import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import org.junit.Ignore
 
 /** @author Akash Yadav */
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.DEFAULT_VALUE_STRING)
-open class JavaLSPTest : LSPTest() {
+@Ignore("Base singleton class")
+object JavaLSPTest : LSPTest() {
 
-  protected val server by lazy {
+  val server by lazy {
     ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
       as JavaLanguageServer
   }
@@ -54,16 +45,9 @@ open class JavaLSPTest : LSPTest() {
 
   override fun getServerId() = JavaLanguageServer.SERVER_ID
 
-  protected fun getCompiler() : JavaCompilerService {
+  fun getCompiler(): JavaCompilerService {
     return JavaCompilerProvider.get(ProjectManager.app)
   }
 
-  @Test
-  override fun test() {
-    CompilerTest().test()
-    AddImportTester().test()
-    PartialReparserImplTester().test()
-    JavaCompletionProviderTester().test()
-    JavaSelectionProviderTester().test()
-  }
+  override fun test() {}
 }

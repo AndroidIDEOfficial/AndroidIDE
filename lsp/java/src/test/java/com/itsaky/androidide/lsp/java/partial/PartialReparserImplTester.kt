@@ -34,56 +34,58 @@ import com.sun.tools.javac.tree.JCTree.JCMethodDecl
 import com.sun.tools.javac.tree.JCTree.JCMethodInvocation
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl
 import com.sun.tools.javac.tree.TreeScanner
+import org.junit.Before
 import org.junit.Test
 import javax.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
-class PartialReparserImplTester : JavaLSPTest() {
+class PartialReparserImplTester  {
 
-  @Test
-  override fun test() {
-    parseMethod()
-    testSimpleErrorneousStatement()
+  @Before
+  fun setup() {
+    JavaLSPTest.setup()
   }
 
-  private fun parseMethod() {
-    openFile("PartialReparserTest")
-    getCompiler().compile(file).run { task ->
-      AssertingScanner().scan(task.root() as JCCompilationUnit)
+  @Test
+  fun parseMethod() {
+    JavaLSPTest.apply {
+      openFile("partial/PartialReparserTest")
+      getCompiler().compile(file).run { task ->
+        AssertingScanner().scan(task.root() as JCCompilationUnit)
+      }
     }
   }
 
-  private fun testSimpleErrorneousStatement() {
-    openFile("PartialErrReparserTest")
-    getCompiler()
-      .compile(
-        CompilationRequest(
-          listOf(SourceFileObject(file)),
-          PartialReparseRequest(172, contents.toString())
+  @Test
+  fun testSimpleErrorneousStatement() {
+    JavaLSPTest.apply {
+      openFile("partial/PartialErrReparserTest")
+      getCompiler()
+        .compile(
+          CompilationRequest(
+            listOf(SourceFileObject(file)),
+            PartialReparseRequest(172, contents.toString())
+          )
+        )
+        .run { PrintingVisitor().scan(it.root() as JCCompilationUnit) }
+      dispatchEvent(
+        DocumentChangeEvent(
+          file!!,
+          contents!!.insert(192, "trim().").toString(),
+          2,
+          INSERT,
+          "trim().".length,
+          Range.NONE
         )
       )
-      .run { PrintingVisitor().scan(it.root() as JCCompilationUnit) }
-    dispatchEvent(
-      DocumentChangeEvent(
-        file!!,
-        contents!!.insert(192, "trim().").toString(),
-        2,
-        INSERT,
-        "trim().".length,
-        Range.NONE
-      )
-    )
-    getCompiler()
-      .compile(
-        CompilationRequest(
-          listOf(SourceFileObject(file)),
-          PartialReparseRequest(179, contents.toString())
+      getCompiler()
+        .compile(
+          CompilationRequest(
+            listOf(SourceFileObject(file)),
+            PartialReparseRequest(179, contents.toString())
+          )
         )
-      )
-  }
-
-  override fun openFile(fileName: String) {
-    super.openFile("partial/$fileName")
+    }
   }
 
   class AssertingScanner : TreeScanner() {

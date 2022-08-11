@@ -55,10 +55,10 @@ abstract class LSPTest {
 
   protected lateinit var toolingServer: IToolingApiServer
   protected lateinit var toolingProject: IProject
-  protected var cursor: Int = -1
+  var cursor: Int = -1
   private val cursorText = "@@cursor@@"
-  protected var file: Path? = null
-  protected var contents: StringBuilder? = null
+  var file: Path? = null
+  var contents: StringBuilder? = null
 
   protected val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -101,13 +101,13 @@ abstract class LSPTest {
   protected abstract fun getServerId(): String
   abstract fun test()
 
-  protected fun requireCursor(): Int {
+  fun requireCursor(): Int {
     this.cursor = contents!!.indexOf(cursorText)
     assertThat(cursor).isGreaterThan(-1)
     return cursor
   }
 
-  protected fun deleteCursorText() {
+  fun deleteCursorText() {
     contents!!.delete(this.cursor, this.cursor + cursorText.length)
     assertThat(contents!!.indexOf(cursorText)).isEqualTo(-1)
 
@@ -117,7 +117,7 @@ abstract class LSPTest {
   }
 
   @JvmOverloads
-  protected fun cursorPosition(deleteCursorText: Boolean = true): Position {
+  fun cursorPosition(deleteCursorText: Boolean = true): Position {
     requireCursor()
 
     if (deleteCursorText) {
@@ -128,18 +128,18 @@ abstract class LSPTest {
     return Position(pos.line, pos.column, pos.index)
   }
 
-  protected open fun openFile(fileName: String) {
+  open fun openFile(fileName: String) {
     file = FileProvider.sourceFile(fileName).normalize()
     contents = FileProvider.contents(file!!)
 
     dispatchEvent(DocumentOpenEvent(file!!, contents.toString(), 0))
   }
 
-  protected open fun dispatchEvent(event: Any) {
+  open fun dispatchEvent(event: Any) {
     EventBus.getDefault().post(event)
   }
 
-  protected open fun createActionData(vararg values: Any): ActionData {
+  open fun createActionData(vararg values: Any): ActionData {
     val data = ActionData()
 
     data.put(Context::class.java, RuntimeEnvironment.getApplication())
