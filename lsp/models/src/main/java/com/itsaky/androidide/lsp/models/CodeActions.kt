@@ -48,9 +48,3 @@ enum class CodeActionKind {
 data class DocumentChange(var file: Path?, var edits: List<TextEdit>) {
   constructor() : this(null, ArrayList())
 }
-
-data class TextEdit(var range: Range, var newText: String) {
-  companion object {
-    @JvmField val NONE: TextEdit = TextEdit(Range.NONE, "")
-  }
-}

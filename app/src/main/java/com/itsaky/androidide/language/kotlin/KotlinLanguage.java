@@ -69,8 +69,6 @@ public class KotlinLanguage extends IDELanguage {
       @NonNull CompletionPublisher publisher,
       @NonNull Bundle extraArguments)
       throws CompletionCancelledException {
-
-    //  completer.complete(content, position, publisher, extraArguments);
   }
 
   @Override
@@ -91,11 +89,6 @@ public class KotlinLanguage extends IDELanguage {
   @Override
   public void destroy() {
     analyzer = null;
-  }
-
-  @Override
-  public CharSequence format(CharSequence content) {
-    return content;
   }
 
   @Override

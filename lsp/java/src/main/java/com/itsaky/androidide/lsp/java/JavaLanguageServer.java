@@ -42,6 +42,7 @@ import com.itsaky.androidide.lsp.java.providers.ReferenceProvider;
 import com.itsaky.androidide.lsp.java.providers.SignatureProvider;
 import com.itsaky.androidide.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.androidide.lsp.java.utils.CancelChecker;
+import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
@@ -226,7 +227,7 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CharSequence formatCode(FormatCodeParams params) {
+  public CodeFormatResult formatCode(FormatCodeParams params) {
     return new CodeFormatProvider(getSettings()).format(params);
   }
 

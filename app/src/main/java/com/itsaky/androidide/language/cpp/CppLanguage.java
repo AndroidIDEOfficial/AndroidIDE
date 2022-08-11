@@ -93,11 +93,6 @@ public class CppLanguage extends IDELanguage {
   }
 
   @Override
-  public CharSequence format(CharSequence content) {
-    return content;
-  }
-
-  @Override
   public int getIndentAdvance(@NonNull String line) {
     try {
       CPP14Lexer lexer = new CPP14Lexer(CharStreams.fromReader(new StringReader(line)));

@@ -21,9 +21,8 @@ import java.nio.file.Path
 
 data class Location(var file: Path, var range: Range)
 
-data class Position(var line: Int, var column: Int, var index: Int) : Comparable<Position> {
-
-  constructor(line: Int, column: Int) : this(line, column, -1)
+data class Position @JvmOverloads constructor(var line: Int, var column: Int, var index: Int = -1) :
+  Comparable<Position> {
 
   fun requireIndex(): Int {
     if (index == -1) {
@@ -84,9 +83,10 @@ data class Position(var line: Int, var column: Int, var index: Int) : Comparable
   }
 }
 
-open class Range(var start: Position, var end: Position) : Comparable<Range> {
-
-  constructor() : this(Position(0, 0), Position(0, 0))
+open class Range
+@JvmOverloads
+constructor(var start: Position = Position(0, 0), var end: Position = Position(0, 0)) :
+  Comparable<Range> {
 
   companion object {
     @JvmField val NONE = Range(Position.NONE, Position.NONE)
@@ -202,4 +202,3 @@ open class Range(var start: Position, var end: Position) : Comparable<Range> {
     return "Range(start=$start, end=$end)"
   }
 }
-

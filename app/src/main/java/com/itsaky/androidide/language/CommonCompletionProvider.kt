@@ -89,12 +89,12 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
     private val LOG = ILogger.newInstance("CommonCompletionProvider")
     @JvmStatic
     fun checkJavaCompletionChar(c: Char): Boolean {
-      return MyCharacter.isJavaIdentifierPart(c.code) || c == '.'
+      return MyCharacter.isJavaIdentifierPart(c) || c == '.'
     }
 
     @JvmStatic
     fun checkXMLCompletionChar(c: Char): Boolean {
-      return MyCharacter.isJavaIdentifierPart(c.code) || c == '<' || c == '/'
+      return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/'
     }
   }
 }

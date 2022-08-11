@@ -113,11 +113,6 @@ public class GroovyLanguage extends IDELanguage {
   public void destroy() {}
 
   @Override
-  public CharSequence format(CharSequence content) {
-    return content;
-  }
-
-  @Override
   public int getIndentAdvance(@NonNull String p1) {
     try {
       GroovyLexer lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(p1)));

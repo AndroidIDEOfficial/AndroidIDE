@@ -36,7 +36,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LOG_TEXT_ERROR
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LOG_TEXT_INFO
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LOG_TEXT_VERBOSE
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LOG_TEXT_WARNING
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_NORMAL
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority.DEBUG
@@ -67,10 +66,11 @@ class LogLineAnalyzer : AsyncIncrementalAnalyzeManager<LogLineState, LogToken>()
     mutableListOf<CodeBlock>()
 
   override fun tokenizeLine(
-    line: CharSequence,
-    state: LogLineState
+    lineText: CharSequence,
+    state: LogLineState,
+    line: Int
   ): LineTokenizeResult<LogLineState, LogToken> {
-    val input = line.toArray()
+    val input = lineText.toArray()
     val tokenizer = LogLineTokenizer(input)
     val tokens = tokenizer.allTokens()
     return LineTokenizeResult(LogLineState(), tokens)

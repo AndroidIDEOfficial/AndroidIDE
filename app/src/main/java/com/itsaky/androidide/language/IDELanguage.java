@@ -20,12 +20,9 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.models.Position;
-import com.itsaky.androidide.models.Range;
 
 import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.lang.format.Formatter;
 
 /**
  * Base class for language implementations in the IDE.
@@ -38,29 +35,11 @@ public abstract class IDELanguage implements Language {
   public boolean useTab() {
     return false;
   }
-
+  
+  @NonNull
   @Override
-  public CharSequence format(CharSequence text) {
-    return formatCode(text, Range.NONE);
-  }
-
-  @Override
-  public CharSequence formatRegion(
-      final CharSequence text, final CharPosition start, final CharPosition end) {
-    return formatCode(
-        text,
-        new Range(
-            new Position(start.line, start.column, start.index),
-            new Position(end.line, end.column, end.index)));
-  }
-
-  public CharSequence formatCode(CharSequence content, Range formattingRange) {
-    final var server = getLanguageServer();
-    if (server != null) {
-      return server.formatCode(new FormatCodeParams(content, formattingRange));
-    }
-
-    return content;
+  public Formatter getFormatter() {
+    return new LSPFormatter(getLanguageServer());
   }
 
   protected ILanguageServer getLanguageServer() {

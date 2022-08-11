@@ -36,6 +36,7 @@ package com.itsaky.androidide.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
@@ -43,11 +44,9 @@ import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.lsp.models.InitializeParams;
 import com.itsaky.androidide.lsp.models.LSPFailure;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
-import com.itsaky.androidide.lsp.models.ServerCapabilities;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Range;
@@ -55,6 +54,7 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 
 import java.nio.file.Path;
+import java.util.Collections;
 
 /**
  * A language server provides API for providing functions related to a specific file type.
@@ -172,8 +172,8 @@ public interface ILanguageServer {
    * @return The formatted source.
    */
   @NonNull
-  default CharSequence formatCode(FormatCodeParams params) {
-    return params.getContent();
+  default CodeFormatResult formatCode(FormatCodeParams params) {
+    return new CodeFormatResult(Collections.emptyList());
   }
 
   /**

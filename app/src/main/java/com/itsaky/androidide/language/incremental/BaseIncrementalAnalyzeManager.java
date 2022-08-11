@@ -142,18 +142,18 @@ public abstract class BaseIncrementalAnalyzeManager
 
   @Override
   public LineTokenizeResult<LineState, IncrementalToken> tokenizeLine(
-      final CharSequence line, final LineState state) {
+      final CharSequence lineText, final LineState state, final int line) {
     final var tokens = new ArrayList<IncrementalToken>();
     var newState = 0;
     var stateObj = new LineState();
     if (state.state == NORMAL) {
-      newState = tokenizeNormal(line, 0, tokens, stateObj, state.lexerMode);
+      newState = tokenizeNormal(lineText, 0, tokens, stateObj, state.lexerMode);
     } else if (state.state == INCOMPLETE) {
-      final var result = fillIncomplete(line, tokens, state.lexerMode);
+      final var result = fillIncomplete(lineText, tokens, state.lexerMode);
       newState = IntPair.getFirst(result);
       if (newState == NORMAL) {
         newState =
-            tokenizeNormal(line, IntPair.getSecond(result), tokens, stateObj, state.lexerMode);
+            tokenizeNormal(lineText, IntPair.getSecond(result), tokens, stateObj, state.lexerMode);
       } else {
         newState = INCOMPLETE;
       }

@@ -24,6 +24,7 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.IServerSettings;
+import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.lsp.models.DefinitionParams;
@@ -55,11 +56,9 @@ import java.util.Collections;
  */
 public class XMLLanguageServer implements ILanguageServer {
 
+  public static final String SERVER_ID = "xml";
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public SDKInfo sdkInfo;
-
-  public static final String SERVER_ID = "xml";
-
   private ILanguageClient client;
   private IServerSettings settings;
   private boolean canProvideCompletions = false;
@@ -151,7 +150,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CharSequence formatCode(FormatCodeParams params) {
+  public CodeFormatResult formatCode(FormatCodeParams params) {
     return new CodeFormatProvider().format(params);
   }
 }

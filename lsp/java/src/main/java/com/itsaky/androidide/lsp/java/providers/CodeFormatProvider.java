@@ -17,15 +17,21 @@
 
 package com.itsaky.androidide.lsp.java.providers;
 
+import static com.google.common.collect.Range.closedOpen;
+
 import androidx.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.Replacement;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings;
+import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
+import com.itsaky.androidide.lsp.models.IndexedTextEdit;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.StopWatch;
 
 import java.util.Collection;
 
@@ -45,37 +51,56 @@ public class CodeFormatProvider {
     this.settings = (JavaServerSettings) settings;
   }
 
-  public CharSequence format(FormatCodeParams params) {
-    final long start = System.currentTimeMillis();
-    final String strContent = params.getContent().toString();
-    CharSequence formatted;
+  public CodeFormatResult format(FormatCodeParams params) {
     try {
+      final StopWatch watch = new StopWatch("Code formatting");
+      final String content = params.getContent().toString();
       final Formatter formatter = new Formatter(settings.getFormatterOptions());
-      if (params.getRange() != Range.NONE) {
-        formatted = formatter.formatSource(strContent, getCharRanges(params.getRange()));
-      } else {
-        formatted = formatter.formatSource(strContent);
+      
+      if (params.getRange() == Range.NONE) {
+        return CodeFormatResult.forWholeContent(content, formatter.formatSource(content));
       }
+
+      final Collection<com.google.common.collect.Range<Integer>> ranges =
+          getCharRanges(content, params.getRange());
+
+      final ImmutableList<Replacement> replacements =
+          formatter.getFormatReplacements(content, ranges);
+
+      watch.log();
+      return createResult(replacements);
     } catch (Throwable e) {
       LOG.error("Failed to format code.", e);
-      formatted = params.getContent();
+      return CodeFormatResult.NONE;
     }
+  }
 
-    if (params.getRange() != Range.NONE) {
-      final Range range = params.getRange();
-      return formatted.subSequence(range.getStart().requireIndex(), range.getEnd().requireIndex());
+  private CodeFormatResult createResult(final ImmutableList<Replacement> replacements) {
+    final CodeFormatResult result = new CodeFormatResult();
+    for (final Replacement replacement : replacements) {
+      final com.google.common.collect.Range<Integer> range = replacement.getReplaceRange();
+      final IndexedTextEdit edit = new IndexedTextEdit();
+      edit.setNewText(replacement.getReplacementString());
+      edit.setStart(range.lowerEndpoint());
+      edit.setEnd(range.upperEndpoint());
+      result.getReplacements().add(edit);
     }
-
-    LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
-
-    return formatted;
+    return result;
   }
 
   @NonNull
   private Collection<com.google.common.collect.Range<Integer>> getCharRanges(
-      @NonNull final Range range) {
-    return ImmutableList.of(
-        com.google.common.collect.Range.closedOpen(
-            range.getStart().requireIndex(), range.getEnd().requireIndex()));
+      final String content, @NonNull final Range range) {
+
+    int start, end;
+    if (range == Range.NONE) {
+      start = 0;
+      end = content.length();
+    } else {
+      start = range.getStart().requireIndex();
+      end = range.getEnd().requireIndex();
+    }
+
+    return ImmutableList.of(closedOpen(start, end));
   }
 }

@@ -20,10 +20,22 @@ package com.itsaky.androidide.lsp.models
 import com.itsaky.androidide.models.Range
 
 /**
- * Parameters containing data required to format source code.
- *
- * @author Akash Yadav
+ * Represents a line-column based text edit. The text in the given [range] must be replaced with the
+ * [newText].
  */
-data class FormatCodeParams(val content: CharSequence, val range: Range) {
-  constructor(content: CharSequence) : this(content, Range.NONE)
+data class TextEdit(var range: Range, var newText: String) {
+  companion object {
+    @JvmField val NONE: TextEdit = TextEdit(Range.NONE, "")
+  }
+}
+
+/**
+ * Represents an index-based text edit. The text from index [start] to [end] must be replaced with
+ * [newText].
+ */
+data class IndexedTextEdit @JvmOverloads constructor(var start: Int = -1, var end: Int = -1, var newText: CharSequence = "") {
+  companion object {
+    @JvmStatic
+    val NONE = IndexedTextEdit()
+  }
 }
