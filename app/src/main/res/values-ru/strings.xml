@@ -98,24 +98,24 @@
     <string name="project_exists">Проект с таким именем уже существует!</string>
 
     <!-- Templates -->
+    <string name="title_warning">Предупреждение</string>
+    <string name="wizard_toolchain">Стандартный C++</string>
     <string name="template_basic">Базовый проект</string>
     <string name="template_description_basic">Базовый проект, включающий в себя AppCompat Toolbar и Floating Action Button</string>
-    <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
-    <string name="template_description_navigation_drawer">Проект с AppCompat Toolbar, DrawerLayout и NavigationView</string>
     <string name="template_empty">Пустой проект</string>
+    <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
     <string name="template_navigation_drawer">Проект с Navigation Drawer</string>
+    <string name="template_description_navigation_drawer">Проект с AppCompat Toolbar, DrawerLayout и NavigationView</string>
     <string name="template_libgdx">Игра LibGDX</string>
     <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
     <string name="template_compose">Jetpack Compose</string>
     <string name="template_description_compose">Базовый hello world проект Jetpack Compose.</string>
     <string name="template_navigation_tabs">Проект с Bottom Navigation</string>
+    <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
     <string name="template_tabs">Проект с вкладками</string>
+    <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
     <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
     <string name="template_cpp">Нативный проект на C++</string>
-    <string name="title_warning">Предупреждение</string>
-    <string name="wizard_toolchain">Стандартный C++</string>
-    <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
-    <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
     <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
 
     <!-- Files -->
