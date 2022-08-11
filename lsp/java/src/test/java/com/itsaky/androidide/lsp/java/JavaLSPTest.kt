@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.api.LSPTest
 import com.itsaky.androidide.lsp.java.actions.AddImportTester
+import com.itsaky.androidide.lsp.java.compiler.CompilerTest
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.partial.PartialReparserImplTester
 import com.itsaky.androidide.lsp.java.providers.JavaCompletionProviderTester
@@ -59,6 +60,7 @@ open class JavaLSPTest : LSPTest() {
 
   @Test
   override fun test() {
+    CompilerTest().test()
     AddImportTester().test()
     PartialReparserImplTester().test()
     JavaCompletionProviderTester().test()
