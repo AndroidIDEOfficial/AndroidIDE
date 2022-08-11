@@ -24,7 +24,10 @@ import com.itsaky.androidide.projects.models.ActiveJavaDocument;
 import com.itsaky.androidide.utils.Cache;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -286,7 +289,15 @@ public class StringSearch {
       return ((ActiveJavaDocument) doc).getPackageName();
     }
 
-    return packageName(FileManager.INSTANCE.getReader(file));
+    return packageName(createIOReader(file));
+  }
+
+  private static BufferedReader createIOReader(final Path file) {
+    try {
+      return new BufferedReader(new InputStreamReader(new FileInputStream(file.toFile())));
+    } catch (Throwable err) {
+      return new BufferedReader(new StringReader(""));
+    }
   }
 
   public static String packageName(final BufferedReader reader) {

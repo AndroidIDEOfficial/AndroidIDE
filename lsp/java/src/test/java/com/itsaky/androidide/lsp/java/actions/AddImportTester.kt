@@ -33,9 +33,12 @@ class AddImportTester : JavaLSPTest() {
     openFile("AddImportAction")
 
     val diagnostic =
-      server.analyze(file!!).diagnostics.first { it.code == "compiler.err.cant.resolve.location" }
+      server.analyze(file!!).diagnostics.firstOrNull { it.code == "compiler.err.cant.resolve.location" }
+    
+    assertThat(diagnostic).isNotNull()
+    
     val file = this.file!!.toFile()
-    val data = createActionData(diagnostic, file, this.file!!, this.server)
+    val data = createActionData(diagnostic!!, file, this.file!!, this.server)
 
     val action = AddImportAction()
     action.prepare(data)
