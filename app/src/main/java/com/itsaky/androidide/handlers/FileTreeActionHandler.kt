@@ -32,6 +32,7 @@ import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
+import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
@@ -43,6 +44,7 @@ import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
+import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
@@ -335,7 +337,7 @@ class FileTreeActionHandler : BaseEventHandler() {
         app.toast(string.msg_file_exists, ERROR)
       } else {
         if (FileIOUtils.writeFileFromString(newFile, content)) {
-          notifyFileCreated(newFile)
+          notifyFileCreated(newFile, context)
           // TODO Notify language servers about file created event
           app.toast(string.msg_file_created, SUCCESS)
           if (lastHeld != null) {
@@ -406,16 +408,16 @@ class FileTreeActionHandler : BaseEventHandler() {
           ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
         executeAsync({ FileUtils.delete(file) }) {
           progressDialog.dismiss()
-          
+
           val deleted = it ?: false
-          
+
           app.toast(
             if (deleted) string.deleted else string.delete_failed,
             if (deleted) SUCCESS else ERROR
           )
-          
+
           if (deleted) {
-            notifyFileDeleted(file)
+            notifyFileDeleted(file, context)
             // TODO Notify language servers about file delete event
             if (lastHeld != null) {
               val parent = lastHeld!!.parent
@@ -466,7 +468,7 @@ class FileTreeActionHandler : BaseEventHandler() {
         if (renamed) SUCCESS else ERROR
       )
       if (renamed) {
-        notifyFileRenamed(file)
+        notifyFileRenamed(file, context)
         // TODO Notify language servers about file rename event
         if (lastHeld != null) {
           val parent = lastHeld!!.parent
@@ -495,15 +497,23 @@ class FileTreeActionHandler : BaseEventHandler() {
     EventBus.getDefault().post(ExpandTreeNodeRequestEvent(node))
   }
 
-  private fun notifyFileRenamed(file: File) {
-    EventBus.getDefault().post(FileRenameEvent(file))
+  private fun notifyFileRenamed(file: File, context: Context) {
+    EventBus.getDefault().post(FileRenameEvent(file).putData(context))
   }
 
-  private fun notifyFileCreated(file: File) {
-    EventBus.getDefault().post(FileCreationEvent(file))
+  private fun notifyFileCreated(file: File, context: Context) {
+    EventBus.getDefault().post(FileCreationEvent(file).putData(context))
   }
 
-  private fun notifyFileDeleted(file: File) {
-    EventBus.getDefault().post(FileDeletionEvent(file))
+  private fun notifyFileDeleted(file: File, context: Context) {
+    EventBus.getDefault().post(FileDeletionEvent(file).putData(context))
+  }
+
+  private fun Event.putData(context: Context): Event {
+    put(Context::class.java, context)
+    if (context is EditorActivity) {
+      put(BuildService::class.java, context.buildService)
+    }
+    return this
   }
 }
