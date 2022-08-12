@@ -64,6 +64,7 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.VMUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -281,6 +282,11 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   private void startOrRestartAnalyzeTimer() {
+    
+    if (VMUtils.isJvm()) {
+      return;
+    }
+    
     if (!this.timer.isStarted()) {
       this.timer.start();
     } else {
