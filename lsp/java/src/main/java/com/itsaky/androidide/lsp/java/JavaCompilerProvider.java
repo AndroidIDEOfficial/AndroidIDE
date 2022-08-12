@@ -29,10 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Akash Yadav
  */
 public class JavaCompilerProvider {
-  
-  private final Map<ModuleProject, JavaCompilerService> mCompilers = new ConcurrentHashMap<>();
+
   private static JavaCompilerProvider sInstance;
-  
+  private final Map<ModuleProject, JavaCompilerService> mCompilers = new ConcurrentHashMap<>();
+
   private JavaCompilerProvider() {}
 
   public static JavaCompilerService get(ModuleProject module) {
@@ -54,13 +54,16 @@ public class JavaCompilerProvider {
     if (cached != null && cached.getModule() != null) {
       return cached;
     }
-    
+
     final JavaCompilerService newInstance = new JavaCompilerService(module);
     mCompilers.put(module, newInstance);
-  
+
     return newInstance;
   }
-  
+
+  // TODO This currently destroys all the compiler instances
+  //  We must have a method to destroy only the required instance in
+  //  JavaLanguageServer.handleFailure(LSPFailure)
   public synchronized void destory() {
     for (final JavaCompilerService compiler : mCompilers.values()) {
       compiler.destroy();

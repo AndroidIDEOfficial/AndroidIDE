@@ -59,6 +59,7 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.LSPEditorActions;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
@@ -90,6 +91,10 @@ public class JavaLanguageServer implements ILanguageServer {
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
+
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
   }
 
   public IServerSettings getSettings() {
@@ -113,7 +118,7 @@ public class JavaLanguageServer implements ILanguageServer {
     CachingJarFileSystemProvider.INSTANCE.clearCache();
     EventBus.getDefault().unregister(this);
 
-    timer.shutdown();
+    timer.cancel();
   }
 
   @Override
@@ -136,9 +141,6 @@ public class JavaLanguageServer implements ILanguageServer {
   public void setupWithProject(@NonNull final Project project) {
 
     LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this);
-    }
 
     // Once we have project initialized
     // Destory the NO_MODULE_COMPILER instance
@@ -158,6 +160,8 @@ public class JavaLanguageServer implements ILanguageServer {
 
       SourceFileManager.forModule(((ModuleProject) subModule));
     }
+
+    startOrRestartAnalyzeTimer();
   }
 
   @NonNull
@@ -276,6 +280,14 @@ public class JavaLanguageServer implements ILanguageServer {
     this.cachedCompletion = cachedCompletion;
   }
 
+  private void startOrRestartAnalyzeTimer() {
+    if (!this.timer.isStarted()) {
+      this.timer.start();
+    } else {
+      this.timer.restart();
+    }
+  }
+
   @Subscribe(threadMode = ThreadMode.ASYNC)
   @SuppressWarnings("unused")
   public void onContentChange(@NonNull DocumentChangeEvent event) {
@@ -295,20 +307,12 @@ public class JavaLanguageServer implements ILanguageServer {
     startOrRestartAnalyzeTimer();
   }
 
-  private void startOrRestartAnalyzeTimer() {
-    if (!this.timer.isStarted()) {
-      this.timer.start();
-    } else {
-      this.timer.restart();
-    }
-  }
-
   @Subscribe(threadMode = ThreadMode.ASYNC)
   @SuppressWarnings("unused")
   public void onFileSelected(@NonNull DocumentSelectedEvent event) {
     this.selectedFile = event.getSelectedFile();
   }
-  
+
   @Subscribe(threadMode = ThreadMode.ASYNC)
   @SuppressWarnings("unused")
   public void onFileOpened(@NonNull DocumentOpenEvent event) {
@@ -321,6 +325,11 @@ public class JavaLanguageServer implements ILanguageServer {
   public void onFileClosed(@NonNull DocumentCloseEvent event) {
     if (this.diagnosticProvider != null) {
       this.diagnosticProvider.clearTimestamp(event.getClosedFile());
+    }
+
+    if (FileManager.INSTANCE.getActiveDocumentCount() == 0) {
+      this.selectedFile = null;
+      this.timer.cancel();
     }
   }
 
