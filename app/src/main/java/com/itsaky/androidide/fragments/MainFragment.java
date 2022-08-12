@@ -65,19 +65,13 @@ public class MainFragment extends BaseFragment
   }
 
   private void pickDirectory() {
-    pickDirectory(
-        new FileChoserCallback() {
-          @Override
-          public void picketDictionary(File file) {
-            openProject(file);
-          }
-        });
+    pickDirectory(this::openProject);
   }
 
   private void showCreateProject() {
 
     WizardFragment wizardFragment = new WizardFragment();
-    wizardFragment.setOnProjectCreatedListener(this::openProject);
+    wizardFragment.setOnProjectCreatedListener(this);
     getParentFragmentManager()
         .beginTransaction()
         .add(R.id.container, wizardFragment, WizardFragment.TAG)

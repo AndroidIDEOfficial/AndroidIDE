@@ -47,7 +47,7 @@ public class BaseFragment extends Fragment {
   ActivityResultLauncher<Intent> startForResult =
       registerForActivityResult(
           new ActivityResultContracts.StartActivityForResult(),
-          new ActivityResultCallback<ActivityResult>() {
+          new ActivityResultCallback<>() {
             @Override
             public void onActivityResult(ActivityResult result) {
               if (result.getResultCode() == Activity.RESULT_OK) {

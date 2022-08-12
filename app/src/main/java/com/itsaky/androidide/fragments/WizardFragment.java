@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
@@ -110,25 +109,8 @@ public class WizardFragment extends BaseFragment {
     templatesBinding.templateRecyclerview.setAdapter(mAdapter);
 
     mViewModel.createTemplatesList();
-    mViewModel
-        .getProjects()
-        .observe(
-            getViewLifecycleOwner(),
-            (list) -> {
-              mAdapter.submitList(list);
-            });
-
-    mViewModel
-        .getLoadingState()
-        .observe(
-            getViewLifecycleOwner(),
-            (v) -> {
-              if (v) {
-                showLoading();
-              } else {
-                showTemplatesView();
-              }
-            });
+    mViewModel.getProjects().observe(getViewLifecycleOwner(), mAdapter::submitList);
+    mViewModel.getLoadingState().observe(getViewLifecycleOwner(), this::toggleLoadingState);
 
     mViewModel
         .getStatusMessage()
@@ -204,6 +186,14 @@ public class WizardFragment extends BaseFragment {
     mListener = listener;
   }
 
+  private void toggleLoadingState(boolean loading) {
+    if (loading) {
+      showLoading();
+    } else {
+      showTemplatesView();
+    }
+  }
+
   private String getSelectedItem(int pos, AutoCompleteTextView view) {
     return view.getAdapter().getItem(pos).toString();
   }
@@ -229,8 +219,7 @@ public class WizardFragment extends BaseFragment {
           view.getText()
               .toString()
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
-      int targetSdkInt = Integer.parseInt(sdk);
-      return targetSdkInt;
+      return Integer.parseInt(sdk);
     } catch (Exception e) {
       StudioApp.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
     }
@@ -358,15 +347,11 @@ public class WizardFragment extends BaseFragment {
       }
     }
 
-    detailsBinding.etAppName.setText("My Application");
-    String domain = manager.getString(PREF_PACKAGE_DOMAIN_KEY, "com.example");
-    detailsBinding.etPackageName.setText(domain + ".myapplication");
-
-    if (languages.size() == 1) {
-      detailsBinding.tilLanguage.setEnabled(false);
-    } else {
-      detailsBinding.tilLanguage.setEnabled(true);
-    }
+    final var packageName =
+        manager.getString(PREF_PACKAGE_DOMAIN_KEY, "com.example").concat(".myapplication");
+    detailsBinding.etAppName.setText(R.string.template_def_app_name);
+    detailsBinding.etPackageName.setText(packageName);
+    detailsBinding.tilLanguage.setEnabled(languages.size() != 1);
 
     detailsBinding.etLanguage.setAdapter(
         new ArrayAdapter<>(
@@ -451,12 +436,7 @@ public class WizardFragment extends BaseFragment {
             getSdks()));
 
     detailsBinding.etMinSdk.setOnItemClickListener(
-        new AdapterView.OnItemClickListener() {
-          @Override
-          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            minSdkIndex = position;
-          }
-        });
+        (parent, view, position, id) -> minSdkIndex = position);
 
     detailsBinding.etTargetSdk.setAdapter(
         new ArrayAdapter<>(
@@ -465,12 +445,7 @@ public class WizardFragment extends BaseFragment {
             getSdks()));
 
     detailsBinding.etTargetSdk.setOnItemClickListener(
-        new AdapterView.OnItemClickListener() {
-          @Override
-          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            targetSdkIndex = position;
-          }
-        });
+        (parent, view, position, id) -> targetSdkIndex = position);
 
     detailsBinding.tilSaveLocation.setEndIconOnClickListener(
         v -> {
@@ -507,7 +482,6 @@ public class WizardFragment extends BaseFragment {
     String pkgCheckerMsg = AndroidUtils.validatePackageName(packageName);
     if (!TextUtils.isEmpty(pkgCheckerMsg)) {
       detailsBinding.tilPackageName.setError(pkgCheckerMsg);
-      return;
     } else {
       detailsBinding.tilPackageName.setErrorEnabled(false);
     }
@@ -535,11 +509,10 @@ public class WizardFragment extends BaseFragment {
     mProgressSheet.setShowShadow(false);
   }
 
-  private void setMessage(int msg) {
-    setMessage(getString(msg));
-  }
-
   private void setMessage(String msg) {
+    if (mProgressSheet == null) {
+      createProgressSheet();
+    }
     mProgressSheet.setMessage(msg);
   }
 

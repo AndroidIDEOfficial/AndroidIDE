@@ -13,7 +13,7 @@
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">Simply, an IDE for Android</string>
     <string name="msg_get_package_failed">Failed to extract package name!</string>
-    <string name="msg_share_app">AndroidIDE is an Integrated Development Environment for building Android apps on your Android Smartphone. It supports :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support and much more.\n\nDownload AndroidIDE at https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE is an Integrated Development Environment for building Android apps on your Android Smartphone. It supports :\n1. Gradle \n2. OpenJDK 17.0–22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support and much more.\n\nDownload AndroidIDE at https://androidide.com</string>
     <string name="msg_need_help">If you\'re facing issues while using AndroidIDE or with building Android Apps, you can join the Telegram Group ask for help there.\n\nYou can also send suggesstions on our email.</string>
     <string name="discuss_amp_help">Discuss &amp; help</string>
     <string name="title_github">GitHub</string>
@@ -342,4 +342,5 @@
     <string name="build_status_failed">Build failed. See build output for more details.</string>
     <string name="build_status_sucess">Build successful</string>
   <string name="msg_output_text_extraction_failed">Failed to get text from editor</string>
+  <string name="template_def_app_name">My Application</string>
 </resources>
