@@ -108,29 +108,6 @@
     <item name="fontFamily">@font/josefin_sans</item>
   </style>
 
-  <style name="AppTheme.FilePicker" parent="Theme.Material3.DayNight.NoActionBar">
-    <item name="colorPrimary">@color/primaryDarkColor</item>
-    <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-    <item name="colorAccent">@color/secondaryColor</item>
-    <item name="android:statusBarColor">@color/primaryDarkColor</item>
-    <item name="android:windowBackground">@color/content_background</item>
-    <item name="android:navigationBarColor">@color/primaryDarkColor</item>
-    <!-- textColorPrimary is for toolbar title text  -->
-    <item name="android:textColorPrimary">@color/primaryTextColor</item>
-    <!-- textColorSecondary is for toolbar action icons tint-->
-    <item name="android:textColorSecondary">@color/primaryIconColor</item>
-    <item name="unicorn.colorAccent">@color/secondaryColor</item>
-    <item name="unicorn.background">@color/content_background</item>
-    <item name="unicorn.secondaryTextColor">@color/secondaryTextColor</item>
-    <item name="unicorn.primaryTextColor">@color/primaryTextColor</item>
-    <item name="unicorn.file.heading">@color/primaryTextColor</item>
-    <item name="unicorn.file.subHeading">@color/primaryTextColorLight</item>
-    <item name="unicorn.file.iconTint">@color/primaryIconColor</item>
-    <item name="unicorn.file.arrowIconTint">@color/primaryIconColor</item>
-    <item name="unicorn.file.selectionTint">@color/secondaryLightColor</item>
-    <item name="unicorn.fabColor">@color/secondaryColor</item>
-  </style>
-
   <style name="PopupAnimation">
     <item name="android:windowEnterAnimation">@anim/popup_in</item>
     <item name="android:windowExitAnimation">@anim/popup_out</item>
