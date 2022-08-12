@@ -11,7 +11,7 @@ buildscript {
     apply from: "dependencies.gradle"
     
     project.ext {
-        compileSdk = 31
+        compileSdk = 32
         buildTools = "31.0.0"
         minSdk = 26
         targetSdk = 28
