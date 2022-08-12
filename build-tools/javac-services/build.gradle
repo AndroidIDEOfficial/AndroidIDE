@@ -40,4 +40,8 @@ dependencies {
     implementation project(path: ':logger')
     
     api project(path: ':build-tools:javac')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
 }

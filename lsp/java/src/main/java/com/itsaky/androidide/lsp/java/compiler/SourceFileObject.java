@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.java.compiler;
 
 import com.google.common.base.MoreObjects;
-import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.utils.DocumentUtils;
 
@@ -64,7 +63,7 @@ public class SourceFileObject implements JavaFileObject {
   public boolean equals(Object other) {
     if (other.getClass() != SourceFileObject.class) return false;
     SourceFileObject that = (SourceFileObject) other;
-    return PathUtils.isSameFile(this.path, that.path);
+    return DocumentUtils.isSameFile(this.path, that.path);
   }
 
   @Override

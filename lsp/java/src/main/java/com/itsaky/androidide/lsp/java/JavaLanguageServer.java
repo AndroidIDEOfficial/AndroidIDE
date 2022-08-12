@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
 import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton;
 import com.itsaky.androidide.javac.services.fs.CachingJarFileSystemProvider;
@@ -84,7 +86,7 @@ public class JavaLanguageServer implements ILanguageServer {
 
   public JavaLanguageServer() {
     this.completionProvider = new CompletionProvider();
-    this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
+    this.diagnosticProvider = new JavaDiagnosticProvider();
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
@@ -225,7 +227,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return DiagnosticResult.NO_UPDATE;
     }
 
-    return this.diagnosticProvider.analyze(compiler, file);
+    return this.diagnosticProvider.analyze(file);
   }
 
   @NonNull
@@ -305,6 +307,21 @@ public class JavaLanguageServer implements ILanguageServer {
   @SuppressWarnings("unused")
   public void onFileSelected(@NonNull DocumentSelectedEvent event) {
     this.selectedFile = event.getSelectedFile();
+  }
+  
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileOpened(@NonNull DocumentOpenEvent event) {
+    this.selectedFile = event.getOpenedFile();
+    startOrRestartAnalyzeTimer();
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileClosed(@NonNull DocumentCloseEvent event) {
+    if (this.diagnosticProvider != null) {
+      this.diagnosticProvider.clearTimestamp(event.getClosedFile());
+    }
   }
 
   private void analyzeSelected() {
