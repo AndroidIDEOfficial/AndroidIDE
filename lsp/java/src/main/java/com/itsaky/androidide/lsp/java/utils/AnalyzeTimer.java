@@ -84,7 +84,7 @@ public class AnalyzeTimer {
   }
 
   /** Shutdown the timer. Cancels any running timers. */
-  public void shutdown() {
+  public void cancel() {
     timerHandler.removeCallbacks(timerCallback);
     started = false;
   }

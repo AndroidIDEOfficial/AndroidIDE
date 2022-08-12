@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
+import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
 import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton;
 import com.itsaky.androidide.javac.services.fs.CachingJarFileSystemProvider;
@@ -57,10 +59,12 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.LSPEditorActions;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.VMUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -84,10 +88,14 @@ public class JavaLanguageServer implements ILanguageServer {
 
   public JavaLanguageServer() {
     this.completionProvider = new CompletionProvider();
-    this.diagnosticProvider = new JavaDiagnosticProvider(this.completionProvider::isCompleting);
+    this.diagnosticProvider = new JavaDiagnosticProvider();
     this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
+
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this);
+    }
   }
 
   public IServerSettings getSettings() {
@@ -111,7 +119,7 @@ public class JavaLanguageServer implements ILanguageServer {
     CachingJarFileSystemProvider.INSTANCE.clearCache();
     EventBus.getDefault().unregister(this);
 
-    timer.shutdown();
+    timer.cancel();
   }
 
   @Override
@@ -134,9 +142,6 @@ public class JavaLanguageServer implements ILanguageServer {
   public void setupWithProject(@NonNull final Project project) {
 
     LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this);
-    }
 
     // Once we have project initialized
     // Destory the NO_MODULE_COMPILER instance
@@ -144,6 +149,9 @@ public class JavaLanguageServer implements ILanguageServer {
 
     // Clear cached file managers
     SourceFileManager.clearCache();
+
+    // Clear cached module-specific compilers
+    JavaCompilerProvider.getInstance().destory();
 
     // Cache classpath locations
     for (final Project subModule : project.getSubModules()) {
@@ -153,6 +161,8 @@ public class JavaLanguageServer implements ILanguageServer {
 
       SourceFileManager.forModule(((ModuleProject) subModule));
     }
+
+    startOrRestartAnalyzeTimer();
   }
 
   @NonNull
@@ -222,7 +232,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return DiagnosticResult.NO_UPDATE;
     }
 
-    return this.diagnosticProvider.analyze(compiler, file);
+    return this.diagnosticProvider.analyze(file);
   }
 
   @NonNull
@@ -271,24 +281,12 @@ public class JavaLanguageServer implements ILanguageServer {
     this.cachedCompletion = cachedCompletion;
   }
 
-  @Subscribe(threadMode = ThreadMode.ASYNC)
-  @SuppressWarnings("unused")
-  public void onContentChange(@NonNull DocumentChangeEvent event) {
-    if (!DocumentUtils.isJavaFile(event.getChangedFile())) {
+  private void startOrRestartAnalyzeTimer() {
+    
+    if (VMUtils.isJvm()) {
       return;
     }
-
-    // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
-    JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event);
-    final JavaCompilerService compilerService =
-        JavaCompilerProvider.getInstance().getCompilerService();
-    if (compilerService != null) {
-      compilerService.onDocumentChange(event);
-    }
-    startOrRestartAnalyzeTimer();
-  }
-
-  private void startOrRestartAnalyzeTimer() {
+    
     if (!this.timer.isStarted()) {
       this.timer.start();
     } else {
@@ -298,8 +296,47 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @Subscribe(threadMode = ThreadMode.ASYNC)
   @SuppressWarnings("unused")
+  public void onContentChange(@NonNull DocumentChangeEvent event) {
+    if (!DocumentUtils.isJavaFile(event.getChangedFile())) {
+      return;
+    }
+
+    // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
+    JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event);
+
+    final ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(event.getChangedFile());
+    if (module != null) {
+      final JavaCompilerService compiler = JavaCompilerProvider.get(module);
+      compiler.onDocumentChange(event);
+    }
+
+    startOrRestartAnalyzeTimer();
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
   public void onFileSelected(@NonNull DocumentSelectedEvent event) {
     this.selectedFile = event.getSelectedFile();
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileOpened(@NonNull DocumentOpenEvent event) {
+    this.selectedFile = event.getOpenedFile();
+    startOrRestartAnalyzeTimer();
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  @SuppressWarnings("unused")
+  public void onFileClosed(@NonNull DocumentCloseEvent event) {
+    if (this.diagnosticProvider != null) {
+      this.diagnosticProvider.clearTimestamp(event.getClosedFile());
+    }
+
+    if (FileManager.INSTANCE.getActiveDocumentCount() == 0) {
+      this.selectedFile = null;
+      this.timer.cancel();
+    }
   }
 
   private void analyzeSelected() {

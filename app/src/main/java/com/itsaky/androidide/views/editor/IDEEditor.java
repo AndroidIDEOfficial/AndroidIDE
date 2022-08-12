@@ -49,11 +49,11 @@ import com.itsaky.androidide.lsp.models.ShowDocumentParams;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.DiagnosticUtil;
-import com.itsaky.androidide.lsp.util.PathUtils;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
 
@@ -165,18 +165,14 @@ public class IDEEditor extends CodeEditor {
     }
   }
 
-  public void analyze() {
-    if (mLanguageServer != null
-        && getFile() != null
-        && getEditorLanguage() instanceof IDELanguage) {
-      CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
-          .whenComplete(
-              (diagnostics, throwable) -> {
-                if (mLanguageClient != null) {
-                  mLanguageClient.publishDiagnostics(diagnostics);
-                }
-              });
+  protected void dispatchDocumentOpenEvent() {
+    if (getFile() == null) {
+      return;
     }
+
+    final var openEvent =
+        new DocumentOpenEvent(getFile().toPath(), getText().toString(), mFileVersion = 0);
+    EventBus.getDefault().post(openEvent);
   }
 
   /**
@@ -266,6 +262,37 @@ public class IDEEditor extends CodeEditor {
     return mSignatureHelpWindow;
   }
 
+  protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var file = getFile().toPath();
+    var type = ChangeType.INSERT;
+    if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
+      type = ChangeType.DELETE;
+    } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+      type = ChangeType.NEW_TEXT;
+    }
+
+    var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
+    if (type == ChangeType.DELETE) {
+      changeDelta = -changeDelta;
+    }
+
+    final var start = event.getChangeStart();
+    final var end = event.getChangeEnd();
+    final var changeRange =
+        new Range(
+            new Position(start.line, start.column, start.index),
+            new Position(end.line, end.column, end.index));
+
+    final var changeEvent =
+        new DocumentChangeEvent(
+            file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange);
+    EventBus.getDefault().post(changeEvent);
+  }
+
   public static int createInputFlags() {
     var flags =
         EditorInfo.TYPE_CLASS_TEXT
@@ -278,6 +305,20 @@ public class IDEEditor extends CodeEditor {
     }
 
     return flags;
+  }
+
+  public void analyze() {
+    if (mLanguageServer != null
+        && getFile() != null
+        && getEditorLanguage() instanceof IDELanguage) {
+      CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
+          .whenComplete(
+              (diagnostics, throwable) -> {
+                if (mLanguageClient != null) {
+                  mLanguageClient.publishDiagnostics(diagnostics);
+                }
+              });
+    }
   }
 
   /**
@@ -447,7 +488,7 @@ public class IDEEditor extends CodeEditor {
                 () -> {
                   if (locations.size() == 1) {
                     var location = locations.get(0);
-                    if (PathUtils.isSameFile(location.getFile(), getFile().toPath())) {
+                    if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
                       setSelection(location.getRange());
                       return;
                     }
@@ -608,7 +649,7 @@ public class IDEEditor extends CodeEditor {
             } else {
               if (result.getLocations().size() == 1) {
                 final var loc = result.getLocations().get(0);
-                if (PathUtils.isSameFile(loc.getFile(), getFile().toPath())) {
+                if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
                   setSelection(loc.getRange());
                   return;
                 }
@@ -670,12 +711,30 @@ public class IDEEditor extends CodeEditor {
     }
   }
 
+  protected void dispatchDocumentCloseEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var closeEvent = new DocumentCloseEvent(getFile().toPath());
+    EventBus.getDefault().post(closeEvent);
+  }
+
   public void onEditorSelected() {
     if (getFile() == null) {
       return;
     }
 
     dispatchDocumentSelectedEvent();
+  }
+
+  protected void dispatchDocumentSelectedEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var selectedEvent = new DocumentSelectedEvent(getFile().toPath());
+    EventBus.getDefault().post(selectedEvent);
   }
 
   @SuppressWarnings("unused")
@@ -807,74 +866,6 @@ public class IDEEditor extends CodeEditor {
     return new Range(start, end);
   }
 
-  protected void dispatchDocumentOpenEvent() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var openEvent =
-        new DocumentOpenEvent(getFile().toPath(), getText().toString(), mFileVersion = 0);
-    EventBus.getDefault().post(openEvent);
-  }
-
-  protected void dispatchDocumentSelectedEvent() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var selectedEvent = new DocumentSelectedEvent(getFile().toPath());
-    EventBus.getDefault().post(selectedEvent);
-  }
-
-  protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var file = getFile().toPath();
-    var type = ChangeType.INSERT;
-    if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
-      type = ChangeType.DELETE;
-    } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      type = ChangeType.NEW_TEXT;
-    }
-
-    var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
-    if (type == ChangeType.DELETE) {
-      changeDelta = -changeDelta;
-    }
-
-    final var start = event.getChangeStart();
-    final var end = event.getChangeEnd();
-    final var changeRange =
-        new Range(
-            new Position(start.line, start.column, start.index),
-            new Position(end.line, end.column, end.index));
-
-    final var changeEvent =
-        new DocumentChangeEvent(
-            file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange);
-    EventBus.getDefault().post(changeEvent);
-  }
-
-  protected void dispatchDocumentSaveEvent() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var saveEvent = new DocumentSaveEvent(getFile().toPath());
-    EventBus.getDefault().post(saveEvent);
-  }
-
-  protected void dispatchDocumentCloseEvent() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var closeEvent = new DocumentCloseEvent(getFile().toPath());
-    EventBus.getDefault().post(closeEvent);
-  }
-
   @Override
   public IDEEditorSearcher getSearcher() {
     return mSearcher;
@@ -892,6 +883,15 @@ public class IDEEditor extends CodeEditor {
     } else {
       LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
     }
+  }
+
+  protected void dispatchDocumentSaveEvent() {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var saveEvent = new DocumentSaveEvent(getFile().toPath());
+    EventBus.getDefault().post(saveEvent);
   }
 
   @Nullable

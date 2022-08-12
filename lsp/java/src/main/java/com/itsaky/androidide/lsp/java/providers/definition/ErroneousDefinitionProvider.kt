@@ -22,9 +22,9 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject
 import com.itsaky.androidide.lsp.java.providers.DefinitionProvider
 import com.itsaky.androidide.lsp.java.utils.FindHelper
-import com.itsaky.androidide.lsp.util.PathUtils.Companion.isSameFile
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.utils.DocumentUtils.isSameFile
 import com.sun.source.util.Trees
 import java.nio.file.Path
 import java.nio.file.Paths

@@ -54,6 +54,10 @@ object FileManager : EventReceiver {
     return this.activeDocuments[file.normalize()]
   }
 
+  fun getActiveDocumentCount(): Int {
+    return this.activeDocuments.size
+  }
+
   fun getDocumentContents(file: Path): String {
     val document = getActiveDocument(file)
     if (document != null) {
