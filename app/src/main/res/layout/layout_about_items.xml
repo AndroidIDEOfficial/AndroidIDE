@@ -1,156 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:paddingTop="16dp">
+
+  <HorizontalScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="16dp">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp"
+    android:fillViewport="true"
+    tools:ignore="ScrollViewSize">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:fillViewport="true"
-        tools:ignore="ScrollViewSize">
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/github"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_github" />
-
-            <ImageView
-                android:id="@+id/discuss"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_telegram" />
-
-            <ImageView
-                android:id="@+id/email"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_email" />
-
-            <ImageView
-                android:id="@+id/website"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/ic_website" />
-
-        </LinearLayout>
-
-    </HorizontalScrollView>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+      <ImageView
+        android:id="@+id/github"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/title_translations"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="?android:attr/dividerVertical" />
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_github" />
 
-    <TextView
-        android:id="@+id/translations"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textSize="15sp" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+      <ImageView
+        android:id="@+id/discuss"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/title_open_source_licenses"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="?android:attr/dividerVertical" />
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_telegram" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+      <ImageView
+        android:id="@+id/email"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="4dp"
-        android:text="@string/msg_open_source_licenses"
-        android:textSize="15sp" />
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_email" />
 
-    <TextView
+      <ImageView
+        android:id="@+id/website"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_website" />
+
+      <ImageView
         android:id="@+id/licenses"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:textSize="15sp" />
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_licenses" />
 
-    <TextView
-        android:id="@+id/footer_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:gravity="center"
-        android:textColor="@color/secondaryTextColor" />
+    </LinearLayout>
+
+  </HorizontalScrollView>
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="4dp"
+    android:text="@string/title_translations"
+    android:textSize="18sp"
+    android:textStyle="bold" />
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    android:background="?android:attr/dividerVertical" />
+
+  <TextView
+    android:id="@+id/translations"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:textSize="15sp" />
+
+  <TextView
+    android:id="@+id/footer_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:gravity="center"
+    android:textColor="@color/secondaryTextColor" />
 
 </LinearLayout>
 

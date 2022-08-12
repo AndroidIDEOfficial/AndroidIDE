@@ -17,18 +17,17 @@
  */
 package com.itsaky.androidide;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
-import com.itsaky.androidide.models.License;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,17 +44,21 @@ public class AboutActivity extends StudioActivity {
     binding.items.footerText.setText(getFooter());
 
     setupTranslations();
-    setupLicenses();
+
+    OssLicensesMenuActivity.setActivityTitle(getString(R.string.oss_license_title));
 
     LayoutAboutItemsBinding items = binding.items;
     TooltipCompat.setTooltipText(items.discuss, getString(R.string.discussions_on_telegram));
     TooltipCompat.setTooltipText(items.github, getString(R.string.title_github));
     TooltipCompat.setTooltipText(items.email, getString(R.string.about_option_email));
     TooltipCompat.setTooltipText(items.website, getString(R.string.about_option_website));
+    TooltipCompat.setTooltipText(items.licenses, getString(R.string.oss_license_title));
     items.github.setOnClickListener(v -> getApp().openGitHub());
     items.discuss.setOnClickListener(v -> getApp().openTelegramGroup());
     items.email.setOnClickListener(v -> getApp().emailUs());
     items.website.setOnClickListener(v -> getApp().openWebsite());
+    items.licenses.setOnClickListener(
+        v -> startActivity(new Intent(this, OssLicensesMenuActivity.class)));
   }
 
   @Override
@@ -105,77 +108,6 @@ public class AboutActivity extends StudioActivity {
     list.add(Pair.create("French", "Se-Lyan"));
     list.add(Pair.create("Portuguese-Brazilian", "Frederick'XS"));
     return list;
-  }
-
-  private void setupLicenses() {
-    final var licenses = new ArrayList<License>();
-    licenses.add(
-        new License(
-            "AndroidX Libraries", "Apache License 2.0", "https://github.com/androidx/androidx"));
-    licenses.add(
-        new License("Gradle Build Tool", "Apache License 2.0", "https://github.com/gradle/gradle"));
-    licenses.add(new License("Gson", "Apache License 2.0", "https://github.com/google/gson"));
-    licenses.add(
-        new License(
-            "Material Components for Android",
-            "Apache License 2.0",
-            "https://github.com/material-components/material-components-android"));
-    licenses.add(
-        new License("ANTLR4 Runtime", "BSD 3-clause License", "https://github.com/antlr/antlr4"));
-    licenses.add(
-        new License("Glide", "BSD, part MIT and Apache 2.0", "https://github.com/bumptech/glide"));
-    licenses.add(
-        new License(
-            "Android UtilCode", "Apache License 2.0", "https://github.com/Blankj/AndroidUtilCode"));
-    licenses.add(
-        new License(
-            "UnicornFilePicker",
-            "Apache License 2.0",
-            "https://github.com/abhishekti7/UnicornFilePicker"));
-    licenses.add(
-        new License("QuickAction", "Apache License 2.0", "https://github.com/piruin/quickaction"));
-    licenses.add(
-        new License("XmlToJson", "Apache License 2.0", "https://github.com/smart-fun/XmlToJson"));
-    licenses.add(
-        new License(
-            "AndroidTreeView",
-            "Apache License 2.0",
-            "https://github.com/bmelnychuk/AndroidTreeView"));
-    licenses.add(
-        new License(
-            "CodeEditor v0.5.2", "Apache License 2.0", "https://github.com/Rosemoe/CodeEditor"));
-    licenses.add(
-        new License("Guava-Android", "Apache License 2.0", "https://github.com/google/guava"));
-    licenses.add(new License("Jsoup", "MIT License", "https://github.com/jhy/jsoup"));
-    licenses.add(
-        new License("Termux [Terminal Emulator]", "GPL 3", "https://github.com/termux/termux-app"));
-    licenses.add(
-        new License("JavaPoet", "Apache License 2.0", "https://github.com/square/JavaPoet"));
-    licenses.add(
-        new License("Zip4j", "Apache License 2.0", "https://github.com/srikanth-lingala/zip4j"));
-    licenses.add(
-        new License(
-            "Android Studio", "Apache License 2.0", "https://cs.android.com/android-studio"));
-
-    StringBuilder sb = new StringBuilder();
-    for (License license : licenses) {
-      sb.append("\u2022 ");
-      sb.append(license.name);
-      sb.append("<br>");
-      sb.append(getString(R.string.msg_about_licensed_under));
-      sb.append(license.license);
-      sb.append("<br><a href=\"");
-      sb.append(license.url);
-      sb.append("\">");
-      sb.append(license.url);
-      sb.append("</a>");
-      sb.append("<br><br>");
-    }
-    sb.append(getString(R.string.license_jdk));
-    sb.append(String.format("<br><a href=\"%1$s\">%1$s</a>", JDK_SOURCE));
-    sb.append("<br><br>");
-    binding.items.licenses.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
-    binding.items.licenses.setMovementMethod(LinkMovementMethod.getInstance());
   }
 
   private String getFooter() {

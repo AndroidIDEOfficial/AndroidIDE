@@ -24,14 +24,12 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.app.StudioApp
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import java.io.File
 
 open class BaseFragment : Fragment() {
 
   private var callback: OnDirectoryPickedCallback? = null
-  private val log = ILogger.newInstance(javaClass.simpleName)
   private val allowedAuthorities =
     setOf(ANDROID_DOCS_AUTHORITY, ANDROIDDIDE_DOCS_AUTHORITY, TERMUX_DOCS_AUTHORITY)
 
@@ -96,6 +94,6 @@ open class BaseFragment : Fragment() {
   }
 
   interface OnDirectoryPickedCallback {
-    fun onDirectoryPicked(file: File?)
+    fun onDirectoryPicked(file: File)
   }
 }

@@ -5,7 +5,6 @@
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
     <string name="title_open_source_licenses">licence Open Source</string>
-    <string name="msg_open_source_licenses">AndroidIDE utilise des librairies open sources. vous pouvez trouver la source et les licences des librairies utilisées en cliquant sur les liens suivant ci-dessous.</string>
     <string name="msg_about_licensed_under">licence sous:&#x20;</string>
     <string name="about_option_email">Émail</string>
     <string name="about_option_website">Site Web</string>

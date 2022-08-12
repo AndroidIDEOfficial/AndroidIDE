@@ -63,7 +63,6 @@
             android:name=".TerminalActivity"
             android:configChanges="orientation|screenSize|uiMode"
             android:windowSoftInputMode="adjustResize" />
-
         <service
             android:name=".services.GradleBuildService"
             android:exported="false" />
@@ -95,6 +94,11 @@
                 <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
             </intent-filter>
         </receiver>
+        <activity
+          android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+          android:theme="@style/AppTheme" />
+        <activity
+          android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+          android:theme="@style/AppTheme" />
     </application>
-
 </manifest>
