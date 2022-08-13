@@ -24,6 +24,7 @@ import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_LEA
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_TRAILING;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_LIGATURES;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawEmptyLineWs;
@@ -33,6 +34,7 @@ import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLine
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawTrailingWs;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontLigatures;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
 
 import android.annotation.SuppressLint;
@@ -287,6 +289,7 @@ public class CodeEditorView extends FrameLayout {
     onInputTypePrefChanged();
     onWordwrapPrefChanged();
     onMagnifierPrefChanged();
+    onUseIcuPrefChanged();
   }
 
   protected void onMagnifierPrefChanged() {
@@ -340,6 +343,10 @@ public class CodeEditorView extends FrameLayout {
 
     binding.editor.setTextSize(textSize);
   }
+  
+  private void onUseIcuPrefChanged() {
+    binding.editor.getProps().useICULibToSelectWords = getUseIcu();
+  }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
@@ -372,9 +379,12 @@ public class CodeEditorView extends FrameLayout {
       case USE_MAGNIFER:
         onMagnifierPrefChanged();
         break;
+      case USE_ICU:
+        onUseIcuPrefChanged();
+        break;
     }
   }
-
+  
   public boolean save() {
     final var file = getFile();
     if (file == null) {

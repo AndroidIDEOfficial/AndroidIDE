@@ -92,6 +92,7 @@ public class EditorPreferences extends BasePreferenceFragment
     final var autoSave = new SwitchPreference(getContext());
     final var useGoogleCodeStyle = new SwitchPreference(getContext());
     final var visiblePasswordFlag = new SwitchPreference(getContext());
+    final var useIcu = new SwitchPreference(getContext());
 
     final var completionsMatchLower = new SwitchPreference(getContext());
 
@@ -152,6 +153,11 @@ public class EditorPreferences extends BasePreferenceFragment
     visiblePasswordFlag.setKey(FLAG_PASSWORD);
     visiblePasswordFlag.setTitle(getString(R.string.idepref_visiblePassword_title));
     visiblePasswordFlag.setSummary(getString(R.string.idepref_visiblePassword_summary));
+    
+    useIcu.setIcon(R.drawable.ic_expand_selection);
+    useIcu.setKey(USE_ICU);
+    useIcu.setTitle(getString(R.string.idepref_useIcu_title));
+    useIcu.setSummary(getString(R.string.idepref_useIcu_summary));
 
     commonCategory.setTitle(getString(R.string.idepref_editor_category_common));
     commonCategory.addPreference(fontSize);
@@ -164,6 +170,7 @@ public class EditorPreferences extends BasePreferenceFragment
     commonCategory.addPreference(nonPrintable);
     commonCategory.addPreference(drawHex);
     commonCategory.addPreference(autoSave);
+    commonCategory.addPreference(useIcu);
 
     javaCategory.setTitle(getString(R.string.idepref_editor_category_java));
     javaCategory.addPreference(useGoogleCodeStyle);
@@ -181,6 +188,7 @@ public class EditorPreferences extends BasePreferenceFragment
     visiblePasswordFlag.setOnPreferenceChangeListener(this);
     wordWrap.setOnPreferenceChangeListener(this);
     magnifier.setOnPreferenceChangeListener(this);
+    useIcu.setOnPreferenceChangeListener(this);
 
     fontLigatures.setChecked(getFontLigatures());
     drawHex.setChecked(getDrawHex());
@@ -190,6 +198,7 @@ public class EditorPreferences extends BasePreferenceFragment
     visiblePasswordFlag.setChecked(getVisiblePasswordFlag());
     wordWrap.setChecked(getWordwrap());
     magnifier.setChecked(getUseMagnifier());
+    useIcu.setChecked(getUseIcu());
   }
 
   @Override
