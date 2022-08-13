@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.TypefaceUtils
 
 /**
- * Fragment to show logs in a [androidx.recyclerview.widget.RecyclerView].
+ * Fragment to show logs.
  * @author Akash Yadav
  */
 abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
