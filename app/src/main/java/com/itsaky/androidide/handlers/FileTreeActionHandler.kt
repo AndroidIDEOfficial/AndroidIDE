@@ -69,6 +69,7 @@ class FileTreeActionHandler : BaseEventHandler() {
 
   private var lastHeld: TreeNode? = null
   private var packageName: String = ""
+  private var isFileCreated: Boolean = false
   private var autoLayout: Boolean = false
 
   companion object {
@@ -264,13 +265,13 @@ class FileTreeActionHandler : BaseEventHandler() {
     val newFileLayout = File(projectDir, layoutName)
     if (newFileLayout.exists()) {
       app.toast(string.msg_file_exists, ERROR)
-    } else {
-      if (FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
-        notifyFileCreated(newFileLayout, context)
-      } else {
-        app.toast(string.msg_file_creation_failed, ERROR)
-      }
+      return
     }
+    if (!FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
+      app.toast(string.msg_file_creation_failed, ERROR)
+      return
+    }
+    notifyFileCreated(newFileLayout, context)
   }
 
   private fun createMenuRes(context: Context, file: File) {
@@ -356,8 +357,8 @@ class FileTreeActionHandler : BaseEventHandler() {
       if (newFile.exists()) {
         app.toast(string.msg_file_exists, ERROR)
       } else {
-        if (autoLayout) createAutoLayout(context, directory, name)
         if (FileIOUtils.writeFileFromString(newFile, content)) {
+          if (autoLayout) isFileCreated = true
           notifyFileCreated(newFile, context)
           // TODO Notify language servers about file created event
           app.toast(string.msg_file_created, SUCCESS)
@@ -372,6 +373,7 @@ class FileTreeActionHandler : BaseEventHandler() {
         } else {
           app.toast(string.msg_file_creation_failed, ERROR)
         }
+        if (isFileCreated) createAutoLayout(context, directory, name)
       }
     } else {
       app.toast(string.msg_invalid_name, ERROR)
