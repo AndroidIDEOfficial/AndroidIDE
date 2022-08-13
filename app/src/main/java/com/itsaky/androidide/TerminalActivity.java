@@ -17,6 +17,7 @@
  */
 package com.itsaky.androidide;
 
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getUseSystemShell;
 import static com.itsaky.androidide.utils.Environment.BIN_DIR;
 import static com.itsaky.androidide.utils.Environment.HOME;
 import static com.itsaky.androidide.utils.Environment.LOGIN_SHELL;
@@ -40,8 +41,8 @@ import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.Constants;
+import com.itsaky.androidide.models.prefs.GeneralPreferencesKt;
 import com.itsaky.androidide.utils.BootstrapInstaller;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
@@ -144,6 +145,29 @@ public class TerminalActivity extends StudioActivity
     fontSize += (increase ? 1 : -1) * 2;
     fontSize = Math.max(MIN_FONT_SIZE, Math.min(fontSize, MAX_FONT_SIZE));
     setFontSize(fontSize, true);
+  }
+
+  public void setFontSize(int value, boolean apply) {
+    getApp().getPrefManager().putString(KEY_FONT_SIZE, String.valueOf(value));
+
+    if (apply) {
+      terminal.setTextSize(getFontSize());
+    }
+  }
+
+  public int getFontSize() {
+    int fontSize;
+    try {
+      fontSize =
+          Integer.parseInt(
+              getApp()
+                  .getPrefManager()
+                  .getString(KEY_FONT_SIZE, String.valueOf(DEFAULT_FONT_SIZE)));
+    } catch (NumberFormatException | ClassCastException e) {
+      fontSize = DEFAULT_FONT_SIZE;
+    }
+
+    return Math.min(Math.max(fontSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
   }
 
   @Override
@@ -262,13 +286,18 @@ public class TerminalActivity extends StudioActivity
     LOG.error(tag + ":", e);
   }
 
+  private void setTerminalCursorBlinkingState(boolean start) {
+    if (terminal != null && terminal.mEmulator != null) {
+      terminal.setTerminalCursorBlinkerState(start, true);
+    }
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     final var bash = new File(BIN_DIR, "bash");
-    final var useSystemShell =
-        getApp().getPrefManager().getBoolean(PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL);
+    final var useSystemShell = getUseSystemShell();
     if ((PREFIX.exists()
             && PREFIX.isDirectory()
             && bash.exists()
@@ -413,8 +442,7 @@ public class TerminalActivity extends StudioActivity
 
   @NonNull
   private String getShellPath() {
-    final var useSystemShell =
-        getApp().getPrefManager().getBoolean(PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL);
+    final var useSystemShell = GeneralPreferencesKt.getUseSystemShell();
     if (!useSystemShell && LOGIN_SHELL.exists() && LOGIN_SHELL.isFile()) {
       return LOGIN_SHELL.getAbsolutePath();
     }
@@ -468,39 +496,10 @@ public class TerminalActivity extends StudioActivity
     return sizes;
   }
 
-  public void setFontSize(int value, boolean apply) {
-    getApp().getPrefManager().putString(KEY_FONT_SIZE, String.valueOf(value));
-
-    if (apply) {
-      terminal.setTextSize(getFontSize());
-    }
-  }
-
-  public int getFontSize() {
-    int fontSize;
-    try {
-      fontSize =
-          Integer.parseInt(
-              getApp()
-                  .getPrefManager()
-                  .getString(KEY_FONT_SIZE, String.valueOf(DEFAULT_FONT_SIZE)));
-    } catch (NumberFormatException | ClassCastException e) {
-      fontSize = DEFAULT_FONT_SIZE;
-    }
-
-    return Math.min(Math.max(fontSize, MIN_FONT_SIZE), MAX_FONT_SIZE);
-  }
-
   @Override
   protected void onResume() {
     super.onResume();
     setTerminalCursorBlinkingState(true);
-  }
-
-  private void setTerminalCursorBlinkingState(boolean start) {
-    if (terminal != null && terminal.mEmulator != null) {
-      terminal.setTerminalCursorBlinkerState(start, true);
-    }
   }
 
   @Override

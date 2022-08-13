@@ -20,8 +20,14 @@
 
 package com.itsaky.androidide;
 
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getLastOpenedProject;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
@@ -33,7 +39,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -61,33 +66,43 @@ public class MainActivity extends StudioActivity {
   }
 
   private void openLastProject() {
-    binding
-        .getRoot()
-        .post(
-            () -> {
-              PreferenceManager manager = getApp().getPrefManager();
-              if (manager.autoOpenProject()
-                  && manager.wasProjectOpened()
-                  && Constants.SPLASH_TO_MAIN) {
-                String path = manager.getOpenedProject();
-                if (path == null || path.trim().isEmpty()) {
-                  getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
-                } else {
-                  File root = new File(manager.getOpenedProject());
-                  if (!root.exists()) {
-                    getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
-                  } else {
-                    if (manager.confirmProjectOpen()) {
-                      askProjectOpenPermission(root);
-                    } else {
-                      openProject(root);
-                    }
-                  }
-                }
-              }
+    binding.getRoot().post(this::tryOpenLastProject);
+  }
 
-              Constants.SPLASH_TO_MAIN = false;
-            });
+  private void tryOpenLastProject() {
+    if (!getAutoOpenProjects()) {
+      Constants.SPLASH_TO_MAIN = false;
+      return;
+    }
+
+    if (!Constants.SPLASH_TO_MAIN) {
+      return;
+    }
+
+    Constants.SPLASH_TO_MAIN = false;
+
+    final var openedProject = getLastOpenedProject();
+    if (NO_OPENED_PROJECT.equals(openedProject)) {
+      return;
+    }
+
+    if (TextUtils.isEmpty(openedProject)) {
+      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      return;
+    }
+
+    final var project = new File(openedProject);
+    if (!project.exists()) {
+      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      return;
+    }
+
+    if (getConfirmProjectOpen()) {
+      askProjectOpenPermission(project);
+      return;
+    }
+
+    openProject(project);
   }
 
   private void askProjectOpenPermission(File root) {

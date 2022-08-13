@@ -18,6 +18,14 @@
 package com.itsaky.androidide.services;
 
 import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.getGradleInstallationDir;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isBuildCacheEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isDebugEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isInfoEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isOfflineEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isScanEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isStacktraceEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isWarningModeAllEnabled;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import android.app.Notification;
@@ -39,9 +47,6 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.fragments.preferences.BuildPreferences;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.builder.BuildService;
@@ -200,7 +205,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public CompletableFuture<List<String>> getBuildArguments() {
-    final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
     final var extraArgs = new ArrayList<String>();
 
     extraArgs.add("--init-script");
@@ -210,26 +214,26 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     // The one downloaded from Maven is not built for Android
     extraArgs.add("-Pandroid.aapt2FromMavenOverride=" + Environment.AAPT2.getAbsolutePath());
 
-    if (prefs.isStackTraceEnabled()) {
+    if (isStacktraceEnabled()) {
       extraArgs.add("--stacktrace");
     }
-    if (prefs.isGradleInfoEnabled()) {
+    if (isInfoEnabled()) {
       extraArgs.add("--info");
     }
-    if (prefs.isGradleDebugEnabled()) {
+    if (isDebugEnabled()) {
       extraArgs.add("--debug");
     }
-    if (prefs.isGradleScanEnabled()) {
+    if (isScanEnabled()) {
       extraArgs.add("--scan");
     }
-    if (prefs.isGradleWarningEnabled()) {
+    if (isWarningModeAllEnabled()) {
       extraArgs.add("--warning-mode");
       extraArgs.add("all");
     }
-    if (prefs.isGradleBuildCacheEnabled()) {
+    if (isBuildCacheEnabled()) {
       extraArgs.add("--build-cache");
     }
-    if (prefs.isGradleOfflineModeEnabled()) {
+    if (isOfflineEnabled()) {
       extraArgs.add("--offline");
     }
 
@@ -308,7 +312,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
-    final var message = new InitializeProjectMessage(rootDir, getGradleInstallationPath());
+    final var message = new InitializeProjectMessage(rootDir, getGradleInstallationDir());
     return performBuildTasks(server.initialize(message));
   }
 
@@ -316,7 +320,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
     final var message =
-        new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath());
+        new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationDir());
     return performBuildTasks(server.executeTasks(message));
   }
 
@@ -325,7 +329,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public CompletableFuture<TaskExecutionResult> executeProjectTasks(
       @NonNull String projectPath, @NonNull String... tasks) {
     final var message =
-        new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationPath());
+        new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationDir());
     return performBuildTasks(server.executeTasks(message));
   }
 
@@ -377,12 +381,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   protected <T> T markBuildAsFinished(final T result, final Throwable throwable) {
     isBuildInProgress = false;
     return result;
-  }
-
-  private String getGradleInstallationPath() {
-    return StudioApp.getInstance()
-        .getPrefManager()
-        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
   }
 
   public boolean isBuildInProgress() {

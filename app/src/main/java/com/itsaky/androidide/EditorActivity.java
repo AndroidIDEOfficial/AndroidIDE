@@ -21,6 +21,8 @@ package com.itsaky.androidide;
 
 import static com.blankj.utilcode.util.IntentUtils.getInstallAppIntent;
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setLastOpenedProject;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -94,13 +96,13 @@ import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
+import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.services.GradleBuildService;
@@ -1132,9 +1134,8 @@ public class EditorActivity extends StudioActivity
   }
 
   private void initialSetup() {
-    getApp()
-        .getPrefManager()
-        .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
+    final var openedProject = Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath());
+    setLastOpenedProject(openedProject);
 
     try {
       final var rootProject = ProjectManager.INSTANCE.getRootProject();
@@ -1529,7 +1530,7 @@ public class EditorActivity extends StudioActivity
     // This will make sure that file contents are not erased.
     closeAll(
         () -> {
-          getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
+          setLastOpenedProject(NO_OPENED_PROJECT);
           if (manualFinish) {
             finish();
           }
@@ -1681,7 +1682,7 @@ public class EditorActivity extends StudioActivity
     mTabCloseAction.setOnActionItemClickListener(
         (item) -> {
           final int id = item.getActionId();
-          if (getApp().getPrefManager().getBoolean(PreferenceManager.KEY_EDITOR_AUTO_SAVE, false)) {
+          if (EditorPreferencesKt.getAutoSave()) {
             saveAll();
           }
 

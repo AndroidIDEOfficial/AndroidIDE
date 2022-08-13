@@ -345,4 +345,6 @@
   <string name="err_invalid_data_by_intent">Intent returned invalid data</string>
   <string name="msg_select_from_primary_storage">Select a directory from primary storage</string>
   <string name="err_authority_not_allowed">Authority \'%s\' not allowed</string>
+  <string name="idepref_useIcu_title">Use ICU lib</string>
+  <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press selection.</string>
 </resources>
