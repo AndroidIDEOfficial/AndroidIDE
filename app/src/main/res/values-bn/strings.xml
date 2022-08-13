@@ -340,4 +340,8 @@
     <string name="build_status_in_progress">বিল্ড চলছে…</string>
     <string name="build_status_failed">বিল্ড ব্যর্থ হয়েছে৷ আরো বিস্তারিত জানার জন্য বিল্ড আউটপুট দেখুন।</string>
     <string name="build_status_sucess">বিল্ড সফল হয়েছে</string>
+    <string name="msg_output_text_extraction_failed">সম্পাদক থেকে পাঠ্য পেতে ব্যর্থ</string>
+    <string name="err_invalid_data_by_intent">ইন্টেন্ট অবৈধ ডেটা ফেরত দিয়েছে</string>
+    <string name="msg_select_from_primary_storage">প্রাথমিক স্টোরেজ থেকে একটি ডিরেক্টরি নির্বাচন করুন</string>
+    <string name="err_authority_not_allowed">কর্তৃপক্ষ \'%s\' অনুমোদিত নয়</string>
 </resources>
