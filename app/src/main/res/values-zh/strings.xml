@@ -11,7 +11,7 @@
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">Simply, an IDE for Android</string>
     <string name="msg_get_package_failed">获取包名失败!</string>
-    <string name="msg_share_app">AndroidIDE是一个用于在Android设备上构建Android应用的集成开发环境。它支持： \n1. Gradle \n2. OpenJDK 11.0.1.\n3. 先进的Java自动补全\n4. XML自动补全 \n5. Kotlin支持，还有更多\n\n请从这里下载AndroidIDE：https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE是一个用于在Android设备上构建Android应用的集成开发环境。它支持： \n1. Gradle \n2. OpenJDK 17.0-22\n3. 先进的Java自动补全\n4. XML自动补全 \n5. Kotlin支持，还有更多\n\n请从这里下载AndroidIDE：https://androidide.com</string>
     <string name="msg_need_help">如果您在使用AndroidIDE构建应用时遇到任何问题，您可以加入Telegram群组寻求帮助。\n\n您也可以通过电子邮件对我们提出建议。</string>
     <string name="discuss_amp_help">讨论 &amp; 帮助</string>
     <string name="title_github">GitHub</string>
@@ -19,17 +19,16 @@
     <string name="other">其他</string>
     <string name="share_with_friends">分享给朋友</string>
     <string name="ide_preferences">环境设置</string>
-    <string name="discussions_on_telegram">Telegram上的讨论</string>
+    <string name="discussions_on_telegram">在 Telegram 上讨论</string>
     <string name="msg_empty_view">没有已可以显示的呢&#8230;</string>
     <string name="btn_terminal">终端</string>
     <string name="reset">重置</string>
     <string name="app_logs">应用日志</string>
     <string name="ide_logs">IDE日志</string>
-    <string name="label_splash_image">Splash images</string>
+    <string name="label_splash_image">启动图</string>
     <string name="get_started">开始使用</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_code_actions">操作</string>
     <string name="msg_cannot_perform_fix">无法执行快速修复</string>
     <string name="msg_performing_actions">正在执行代码操作&#8230;</string>
     <string name="msg_api_info_since">在API %d 添加</string>
@@ -48,7 +47,7 @@
     <string name="msg_pick_single_file">请只选择一个文件夹</string>
     <string name="please_wait">请稍等 &#8230;</string>
     <string name="title_device_not_supported">设备不受支持</string>
-    <string name="msg_device_not_supported">很不幸，您的设备当前不受我们支持。我们对其产生的不便很抱歉。\n\n支持的CPU架构: aarch64 and armeabi-v7a</string>
+    <string name="msg_device_not_supported">很不幸，您的设备当前不受我们支持。我们对其产生的不便很抱歉。\n\n支持的CPU架构: aarch64 与 armeabi-v7a</string>
 
     <!-- Project Builder -->
     <string name="lint">Lint</string>
@@ -66,7 +65,7 @@
     <string name="quick_run_debug">快速运行</string>
     <string name="msg_sync_needed">Gradle文件已改变。请重新编译您的项目来同步依赖和配置项。</string>
     <string name="preparing">准备中</string>
-    <string name="preparing_first">准备中。 第一次编译可能耗费 10&#8211;15 分钟!</string>
+    <string name="preparing_first">准备中，第一次编译可能耗费 10&#8211;15 分钟!</string>
     <string name="msg_installing_gradlew">Gradle Wrapper不可用!\n正在安装默认版本。 如有需要，Gradle v7.4将会被下载</string>
     <string name="msg_getting_daemom_status">正在获取Gradle守护进程状态，请稍等&#8230;</string>
     <string name="gradle_daemon_status">Gradle守护进程状态</string>
@@ -75,7 +74,7 @@
     <string name="run">运行</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">第一次编译</string>
-    <string name="msg_first_build">这是您安装AndroidIDE后第一次编译项目。由于需要下载Gradle和各种依赖项目，第一次编译需要较长时间。这可能要花费10&#8211;15分钟。 但这完全取决于您的网络连接。\n\n请耐心等待 &#8230;</string>
+    <string name="msg_first_build">这是您安装AndroidIDE后第一次编译项目，由于需要下载Gradle和各种依赖项目，第一次编译需要较长时间。这可能要花费10&#8211;15分钟，但这完全取决于您的网络连接。\n\n请耐心等待 &#8230;</string>
 
     <!-- Project -->
     <string name="create_project">创建项目</string>
@@ -105,6 +104,15 @@
     <string name="template_navigation_drawer">导航侧滑项目</string>
     <string name="template_libgdx">LibGDX 游戏</string>
     <string name="template_description_libgdx">LibGDX 游戏项目图像渲染示例</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Jetpack Compose 基本 hello world 项目</string>
+    <string name="template_navigation_tabs">底部导航栏 Activity</string>
+    <string name="template_navigation_tabs_description">创建一个带有底部导航栏的 Activity</string>
+    <string name="template_tabs">选项卡 Activity</string>
+    <string name="template_tabs_description">新建一个带有选项卡的空白 Activity</string>
+    <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
+    <string name="template_cpp">Native C++</string>
+    <string name="template_cpp_description">创建一个使用 JNI 空白 Activity 的新项目</string>
 
     <!-- Files -->
     <string name="save">保存</string>
@@ -177,8 +185,8 @@
     <!-- Code Editor -->
     <string name="undo">撤销</string>
     <string name="redo">重做</string>
+
     <item name="copy" type="string" tools:override="true">复制</item>
-    <item name="next" type="string">下一个</item>
     <item name="text_to_search" type="string">查找文本</item>
 
     <!-- Preferences -->
@@ -213,7 +221,6 @@
     <string name="pref_changelog">更新日志</string>
     <string name="msg_editor_font_size">请选择编辑器的默认字体大小 :</string>
     <string name="msg_clear_cache">这将会删除Gradle创建的缓存文件夹。如果您删除它，由于需要下载文件，下一次构建可能需要花费更久的时间。\n注意: 这也会删除AAPT2。你需要重新安装它，否则你将会遇到编译错误。\n\n你真的要删除它们吗？</string>
-
 
     <!-- Error Messages used while Logging -->
     <string name="err_init_sdkinfo">无法获取SDK信息</string>
@@ -277,7 +284,6 @@
     <string name="idepref_java_matchLower_summary">若启用，输入大小写字母都将提示类名及其作用域成员</string>
     <string name="idepref_editor_ligatures_title">连体字</string>
     <string name="idepref_editor_ligatures_summary">启用/禁用 连体字</string>
-
     <string name="yes">@android:string/yes</string>
     <string name="no">@android:string/no</string>
     <string name="msg_apk_install_intent_failed">无法启动 APK 安装程序</string>
@@ -292,6 +298,7 @@
     <string name="hint_string_value">String 值</string>
     <string name="hint_string_resource">String 资源</string>
     <string name="hint_resource_reference">任一资源引用</string>
+    <string name="msg_code_actions">操作</string>
     <string name="title_format_code">代码格式化</string>
     <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
     <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
@@ -299,16 +306,42 @@
     <string name="idepref_visiblePassword_summary">在编辑器中指示系统使用明文密码键盘。这确保您的键盘不会显示字词建议</string>
     <string name="previous">上一个</string>
     <string name="msg_replacing">替换中&#8230;</string>
-
     <string name="title_gradle_service_notification_ticker">Gradle 构建服务已启动</string>
     <string name="title_gradle_service_notification">Gradle 构建服务</string>
     <string name="msg_gradle_service_notification">AndroidIDE 的 Gradle 构建服务正在后台运行。</string>
-
     <string name="title_cancel_build">停止构建</string>
+    <string name="title_warning">警告</string>
+    <string name="msg_ndk_currently_unsupported">NDK 目前并不被官方支持，这个模板只有在你设置好 NDK 后才能工作</string>
     <string name="msg_initializing_project">初始化项目中&#8230;</string>
     <string name="msg_project_initialized">项目已初始化</string>
     <string name="msg_project_initialization_failed">项目初始化失败</string>
     <string name="msg_project_not_initialized">项目未初始化</string>
     <string name="msg_running_task">运行的任务: \'%1$s\'</string>
+    <string name="msg_replacement">替换</string>
+    <string name="title_sync_project">同步项目</string>
+    <string name="wizard_error_name_empty">名称不能为空</string>
+    <string name="wizard_error_name_illegal">名称不能包含非法字符</string>
+    <string name="wizard_save_location">保存位置</string>
+    <string name="wizard_language">项目语言</string>
+    <string name="wizard_loading">模板加载中&#8230;</string>
+    <string name="wizard_toolchain">C++ 标准</string>
+    <string name="next">下一个</string>
+    <string name="exit">离开</string>
+    <string name="idepref_title_tpFix">JDK 11 标记指针修复</string>
+    <string name="idepref_msg_tpFix">设置 LD_PRELOAD 为 libhook.so 在安卓 11 中修复 JDK 11 标记指针问题 【废弃 - 推荐使用 JDK 17】</string>
+    <string name="idepref_title_customGradleInstallation">自定义 Gradle 程序</string>
+    <string name="idepref_msg_customGradleInstallation">指定用于构建的自定义 Gradle 程序，这将会覆盖 gradle-wrapper.properties 中指定的版本</string>
+    <string name="msg_gradle_installation_path">Gradle 程序路径</string>
+    <string name="msg_gradle_installation_input_help">留空将使用 Gradle 包装器</string>
+    <string name="msg_require_install_jdk_and_android_sdk">您需要先安装 JDK 和 Android SDK，IDE才能工作。若安装，请点击“是”，并按照说明操作。<![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 
+    <string name="build_status_idle">无进行中构建</string>
+    <string name="build_status_in_progress">正在构建&#8230;</string>
+    <string name="build_status_failed">构建失败，请参阅构建输出以获取详情</string>
+    <string name="build_status_sucess">构建成功</string>
+    <string name="msg_output_text_extraction_failed">无法从编辑器获取文本</string>
+    <string name="template_def_app_name">My Application</string>
+    <string name="err_invalid_data_by_intent">Intent 返回了无效数据</string>
+    <string name="msg_select_from_primary_storage">从内部存储中选择目录</string>
+    <string name="err_authority_not_allowed">权限“%s”不允许</string>
 </resources>
