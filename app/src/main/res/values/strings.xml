@@ -310,7 +310,8 @@
   <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
   <string name="title_gradle_service_notification">Gradle build service</string>
   <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
-  <string name="title_cancel_build">Cancel build</string>  <string name="title_warning">Warning</string>
+  <string name="title_cancel_build">Cancel build</string>
+  <string name="title_warning">Warning</string>
   <string name="msg_ndk_currently_unsupported">NDK is currently not officially supported. This template works only after you setup NDK</string>
   <string name="msg_initializing_project">Initializing project</string>
   <string name="msg_project_initialized">Project initialized</string>
@@ -340,11 +341,8 @@
   <string name="build_status_failed">Build failed. See build output for more details.</string>
   <string name="build_status_sucess">Build successful</string>
   <string name="msg_output_text_extraction_failed">Failed to get text from editor</string>
-
-</resources>
   <string name="template_def_app_name">My Application</string>
   <string name="err_invalid_data_by_intent">Intent returned invalid data</string>
   <string name="msg_select_from_primary_storage">Select a directory from primary storage</string>
   <string name="err_authority_not_allowed">Authority \'%s\' not allowed</string>
 </resources>
-
