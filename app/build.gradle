@@ -1,5 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.android.gms.oss-licenses-plugin'
+}
 
 android {
     namespace "com.itsaky.androidide"
@@ -98,7 +101,6 @@ dependencies {
     
     implementation common.editor
     implementation common.utilcode
-    implementation common.file_picker
     implementation common.glide
     implementation common.quickaction
     implementation common.bll
@@ -121,6 +123,7 @@ dependencies {
     implementation androidx.vectors
     implementation androidx.animated_vectors
     implementation google.material
+    implementation google.oss_licenses
     
     // Kotlin
     implementation androidx.ktx
