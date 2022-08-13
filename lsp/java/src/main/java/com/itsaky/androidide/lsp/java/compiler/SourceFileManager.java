@@ -22,7 +22,6 @@ import static java.util.Collections.emptyList;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.CloseUtils;
-import com.google.common.collect.Streams;
 import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
@@ -45,7 +44,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.tools.FileObject;
@@ -138,24 +136,14 @@ public class SourceFileManager extends JavacFileManager {
       } else {
         nodes = node.getChildren().values().stream();
       }
-      
+
       final Stream<JavaFileObject> stream =
           nodes
               .filter(it -> it instanceof SourceClassTrie.SourceNode)
               .map(it -> asJavaFileObject((SourceClassTrie.SourceNode) it));
-      final Set<JavaFileObject> result = stream.collect(Collectors.toSet());
-      LOG.debug(
-          "list(location:",
-          location,
-          "packageName:",
-          packageName,
-          "kinds:",
-          kinds,
-          "recurse:",
-          recurse,
-          "result:",
-          result + ")");
-      return result;
+
+      //noinspection NullableProblems
+      return stream::iterator;
     } else {
       return super.list(location, packageName, kinds, recurse);
     }
@@ -168,7 +156,6 @@ public class SourceFileManager extends JavacFileManager {
       String packageName = packageNameOrEmpty(source.path);
       String className = removeExtension(source.path.getFileName().toString());
       if (!packageName.isEmpty()) className = packageName + "." + className;
-      LOG.debug("inferBinaryName(location:", location, "file:", file, "result:", className + ")");
       return className;
     } else {
       return super.inferBinaryName(location, file);
