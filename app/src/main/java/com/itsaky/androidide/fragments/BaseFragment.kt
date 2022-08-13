@@ -31,11 +31,11 @@ open class BaseFragment : Fragment() {
 
   private var callback: OnDirectoryPickedCallback? = null
   private val allowedAuthorities =
-    setOf(ANDROID_DOCS_AUTHORITY, ANDROIDDIDE_DOCS_AUTHORITY, TERMUX_DOCS_AUTHORITY)
+    setOf(ANDROID_DOCS_AUTHORITY, ANDROIDIDE_DOCS_AUTHORITY, TERMUX_DOCS_AUTHORITY)
 
   companion object {
     const val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
-    const val ANDROIDDIDE_DOCS_AUTHORITY = "com.itsaky.androidide.documents"
+    const val ANDROIDIDE_DOCS_AUTHORITY = "com.itsaky.androidide.documents"
     const val TERMUX_DOCS_AUTHORITY = "com.termux.documents"
   }
 
@@ -66,7 +66,7 @@ open class BaseFragment : Fragment() {
       }
 
       val dir =
-        if (authority == ANDROIDDIDE_DOCS_AUTHORITY || authority == TERMUX_DOCS_AUTHORITY) {
+        if (authority == ANDROIDIDE_DOCS_AUTHORITY || authority == TERMUX_DOCS_AUTHORITY) {
           File(docId)
         } else {
           val split = docId.split(':')
