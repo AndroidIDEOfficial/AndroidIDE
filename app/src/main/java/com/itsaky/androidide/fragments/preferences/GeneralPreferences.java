@@ -17,9 +17,15 @@
  **************************************************************************************/
 package com.itsaky.androidide.fragments.preferences;
 
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_CONFIRM_PROJECT_OPEN;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_OPEN_PROJECTS;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.CONFIRM_PROJECT_OPEN;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.OPEN_PROJECTS;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.TERMINAL_USE_SYSTEM_SHELL;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getUseSystemShell;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setAutoOpenProjects;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setConfirmProjectOpen;
+import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setUseSystemShell;
 
 import android.os.Bundle;
 
@@ -43,24 +49,24 @@ public class GeneralPreferences extends BasePreferenceFragment
     final SwitchPreference confirmProjectOpen = new SwitchPreference(getContext());
     final SwitchPreference shell = new SwitchPreference(getContext());
 
-    openProjects.setKey(KEY_OPEN_PROJECTS);
+    openProjects.setKey(OPEN_PROJECTS);
     openProjects.setTitle(R.string.title_open_projects);
     openProjects.setIcon(R.drawable.ic_open_project);
     openProjects.setSummary(R.string.msg_open_projects);
 
-    confirmProjectOpen.setKey(KEY_CONFIRM_PROJECT_OPEN);
+    confirmProjectOpen.setKey(CONFIRM_PROJECT_OPEN);
     confirmProjectOpen.setTitle(R.string.title_confirm_project_open);
     confirmProjectOpen.setSummary(R.string.msg_confirm_project_open);
     confirmProjectOpen.setIcon(R.drawable.ic_open_project);
 
-    shell.setKey(KEY_TERMINAL_USE_SYSTEM_SHELL);
+    shell.setKey(TERMINAL_USE_SYSTEM_SHELL);
     shell.setTitle(getString(R.string.title_default_shell));
     shell.setSummary(getString(R.string.msg_default_shell));
     shell.setIcon(R.drawable.ic_bash_commands);
 
-    openProjects.setChecked(getPrefManager().autoOpenProject());
-    confirmProjectOpen.setChecked(getPrefManager().confirmProjectOpen());
-    shell.setChecked(getPrefManager().getBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL));
+    openProjects.setChecked(getAutoOpenProjects());
+    confirmProjectOpen.setChecked(getConfirmProjectOpen());
+    shell.setChecked(getUseSystemShell());
 
     screen.addPreference(openProjects);
     screen.addPreference(confirmProjectOpen);
@@ -78,14 +84,14 @@ public class GeneralPreferences extends BasePreferenceFragment
     boolean checked = (Boolean) p2;
     final var key = p1.getKey();
     switch (key) {
-      case KEY_OPEN_PROJECTS:
-        getPrefManager().putBoolean(KEY_OPEN_PROJECTS, checked);
+      case OPEN_PROJECTS:
+        setAutoOpenProjects(checked);
         break;
-      case KEY_CONFIRM_PROJECT_OPEN:
-        getPrefManager().putBoolean(KEY_CONFIRM_PROJECT_OPEN, checked);
+      case CONFIRM_PROJECT_OPEN:
+        setConfirmProjectOpen(checked);
         break;
-      case KEY_TERMINAL_USE_SYSTEM_SHELL:
-        getPrefManager().putBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL, checked);
+      case TERMINAL_USE_SYSTEM_SHELL:
+        setUseSystemShell(checked);
         break;
     }
     return true;

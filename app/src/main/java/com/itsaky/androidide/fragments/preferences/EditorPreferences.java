@@ -17,21 +17,43 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
-import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
-import static com.itsaky.androidide.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_AUTO_SAVE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_DRAW_HEX;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_PASSWORD;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_INNER;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_LIGATURES;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.AUTO_SAVE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.COMPLETIONS_MATCH_LOWER;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.DRAW_HEX;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_PASSWORD;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_LIGATURES;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.GOOGLE_CODE_STYLE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.PRINTABLE_CHARS;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.TAB_SIZE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getAutoSave;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getCompletionsMatchLower;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawEmptyLineWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawHex;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawInnerWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLeadingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLineBreak;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawTrailingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontLigatures;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getGoogleCodeStyle;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getTabSize;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getWordwrap;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawEmptyLineWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawInnerWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawLeadingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawLineBreak;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawTrailingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setFontSize;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setTabSize;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
@@ -43,7 +65,6 @@ import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class EditorPreferences extends BasePreferenceFragment
@@ -71,6 +92,7 @@ public class EditorPreferences extends BasePreferenceFragment
     final var autoSave = new SwitchPreference(getContext());
     final var useGoogleCodeStyle = new SwitchPreference(getContext());
     final var visiblePasswordFlag = new SwitchPreference(getContext());
+    final var useIcu = new SwitchPreference(getContext());
 
     final var completionsMatchLower = new SwitchPreference(getContext());
 
@@ -78,59 +100,64 @@ public class EditorPreferences extends BasePreferenceFragment
     screen.addPreference(javaCategory);
 
     fontSize.setIcon(R.drawable.ic_text_size);
-    fontSize.setKey(KEY_EDITOR_FONT_SIZE);
+    fontSize.setKey(FONT_SIZE);
     fontSize.setTitle(R.string.idepref_editor_fontsize_title);
     fontSize.setSummary(R.string.idepref_editor_fontsize_summary);
 
     wordWrap.setIcon(R.drawable.ic_wrap_text);
-    wordWrap.setKey(PreferenceManager.KEY_EDITOR_WORD_WRAP);
+    wordWrap.setKey(WORD_WRAP);
     wordWrap.setTitle(R.string.idepref_editor_word_wrap_title);
     wordWrap.setSummary(R.string.idepref_editor_word_wrap_summary);
 
     magnifier.setIcon(R.drawable.ic_loupe);
-    magnifier.setKey(PreferenceManager.KEY_EDITOR_USE_MAGNIFER);
+    magnifier.setKey(USE_MAGNIFER);
     magnifier.setTitle(R.string.idepref_editor_use_magnifier_title);
     magnifier.setSummary(R.string.idepref_editor_use_magnifier_summary);
 
     nonPrintable.setIcon(R.drawable.ic_drawing);
-    nonPrintable.setKey(KEY_EDITOR_PRINTABLE_CHARS);
+    nonPrintable.setKey(PRINTABLE_CHARS);
     nonPrintable.setTitle(R.string.idepref_editor_paintingflags_title);
     nonPrintable.setSummary(R.string.idepref_editor_paintingflags_summary);
 
     tabSize.setIcon(R.drawable.ic_tab);
-    tabSize.setKey(KEY_EDITOR_TAB_SIZE);
+    tabSize.setKey(FONT_SIZE);
     tabSize.setTitle(R.string.title_tab_size);
     tabSize.setSummary(R.string.msg_tab_size);
 
     drawHex.setIcon(R.drawable.ic_hexadecimal);
-    drawHex.setKey(KEY_EDITOR_DRAW_HEX);
+    drawHex.setKey(DRAW_HEX);
     drawHex.setTitle(R.string.idepref_editor_drawhexcolors_title);
     drawHex.setSummary(R.string.idepref_editor_drawhexcolors_summary);
 
     fontLigatures.setIcon(R.drawable.ic_font_ligatures);
-    fontLigatures.setKey(KEY_EDITOR_FONT_LIGATURES);
+    fontLigatures.setKey(FONT_LIGATURES);
     fontLigatures.setTitle(getString(R.string.idepref_editor_ligatures_title));
     fontLigatures.setSummary(getString(R.string.idepref_editor_ligatures_summary));
 
     autoSave.setIcon(R.drawable.ic_save);
-    autoSave.setKey(KEY_EDITOR_AUTO_SAVE);
+    autoSave.setKey(AUTO_SAVE);
     autoSave.setTitle(getString(R.string.idepref_editor_autoSave_title));
     autoSave.setSummary(getString(R.string.idepref_editor_autoSave_summary));
 
-    completionsMatchLower.setKey(KEY_COMPLETIONS_MATCH_LOWER);
+    completionsMatchLower.setKey(COMPLETIONS_MATCH_LOWER);
     completionsMatchLower.setIcon(R.drawable.ic_text_lower);
     completionsMatchLower.setTitle(getString(R.string.idepref_java_matchLower_title));
     completionsMatchLower.setSummary(getString(R.string.idepref_java_matchLower_summary));
 
     useGoogleCodeStyle.setIcon(R.drawable.ic_format_code);
-    useGoogleCodeStyle.setKey(KEY_JAVA_PREF_GOOGLE_CODE_STYLE);
+    useGoogleCodeStyle.setKey(GOOGLE_CODE_STYLE);
     useGoogleCodeStyle.setTitle(getString(R.string.idepref_java_useGoogleStyle_title));
     useGoogleCodeStyle.setSummary(getString(R.string.idepref_java_useGoogleStyle_summary));
 
     visiblePasswordFlag.setIcon(R.drawable.ic_password_input);
-    visiblePasswordFlag.setKey(KEY_EDITOR_FLAG_PASSWORD);
+    visiblePasswordFlag.setKey(FLAG_PASSWORD);
     visiblePasswordFlag.setTitle(getString(R.string.idepref_visiblePassword_title));
     visiblePasswordFlag.setSummary(getString(R.string.idepref_visiblePassword_summary));
+    
+    useIcu.setIcon(R.drawable.ic_expand_selection);
+    useIcu.setKey(USE_ICU);
+    useIcu.setTitle(getString(R.string.idepref_useIcu_title));
+    useIcu.setSummary(getString(R.string.idepref_useIcu_summary));
 
     commonCategory.setTitle(getString(R.string.idepref_editor_category_common));
     commonCategory.addPreference(fontSize);
@@ -143,6 +170,7 @@ public class EditorPreferences extends BasePreferenceFragment
     commonCategory.addPreference(nonPrintable);
     commonCategory.addPreference(drawHex);
     commonCategory.addPreference(autoSave);
+    commonCategory.addPreference(useIcu);
 
     javaCategory.setTitle(getString(R.string.idepref_editor_category_java));
     javaCategory.addPreference(useGoogleCodeStyle);
@@ -160,18 +188,17 @@ public class EditorPreferences extends BasePreferenceFragment
     visiblePasswordFlag.setOnPreferenceChangeListener(this);
     wordWrap.setOnPreferenceChangeListener(this);
     magnifier.setOnPreferenceChangeListener(this);
+    useIcu.setOnPreferenceChangeListener(this);
 
-    fontLigatures.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FONT_LIGATURES, true));
-    drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
-    autoSave.setChecked(getPrefManager().getBoolean(KEY_EDITOR_AUTO_SAVE, false));
-    completionsMatchLower.setChecked(
-        getPrefManager().getBoolean(KEY_COMPLETIONS_MATCH_LOWER, false));
-    useGoogleCodeStyle.setChecked(
-        getPrefManager().getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false));
-    visiblePasswordFlag.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FLAG_PASSWORD, true));
-    wordWrap.setChecked(getPrefManager().getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false));
-    magnifier.setChecked(
-        getPrefManager().getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true));
+    fontLigatures.setChecked(getFontLigatures());
+    drawHex.setChecked(getDrawHex());
+    autoSave.setChecked(getAutoSave());
+    completionsMatchLower.setChecked(getCompletionsMatchLower());
+    useGoogleCodeStyle.setChecked(getGoogleCodeStyle());
+    visiblePasswordFlag.setChecked(getVisiblePasswordFlag());
+    wordWrap.setChecked(getWordwrap());
+    magnifier.setChecked(getUseMagnifier());
+    useIcu.setChecked(getUseIcu());
   }
 
   @Override
@@ -185,13 +212,13 @@ public class EditorPreferences extends BasePreferenceFragment
   public boolean onPreferenceClick(@NonNull Preference preference) {
     final String key = preference.getKey();
     switch (key) {
-      case KEY_EDITOR_FONT_SIZE:
+      case FONT_SIZE:
         showTextSizeDialog();
         break;
-      case KEY_EDITOR_PRINTABLE_CHARS:
+      case PRINTABLE_CHARS:
         showPrintableCharsDialog();
         break;
-      case KEY_EDITOR_TAB_SIZE:
+      case TAB_SIZE:
         showTabSizeDialog();
         break;
     }
@@ -202,33 +229,32 @@ public class EditorPreferences extends BasePreferenceFragment
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(getContext());
     final String[] sizes = new String[] {"2", "4", "6", "8"};
 
-    int current = (getPrefManager().getEditorTabSize() / 2) - 1;
+    int current = (getTabSize() / 2) - 1;
     if (current < 0 || current >= sizes.length) {
       current = 1;
     }
 
     builder.setTitle(R.string.title_tab_size);
-    builder.setSingleChoiceItems(
-        sizes,
-        current,
-        (d, i) -> {
-          d.dismiss();
-
-          int tabSize = (i + 1) * 2;
-          if (tabSize < 2 || tabSize > 8) {
-            tabSize = 4;
-          }
-          getPrefManager().putInt(KEY_EDITOR_TAB_SIZE, tabSize);
-        });
+    builder.setSingleChoiceItems(sizes, current, this::changeTabSize);
     builder.setCancelable(true);
     builder.show();
+  }
+
+  private void changeTabSize(final DialogInterface dialog, final int position) {
+    dialog.dismiss();
+
+    int tabSize = (position + 1) * 2;
+    if (tabSize < 2 || tabSize > 8) {
+      tabSize = 4;
+    }
+    setTabSize(tabSize);
   }
 
   private void showTextSizeDialog() {
     final LayoutTextSizeSliderBinding binding =
         LayoutTextSizeSliderBinding.inflate(LayoutInflater.from(getContext()));
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(getContext());
-    float size = getPrefManager().getFloat(KEY_EDITOR_FONT_SIZE, 14);
+    float size = getFontSize();
     if (size < 6 || size > 32) {
       size = 14;
     }
@@ -251,7 +277,7 @@ public class EditorPreferences extends BasePreferenceFragment
   }
 
   private void changeTextSize(LayoutTextSizeSliderBinding binding, float size) {
-    getPrefManager().putFloat(KEY_EDITOR_FONT_SIZE, size);
+    setFontSize(size);
     binding.slider.setValue(size);
   }
 
@@ -264,32 +290,32 @@ public class EditorPreferences extends BasePreferenceFragment
       "Line breaks"
     };
     final boolean[] checked = {
-      getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_LEADING, true),
-      getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_TRAILING, false),
-      getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_INNER, true),
-      getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, true),
-      getPrefManager().getBoolean(KEY_EDITOR_FLAG_LINE_BREAK, true)
+      getDrawLeadingWs(),
+      getDrawTrailingWs(),
+      getDrawInnerWs(),
+      getDrawEmptyLineWs(),
+      getDrawLineBreak()
     };
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(getContext());
     builder.setTitle(R.string.idepref_editor_paintingflags_title);
     builder.setMultiChoiceItems(
-        labels,
-        checked,
-        (dialog, which, isChecked) -> {
-          if (which == 0) {
-            getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_LEADING, isChecked);
-          } else if (which == 1) {
-            getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_TRAILING, isChecked);
-          } else if (which == 2) {
-            getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_INNER, isChecked);
-          } else if (which == 3) {
-            getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, isChecked);
-          } else if (which == 4) {
-            getPrefManager().putBoolean(KEY_EDITOR_FLAG_LINE_BREAK, isChecked);
-          }
-        });
+        labels, checked, (dialog, which, draw) -> changePaintingFlag(which, draw));
     builder.setPositiveButton(android.R.string.ok, null);
     builder.setCancelable(false);
     builder.show();
+  }
+
+  private void changePaintingFlag(final int which, final boolean draw) {
+    if (which == 0) {
+      setDrawLeadingWs(draw);
+    } else if (which == 1) {
+      setDrawTrailingWs(draw);
+    } else if (which == 2) {
+      setDrawInnerWs(draw);
+    } else if (which == 3) {
+      setDrawEmptyLineWs(draw);
+    } else if (which == 4) {
+      setDrawLineBreak(draw);
+    }
   }
 }

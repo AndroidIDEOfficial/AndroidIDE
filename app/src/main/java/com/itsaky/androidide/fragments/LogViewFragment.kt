@@ -27,17 +27,15 @@ import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.language.log.LogLanguage
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.TypefaceUtils
 
 /**
- * Fragment to show logs in a [androidx.recyclerview.widget.RecyclerView].
+ * Fragment to show logs.
  * @author Akash Yadav
  */
 abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
   var binding: FragmentLogBinding? = null
 
   fun appendLog(line: LogLine) {
@@ -95,15 +93,15 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     super.onDestroy()
     this.binding = null
   }
-  
+
   override fun getContent(): String {
     if (this.binding == null) {
       return ""
     }
-    
+
     return this.binding!!.editor.text.toString()
   }
-  
+
   override fun clearOutput() {
     binding?.editor?.setText("")
   }

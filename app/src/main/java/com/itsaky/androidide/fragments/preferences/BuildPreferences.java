@@ -17,7 +17,28 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_TP_FIX;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.CUSTOM_GRADLE_INSTALLATION;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.GRADLE_CLEAR_CACHE;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.GRADLE_COMMANDS;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.TP_FIX;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.getGradleInstallationDir;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.getTpFix;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isBuildCacheEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isDebugEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isInfoEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isOfflineEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isScanEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isStacktraceEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isWarningModeAllEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setBuildCacheEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setDebugEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setGradleInstallationDir;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setInfoEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setOfflineEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setScanEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setStacktraceEnabled;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setTpFix;
+import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.setWarningModeAllEnabled;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -35,19 +56,12 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.ILogger;
 
 import java.io.File;
 import java.util.Objects;
 
 public class BuildPreferences extends BasePreferenceFragment
     implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
-
-  public static final String KEY_GRADLE_COMMANDS = "idepref_build_gradleCommands";
-  public static final String KEY_GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache";
-  public static final String KEY_CUSTOM_GRADLE_INSTALLATION =
-      "idepref_build_customGradleInstallation";
-  private static final ILogger LOG = ILogger.newInstance("BuildPreferences");
 
   private ProgressSheet progressSheet;
 
@@ -63,17 +77,17 @@ public class BuildPreferences extends BasePreferenceFragment
 
     screen.addPreference(categoryGradle);
 
-    customCommands.setKey(KEY_GRADLE_COMMANDS);
+    customCommands.setKey(GRADLE_COMMANDS);
     customCommands.setIcon(R.drawable.ic_bash_commands);
     customCommands.setTitle(R.string.idepref_build_customgradlecommands_title);
     customCommands.setSummary(R.string.idepref_build_customgradlecommands_summary);
 
-    customInstallation.setKey(KEY_CUSTOM_GRADLE_INSTALLATION);
+    customInstallation.setKey(CUSTOM_GRADLE_INSTALLATION);
     customInstallation.setIcon(R.drawable.ic_gradle);
     customInstallation.setTitle(getString(R.string.idepref_title_customGradleInstallation));
     customInstallation.setSummary(getString(R.string.idepref_msg_customGradleInstallation));
 
-    clearCache.setKey(KEY_GRADLE_CLEAR_CACHE);
+    clearCache.setKey(GRADLE_CLEAR_CACHE);
     clearCache.setIcon(R.drawable.ic_delete);
     clearCache.setTitle(R.string.idepref_build_clearCache_title);
     clearCache.setSummary(R.string.idepref_build_clearCache_summary);
@@ -86,11 +100,11 @@ public class BuildPreferences extends BasePreferenceFragment
     // Works only for Android 11
     if (BaseApplication.isAarch64() && Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
       final var tpFix = new SwitchPreference(getContext());
-      tpFix.setKey(KEY_TP_FIX);
+      tpFix.setKey(TP_FIX);
       tpFix.setIcon(R.drawable.ic_language_java);
       tpFix.setTitle(getString(R.string.idepref_title_tpFix));
       tpFix.setSummary(getString(R.string.idepref_msg_tpFix));
-      tpFix.setChecked(getPrefManager().shouldUseLdPreload());
+      tpFix.setChecked(getTpFix());
       tpFix.setOnPreferenceChangeListener(this);
 
       categoryGradle.addPreference(tpFix);
@@ -107,13 +121,13 @@ public class BuildPreferences extends BasePreferenceFragment
   public boolean onPreferenceClick(Preference p1) {
     final String key = p1.getKey();
     switch (key) {
-      case KEY_GRADLE_COMMANDS:
+      case GRADLE_COMMANDS:
         showGradleCommandsDialog();
         break;
-      case KEY_GRADLE_CLEAR_CACHE:
+      case GRADLE_CLEAR_CACHE:
         showClearCacheDialog();
         break;
-      case KEY_CUSTOM_GRADLE_INSTALLATION:
+      case CUSTOM_GRADLE_INSTALLATION:
         changeGradleDist();
         break;
     }
@@ -127,8 +141,7 @@ public class BuildPreferences extends BasePreferenceFragment
     binding.name.setHint(R.string.msg_gradle_installation_path);
     binding.name.setHelperText(getString(R.string.msg_gradle_installation_input_help));
     binding.name.setCounterEnabled(false);
-    Objects.requireNonNull(binding.name.getEditText())
-        .setText(getPrefManager().getString(KEY_CUSTOM_GRADLE_INSTALLATION, ""));
+    Objects.requireNonNull(binding.name.getEditText()).setText(getGradleInstallationDir());
     builder
         .setTitle(R.string.idepref_title_customGradleInstallation)
         .setView(binding.getRoot())
@@ -137,7 +150,7 @@ public class BuildPreferences extends BasePreferenceFragment
             (dialogInterface, i) -> {
               final var path =
                   Objects.requireNonNull(binding.name.getEditText()).getText().toString().trim();
-              getPrefManager().putString(KEY_CUSTOM_GRADLE_INSTALLATION, path);
+              setGradleInstallationDir(path);
             })
         .setNegativeButton(
             android.R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
@@ -155,34 +168,34 @@ public class BuildPreferences extends BasePreferenceFragment
       "--offline"
     };
     final boolean[] checked = {
-      getPrefManager().isStackTraceEnabled(),
-      getPrefManager().isGradleInfoEnabled(),
-      getPrefManager().isGradleDebugEnabled(),
-      getPrefManager().isGradleScanEnabled(),
-      getPrefManager().isGradleWarningEnabled(),
-      getPrefManager().isGradleBuildCacheEnabled(),
-      getPrefManager().isGradleOfflineModeEnabled()
+      isStacktraceEnabled(),
+      isInfoEnabled(),
+      isDebugEnabled(),
+      isScanEnabled(),
+      isWarningModeAllEnabled(),
+      isBuildCacheEnabled(),
+      isOfflineEnabled()
     };
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(getContext());
     builder.setTitle(R.string.idepref_build_customgradlecommands_title);
     builder.setMultiChoiceItems(
         labels,
         checked,
-        (p1, p2, p3) -> {
+        (p1, p2, enabled) -> {
           if (p2 == 0) {
-            getPrefManager().setGradleStacktraceEnabled(p3);
+            setStacktraceEnabled(enabled);
           } else if (p2 == 1) {
-            getPrefManager().setGradleInfoEnabled(p3);
+            setInfoEnabled(enabled);
           } else if (p2 == 2) {
-            getPrefManager().setGradleDebugEnabled(p3);
+            setDebugEnabled(enabled);
           } else if (p2 == 3) {
-            getPrefManager().setGradleScanEnabled(p3);
+            setScanEnabled(enabled);
           } else if (p2 == 4) {
-            getPrefManager().setGradleWarningEnabled(p3);
+            setWarningModeAllEnabled(enabled);
           } else if (p2 == 5) {
-            getPrefManager().setGradleBuildCacheEnabled(p3);
+            setBuildCacheEnabled(enabled);
           } else if (p2 == 6) {
-            getPrefManager().setGradleOfflineModeEnabled(p3);
+            setOfflineEnabled(enabled);
           }
         });
     builder.setPositiveButton(android.R.string.ok, null);
@@ -223,8 +236,8 @@ public class BuildPreferences extends BasePreferenceFragment
   @Override
   public boolean onPreferenceChange(final Preference preference, final Object newValue) {
     final var key = preference.getKey();
-    if (KEY_TP_FIX.equals(key)) {
-      getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
+    if (TP_FIX.equals(key)) {
+      setTpFix(((boolean) newValue));
     }
     return true;
   }

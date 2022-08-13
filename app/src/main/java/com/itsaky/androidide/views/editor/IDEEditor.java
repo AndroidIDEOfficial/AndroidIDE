@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -49,7 +51,6 @@ import com.itsaky.androidide.lsp.models.ShowDocumentParams;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.DiagnosticUtil;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -298,9 +299,7 @@ public class IDEEditor extends CodeEditor {
         EditorInfo.TYPE_CLASS_TEXT
             | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
             | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-    if (StudioApp.getInstance()
-        .getPrefManager()
-        .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
+    if (getVisiblePasswordFlag()) {
       flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
 

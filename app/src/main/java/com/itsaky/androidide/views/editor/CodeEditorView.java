@@ -16,16 +16,26 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_PASSWORD;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_INNER;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_LIGATURES;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_MAGNIFER;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_WORD_WRAP;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_LINE_BREAK;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_PASSWORD;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_INNER;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_LEADING;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_TRAILING;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_LIGATURES;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawEmptyLineWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawInnerWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLeadingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLineBreak;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawTrailingWs;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontLigatures;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -50,8 +60,8 @@ import com.itsaky.androidide.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
@@ -273,22 +283,21 @@ public class CodeEditorView extends FrameLayout {
   }
 
   private void configureEditorIfNeeded() {
-    final var prefs = StudioApp.getInstance().getPrefManager();
-    onFontSizePrefChanged(prefs);
-    onFontLigaturesPrefChanged(prefs);
-    onPrintingFlagsPrefChanged(prefs);
+    onFontSizePrefChanged();
+    onFontLigaturesPrefChanged();
+    onPrintingFlagsPrefChanged();
     onInputTypePrefChanged();
-    onWordwrapPrefChanged(prefs);
-    onMagnifierPrefChanged(prefs);
+    onWordwrapPrefChanged();
+    onMagnifierPrefChanged();
+    onUseIcuPrefChanged();
   }
 
-  protected void onMagnifierPrefChanged(final PreferenceManager prefs) {
-    var enabled = prefs.getBoolean(KEY_EDITOR_USE_MAGNIFER, true);
-    binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
+  protected void onMagnifierPrefChanged() {
+    binding.editor.getComponent(Magnifier.class).setEnabled(getUseMagnifier());
   }
 
-  protected void onWordwrapPrefChanged(final PreferenceManager prefs) {
-    var enabled = prefs.getBoolean(KEY_EDITOR_WORD_WRAP, false);
+  protected void onWordwrapPrefChanged() {
+    var enabled = EditorPreferencesKt.getWordwrap();
     binding.editor.setWordwrap(enabled);
   }
 
@@ -296,43 +305,47 @@ public class CodeEditorView extends FrameLayout {
     binding.editor.setInputType(IDEEditor.createInputFlags());
   }
 
-  protected void onPrintingFlagsPrefChanged(final PreferenceManager prefs) {
+  protected void onPrintingFlagsPrefChanged() {
     int flags = 0;
-    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_LEADING, true)) {
+    if (getDrawLeadingWs()) {
       flags |= IDEEditor.FLAG_DRAW_WHITESPACE_LEADING;
     }
 
-    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_TRAILING, false)) {
+    if (getDrawTrailingWs()) {
       flags |= IDEEditor.FLAG_DRAW_WHITESPACE_TRAILING;
     }
 
-    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_INNER, true)) {
+    if (getDrawInnerWs()) {
       flags |= IDEEditor.FLAG_DRAW_WHITESPACE_INNER;
     }
 
-    if (prefs.getBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, true)) {
+    if (getDrawEmptyLineWs()) {
       flags |= IDEEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE;
     }
 
-    if (prefs.getBoolean(KEY_EDITOR_FLAG_LINE_BREAK, true)) {
+    if (getDrawLineBreak()) {
       flags |= IDEEditor.FLAG_DRAW_LINE_SEPARATOR;
     }
 
     binding.editor.setNonPrintablePaintingFlags(flags);
   }
 
-  protected void onFontLigaturesPrefChanged(final PreferenceManager prefs) {
-    var enabled = prefs.getBoolean(KEY_EDITOR_FONT_LIGATURES, true);
+  protected void onFontLigaturesPrefChanged() {
+    var enabled = getFontLigatures();
     binding.editor.setLigatureEnabled(enabled);
   }
 
-  protected void onFontSizePrefChanged(final PreferenceManager prefs) {
-    float textSize = prefs.getFloat(KEY_EDITOR_FONT_SIZE);
+  protected void onFontSizePrefChanged() {
+    float textSize = getFontSize();
     if (textSize < 6 || textSize > 32) {
       textSize = 14;
     }
 
     binding.editor.setTextSize(textSize);
+  }
+  
+  private void onUseIcuPrefChanged() {
+    binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -344,31 +357,34 @@ public class CodeEditorView extends FrameLayout {
 
     final var prefs = StudioApp.getInstance().getPrefManager();
     switch (event.getKey()) {
-      case KEY_EDITOR_FONT_SIZE:
-        onFontSizePrefChanged(prefs);
+      case FONT_SIZE:
+        onFontSizePrefChanged();
         break;
-      case KEY_EDITOR_FONT_LIGATURES:
-        onFontLigaturesPrefChanged(prefs);
+      case FONT_LIGATURES:
+        onFontLigaturesPrefChanged();
         break;
-      case KEY_EDITOR_FLAG_LINE_BREAK:
-      case KEY_EDITOR_FLAG_WS_INNER:
-      case KEY_EDITOR_FLAG_WS_EMPTY_LINE:
-      case KEY_EDITOR_FLAG_WS_LEADING:
-      case KEY_EDITOR_FLAG_WS_TRAILING:
-        onPrintingFlagsPrefChanged(prefs);
+      case FLAG_LINE_BREAK:
+      case FLAG_WS_INNER:
+      case FLAG_WS_EMPTY_LINE:
+      case FLAG_WS_LEADING:
+      case FLAG_WS_TRAILING:
+        onPrintingFlagsPrefChanged();
         break;
-      case KEY_EDITOR_FLAG_PASSWORD:
+      case FLAG_PASSWORD:
         onInputTypePrefChanged();
         break;
-      case KEY_EDITOR_WORD_WRAP:
-        onWordwrapPrefChanged(prefs);
+      case WORD_WRAP:
+        onWordwrapPrefChanged();
         break;
-      case KEY_EDITOR_USE_MAGNIFER:
-        onMagnifierPrefChanged(prefs);
+      case USE_MAGNIFER:
+        onMagnifierPrefChanged();
+        break;
+      case USE_ICU:
+        onUseIcuPrefChanged();
         break;
     }
   }
-
+  
   public boolean save() {
     final var file = getFile();
     if (file == null) {

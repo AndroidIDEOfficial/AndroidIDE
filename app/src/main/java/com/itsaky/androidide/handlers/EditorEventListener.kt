@@ -20,7 +20,7 @@ package com.itsaky.androidide.handlers
 import android.content.DialogInterface
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.managers.PreferenceManager
+import com.itsaky.androidide.models.prefs.isFirstBuild
 import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
@@ -44,8 +44,7 @@ class EditorEventListener : GradleBuildService.EventListener {
   }
 
   override fun prepareBuild() {
-    val isFirstBuild =
-      activity().app.prefManager.getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true)
+    val isFirstBuild = isFirstBuild
     activity()
       .setStatus(
         activity().getString(if (isFirstBuild) string.preparing_first else string.preparing)
@@ -54,7 +53,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     if (isFirstBuild) {
       activity().showFirstBuildNotice()
     }
-  
+
     activity().viewModel.progressBarVisible.value = true
   }
 
@@ -62,7 +61,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     analyzeCurrentFile()
     appendOutputSeparator()
 
-    activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+    isFirstBuild = false
     activity().viewModel.progressBarVisible.value = false
     activity().invalidateOptionsMenu()
   }
@@ -83,7 +82,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     analyzeCurrentFile()
     appendOutputSeparator()
 
-    activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+    isFirstBuild = false
     activity().viewModel.progressBarVisible.value = false
     activity().invalidateOptionsMenu()
   }
