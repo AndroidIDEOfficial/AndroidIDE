@@ -1,7 +1,16 @@
 <resources>
+    <string name="title_gradle_service_notification_channel">AndroidIDE Gradle 构建服务</string>
     <string name="msg_hex_color_code">十六进制颜色代码</string>
     <string name="msg_color_picker_pick">选择</string>
     <string name="msg_chmod_exec">正在设置可执行权限…</string>
     <string name="msg_linking">正在将 %1$s 链接到 %2$s</string>
     <string name="msg_extracting_hooks">正在提取钩子库…</string>
+    <string name="msg_empty_package">包名为空</string>
+    <string name="msg_package_is_not_valid">包名无效</string>
+    <string name="msg_package_is_to_long">包名过长</string>
+    <string name="msg_package_not_valid_char_1">符号“_”不能作为包名首字符</string>
+    <string name="msg_package_not_use_digit_first">数字不能作为包名首字符</string>
+    <string name="msg_package_not_valid_char_2">字符“%1$s”不能作为安卓应用程序包名</string>
+    <string name="msg_package_mus_have_dot">包名至少要有一个“.”分隔符</string>
+    
 </resources>
