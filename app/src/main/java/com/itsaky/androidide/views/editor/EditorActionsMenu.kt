@@ -290,7 +290,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
   private fun getDiagnosticAtCursor(): com.itsaky.androidide.lsp.models.DiagnosticItem? {
     val start = editor.cursorRange.start
-    return editor.mLanguageClient?.getDiagnosticAt(editor.file, start.line, start.column)
+    return editor.languageClient?.getDiagnosticAt(editor.file, start.line, start.column)
   }
 
   override fun onExec(action: ActionItem, result: Any) {

@@ -41,7 +41,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   init {
-    mAdapter = ReflectUtils.reflect(this).field("mAdapter").get()
+    mAdapter = ReflectUtils.reflect(this).field("adapter").get()
   }
 
   override fun setLayout(layout: CompletionLayout) {
@@ -78,15 +78,15 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
   }
 
   override fun cancelCompletion() {
-    if (mThread != null) {
-      ProgressManager.instance.cancel(mThread)
+    if (completionThread != null) {
+      ProgressManager.instance.cancel(completionThread)
     }
     super.cancelCompletion()
     popup.dismiss()
   }
 
   override fun requireCompletion() {
-    if (mCancelShowUp || !isEnabled) {
+    if (cancelShowUp || !isEnabled) {
       return
     }
     val text = editor.text
@@ -94,13 +94,13 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       hide()
       return
     }
-    if (System.nanoTime() - mRequestTime < editor.props.cancelCompletionNs) {
+    if (System.nanoTime() - requestTime < editor.props.cancelCompletionNs) {
       hide()
-      mRequestTime = System.nanoTime()
+      requestTime = System.nanoTime()
       return
     }
     cancelCompletion()
-    mRequestTime = System.nanoTime()
+    requestTime = System.nanoTime()
     setCurrent(-1)
     val reference = AtomicReference<List<CompletionItem>>()
     val publisher =
@@ -112,7 +112,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
           mItems.addAll(newItems)
           mAdapter!!.notifyDataSetChanged()
           val newHeight = (mAdapter!!.itemHeight * mAdapter!!.count).toFloat()
-          setSize(width, min(newHeight, mMaxHeight.toFloat()).toInt())
+          setSize(width, min(newHeight, maxHeight.toFloat()).toInt())
           if (!popup.isShowing) {
             dismiss()
             show()
@@ -126,17 +126,17 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     publisher.setUpdateThreshold(1)
     reference.set(publisher.items)
 
-    mThread = CompletionThread(mRequestTime, publisher)
-    mThread.name = "CompletionThread-$mRequestTime"
+    completionThread = CompletionThread(requestTime, publisher)
+    completionThread.name = "CompletionThread-$requestTime"
 
     setLoading(true)
 
-    mThread.start()
+    completionThread.start()
   }
 
   private fun setCurrent(pos: Int) {
     try {
-      val field = EditorAutoCompletion::class.java.getDeclaredField("mCurrent")
+      val field = EditorAutoCompletion::class.java.getDeclaredField("currentSelection")
       field.isAccessible = true
       field.set(this, pos)
     } catch (e: Throwable) {

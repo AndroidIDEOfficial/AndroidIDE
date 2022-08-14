@@ -25,7 +25,6 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
@@ -43,14 +42,12 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.models.Command;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
-import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.lsp.models.ShowDocumentParams;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
-import com.itsaky.androidide.lsp.util.DiagnosticUtil;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -61,7 +58,6 @@ import com.itsaky.toaster.Toaster;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
@@ -76,14 +72,14 @@ public class IDEEditor extends CodeEditor {
 
   public static final String KEY_FILE = "editor_file";
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
-  private final EditorActionsMenu mActionsPopup;
-  private IDEEditorSearcher mSearcher;
-  private int mFileVersion;
+  private final EditorActionsMenu actionsMenu;
+  private IDEEditorSearcher searcher;
+  private int fileVersion;
   private File file;
-  private ILanguageServer mLanguageServer;
-  private SignatureHelpWindow mSignatureHelpWindow;
-  private DiagnosticWindow mDiagnosticWindow;
-  IDELanguageClientImpl mLanguageClient;
+  private ILanguageServer languageServer;
+  private SignatureHelpWindow signatureHelpWindow;
+  private DiagnosticWindow diagnosticWindow;
+  IDELanguageClientImpl languageClient;
 
   public IDEEditor(Context context) {
     this(context, null);
@@ -100,8 +96,8 @@ public class IDEEditor extends CodeEditor {
   public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
 
-    mActionsPopup = new EditorActionsMenu(this);
-    mActionsPopup.init();
+    actionsMenu = new EditorActionsMenu(this);
+    actionsMenu.init();
 
     final var window = new EditorCompletionWindow(this);
     window.setAdapter(new CompletionListAdapter());
@@ -117,7 +113,7 @@ public class IDEEditor extends CodeEditor {
   }
 
   private void handleSelectionChange(@NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
-    if (event.isSelected() || mLanguageClient == null) {
+    if (event.isSelected() || languageClient == null) {
       // do not show diagnostics when text is selected
       // or if we cannot get diagnostics
       return;
@@ -127,15 +123,15 @@ public class IDEEditor extends CodeEditor {
     final var column = event.getLeft().column;
 
     // diagnostics are expected to be sorted, so, we do a binary search
-    getDiagnosticWindow().showDiagnostic(mLanguageClient.getDiagnosticAt(getFile(), line, column));
+    getDiagnosticWindow().showDiagnostic(languageClient.getDiagnosticAt(getFile(), line, column));
   }
 
   private DiagnosticWindow getDiagnosticWindow() {
-    if (mDiagnosticWindow == null) {
-      mDiagnosticWindow = new DiagnosticWindow(this);
+    if (diagnosticWindow == null) {
+      diagnosticWindow = new DiagnosticWindow(this);
     }
 
-    return mDiagnosticWindow;
+    return diagnosticWindow;
   }
 
   /**
@@ -172,7 +168,7 @@ public class IDEEditor extends CodeEditor {
     }
 
     final var openEvent =
-        new DocumentOpenEvent(getFile().toPath(), getText().toString(), mFileVersion = 0);
+        new DocumentOpenEvent(getFile().toPath(), getText().toString(), fileVersion = 0);
     EventBus.getDefault().post(openEvent);
   }
 
@@ -182,7 +178,7 @@ public class IDEEditor extends CodeEditor {
    * @param event The content change event.
    */
   private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (getFile() == null || mLanguageServer == null) {
+    if (getFile() == null || languageServer == null) {
       return;
     }
 
@@ -221,11 +217,11 @@ public class IDEEditor extends CodeEditor {
    * response, shows the signature help in a popup window.
    */
   public void signatureHelp() {
-    if (mLanguageServer != null && getFile() != null) {
+    if (languageServer != null && getFile() != null) {
       final CompletableFuture<SignatureHelp> future =
           CompletableFuture.supplyAsync(
               () ->
-                  mLanguageServer.signatureHelp(
+                  languageServer.signatureHelp(
                       new SignatureHelpParams(
                           getFile().toPath(),
                           new Position(getCursor().getLeftLine(), getCursor().getLeftColumn()))));
@@ -233,7 +229,7 @@ public class IDEEditor extends CodeEditor {
       future.whenComplete(
           (help, error) -> {
             if (help == null
-                || mLanguageClient == null
+                || languageClient == null
                 || future.isCancelled()
                 || future.isCompletedExceptionally()) {
               LOG.error("An error occurred while finding signature help", error);
@@ -256,11 +252,11 @@ public class IDEEditor extends CodeEditor {
   }
 
   private SignatureHelpWindow getSignatureHelpWindow() {
-    if (mSignatureHelpWindow == null) {
-      mSignatureHelpWindow = new SignatureHelpWindow(this);
+    if (signatureHelpWindow == null) {
+      signatureHelpWindow = new SignatureHelpWindow(this);
     }
 
-    return mSignatureHelpWindow;
+    return signatureHelpWindow;
   }
 
   protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
@@ -290,7 +286,7 @@ public class IDEEditor extends CodeEditor {
 
     final var changeEvent =
         new DocumentChangeEvent(
-            file, getText().toString(), mFileVersion + 1, type, changeDelta, changeRange);
+            file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
     EventBus.getDefault().post(changeEvent);
   }
 
@@ -307,14 +303,12 @@ public class IDEEditor extends CodeEditor {
   }
 
   public void analyze() {
-    if (mLanguageServer != null
-        && getFile() != null
-        && getEditorLanguage() instanceof IDELanguage) {
-      CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
+    if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
+      CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
           .whenComplete(
               (diagnostics, throwable) -> {
-                if (mLanguageClient != null) {
-                  mLanguageClient.publishDiagnostics(diagnostics);
+                if (languageClient != null) {
+                  languageClient.publishDiagnostics(diagnostics);
                 }
               });
     }
@@ -337,10 +331,10 @@ public class IDEEditor extends CodeEditor {
    *     features.
    */
   public void setLanguageServer(ILanguageServer server) {
-    this.mLanguageServer = server;
+    this.languageServer = server;
 
-    if (mLanguageClient == null && IDELanguageClientImpl.isInitialized()) {
-      mLanguageClient = IDELanguageClientImpl.getInstance();
+    if (languageClient == null && IDELanguageClientImpl.isInitialized()) {
+      languageClient = IDELanguageClientImpl.getInstance();
     }
   }
 
@@ -370,70 +364,6 @@ public class IDEEditor extends CodeEditor {
     setSelection(line, 0);
   }
 
-  /** Comment the line of the left cursor. */
-  public void commentLine() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var text = getText();
-    final var name = getFile().getName();
-    int line = getCursor().getLeftLine();
-    if (name.endsWith(".java") || name.endsWith(".gradle")) {
-      while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-        if (!text.getLineString(line).trim().startsWith("//")) {
-          text.insert(line, 0, "//");
-        }
-        line++;
-      }
-    } else if (name.endsWith(".xml")) {
-      while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-        final String lineString = text.getLineString(line);
-        if (!lineString.trim().startsWith("<!--") && !lineString.trim().endsWith("-->")) {
-          text.replace(
-              line, 0, line, text.getColumnCount(line), "<!--".concat(lineString).concat("-->"));
-        }
-        line++;
-      }
-    }
-  }
-
-  /** Uncomment the current line */
-  public void uncommentLine() {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var text = getText();
-    final String name = getFile().getName();
-    int line = getCursor().getLeftLine();
-    if (name.endsWith(".java") || name.endsWith(".gradle")) {
-      while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-        String l = text.getLineString(line);
-        if (l.trim().startsWith("//")) {
-          int i = l.indexOf("//");
-          text.delete(line, i, line, i + 2);
-        }
-        line++;
-      }
-    } else if (name.endsWith(".xml")) {
-      final String commentStart = "<!--";
-      final String commentEnd = "-->";
-      while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-        String l = text.getLineString(line);
-        if (l.trim().startsWith(commentStart)) {
-          int i = l.indexOf(commentStart);
-          text.delete(line, i, line, i + commentStart.length());
-        }
-        if (l.trim().endsWith(commentEnd)) {
-          int count = text.getColumnCount(line);
-          text.delete(line, count - commentEnd.length(), line, count);
-        }
-        line++;
-      }
-    }
-  }
-
   /**
    * If any language server is set, asks the language server to find the definition of token at the
    * cursor position.
@@ -441,7 +371,7 @@ public class IDEEditor extends CodeEditor {
    * <p>If the server returns a valid response, and the file specified in the response is same the
    * file in this editor, the range specified in the response will be selected.
    */
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings({"deprecation", "unused"})
   public void findDefinition() {
     if (getFile() == null) {
       return;
@@ -461,13 +391,13 @@ public class IDEEditor extends CodeEditor {
                         new com.itsaky.androidide.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()));
 
-                return mLanguageServer.findDefinition(params);
+                return languageServer.findDefinition(params);
               });
 
       future.whenComplete(
           (result, error) -> {
             if (result == null
-                || mLanguageClient == null
+                || languageClient == null
                 || future.isCancelled()
                 || future.isCompletedExceptionally()) {
               LOG.error("An error occurred while finding definition", error);
@@ -491,10 +421,10 @@ public class IDEEditor extends CodeEditor {
                       setSelection(location.getRange());
                       return;
                     }
-                    mLanguageClient.showDocument(
+                    languageClient.showDocument(
                         new ShowDocumentParams(location.getFile(), location.getRange()));
                   } else {
-                    mLanguageClient.showLocations(locations);
+                    languageClient.showLocations(locations);
                   }
                 });
 
@@ -608,6 +538,7 @@ public class IDEEditor extends CodeEditor {
    * <p>If the server returns a valid response, that response is forwarded to the {@link
    * IDELanguageClientImpl}.
    */
+  @SuppressWarnings("unused")
   public void findReferences() {
     if (getFile() == null) {
       return;
@@ -619,7 +550,7 @@ public class IDEEditor extends CodeEditor {
             getContext(), null, getContext().getString(R.string.msg_finding_references));
 
     try {
-      final CompletableFuture<ReferenceResult> future =
+      final var future =
           CompletableFuture.supplyAsync(
               () -> {
                 final var referenceParams =
@@ -628,41 +559,48 @@ public class IDEEditor extends CodeEditor {
                         new com.itsaky.androidide.models.Position(
                             getCursor().getLeftLine(), getCursor().getLeftColumn()),
                         true);
-                return mLanguageServer.findReferences(referenceParams);
+                return languageServer.findReferences(referenceParams);
               });
 
-      future.whenComplete(
-          (result, error) -> {
-            if (result == null
-                || mLanguageClient == null
-                || future.isCancelled()
-                || future.isCompletedExceptionally()) {
-              LOG.error("An error occurred while finding references", error);
-              showReferencesNotFound(pd);
-              return;
-            }
-
-            if (result.getLocations().isEmpty()) {
-              showReferencesNotFound(pd);
-              return;
-            } else {
-              if (result.getLocations().size() == 1) {
-                final var loc = result.getLocations().get(0);
-                if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
-                  setSelection(loc.getRange());
-                  return;
-                }
-              }
-
-              ThreadUtils.runOnUiThread(() -> mLanguageClient.showLocations(result.getLocations()));
-            }
-
-            dismissOnUiThread(pd);
-          });
+      future.whenComplete((result, error) -> onFindReferencesResult(pd, future, result, error));
     } catch (Throwable th) {
       LOG.error("An error occurred while finding references", th);
       showReferencesNotFound(pd);
     }
+  }
+
+  @SuppressWarnings("deprecation")
+  private void onFindReferencesResult(
+      final ProgressDialog pd,
+      final CompletableFuture<ReferenceResult> future,
+      final ReferenceResult result,
+      final Throwable error) {
+    if (result == null
+        || languageClient == null
+        || future.isCancelled()
+        || future.isCompletedExceptionally()) {
+      LOG.error("An error occurred while finding references", error);
+      showReferencesNotFound(pd);
+      return;
+    }
+
+    if (result.getLocations().isEmpty()) {
+      showReferencesNotFound(pd);
+      return;
+    } else {
+      if (result.getLocations().size() == 1) {
+        final var loc = result.getLocations().get(0);
+        if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
+          setSelection(loc.getRange());
+          return;
+        }
+      }
+
+      //noinspection ConstantConditions
+      ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
+    }
+
+    dismissOnUiThread(pd);
   }
 
   /**
@@ -689,7 +627,7 @@ public class IDEEditor extends CodeEditor {
 
     dispatchDocumentCloseEvent();
 
-    mActionsPopup.unsubscribeEvents();
+    actionsMenu.unsubscribeEvents();
     ensureWindowsDismissed();
   }
 
@@ -703,9 +641,9 @@ public class IDEEditor extends CodeEditor {
       getSignatureHelpWindow().dismiss();
     }
 
-    if (mActionsPopup != null) {
-      if (mActionsPopup.isShowing()) {
-        mActionsPopup.dismiss();
+    if (actionsMenu != null) {
+      if (actionsMenu.isShowing()) {
+        actionsMenu.dismiss();
       }
     }
   }
@@ -763,7 +701,7 @@ public class IDEEditor extends CodeEditor {
    * selection. If a valid response is received, that range will be selected.
    */
   public void expandSelection() {
-    if (mLanguageServer == null || getFile() == null) {
+    if (languageServer == null || getFile() == null) {
       LOG.error("Cannot expand selection. Language server or file is null");
       return;
     }
@@ -775,7 +713,7 @@ public class IDEEditor extends CodeEditor {
     final CompletableFuture<Range> future =
         CompletableFuture.supplyAsync(
             () ->
-                mLanguageServer.expandSelection(
+                languageServer.expandSelection(
                     new ExpandSelectionParams(getFile().toPath(), getCursorRange())));
 
     future.whenComplete(
@@ -867,11 +805,11 @@ public class IDEEditor extends CodeEditor {
 
   @Override
   public IDEEditorSearcher getSearcher() {
-    return mSearcher;
+    return searcher;
   }
 
   protected void setSearcher(@NonNull IDEEditorSearcher searcher) {
-    mSearcher = searcher;
+    this.searcher = searcher;
   }
 
   @Override
@@ -891,11 +829,5 @@ public class IDEEditor extends CodeEditor {
 
     final var saveEvent = new DocumentSaveEvent(getFile().toPath());
     EventBus.getDefault().post(saveEvent);
-  }
-
-  @Nullable
-  private DiagnosticItem binarySearchDiagnostic(
-      @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
-    return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
   }
 }
