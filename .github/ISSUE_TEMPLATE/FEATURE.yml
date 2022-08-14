@@ -1,0 +1,57 @@
+name: Feature request
+description: Request a new feature
+title: "[Feature]: "
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a proper title and description to the issue.
+        
+        A **GOOD** issue title describes the issue briefly. For example :
+        - [Bug]: Cannot use bluetooth keyboard in terminal
+        - [Feature]: Add support for previewing custom view in UI Designer
+        - [Feature]: Add preferences to configure Java code formatting
+        
+        Examples of a **BAD** title :
+        - File editing issues
+        - Terminal emulator
+        - App crashed
+        - Error
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature description
+      description: Describe the feature properly.
+      placeholder: Describe the feature
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: What version of AndroidIDE you're using?
+      multiple: false
+      options:
+        - v2.1.2 (debug builds)
+        - v2.1.1
+        - v2.1.0
+        - v2.0.1
+        - v2.0.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: not-a-duplicate
+    attributes:
+      label: Duplicate issues
+      description: Please make sure that there are no similar issues opened. Duplicate issues will be closed directly. If there are any similar looking issues, leave a comment there.
+      options:
+        - label: This issue has not been reported yet.
+          required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/itsaky/AndroidIDE/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
