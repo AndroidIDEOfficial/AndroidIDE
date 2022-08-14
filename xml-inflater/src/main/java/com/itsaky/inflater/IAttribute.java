@@ -38,6 +38,7 @@ public interface IAttribute {
    * further.
    */
   int DO_COMPARE = 2;
+
   Comparator<IAttribute> COMPARATOR =
       (first, second) -> {
         var result = compareNull(first, second);

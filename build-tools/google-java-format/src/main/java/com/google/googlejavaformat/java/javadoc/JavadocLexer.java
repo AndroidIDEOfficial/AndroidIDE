@@ -118,6 +118,7 @@ final class JavadocLexer {
   private final NestingCounter codeDepth = new NestingCounter();
   private final NestingCounter tableDepth = new NestingCounter();
   private boolean somethingSinceNewline;
+
   private JavadocLexer(CharStream input) {
     this.input = checkNotNull(input);
   }

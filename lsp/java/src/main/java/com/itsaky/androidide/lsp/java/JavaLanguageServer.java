@@ -227,6 +227,10 @@ public class JavaLanguageServer implements ILanguageServer {
   @NonNull
   @Override
   public DiagnosticResult analyze(@NonNull Path file) {
+    if (!DocumentUtils.isJavaFile(file)) {
+      return DiagnosticResult.NO_UPDATE;
+    }
+    
     final JavaCompilerService compiler = getCompiler(file);
     if (!settings.codeAnalysisEnabled() || compiler == null) {
       return DiagnosticResult.NO_UPDATE;
@@ -282,11 +286,11 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   private void startOrRestartAnalyzeTimer() {
-    
+
     if (VMUtils.isJvm()) {
       return;
     }
-    
+
     if (!this.timer.isStarted()) {
       this.timer.start();
     } else {

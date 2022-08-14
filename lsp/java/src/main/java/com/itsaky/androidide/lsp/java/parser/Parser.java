@@ -86,7 +86,7 @@ public class Parser {
     if (module != null) {
       FILE_MANAGER = SourceFileManager.forModule(module);
     }
-    
+
     return (JavacTask)
         COMPILER.getTask(
             null,

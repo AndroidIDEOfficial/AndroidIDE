@@ -71,6 +71,7 @@ public final class JavaInput extends Input {
    */
   /** Map from Tok index to the associated Token. */
   private final Token[] kToToken;
+
   private int kN; // The number of numbered toks (tokens or comments), excluding the EOF.
   private JCCompilationUnit unit;
 

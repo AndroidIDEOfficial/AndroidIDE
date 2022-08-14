@@ -28,29 +28,32 @@ import javax.lang.model.SourceVersion
  *
  * @author Akash Yadav
  */
-class CachedJarFileSystem(provider: ZipFileSystemProvider?, zfpath: Path?, env: MutableMap<String, *>?) :
-  ZipFileSystem(provider, zfpath, env) {
-  
+class CachedJarFileSystem(
+  provider: ZipFileSystemProvider?,
+  zfpath: Path?,
+  env: MutableMap<String, *>?
+) : ZipFileSystem(provider, zfpath, env) {
+
   internal val packages = mutableMapOf<RelativeDirectory, Path>()
-  
+
   override fun close() {
     // Do nothing
     // This is called manually by the Java LSP
   }
-  
+
   fun doClose() {
     super.close()
   }
-  
-  fun storeJARPackageDir(dir: Path?) : Boolean {
+
+  fun storeJARPackageDir(dir: Path?): Boolean {
     if (isValid(dir?.fileName)) {
       packages[RelativeDirectory(rootDir.relativize(dir!!).toString())] = dir
       return true
     }
-    
+
     return false
   }
-  
+
   private fun isValid(fileName: Path?): Boolean {
     return if (fileName == null) {
       true

@@ -51,14 +51,14 @@ public class LogUtils {
       return true;
     }
   }
-  
+
   public static String preProcessLogTag(String tag) {
     final var regex = "[^a-z-A-Z0-9_.]";
     final var matcher = Pattern.compile(regex).matcher(tag);
     if (matcher.find()) {
       tag = tag.replaceAll(regex, "_");
     }
-    
+
     return tag;
   }
 

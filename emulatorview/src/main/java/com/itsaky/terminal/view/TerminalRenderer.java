@@ -23,6 +23,7 @@ public final class TerminalRenderer {
    * The {@link Paint#ascent()}. See http://www.fampennings.nl/maarten/android/08numgrid/font.png
    */
   private final int mFontAscent;
+
   private final float[] asciiMeasures = new float[127];
   final int mTextSize;
   final Typeface mTypeface;

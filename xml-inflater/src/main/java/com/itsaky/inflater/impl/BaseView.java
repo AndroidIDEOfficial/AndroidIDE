@@ -68,7 +68,9 @@ public abstract class BaseView implements IView {
   public int hashCode() {
     return Objects.hash(
         attributes, attrAdapters, qualifiedName, view, getParent(), stored, isPlaceholder());
-  }  @Override
+  }
+
+  @Override
   public void setParent(IViewGroup parent) {
     this.parent = parent;
   }
@@ -89,13 +91,17 @@ public abstract class BaseView implements IView {
         && Objects.equals(view, baseView.view)
         && Objects.equals(getParent(), baseView.getParent())
         && Objects.equals(stored, baseView.stored);
-  }  public void setPlaceholder(boolean placeholder) {
+  }
+
+  public void setPlaceholder(boolean placeholder) {
     this.isPlaceholder = placeholder;
   }
 
   protected Set<IAttributeAdapter> getAttributeAdapters() {
     return attrAdapters;
-  }  @Override
+  }
+
+  @Override
   public boolean isPlaceholder() {
     return isPlaceholder;
   }
@@ -216,8 +222,6 @@ public abstract class BaseView implements IView {
     this.attrAdapters.add(adapter);
   }
 
-
-
   @Override
   public void setExtraData(Object data) {
     this.stored = data;
@@ -329,10 +333,6 @@ public abstract class BaseView implements IView {
 
     return sb.toString();
   }
-
-
-
-
 
   protected void newLine(@NonNull StringBuilder stringBuilder, int indentCount) {
     stringBuilder.append("\n");

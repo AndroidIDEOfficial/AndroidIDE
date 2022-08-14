@@ -142,6 +142,15 @@ public class CodeEditorView extends FrameLayout {
 
     configureEditorIfNeeded();
   }
+  
+  /**
+   * For internal use only!
+   *
+   * Marks this editor as unmodified. Used only when the activity is being destroyed.
+   */
+  public void markUnmodified() {
+    isModified = false;
+  }
 
   @NonNull
   private Bundle createEditorArgs() {
@@ -343,7 +352,7 @@ public class CodeEditorView extends FrameLayout {
 
     binding.editor.setTextSize(textSize);
   }
-  
+
   private void onUseIcuPrefChanged() {
     binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
@@ -384,7 +393,7 @@ public class CodeEditorView extends FrameLayout {
         break;
     }
   }
-  
+
   public boolean save() {
     final var file = getFile();
     if (file == null) {

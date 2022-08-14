@@ -479,7 +479,7 @@ public class DesignerActivity extends StudioActivity
     TransitionManager.beginDelayedTransition(
         mBinding.navigation,
         new TransitionSet().addTransition(new Slide(Gravity.END)).addTransition(new Fade()));
-  
+
     this.mBinding.groupItems.getAdapter().notifyDataSetChanged();
   }
 

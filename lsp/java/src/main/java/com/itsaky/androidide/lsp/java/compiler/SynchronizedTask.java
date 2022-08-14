@@ -104,7 +104,7 @@ public class SynchronizedTask {
       }
       run.run();
     } catch (Throwable err) {
-      if(!CancelChecker.isCancelled(err)) {
+      if (!CancelChecker.isCancelled(err)) {
         LOG.error("An error occurred", err);
       }
       throw err;

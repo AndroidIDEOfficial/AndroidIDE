@@ -58,6 +58,7 @@ public class CharSequenceReader extends Reader implements Serializable {
    * @since 2.7
    */
   private final Integer end;
+
   private int idx;
   private int mark;
 
@@ -132,7 +133,9 @@ public class CharSequenceReader extends Reader implements Serializable {
   public String toString() {
     final CharSequence subSequence = charSequence.subSequence(start(), end());
     return subSequence.toString();
-  }  /** Close resets the file back to the start and removes any marked position. */
+  }
+  /** Close resets the file back to the start and removes any marked position. */
+
   @Override
   public void close() {
     idx = start;
@@ -147,11 +150,13 @@ public class CharSequenceReader extends Reader implements Serializable {
    */
   private int start() {
     return Math.min(charSequence.length(), start);
-  }  /**
+  }
+  /**
    * Returns the index in the character sequence to end reading at, taking into account its length.
    *
    * @return The end index in the character sequence (exclusive).
    */
+
   private int end() {
     /*
      * end == null for de-serialized instances that were serialized before start and end were added.
@@ -281,8 +286,4 @@ public class CharSequenceReader extends Reader implements Serializable {
     idx = dest;
     return count;
   }
-
-
-
-
 }

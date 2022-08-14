@@ -88,7 +88,7 @@ public abstract class ILogger {
   public static ILogger newInstance(String tag) {
     return createInstance(tag);
   }
-  
+
   public static Priority priority(char priorityChar) {
     for (var priority : Priority.values()) {
       if (priorityChar(priority) == priorityChar) {

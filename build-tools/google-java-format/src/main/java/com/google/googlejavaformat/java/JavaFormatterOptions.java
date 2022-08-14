@@ -31,6 +31,7 @@ public class JavaFormatterOptions {
 
   private final Style style;
   private final boolean formatJavadoc;
+
   private JavaFormatterOptions(Style style, boolean formatJavadoc) {
     this.style = style;
     this.formatJavadoc = formatJavadoc;

@@ -40,7 +40,7 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
 
   protected fun getEditor(): CodeEditor {
     try {
-      val field = EditorSearcher::class.java.getDeclaredField("mEditor")
+      val field = EditorSearcher::class.java.getDeclaredField("editor")
       field.isAccessible = true
       return field.get(this) as CodeEditor
     } catch (error: Throwable) {

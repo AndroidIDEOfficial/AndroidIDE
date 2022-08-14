@@ -38,6 +38,7 @@ public final class TerminalSession extends TerminalOutput {
   public final String mHandle = UUID.randomUUID().toString();
   /** Buffer to write translate code points into utf8 before writing to mTerminalToProcessIOQueue */
   private final byte[] mUtf8InputBuffer = new byte[5];
+
   private final String mShellPath;
   private final String mCwd;
   private final String[] mArgs;
@@ -53,6 +54,7 @@ public final class TerminalSession extends TerminalOutput {
    * which forwards by writing to the {@link #mTerminalFileDescriptor}.
    */
   final ByteQueue mTerminalToProcessIOQueue = new ByteQueue(4096);
+
   final Handler mMainThreadHandler = new Handler(Looper.getMainLooper(), new MainThreadHandler());
   /** Set by the application for user identification of session, not by terminal. */
   public String mSessionName;
@@ -61,6 +63,7 @@ public final class TerminalSession extends TerminalOutput {
    * calling {@link JNI#createSubprocess(String, String, String[], String[], int[], int, int)}.
    */
   private int mTerminalFileDescriptor;
+
   TerminalEmulator mEmulator;
   /** Callback which gets notified when a session finishes or changes title. */
   TerminalSessionClient mClient;

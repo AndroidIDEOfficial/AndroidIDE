@@ -84,6 +84,7 @@ public enum XmlAttributeSortOrder {
           return attr1.getName().compareTo(attr2.getName());
         }
       };
+
   public final String key;
 
   XmlAttributeSortOrder(String key) {

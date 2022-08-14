@@ -17,9 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.providers;
 
-import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.analyze;
-import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.enterTrees;
-import static com.itsaky.androidide.javac.services.util.JavacTaskUtil.parse;
 import static com.itsaky.androidide.progress.ProgressManager.abortIfCancelled;
 
 import androidx.annotation.NonNull;
@@ -29,7 +26,6 @@ import com.itsaky.androidide.lsp.api.AbstractServiceProvider;
 import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.internal.model.CachedCompletion;
-import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
@@ -50,14 +46,12 @@ import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
+import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
-import com.sun.tools.javac.api.JavacTaskImpl;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -65,9 +59,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-
-import javax.lang.model.element.Element;
-import javax.tools.JavaFileObject;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
@@ -94,14 +85,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     super.applySettings(settings);
     return this;
   }
-
-  public boolean isCompleting() {
-    return completing.get();
-  }
-
+  
   @Override
   public boolean canComplete(Path file) {
-    return ICompletionProvider.super.canComplete(file) && file.toFile().getName().endsWith(".java");
+    return ICompletionProvider.super.canComplete(file) && DocumentUtils.isJavaFile(file);
   }
 
   @NonNull
@@ -114,6 +101,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     completing.set(true);
     try {
       abortIfCancelled();
+      abortCompletionIfCancelled();
       return completeInternal(params);
     } finally {
       completing.set(false);
@@ -152,10 +140,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     abortIfCancelled();
+    abortCompletionIfCancelled();
     final StopWatch watch = new StopWatch("Prune method bodies");
     ParseTask task = compiler.parse(file);
 
     abortIfCancelled();
+    abortCompletionIfCancelled();
     long cursor = task.root.getLineMap().getPosition(line, column);
     StringBuilder pruned = new PruneMethodBodies(task.task).scan(task.root, cursor);
     watch.log();
@@ -165,6 +155,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final CharSequence contents;
     if (compiler.compiler.currentContext != null) {
       abortIfCancelled();
+      abortCompletionIfCancelled();
       contents = new ASTFixer(compiler.compiler.currentContext).fix(pruned);
     } else {
       contents = pruned.toString();
@@ -174,16 +165,19 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final PartialReparseRequest partialRequest =
         new PartialReparseRequest(cursor - params.requirePrefix().length(), contentString);
     abortIfCancelled();
+    abortCompletionIfCancelled();
     CompletionResult result = compileAndComplete(file, contentString, cursor, partialRequest);
     if (result == null) {
       result = CompletionResult.EMPTY;
     }
 
     abortIfCancelled();
+    abortCompletionIfCancelled();
     new TopLevelSnippetsProvider().complete(task, result);
     logCompletionDuration(started, result);
 
     abortIfCancelled();
+    abortCompletionIfCancelled();
     if (this.nextCacheConsumer != null) {
       this.nextCacheConsumer.accept(CachedCompletion.cache(params, result));
     }
@@ -229,7 +223,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final boolean endsWithParen = endsWithParen(contents, (int) cursor);
 
     abortIfCancelled();
-    
+    abortCompletionIfCancelled();
+
     final CompilationRequest request =
         new CompilationRequest(Collections.singletonList(source), partialRequest);
     SynchronizedTask synchronizedTask = compiler.compile(request);
@@ -239,10 +234,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return CompletionResult.EMPTY;
           }
           abortIfCancelled();
+          abortCompletionIfCancelled();
           LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
           TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
 
           abortIfCancelled();
+          abortCompletionIfCancelled();
           String newPartial = partial;
           if (path.getLeaf().getKind() == Tree.Kind.IMPORT) {
             newPartial = qualifiedPartialIdentifier(contents, (int) cursor);
@@ -266,6 +263,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       final TreePath path) {
     final Class<? extends IJavaCompletionProvider> klass;
     abortIfCancelled();
+    abortCompletionIfCancelled();
     switch (path.getLeaf().getKind()) {
       case IDENTIFIER:
         klass = IdentifierCompletionProvider.class;
@@ -296,6 +294,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     abortIfCancelled();
+    abortCompletionIfCancelled();
     return provider.complete(task, path, partial, endsWithParen);
   }
 
@@ -319,43 +318,5 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
   private boolean isQualifiedIdentifierChar(char c) {
     return c == '.' || Character.isJavaIdentifierPart(c);
-  }
-
-  private static class CompletionTaskProcesor implements CompilationTaskProcessor {
-
-    private final JavaFileObject file;
-    private final long cursor;
-
-    private CompletionTaskProcesor(final JavaFileObject file, final long cursor) {
-      this.file = file;
-      this.cursor = cursor;
-    }
-
-    @Override
-    public void process(
-        @NonNull final JavacTaskImpl task,
-        @NonNull final Consumer<CompilationUnitTree> processCompilationUnit)
-        throws IOException {
-
-      final StopWatch watch = new StopWatch("Process compilation task for completion");
-      final Iterable<? extends CompilationUnitTree> trees = parse(task, file);
-      watch.lapFromLast("Parsed");
-      trees.forEach(processCompilationUnit);
-      watch.lapFromLast("Processed");
-
-      // The enter call takes a lot of time
-      // Consumes around 60s for sora-editor's CodeEditor.java
-      // This is because of the JAR files that are read and when entering the trees
-      // TODO The data read from the JAR files are cached anyways
-      //   Make all the instances of JavaCompilerService use the same instance of SourceFileManager
-      //   Also, perform a fake compilation with the file manager instance at the initialization
-      //   phase of project so that, at least some of the data is already cached and the
-      //   first-time-completion request after initialization could be faster
-      final Iterable<? extends Element> elements = enterTrees(task, trees);
-      watch.lapFromLast("Entered trees");
-
-      final Iterable<? extends Element> analyzed = analyze(task, elements);
-      watch.lapFromLast("Analyzed");
-    }
   }
 }

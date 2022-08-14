@@ -63,6 +63,7 @@ class StaticImportCompletionProvider(
     val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
 
     outer@ for (i in root.imports) {
       if (!i.isStatic) {

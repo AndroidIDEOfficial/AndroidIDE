@@ -55,6 +55,7 @@ public class NBNames {
   public static void preRegister(Context context) {
     context.put(nbNamesKey, (Context.Factory<NBNames>) NBNames::new);
   }
+
   protected NBNames(Context context) {
     Names n = Names.instance(context);
 

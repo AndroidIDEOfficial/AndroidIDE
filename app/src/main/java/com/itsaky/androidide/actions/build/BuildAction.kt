@@ -34,9 +34,7 @@ class BuildAction() : BaseBuildAction() {
   override val id: String = "editor_build"
 
   override fun execAction(data: ActionData): Boolean {
-    val activity = getActivity(data) ?: return false
-
-    activity.build()
+    execTasks(data = data, resultHandler = {},"build")
     return true
   }
 }

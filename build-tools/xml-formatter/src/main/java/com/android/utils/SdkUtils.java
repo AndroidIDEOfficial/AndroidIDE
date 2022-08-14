@@ -50,6 +50,7 @@ import java.util.List;
 public class SdkUtils {
   /** Prefix in comments which mark the source locations for merge results */
   public static final String FILENAME_PREFIX = "From: ";
+
   public static final List<String> IMAGE_EXTENSIONS =
       ImmutableList.of(DOT_PNG, DOT_9PNG, DOT_GIF, DOT_JPEG, DOT_JPG, DOT_BMP, DOT_WEBP);
   /** For use by {@link #getLineSeparator()} */

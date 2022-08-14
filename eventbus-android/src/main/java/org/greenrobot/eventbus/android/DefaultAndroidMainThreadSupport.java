@@ -8,13 +8,13 @@ import org.greenrobot.eventbus.Poster;
 
 public class DefaultAndroidMainThreadSupport implements MainThreadSupport {
 
-    @Override
-    public boolean isMainThread() {
-        return Looper.getMainLooper() == Looper.myLooper();
-    }
+  @Override
+  public boolean isMainThread() {
+    return Looper.getMainLooper() == Looper.myLooper();
+  }
 
-    @Override
-    public Poster createPoster(EventBus eventBus) {
-        return new HandlerPoster(eventBus, Looper.getMainLooper(), 10);
-    }
+  @Override
+  public Poster createPoster(EventBus eventBus) {
+    return new HandlerPoster(eventBus, Looper.getMainLooper(), 10);
+  }
 }

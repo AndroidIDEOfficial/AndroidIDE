@@ -39,7 +39,9 @@ public class SimpleIconTextAdapter extends IconTextAdapter<IconTextListItem> {
   @Override
   public int getItemCount() {
     return items.size();
-  }  @NonNull
+  }
+
+  @NonNull
   @Override
   public IconTextListItem getItemAt(int index) {
     return items.get(index);
@@ -55,6 +57,4 @@ public class SimpleIconTextAdapter extends IconTextAdapter<IconTextListItem> {
   public String getItemText(int index) {
     return getItemAt(index).getText();
   }
-
-
 }

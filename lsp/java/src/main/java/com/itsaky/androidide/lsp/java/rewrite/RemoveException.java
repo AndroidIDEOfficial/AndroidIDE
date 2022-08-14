@@ -50,7 +50,7 @@ public class RemoveException extends Rewrite {
   final String className, methodName;
   final String[] erasedParameterTypes;
   final String exceptionType;
-  
+
   private static final ILogger LOG = ILogger.newInstance("RemoveException");
 
   public RemoveException(
@@ -64,12 +64,12 @@ public class RemoveException extends Rewrite {
   @Override
   public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
-  
+
     if (file == CompilerProvider.NOT_FOUND) {
       LOG.warn("Unable to find source file for class:", this.className);
       return CANCELLED;
     }
-    
+
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {

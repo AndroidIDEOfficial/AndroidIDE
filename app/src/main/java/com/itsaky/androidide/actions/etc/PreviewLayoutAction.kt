@@ -18,7 +18,9 @@
 package com.itsaky.androidide.actions.etc
 
 import android.content.Context
+import android.view.MenuItem
 import androidx.core.content.ContextCompat
+import com.blankj.utilcode.util.KeyboardUtils
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
@@ -51,6 +53,15 @@ class PreviewLayoutAction() : EditorRelatedAction() {
         file.parentFile != null &&
         Regex(FileTreeActionHandler.LAYOUT_RES_PATH_REGEX).matches(file.parentFile!!.absolutePath)
     enabled = visible
+  }
+
+  override fun getShowAsActionFlags(data: ActionData): Int {
+    val activity = getActivity(data) ?: return super.getShowAsActionFlags(data)
+    return if (KeyboardUtils.isSoftInputVisible(activity)) {
+      MenuItem.SHOW_AS_ACTION_IF_ROOM
+    } else {
+      MenuItem.SHOW_AS_ACTION_ALWAYS
+    }
   }
 
   override fun execAction(data: ActionData): Any {

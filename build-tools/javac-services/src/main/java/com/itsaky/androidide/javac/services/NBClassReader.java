@@ -47,7 +47,6 @@ import com.sun.tools.javac.resources.CompilerProperties.Warnings;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Name;
-import com.sun.tools.javac.util.Names;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -65,7 +64,6 @@ import javax.tools.JavaFileObject;
  */
 public class NBClassReader extends ClassReader {
 
-  private final Names names;
   private final NBNames nbNames;
   private final Log log;
 
@@ -76,7 +74,6 @@ public class NBClassReader extends ClassReader {
   public NBClassReader(Context context) {
     super(context);
 
-    names = Names.instance(context);
     nbNames = NBNames.instance(context);
     log = Log.instance(context);
 
@@ -114,9 +111,9 @@ public class NBClassReader extends ClassReader {
             data[6] = (byte) (maxMajor >> 8);
             data[7] = (byte) (maxMajor & 0xFF);
             c.classfile =
-                new ForwardingJavaFileObject(origFile) {
+                new ForwardingJavaFileObject<JavaFileObject>(origFile) {
                   @Override
-                  public InputStream openInputStream() throws IOException {
+                  public InputStream openInputStream() {
                     return new ByteArrayInputStream(data);
                   }
                 };

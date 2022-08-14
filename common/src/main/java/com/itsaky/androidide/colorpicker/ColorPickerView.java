@@ -161,12 +161,14 @@ public class ColorPickerView extends LinearLayout {
 
     @Override
     public void afterTextChanged(Editable s) {}
-  }  /**
+  }
+  /**
    * Set the color value of this picker to the given hex color code.
    *
    * @param hexCode The hex color code.
    * @see #setColor(int)
    */
+
   public void setColor(final String hexCode) {
     setColor(parseColor(hexCode));
   }
@@ -185,12 +187,14 @@ public class ColorPickerView extends LinearLayout {
      * @param hexCode The hex color code of the color.
      */
     void onPick(int color, String hexCode);
-  }  /**
+  }
+  /**
    * Set the color value for this color picker. this will in turn update value of the sliders and
    * the color preview.
    *
    * @param color The new color value.
    */
+
   public void setColor(int color) {
     this.alpha = alpha(color);
     this.red = red(color);
@@ -219,8 +223,4 @@ public class ColorPickerView extends LinearLayout {
   private void updatePreview() {
     this.binding.colorPreview.setBackgroundColor(getColor());
   }
-
-
-
-
 }

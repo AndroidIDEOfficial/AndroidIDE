@@ -373,6 +373,7 @@ public class KotlinParser extends Parser {
    * @deprecated Use {@link #VOCABULARY} instead.
    */
   @Deprecated public static final String[] tokenNames;
+
   protected static final DFA[] _decisionToDFA;
   protected static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   private static final String[] _LITERAL_NAMES = makeLiteralNames();

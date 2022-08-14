@@ -57,6 +57,7 @@ public class MessageTypeAdapter extends TypeAdapter<Message> {
   private static Type[] EMPTY_TYPE_ARRAY = {};
   private final MessageJsonHandler handler;
   private final Gson gson;
+
   public MessageTypeAdapter(MessageJsonHandler handler, Gson gson) {
     this.handler = handler;
     this.gson = gson;

@@ -31,6 +31,7 @@ public class EnumTypeAdapter<T extends Enum<T>> extends TypeAdapter<T> {
   private final Map<String, T> nameToConstant = new HashMap<>();
   private final Map<Integer, T> valueToConstant = new HashMap<>();
   private final Map<T, Integer> constantToValue = new HashMap<>();
+
   EnumTypeAdapter(Class<T> classOfT) throws IllegalAccessException {
     try {
       Field valueField = classOfT.getDeclaredField(VALUE_FIELD_NAME);

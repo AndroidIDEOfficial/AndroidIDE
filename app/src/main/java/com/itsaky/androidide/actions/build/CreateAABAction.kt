@@ -33,9 +33,7 @@ class CreateAABAction() : BaseBuildAction() {
 
   override val id: String = "editor_createAAB"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.bundle()
+    execTasks(data = data, resultHandler = {},"bundle")
     return true
   }
 }

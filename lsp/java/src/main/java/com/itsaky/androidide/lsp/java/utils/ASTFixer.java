@@ -97,8 +97,7 @@ public class ASTFixer {
     }
   }
 
-  private void fixError(
-      @NonNull Scanner scanner, @NonNull CharSequence content, List<Edit> edits) {
+  private void fixError(@NonNull Scanner scanner, @NonNull CharSequence content, List<Edit> edits) {
     int errPos = scanner.errPos();
     if (content.charAt(errPos) == '.' && errPos > 0 && content.charAt(errPos) == '.') {
       if (errPos < content.length() - 1
@@ -136,8 +135,7 @@ public class ASTFixer {
 
     @NonNull
     public static CharSequence applyInsertions(CharSequence content, List<Edit> edits) {
-      ImmutableList<Edit> reverseEdits =
-          REVERSE_INSERTION.immutableSortedCopy(edits);
+      ImmutableList<Edit> reverseEdits = REVERSE_INSERTION.immutableSortedCopy(edits);
 
       StringBuilder sb = new StringBuilder(content);
 

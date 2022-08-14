@@ -59,6 +59,7 @@ class ClassNamesCompletionProvider(
       root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
       val matchLevel = matchLevel(className, partial)
       if (matchLevel == NO_MATCH) {
@@ -70,6 +71,7 @@ class ClassNamesCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (className in compiler.publicTopLevelTypes()) {
       val matchLevel = matchLevel(simpleName(className), partial)
       if (matchLevel == NO_MATCH) {
@@ -89,6 +91,7 @@ class ClassNamesCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (t in root.typeDecls) {
       if (t !is ClassTree) {
         continue

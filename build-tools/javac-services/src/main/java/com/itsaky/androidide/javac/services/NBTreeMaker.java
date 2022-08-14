@@ -50,6 +50,7 @@ public class NBTreeMaker extends TreeMaker {
   private final Names names;
   private final Types types;
   private final Symtab syms;
+
   protected NBTreeMaker(JCCompilationUnit toplevel, Names names, Types types, Symtab syms) {
     super(toplevel, names, types, syms);
     this.names = names;

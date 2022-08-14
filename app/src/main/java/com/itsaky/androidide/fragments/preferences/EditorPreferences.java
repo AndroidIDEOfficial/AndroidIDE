@@ -153,7 +153,7 @@ public class EditorPreferences extends BasePreferenceFragment
     visiblePasswordFlag.setKey(FLAG_PASSWORD);
     visiblePasswordFlag.setTitle(getString(R.string.idepref_visiblePassword_title));
     visiblePasswordFlag.setSummary(getString(R.string.idepref_visiblePassword_summary));
-    
+
     useIcu.setIcon(R.drawable.ic_expand_selection);
     useIcu.setKey(USE_ICU);
     useIcu.setTitle(getString(R.string.idepref_useIcu_title));

@@ -34,9 +34,7 @@ class AssembleReleaseAction() : BaseBuildAction() {
   override val id: String = "editor_assembleRelease"
 
   override fun execAction(data: ActionData): Boolean {
-    val activity = getActivity(data) ?: return false
-
-    activity.assembleRelease()
+    execTasks(data = data, resultHandler = {},"assembleRelease")
     return true
   }
 }

@@ -26,6 +26,7 @@ public class JsonElementTypeAdapter extends TypeAdapter<Object> {
 
   private final Gson gson;
   private final TypeAdapter<JsonElement> adapter;
+
   public JsonElementTypeAdapter(Gson gson) {
     this.gson = gson;
     this.adapter = gson.getAdapter(JsonElement.class);

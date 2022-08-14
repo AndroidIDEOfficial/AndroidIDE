@@ -15,6 +15,7 @@ public final class TerminalBuffer {
   private int mActiveTranscriptRows = 0;
   /** The index in the circular buffer where the visible screen starts. */
   private int mScreenFirstRow = 0;
+
   TerminalRow[] mLines;
   /** The length of {@link #mLines}. */
   int mTotalRows;

@@ -36,19 +36,19 @@ import org.json.JSONObject;
  *
  * <p>Examples: {@code # Empty: []
  *
- * <p><p><p><p><p><p><p># Single row: [[ESC, TAB, CTRL, ALT, {key: '-', popup: '|'}, DOWN, UP]]
+ * <p><p><p><p><p><p><p><p># Single row: [[ESC, TAB, CTRL, ALT, {key: '-', popup: '|'}, DOWN, UP]]
  *
- * <p><p><p><p><p><p><p># 2 row: [['ESC','/',{key: '-', popup: '|'},'HOME','UP','END','PGUP'],
+ * <p><p><p><p><p><p><p><p># 2 row: [['ESC','/',{key: '-', popup: '|'},'HOME','UP','END','PGUP'],
  * ['TAB','CTRL','ALT','LEFT','DOWN','RIGHT','PGDN']]
  *
- * <p><p><p><p><p><p><p># Advance: [[ {key: ESC, popup: {macro: "CTRL f d", display: "tmux exit"}},
- * {key: CTRL, popup: {macro: "CTRL f BKSP", display: "tmux ←"}}, {key: ALT, popup: {macro: "CTRL f
- * TAB", display: "tmux →"}}, {key: TAB, popup: {macro: "ALT a", display: A-a}}, {key: LEFT, popup:
- * HOME}, {key: DOWN, popup: PGDN}, {key: UP, popup: PGUP}, {key: RIGHT, popup: END}, {macro: "ALT
- * j", display: A-j, popup: {macro: "ALT g", display: A-g}}, {key: KEYBOARD, popup: {macro: "CTRL
- * d", display: exit}} ]]
+ * <p><p><p><p><p><p><p><p># Advance: [[ {key: ESC, popup: {macro: "CTRL f d", display: "tmux
+ * exit"}}, {key: CTRL, popup: {macro: "CTRL f BKSP", display: "tmux ←"}}, {key: ALT, popup: {macro:
+ * "CTRL f TAB", display: "tmux →"}}, {key: TAB, popup: {macro: "ALT a", display: A-a}}, {key: LEFT,
+ * popup: HOME}, {key: DOWN, popup: PGDN}, {key: UP, popup: PGUP}, {key: RIGHT, popup: END}, {macro:
+ * "ALT j", display: A-j, popup: {macro: "ALT g", display: A-g}}, {key: KEYBOARD, popup: {macro:
+ * "CTRL d", display: exit}} ]]
  *
- * <p><p><p><p><p><p><p>}
+ * <p><p><p><p><p><p><p><p>}
  *
  * <p>Aliases are also allowed for the keys that you can pass as {@code extraKeyAliasMap}. Check
  * {@link VirtualKeysConstants#CONTROL_CHARS_ALIASES}.

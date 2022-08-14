@@ -41,6 +41,7 @@ public final class TerminalView extends View {
   private static final String LOG_TAG = "TerminalView";
   /** Log terminal view key and IME events. */
   private static boolean TERMINAL_VIEW_KEY_LOGGING_ENABLED = false;
+
   private final boolean mAccessibilityEnabled;
   final GestureAndScaleRecognizer mGestureRecognizer;
   final Scroller mScroller;
@@ -48,6 +49,7 @@ public final class TerminalView extends View {
   public TerminalSession mTermSession;
   /** Our terminal emulator whose session is {@link #mTermSession}. */
   public TerminalEmulator mEmulator;
+
   public TerminalRenderer mRenderer;
   public TerminalViewClient mClient;
   private TextSelectionCursorController mTextSelectionCursorController;
@@ -61,6 +63,7 @@ public final class TerminalView extends View {
           }
         }
       };
+
   private Handler mTerminalCursorBlinkerHandler;
   private TerminalCursorBlinkerRunnable mTerminalCursorBlinkerRunnable;
   private int mTerminalCursorBlinkerRate;
@@ -71,6 +74,7 @@ public final class TerminalView extends View {
   private long mMouseStartDownTime = -1;
   /** The top row of text to display. Ranges from -activeTranscriptRows to 0. */
   int mTopRow;
+
   int[] mDefaultSelectors = new int[] {-1, -1, -1, -1};
   float mScaleFactor = 1.f;
   /** What was left in from scrolling movement. */

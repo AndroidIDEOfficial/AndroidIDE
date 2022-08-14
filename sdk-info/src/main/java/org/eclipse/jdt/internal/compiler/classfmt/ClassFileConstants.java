@@ -118,6 +118,7 @@ public final class ClassFileConstants {
   int AccMandated = 0x8000;
   /** Flags in module declaration - since java9 */
   int ACC_OPEN = 0x0020;
+
   int ACC_TRANSITIVE = 0x0020;
   int ACC_STATIC_PHASE = 0x0040;
   int ACC_SYNTHETIC = 0x1000;
@@ -129,6 +130,7 @@ public final class ClassFileConstants {
    */
   int AccAnnotationDefault =
       ASTNode.Bit18; // indicate presence of an attribute  "DefaultValue" (annotation method)
+
   int AccDeprecated = ASTNode.Bit21; // indicate presence of an attribute "Deprecated"
   int Utf8Tag = 1;
   int IntegerTag = 3;

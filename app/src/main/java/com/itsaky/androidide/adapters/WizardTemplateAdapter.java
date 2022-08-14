@@ -22,6 +22,7 @@ public class WizardTemplateAdapter extends RecyclerView.Adapter<WizardTemplateAd
 
   private final List<ProjectTemplate> mItems = new ArrayList<>();
   private OnItemClickListener mListener;
+
   public WizardTemplateAdapter() {}
 
   public void setOnItemClickListener(OnItemClickListener listener) {

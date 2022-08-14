@@ -63,6 +63,7 @@ class KeywordCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val list = mutableListOf<CompletionItem>()
     for (k in keywords) {
       val matchLevel = matchLevel(k, partial)

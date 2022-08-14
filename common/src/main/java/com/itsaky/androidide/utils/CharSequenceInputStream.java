@@ -115,12 +115,14 @@ public class CharSequenceInputStream extends InputStream {
   public CharSequenceInputStream(
       final CharSequence cs, final String charset, final int bufferSize) {
     this(cs, toCharset(charset), bufferSize);
-  }  /**
+  }
+  /**
    * Return an estimate of the number of bytes remaining in the byte stream.
    *
    * @return the count of bytes that can be read without blocking (or returning EOF).
    * @throws IOException if an error occurs (probably not possible).
    */
+
   @Override
   public int available() throws IOException {
     // The cached entries are in bbuf; since encoding always creates at least one byte
@@ -132,7 +134,9 @@ public class CharSequenceInputStream extends InputStream {
 
   static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
     return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
-  }  @Override
+  }
+
+  @Override
   public void close() throws IOException {
     // noop
   }
@@ -144,11 +148,13 @@ public class CharSequenceInputStream extends InputStream {
    */
   CharsetEncoder getCharsetEncoder() {
     return charsetEncoder;
-  }  /**
+  }
+  /**
    * Fills the byte output buffer from the input char buffer.
    *
    * @throws CharacterCodingException an error encoding data.
    */
+
   private void fillBuffer() throws CharacterCodingException {
     this.bBuf.compact();
     final CoderResult result = this.charsetEncoder.encode(this.cBuf, this.bBuf, true);
@@ -157,8 +163,6 @@ public class CharSequenceInputStream extends InputStream {
     }
     this.bBuf.flip();
   }
-
-
 
   /**
    * {@inheritDoc}
@@ -288,8 +292,4 @@ public class CharSequenceInputStream extends InputStream {
     }
     return skipped;
   }
-
-
-
-
 }

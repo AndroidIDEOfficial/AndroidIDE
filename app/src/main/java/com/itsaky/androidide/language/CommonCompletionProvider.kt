@@ -17,6 +17,7 @@
 package com.itsaky.androidide.language
 
 import com.itsaky.androidide.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.FailureType.COMPLETION
@@ -28,7 +29,6 @@ import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.lang.completion.CompletionHelper
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
-import io.github.rosemoe.sora.util.MyCharacter
 import java.nio.file.Path
 import java.util.function.*
 
@@ -39,6 +39,8 @@ import java.util.function.*
  * @author Akash Yadav
  */
 class CommonCompletionProvider(private val server: ILanguageServer) {
+
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
   /**
    * Computes completion items using the provided language server instance.
@@ -54,7 +56,7 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
     file: Path,
     position: CharPosition,
     prefixMatcher: Predicate<Char?>
-  ): List<com.itsaky.androidide.lsp.models.CompletionItem> {
+  ): List<CompletionItem> {
     val completionResult =
       try {
         val prefix = CompletionHelper.computePrefix(content, position) { prefixMatcher.test(it) }
@@ -66,13 +68,13 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
       } catch (e: Throwable) {
 
         if (e is ProcessCancelledException) {
-          LOG.debug("Completion process cancelled")
+          log.debug("Completion process cancelled")
         }
 
         // Do not log if completion was interrupted or cancelled
         if (!(e is ProcessCancelledException || e is CompletionCancelledException)) {
           if (!server.handleFailure(LSPFailure(COMPLETION, e))) {
-            LOG.error("Unable to compute completions", e)
+            log.error("Unable to compute completions", e)
           }
         }
         CompletionResult.EMPTY
@@ -83,18 +85,5 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
     }
 
     return completionResult.items
-  }
-
-  companion object {
-    private val LOG = ILogger.newInstance("CommonCompletionProvider")
-    @JvmStatic
-    fun checkJavaCompletionChar(c: Char): Boolean {
-      return MyCharacter.isJavaIdentifierPart(c) || c == '.'
-    }
-
-    @JvmStatic
-    fun checkXMLCompletionChar(c: Char): Boolean {
-      return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/'
-    }
   }
 }
