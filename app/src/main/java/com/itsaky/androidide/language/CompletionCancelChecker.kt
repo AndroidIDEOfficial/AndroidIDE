@@ -28,18 +28,9 @@ import io.github.rosemoe.sora.lang.completion.CompletionPublisher
  */
 class CompletionCancelChecker(val publisher: CompletionPublisher) : ICompletionCancelChecker {
 
-  companion object {
-    @JvmStatic
-    private val checkCancelled = CompletionPublisher::class.java.getDeclaredMethod("checkCancelled")
-
-    init {
-      checkCancelled.isAccessible = true
-    }
-  }
-
   /** Check if the completion is cancelled. */
   @Throws(CompletionCancelledException::class)
   override fun abortIfCancelled() {
-    checkCancelled.invoke(publisher)
+    publisher.checkCancelled()
   }
 }
