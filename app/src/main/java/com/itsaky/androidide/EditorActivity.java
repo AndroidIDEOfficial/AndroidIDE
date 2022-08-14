@@ -194,7 +194,6 @@ public class EditorActivity extends StudioActivity
         @Override
         public void onServiceDisconnected(ComponentName name) {
           mBuildService = null;
-          Lookup.DEFAULT.unregister(BuildService.class);
           LOG.info("Disconnected from Gradle build service...");
         }
       };
@@ -1005,6 +1004,7 @@ public class EditorActivity extends StudioActivity
     }
     unbindService(mGradleServiceConnection);
     super.onDestroy();
+    Lookup.DEFAULT.unregister(BuildService.class);
     mBinding = null;
     mViewModel = null;
   }
