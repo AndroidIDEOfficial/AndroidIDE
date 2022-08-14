@@ -90,6 +90,7 @@ public class ReaderInputStream extends InputStream {
    * transfer data from the decoder to the buffer provided by the caller.
    */
   private final ByteBuffer encoderOut;
+
   private CoderResult lastCoderResult;
   private boolean endOfInput;
 

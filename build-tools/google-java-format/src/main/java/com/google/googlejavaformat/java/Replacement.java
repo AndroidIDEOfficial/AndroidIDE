@@ -31,6 +31,7 @@ public final class Replacement {
 
   private final Range<Integer> replaceRange;
   private final String replacementString;
+
   private Replacement(Range<Integer> replaceRange, String replacementString) {
     this.replaceRange = checkNotNull(replaceRange, "Null replaceRange");
     this.replacementString = checkNotNull(replacementString, "Null replacementString");

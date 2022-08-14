@@ -33,6 +33,7 @@ public final class TerminalEmulator {
   public static final int MOUSE_LEFT_BUTTON = 0;
   /** Mouse moving while having left mouse button pressed. */
   public static final int MOUSE_LEFT_BUTTON_MOVED = 32;
+
   public static final int MOUSE_WHEELUP_BUTTON = 64;
   public static final int MOUSE_WHEELDOWN_BUTTON = 65;
   /**
@@ -42,6 +43,7 @@ public final class TerminalEmulator {
   public static final int UNICODE_REPLACEMENT_CHAR = 0xFFFD;
   /** The number of terminal transcript rows that can be scrolled back to. */
   public static final int TERMINAL_TRANSCRIPT_ROWS_MIN = 100;
+
   public static final int TERMINAL_TRANSCRIPT_ROWS_MAX = 50000;
   public static final int DEFAULT_TERMINAL_TRANSCRIPT_ROWS = 2000;
   public static final int TERMINAL_CURSOR_STYLE_BLOCK = 0;
@@ -101,6 +103,7 @@ public final class TerminalEmulator {
   private static final int MAX_OSC_STRING_LENGTH = 8192;
   /** DECSET 1 - application cursor keys. */
   private static final int DECSET_BIT_APPLICATION_CURSOR_KEYS = 1;
+
   private static final int DECSET_BIT_REVERSE_VIDEO = 1 << 1;
   /**
    * http://www.vt100.net/docs/vt510-rm/DECOM: "When DECOM is set, the home cursor position is at
@@ -121,6 +124,7 @@ public final class TerminalEmulator {
   private static final int DECSET_BIT_AUTOWRAP = 1 << 3;
   /** DECSET 25 - if the cursor should be enabled, {@link #isCursorEnabled()}. */
   private static final int DECSET_BIT_CURSOR_ENABLED = 1 << 4;
+
   private static final int DECSET_BIT_APPLICATION_KEYPAD = 1 << 5;
   /** DECSET 1000 - if to report mouse press&release events. */
   private static final int DECSET_BIT_MOUSE_TRACKING_PRESS_RELEASE = 1 << 6;
@@ -138,6 +142,7 @@ public final class TerminalEmulator {
   /* The supported terminal cursor styles. */
   /** Not really DECSET bit... - http://www.vt100.net/docs/vt510-rm/DECSACE */
   private static final int DECSET_BIT_RECTANGULAR_CHANGEATTRIBUTE = 1 << 12;
+
   private static final String LOG_TAG = "TerminalEmulator";
   public final TerminalColors mColors = new TerminalColors();
   private final Stack<String> mTitleStack = new Stack<>();
@@ -152,6 +157,7 @@ public final class TerminalEmulator {
   private final int[] mArgs = new int[MAX_ESCAPE_PARAMETERS];
   /** Holds OSC and device control arguments, which can be strings. */
   private final StringBuilder mOSCOrDeviceControlArgs = new StringBuilder();
+
   private final SavedScreenState mSavedStateMain = new SavedScreenState();
   private final SavedScreenState mSavedStateAlt = new SavedScreenState();
   private final byte[] mUtf8InputBuffer = new byte[4];
@@ -165,6 +171,7 @@ public final class TerminalEmulator {
   final TerminalBuffer mAltBuffer;
   /** The number of character rows and columns in the terminal screen. */
   public int mRows, mColumns;
+
   private String mTitle;
   /** The cursor position. Between (0,0) and (mRows-1, mColumns-1). */
   private int mCursorRow, mCursorCol;
@@ -227,6 +234,7 @@ public final class TerminalEmulator {
    * selection up along with the scrolling text.
    */
   private int mScrollCounter = 0;
+
   private byte mUtf8ToFollow, mUtf8Index;
   private int mLastEmittedCodePoint = -1;
   TerminalSessionClient mClient;

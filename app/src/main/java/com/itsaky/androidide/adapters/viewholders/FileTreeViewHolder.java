@@ -76,7 +76,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     } else {
       chevronIcon = R.drawable.ic_chevron_right;
     }
-  
+
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeImageTransform());
     binding.filetreeChevron.setImageResource(chevronIcon);
     binding

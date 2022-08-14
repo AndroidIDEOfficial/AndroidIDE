@@ -40,7 +40,7 @@ import java.util.Arrays;
 public class FlagEditor extends FixedValueEditor {
 
   private static final ILogger LOG = ILogger.newInstance("FlagEditor");
-  
+
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);

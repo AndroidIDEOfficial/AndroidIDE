@@ -151,10 +151,12 @@ public final class VirtualKeysView extends GridLayout {
    * and a swipe up action is done on an extra key.
    */
   private PopupWindow mPopupWindow;
+
   private ScheduledExecutorService mScheduledExecutor;
   private Handler mHandler;
   private SpecialButtonsLongHoldRunnable mSpecialButtonsLongHoldRunnable;
   private int mLongPressCount;
+
   public VirtualKeysView(Context context, AttributeSet attrs) {
     super(context, attrs);
 

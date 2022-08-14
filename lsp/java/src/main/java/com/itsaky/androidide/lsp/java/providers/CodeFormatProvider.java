@@ -57,7 +57,7 @@ public class CodeFormatProvider {
       final StopWatch watch = new StopWatch("Code formatting");
       final String content = params.getContent().toString();
       final Formatter formatter = new Formatter(settings.getFormatterOptions());
-      
+
       if (params.getRange() == Range.NONE) {
         String formatted;
         try {

@@ -68,8 +68,7 @@ public class KotlinLanguage extends IDELanguage {
       @NonNull CharPosition position,
       @NonNull CompletionPublisher publisher,
       @NonNull Bundle extraArguments)
-      throws CompletionCancelledException {
-  }
+      throws CompletionCancelledException {}
 
   @Override
   public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {

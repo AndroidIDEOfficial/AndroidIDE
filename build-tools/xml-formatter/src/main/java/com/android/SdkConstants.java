@@ -105,6 +105,7 @@ public final class SdkConstants {
   public static final String FN_ANDROID_MANIFEST_XML = "AndroidManifest.xml"; // $NON-NLS-1$
   /** pre-dex jar filename. i.e. "classes.jar" */
   public static final String TOOLS_NS_NAME = "tools";
+
   public static final String FN_CLASSES_JAR = "classes.jar";
   /** Dex filename inside the APK. i.e. "classes.dex" */
   public static final String FN_APK_CLASSES_DEX = "classes.dex"; // $NON-NLS-1$
@@ -537,6 +538,7 @@ public final class SdkConstants {
    */
   public static final String CLASS_MOCK_VIEW =
       "com.android.layoutlib.bridge.MockView"; //$NON-NLS-1$
+
   public static final String CLASS_LAYOUT_INFLATER = "android.view.LayoutInflater"; // $NON-NLS-1$
   /* Android Design Support Class Constants */
   public static final String CLASS_COORDINATOR_LAYOUT =
@@ -606,6 +608,7 @@ public final class SdkConstants {
   public static final String ANDROID_NS_NAME = "android"; // $NON-NLS-1$
   /** The default prefix used for the {@link #ANDROID_URI} name space including the colon */
   public static final String ANDROID_NS_NAME_PREFIX = "android:"; // $NON-NLS-1$
+
   public static final int ANDROID_NS_NAME_PREFIX_LEN = ANDROID_NS_NAME_PREFIX.length();
   /** The default prefix used for the app */
   public static final String APP_PREFIX = "app"; // $NON-NLS-1$
@@ -619,6 +622,7 @@ public final class SdkConstants {
   public static final String LT_ENTITY = "&lt;"; // $NON-NLS-1$
   /** The entity for the greater than character */
   public static final String GT_ENTITY = "&gt;"; // $NON-NLS-1$
+
   public static final String NEWLINE_ENTITY = "&#xA;";
   /** Namespace prefix used for all resources */
   public static final String URI_PREFIX = "http://schemas.android.com/apk/res/"; // $NON-NLS-1$
@@ -1017,6 +1021,7 @@ public final class SdkConstants {
   public static final String FN_MANIFEST_CLASS = FN_MANIFEST_BASE + DOT_JAVA;
   /** BuildConfig java class filename, i.e. "BuildConfig.java" */
   public static final String FN_BUILD_CONFIG = FN_BUILD_CONFIG_BASE + DOT_JAVA;
+
   public static final String DRAWABLE_FOLDER = "drawable"; // $NON-NLS-1$
   public static final String DRAWABLE_XHDPI = "drawable-xhdpi"; // $NON-NLS-1$
   public static final String DRAWABLE_XXHDPI = "drawable-xxhdpi"; // $NON-NLS-1$
@@ -1170,6 +1175,7 @@ public final class SdkConstants {
   public static final String FQCN_RELATIVE_LAYOUT = "android.widget.RelativeLayout"; // $NON-NLS-1$
   /** The fully qualified class name of a RelativeLayout view */
   public static final String FQCN_GRID_LAYOUT = "android.widget.GridLayout"; // $NON-NLS-1$
+
   public static final String FQCN_GRID_LAYOUT_V7 =
       "android.support.v7.widget.GridLayout"; //$NON-NLS-1$
   /** The fully qualified class name of a FrameLayout view */
@@ -1208,11 +1214,13 @@ public final class SdkConstants {
   public static final String FQCN_RADIO_GROUP = "android.widgets.RadioGroup"; // $NON-NLS-1$
   /** The fully qualified class name of a Space */
   public static final String FQCN_SPACE = "android.widget.Space"; // $NON-NLS-1$
+
   public static final String FQCN_SPACE_V7 = "android.support.v7.widget.Space"; // $NON-NLS-1$
   /** The fully qualified class name of a TextView view */
   public static final String FQCN_TEXT_VIEW = "android.widget.TextView"; // $NON-NLS-1$
   /** The fully qualified class name of an ImageView view */
   public static final String FQCN_IMAGE_VIEW = "android.widget.ImageView"; // $NON-NLS-1$
+
   public static final String ATTR_SRC = "src"; // $NON-NLS-1$
   public static final String ATTR_GRAVITY = "gravity"; // $NON-NLS-1$
   public static final String ATTR_WEIGHT_SUM = "weightSum"; // $NON-NLS-1$

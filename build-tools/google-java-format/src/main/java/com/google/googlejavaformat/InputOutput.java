@@ -29,6 +29,7 @@ public abstract class InputOutput {
   private static final DiscreteDomain<Integer> INTEGERS = DiscreteDomain.integers();
   /** The {@link Range}s of the tokens or comments lying on each line, in any part. */
   protected final List<Range<Integer>> ranges = new ArrayList<>();
+
   private ImmutableList<String> lines = ImmutableList.of();
 
   /**

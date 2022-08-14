@@ -26,6 +26,7 @@ public final class TextStyle {
   public static final int CHARACTER_ATTRIBUTE_PROTECTED = 1 << 7;
   /** Dim colors. Also known as faint or half intensity. */
   public static final int CHARACTER_ATTRIBUTE_DIM = 1 << 8;
+
   public static final int COLOR_INDEX_FOREGROUND = 256;
   public static final int COLOR_INDEX_BACKGROUND = 257;
   public static final int COLOR_INDEX_CURSOR = 258;

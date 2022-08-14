@@ -189,6 +189,7 @@ public abstract class Doc {
     private final RealOrImaginary realOrImaginary;
     private final Indent plusIndentCommentsBefore;
     private final Optional<Indent> breakAndIndentTrailingComment;
+
     private Token(
         Input.Token token,
         RealOrImaginary realOrImaginary,

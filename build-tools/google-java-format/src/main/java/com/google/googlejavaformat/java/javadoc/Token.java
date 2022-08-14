@@ -22,6 +22,7 @@ package com.google.googlejavaformat.java.javadoc;
 final class Token {
   private final Type type;
   private final String value;
+
   Token(Type type, String value) {
     this.type = type;
     this.value = value;

@@ -282,11 +282,11 @@ public class JavaLanguageServer implements ILanguageServer {
   }
 
   private void startOrRestartAnalyzeTimer() {
-    
+
     if (VMUtils.isJvm()) {
       return;
     }
-    
+
     if (!this.timer.isStarted()) {
       this.timer.start();
     } else {

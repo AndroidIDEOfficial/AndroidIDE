@@ -24,67 +24,63 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-
 /**
  * Maps throwables to texts for error dialogs. Use Config to configure the mapping.
- * 
+ *
  * @author Markus
  */
 public class ExceptionToResourceMapping {
 
-    public final Map<Class<? extends Throwable>, Integer> throwableToMsgIdMap;
+  public final Map<Class<? extends Throwable>, Integer> throwableToMsgIdMap;
 
-    public ExceptionToResourceMapping() {
-        throwableToMsgIdMap = new HashMap<>();
-    }
+  public ExceptionToResourceMapping() {
+    throwableToMsgIdMap = new HashMap<>();
+  }
 
-    /** Looks at the exception and its causes trying to find an ID. */
-    public Integer mapThrowable(final Throwable throwable) {
-        Throwable throwableToCheck = throwable;
-        int depthToGo = 20;
+  /** Looks at the exception and its causes trying to find an ID. */
+  public Integer mapThrowable(final Throwable throwable) {
+    Throwable throwableToCheck = throwable;
+    int depthToGo = 20;
 
-        while (true) {
-            Integer resId = mapThrowableFlat(throwableToCheck);
-            if (resId != null) {
-                return resId;
-            } else {
-                throwableToCheck = throwableToCheck.getCause();
-                depthToGo--;
-                if (depthToGo <= 0 || throwableToCheck == throwable || throwableToCheck == null) {
-                    Logger logger = Logger.Default.get();  // No EventBus instance here
-                    logger.log(Level.FINE, "No specific message resource ID found for " + throwable);
-                    // return config.defaultErrorMsgId;
-                    return null;
-                }
-            }
-        }
-
-    }
-
-    /** Mapping without checking the cause (done in mapThrowable). */
-    protected Integer mapThrowableFlat(Throwable throwable) {
-        Class<? extends Throwable> throwableClass = throwable.getClass();
-        Integer resId = throwableToMsgIdMap.get(throwableClass);
-        if (resId == null) {
-            Class<? extends Throwable> closestClass = null;
-            Set<Entry<Class<? extends Throwable>, Integer>> mappings = throwableToMsgIdMap.entrySet();
-            for (Entry<Class<? extends Throwable>, Integer> mapping : mappings) {
-                Class<? extends Throwable> candidate = mapping.getKey();
-                if (candidate.isAssignableFrom(throwableClass)) {
-                    if (closestClass == null || closestClass.isAssignableFrom(candidate)) {
-                        closestClass = candidate;
-                        resId = mapping.getValue();
-                    }
-                }
-            }
-
-        }
+    while (true) {
+      Integer resId = mapThrowableFlat(throwableToCheck);
+      if (resId != null) {
         return resId;
+      } else {
+        throwableToCheck = throwableToCheck.getCause();
+        depthToGo--;
+        if (depthToGo <= 0 || throwableToCheck == throwable || throwableToCheck == null) {
+          Logger logger = Logger.Default.get(); // No EventBus instance here
+          logger.log(Level.FINE, "No specific message resource ID found for " + throwable);
+          // return config.defaultErrorMsgId;
+          return null;
+        }
+      }
     }
+  }
 
-    public ExceptionToResourceMapping addMapping(Class<? extends Throwable> clazz, int msgId) {
-        throwableToMsgIdMap.put(clazz, msgId);
-        return this;
+  /** Mapping without checking the cause (done in mapThrowable). */
+  protected Integer mapThrowableFlat(Throwable throwable) {
+    Class<? extends Throwable> throwableClass = throwable.getClass();
+    Integer resId = throwableToMsgIdMap.get(throwableClass);
+    if (resId == null) {
+      Class<? extends Throwable> closestClass = null;
+      Set<Entry<Class<? extends Throwable>, Integer>> mappings = throwableToMsgIdMap.entrySet();
+      for (Entry<Class<? extends Throwable>, Integer> mapping : mappings) {
+        Class<? extends Throwable> candidate = mapping.getKey();
+        if (candidate.isAssignableFrom(throwableClass)) {
+          if (closestClass == null || closestClass.isAssignableFrom(candidate)) {
+            closestClass = candidate;
+            resId = mapping.getValue();
+          }
+        }
+      }
     }
+    return resId;
+  }
 
+  public ExceptionToResourceMapping addMapping(Class<? extends Throwable> clazz, int msgId) {
+    throwableToMsgIdMap.put(clazz, msgId);
+    return this;
+  }
 }

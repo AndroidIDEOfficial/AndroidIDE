@@ -46,7 +46,7 @@ public class RemoveMethod extends Rewrite {
     if (file == CompilerProvider.NOT_FOUND) {
       return CANCELLED;
     }
-    
+
     return compiler
         .compile(file)
         .get(

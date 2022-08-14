@@ -18,7 +18,6 @@ package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 
@@ -33,19 +32,19 @@ import io.github.rosemoe.sora.lang.format.Formatter;
 public abstract class IDELanguage implements Language {
 
   private Formatter formatter;
-  
+
   @Override
   public boolean useTab() {
     return false;
   }
-  
+
   @NonNull
   @Override
   public Formatter getFormatter() {
     if (formatter != null) {
       return formatter;
     }
-    
+
     return formatter = new LSPFormatter(getLanguageServer());
   }
 

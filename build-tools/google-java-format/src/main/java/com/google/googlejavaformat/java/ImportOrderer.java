@@ -69,6 +69,7 @@ public class ImportOrderer {
           .thenComparing(Import::isThirdParty, trueFirst())
           .thenComparing(Import::isJava, trueFirst())
           .thenComparing(Import::imported);
+
   private final String text;
   private final ImmutableList<Tok> toks;
   private final String lineSeparator;

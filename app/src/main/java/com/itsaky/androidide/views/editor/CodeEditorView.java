@@ -343,7 +343,7 @@ public class CodeEditorView extends FrameLayout {
 
     binding.editor.setTextSize(textSize);
   }
-  
+
   private void onUseIcuPrefChanged() {
     binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
@@ -384,7 +384,7 @@ public class CodeEditorView extends FrameLayout {
         break;
     }
   }
-  
+
   public boolean save() {
     final var file = getFile();
     if (file == null) {

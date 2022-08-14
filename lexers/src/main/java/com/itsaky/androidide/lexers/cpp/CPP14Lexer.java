@@ -164,6 +164,7 @@ public class CPP14Lexer extends Lexer {
    * @deprecated Use {@link #VOCABULARY} instead.
    */
   @Deprecated public static final String[] tokenNames;
+
   public static final String _serializedATN =
       "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2\u0093\u05b6\b\1\4"
           + "\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n"

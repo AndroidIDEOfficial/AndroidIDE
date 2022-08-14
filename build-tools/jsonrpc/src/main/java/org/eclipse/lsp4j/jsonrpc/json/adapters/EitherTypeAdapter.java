@@ -42,9 +42,11 @@ public class EitherTypeAdapter<L, R> extends TypeAdapter<Either<L, R>> {
   protected final EitherTypeArgument<R> right;
   protected final Predicate<JsonElement> leftChecker;
   protected final Predicate<JsonElement> rightChecker;
+
   public EitherTypeAdapter(Gson gson, TypeToken<Either<L, R>> typeToken) {
     this(gson, typeToken, null, null);
   }
+
   public EitherTypeAdapter(
       Gson gson,
       TypeToken<Either<L, R>> typeToken,

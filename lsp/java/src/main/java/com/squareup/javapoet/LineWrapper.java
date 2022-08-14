@@ -29,6 +29,7 @@ final class LineWrapper {
   private final int columnLimit;
   /** Characters written since the last wrapping space that haven't yet been flushed. */
   private final StringBuilder buffer = new StringBuilder();
+
   private boolean closed;
   /** The number of characters since the most recent newline. Includes both out and the buffer. */
   private int column = 0;

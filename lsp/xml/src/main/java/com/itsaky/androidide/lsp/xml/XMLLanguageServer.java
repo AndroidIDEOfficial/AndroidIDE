@@ -57,8 +57,10 @@ import java.util.Collections;
 public class XMLLanguageServer implements ILanguageServer {
 
   public static final String SERVER_ID = "xml";
+
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public SDKInfo sdkInfo;
+
   private ILanguageClient client;
   private IServerSettings settings;
   private boolean canProvideCompletions = false;

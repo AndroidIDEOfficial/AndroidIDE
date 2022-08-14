@@ -60,12 +60,12 @@ public class GenerateRecordConstructor extends Rewrite {
     LOG.info("Generate default constructor for " + className + "...");
     // TODO this needs to fall back on looking for inner classes and package-private classes
     Path file = compiler.findTypeDeclaration(className);
-    
+
     if (file == CompilerProvider.NOT_FOUND) {
       LOG.warn("Unable to find source file for class:", this.className);
       return CANCELLED;
     }
-    
+
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {

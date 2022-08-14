@@ -41,6 +41,7 @@ public class CollectionTypeAdapter<E> extends TypeAdapter<Collection<E>> {
   private final Type elementType;
   private final TypeAdapter<E> elementTypeAdapter;
   private final Supplier<Collection<E>> constructor;
+
   public CollectionTypeAdapter(
       Gson gson,
       Type elementType,

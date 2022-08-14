@@ -44,6 +44,7 @@ public final class Main {
   private final PrintWriter outWriter;
   private final PrintWriter errWriter;
   private final InputStream inStream;
+
   public Main(PrintWriter outWriter, PrintWriter errWriter, InputStream inStream) {
     this.outWriter = outWriter;
     this.errWriter = errWriter;

@@ -74,7 +74,7 @@ public abstract class BaseValueEditorFragment extends Fragment {
     if (child != null) {
       scrollView.addView(child);
     }
-    
+
     return scrollView;
   }
 
