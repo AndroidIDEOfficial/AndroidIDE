@@ -105,7 +105,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
     else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
     else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
-    else if (ImageUtils.isImage(file)) icon = R.drawable.ic_image;
+    else if (ImageUtils.isImage(file)) icon = R.drawable.ic_file_image;
     else icon = R.drawable.ic_file_unknown;
     return icon;
   }
