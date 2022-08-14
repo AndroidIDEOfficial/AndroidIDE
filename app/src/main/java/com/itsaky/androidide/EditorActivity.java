@@ -178,7 +178,6 @@ public class EditorActivity extends StudioActivity
   private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
   private GradleBuildService mBuildService;
-
   private final ServiceConnection mGradleServiceConnection =
       new ServiceConnection() {
         @Override
@@ -197,6 +196,7 @@ public class EditorActivity extends StudioActivity
           LOG.info("Disconnected from Gradle build service...");
         }
       };
+  private boolean isFinishing = false;
 
   @SuppressLint("RestrictedApi")
   @Override
@@ -996,6 +996,7 @@ public class EditorActivity extends StudioActivity
 
   @Override
   protected void onDestroy() {
+    isFinishing = true;
     closeProject(false);
     try {
       unregisterReceiver(mLogReceiver);
@@ -1279,6 +1280,17 @@ public class EditorActivity extends StudioActivity
   }
 
   private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
+
+    if (isFinishing) {
+      // Do not show unsaved files dialog if the activity is being destroyed
+      // TODO Use a service to save files and to avoid file content loss
+      for (final CodeEditorView editor : unsavedEditors) {
+        editor.markUnmodified();
+      }
+      invokeAfter.run();
+      return;
+    }
+
     //noinspection ConstantConditions
     final var mapped =
         unsavedEditors.stream()
