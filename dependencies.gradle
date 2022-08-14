@@ -16,7 +16,7 @@ ext {
     ]
     
     common = [
-            editor     : 'io.github.Rosemoe.sora-editor:editor:0.16.4',
+            editor     : 'io.github.Rosemoe.sora-editor:editor:0.16.5',
             utilcode   : 'com.blankj:utilcodex:1.31.0',
             glide      : 'com.github.bumptech.glide:glide:4.13.2',
             glide_ap   : 'com.github.bumptech.glide:compiler:4.13.2',

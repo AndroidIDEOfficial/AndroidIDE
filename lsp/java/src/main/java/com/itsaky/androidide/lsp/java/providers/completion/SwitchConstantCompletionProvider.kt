@@ -76,6 +76,7 @@ class SwitchConstantCompletionProvider(
     val list: MutableList<com.itsaky.androidide.lsp.models.CompletionItem> = ArrayList()
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
 
     for (member in task.task.elements.getAllMembers(element)) {
       if (member.kind != ENUM_CONSTANT) {
@@ -100,6 +101,7 @@ class SwitchConstantCompletionProvider(
     endsWithParen: Boolean
   ): CompletionResult {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return IdentifierCompletionProvider(file, cursor, compiler, settings)
       .complete(task, path, partial, endsWithParen)
   }

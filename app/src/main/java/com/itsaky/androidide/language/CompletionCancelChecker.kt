@@ -15,31 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.providers
+package com.itsaky.androidide.language
 
-import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker
-import com.itsaky.androidide.lsp.api.IServerSettings
-import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.utils.ILogger
-import java.nio.file.Path
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 
 /**
- * Base class for java service providers.
+ * [CompletionPublisher] implementation which exposes the `checkCancelled` method.
  *
  * @author Akash Yadav
  */
-abstract class BaseJavaServiceProvider(
-  protected val file: Path,
-  protected val compiler: JavaCompilerService,
-  protected val settings: IServerSettings
-) {
-  
-  private val log = ILogger.newInstance(javaClass.simpleName)
+class CompletionCancelChecker(val publisher: CompletionPublisher) : ICompletionCancelChecker {
 
-  /** Abort the completion if cancelled. */
-  fun abortCompletionIfCancelled() {
-    val checker = Lookup.DEFAULT.lookup(ICompletionCancelChecker::class.java)
-    checker?.abortIfCancelled()
+  companion object {
+    @JvmStatic
+    private val checkCancelled = CompletionPublisher::class.java.getDeclaredMethod("checkCancelled")
+
+    init {
+      checkCancelled.isAccessible = true
+    }
+  }
+
+  /** Check if the completion is cancelled. */
+  @Throws(CompletionCancelledException::class)
+  override fun abortIfCancelled() {
+    checkCancelled.invoke(publisher)
   }
 }

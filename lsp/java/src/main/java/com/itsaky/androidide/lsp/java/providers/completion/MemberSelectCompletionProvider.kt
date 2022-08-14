@@ -67,6 +67,7 @@ class MemberSelectCompletionProvider(
     val scope = trees.getScope(exprPath)
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return when (val type = trees.getTypeMirror(exprPath)) {
       is ArrayType -> completeArrayMemberSelect(isStatic, partial)
       is TypeVariable ->
@@ -83,6 +84,7 @@ class MemberSelectCompletionProvider(
   ): CompletionResult {
     return if (isStatic) {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       CompletionResult.EMPTY
     } else {
       val list = mutableListOf<CompletionItem>()
@@ -100,6 +102,7 @@ class MemberSelectCompletionProvider(
     endsWithParen: Boolean,
   ): CompletionResult {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberSelect(
@@ -139,6 +142,7 @@ class MemberSelectCompletionProvider(
       mutableMapOf()
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (member in task.task.elements.getAllMembers(typeElement)) {
       if (member.kind == CONSTRUCTOR) {
         continue
@@ -165,6 +169,7 @@ class MemberSelectCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for ((key, value) in methods) {
       val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
       if (matchLevel == NO_MATCH) {

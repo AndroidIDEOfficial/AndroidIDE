@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.providers.completion
 
+import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.api.ICompletionCancelChecker
 import com.itsaky.androidide.lsp.java.parser.ParseTask
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.SNIPPET
@@ -36,6 +38,7 @@ import java.nio.file.Paths
 class TopLevelSnippetsProvider {
   fun complete(task: ParseTask, result: CompletionResult) {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val file = Paths.get(task.root.sourceFile.toUri())
     if (!hasTypeDeclaration(task.root)) {
       result.add(classSnippet(file))
@@ -59,6 +62,7 @@ class TopLevelSnippetsProvider {
 
   private fun classSnippet(file: Path): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     var name = file.fileName.toString()
     name = name.substring(0, name.length - ".java".length)
     return snippetItem("class $name", "class $name {\n    $0\n}")
@@ -66,6 +70,7 @@ class TopLevelSnippetsProvider {
 
   private fun packageSnippet(file: Path): CompletionItem? {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val module = ProjectManager.findModuleForFile(file) ?: return null
     val name = module.suggestPackageName(file)
     return snippetItem("package $name", "package $name;\n\n")
@@ -73,6 +78,7 @@ class TopLevelSnippetsProvider {
 
   private fun snippetItem(label: String, snippet: String): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val item = CompletionItem()
     item.setLabel(label)
     item.kind = SNIPPET
@@ -81,5 +87,11 @@ class TopLevelSnippetsProvider {
     item.sortText = label
     item.matchLevel = CASE_INSENSITIVE_EQUAL
     return item
+  }
+  
+  /** Abort the completion if cancelled. */
+  fun abortCompletionIfCancelled() {
+    val checker = Lookup.DEFAULT.lookup(ICompletionCancelChecker::class.java)
+    checker?.abortIfCancelled()
   }
 }

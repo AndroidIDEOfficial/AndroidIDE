@@ -97,6 +97,7 @@ class ImportCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     run {
       val match = matchLevel("static", incomplete)
       if (match != NO_MATCH && !importTree.isStatic && pkgName.isEmpty()) {
@@ -105,6 +106,7 @@ class ImportCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val module = compiler.module
     if (module == null) {
       legacyImportPathCompletion(partial, names, list)
@@ -121,6 +123,7 @@ class ImportCompletionProvider(
     try {
       val packages = collectPackageNodes(module, pkgName)
       abortIfCancelled()
+      abortCompletionIfCancelled()
       if (packages.isNotEmpty()) {
         for (node in packages) {
           addDirectChildNodes(node, incomplete, list, names, false)
@@ -156,6 +159,7 @@ class ImportCompletionProvider(
     list: MutableList<CompletionItem>
   ): Boolean {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val elements = task.task.elements
     var typesForPkg: Set<TypeElement> = setOf()
     val maybeInnerName = StringBuilder(pkgName)
@@ -173,6 +177,7 @@ class ImportCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     if (typesForPkg.isNotEmpty()) {
       // We found a valid class name
       // Add the accessible class items
@@ -197,6 +202,7 @@ class ImportCompletionProvider(
    */
   private fun collectPackageNodes(module: ModuleProject, pkgName: String): List<Node> {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val result = mutableListOf<Node>()
     val fromSource = collectPackageNode(module.compileJavaSourceClasses, pkgName)
     if (fromSource != null) {
@@ -204,6 +210,7 @@ class ImportCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val fromClasspath = collectPackageNode(module.compileClasspathClasses, pkgName)
     if (fromClasspath != null) {
       result.add(fromClasspath)
@@ -211,6 +218,7 @@ class ImportCompletionProvider(
 
     BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       val fromBootclasspath = collectPackageNode(it, pkgName)
       if (fromBootclasspath != null) {
         result.add(fromBootclasspath)
@@ -233,6 +241,7 @@ class ImportCompletionProvider(
     var node: Node? = trie.root
     for (segment in segments) {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       if (node == null) {
         break
       }
@@ -257,6 +266,7 @@ class ImportCompletionProvider(
   ): MutableList<CompletionItem> {
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
 
     val list = mutableListOf<CompletionItem>()
     val elements = task.task.elements
@@ -272,6 +282,7 @@ class ImportCompletionProvider(
     val members = elements.getAllMembers(type)
     for (member in members) {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       if (
         member.kind == CONSTRUCTOR || member.kind == STATIC_INIT || member.kind == INSTANCE_INIT
       ) {
@@ -324,6 +335,7 @@ class ImportCompletionProvider(
     packageOnly: Boolean = false
   ) {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val sourceNode =
       if (pkgName.isEmpty()) module.compileJavaSourceClasses.root
       else module.compileJavaSourceClasses.findNode(pkgName)
@@ -336,6 +348,7 @@ class ImportCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val classpathNode =
       if (pkgName.isEmpty()) module.compileClasspathClasses.root
       else module.compileClasspathClasses.findNode(pkgName)
@@ -349,6 +362,7 @@ class ImportCompletionProvider(
 
     BootClasspathProvider.getAllEntries().forEach {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       val node =
         if (pkgName.isEmpty()) {
           it.root
@@ -371,6 +385,7 @@ class ImportCompletionProvider(
   ) {
     for (child in sourceNode.children.values) {
       abortIfCancelled()
+      abortCompletionIfCancelled()
       val match =
         if (incomplete.isEmpty()) {
           CASE_SENSITIVE_EQUAL
@@ -402,6 +417,7 @@ class ImportCompletionProvider(
     list: MutableList<CompletionItem>
   ) {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (className in compiler.publicTopLevelTypes()) {
       val matchLevel = matchLevel(className, partial)
       if (matchLevel == NO_MATCH) {

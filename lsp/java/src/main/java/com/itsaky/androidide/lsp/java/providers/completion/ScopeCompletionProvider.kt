@@ -89,6 +89,7 @@ class ScopeCompletionProvider(
       }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for (member in ScopeHelper.scopeMembers(task, scope, filter)) {
       var name = member.simpleName.toString()
       if (name.contains('(')) {
@@ -133,7 +134,7 @@ class ScopeCompletionProvider(
     }
 
     abortIfCancelled()
-
+    abortCompletionIfCancelled()
     val types = task.task.types
     val parentElement =
       Trees.instance(task.task).getElement(parentPath)
@@ -174,6 +175,7 @@ class ScopeCompletionProvider(
     insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
 
     val item = CompletionItem()
     item.setLabel(methodSpec.name)

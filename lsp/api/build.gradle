@@ -62,6 +62,7 @@ dependencies {
     implementation google.material
     
     api project (':build-tools:projects')
+    api project (':lookup')
     api project (':lsp:models')
     
     compileOnly project (':xml-inflater')

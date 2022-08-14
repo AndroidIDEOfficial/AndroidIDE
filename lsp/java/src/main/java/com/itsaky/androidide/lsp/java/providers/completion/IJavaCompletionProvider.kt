@@ -89,6 +89,7 @@ abstract class IJavaCompletionProvider(
     filePackage = root.`package`.packageName.toString()
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return doComplete(task, path, partial, endsWithParen)
   }
 
@@ -111,6 +112,7 @@ abstract class IJavaCompletionProvider(
 
   protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return CompletionItem.matchLevel(candidate.toString(), partial.toString())
   }
 
@@ -119,6 +121,7 @@ abstract class IJavaCompletionProvider(
     methods: MutableMap<String, MutableList<ExecutableElement>>,
   ) {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val name = method.simpleName.toString()
     if (!methods.containsKey(name)) {
       methods[name] = ArrayList()
@@ -139,6 +142,7 @@ abstract class IJavaCompletionProvider(
     matchLevel: MatchLevel,
   ): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val item = CompletionItem()
     item.setLabel(keyword)
     item.kind = KEYWORD
@@ -155,6 +159,7 @@ abstract class IJavaCompletionProvider(
     matchLevel: MatchLevel,
   ): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val first = overloads[0]
     val item = CompletionItem()
     item.setLabel(first.simpleName.toString())
@@ -167,6 +172,7 @@ abstract class IJavaCompletionProvider(
     item.data = data
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     if (addParens) {
       if (overloads.size == 1 && first.parameters.isEmpty()) {
         item.insertText = first.simpleName.toString() + "()$0"
@@ -204,6 +210,7 @@ abstract class IJavaCompletionProvider(
     if (element.kind == METHOD) throw RuntimeException("method")
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val item = CompletionItem()
     item.setLabel(element.simpleName.toString())
     item.kind = kind(element)
@@ -233,6 +240,7 @@ abstract class IJavaCompletionProvider(
     matchLevel: MatchLevel,
   ): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val item = CompletionItem()
     item.setLabel(simpleName(className).toString())
     item.kind = CompletionItemKind.CLASS
@@ -260,6 +268,7 @@ abstract class IJavaCompletionProvider(
 
   protected open fun packageItem(name: String, matchLevel: MatchLevel): CompletionItem {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val simpleName = simpleName(name).toString()
     var packageName = packageName(name).toString()
     if (packageName == name) {
@@ -277,6 +286,7 @@ abstract class IJavaCompletionProvider(
 
   protected open fun kind(e: Element): CompletionItemKind {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return when (e.kind) {
       ANNOTATION_TYPE -> CompletionItemKind.ANNOTATION_TYPE
       CLASS -> CompletionItemKind.CLASS
@@ -301,6 +311,7 @@ abstract class IJavaCompletionProvider(
 
   protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val data = CompletionData()
     when {
       element is TypeElement -> data.className = element.qualifiedName.toString()

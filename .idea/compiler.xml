@@ -34,9 +34,6 @@
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
       <module name="AndroidIDE.javac" target="1.8" />
-      <module name="AndroidIDE.lookup" target="11" />
-      <module name="AndroidIDE.lookup.main" target="11" />
-      <module name="AndroidIDE.lookup.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

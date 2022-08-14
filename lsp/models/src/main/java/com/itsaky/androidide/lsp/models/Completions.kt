@@ -121,9 +121,7 @@ open class CompletionItem(
   var data: CompletionData?
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   var sortText: String? = sortText
     get() {
       if (field == null) {

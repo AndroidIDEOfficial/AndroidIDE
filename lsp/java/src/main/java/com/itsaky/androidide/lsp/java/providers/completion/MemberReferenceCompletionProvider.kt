@@ -66,6 +66,7 @@ class MemberReferenceCompletionProvider(
     val scope = trees.getScope(exprPath)
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return when (val type = trees.getTypeMirror(exprPath)) {
       is ArrayType -> completeArrayMemberReference(isStatic, partial)
       is TypeVariable -> completeTypeVariableMemberReference(task, scope, type, isStatic, partial)
@@ -79,6 +80,7 @@ class MemberReferenceCompletionProvider(
     partialName: CharSequence,
   ): CompletionResult {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return if (isStatic) {
       val list = mutableListOf<CompletionItem>()
       list.add(keyword("new", partialName, 100))
@@ -96,6 +98,7 @@ class MemberReferenceCompletionProvider(
     partial: String,
   ): CompletionResult {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     return when (type.upperBound) {
       is DeclaredType ->
         completeDeclaredTypeMemberReference(
@@ -125,6 +128,7 @@ class MemberReferenceCompletionProvider(
     partial: String,
   ): CompletionResult {
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
     val list: MutableList<CompletionItem> = ArrayList()
@@ -157,6 +161,7 @@ class MemberReferenceCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     for ((key, value) in methods) {
       val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
       if (matchLevel == NO_MATCH) {
