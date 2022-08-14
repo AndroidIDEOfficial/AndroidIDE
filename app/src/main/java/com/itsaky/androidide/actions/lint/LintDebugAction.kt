@@ -33,9 +33,7 @@ class LintDebugAction() : BaseBuildAction() {
 
   override val id: String = "editor_lintDebug"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.lintDebug()
+    execTasks(data = data, resultHandler = {},"lintDebug")
     return true
   }
 }

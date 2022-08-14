@@ -33,9 +33,7 @@ class LintReleaseAction() : BaseBuildAction() {
 
   override val id: String = "editor_lintRelease"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.lintRelease()
+    execTasks(data = data, resultHandler = {},"lintRelease")
     return true
   }
 }

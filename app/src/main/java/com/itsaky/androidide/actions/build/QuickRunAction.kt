@@ -28,7 +28,7 @@ import com.itsaky.androidide.actions.BaseBuildAction
  *
  * @author Akash Yadav
  */
-class QuickRunAction() : BaseBuildAction() {
+class QuickRunAction() : AssembleDebugAction() {
 
   constructor(context: Context) : this() {
     label = context.getString(R.string.quick_run_debug)
@@ -36,10 +36,5 @@ class QuickRunAction() : BaseBuildAction() {
   }
 
   override val id: String = "editor_quick_run"
-
-  override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-    context.assembleDebug(true)
-    return true
-  }
+  override var installApk: Boolean = true
 }

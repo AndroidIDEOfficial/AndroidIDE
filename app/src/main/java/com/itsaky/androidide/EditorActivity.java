@@ -19,7 +19,6 @@
  */
 package com.itsaky.androidide;
 
-import static com.blankj.utilcode.util.IntentUtils.getInstallAppIntent;
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setLastOpenedProject;
@@ -97,7 +96,6 @@ import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
-import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.Range;
@@ -111,8 +109,6 @@ import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
-import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
@@ -141,10 +137,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -862,129 +856,12 @@ public class EditorActivity extends StudioActivity
     }
   }
 
-  public void assembleDebug(boolean installApk) {
-    execTasks(installApk ? installableTaskResultConsumer("debug") : null, "assembleDebug");
-  }
-
-  @SuppressWarnings("UnusedReturnValue")
-  @NonNull
-  public CompletableFuture<TaskExecutionResult> execTasks(
-      Consumer<TaskExecutionResult> resultHandler, String... tasks) {
-    saveAll(false);
-    runOnUiThread(() -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
-    return mBuildService
-        .executeTasks(tasks)
-        .whenComplete(
-            ((executionResult, throwable) -> {
-              if (executionResult == null || throwable != null) {
-                LOG.error("Tasks failed to execute", TextUtils.join(", ", tasks));
-              }
-
-              if (resultHandler != null) {
-                resultHandler.accept(executionResult);
-              }
-            }));
-  }
-
   public void appendBuildOut(final String str) {
     final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
 
     if (frag != null) {
       frag.appendOutput(str);
     }
-  }
-
-  public Consumer<TaskExecutionResult> installableTaskResultConsumer(@NonNull String variantName) {
-    return result -> {
-      if (result != null && result.isSuccessful()) {
-        LOG.debug("Installing APK(s) for variant:", variantName);
-        // TODO Handle multiple application modules
-        final var projectManager = ProjectManager.INSTANCE;
-        final var app = projectManager.getApplicationModule();
-        if (app == null) {
-          LOG.warn("No application module found. Cannot install APKs");
-          return;
-        }
-
-        Optional<SimpleVariantData> foundVariant =
-            app.getVariants().stream().filter(it -> variantName.equals(it.getName())).findFirst();
-        if (foundVariant.isPresent()) {
-          final var variant = foundVariant.get();
-          final var main = variant.getMainArtifact();
-          final var outputListingFile = main.getAssembleTaskOutputListingFile();
-          if (outputListingFile == null) {
-            LOG.error("No output listing file provided with project model");
-            return;
-          }
-
-          final var apkFile = ApkMetadata.findApkFile(outputListingFile);
-          if (apkFile == null) {
-            LOG.error("No apk file specified in output listing file:", outputListingFile);
-            return;
-          }
-
-          if (!apkFile.exists()) {
-            LOG.error("APK file specified in output listing file does not exist!", apkFile);
-            return;
-          }
-
-          install(apkFile);
-        } else {
-          LOG.error("No", variantName, "variant found in application module", app.getPath());
-        }
-      } else {
-        LOG.debug("Cannot install APK. Task execution result:", result);
-      }
-    };
-  }
-
-  public void install(@NonNull File apk) {
-    runOnUiThread(
-        () -> {
-          LOG.debug("Installing APK:", apk);
-          if (apk.exists()) {
-            Intent i = getInstallAppIntent(apk);
-            if (i != null) {
-              startActivity(i);
-            } else {
-              getApp().toast(R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
-            }
-          } else {
-            LOG.error("APK file does not exist!");
-          }
-        });
-  }
-
-  public void assembleRelease() {
-    execTasks(null, "assembleRelease");
-  }
-
-  public void build() {
-    execTasks(null, "build");
-  }
-
-  public void clean() {
-    execTasks(null, "clean");
-  }
-
-  public void bundle() {
-    execTasks(null, "bundle");
-  }
-
-  public void lint() {
-    execTasks(null, "lint");
-  }
-
-  public void lintDebug() {
-    execTasks(null, "lintDebug");
-  }
-
-  public void lintRelease() {
-    execTasks(null, "lintRelease");
-  }
-
-  public void cleanAndRebuild() {
-    execTasks(null, "clean", "build");
   }
 
   public AlertDialog getFindInProjectDialog() {

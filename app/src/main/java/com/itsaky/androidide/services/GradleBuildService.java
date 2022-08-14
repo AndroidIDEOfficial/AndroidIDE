@@ -309,6 +309,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         .notify(NOTIFICATION_ID, buildNotification(message));
   }
 
+  @Override
+  public boolean isBuildInProgress() {
+    return isBuildInProgress;
+  }
+
   @NonNull
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
@@ -381,10 +386,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   protected <T> T markBuildAsFinished(final T result, final Throwable throwable) {
     isBuildInProgress = false;
     return result;
-  }
-
-  public boolean isBuildInProgress() {
-    return isBuildInProgress;
   }
 
   public void startToolingServer(@Nullable OnServerStartListener listener) {

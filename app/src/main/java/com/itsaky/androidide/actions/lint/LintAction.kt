@@ -33,9 +33,7 @@ class LintAction() : BaseBuildAction() {
 
   override val id: String = "editor_lint"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.lint()
+    execTasks(data = data, resultHandler = {},"lint")
     return true
   }
 }
