@@ -32,6 +32,7 @@ import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.unnamed.b.atv.model.TreeNode;
@@ -104,6 +105,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
     else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
     else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
+    else if (ImageUtils.isImage(file)) icon = R.drawable.ic_image;
     else icon = R.drawable.ic_file_unknown;
     return icon;
   }
