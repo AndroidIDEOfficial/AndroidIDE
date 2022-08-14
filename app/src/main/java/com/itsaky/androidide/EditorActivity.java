@@ -91,6 +91,7 @@ import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver;
 import com.itsaky.androidide.handlers.EditorEventListener;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
+import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
@@ -105,6 +106,7 @@ import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
@@ -188,6 +190,7 @@ public class EditorActivity extends StudioActivity
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
           mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
+          Lookup.DEFAULT.register(BuildService.class, mBuildService);
           LOG.info("Gradle build service has been started...");
           mBuildService
               .setEventListener(mBuildEventListener)
@@ -197,6 +200,7 @@ public class EditorActivity extends StudioActivity
         @Override
         public void onServiceDisconnected(ComponentName name) {
           mBuildService = null;
+          Lookup.DEFAULT.unregister(BuildService.class);
           LOG.info("Disconnected from Gradle build service...");
         }
       };
