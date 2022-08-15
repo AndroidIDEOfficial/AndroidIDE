@@ -31,13 +31,15 @@ import android.widget.LinearLayout;
 import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.io.File;
+
+import kotlin.io.FilesKt;
 
 public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 
@@ -98,21 +100,45 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
   }
 
   protected int getIconForFile(final File file) {
-    final int icon;
-    if (file.isDirectory()) icon = R.drawable.ic_folder;
-    else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
-    else if (file.getName().endsWith(".kt") || file.getName().endsWith(".kts")) icon = R.drawable.ic_language_kotlin;
-    else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
-    else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
-    else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
-    else if (file.getName().endsWith(".properties")) icon = R.drawable.ic_language_properties;
-    else if (file.getName().endsWith(".apk")) icon = R.drawable.ic_file_apk;
-    else if (file.getName().endsWith(".txt") || file.getName().endsWith(".log")) icon = R.drawable.ic_file_txt;
-    else if (file.getName().endsWith(".cpp") || file.getName().endsWith(".h")) icon = R.drawable.ic_language_cpp;
-    else if (file.getName().endsWith("gradlew") || file.getName().endsWith("gradlew.bat")) icon = R.drawable.ic_terminal;
-    else if (ImageUtils.isImage(file)) icon = R.drawable.ic_file_image;
-    else icon = R.drawable.ic_file_unknown;
-    return icon;
+
+    if (file.isDirectory()) {
+      return R.drawable.ic_folder;
+    }
+
+    if (ImageUtils.isImage(file)) {
+      return R.drawable.ic_file_image;
+    }
+
+    if ("gradlew".equals(file.getName()) || "gradlew.bat".equals(file.getName())) {
+      return R.drawable.ic_terminal;
+    }
+
+    final String extension = FilesKt.getExtension(file);
+    switch (extension) {
+      case ".java":
+        return R.drawable.ic_language_java;
+      case ".xml":
+        return R.drawable.ic_language_xml;
+      case ".gradle":
+        return R.drawable.ic_language_gradle;
+      case ".json":
+        return R.drawable.ic_language_json;
+      case ".properties":
+        return R.drawable.ic_language_properties;
+      case ".apk":
+        return R.drawable.ic_file_apk;
+      case ".kt":
+      case ".kts":
+        return R.drawable.ic_language_kotlin;
+      case "txt":
+      case "log":
+        return R.drawable.ic_file_txt;
+      case "cpp":
+      case "h":
+        return R.drawable.ic_language_cpp;
+      default:
+        return R.drawable.ic_file_unknown;
+    }
   }
 
   public void updateChevron(boolean expanded) {
