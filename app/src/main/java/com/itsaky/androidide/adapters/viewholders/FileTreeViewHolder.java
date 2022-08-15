@@ -35,11 +35,10 @@ import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
+import com.itsaky.androidide.models.TreeFileExtension;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.io.File;
-
-import kotlin.io.FilesKt;
 
 public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 
@@ -113,32 +112,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
       return R.drawable.ic_terminal;
     }
 
-    final String extension = FilesKt.getExtension(file);
-    switch (extension) {
-      case ".java":
-        return R.drawable.ic_language_java;
-      case ".xml":
-        return R.drawable.ic_language_xml;
-      case ".gradle":
-        return R.drawable.ic_language_gradle;
-      case ".json":
-        return R.drawable.ic_language_json;
-      case ".properties":
-        return R.drawable.ic_language_properties;
-      case ".apk":
-        return R.drawable.ic_file_apk;
-      case ".kt":
-      case ".kts":
-        return R.drawable.ic_language_kotlin;
-      case "txt":
-      case "log":
-        return R.drawable.ic_file_txt;
-      case "cpp":
-      case "h":
-        return R.drawable.ic_language_cpp;
-      default:
-        return R.drawable.ic_file_unknown;
-    }
+    return TreeFileExtension.Factory.forFile(file).getIcon();
   }
 
   public void updateChevron(boolean expanded) {
