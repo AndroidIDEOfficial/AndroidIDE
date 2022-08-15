@@ -344,4 +344,6 @@
     <string name="err_invalid_data_by_intent">ইন্টেন্ট অবৈধ ডেটা ফেরত দিয়েছে</string>
     <string name="msg_select_from_primary_storage">প্রাথমিক স্টোরেজ থেকে একটি ডিরেক্টরি নির্বাচন করুন</string>
     <string name="err_authority_not_allowed">কর্তৃপক্ষ \'%s\' অনুমোদিত নয়</string>
+    <string name="idepref_useIcu_title">ICU lib ব্যবহার করুন</string>
+    <string name="idepref_useIcu_summary">ডাবল-ট্যাপ এবং দীর্ঘক্ষণ চাপা শব্দ নির্বাচনের জন্য ICU লাইব্রেরি ব্যবহার করুন৷</string>
 </resources>
