@@ -28,6 +28,7 @@ import java.io.File
  */
 enum class TreeFileExtension(val extension: String, @DrawableRes val icon: Int) {
   JAVA("java", R.drawable.ic_language_java),
+  JAR("jar", R.drawable.ic_language_java),
   KT("kt", R.drawable.ic_language_kotlin),
   KTS("kts", R.drawable.ic_language_kotlin),
   XML("xml", R.drawable.ic_language_xml),
