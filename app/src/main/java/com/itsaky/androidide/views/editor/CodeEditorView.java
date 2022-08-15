@@ -142,6 +142,15 @@ public class CodeEditorView extends FrameLayout {
 
     configureEditorIfNeeded();
   }
+  
+  /**
+   * For internal use only!
+   *
+   * Marks this editor as unmodified. Used only when the activity is being destroyed.
+   */
+  public void markUnmodified() {
+    isModified = false;
+  }
 
   @NonNull
   private Bundle createEditorArgs() {

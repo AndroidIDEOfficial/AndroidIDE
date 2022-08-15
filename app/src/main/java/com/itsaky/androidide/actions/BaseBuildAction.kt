@@ -17,7 +17,12 @@
 
 package com.itsaky.androidide.actions
 
-import com.itsaky.androidide.EditorActivity
+import android.text.TextUtils
+import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNKNOWN
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * Marker class for actions that execute build related tasks.
@@ -25,6 +30,10 @@ import com.itsaky.androidide.EditorActivity
  * @author Akash Yadav
  */
 abstract class BaseBuildAction : EditorActivityAction() {
+
+  protected val log: ILogger = ILogger.newInstance(javaClass.simpleName)
+  protected val buildService: BuildService?
+    get() = Lookup.DEFAULT.lookup(BuildService::class.java)
 
   override fun prepare(data: ActionData) {
     val context = getActivity(data)
@@ -35,7 +44,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
       visible = true
     }
 
-    if (isBuildInProgress(context)) {
+    if (isBuildInProgress()) {
       enabled = false
       return
     } else {
@@ -50,6 +59,39 @@ abstract class BaseBuildAction : EditorActivityAction() {
 
   fun shouldPrepare() = visible && enabled
 
-  private fun isBuildInProgress(activity: EditorActivity): Boolean =
-    activity.buildService == null || activity.buildService.isBuildInProgress
+  private fun isBuildInProgress(): Boolean {
+    return buildService == null || buildService?.isBuildInProgress == true
+  }
+
+  @JvmOverloads
+  protected fun execTasks(
+    data: ActionData,
+    resultHandler: (TaskExecutionResult?) -> Unit = {},
+    vararg tasks: String,
+  ) {
+
+    if (buildService == null) {
+      return
+    }
+
+    val activity =
+      getActivity(data)
+        ?: run {
+          resultHandler(TaskExecutionResult(false, UNKNOWN))
+          return
+        }
+
+    activity.saveAll()
+    activity.runOnUiThread {
+      activity.appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks))
+    }
+
+    buildService!!.executeTasks(tasks = tasks).whenComplete { result, err ->
+      if (result == null || err != null) {
+        log.error("Tasks failed to execute", TextUtils.join(", ", tasks))
+      }
+
+      resultHandler(result)
+    }
+  }
 }

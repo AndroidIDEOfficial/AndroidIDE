@@ -20,7 +20,7 @@ package com.itsaky.androidide.projects.builder
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * A build service provides API to initialize project, execute builds, query a build, cancel running
@@ -29,6 +29,9 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 interface BuildService {
+
+  /** Whether a build is in progress or not. */
+  val isBuildInProgress: Boolean
 
   /**
    * Initialize the project.

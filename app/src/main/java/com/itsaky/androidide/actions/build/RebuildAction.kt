@@ -33,9 +33,7 @@ class RebuildAction() : BaseBuildAction() {
 
   override val id: String = "editor_cleanAndBuild"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.cleanAndRebuild()
+    execTasks(data = data, resultHandler = {},"clean", "build")
     return true
   }
 }

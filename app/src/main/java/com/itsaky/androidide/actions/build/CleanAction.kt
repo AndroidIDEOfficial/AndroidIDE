@@ -33,9 +33,7 @@ class CleanAction() : BaseBuildAction() {
 
   override val id: String = "editor_clean"
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
-    context.clean()
+    execTasks(data = data, resultHandler = {},"clean")
     return true
   }
 }

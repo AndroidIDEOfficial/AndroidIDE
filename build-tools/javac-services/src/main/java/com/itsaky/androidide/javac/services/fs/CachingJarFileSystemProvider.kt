@@ -17,17 +17,16 @@
 
 package com.itsaky.androidide.javac.services.fs
 
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.zipfs2.JarFileSystemProvider
 import com.itsaky.androidide.zipfs2.ZipFileSystem
 import java.nio.file.FileSystem
 import java.nio.file.Path
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.*
 import kotlin.io.path.pathString
 
 /**
- * An implementation of [JarFileSystemProvider] that caches the created [CachedJarFileSystem] so that it can
- * be (re)used in multiple compilations.
+ * An implementation of [JarFileSystemProvider] that caches the created [CachedJarFileSystem] so
+ * that it can be (re)used in multiple compilations.
  *
  * @author Akash Yadav
  */
@@ -35,25 +34,23 @@ object CachingJarFileSystemProvider : JarFileSystemProvider() {
   private val cachedFs = ConcurrentHashMap<String, CachedJarFileSystem>()
 
   override fun createFs(path: Path, env: MutableMap<String, *>?): ZipFileSystem {
-    
+
     val cached = cachedFs[path.normalize().pathString]
     if (cached != null) {
       return cached
     }
     return createAndCache(path, env)
   }
-  
+
   fun newFileSystem(path: Path): FileSystem? {
     return newFileSystem(path, mutableMapOf<String, Any>())
   }
-  
+
   fun clearCache() {
-    cachedFs.values.forEach {
-      it.doClose()
-    }
+    cachedFs.values.forEach { it.doClose() }
     cachedFs.clear()
   }
-  
+
   private fun createAndCache(path: Path, env: MutableMap<String, *>?): CachedJarFileSystem {
     val fs = CachedJarFileSystem(this, path, env)
     cachedFs[path.normalize().pathString] = fs

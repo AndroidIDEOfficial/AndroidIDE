@@ -499,28 +499,6 @@ public class JavaCompilerService implements CompilerProvider {
     this.newCursorPosition = event.getChangeRange().getEnd();
   }
 
-  @Nullable
-  private Pair<Range, TreePath> binarySearchMethodForRange(
-      final List<Pair<Range, TreePath>> methods, final Range range) {
-    int left = 0;
-    int right = methods.size() - 1;
-    while (left <= right) {
-      final int mid = (left + right) / 2;
-      final Pair<Range, TreePath> method = methods.get(mid);
-      final int compareResult = method.first.containsForBinarySearch(range.getStart());
-      if (compareResult == 0) {
-        return method;
-      }
-
-      if (compareResult < 0) {
-        right = mid - 1;
-      } else {
-        left = mid + 1;
-      }
-    }
-    return null;
-  }
-
   private boolean containsType(Path file, String className) {
     if (cacheContainsType.needs(file, null)) {
       CompilationUnitTree root = parse(file).root;

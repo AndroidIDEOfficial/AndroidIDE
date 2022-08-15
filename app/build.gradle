@@ -134,6 +134,7 @@ dependencies {
     implementation project (':eventbus-events')
     implementation project (':build-tools:projects')
     implementation project (':build-tools:tooling-api')
+    implementation project (':lookup')
     implementation project (':treeview')
     implementation project (':emulatorview')
     implementation project (':xml-inflater')

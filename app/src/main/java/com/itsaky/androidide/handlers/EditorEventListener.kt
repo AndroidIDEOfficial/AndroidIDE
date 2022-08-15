@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.handlers
 
-import android.content.DialogInterface
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.models.prefs.isFirstBuild
@@ -25,9 +24,7 @@ import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
 import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
-import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
 import java.lang.ref.WeakReference
 
 /**
@@ -107,35 +104,5 @@ class EditorEventListener : GradleBuildService.EventListener {
   fun activity(): EditorActivity {
     return activityReference.get()
       ?: throw IllegalStateException("Activity reference has been destroyed!")
-  }
-
-  private fun installApks(apks: Set<File>?) {
-    if (apks == null || apks.isEmpty()) {
-      log.error("Cannot install APKs: $apks")
-      return
-    }
-
-    if (apks.size == 1) {
-      activity().install(apks.iterator().next())
-    } else {
-      log.info("Multiple APKs found. Let the user select...")
-      val files: List<File> = ArrayList(apks)
-      val builder = DialogUtils.newMaterialDialogBuilder(activity())
-      builder.setTitle(activity().getString(string.title_install_apks))
-      builder.setItems(getNames(files)) { d: DialogInterface, w: Int ->
-        d.dismiss()
-        activity().install(files[w])
-      }
-      builder.show()
-    }
-  }
-
-  private fun getNames(apks: Collection<File>): Array<String?> {
-    val names = arrayOfNulls<String>(apks.size)
-    for ((i, apk) in apks.withIndex()) {
-      names[i] = apk.name
-    }
-
-    return names
   }
 }

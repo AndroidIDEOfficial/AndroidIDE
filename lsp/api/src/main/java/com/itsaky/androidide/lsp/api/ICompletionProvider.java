@@ -36,6 +36,7 @@ package com.itsaky.androidide.lsp.api;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.models.CompletionItem;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
@@ -56,6 +57,14 @@ public interface ICompletionProvider {
 
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);
+  }
+
+  /** Abort the completion process if cancelled. */
+  default void abortCompletionIfCancelled() {
+    final var checker = Lookup.DEFAULT.lookup(ICompletionCancelChecker.class);
+    if (checker != null) {
+      checker.abortIfCancelled();
+    }
   }
 
   default MatchLevel matchLevel(CharSequence candidate, CharSequence partial) {

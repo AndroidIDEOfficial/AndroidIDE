@@ -43,12 +43,14 @@ class IdentifierCompletionProvider(
     val list = mutableListOf<CompletionItem>()
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val scopeMembers =
       ScopeCompletionProvider(file, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
     list.addAll(scopeMembers.items)
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val staticImports =
       StaticImportCompletionProvider(
           file,
@@ -64,6 +66,7 @@ class IdentifierCompletionProvider(
       val allLower: Boolean = settings.shouldMatchAllLowerCase()
       if (allLower || partial.isNotEmpty() && Character.isUpperCase(partial[0])) {
         abortIfCancelled()
+        abortCompletionIfCancelled()
         val classNames =
           ClassNamesCompletionProvider(
               file,
@@ -78,6 +81,7 @@ class IdentifierCompletionProvider(
     }
 
     abortIfCancelled()
+    abortCompletionIfCancelled()
     val keywords =
       KeywordCompletionProvider(file, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
