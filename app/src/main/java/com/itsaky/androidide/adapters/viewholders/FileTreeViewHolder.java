@@ -109,6 +109,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     else if (file.getName().endsWith(".apk")) icon = R.drawable.ic_file_apk;
     else if (file.getName().endsWith(".txt") || file.getName().endsWith(".log")) icon = R.drawable.ic_file_txt;
     else if (file.getName().endsWith("proguard_rules.pro")) icon = R.drawable.ic_proguard_rules;
+    else if (file.getName().endsWith(".cpp") || file.getName().endsWith(".h")) icon = R.drawable.ic_language_cpp;
     else if (ImageUtils.isImage(file)) icon = R.drawable.ic_file_image;
     else icon = R.drawable.ic_file_unknown;
     return icon;
