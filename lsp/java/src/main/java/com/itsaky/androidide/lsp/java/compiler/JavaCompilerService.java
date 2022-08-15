@@ -105,8 +105,9 @@ public class JavaCompilerService implements CompilerProvider {
       this.classPathClasses = Collections.emptySet();
     } else {
       this.fileManager = SourceFileManager.forModule(module);
-      this.classPathClasses = module.compileClasspathClasses.allClassNames();
-      this.bootClasspathClasses = getBootclasspathClasses();
+      this.classPathClasses =
+          Collections.unmodifiableSet(module.compileClasspathClasses.allClassNames());
+      this.bootClasspathClasses = Collections.unmodifiableSet(getBootclasspathClasses());
     }
   }
 
@@ -116,9 +117,21 @@ public class JavaCompilerService implements CompilerProvider {
           ((AndroidModule) module)
               .getBootClassPaths().stream().map(File::getPath).collect(Collectors.toList());
       BootClasspathProvider.update(classpaths);
-      this.bootClasspathClasses = BootClasspathProvider.getTopLevelClasses(classpaths);
+      this.bootClasspathClasses =
+          Collections.unmodifiableSet(BootClasspathProvider.getTopLevelClasses(classpaths));
     }
     return bootClasspathClasses;
+  }
+
+  private JavaCompilerService(
+      @Nullable ModuleProject module,
+      SourceFileManager fileManager,
+      Set<String> bootClasspathClasses,
+      Set<String> classPathClasses) {
+    this.module = module;
+    this.fileManager = fileManager;
+    this.bootClasspathClasses = bootClasspathClasses;
+    this.classPathClasses = classPathClasses;
   }
 
   public ModuleProject getModule() {
@@ -497,6 +510,20 @@ public class JavaCompilerService implements CompilerProvider {
   public void onDocumentChange(@NonNull DocumentChangeEvent event) {
     this.changeDelta += event.getChangeDelta();
     this.newCursorPosition = event.getChangeRange().getEnd();
+  }
+
+  public JavaCompilerService copy() {
+    final JavaCompilerService compiler =
+        new JavaCompilerService(
+            this.module, this.fileManager, this.bootClasspathClasses, this.classPathClasses);
+    compiler.cachedCompile = null;
+    compiler.newCursorPosition = Position.NONE;
+    compiler.lastReparsePosition = Position.NONE;
+    compiler.changeDelta = 0;
+    compiler.compiler = new ReusableCompiler();
+    compiler.diagnostics.clear();
+    compiler.cachedModified.clear();
+    return compiler;
   }
 
   private boolean containsType(Path file, String className) {

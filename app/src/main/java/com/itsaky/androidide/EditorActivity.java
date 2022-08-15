@@ -1268,10 +1268,14 @@ public class EditorActivity extends StudioActivity
     // use a common name to avoid multiple files
     final var file = getFilesDir().toPath().resolve(type + ".txt");
     try {
+      if (Files.exists(file)) {
+        Files.delete(file);
+      }
+
       Files.write(
           file,
           text.getBytes(StandardCharsets.UTF_8),
-          StandardOpenOption.CREATE,
+          StandardOpenOption.CREATE_NEW,
           StandardOpenOption.WRITE);
     } catch (IOException e) {
       LOG.error("Unable to write output to file", e);

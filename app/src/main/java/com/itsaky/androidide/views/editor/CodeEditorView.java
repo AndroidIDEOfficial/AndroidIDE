@@ -79,14 +79,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.component.Magnifier;
 
 /**
@@ -141,15 +139,6 @@ public class CodeEditorView extends FrameLayout {
         });
 
     configureEditorIfNeeded();
-  }
-  
-  /**
-   * For internal use only!
-   *
-   * Marks this editor as unmodified. Used only when the activity is being destroyed.
-   */
-  public void markUnmodified() {
-    isModified = false;
   }
 
   @NonNull
@@ -357,6 +346,15 @@ public class CodeEditorView extends FrameLayout {
     binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
 
+  /**
+   * For internal use only!
+   *
+   * <p>Marks this editor as unmodified. Used only when the activity is being destroyed.
+   */
+  public void markUnmodified() {
+    isModified = false;
+  }
+
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
   public void onPreferenceChanged(PreferenceChangeEvent event) {
@@ -439,10 +437,6 @@ public class CodeEditorView extends FrameLayout {
     return binding.editor.getText().toString();
   }
 
-  public void onResume() {
-    configureEditorIfNeeded();
-  }
-
   public void onEditorSelected() {
     final var editor = getEditor();
     if (editor != null) {
@@ -484,17 +478,5 @@ public class CodeEditorView extends FrameLayout {
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     EventBus.getDefault().unregister(this);
-  }
-
-  @NonNull
-  private List<CharSequence> getLines(Content text) {
-    final var count = text.getLineCount();
-    final var result = new ArrayList<CharSequence>();
-
-    for (int i = 0; i < count; i++) {
-      result.add(text.getLine(i));
-    }
-
-    return result;
   }
 }

@@ -43,7 +43,7 @@ class JavaDiagnosticProvider {
   private var analyzing = AtomicBoolean(false)
   private var analyzingThread: AnalyzingThread? = null
 
-  fun analyze(file: Path): DiagnosticResult {
+  fun analyze(c: JavaCompilerService, file: Path): DiagnosticResult {
 
     val module = ProjectManager.findModuleForFile(file) ?: return DiagnosticResult.NO_UPDATE
     val compiler = JavaCompilerService(module)

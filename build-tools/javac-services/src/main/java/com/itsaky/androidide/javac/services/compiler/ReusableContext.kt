@@ -20,6 +20,7 @@ package com.itsaky.androidide.javac.services.compiler
 import com.itsaky.androidide.javac.services.CancelService
 import com.itsaky.androidide.javac.services.NBAttr
 import com.itsaky.androidide.javac.services.NBClassFinder
+import com.itsaky.androidide.javac.services.NBClassReader
 import com.itsaky.androidide.javac.services.NBEnter
 import com.itsaky.androidide.javac.services.NBJavacTrees
 import com.itsaky.androidide.javac.services.NBMemberEnter
@@ -52,6 +53,7 @@ import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.DefinedBy
 import com.sun.tools.javac.util.DefinedBy.Api.COMPILER_TREE
 import com.sun.tools.javac.util.Log
+import java.io.PrintWriter
 import java.net.URI
 import javax.tools.DiagnosticListener
 import javax.tools.JavaFileManager
@@ -143,6 +145,7 @@ class ReusableContext(cancelService: CancelService) : Context(), TaskListener {
     NBEnter.preRegister(this)
     NBMemberEnter.preRegister(this, false)
     NBClassFinder.preRegister(this)
+    NBClassReader.preRegister(this)
     CancelService.preRegister(this, cancelService)
   }
 }
