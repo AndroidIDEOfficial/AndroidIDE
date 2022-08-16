@@ -26,7 +26,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.views.editor.IDEEditor
 import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.util.IntPair
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * Search text in editor. As the constructor of [EditorSearcher] is package private, we cannot
@@ -37,6 +37,9 @@ import java.util.concurrent.*
 open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
+
+  var searching = false
+    private set
 
   protected fun getEditor(): CodeEditor {
     try {
@@ -49,6 +52,7 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
   }
 
   fun replaceAllAsync(replacement: String): CompletableFuture<Void> {
+    markSearching()
     val dialog =
       ProgressDialog.show(
         getEditor().context,
@@ -61,8 +65,29 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
       .thenAccept { getEditor().post { dialog.dismiss() } }
   }
 
+  override fun replaceAll(replacement: String, whenFinished: Runnable?) {
+    markSearching()
+    super.replaceAll(replacement, whenFinished)
+  }
+
+  override fun replaceThis(replacement: String) {
+    markSearching()
+    super.replaceThis(replacement)
+  }
+
+  override fun gotoNext(): Boolean {
+    markSearching()
+    return super.gotoNext()
+  }
+
+  override fun gotoPrevious(): Boolean {
+    markSearching()
+    return super.gotoPrevious()
+  }
+
   override fun replaceAll(replacement: String) {
     checkState()
+    markSearching()
     if (!isResultValid) {
       Toast.makeText(getEditor().context, "Editor is still preparing", Toast.LENGTH_SHORT).show()
       return
@@ -111,6 +136,15 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
     } catch (e: Exception) {
       log.error("Failed to replace", e)
     }
+  }
+
+  override fun stopSearch() {
+    searching = false
+    super.stopSearch()
+  }
+
+  fun markSearching() {
+    searching = true
   }
 
   private fun checkState() {

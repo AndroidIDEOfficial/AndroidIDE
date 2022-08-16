@@ -300,6 +300,12 @@ open class EditorActionsMenu(val editor: IDEEditor) :
   }
 
   override fun show() {
+    
+    if (editor.searcher.searching) {
+      // Do not show if user is searching text
+      return
+    }
+    
     if (list.parent != null) {
       (list.parent as ViewGroup).removeView(list)
     }

@@ -37,7 +37,7 @@ import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
  * @author Akash Yadav
  */
 class SearchActionMode(val editor: IDEEditor) : ActionMode.Callback {
-
+  
   @SuppressLint("RestrictedApi")
   override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
 
