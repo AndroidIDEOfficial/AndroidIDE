@@ -236,7 +236,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return DiagnosticResult.NO_UPDATE;
     }
 
-    return this.diagnosticProvider.analyze(compiler, file);
+    return this.diagnosticProvider.analyze(file);
   }
 
   @NonNull

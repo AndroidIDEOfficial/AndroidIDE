@@ -61,7 +61,10 @@ import java.io.File
  * @param viewBindingOptions The view binding options of this module.
  * @param bootClassPaths The boot class paths of the project. Usually contains the path to the
  * `android.jar` file.
- * @param libraries The list of libraries for the debug variant.
+ * @param libraries The list of libraries for the debug variant. Values must be values in the
+ * [libraryMap].
+ * @param libraryMap The map of libraries. Keys are the key field obtained from the GraphItem
+ * instance in the Tooling API implementation.
  * @param dynamicFeatures The dynamic features.
  * @param lintCheckJars The lint check jar files.
  * @param modelSyncFiles The model sync files.
@@ -86,20 +89,26 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val javaCompileOptions: DefaultJavaCompileOptions,
   val viewBindingOptions: DefaultViewBindingOptions,
   val bootClassPaths: Collection<File>,
-  val libraries: List<DefaultLibrary>,
+  val libraries: Set<String>,
+  val libraryMap: Map<String, DefaultLibrary>,
   val dynamicFeatures: Collection<String>?,
   val lintCheckJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
   val variants: List<SimpleVariantData> = listOf()
 ) :
-  ModuleProject(name, description, path, projectDir, buildDir, buildScript, tasks, javaCompileOptions), WithModuleData {
+  ModuleProject(
+    name,
+    description,
+    path,
+    projectDir,
+    buildDir,
+    buildScript,
+    tasks,
+    javaCompileOptions
+  ),
+  WithModuleData {
 
-  companion object {
-    const val UNKNOWN_PACKAGE = com.itsaky.androidide.tooling.api.model.AndroidModule.UNKNOWN_PACKAGE;
-  }
-  
   private val log = ILogger.newInstance(javaClass.simpleName)
-  private var cachedLibraries: Map<String, List<DefaultLibrary>> = mutableMapOf()
   override var moduleData: SimpleModuleData? = null
 
   init {
@@ -174,56 +183,53 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileClasspaths(): Set<File> {
-    val compileLibraries = getCompileLibraries()
-    val classpaths = getModuleClasspaths().toMutableSet()
-    getCompileModuleProjects(compileLibraries).forEach {
-      classpaths.addAll(it.getModuleClasspaths())
-    }
-    getCompileAndroidOrJavaLibraries(compileLibraries).forEach {
-      if (it.type == ANDROID_LIBRARY) {
-        classpaths.addAll(it.androidLibraryData!!.compileJarFiles)
-      } else {
-        classpaths.add(it.artifact!!)
+    val root = ProjectManager.rootProject ?: return emptySet()
+    val result = mutableSetOf<File>()
+    result.addAll(getModuleClasspaths())
+
+    collectLibraries(root, this.libraries, result)
+    return result
+  }
+
+  private fun collectLibraries(root: Project, libraries: Set<String>, result: MutableSet<File>) {
+    for (library in libraries) {
+      val lib = this.libraryMap[library] ?: continue
+      if (lib.type == PROJECT) {
+        val module = root.findByPath(lib.projectInfo!!.projectPath) ?: continue
+        if (module !is ModuleProject) {
+          continue
+        }
+
+        result.addAll(module.getCompileClasspaths())
+      } else if (lib.type == ANDROID_LIBRARY) {
+        result.addAll(lib.androidLibraryData!!.compileJarFiles)
+      } else if (lib.type == JAVA_LIBRARY) {
+        result.add(lib.artifact!!)
       }
+
+      collectLibraries(root, lib.dependencies, result)
     }
-    return classpaths
   }
 
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    return getCompileModuleProjects(getCompileLibraries())
-  }
-
-  fun getCompileAndroidOrJavaLibraries(): List<DefaultLibrary> {
-    return getCompileAndroidOrJavaLibraries(getCompileLibraries())
-  }
-
-  /**
-   * Get all the libraries of this project with compile scope. This includes libraries of all
-   * [com.android.builder.model.v2.ide.LibraryType]s.
-   */
-  fun getCompileLibraries(): List<DefaultLibrary> {
-    return this.libraries.filter {
-      when (it.type) {
-        PROJECT -> it.projectInfo!!.attributes[PROP_USAGE] == USAGE_API
-        ANDROID_LIBRARY,
-        JAVA_LIBRARY -> it.libraryInfo!!.attributes[PROP_USAGE] == USAGE_API
-        else -> false
-      }
-    }
-  }
-
-  private fun getCompileModuleProjects(libs: List<DefaultLibrary>): List<ModuleProject> {
     val root = ProjectManager.rootProject ?: return emptyList()
-    return libs
-      .filter { it.type == PROJECT }
-      .mapNotNull { root.findByPath(it.projectInfo!!.projectPath) }
-      .filterIsInstance(ModuleProject::class.java)
-  }
+    val result = mutableListOf<ModuleProject>()
 
-  private fun getCompileAndroidOrJavaLibraries(libs: List<DefaultLibrary>): List<DefaultLibrary> {
-    return libs.filter {
-      (it.type == ANDROID_LIBRARY || it.type == JAVA_LIBRARY) &&
-        it.libraryInfo!!.attributes[PROP_USAGE] == USAGE_API
+    for (library in this.libraries) {
+      val lib = this.libraryMap[library] ?: continue
+      if (lib.type != PROJECT) {
+        continue
+      }
+
+      val module = root.findByPath(lib.projectInfo!!.projectPath) ?: continue
+      if (module !is ModuleProject) {
+        continue
+      }
+
+      result.add(module)
+      result.addAll(module.getCompileModuleProjects())
     }
+
+    return result
   }
 }

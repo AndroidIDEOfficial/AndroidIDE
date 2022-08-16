@@ -18,6 +18,9 @@
 package com.itsaky.androidide.lsp.java.compiler;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -83,25 +86,29 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
 
     setLocationLogError(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
 
-    final Set<File> classpaths = getClasspaths(module);
+    final Set<File> classpaths = configureClasspaths(module);
     setLocationLogError(StandardLocation.CLASS_PATH, classpaths);
-    
-    listLocations(EnumSet.of(StandardLocation.CLASS_PATH));
+
+    listLocations(EnumSet.of(StandardLocation.CLASS_PATH, StandardLocation.PLATFORM_CLASS_PATH));
   }
 
   @NonNull
-  private Set<File> getClasspaths(final ModuleProject module) {
+  private Set<File> configureClasspaths(final ModuleProject module) {
     if (module == null) {
-      return Collections.singleton(Environment.ANDROID_JAR);
+      setFallbackPlatformClasspath();
+      return emptySet();
     }
 
     final Set<File> classpaths = module.getCompileClasspaths();
-    if (module instanceof AndroidModule) {
-      classpaths.addAll(((AndroidModule) module).getBootClassPaths());
-    } else {
-      classpaths.add(Environment.ANDROID_JAR);
+    if (!(module instanceof AndroidModule)) {
+      setFallbackPlatformClasspath();
+      return emptySet();
     }
-
+  
+    final AndroidModule androidModule = (AndroidModule) module;
+    classpaths.addAll(androidModule.getBootClassPaths());
+    
+    setLocationLogError(StandardLocation.PLATFORM_CLASS_PATH, androidModule.getBootClassPaths());
     return classpaths;
   }
 

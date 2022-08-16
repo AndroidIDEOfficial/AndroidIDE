@@ -30,11 +30,11 @@ import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File
 import java.io.Serializable
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Default implementation of [AndroidProject].
@@ -78,8 +78,9 @@ open class AndroidModule(
     }
   var bootClassPaths: Collection<File> = emptyList()
   var mainSourceSet: DefaultSourceSetContainer? = null
-  var libraries: List<DefaultLibrary> = emptyList()
-  
+  var libraries = mutableSetOf<String>()
+  var libraryMap = mutableMapOf<String, DefaultLibrary>()
+
   override var compilerSettings: IJavaCompilerSettings = javaCompileOptions
 
   @Suppress("unused")

@@ -28,7 +28,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
 import java.time.Instant
-import java.util.concurrent.atomic.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Code analyzer for java source code.
@@ -43,7 +43,7 @@ class JavaDiagnosticProvider {
   private var analyzing = AtomicBoolean(false)
   private var analyzingThread: AnalyzingThread? = null
 
-  fun analyze(c: JavaCompilerService, file: Path): DiagnosticResult {
+  fun analyze(file: Path): DiagnosticResult {
 
     val module = ProjectManager.findModuleForFile(file) ?: return DiagnosticResult.NO_UPDATE
     val compiler = JavaCompilerService(module)

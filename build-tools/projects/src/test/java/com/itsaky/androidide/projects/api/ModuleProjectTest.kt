@@ -21,21 +21,18 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
+import java.io.File
+import java.nio.file.Files
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.io.File
-import java.nio.file.Files
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
 class ModuleProjectTest {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   @Test
   fun test() {

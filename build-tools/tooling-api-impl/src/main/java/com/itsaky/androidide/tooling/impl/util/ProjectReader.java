@@ -22,6 +22,8 @@ import static com.itsaky.androidide.utils.ILogger.MSG_SEPARATOR;
 import static java.util.Collections.emptyList;
 
 import com.android.builder.model.ModelBuilderParameter;
+import com.android.builder.model.v2.ide.GraphItem;
+import com.android.builder.model.v2.ide.Library;
 import com.android.builder.model.v2.ide.ProjectType;
 import com.android.builder.model.v2.models.AndroidProject;
 import com.android.builder.model.v2.models.BasicAndroidProject;
@@ -62,10 +64,16 @@ import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+
+import kotlin.Pair;
 
 /**
  * @author Akash Yadav
@@ -264,12 +272,9 @@ public class ProjectReader {
             ModelBuilderParameter.class,
             it -> it.setVariantName("debug"));
 
-    final var libraries = new ArrayList<DefaultLibrary>();
-    variantDependencies
-        .getLibraries()
-        .forEach((s, library) -> libraries.add(AndroidModulePropertyCopier.INSTANCE.copy(library)));
-
-    module.setLibraries(libraries);
+    final var dependencies = getAllCompileDependencies(variantDependencies);
+    module.setLibraryMap(dependencies.getFirst());
+    module.setLibraries(dependencies.getSecond());
 
     log("Fetching project sync issues...");
     final var issues = controller.findModel(gradle, ProjectSyncIssues.class);
@@ -283,6 +288,45 @@ public class ProjectReader {
         System.currentTimeMillis() - start,
         "ms");
     return new ModelInfoContainer(module, syncIssues);
+  }
+
+  private static Pair<Map<String, DefaultLibrary>, Set<String>> getAllCompileDependencies(
+      final VariantDependencies variantDependencies) {
+    final var seen = new HashMap<String, DefaultLibrary>();
+    final var libs = new HashSet<String>();
+    final var compileDependencies = variantDependencies.getMainArtifact().getCompileDependencies();
+    final var libraries = variantDependencies.getLibraries();
+    for (final var dependency : compileDependencies) {
+      var library = seen.get(dependency.getKey());
+      if (library == null) {
+        library = getLibrary(dependency, libraries, seen);
+      }
+      if (library == null) {
+        continue;
+      }
+
+      libs.add(library.getKey());
+    }
+    return new Pair<>(seen, libs);
+  }
+
+  private static DefaultLibrary getLibrary(
+      final GraphItem item,
+      final Map<String, Library> libraries,
+      final HashMap<String, DefaultLibrary> seen) {
+    final var lib = libraries.get(item.getKey());
+    if (lib == null) {
+      return null;
+    }
+
+    final var library = AndroidModulePropertyCopier.INSTANCE.copy(lib);
+    for (final var dependency : item.getDependencies()) {
+      final DefaultLibrary dep = Objects.requireNonNull(getLibrary(dependency, libraries, seen));
+      library.getDependencies().add(dep.getKey());
+    }
+
+    seen.put(item.getKey(), library);
+    return library;
   }
 
   private static JavaModule buildJavaModuleProject(
