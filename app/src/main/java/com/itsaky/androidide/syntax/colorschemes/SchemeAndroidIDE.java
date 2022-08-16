@@ -130,12 +130,13 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     // Apply customized colors
     setColor(WHOLE_BACKGROUND, 0xff212121);
     setColor(LINE_NUMBER_BACKGROUND, 0xff212121);
+    setColor(MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
+    setColor(SELECTED_TEXT_BACKGROUND, 0xff757575);
     setColor(LINE_DIVIDER, Color.TRANSPARENT);
     setColor(LINE_NUMBER, 0xffaaaaaa);
     setColor(LINE_NUMBER_PANEL, 0xff000000);
     setColor(LINE_NUMBER_PANEL_TEXT, 0xffffffff);
     setColor(TEXT_NORMAL, 0xfff5f5f5);
-    setColor(SELECTED_TEXT_BACKGROUND, 0xff757575);
     setColor(TEXT_SELECTED, 0xff424242);
     setColor(SELECTION_INSERT, 0xffff5252);
     setColor(SELECTION_HANDLE, 0xffff5252);
@@ -148,7 +149,6 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(BLOCK_LINE_CURRENT, 0xffffffff);
     setColor(COMPLETION_WND_BACKGROUND, 0xff757575);
     setColor(COMPLETION_WND_CORNER, 0xff9e9e9e);
-    setColor(MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
     setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
     setColor(KEYWORD, 0xffff6060);
     setColor(OPERATOR, 0xff4fc3f7);
@@ -199,5 +199,10 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(TODO_COMMENT, 0xffffc400);
     setColor(FIXME_COMMENT, 0xffffab00);
     setColor(COMMENT, 0xffbdbdbd);
+  }
+  
+  @Override
+  public boolean isDark() {
+    return true;
   }
 }
