@@ -105,12 +105,10 @@ class JavaDiagnosticProvider {
         try {
             compiler.compile(file).get { task -> doAnalyze(file, task) }
           } catch (err: Throwable) {
-
-            if (CancelChecker.isCancelled(err)) {
-              DiagnosticResult.NO_UPDATE
+            
+            if (!CancelChecker.isCancelled(err)) {
+              log.warn("Unable to analyze file", err)
             }
-
-            log.warn("Unable to analyze file", err)
 
             DiagnosticResult.NO_UPDATE
           } finally {
