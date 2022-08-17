@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.projects.util
 
-import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType.LIBRARY
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -61,7 +60,9 @@ class ProjectTransformer {
     }
   }
 
-  fun transform(project: com.itsaky.androidide.tooling.api.model.AndroidModule): AndroidModule {
+  private fun transform(
+    project: com.itsaky.androidide.tooling.api.model.AndroidModule
+  ): AndroidModule {
     return AndroidModule(
       name = project.name,
       description = project.description ?: "",
@@ -81,10 +82,8 @@ class ProjectTransformer {
       javaCompileOptions = project.javaCompileOptions,
       viewBindingOptions = project.viewBindingOptions ?: DefaultViewBindingOptions(),
       bootClassPaths = project.bootClassPaths,
-      libraries =
-        project.libraries.filter {
-          !(it.type == PROJECT && it.projectInfo!!.projectPath == project.projectPath)
-        },
+      libraries = project.libraries,
+      libraryMap = project.libraryMap,
       dynamicFeatures = project.dynamicFeatures,
       lintCheckJars = project.lintChecksJars,
       modelSyncFiles = project.modelSyncFiles,
@@ -92,7 +91,7 @@ class ProjectTransformer {
     )
   }
 
-  fun transform(project: com.itsaky.androidide.tooling.api.model.JavaModule): JavaModule {
+  private fun transform(project: com.itsaky.androidide.tooling.api.model.JavaModule): JavaModule {
     return JavaModule(
       name = project.name,
       description = project.description ?: "",
@@ -110,12 +109,12 @@ class ProjectTransformer {
   private fun transform(modules: MutableList<SimpleModuleData>, root: IProject): List<Project> {
     return mutableListOf<Project>().apply {
       for (module in modules) {
-        add(createProject(module, root)!!)
+        add(createProject(module, root))
       }
     }
   }
 
-  private fun createProject(module: SimpleModuleData, root: IProject): Project? {
+  private fun createProject(module: SimpleModuleData, root: IProject): Project {
     val project =
       root.findByPath(module.path).get()
         ?: throw java.lang.IllegalStateException("Invalid module data")

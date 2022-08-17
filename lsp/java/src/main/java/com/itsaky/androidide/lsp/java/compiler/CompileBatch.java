@@ -140,23 +140,28 @@ public class CompileBatch implements AutoCloseable {
         JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, Environment.JAVA_HOME.getAbsolutePath());
     JavacConfigProvider.setLatestSourceVersion(SourceVersion.RELEASE_8);
     JavacConfigProvider.setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
+
     JavacConfigProvider.disableModules();
 
-    setupCompileOptions(parent.module, options);
-    Collections.addAll(options, "-proc:none");
-    Collections.addAll(options, "-g");
+    LOG.debug(
+        JavacConfigProvider.getJavaHome(),
+        JavacConfigProvider.isModulesEnabled(),
+        SourceVersion.latest(),
+        SourceVersion.latestSupported());
 
-    options.add("-XDcompilePolicy=byfile");
-    options.add("-XD-Xprefer=source");
-    options.add("-XDide");
-    options.add("-XDsuppressAbortOnBadClassFile");
-    options.add("-XDshould-stop.at=GENERATE");
-    options.add("-XDdiags.formatterOptions=-source");
-    options.add("-XDdiags.layout=%L%m|%L%m|%L%m");
-    options.add("-XDbreakDocCommentParsingOnError=false");
+    setupCompileOptions(parent.module, options);
+    Collections.addAll(options, "-proc:none", "-g");
 
     Collections.addAll(
         options,
+        "-XDcompilePolicy=byfile",
+        "-XD-Xprefer=source",
+        "-XDide",
+        "-XDsuppressAbortOnBadClassFile",
+        "-XDshould-stop.at=GENERATE",
+        "-XDdiags.formatterOptions=-source",
+        "-XDdiags.layout=%L%m|%L%m|%L%m",
+        "-XDbreakDocCommentParsingOnError=false",
         "-Xlint:cast",
         "-Xlint:deprecation",
         "-Xlint:empty",

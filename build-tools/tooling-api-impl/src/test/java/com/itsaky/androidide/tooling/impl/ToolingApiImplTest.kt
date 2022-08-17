@@ -20,6 +20,7 @@ package com.itsaky.androidide.tooling.impl
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
@@ -27,6 +28,7 @@ import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import java.io.File
 import org.junit.Test
@@ -57,6 +59,11 @@ class ToolingApiImplTest {
     assertThat(app).isNotNull()
     assertThat(app).isInstanceOf(AndroidModule::class.java)
 
+    GsonBuilder().apply {
+      ToolingApiLauncher.configureGson(this)
+      println(create().toJson(app))
+    }
+
     assertThat((app as AndroidModule).javaCompileOptions).isNotNull()
     assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
     assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
@@ -77,11 +84,11 @@ class ToolingApiImplTest {
 
     assertThat(app.libraries).isNotEmpty()
     // At least one project library
-    assertThat(app.libraries.filter { it.type == PROJECT }).isNotEmpty()
+    assertThat(app.libraryMap.values.filter { it.type == PROJECT }).isNotEmpty()
 
     // :app module includes :java-library as a dependency. But it is not transitive
     assertThat(
-        app.libraries.firstOrNull {
+        app.libraryMap.values.firstOrNull {
           it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
@@ -96,7 +103,7 @@ class ToolingApiImplTest {
     // :java-library project which further includes :another-java-libraries project with 'api'
     // configuration
     assertThat(
-        (androidLib as AndroidModule).libraries.firstOrNull {
+        (androidLib as AndroidModule).libraryMap.values.firstOrNull {
           it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"

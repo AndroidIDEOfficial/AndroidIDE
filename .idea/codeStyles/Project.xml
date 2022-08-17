@@ -49,7 +49,7 @@
           </group>
           <group>
             <type>OVERRIDDEN_METHODS</type>
-            <order>BY_NAME</order>
+            <order>KEEP</order>
           </group>
           <group>
             <type>DEPENDENT_METHODS</type>

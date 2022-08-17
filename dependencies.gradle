@@ -12,7 +12,7 @@ ext {
     ]
     
     androidide = [
-            javac: 'io.github.itsaky:nb-javac-android:17.0.0.3'
+            javac: 'io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT'
     ]
     
     common = [

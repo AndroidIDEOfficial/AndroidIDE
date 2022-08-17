@@ -62,7 +62,7 @@ public class NBLog extends Log {
   private final Map<URI, Collection<Symbol.ClassSymbol>> notInProfiles = new HashMap<>();
 
   private JavaFileObject partialReparseFile;
-  private Set<Integer> seenPartialReparsePositions = new HashSet<>();
+  private final Set<Integer> seenPartialReparsePositions = new HashSet<>();
 
   protected NBLog(final Context context, final PrintWriter output) {
     super(context, output);

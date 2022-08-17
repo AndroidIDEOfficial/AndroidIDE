@@ -120,7 +120,7 @@ public class EditorPreferences extends BasePreferenceFragment
     nonPrintable.setSummary(R.string.idepref_editor_paintingflags_summary);
 
     tabSize.setIcon(R.drawable.ic_tab);
-    tabSize.setKey(FONT_SIZE);
+    tabSize.setKey(TAB_SIZE);
     tabSize.setTitle(R.string.title_tab_size);
     tabSize.setSummary(R.string.msg_tab_size);
 

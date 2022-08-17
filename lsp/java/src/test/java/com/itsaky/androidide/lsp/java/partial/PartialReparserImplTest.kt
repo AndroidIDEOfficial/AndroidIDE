@@ -36,10 +36,15 @@ import com.sun.tools.javac.tree.JCTree.JCVariableDecl
 import com.sun.tools.javac.tree.TreeScanner
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import javax.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
-class PartialReparserImplTest  {
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.DEFAULT_VALUE_STRING)
+class PartialReparserImplTest {
 
   @Before
   fun setup() {

@@ -37,6 +37,9 @@ package com.itsaky.androidide.javac.services;
 
 import static com.sun.tools.javac.jvm.ClassFile.Version.V45_3;
 
+import android.text.TextUtils;
+
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.tools.javac.code.ClassFinder.BadClassFile;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
@@ -64,6 +67,7 @@ import javax.tools.JavaFileObject;
  */
 public class NBClassReader extends ClassReader {
 
+  private static final ILogger LOG = ILogger.newInstance("NBClassReader");
   private final NBNames nbNames;
   private final Log log;
 
@@ -91,6 +95,12 @@ public class NBClassReader extends ClassReader {
     for (NBAttributeReader r : readers) {
       attributeReaders.put(r.getName(), r);
     }
+  }
+
+  @Override
+  public BadClassFile badClassFile(final String key, final Object... args) {
+    LOG.debug("Bad class file", key, TextUtils.join(", ", args), new RuntimeException());
+    return super.badClassFile(key, args);
   }
 
   @Override

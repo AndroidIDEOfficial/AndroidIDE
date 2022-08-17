@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Button xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/symbol"
-    style="@style/Widget.Material3.Button.TextButton"
-    android:layout_width="32dp"
-    android:layout_height="40dp"
-    android:background="@color/symbolInput_background"
-    android:gravity="center"
-    android:singleLine="true"
-    android:textColor="@color/symbolInput_text" />
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/symbol"
+  style="@style/Widget.Material3.Button.TextButton"
+  android:layout_width="40dp"
+  android:layout_height="40dp"
+  android:gravity="center"
+  android:singleLine="true"
+  android:textColor="@color/symbolInput_text"
+  tools:text="↹" />

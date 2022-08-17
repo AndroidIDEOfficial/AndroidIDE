@@ -21,7 +21,7 @@ import com.itsaky.androidide.zipfs2.JarFileSystemProvider
 import com.itsaky.androidide.zipfs2.ZipFileSystem
 import java.nio.file.FileSystem
 import java.nio.file.Path
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.io.path.pathString
 
 /**
@@ -34,7 +34,6 @@ object CachingJarFileSystemProvider : JarFileSystemProvider() {
   private val cachedFs = ConcurrentHashMap<String, CachedJarFileSystem>()
 
   override fun createFs(path: Path, env: MutableMap<String, *>?): ZipFileSystem {
-
     val cached = cachedFs[path.normalize().pathString]
     if (cached != null) {
       return cached

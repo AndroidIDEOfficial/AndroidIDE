@@ -32,4 +32,7 @@ class DefaultLibrary : Library, Serializable {
   override var lintJar: File? = null
   override var projectInfo: DefaultProjectInfo? = null
   override var type: LibraryType = ANDROID_LIBRARY
+
+  /** Dependencies of this library. */
+  val dependencies = mutableSetOf<String>()
 }

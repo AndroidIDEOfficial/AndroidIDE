@@ -262,6 +262,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     TaskExecutor.executeAsync(
         new FileTreeCallable(getContext(), mRoot, projectDir),
         (result) -> {
+          if (binding == null) {
+            // Fragment has been destroyed
+            return;
+          }
           binding.filetreeHorizontalScrollView.setVisibility(View.VISIBLE);
           binding.fileTreeLoadingProgress.setVisibility(View.GONE);
           AndroidTreeView tree = createTreeView(mRoot);

@@ -31,10 +31,11 @@ import android.widget.LinearLayout;
 import androidx.transition.ChangeImageTransform;
 import androidx.transition.TransitionManager;
 
-import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
+import com.itsaky.androidide.models.TreeFileExtension;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.io.File;
@@ -98,16 +99,20 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
   }
 
   protected int getIconForFile(final File file) {
-    final int icon;
-    if (file.isDirectory()) icon = R.drawable.ic_folder;
-    else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
-    else if (file.getName().endsWith(".kt")) icon = R.drawable.ic_language_kotlin;
-    else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
-    else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
-    else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
-    else if (ImageUtils.isImage(file)) icon = R.drawable.ic_file_image;
-    else icon = R.drawable.ic_file_unknown;
-    return icon;
+
+    if (file.isDirectory()) {
+      return R.drawable.ic_folder;
+    }
+
+    if (ImageUtils.isImage(file)) {
+      return R.drawable.ic_file_image;
+    }
+
+    if ("gradlew".equals(file.getName()) || "gradlew.bat".equals(file.getName())) {
+      return R.drawable.ic_terminal;
+    }
+
+    return TreeFileExtension.Factory.forFile(file).getIcon();
   }
 
   public void updateChevron(boolean expanded) {

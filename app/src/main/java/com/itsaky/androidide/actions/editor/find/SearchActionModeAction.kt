@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.actions.editor.find
 
-import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionItem.Location
+import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_SEARCH_ACTION_MODE
 import com.itsaky.androidide.actions.EditorRelatedAction
 
 /** @author Akash Yadav */
 abstract class SearchActionModeAction : EditorRelatedAction() {
-  override var location: Location = ActionItem.Location.EDITOR_SEARCH_ACTION_MODE
+  override var location: Location = EDITOR_SEARCH_ACTION_MODE
 }

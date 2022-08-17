@@ -21,24 +21,23 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.RectF
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.view.View.MeasureSpec
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ListView
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.appcompat.view.menu.SubMenuBuilder
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textview.MaterialTextView
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
@@ -46,13 +45,15 @@ import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.app.StudioApp
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.databinding.LayoutPopupMenuItemBinding
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
+import io.github.rosemoe.sora.text.Cursor
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorTouchEventHandler
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow
@@ -66,7 +67,7 @@ import kotlin.math.min
  * @author Akash Yadav
  */
 @SuppressLint("RestrictedApi")
-open class EditorActionsMenu(val editor: IDEEditor) :
+open class EditorActionsMenu constructor(val editor: IDEEditor) :
   EditorPopupWindow(editor, FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED),
   ActionsRegistry.ActionExecListener,
   MenuBuilder.Callback {
@@ -77,8 +78,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
   private val touchHandler: EditorTouchEventHandler = editor.eventHandler
   private val receipts: MutableList<SubscriptionReceipt<*>> = mutableListOf()
-  private val log = ILogger.newInstance(javaClass.simpleName)
-  private val list: ListView = ListView(editor.context)
+  private val list = RecyclerView(editor.context)
   private var mLastScroll: Long = 0
   private var mLastPosition: Int = 0
 
@@ -89,17 +89,20 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     subscribe()
     applyBackground()
 
-    list.clipChildren = true
-    list.clipToOutline = true
-    list.isVerticalFadingEdgeEnabled = true
-    list.isVerticalScrollBarEnabled = true
-    list.setFadingEdgeLength(SizeUtils.dp2px(42f))
-    list.divider = null
-    list.layoutParams =
-      ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.WRAP_CONTENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT
-      )
+    list.apply {
+      clipChildren = true
+      clipToOutline = true
+      isVerticalFadingEdgeEnabled = true
+      isVerticalScrollBarEnabled = true
+      layoutParams =
+        ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.WRAP_CONTENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+      setFadingEdgeLength(SizeUtils.dp2px(42f))
+      setPaddingRelative(paddingStart, paddingTop, SizeUtils.dp2px(16f), paddingBottom)
+    }
 
     popup.contentView = this.list
     popup.animationStyle = R.style.PopupAnimation
@@ -180,7 +183,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
   protected open fun applyBackground() {
     val drawable = GradientDrawable()
     drawable.shape = GradientDrawable.RECTANGLE
-    drawable.cornerRadius = 16f
+    drawable.cornerRadius = SizeUtils.dp2px(28f).toFloat() // Recommeneded size is 28dp
     drawable.color =
       ColorStateList.valueOf(ContextCompat.getColor(editor.context, R.color.content_background))
     drawable.setStroke(
@@ -241,9 +244,23 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     top = max(0, min(top, editor.height - height - 5))
     val handleLeftX = editor.getOffset(editor.cursor.leftLine, editor.cursor.leftColumn)
     val handleRightX = editor.getOffset(editor.cursor.rightLine, editor.cursor.rightColumn)
-    val panelX = ((handleLeftX + handleRightX) / 2f).toInt()
+    val panelX = computePanelX(cursor, handleLeftX, handleRightX)
     setLocationAbsolutely(panelX, top)
     show()
+  }
+
+  private fun computePanelX(cursor: Cursor, handleLeftX: Float, handleRightX: Float): Int {
+    return if (cursor.isSelected) {
+      ((handleLeftX + handleRightX) / 2f).toInt()
+    } else {
+      var x = (handleLeftX - (width / 2f)).toInt()
+      if (x <= 0) {
+        x = (handleRightX + SizeUtils.dp2px(10f)).toInt()
+      } else if (x >= editor.width) {
+        x = editor.width - SizeUtils.dp2px(10f)
+      }
+      x
+    }
   }
 
   protected open fun fillMenu() {
@@ -255,7 +272,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     registry.registerActionExecListener(this)
     onFillMenu(registry, data)
 
-    this.list.adapter = ActionsListAdapter(getMenu(), editor.context)
+    this.list.adapter = ActionsListAdapter(getMenu())
   }
 
   protected open fun onFillMenu(registry: ActionsRegistry, data: ActionData) {
@@ -273,7 +290,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
       editor
     ) // For LSP actions, as they cannot access IDEEditor class
     data.put(File::class.java, editor.file)
-    data.put(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java, getDiagnosticAtCursor())
+    data.put(DiagnosticItem::class.java, getDiagnosticAtCursor())
     data.put(com.itsaky.androidide.models.Range::class.java, editor.cursorRange)
     data.put(
       JavaLanguageServer::class.java,
@@ -288,7 +305,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
   protected open fun getMenu(): Menu = menu
 
-  private fun getDiagnosticAtCursor(): com.itsaky.androidide.lsp.models.DiagnosticItem? {
+  private fun getDiagnosticAtCursor(): DiagnosticItem? {
     val start = editor.cursorRange.start
     return editor.languageClient?.getDiagnosticAt(editor.file, start.line, start.column)
   }
@@ -300,23 +317,35 @@ open class EditorActionsMenu(val editor: IDEEditor) :
   }
 
   override fun show() {
+
+    if (editor.searcher.searching) {
+      // Do not show if user is searching text
+      return
+    }
+
     if (list.parent != null) {
       (list.parent as ViewGroup).removeView(list)
     }
+    
+    this.list.layoutManager = LinearLayoutManager(editor.context, RecyclerView.HORIZONTAL, false)
 
     fillMenu()
 
+    measureActionsList()
+
+    val height = list.measuredHeight
+    val width = min(editor.width - SizeUtils.dp2px(32f), list.measuredWidth)
+    setSize(width, height)
+    super.show()
+  }
+
+  private fun measureActionsList() {
     val dp8 = SizeUtils.dp2px(8f)
     val dp16 = dp8 * 2
     this.list.measure(
-      View.MeasureSpec.makeMeasureSpec(editor.width - dp16 * 2, View.MeasureSpec.AT_MOST),
-      View.MeasureSpec.makeMeasureSpec(
-        (260 * editor.dpUnit).toInt() - dp16 * 2,
-        View.MeasureSpec.AT_MOST
-      )
+      MeasureSpec.makeMeasureSpec(editor.width - dp16 * 2, MeasureSpec.AT_MOST),
+      MeasureSpec.makeMeasureSpec((260 * editor.dpUnit).toInt() - dp16 * 2, MeasureSpec.AT_MOST)
     )
-    setSize(findWidestItem(), this.list.measuredHeight)
-    super.show()
   }
 
   @SuppressLint("InflateParams")
@@ -324,10 +353,10 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     var widest = 0
     val text =
       LayoutInflater.from(editor.context).inflate(R.layout.layout_popup_menu_item, null)
-        as MaterialTextView
+        as MaterialButton
     val dp30 = SizeUtils.dp2px(30f)
     val paddingHorizontal = text.paddingStart + text.paddingEnd
-    val drawablePadding = text.compoundDrawablePadding
+    val drawablePadding = text.iconPadding
     val extraWidth = dp30 * 2 // 30dp for start and end drawables both
 
     for (i in 0 until getMenu().size()) {
@@ -345,40 +374,35 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     return widest
   }
 
-  private class ActionsListAdapter(val menu: Menu, val context: Context) : BaseAdapter() {
+  private class ActionsListAdapter(val menu: Menu, val forceShowTitle: Boolean = false) : RecyclerView.Adapter<ActionsListAdapter.VH>() {
 
-    override fun getCount(): Int = menu.size()
-
-    override fun getItem(position: Int): MenuItem = menu.getItem(position)
-
-    override fun getItemId(position: Int): Long = position.toLong()
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-      val view: MaterialTextView =
-        if (convertView == null || convertView !is MaterialButton) {
-          (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(
-            R.layout.layout_popup_menu_item,
-            parent,
-            false
-          ) as MaterialTextView
-        } else {
-          convertView as MaterialTextView
-        }
-
-      val item = getItem(position)
-      view.text = item.title
-
-      val start = item.icon ?: null
-      var end: Drawable? = null
-      if (item.hasSubMenu()) {
-        end = ContextCompat.getDrawable(context, R.drawable.ic_submenu_arrow)
-      }
-
-      view.setCompoundDrawablesRelativeWithIntrinsicBounds(start, null, end, null)
-      view.setOnClickListener { (item as MenuItemImpl).invoke() }
-
-      return view
+    override fun getItemCount(): Int {
+      return menu.size()
     }
+
+    fun getItem(position: Int): MenuItem = menu.getItem(position)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+      return VH(
+        LayoutPopupMenuItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+      )
+    }
+
+    override fun onBindViewHolder(holder: VH, position: Int) {
+      val item = getItem(position)
+      holder.binding.root.text = if (forceShowTitle) item.title else ""
+      holder.binding.root.tooltipText = item.title
+      holder.binding.root.icon = item.icon ?: run {
+        holder.binding.root.text = item.title
+        holder.binding.root.layoutParams.apply {
+          width = ViewGroup.LayoutParams.WRAP_CONTENT
+        }
+        null
+      }
+      holder.binding.root.setOnClickListener { (item as MenuItemImpl).invoke() }
+    }
+
+    inner class VH(val binding: LayoutPopupMenuItemBinding) : ViewHolder(binding.root)
   }
 
   override fun onMenuItemSelected(menu: MenuBuilder, item: MenuItem): Boolean {
@@ -394,7 +418,11 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
     this.editor.post {
       TransitionManager.beginDelayedTransition(this.list, ChangeBounds())
-      this.list.adapter = ActionsListAdapter(item.subMenu, editor.context)
+      this.list.layoutManager = LinearLayoutManager(editor.context)
+      this.list.adapter = ActionsListAdapter(item.subMenu, true)
+      
+      measureActionsList()
+      popup.update(findWidestItem(), this.list.measuredHeight)
     }
 
     return true
