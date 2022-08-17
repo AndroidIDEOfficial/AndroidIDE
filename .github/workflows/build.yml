@@ -1,18 +1,15 @@
-name: Build and Test
+name: Build and test
 
 on:
-
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]  
-    
-  workflow_dispatch:
+    branches: [ "main" ]
+  workflow_dispatch: {}
 
 jobs:
-
   local_test_job:
-    name: Running Local Tests
+    name: Running local tests
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -35,8 +32,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
-      - name: Run Debug Tests
+      - name: Run debug tests
         run: ./gradlew testDebugUnitTest --continue
       - name: Upload Test Reports
         if: ${{ always() }}
@@ -46,7 +42,7 @@ jobs:
           path: '**/build/reports/tests/'
 
   android_test_job:
-    name: Android Tests
+    name: Android tests
     runs-on: macos-latest
     continue-on-error: true
     steps:
@@ -69,7 +65,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Instrumentation Tests
+      - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -106,5 +102,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: AndroidAPK
+          name: apk-debug
           path: app/build/outputs/apk/debug/**.apk
