@@ -20,6 +20,9 @@
 
 package com.itsaky.androidide.utils;
 
+import static java.lang.Character.isUpperCase;
+import static java.lang.Character.toLowerCase;
+
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.FileIOUtils;
@@ -43,6 +46,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import kotlin.text.StringsKt;
 
 public class ProjectWriter {
 
@@ -71,6 +76,45 @@ public class ProjectWriter {
   @NonNull
   public static String createLayout() {
     return ResourceUtils.readAssets2String(XML_TEMPLATE_PATH + "/layout.xml");
+  }
+
+  @NonNull
+  public static String createLayoutName(String name) {
+    final var nameWithoutExtension = StringsKt.substringBeforeLast(name, '.', name);
+    var baseName = nameWithoutExtension;
+    if (baseName.endsWith("Activity")) {
+      baseName = StringsKt.substringBeforeLast(baseName, "Activity", baseName);
+      baseName = "activity" + baseName;
+    } else if (baseName.endsWith("Fragment")) {
+      baseName = StringsKt.substringBeforeLast(baseName, "Fragment", baseName);
+      baseName = "fragment" + baseName;
+    } else {
+      baseName = "layout" + baseName;
+    }
+
+    final var sb = new StringBuilder();
+    var hasUpper = false;
+    for (int i = 0; i < baseName.length(); i++) {
+      final char c = baseName.charAt(i);
+      if (isUpperCase(c)) {
+        hasUpper = true;
+        sb.append("_");
+        sb.append(toLowerCase(c));
+        continue;
+      }
+
+      sb.append(c);
+    }
+
+    if (!hasUpper) {
+      sb.delete(0, sb.length());
+      sb.append("layout_");
+      sb.append(nameWithoutExtension);
+    }
+
+    sb.append(".xml");
+
+    return sb.toString();
   }
 
   public static String getPackageName(File parentPath) {
@@ -169,10 +213,9 @@ public class ProjectWriter {
     if (!f.isDirectory()) {
       f.mkdirs();
     }
-    ZipInputStream zin =
-        new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE));
-    try {
-      ZipEntry ze = null;
+    try (ZipInputStream zin =
+        new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile), BUFFER_SIZE))) {
+      ZipEntry ze;
       while ((ze = zin.getNextEntry()) != null) {
         final var prefix = details.language.toLowerCase(Locale.ROOT);
         if (ze.getName().startsWith(prefix) && !ze.isDirectory()) {
@@ -237,8 +280,6 @@ public class ProjectWriter {
           }
         }
       }
-    } finally {
-      zin.close();
     }
   }
 

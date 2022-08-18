@@ -4,17 +4,20 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical"
-  android:paddingTop="8dp"
-  android:paddingBottom="8dp">
+  android:layout_marginTop="16dp"
+  android:layout_marginBottom="16dp">
 
   <HorizontalScrollView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:layout_marginBottom="8dp"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:paddingEnd="16dp"
+    android:scrollbars="none">
 
     <com.google.android.material.button.MaterialButtonToggleGroup
       android:id="@+id/typeGroup"
@@ -69,6 +72,8 @@
     style="@style/Widget.Material3.TextInputEditText.OutlinedBox.Dense"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:hint="@string/file_name"
     android:theme="@style/AppTheme.TextInputLayout"
     app:counterEnabled="true"
@@ -82,6 +87,14 @@
       android:singleLine="true" />
 
   </com.google.android.material.textfield.TextInputLayout>
+
+  <CheckBox
+    android:id="@+id/checkButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:checked="true"
+    android:text="@string/create_auto_layout" />
 
 </LinearLayout>
 
