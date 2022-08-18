@@ -102,7 +102,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public void onCreate() {
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    showNotification(getString(R.string.build_status_idle));
+    showNotification(getString(R.string.build_status_idle), false);
   }
 
   private void showNotification(final String message, final boolean isProgress) {
