@@ -127,7 +127,9 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             .setContentText(message)
             .setContentIntent(intent);
     
+    // Checking whether to add a ProgressBar to the notification
     if (isProgress) {
+      // Add ProgressBar to Notification
       builder.setProgress(100, 0, true);
     }
 
