@@ -230,7 +230,7 @@
  
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Não foi possível visualizar o layout!</string>
-    <string name="title_preview_layout">Vizualizar layout</string>
+    <string name="title_preview_layout">Visualizar layout</string>
     <string name="label_ui_designer_content">Conteúdo principal do designer da UI</string>
     <string name="widget_textview">TextView</string>
     <string name="widget_button">Button</string>
