@@ -128,7 +128,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             .setContentIntent(intent);
     
     if (isProgress) {
-      builder.setProgress(max, 0, true);
+      builder.setProgress(100, 0, true);
     }
 
     return builder.build();
