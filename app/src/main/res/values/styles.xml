@@ -9,6 +9,7 @@
     <item name="colorButtonNormal">@color/secondaryColor</item>
     <item name="colorControlNormal">@color/secondaryColor</item>
     <item name="colorControlHighlight">@color/rippleHighlightColor</item>
+    <item name="checkboxStyle">@style/AppTheme.CheckBox</item>
     <item name="fontFamily">@font/josefin_sans</item>
     <item name="hintTextColor">@color/secondaryColor</item>
     <item name="android:textColorLink">@color/secondaryColor</item>
@@ -21,6 +22,10 @@
     <item name="android:textColorSecondary">@color/secondaryTextColor</item>
     <item name="android:windowBackground">@color/content_background</item>
     <item name="android:fontFamily">@font/josefin_sans</item>
+  </style>
+
+  <style name="AppTheme.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+    <item name="buttonTint">@color/secondaryColor</item>
   </style>
 
   <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.Material3.Chip.Filter">
