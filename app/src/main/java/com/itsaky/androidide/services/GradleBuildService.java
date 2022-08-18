@@ -105,12 +105,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     showNotification(getString(R.string.build_status_idle));
   }
 
-  private void showNotification(final String message) {
+  private void showNotification(final String message, final boolean isProgress) {
     LOG.info("Showing notification to user...");
-    startForeground(NOTIFICATION_ID, buildNotification(message));
+    startForeground(NOTIFICATION_ID, buildNotification(message, isProgress));
   }
 
-  private Notification buildNotification(final String message) {
+  private Notification buildNotification(final String message, final boolean isProgress) {
     final var ticker = getString(R.string.title_gradle_service_notification_ticker);
     final var title = getString(R.string.title_gradle_service_notification);
 
@@ -126,6 +126,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(intent);
+    
+    if (isProgress) {
+      builder.setProgress(max, 0, true);
+    }
 
     return builder.build();
   }
@@ -173,7 +177,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void prepareBuild() {
-    updateNotification(getString(R.string.build_status_in_progress));
+    updateNotification(getString(R.string.build_status_in_progress), true);
     if (eventListener != null) {
       eventListener.prepareBuild();
     }
@@ -181,7 +185,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onBuildSuccessful(@NonNull BuildResult result) {
-    updateNotification(getString(R.string.build_status_sucess));
+    updateNotification(getString(R.string.build_status_sucess), false);
     if (eventListener != null) {
       eventListener.onBuildSuccessful(result.getTasks());
     }
@@ -189,7 +193,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onBuildFailed(@NonNull BuildResult result) {
-    updateNotification(getString(R.string.build_status_failed));
+    updateNotification(getString(R.string.build_status_failed), false);
     if (eventListener != null) {
       eventListener.onBuildFailed(result.getTasks());
     }
@@ -300,13 +304,13 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   @SuppressWarnings("ConstantConditions")
-  protected void updateNotification(final String message) {
-    ThreadUtils.runOnUiThread(() -> doUpdateNotification(message));
+  protected void updateNotification(final String message, final boolean isProgress) {
+    ThreadUtils.runOnUiThread(() -> doUpdateNotification(message, isProgress));
   }
 
-  protected void doUpdateNotification(final String message) {
+  protected void doUpdateNotification(final String message, final boolean isProgress) {
     ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
-        .notify(NOTIFICATION_ID, buildNotification(message));
+        .notify(NOTIFICATION_ID, buildNotification(message, isProgress));
   }
 
   @Override
