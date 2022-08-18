@@ -35,7 +35,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,6 +54,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -1100,11 +1105,14 @@ public class EditorActivity extends StudioActivity
 
           if (files == null || files.isEmpty()) {
             mBinding.tabs.setVisibility(View.GONE);
+            mBinding.viewContainer.setDisplayedChild(1);
           } else {
             mBinding.tabs.setVisibility(View.VISIBLE);
+            mBinding.viewContainer.setDisplayedChild(0);
           }
         });
 
+    setupNoEditorView();
     setupBottomSheetPager();
     setupBottomSheet();
     setupBottomSheetTabs();
@@ -1123,7 +1131,54 @@ public class EditorActivity extends StudioActivity
               1500);
     }
   }
+  
+  private void setupNoEditorView() {
+    
+    mBinding.noEditorSummary.setMovementMethod(new LinkMovementMethod());
+    
+    final var filesSpan =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull final View widget) {
+            if (mBinding != null) {
+              mBinding.getRoot().openDrawer(GravityCompat.END);
+            }
+          }
+        };
 
+    final var bottomSheetSpan = new ClickableSpan() {
+      @Override
+      public void onClick(@NonNull final View widget) {
+        if (mEditorBottomSheet != null) {
+          mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+      }
+    };
+    
+    
+    final var sb = new SpannableStringBuilder();
+    appendClickableSpan(sb, R.string.msg_swipe_for_files, filesSpan);
+    appendClickableSpan(sb, R.string.msg_swipe_for_output, bottomSheetSpan);
+    mBinding.noEditorSummary.setText(sb);
+  }
+  
+  private void appendClickableSpan(final SpannableStringBuilder sb, @StringRes final int textRes, final ClickableSpan span) {
+    final var str = getString(textRes);
+    final var split = str.split("@@",3);
+    
+    if (split.length != 3) {
+      // Not a valid format
+      sb.append(str);
+      sb.append('\n');
+      return;
+    }
+    
+    sb.append(split[0]);
+    sb.append(split[1], span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    sb.append(split[2]);
+    sb.append('\n');
+  }
+  
   private void setupBottomSheetShareOutputFAB() {
     mBinding.bottomSheet.shareOutputFab.setOnClickListener(
         v -> {
