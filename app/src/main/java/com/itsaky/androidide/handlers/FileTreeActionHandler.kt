@@ -68,9 +68,6 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 class FileTreeActionHandler : BaseEventHandler() {
 
   private var lastHeld: TreeNode? = null
-  private var packageName: String = ""
-  private var isFileCreated: Boolean = false
-  private var autoLayout: Boolean = false
 
   companion object {
     const val TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment"
@@ -217,31 +214,36 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.setPositiveButton(string.text_create) { dialogInterface, _ ->
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
-      autoLayout = binding.checkButton.isChecked
+      val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
         StudioApp.getInstance().toast(string.msg_get_package_failed, ERROR)
-      } else {
-        packageName = pkgName.toString().replace(".", "/")
-        val id: Int = binding.typeGroup.checkedButtonId
-        val javaName = if (name.endsWith(".java")) name else "$name.java"
-        val className = if (!name.contains(".")) name else name.substring(0, name.lastIndexOf("."))
-        when (id) {
-          binding.typeClass.id ->
-            createFile(context, file, javaName, ProjectWriter.createJavaClass(pkgName, className))
-          binding.typeInterface.id ->
-            createFile(
-              context,
-              file,
-              javaName,
-              ProjectWriter.createJavaInterface(pkgName, className)
-            )
-          binding.typeEnum.id ->
-            createFile(context, file, javaName, ProjectWriter.createJavaEnum(pkgName, className))
-          binding.typeActivity.id ->
-            createFile(context, file, javaName, ProjectWriter.createActivity(pkgName, className))
-          else -> createFile(context, file, name, "")
-        }
+        return@setPositiveButton
+      }
+      
+      val id: Int = binding.typeGroup.checkedButtonId
+      val javaName = if (name.endsWith(".java")) name else "$name.java"
+      val className = if (!name.contains(".")) name else name.substring(0, name.lastIndexOf("."))
+      val created = when (id) {
+        binding.typeClass.id ->
+          createFile(context, file, javaName, ProjectWriter.createJavaClass(pkgName, className))
+        binding.typeInterface.id ->
+          createFile(
+            context,
+            file,
+            javaName,
+            ProjectWriter.createJavaInterface(pkgName, className)
+          )
+        binding.typeEnum.id ->
+          createFile(context, file, javaName, ProjectWriter.createJavaEnum(pkgName, className))
+        binding.typeActivity.id ->
+          createFile(context, file, javaName, ProjectWriter.createActivity(pkgName, className))
+        else -> createFile(context, file, name, "")
+      }
+  
+      if (created && autoLayout) {
+        val packagePath = pkgName.toString().replace(".", "/")
+        createAutoLayout(context, file, name, packagePath)
       }
     }
     builder.setNegativeButton(android.R.string.cancel, null)
@@ -258,19 +260,21 @@ class FileTreeActionHandler : BaseEventHandler() {
     )
   }
 
-  private fun createAutoLayout(context: Context, directory: File, fileName: String) {
+  private fun createAutoLayout(context: Context, directory: File, fileName: String, packagePath: String) {
     val app = StudioApp.getInstance()
-    val projectDir = directory.toString().replace("java/$packageName", "res/layout/")
+    val dir = directory.toString().replace("java/$packagePath", "res/layout/")
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
-    val newFileLayout = File(projectDir, layoutName)
+    val newFileLayout = File(dir, layoutName)
     if (newFileLayout.exists()) {
       app.toast(string.msg_file_exists, ERROR)
       return
     }
+    
     if (!FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
       app.toast(string.msg_file_creation_failed, ERROR)
       return
     }
+    
     notifyFileCreated(newFileLayout, context)
   }
 
@@ -350,36 +354,38 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.create().show()
   }
 
-  private fun createFile(context: Context, directory: File, name: String, content: String) {
+  private fun createFile(context: Context, directory: File, name: String, content: String) : Boolean {
     val app = StudioApp.getInstance()
-    if (name.length in 1..40 && !name.startsWith("/")) {
-      val newFile = File(directory, name)
-      if (newFile.exists()) {
-        app.toast(string.msg_file_exists, ERROR)
-      } else {
-        if (FileIOUtils.writeFileFromString(newFile, content)) {
-          if (autoLayout) isFileCreated = true
-          notifyFileCreated(newFile, context)
-          // TODO Notify language servers about file created event
-          app.toast(string.msg_file_created, SUCCESS)
-          if (lastHeld != null) {
-            val node = TreeNode(newFile)
-            node.viewHolder = FileTreeViewHolder(context)
-            lastHeld!!.addChild(node)
-            requestExpandHeldNode()
-          } else {
-            requestFileListing()
-          }
-        } else {
-          app.toast(string.msg_file_creation_failed, ERROR)
-        }
-        if (isFileCreated) createAutoLayout(context, directory, name)
-      }
-    } else {
+    if (name.length !in 1..40 || name.startsWith("/")) {
       app.toast(string.msg_invalid_name, ERROR)
+      return false
     }
+    
+    val newFile = File(directory, name)
+    if (newFile.exists()) {
+      app.toast(string.msg_file_exists, ERROR)
+      return false
+    }
+    if (!FileIOUtils.writeFileFromString(newFile, content)) {
+      app.toast(string.msg_file_creation_failed, ERROR)
+      return false
+    }
+    
+    notifyFileCreated(newFile, context)
+    // TODO Notify language servers about file created event
+    app.toast(string.msg_file_created, SUCCESS)
+    if (lastHeld != null) {
+      val node = TreeNode(newFile)
+      node.viewHolder = FileTreeViewHolder(context)
+      lastHeld!!.addChild(node)
+      requestExpandHeldNode()
+    } else {
+      requestFileListing()
+    }
+    
+    return true
   }
-
+  
   private fun createNewFolder(context: Context, currentDir: File) {
     val app = StudioApp.getInstance()
     val binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(context))
