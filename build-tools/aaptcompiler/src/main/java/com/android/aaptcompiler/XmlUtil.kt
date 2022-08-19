@@ -1,9 +1,9 @@
 package com.android.aaptcompiler
 
 import com.android.SdkConstants
-import javax.xml.stream.XMLEventReader
-import javax.xml.stream.XMLInputFactory
-import javax.xml.stream.events.StartElement
+import jaxp.xml.stream.XMLEventReader
+import jaxp.xml.stream.XMLInputFactory
+import jaxp.xml.stream.events.StartElement
 
 internal val xmlInputFactory = XMLInputFactory.newFactory()
 

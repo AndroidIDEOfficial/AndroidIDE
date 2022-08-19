@@ -10,7 +10,8 @@
         <module name="AndroidIDE.build-tools.google-java-format.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="1.7">
+      <module name="AndroidIDE.build-tools.aaptcompiler.test" target="11" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
       <module name="AndroidIDE.build-tools.caching-jar-fs" target="11" />
@@ -27,6 +28,7 @@
       <module name="AndroidIDE.build-tools.eventbus.test" target="11" />
       <module name="AndroidIDE.build-tools.layoutib-api.main" target="11" />
       <module name="AndroidIDE.build-tools.layoutib-api.test" target="11" />
+      <module name="AndroidIDE.build-tools.layoutlib-api.test" target="11" />
       <module name="AndroidIDE.build-tools.logger" target="11" />
       <module name="AndroidIDE.build-tools.logger.main" target="11" />
       <module name="AndroidIDE.build-tools.logger.test" target="11" />

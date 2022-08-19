@@ -20,7 +20,7 @@ import com.android.ide.common.blame.SourceFilePosition
 import com.android.ide.common.blame.SourcePosition
 import com.android.utils.ILogger
 import java.io.File
-import javax.xml.stream.Location
+import jaxp.xml.stream.Location
 
 internal fun blameSource(
   source: Source,

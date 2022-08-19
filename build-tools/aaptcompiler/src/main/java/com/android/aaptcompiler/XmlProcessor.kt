@@ -2,16 +2,16 @@ package com.android.aaptcompiler
 
 import java.io.InputStream
 import java.lang.RuntimeException
-import javax.xml.namespace.QName
-import javax.xml.stream.XMLEventReader
-import javax.xml.stream.XMLStreamConstants
-import javax.xml.stream.XMLStreamException
-import javax.xml.stream.events.Attribute
-import javax.xml.stream.events.Characters
-import javax.xml.stream.events.EndElement
-import javax.xml.stream.events.Namespace
-import javax.xml.stream.events.StartElement
-import javax.xml.stream.events.XMLEvent
+import jaxp.xml.namespace.QName
+import jaxp.xml.stream.XMLEventReader
+import jaxp.xml.stream.XMLStreamConstants
+import jaxp.xml.stream.XMLStreamException
+import jaxp.xml.stream.events.Attribute
+import jaxp.xml.stream.events.Characters
+import jaxp.xml.stream.events.EndElement
+import jaxp.xml.stream.events.Namespace
+import jaxp.xml.stream.events.StartElement
+import jaxp.xml.stream.events.XMLEvent
 
 private const val AAPT_ATTR_TAG = "attr"
 

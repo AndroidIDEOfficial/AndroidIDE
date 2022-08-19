@@ -16,30 +16,47 @@
  */
 
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'com.android.library'
+    id 'kotlin-android'
 }
 
-java {
-    sourceCompatibility = rootProject.ext.javaSourceVersion
-    targetCompatibility = rootProject.ext.javaTargetVersion
-}
-
-compileKotlin {
+android {
+    namespace "com.itsaky.androidide.aaptcompiler"
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
     kotlinOptions {
         jvmTarget = "11"
     }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
 
 dependencies {
-    implementation common.jkotlin
+    implementation common.kotlin
     implementation project (':build-tools:layoutlib-api')
+    implementation project (':build-tools:jaxp')
     
     api 'com.android.tools:common:30.2.2'
     implementation 'com.android.tools:annotations:30.2.2'

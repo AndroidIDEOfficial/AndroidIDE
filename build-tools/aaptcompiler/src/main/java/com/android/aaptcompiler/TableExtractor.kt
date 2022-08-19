@@ -4,15 +4,15 @@ import com.android.aapt.Resources
 import com.android.aaptcompiler.android.stringToInt
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import java.io.InputStream
-import javax.xml.XMLConstants
-import javax.xml.namespace.QName
-import javax.xml.stream.XMLEventReader
-import javax.xml.stream.XMLStreamConstants
-import javax.xml.stream.XMLStreamException
-import javax.xml.stream.events.Attribute
-import javax.xml.stream.events.Comment
-import javax.xml.stream.events.StartElement
-import javax.xml.stream.events.XMLEvent
+import jaxp.xml.XMLConstants
+import jaxp.xml.namespace.QName
+import jaxp.xml.stream.XMLEventReader
+import jaxp.xml.stream.XMLStreamConstants
+import jaxp.xml.stream.XMLStreamException
+import jaxp.xml.stream.events.Attribute
+import jaxp.xml.stream.events.Comment
+import jaxp.xml.stream.events.StartElement
+import jaxp.xml.stream.events.XMLEvent
 
 /**
  * Namespace uri for the xliff:g tag in XML.
