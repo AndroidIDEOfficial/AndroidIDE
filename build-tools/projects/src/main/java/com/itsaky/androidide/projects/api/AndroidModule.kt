@@ -34,6 +34,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.res.ResourceTableRegistry
 import java.io.File
 
 /**
@@ -231,5 +232,16 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     }
 
     return result
+  }
+
+  /**
+   * Reads the resource files are creates the [com.android.aaptcompiler.ResourceTable] instances for
+   * the corresponding resource directories.
+   */
+  fun readResources() {
+    val registry = ResourceTableRegistry.getInstance()
+    for (resourceDirectory in getResourceDirectories()) {
+      registry.forResourceDir(resourceDirectory)
+    }
   }
 }

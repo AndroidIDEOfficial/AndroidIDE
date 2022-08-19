@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace "com.itsaky.androidide.aaptcompiler"
+    namespace "com.itsaky.androidide.xml"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     

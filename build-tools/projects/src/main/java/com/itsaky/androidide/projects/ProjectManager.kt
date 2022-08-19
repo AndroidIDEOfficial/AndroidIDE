@@ -16,7 +16,6 @@
  */
 package com.itsaky.androidide.projects
 
-import android.content.Context
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
@@ -30,6 +29,7 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.res.ResourceTableRegistry
 import java.io.File
 import java.nio.file.Path
 import org.greenrobot.eventbus.EventBus
@@ -56,7 +56,13 @@ object ProjectManager : EventReceiver {
       this.rootProject!!
         .subModules
         .filterIsInstance(ModuleProject::class.java)
-        .forEach(ModuleProject::indexSourcesAndClasspaths)
+        .forEach {
+          it.indexSourcesAndClasspaths()
+  
+          if (it is AndroidModule) {
+            it.readResources()
+          }
+        }
     }
   }
 
@@ -202,7 +208,7 @@ object ProjectManager : EventReceiver {
     if (!isResource(file)) {
       return
     }
-    
+
     generateSources(builder)
   }
 

@@ -29,9 +29,7 @@ import java.io.File
 interface ResourceTableRegistry {
 
   companion object {
-    private val instance = DefaultResourceTableRegistry()
-
-    @JvmStatic fun getInstance(): ResourceTableRegistry = instance
+    @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
   }
 
   /**

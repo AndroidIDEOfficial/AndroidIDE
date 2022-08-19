@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.xml.res
 
 import android.graphics.Color
@@ -26,10 +25,10 @@ import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.res.internal.DefaultResourceTableRegistry
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -45,15 +44,17 @@ class ResourceTableRegistryTest {
   fun `test with simple framework resource parsing`() {
     val androidJar = findAndroidJar()
     val registry = ResourceTableRegistry.getInstance()
-    val resourceTable = registry.forResourceDir(File(androidJar.parentFile, "data/res"))
+    val resDir = File(androidJar.parentFile, "data/res")
+    val resourceTable = registry.forResourceDir(resDir)
 
     assertThat(resourceTable).isNotNull()
-    
+
+    // Should return same instance unless updated
+    assertThat(registry.forResourceDir(resDir)).isEqualTo(resourceTable)
+
     resourceTable.apply {
       assertThat(this!!.packages).hasSize(1)
-      this.packages.first().apply {
-        assertThat(this.name).isEqualTo("")
-      }
+      this.packages.first().apply { assertThat(this.name).isEqualTo("") }
     }
 
     resourceTable!!.findResource(ResourceName(pck = "", type = STRING, entry = "ok")).apply {

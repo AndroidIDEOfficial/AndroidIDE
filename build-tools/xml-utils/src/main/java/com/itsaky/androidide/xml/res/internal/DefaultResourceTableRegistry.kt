@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Akash Yadav
  */
-internal class DefaultResourceTableRegistry : ResourceTableRegistry {
+internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -52,6 +52,7 @@ internal class DefaultResourceTableRegistry : ResourceTableRegistry {
   }
 
   private fun createTable(resDir: File): ResourceTable? {
+    log.info("Creating resource table for resource directory $resDir")
     val values = File(resDir, "values")
     if (!values.exists()) {
       return null
@@ -61,9 +62,7 @@ internal class DefaultResourceTableRegistry : ResourceTableRegistry {
     val table = ResourceTable()
     val options =
       TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
-    values
-      .listFiles { file -> file.isFile && file.extension == "xml" }
-      ?.forEach { updateFromFile(it = it, table = table, options = options, logger = logger) }
+    updateFromDirectory(values, table, options, logger)
     return table
   }
 
