@@ -1155,7 +1155,6 @@ public class EditorActivity extends StudioActivity
       }
     };
     
-    
     final var sb = new SpannableStringBuilder();
     appendClickableSpan(sb, R.string.msg_swipe_for_files, filesSpan);
     appendClickableSpan(sb, R.string.msg_swipe_for_output, bottomSheetSpan);
