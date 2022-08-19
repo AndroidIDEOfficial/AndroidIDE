@@ -118,13 +118,7 @@ public class StudioApp extends BaseApplication {
     return Objects.requireNonNull(
         ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID));
   }
-
-  @NonNull
-  public ILanguageServer getJavaLanguageServer() {
-    return Objects.requireNonNull(
-        ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID));
-  }
-
+  
   public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
       ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
 

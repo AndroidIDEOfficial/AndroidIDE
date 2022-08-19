@@ -44,8 +44,8 @@ import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.editor.SelectAllAction
-import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.databinding.LayoutPopupMenuItemBinding
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
@@ -294,11 +294,13 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     data.put(com.itsaky.androidide.models.Range::class.java, editor.cursorRange)
     data.put(
       JavaLanguageServer::class.java,
-      StudioApp.getInstance().javaLanguageServer as JavaLanguageServer
+      ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
+        as JavaLanguageServer
     )
     data.put(
       XMLLanguageServer::class.java,
-      StudioApp.getInstance().xmlLanguageServer as XMLLanguageServer
+      ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
+        as XMLLanguageServer
     )
     return data
   }
@@ -326,7 +328,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     if (list.parent != null) {
       (list.parent as ViewGroup).removeView(list)
     }
-    
+
     this.list.layoutManager = LinearLayoutManager(editor.context, RecyclerView.HORIZONTAL, false)
 
     fillMenu()
@@ -374,7 +376,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     return widest
   }
 
-  private class ActionsListAdapter(val menu: Menu, val forceShowTitle: Boolean = false) : RecyclerView.Adapter<ActionsListAdapter.VH>() {
+  private class ActionsListAdapter(val menu: Menu, val forceShowTitle: Boolean = false) :
+    RecyclerView.Adapter<ActionsListAdapter.VH>() {
 
     override fun getItemCount(): Int {
       return menu.size()
@@ -392,13 +395,13 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
       val item = getItem(position)
       holder.binding.root.text = if (forceShowTitle) item.title else ""
       holder.binding.root.tooltipText = item.title
-      holder.binding.root.icon = item.icon ?: run {
-        holder.binding.root.text = item.title
-        holder.binding.root.layoutParams.apply {
-          width = ViewGroup.LayoutParams.WRAP_CONTENT
-        }
-        null
-      }
+      holder.binding.root.icon =
+        item.icon
+          ?: run {
+            holder.binding.root.text = item.title
+            holder.binding.root.layoutParams.apply { width = ViewGroup.LayoutParams.WRAP_CONTENT }
+            null
+          }
       holder.binding.root.setOnClickListener { (item as MenuItemImpl).invoke() }
     }
 
@@ -420,7 +423,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
       TransitionManager.beginDelayedTransition(this.list, ChangeBounds())
       this.list.layoutManager = LinearLayoutManager(editor.context)
       this.list.adapter = ActionsListAdapter(item.subMenu, true)
-      
+
       measureActionsList()
       popup.update(findWidestItem(), this.list.measuredHeight)
     }

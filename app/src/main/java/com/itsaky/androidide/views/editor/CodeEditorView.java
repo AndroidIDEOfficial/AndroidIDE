@@ -60,6 +60,9 @@ import com.itsaky.androidide.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -241,18 +244,24 @@ public class CodeEditorView extends FrameLayout {
   }
 
   private ILanguageServer createLanguageServer(File file) {
-    if (file.isFile()) {
-      String ext = FileUtils.getFileExtension(file);
-      switch (ext) {
-        case "java":
-          return StudioApp.getInstance().getJavaLanguageServer();
-        case "xml":
-          return StudioApp.getInstance().getXMLLanguageServer();
-        default:
-          return null;
-      }
+    if (!file.isFile()) {
+      return null;
     }
-    return null;
+
+    String ext = FileUtils.getFileExtension(file);
+    var serverID = "";
+    switch (ext) {
+      case "java":
+        serverID = JavaLanguageServer.SERVER_ID;
+        break;
+      case "xml":
+        serverID = XMLLanguageServer.SERVER_ID;
+        break;
+      default:
+        return null;
+    }
+
+    return ILanguageServerRegistry.getDefault().getServer(serverID);
   }
 
   private Language createLanguage(File file) {
