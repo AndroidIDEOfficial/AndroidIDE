@@ -103,7 +103,6 @@ public class StudioApp extends BaseApplication {
           if (sdkInfo == null) {
             try {
               sdkInfo = new SDKInfo(StudioApp.this);
-              ((XMLLanguageServer) getXMLLanguageServer()).setupSDK(sdkInfo);
             } catch (Throwable th) {
               LOG.error(getString(R.string.err_init_sdkinfo), th);
             }
