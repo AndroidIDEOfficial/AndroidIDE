@@ -35,7 +35,7 @@ import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
-import com.itsaky.androidide.models.TreeFileExtension;
+import com.itsaky.androidide.models.FileExtension;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.io.File;
@@ -112,7 +112,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
       return R.drawable.ic_terminal;
     }
 
-    return TreeFileExtension.Factory.forFile(file).getIcon();
+    return FileExtension.Factory.forFile(file).getIcon();
   }
 
   public void updateChevron(boolean expanded) {

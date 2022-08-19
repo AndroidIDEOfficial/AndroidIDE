@@ -26,7 +26,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-enum class TreeFileExtension(val extension: String, @DrawableRes val icon: Int) {
+enum class FileExtension(val extension: String, @DrawableRes val icon: Int) {
   JAVA("java", R.drawable.ic_language_java),
   JAR("jar", R.drawable.ic_language_java),
   KT("kt", R.drawable.ic_language_kotlin),
@@ -42,19 +42,19 @@ enum class TreeFileExtension(val extension: String, @DrawableRes val icon: Int) 
   H("h", R.drawable.ic_language_cpp),
   UNKNOWN("", R.drawable.ic_file_unknown);
 
-  /** Factory class for getting [TreeFileExtension] instances. */
+  /** Factory class for getting [FileExtension] instances. */
   class Factory {
     companion object {
 
-      /** Get [TreeFileExtension] for the given file. */
+      /** Get [FileExtension] for the given file. */
       @JvmStatic
-      fun forFile(file: File): TreeFileExtension {
+      fun forFile(file: File): FileExtension {
         return forExtension(file.extension)
       }
 
-      /** Get [TreeFileExtension] for the given extension. */
+      /** Get [FileExtension] for the given extension. */
       @JvmStatic
-      fun forExtension(extension: String): TreeFileExtension {
+      fun forExtension(extension: String): FileExtension {
         for (value in values()) {
           if (value.extension == extension) {
             return value
