@@ -48,13 +48,17 @@ enum class FileExtension(val extension: String, @DrawableRes val icon: Int) {
 
       /** Get [FileExtension] for the given file. */
       @JvmStatic
-      fun forFile(file: File): FileExtension {
-        return forExtension(file.extension)
+      fun forFile(file: File?): FileExtension {
+        return forExtension(file?.extension)
       }
 
       /** Get [FileExtension] for the given extension. */
       @JvmStatic
-      fun forExtension(extension: String): FileExtension {
+      fun forExtension(extension: String?): FileExtension {
+        if (extension == null) {
+          return UNKNOWN
+        }
+        
         for (value in values()) {
           if (value.extension == extension) {
             return value

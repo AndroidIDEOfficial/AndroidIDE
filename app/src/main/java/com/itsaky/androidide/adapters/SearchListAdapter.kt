@@ -27,6 +27,7 @@ import com.itsaky.androidide.R.drawable
 import com.itsaky.androidide.adapters.SearchListAdapter.VH
 import com.itsaky.androidide.databinding.LayoutSearchResultGroupBinding
 import com.itsaky.androidide.databinding.LayoutSearchResultItemBinding
+import com.itsaky.androidide.models.FileExtension
 import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.syntax.highlighters.JavaHighlighter
 import java.io.File
@@ -55,7 +56,7 @@ class SearchListAdapter(
     val matches = results[file] ?: listOf()
     val color = ContextCompat.getColor(binding.icon.context, color.secondaryColor)
     binding.title.text = file.name
-    binding.icon.setImageResource(drawable.ic_language_java)
+    binding.icon.setImageResource(FileExtension.Factory.forFile(file).icon)
     binding.icon.setColorFilter(color, SRC_ATOP)
     binding.items.layoutManager = LinearLayoutManager(binding.items.context)
     binding.items.adapter = ChildAdapter(matches)
