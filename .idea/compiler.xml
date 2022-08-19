@@ -25,11 +25,14 @@
       <module name="AndroidIDE.build-tools.eventbus-models.test" target="11" />
       <module name="AndroidIDE.build-tools.eventbus.main" target="11" />
       <module name="AndroidIDE.build-tools.eventbus.test" target="11" />
+      <module name="AndroidIDE.build-tools.layoutib-api.main" target="11" />
+      <module name="AndroidIDE.build-tools.layoutib-api.test" target="11" />
       <module name="AndroidIDE.build-tools.logger" target="11" />
       <module name="AndroidIDE.build-tools.logger.main" target="11" />
       <module name="AndroidIDE.build-tools.logger.test" target="11" />
       <module name="AndroidIDE.build-tools.project" target="11" />
       <module name="AndroidIDE.build-tools.tooling-api-plugin" target="11" />
+      <module name="AndroidIDE.build-tools.tools-common" target="11" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />

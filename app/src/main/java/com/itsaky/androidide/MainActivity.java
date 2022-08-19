@@ -35,14 +35,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
 
+import com.android.aaptcompiler.BlameLogger;
+import com.android.aaptcompiler.ResourceCompiler;
+import com.android.aaptcompiler.ResourceCompilerOptions;
+import com.android.utils.StdLogger;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
 import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -63,6 +69,27 @@ public class MainActivity extends StudioActivity {
         .beginTransaction()
         .replace(R.id.container, new MainFragment(), MainFragment.TAG)
         .commit();
+
+    TaskExecutor.executeAsyncProvideError(
+        () -> {
+          final var input =
+              new File(Environment.PROJECTS_DIR, "TestApp/app/src/main/res/layout/activity_main.xml");
+          final var output = Environment.PROJECTS_DIR;
+
+          final var watch = new StopWatch("Compile sample resource");
+          ResourceCompiler.compileResource(
+              input,
+              output,
+              new ResourceCompilerOptions(),
+              new BlameLogger(new StdLogger(StdLogger.Level.VERBOSE), str -> str));
+          watch.log();
+          return true;
+        },
+        (result, error) -> {
+          if (error != null) {
+            LOG.error("XML compilation error", error);
+          }
+        });
   }
 
   private void openLastProject() {

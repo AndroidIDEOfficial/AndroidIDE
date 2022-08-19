@@ -72,6 +72,8 @@ android {
                          'META-INF/CHANGES',
                          'META-INF/README.md',
                          'about_files/LICENSE-2.0.txt',
+                         'META-INF/AL2.0',
+                         'META-INF/LGPL2.1',
                          'plugin.xml',
                          'plugin.properties',
                          'about.mappings',
@@ -130,6 +132,7 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
+    implementation project (':build-tools:aaptcompiler')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
     implementation project (':build-tools:projects')
