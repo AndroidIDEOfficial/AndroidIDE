@@ -23,7 +23,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
   val stringPool = StringPool()
 
   /** The list of packages in this table. */
-  internal val packages = mutableListOf<ResourceTablePackage>()
+  val packages = mutableListOf<ResourceTablePackage>()
 
   /**
    * Set of dynamic packages that this table may reference. Their package names get encoded into the
@@ -638,8 +638,7 @@ class ResourceTablePackage(var name: String = "", var id: Byte? = null) {
     }
 
   fun findOrCreateGroup(type: AaptResourceType, groupId: Byte? = null): ResourceGroup {
-    val group = findGroup(type, groupId)
-    return when(group) {
+    return when(val group = findGroup(type, groupId)) {
       null -> {
         val newGroup = ResourceGroup(type)
         newGroup.id = groupId
@@ -705,7 +704,7 @@ class ResourceEntry(val name : String) {
   var allowNew: AllowNew? = null
   var overlayable: OverlayableItem? = null
 
-  internal val values = mutableListOf<ResourceConfigValue>()
+  val values = mutableListOf<ResourceConfigValue>()
 
   fun findValue(config: ConfigDescription, product: String = ""): ResourceConfigValue? {
     return values.find { it.config == config && it.product == product }

@@ -27,9 +27,10 @@ import kotlin.io.path.absolute
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
-@RunWith(JUnit4::class)
+@RunWith(RobolectricTestRunner::class)
 class CompilerTest {
 
   @Test

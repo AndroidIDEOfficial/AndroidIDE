@@ -55,9 +55,8 @@ android {
 dependencies {
     implementation common.jkotlin
     
-    implementation 'com.android.tools:annotations:30.2.2'
-    implementation 'net.sf.kxml:kxml2:2.3.0'
-    implementation 'org.jetbrains:annotations:13.0'
+    implementation aapt.annotations
+    implementation aapt.jb_annotations
     
     implementation google.guava_jre
     

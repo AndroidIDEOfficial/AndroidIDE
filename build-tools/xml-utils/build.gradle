@@ -55,15 +55,9 @@ android {
 
 dependencies {
     implementation common.kotlin
-    implementation project (':logger')
-    implementation project (':build-tools:jaxp')
+    implementation project(path: ':logger')
     
-    api aapt.common
-    api project (':build-tools:layoutlib-api')
-    
-    implementation aapt.annotations
-    implementation aapt.proto
-    implementation google.protobuf
+    api project(path: ':build-tools:aaptcompiler')
     
     testImplementation tests.junit
     testImplementation tests.robolectric
