@@ -61,11 +61,7 @@ object XmlUtils {
   }
 
   fun isTag(node: DOMNode, index: Int): Boolean {
-    var name = node.nodeName
-    if (name == null) {
-      name = ""
-    }
-    return node.start < index && index <= node.start + name.length + 1
+    return node.start < index && index <= node.start + node.nodeName.length + 1
   }
 
   fun isEndTag(node: DOMNode?, index: Int): Boolean {

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.providers
 
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.AbstractServiceProvider
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.api.IServerSettings
@@ -41,9 +42,10 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.widgets.Widget
+import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.attrinfo.models.Attr
 import com.itsaky.sdk.SDKInfo
-import com.itsaky.widgets.models.Widget
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
 import java.io.IOException
@@ -58,7 +60,7 @@ import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
  *
  * @author Akash Yadav
  */
-class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSettings) :
+class XmlCompletionProvider @JvmOverloads constructor(private val sdkInfo: SDKInfo? = null, settings: IServerSettings) :
   AbstractServiceProvider(), ICompletionProvider {
 
   init {
@@ -130,12 +132,13 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
   }
 
   private fun completeTags(prefix: String): CompletionResult {
-    val widgets = sdkInfo.widgetInfo.widgets
+    val widgets =
+      Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY)?.getAllWidgets() ?: return EMPTY
     val result = mutableListOf<CompletionItem>()
 
     for (widget in widgets) {
       val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
-      val nameMatchLevel = matchLevel(widget.name, prefix)
+      val nameMatchLevel = matchLevel(widget.qualifiedName, prefix)
       if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
         continue
       }
@@ -150,12 +153,10 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
   }
 
   private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
-    // TODO Provide attributes based on current node and it's direct parent node
-    //   For example, if the current node is a 'TextView', provide attributes applicable to
-    //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
-    //   attributes related to LinearLayout LayoutParams.
+    if (sdkInfo == null) {
+      return EMPTY
+    }
 
-    // TODO Provided attributes from declared namespaces only
     val attr = document.findAttrAt(position.requireIndex())
     val list = mutableListOf<CompletionItem>()
     for (attribute in sdkInfo.attrInfo.attributes.values) {
@@ -175,6 +176,10 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
     prefix: String,
     position: Position
   ): CompletionResult {
+    if (sdkInfo == null) {
+      return EMPTY
+    }
+
     val attr = document.findAttrAt(position.requireIndex())
 
     // TODO Provide attribute values based on namespace URI
@@ -204,11 +209,11 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
   private fun createTagCompletionItem(widget: Widget, matchLevel: MatchLevel): CompletionItem =
     CompletionItem().apply {
       this.label = widget.simpleName
-      this.detail = widget.name
+      this.detail = widget.qualifiedName
       this.sortText = label.toString()
       this.matchLevel = matchLevel
       this.kind = CLASS
-      this.data = CompletionData().apply { className = widget.name }
+      this.data = CompletionData().apply { className = widget.qualifiedName }
     }
 
   private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
