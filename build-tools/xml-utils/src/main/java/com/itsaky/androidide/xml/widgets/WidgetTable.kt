@@ -36,4 +36,17 @@ interface WidgetTable {
    * @return The widget or `null`.
    */
   fun getWidget(name: String): Widget?
+
+  /**
+   * Finds the first widget with the given simple name. This searches the whole table so [getWidget]
+   * is preferable.
+   */
+  fun findWidgetWithSimpleName(name: String): Widget?
+
+  /**
+   * Get the set of all registered widgets.
+   *
+   * @return The set of widgets.
+   */
+  fun getAllWidgets(): Set<Widget>
 }

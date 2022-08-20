@@ -69,12 +69,6 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
   override fun complete(params: CompletionParams): CompletionResult {
     return try {
-      // TODO When the completion will be namespace-aware, we will then need to use
-      //   'params.module'
-
-      // val namespace =
-      // INamespace.forPackageName((params.module as AndroidModule).packageName)
-
       val namespace = INamespace.ANDROID
       val contents = toString(params.requireContents())
       val document =

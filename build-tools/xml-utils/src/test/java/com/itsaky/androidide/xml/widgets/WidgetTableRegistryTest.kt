@@ -34,19 +34,10 @@ class WidgetTableRegistryTest {
     assertThat(registry.forPlatformDir(platformDir)).isEqualTo(table)
   }
 
-  private fun createTable(): Triple<File, WidgetTableRegistry, WidgetTable?> {
-    val platformDir = findAndroidJar().parentFile!!
-    val registry = WidgetTableRegistry.getInstance()
-    val table = registry.forPlatformDir(platformDir)
-
-    assertThat(table).isNotNull()
-    return Triple(platformDir, registry, table)
-  }
-
   @Test
   fun `test simple layout retrieval`() {
     val (platformDir, registry, table) = createTable()
-    table!!.getWidget("android.widget.FrameLayout").apply {
+    table.getWidget("android.widget.FrameLayout").apply {
       assertThat(this).isNotNull()
       assertThat(this!!.qualifiedName).isEqualTo("android.widget.FrameLayout")
       assertThat(this.simpleName).isEqualTo("FrameLayout")
@@ -57,11 +48,47 @@ class WidgetTableRegistryTest {
   @Test
   fun `test table contains layout params`() {
     val (platformDir, registry, table) = createTable()
-    table!!.getWidget("android.widget.FrameLayout.LayoutParams").apply {
+    table.getWidget("android.widget.FrameLayout.LayoutParams").apply {
       assertThat(this).isNotNull()
       assertThat(this!!.qualifiedName).isEqualTo("android.widget.FrameLayout.LayoutParams")
       assertThat(this.simpleName).isEqualTo("LayoutParams")
       assertThat(this.type).isEqualTo(WidgetType.LAYOUT_PARAM)
     }
+  }
+
+  @Test
+  fun `test find with simple name`() {
+    val (platformDir, registry, table) = createTable()
+    table.findWidgetWithSimpleName("TextView").apply {
+      assertThat(this).isNotNull()
+      assertThat(this!!.simpleName).isEqualTo("TextView")
+      assertThat(this.qualifiedName).isEqualTo("android.widget.TextView")
+      assertThat(this.superclasses).containsExactly("android.view.View", "java.lang.Object")
+    }
+  }
+
+  @Test
+  fun `test get all widgets list`() {
+    val (file, registry, table) = createTable()
+    assertThat(table.getAllWidgets().map(Widget::simpleName))
+      .containsAtLeast(
+        "TextView",
+        "ImageView",
+        "Button",
+        "LinearLayout",
+        "RelativeLayout",
+        "FrameLayout",
+        "GestureOverlayView",
+        "CalendarView"
+      )
+  }
+
+  private fun createTable(): Triple<File, WidgetTableRegistry, WidgetTable> {
+    val platformDir = findAndroidJar().parentFile!!
+    val registry = WidgetTableRegistry.getInstance()
+    val table = registry.forPlatformDir(platformDir)
+
+    assertThat(table).isNotNull()
+    return Triple(platformDir, registry, table!!)
   }
 }

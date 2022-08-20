@@ -42,6 +42,48 @@ class DefaultWidgetTable : WidgetTable {
     return node.widget
   }
 
+  override fun findWidgetWithSimpleName(name: String): Widget? {
+    return findWidgetWithSimpleName(name, root)
+  }
+
+  override fun getAllWidgets(): Set<Widget> {
+    val result = mutableSetOf<Widget>()
+    root.children.values.forEach { result.addAll(collectWidgets(it)) }
+    return result
+  }
+
+  private fun collectWidgets(node: WidgetNode): Set<Widget> {
+    val result = mutableSetOf<Widget>()
+    if (node.widget != null) {
+      result.add(node.widget)
+    }
+    
+    node.children.values.forEach {
+      result.addAll(collectWidgets(it))
+    }
+    
+    return result
+  }
+
+  private fun findWidgetWithSimpleName(name: String, root: WidgetNode): Widget? {
+    for (child in root.children.values) {
+      if (child.widget?.simpleName == name) {
+        return child.widget
+      }
+
+      if (child.children.isEmpty()) {
+        continue
+      }
+
+      val inner = findWidgetWithSimpleName(name, child)
+      if (inner != null) {
+        return inner
+      }
+    }
+
+    return null
+  }
+
   internal fun putWidget(line: String) {
     val widget =
       WidgetParser.parse(line)
@@ -49,7 +91,7 @@ class DefaultWidgetTable : WidgetTable {
           log.debug("Cannot parse widget from line: $line")
           return
         }
-  
+
     putWidget(widget)
   }
 
