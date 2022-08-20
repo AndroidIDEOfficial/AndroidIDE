@@ -4,6 +4,7 @@
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
     <string name="title_open_source_licenses">Лицензирование открытого кода</string>
+    <string name="title_open_source_licenses">Лицензии открытого кода</string>
     <string name="msg_about_licensed_under">"Лицензия: "</string>
     <string name="about_option_email">Email</string>
     <string name="about_option_website">Вебсайт</string>
@@ -304,6 +305,18 @@
     <string name="build_status_in_progress">Сборка в процессе&#8230;</string>
     <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
     <string name="build_status_sucess">Сборка прошла успешно</string>
+
+    <string name="template_def_app_name">My Application</string>
+    <string name="msg_output_text_extraction_failed">Не удалось получить текст из редактора</string>
+    <string name="err_invalid_data_by_intent">Намерение вернуло неверные данные</string>
+    <string name="msg_select_from_primary_storage">Выберите каталог из основного хранилища</string>
+    <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
+    <string name="idepref_useIcu_title">Используйте библиотеку ICU</string>
+    <string name="idepref_useIcu_summary">Используйте библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
+    <!--The text sorrounded with '@@' is spanned as clickable.-->
+    <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
+    <string name="msg_swipe_for_files">Проведите влево для просмотра @@файлов@@.</string>
+    <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
 
     <!-- Other -->
     <string name="yes">Да</string>
