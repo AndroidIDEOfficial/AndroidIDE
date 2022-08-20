@@ -305,14 +305,6 @@
     <string name="build_status_failed">Сборка завершилась неудачей. Дополнительные сведения см. в выводе сборки.</string>
     <string name="build_status_sucess">Сборка прошла успешно</string>
 
-    <string name="template_def_app_name">My Application</string>
-    <string name="msg_output_text_extraction_failed">Не удалось получить текст из редактора</string>
-    <string name="err_invalid_data_by_intent">Намерение вернуло неверные данные</string>
-    <string name="msg_select_from_primary_storage">Выберите каталог из основного хранилища</string>
-    <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
-    <string name="idepref_useIcu_title">Используйте библиотеку ICU</string>
-    <string name="idepref_useIcu_summary">Используйте библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
-
     <!-- Other -->
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -349,9 +341,17 @@
     <string name="msg_running_task">Запущена задача: \'%1$s\'</string>
     <string name="msg_ndk_currently_unsupported">В настоящее время нет официальной поддержки NDK. Этот шаблон будет работать только после настройки NDK</string>
     <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь.</a>]]></string>
-    
+
     <!--The text sorrounded with '@@' is spanned as clickable.-->
     <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
     <string name="msg_swipe_for_files">Проведите влево для просмотра @@файлов@@.</string>
     <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
+
+    <string name="template_def_app_name">My Application</string>
+    <string name="msg_output_text_extraction_failed">Не удалось получить текст из редактора</string>
+    <string name="err_invalid_data_by_intent">Намерение вернуло неверные данные</string>
+    <string name="msg_select_from_primary_storage">Выберите каталог из основного хранилища</string>
+    <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
+    <string name="idepref_useIcu_title">Используйте библиотеку ICU</string>
+    <string name="idepref_useIcu_summary">Используйте библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
 </resources>
