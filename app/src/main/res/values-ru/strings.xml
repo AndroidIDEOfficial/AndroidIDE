@@ -171,7 +171,7 @@
     <string name="action_closeOthers">Закрыть остальные</string>
     <string name="action_closeThis">Закрыть этот</string>
     <string name="all_saved">Все файлы сохранены!</string>
-    <string name="msg_newfile_dest">Назначение: %s/</string>
+    <string name="msg_newfile_dest">Место расположения: %s/</string>
     <string name="restype_drawable">Рисунок</string>
     <string name="restype_layout">Разметка</string>
     <string name="restype_menu">Меню</string>
@@ -352,6 +352,6 @@
     <string name="err_invalid_data_by_intent">Намерение вернуло неверные данные</string>
     <string name="msg_select_from_primary_storage">Выберите каталог из основного хранилища</string>
     <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
-    <string name="idepref_useIcu_title">Используйте библиотеку ICU</string>
-    <string name="idepref_useIcu_summary">Используйте библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
+    <string name="idepref_useIcu_title">Использовать библиотеку ICU</string>
+    <string name="idepref_useIcu_summary">Использовать библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
 </resources>
