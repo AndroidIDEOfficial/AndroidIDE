@@ -29,7 +29,7 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.res.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import java.io.File
 import java.nio.file.Path
 import org.greenrobot.eventbus.EventBus

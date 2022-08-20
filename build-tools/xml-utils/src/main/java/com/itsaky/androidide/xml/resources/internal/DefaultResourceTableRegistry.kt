@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.res.internal
+package com.itsaky.androidide.xml.resources.internal
 
 import com.android.aaptcompiler.BlameLogger
 import com.android.aaptcompiler.ResourceTable
@@ -25,7 +25,7 @@ import com.android.aaptcompiler.extractPathData
 import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.res.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 

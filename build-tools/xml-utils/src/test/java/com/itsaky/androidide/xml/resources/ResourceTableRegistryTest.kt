@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.xml.res
+package com.itsaky.androidide.xml.resources
 
 import android.graphics.Color
 import com.android.aaptcompiler.AaptResourceType.COLOR
@@ -24,7 +24,8 @@ import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.xml.res.internal.DefaultResourceTableRegistry
+import com.itsaky.androidide.xml.findAndroidJar
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -106,39 +107,5 @@ class ResourceTableRegistryTest {
           }
         }
       }
-  }
-
-  private fun findAndroidJar(): File {
-    val androidHome = findAndroidHome()
-    return run {
-      for (platform in intArrayOf(33, 32, 31)) {
-        val f = File(androidHome, "platforms/android-$platform/android.jar")
-        if (f.exists() && !f.isDirectory) {
-          return@run f
-        }
-      }
-
-      throw RuntimeException("Cannot find android.jar")
-    }
-  }
-
-  private fun findAndroidHome(): String {
-    var androidHome = System.getenv("ANDROID_HOME")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    androidHome = System.getenv("ANDROID_SDK_ROOT")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    val os = System.getProperty("os.name")
-    val home = System.getProperty("user.home")
-    return if (os.contains("Linux")) {
-      "$home/Android/Sdk"
-    } else {
-      "$home\\AppData\\Local\\Android\\Sdk"
-    }
   }
 }

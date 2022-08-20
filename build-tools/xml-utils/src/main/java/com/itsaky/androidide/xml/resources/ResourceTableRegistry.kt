@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.res
+package com.itsaky.androidide.xml.resources
 
 import com.android.aaptcompiler.ResourceTable
-import com.itsaky.androidide.xml.res.internal.DefaultResourceTableRegistry
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import java.io.File
 
 /**

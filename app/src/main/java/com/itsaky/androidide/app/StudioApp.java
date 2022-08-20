@@ -111,12 +111,6 @@ public class StudioApp extends BaseApplication {
           return sdkInfo;
         });
   }
-
-  @NonNull
-  public ILanguageServer getXMLLanguageServer() {
-    return Objects.requireNonNull(
-        ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID));
-  }
   
   public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
       ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {

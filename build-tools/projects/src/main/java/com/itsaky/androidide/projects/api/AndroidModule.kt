@@ -34,7 +34,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.res.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import java.io.File
 
 /**
