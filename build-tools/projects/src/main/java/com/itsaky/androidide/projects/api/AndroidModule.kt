@@ -251,9 +251,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
           registry.forPlatformDir(platformDir)
         }
 
-        for (resourceDirectory in getResourceDirectories()) {
-          registry.forResourceDir(resourceDirectory)
-        }
+        mainSourceSet?.sourceProvider?.resDirectories?.forEach { registry.forResourceDir(it) }
       }
     )
 
