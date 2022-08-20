@@ -15,22 +15,25 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets
+package com.itsaky.androidide.xml.registry
 
-import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.widgets.internal.DefaultWidgetTableRegistry
+import java.io.File
 
 /**
- * Information about widgets, layouts and layout params extracted from `widgets.txt` from the
- * Android SDK.
+ * Base interface for all XML registry interfaces.
  *
+ * @param T The type of data the registry provides.
  * @author Akash Yadav
  */
-interface WidgetTableRegistry : XmlRegistry<WidgetTable> {
+interface XmlRegistry<T> {
 
-  companion object {
+  /**
+   * Get data for the given platform directory.
+   *
+   * @param platform The platform directory.
+   */
+  fun forPlatformDir(platform: File): T?
 
-    /** Get the default instance of [WidgetTableRegistry]. */
-    @JvmStatic fun getInstance(): WidgetTableRegistry = DefaultWidgetTableRegistry
-  }
+  /** Clears all the cached data. */
+  fun clear()
 }

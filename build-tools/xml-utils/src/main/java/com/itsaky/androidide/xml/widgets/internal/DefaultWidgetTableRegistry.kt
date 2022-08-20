@@ -33,14 +33,14 @@ internal object DefaultWidgetTableRegistry : WidgetTableRegistry {
   private val tables = ConcurrentHashMap<String, WidgetTable>()
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  override fun forPlatform(platformDir: File): WidgetTable? {
-    var table = tables[platformDir.path]
+  override fun forPlatformDir(platform: File): WidgetTable? {
+    var table = tables[platform.path]
     if (table != null) {
       return table
     }
 
-    table = createTable(platformDir) ?: return null
-    tables[platformDir.path] = table
+    table = createTable(platform) ?: return null
+    tables[platform.path] = table
     return table
   }
 

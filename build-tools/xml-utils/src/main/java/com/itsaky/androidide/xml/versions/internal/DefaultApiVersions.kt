@@ -15,22 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets
+package com.itsaky.androidide.xml.versions.internal
 
-import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.widgets.internal.DefaultWidgetTableRegistry
+import com.itsaky.androidide.xml.versions.ApiVersions
+import com.itsaky.androidide.xml.versions.ClassInfo
+import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Information about widgets, layouts and layout params extracted from `widgets.txt` from the
- * Android SDK.
- *
- * @author Akash Yadav
- */
-interface WidgetTableRegistry : XmlRegistry<WidgetTable> {
+/** @author Akash Yadav */
+internal class DefaultApiVersions : ApiVersions {
 
-  companion object {
+  val classes = ConcurrentHashMap<String, ClassInfo>()
 
-    /** Get the default instance of [WidgetTableRegistry]. */
-    @JvmStatic fun getInstance(): WidgetTableRegistry = DefaultWidgetTableRegistry
+  override fun getClass(name: String): ClassInfo? {
+    return classes[name.replace('.', '/')]
+  }
+  
+  internal fun putClass(name: String, info: ClassInfo) {
+    classes[name] = info
   }
 }

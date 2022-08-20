@@ -15,22 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets
+package com.itsaky.androidide.xml.versions
 
 import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.widgets.internal.DefaultWidgetTableRegistry
+import com.itsaky.androidide.xml.versions.internal.DefaultApiVersionsRegistry
 
 /**
- * Information about widgets, layouts and layout params extracted from `widgets.txt` from the
- * Android SDK.
+ * Registry that reads information about the API versions of classes, their fields and methods.
  *
+ * The following information is stored :
+ * - Since
+ * - Removed
+ * - Deprecated
  * @author Akash Yadav
  */
-interface WidgetTableRegistry : XmlRegistry<WidgetTable> {
-
+interface ApiVersionsRegistry : XmlRegistry<ApiVersions> {
   companion object {
 
-    /** Get the default instance of [WidgetTableRegistry]. */
-    @JvmStatic fun getInstance(): WidgetTableRegistry = DefaultWidgetTableRegistry
+    /** Get the default instance of [ApiVersionsRegistry]. */
+    @JvmStatic fun getInstance(): ApiVersionsRegistry = DefaultApiVersionsRegistry
   }
 }

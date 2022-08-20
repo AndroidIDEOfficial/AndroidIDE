@@ -31,13 +31,13 @@ class WidgetTableRegistryTest {
   @Test
   fun `test multiple calls should returns same instance`() {
     val (platformDir, registry, table) = createTable()
-    assertThat(registry.forPlatform(platformDir)).isEqualTo(table)
+    assertThat(registry.forPlatformDir(platformDir)).isEqualTo(table)
   }
 
   private fun createTable(): Triple<File, WidgetTableRegistry, WidgetTable?> {
     val platformDir = findAndroidJar().parentFile!!
     val registry = WidgetTableRegistry.getInstance()
-    val table = registry.forPlatform(platformDir)
+    val table = registry.forPlatformDir(platformDir)
 
     assertThat(table).isNotNull()
     return Triple(platformDir, registry, table)

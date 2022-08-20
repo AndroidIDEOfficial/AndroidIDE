@@ -63,7 +63,7 @@ public class ApiInfo {
     }
     Document doc = Jsoup.parse(readStream(in));
     Elements classes = doc.getElementsByTag("api").first().getElementsByTag("class");
-    if (classes == null || classes.size() <= 0) {
+    if (classes.size() <= 0) {
       return;
     }
 
@@ -105,26 +105,26 @@ public class ApiInfo {
     }
 
     Elements superClass = clazz.getElementsByTag(EXTENDS);
-    if (superClass != null && superClass.size() == 1) {
+    if (superClass.size() == 1) {
       info.superClass = superClass.first().attr(NAME);
     }
 
     Elements interfaces = clazz.getElementsByTag(IMPLEMENTS);
-    if (interfaces != null && interfaces.size() > 0) {
+    if (interfaces.size() > 0) {
       for (Element iface : interfaces) {
         info.interfaces.add(iface.attr(NAME));
       }
     }
 
     Elements fields = clazz.getElementsByTag(FIELD);
-    if (fields != null && fields.size() > 0) {
+    if (fields.size() > 0) {
       for (Element field : fields) {
         putField(field, info);
       }
     }
 
     Elements methods = clazz.getElementsByTag(METHOD);
-    if (methods != null && methods.size() > 0) {
+    if (methods.size() > 0) {
       for (Element method : methods) {
         putMethod(method, info);
       }

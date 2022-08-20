@@ -18,6 +18,7 @@
 package com.itsaky.androidide.xml.resources
 
 import com.android.aaptcompiler.ResourceTable
+import com.itsaky.androidide.xml.registry.XmlRegistry
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import java.io.File
 
@@ -26,7 +27,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-interface ResourceTableRegistry {
+interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
     @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
@@ -46,7 +47,8 @@ interface ResourceTableRegistry {
    * @param dir The resource directory to remove the resource table entry for.
    */
   fun removeTable(dir: File)
-
-  /** Clears all the registered resource tables. */
-  fun clear()
+  
+  override fun forPlatformDir(platform: File): ResourceTable? {
+    return forResourceDir(File(platform, "data/res"))
+  }
 }
