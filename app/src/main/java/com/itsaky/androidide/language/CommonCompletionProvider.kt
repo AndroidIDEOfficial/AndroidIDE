@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.language
 
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
@@ -24,13 +25,18 @@ import com.itsaky.androidide.lsp.models.FailureType.COMPLETION
 import com.itsaky.androidide.lsp.models.LSPFailure
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.progress.ProcessCancelledException
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.versions.ApiVersions
+import com.itsaky.androidide.xml.widgets.WidgetTable
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException
 import io.github.rosemoe.sora.lang.completion.CompletionHelper
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import java.nio.file.Path
-import java.util.function.*
+import java.util.function.Predicate
 
 /**
  * Common implementation of completion provider which requests completions to provided language
@@ -59,6 +65,32 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
   ): List<CompletionItem> {
     val completionResult =
       try {
+        val module = ProjectManager.findModuleForFile(file)
+        if (module != null && module is AndroidModule) {
+          val lookup = Lookup.DEFAULT
+          val versions = module.getApiVersions()
+          if (versions != null) {
+            lookup.update(ApiVersions.COMPLETION_LOOKUP_KEY, versions)
+          }
+
+          val widgets = module.getWidgetTable()
+          if (widgets != null) {
+            lookup.update(WidgetTable.COMPLETION_LOOKUP_KEY, widgets)
+          }
+
+          val moduleResources = module.getSourceResourceTables()
+          if (moduleResources.isNotEmpty()) {
+            lookup.update(ResourceTableRegistry.COMPLETION_MODULE_RES_LOOKUP_KEY, moduleResources)
+          }
+
+          val frameworkResources = module.getFrameworkResourceTable()
+          if (frameworkResources != null) {
+            lookup.update(
+              ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY,
+              frameworkResources
+            )
+          }
+        }
         val prefix = CompletionHelper.computePrefix(content, position) { prefixMatcher.test(it) }
         val params =
           CompletionParams(Position(position.line, position.column, position.index), file)

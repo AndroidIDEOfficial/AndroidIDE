@@ -48,6 +48,11 @@ public final class DefaultLookup implements Lookup {
   }
 
   @Override
+  public <T> void update(final Class<T> klass, final T instance) {
+    update(key(klass), instance);
+  }
+
+  @Override
   public <T> void unregister(final Class<T> klass) {
     unregister(key(klass));
   }
@@ -58,13 +63,9 @@ public final class DefaultLookup implements Lookup {
     return lookup(key(klass));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <T> void register(final Key<T> key, final T instance) {
-    final T existing = (T) services.put(key, instance);
-    if (existing != null) {
-      throw new ServiceRegisteredException();
-    }
+    registerOrUpdate(key, instance, false);
   }
 
   @Override
@@ -79,12 +80,26 @@ public final class DefaultLookup implements Lookup {
     return (T) services.get(key);
   }
 
+  @Override
+  public <T> void update(final Key<T> key, final T instance) {
+    registerOrUpdate(key, instance, true);
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> void registerOrUpdate(final Key<T> key, final T instance, boolean update) {
+    final T existing = (T) services.put(key, instance);
+    if (existing != null && !update) {
+      services.put(key, existing);
+      throw new ServiceRegisteredException();
+    }
+  }
+
   @SuppressWarnings("unchecked")
   @NotNull
   private <T> Key<T> key(Class<T> klass) {
     final var key = keyTable.get(klass);
     if (key == null) {
-      // Returning a new key instance will always make all the methods above return null
+      // Returning a new key instance will always make the lookup methods above return null
       return new Key<>();
     }
 

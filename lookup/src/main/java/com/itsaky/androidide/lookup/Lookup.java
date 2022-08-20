@@ -40,6 +40,15 @@ public interface Lookup {
   <T> void register(Class<T> klass, T instance);
 
   /**
+   * Updates the service for the given class. Registers if not already registered.
+   *
+   * @param klass The class to update the service for.
+   * @param instance The instance of the service.
+   * @param <T> The type of the service.
+   */
+  <T> void update(Class<T> klass, T instance);
+
+  /**
    * Unregister the service for given class.
    *
    * @param klass The class of service to unregister.
@@ -83,6 +92,15 @@ public interface Lookup {
    */
   @Nullable
   <T> T lookup(Key<T> key);
+
+  /**
+   * Updates the service for the given key. Registers if not already registered.
+   *
+   * @param key The key to update the service for.
+   * @param instance The instance of the service.
+   * @param <T> The type of the service.
+   */
+  <T> void update(Key<T> key, T instance);
 
   /**
    * The key that is used to register services in the table.

@@ -17,17 +17,23 @@
 
 package com.itsaky.androidide.xml.widgets
 
+import com.itsaky.androidide.lookup.Lookup
+
 /**
  * A widget table holds information about all widgets defined in the `widgets.txt`.
  *
  * @author Akash Yadav
  */
 interface WidgetTable {
-  
+
+  companion object {
+    @JvmStatic val COMPLETION_LOOKUP_KEY = Lookup.Key<WidgetTable>()
+  }
+
   /**
    * Get the widget for the given fully qualified name. For example, `android.widget.TextView`.
    *
    * @return The widget or `null`.
    */
-  fun getWidget(name: String) : Widget?
+  fun getWidget(name: String): Widget?
 }

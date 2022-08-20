@@ -58,6 +58,7 @@ dependencies {
     implementation project(path: ':logger')
     implementation project(path: ':build-tools:jdt')
     
+    api project(path: ':lookup')
     api project(path: ':build-tools:aaptcompiler')
     
     testImplementation tests.junit

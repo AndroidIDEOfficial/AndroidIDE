@@ -249,30 +249,12 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     val threads = mutableListOf<Thread>()
     threads.add(
       Thread {
-        val registry = ResourceTableRegistry.getInstance()
-        if (platformDir != null) {
-          registry.forPlatformDir(platformDir)
-        }
-
-        mainSourceSet?.sourceProvider?.resDirectories?.forEach { registry.forResourceDir(it) }
+        getFrameworkResourceTable()
+        getSourceResourceTables()
       }
     )
-
-    if (platformDir != null) {
-      threads.add(
-        Thread {
-          val registry = ApiVersionsRegistry.getInstance()
-          registry.forPlatformDir(platformDir)
-        }
-      )
-
-      threads.add(
-        Thread {
-          val registry = WidgetTableRegistry.getInstance()
-          registry.forPlatformDir(platformDir)
-        }
-      )
-    }
+    threads.add(Thread(this::getApiVersions))
+    threads.add(Thread(this::getWidgetTable))
 
     for (thread in threads) {
       thread.start()
@@ -310,7 +292,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
     return null
   }
-  
+
   /**
    * Get the [ResourceTable] instance for this module's compile SDK.
    *
@@ -321,10 +303,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     if (platformDir != null) {
       return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
     }
-    
+
     return null
   }
-  
+
   /**
    * Get the resource tables for this module as well as it's dependent modules.
    *

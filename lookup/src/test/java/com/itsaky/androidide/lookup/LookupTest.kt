@@ -29,9 +29,18 @@ class LookupTest {
   @Test
   fun `test with class`() {
     val lookup = Lookup.DEFAULT
-    val service = TestServiceImpl()
-    lookup.register(TestService::class.java, service)
 
+    // Test register
+    var service = TestServiceImpl()
+    lookup.register(TestService::class.java, service)
+    lookup.lookup(TestService::class.java).apply {
+      assertThat(this).isNotNull()
+      assertThat(this).isEqualTo(service)
+    }
+
+    // Test update
+    service = TestServiceImpl()
+    lookup.update(TestService::class.java, service)
     lookup.lookup(TestService::class.java).apply {
       assertThat(this).isNotNull()
       assertThat(this).isEqualTo(service)
@@ -46,15 +55,27 @@ class LookupTest {
   fun `test with key`() {
     val lookup = Lookup.DEFAULT
     val key = Key<TestService>()
-    val service = TestServiceImpl()
-    lookup.register(key, service)
 
+    // Test register
+    var service = TestServiceImpl()
+    lookup.register(key, service)
+    lookup.lookup(key).apply {
+      assertThat(this).isNotNull()
+      assertThat(this).isEqualTo(service)
+    }
+  
+    // Service not registered with the Class object. Must return null.
+    lookup.lookup(TestService::class.java).apply { assertThat(this).isNull() }
+
+    // Test update
+    service = TestServiceImpl()
+    lookup.update(key, service)
     lookup.lookup(key).apply {
       assertThat(this).isNotNull()
       assertThat(this).isEqualTo(service)
     }
 
-    // Not service with the Class object. Must return null.
+    // Service not registered with the Class object. Must return null.
     lookup.lookup(TestService::class.java).apply { assertThat(this).isNull() }
 
     lookup.unregister(key)

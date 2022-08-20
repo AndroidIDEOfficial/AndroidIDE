@@ -18,6 +18,7 @@
 package com.itsaky.androidide.xml.resources
 
 import com.android.aaptcompiler.ResourceTable
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.xml.registry.XmlRegistry
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import java.io.File
@@ -30,6 +31,10 @@ import java.io.File
 interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
+
+    @JvmStatic val COMPLETION_MODULE_RES_LOOKUP_KEY = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic val COMPLETION_FRAMEWORK_RES_LOOKUP_KEY = Lookup.Key<ResourceTable>()
+
     @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
   }
 
@@ -47,7 +52,7 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    * @param dir The resource directory to remove the resource table entry for.
    */
   fun removeTable(dir: File)
-  
+
   override fun forPlatformDir(platform: File): ResourceTable? {
     return forResourceDir(File(platform, "data/res"))
   }
