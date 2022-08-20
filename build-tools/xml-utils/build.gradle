@@ -56,6 +56,7 @@ android {
 dependencies {
     implementation common.kotlin
     implementation project(path: ':logger')
+    implementation project(path: ':build-tools:jdt')
     
     api project(path: ':build-tools:aaptcompiler')
     

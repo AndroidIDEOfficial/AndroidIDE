@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.xml.versions.internal
 
-import android.util.Xml
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -57,6 +56,7 @@ internal object DefaultApiVersionsRegistry : ApiVersionsRegistry {
       return null
     }
 
+    log.info("Creating API versions table for platform dir: $platform")
     return versionsFile.bufferedReader().use {
       val parser =
         XmlPullParserFactory.newInstance().run {
@@ -140,7 +140,7 @@ internal object DefaultApiVersionsRegistry : ApiVersionsRegistry {
           if (event == XmlPullParser.END_TAG && parser.depth == depth) {
             break
           }
-          
+
           if (event != XmlPullParser.START_TAG) {
             event = parser.next()
             continue

@@ -51,6 +51,7 @@ internal object DefaultWidgetTableRegistry : WidgetTableRegistry {
       return null
     }
 
+    log.info("Creating widget table for platform dir: $platformDir")
     return widgets.inputStream().bufferedReader().useLines {
       val table =  DefaultWidgetTable()
       it.forEach { line ->

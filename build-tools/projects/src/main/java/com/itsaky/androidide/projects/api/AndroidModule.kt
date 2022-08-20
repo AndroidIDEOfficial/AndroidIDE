@@ -35,6 +35,8 @@ import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERM
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
+import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import java.io.File
 
 /**
@@ -239,9 +241,44 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    * the corresponding resource directories.
    */
   fun readResources() {
-    val registry = ResourceTableRegistry.getInstance()
-    for (resourceDirectory in getResourceDirectories()) {
-      registry.forResourceDir(resourceDirectory)
+    // Read resources in parallel
+    val platformDir = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
+    val threads = mutableListOf<Thread>()
+    threads.add(
+      Thread {
+        val registry = ResourceTableRegistry.getInstance()
+        if (platformDir != null) {
+          registry.forPlatformDir(platformDir)
+        }
+
+        for (resourceDirectory in getResourceDirectories()) {
+          registry.forResourceDir(resourceDirectory)
+        }
+      }
+    )
+
+    if (platformDir != null) {
+      threads.add(
+        Thread {
+          val registry = ApiVersionsRegistry.getInstance()
+          registry.forPlatformDir(platformDir)
+        }
+      )
+
+      threads.add(
+        Thread {
+          val registry = WidgetTableRegistry.getInstance()
+          registry.forPlatformDir(platformDir)
+        }
+      )
+    }
+
+    for (thread in threads) {
+      thread.start()
+    }
+
+    for (thread in threads) {
+      thread.join()
     }
   }
 }

@@ -17,42 +17,7 @@
 
 package com.itsaky.androidide.aapt.logging
 
-import com.android.utils.ILogger
+import com.android.utils.StdLogger
+import com.android.utils.StdLogger.Level.VERBOSE
 
-/**
- * Implementation of [ILogger] which redirects all logs to AndroidIDE's logger implementation i.e.
- * [com.itsaky.androidide.utils.ILogger].
- *
- * @author Akash Yadav
- */
-object IDELogger : ILogger {
-
-  private val log = com.itsaky.androidide.utils.ILogger.newInstance("AAPTCompilerLogger")
-
-  override fun error(t: Throwable?, msgFormat: String?, vararg args: Any?) {
-    if (msgFormat != null) {
-      log.error(String.format(msgFormat, args))
-    }
-    if (t != null) {
-      log.error(t)
-    }
-  }
-
-  override fun warning(msgFormat: String?, vararg args: Any?) {
-    if (msgFormat != null) {
-      log.warn(String.format(msgFormat, args))
-    }
-  }
-
-  override fun info(msgFormat: String?, vararg args: Any?) {
-    if (msgFormat != null) {
-      log.info(String.format(msgFormat, args))
-    }
-  }
-
-  override fun verbose(msgFormat: String?, vararg args: Any?) {
-    if (msgFormat != null) {
-      log.verbose(String.format(msgFormat, args))
-    }
-  }
-}
+object IDELogger : StdLogger(VERBOSE)

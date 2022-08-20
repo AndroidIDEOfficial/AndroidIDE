@@ -10,7 +10,7 @@
         <module name="AndroidIDE.build-tools.google-java-format.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.7">
+    <bytecodeTargetLevel target="1.8">
       <module name="AndroidIDE.build-tools.aaptcompiler.test" target="11" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
