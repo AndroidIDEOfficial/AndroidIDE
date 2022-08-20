@@ -343,12 +343,12 @@
     <string name="msg_require_install_jdk_and_android_sdk">Для работы IDE вам необходимо установить JDK и Android SDK. Для установки нажмите \"Да\" и следуйте инструкциям <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">здесь.</a>]]></string>
     <string name="template_def_app_name">My Application</string>
     <string name="msg_output_text_extraction_failed">Не удалось получить текст из редактора</string>
-    <string name="err_invalid_data_by_intent">Намерение вернуло неверные данные</string>
+    <string name="err_invalid_data_by_intent">Намерение вернуло недопустимые данные</string>
     <string name="msg_select_from_primary_storage">Выберите каталог из основного хранилища</string>
     <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
     <string name="idepref_useIcu_title">Использовать библиотеку ICU</string>
     <string name="idepref_useIcu_summary">Использовать библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
-    <string name="create_auto_layout">Автоматически создать файл макета</string>
+    <string name="create_auto_layout">Создать файл макета автоматически</string>
 
     <!--The text sorrounded with '@@' is spanned as clickable.-->
     <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
