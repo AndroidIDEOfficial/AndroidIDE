@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.android.aaptcompiler.ResourceTable
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
@@ -35,7 +36,9 @@ import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERM
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
+import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import java.io.File
 
@@ -242,7 +245,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    */
   fun readResources() {
     // Read resources in parallel
-    val platformDir = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
+    val platformDir = getPlatformDir()
     val threads = mutableListOf<Thread>()
     threads.add(
       Thread {
@@ -279,4 +282,64 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       thread.join()
     }
   }
+
+  /**
+   * Get the [ApiVersions] instance for this module.
+   *
+   * @return The [ApiVersions] for this module.
+   */
+  fun getApiVersions(): ApiVersions? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return ApiVersionsRegistry.getInstance().forPlatformDir(platformDir)
+    }
+
+    return null
+  }
+
+  /**
+   * Get the [WidgetTable] instance for this module.
+   *
+   * @return The [WidgetTable] for this module.
+   */
+  fun getWidgetTable(): WidgetTable? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return WidgetTableRegistry.getInstance().forPlatformDir(platformDir)
+    }
+
+    return null
+  }
+  
+  /**
+   * Get the [ResourceTable] instance for this module's compile SDK.
+   *
+   * @return The [ApiVersions] for this module.
+   */
+  fun getFrameworkResourceTable(): ResourceTable? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
+    }
+    
+    return null
+  }
+  
+  /**
+   * Get the resource tables for this module as well as it's dependent modules.
+   *
+   * @return The set of resource tables. Empty when project is not initalized.
+   */
+  fun getSourceResourceTables(): Set<ResourceTable> {
+    val set = mutableSetOf<ResourceTable>()
+    getResourceDirectories().forEach {
+      val table = ResourceTableRegistry.getInstance().forResourceDir(it)
+      if (table != null) {
+        set.add(table)
+      }
+    }
+    return set
+  }
+
+  private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }
