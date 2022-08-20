@@ -27,14 +27,14 @@ import org.jetbrains.annotations.Nullable;
  * @author Akash Yadav
  */
 public interface Lookup {
-  
+
   Lookup DEFAULT = DefaultLookup.INSTANCE;
-  
+
   /**
    * Register the service for the given class.
    *
    * @param klass The class to register the service for.
-   * @param instance The implementation of teh service.
+   * @param instance The implementation of the service.
    * @param <T> The type of service.
    */
   <T> void register(Class<T> klass, T instance);
@@ -56,4 +56,40 @@ public interface Lookup {
    */
   @Nullable
   <T> T lookup(Class<T> klass);
+
+  /**
+   * Register the service for the given key.
+   *
+   * @param key The class to register the service for.
+   * @param instance The implementation of the service.
+   * @param <T> The type of service.
+   */
+  <T> void register(Key<T> key, T instance);
+
+  /**
+   * Unregister the service for given key.
+   *
+   * @param key The key of service to unregister.
+   * @param <T> The type of service.
+   */
+  <T> void unregister(Key<T> key);
+
+  /**
+   * Lookup the service for the given key.
+   *
+   * @param key The key of the service to look for.
+   * @param <T> The type of service.
+   * @return The instance of the registered service or <code>null</code>.
+   */
+  @Nullable
+  <T> T lookup(Key<T> key);
+
+  /**
+   * The key that is used to register services in the table.
+   *
+   * @param <T> The type of the service.
+   */
+  class Key<T> {
+    // we inherit identity equality from Object
+  }
 }
