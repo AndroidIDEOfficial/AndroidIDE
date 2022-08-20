@@ -19,18 +19,12 @@ package com.itsaky.androidide.app;
 
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
-import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
-import com.itsaky.androidide.lsp.java.JavaLanguageServer;
-import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.apiinfo.ApiInfo;
@@ -44,7 +38,6 @@ import com.itsaky.widgets.WidgetInfo;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -111,7 +104,7 @@ public class StudioApp extends BaseApplication {
           return sdkInfo;
         });
   }
-  
+
   public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
       ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
 
@@ -135,11 +128,7 @@ public class StudioApp extends BaseApplication {
   public IResourceTable getResourceTable() {
     return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
   }
-
-  public ApiInfo apiInfo() {
-    return sdkInfo.getApiInfo();
-  }
-
+  
   public AttrInfo attrInfo() {
     return sdkInfo.getAttrInfo();
   }

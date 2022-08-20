@@ -250,7 +250,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     threads.add(
       Thread {
         getFrameworkResourceTable()
-        getSourceResourceTables()
+        getResourceTable()
       }
     )
     threads.add(Thread(this::getApiVersions))
@@ -293,6 +293,16 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     return null
   }
 
+  /** Get the resource table for this module i.e. without resource tables for dependent modules. */
+  fun getResourceTable(): ResourceTable? {
+    val resDir = mainSourceSet?.sourceProvider?.resDirectories?.firstOrNull() ?: return null
+    val table = ResourceTableRegistry.getInstance().forResourceDir(resDir)
+    if (table != null) {
+      table.packages.firstOrNull()?.name = packageName
+    }
+    return table
+  }
+
   /**
    * Get the [ResourceTable] instance for this module's compile SDK.
    *
@@ -301,7 +311,9 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   fun getFrameworkResourceTable(): ResourceTable? {
     val platformDir = getPlatformDir()
     if (platformDir != null) {
-      return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
+      val table = ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
+      table?.findPackage("")?.name = "android"
+      return table
     }
 
     return null
