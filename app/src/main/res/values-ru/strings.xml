@@ -354,4 +354,6 @@
     <string name="err_authority_not_allowed">Полномочия \'%s\' не разрешены</string>
     <string name="idepref_useIcu_title">Использовать библиотеку ICU</string>
     <string name="idepref_useIcu_summary">Использовать библиотеку ICU, чтобы повторно использовать края слов для выбора слова двойным касанием и длительным нажатием.</string>
+
+    <string name="create_auto_layout">Автоматически создать файл макета</string>
 </resources>
