@@ -35,7 +35,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     XMLLSPTest.initProjectIfNeeded()
   }
 
-  @Test
+  @Test // prefix: 's'
   fun `attributes from superclasses must be included`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsFromSuperclass")
@@ -47,7 +47,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     }
   }
 
-  @Test
+  @Test // prefix: 'l'
   fun `attributes from parent's layout params must be included`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsFromLayoutParams")
@@ -61,7 +61,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     }
   }
 
-  @Test
+  @Test // prefix: 'l'
   fun `attributes from parent's margin layout params must be included`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsFromLayoutParams")
@@ -82,7 +82,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     }
   }
   
-  @Test
+  @Test // prefix: 'android:l'
   fun `attributes must be completed when namespace is specified as well`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsWithNamespace")
@@ -103,7 +103,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     }
   }
   
-  @Test
+  @Test // prefix: 'android:margin'
   fun `attributes must be completed with a partial prefix`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsWithPartialName")

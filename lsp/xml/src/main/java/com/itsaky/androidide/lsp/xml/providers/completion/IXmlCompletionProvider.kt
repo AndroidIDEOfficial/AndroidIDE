@@ -141,20 +141,56 @@ abstract class IXmlCompletionProvider {
   /**
    * Create a completion item for an attribute's value.
    *
-   * @param attrName The attribute name.
-   * @param value The attribute value.
+   * @param pck The package of the attribute.
+   * @param type The type of the value. For example: color, anim, layout, etc.
+   * @param name The attribute value.
    * @param matchLevel The match level.
    */
   protected open fun createAttrValueCompletionItem(
-    attrName: String,
-    value: String,
+    pck: String = "",
+    type: String,
+    name: String,
+    matchLevel: MatchLevel
+  ): CompletionItem {
+    val sb = StringBuilder()
+    sb.append("@")
+    if (pck.isNotBlank()) {
+      sb.append(pck)
+      sb.append(":")
+    }
+    sb.append(type)
+    sb.append("/")
+    sb.append(name)
+
+    val text = sb.toString()
+    return CompletionItem().apply {
+      this.label = text
+      this.detail = "From package '$pck'"
+      this.kind = VALUE
+      this.sortText = text
+      this.insertText = text
+      this.matchLevel = matchLevel
+    }
+  }
+  
+  /**
+   * Create a completion item for an attribute's value.
+   *
+   * @param pck The package of the attribute.
+   * @param name The name of the enum or flag value.
+   * @param matchLevel The match level.
+   */
+  protected open fun createEnumOrFlagCompletionItem(
+    pck: String = "",
+    name: String,
     matchLevel: MatchLevel
   ): CompletionItem {
     return CompletionItem().apply {
-      this.label = value
-      this.detail = "Value for '$attrName'"
+      this.label = name
+      this.detail = "From package '$pck'"
       this.kind = VALUE
-      this.sortText = label.toString()
+      this.sortText = name
+      this.insertText = name
       this.matchLevel = matchLevel
     }
   }

@@ -17,10 +17,20 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
+import com.android.aapt.Resources.Attribute.FormatFlags
+import com.android.aapt.Resources.Attribute.FormatFlags.BOOLEAN
+import com.android.aapt.Resources.Attribute.FormatFlags.DIMENSION
+import com.android.aapt.Resources.Attribute.FormatFlags.ENUM
+import com.android.aapt.Resources.Attribute.FormatFlags.FLAGS
+import com.android.aapt.Resources.Attribute.FormatFlags.INTEGER
+import com.android.aapt.Resources.Attribute.FormatFlags.STRING
+import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ATTR
+import com.android.aaptcompiler.AaptResourceType.UNKNOWN
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourcePathData
+import com.itsaky.androidide.aapt.findEntries
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
@@ -30,7 +40,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -58,7 +68,7 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
         }
 
     val attrs =
-      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
+      Lookup.DEFAULT.lookup(COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
         ?.findPackage("android")
         ?.findGroup(ATTR)
         ?: run {
@@ -78,16 +88,81 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
     }
 
     val list = mutableListOf<CompletionItem>()
-    for (symbol in entry.symbols) {
-      val entryName = symbol.symbol.name.entry!!
-      val matchLevel = matchLevel(entryName, prefix)
-      if (matchLevel == NO_MATCH && prefix.isNotEmpty()) {
-        continue
+
+    if (entry.hasType(FormatFlags.REFERENCE)) {
+      for (value in AaptResourceType.values()) {
+        if (value == UNKNOWN) {
+          continue
+        }
+
+        addValues("android", value, prefix, list)
+      }
+    } else {
+      if (entry.hasType(STRING)) {
+        addValues("android", type = AaptResourceType.STRING, prefix = prefix, result = list)
       }
 
-      list.add(createAttrValueCompletionItem(attrName, entryName, matchLevel))
+      if (entry.hasType(INTEGER)) {
+        addValues("android", type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+      }
+
+      if (entry.hasType(BOOLEAN)) {
+        addValues("android", type = AaptResourceType.BOOL, prefix = prefix, result = list)
+      }
+
+      if (entry.hasType(DIMENSION)) {
+        addValues("android", type = AaptResourceType.DIMEN, prefix = prefix, result = list)
+      }
+
+      if (entry.hasType(INTEGER)) {
+        addValues("android", type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+      }
+
+      if (entry.hasType(ENUM) || entry.hasType(FLAGS)) {
+        for (symbol in entry.symbols) {
+          val matchLevel = matchLevel(symbol.symbol.name.entry!!, prefix)
+          if (matchLevel == NO_MATCH && prefix.isNotEmpty()) {
+            continue
+          }
+
+          list.add(
+            createEnumOrFlagCompletionItem(
+              pck = "android",
+              name = symbol.symbol.name.entry!!,
+              matchLevel
+            )
+          )
+        }
+      }
     }
 
     return CompletionResult(list)
+  }
+
+  private fun addValues(
+    pck: String,
+    type: AaptResourceType,
+    prefix: String,
+    result: MutableList<CompletionItem>
+  ) {
+    val resources = Lookup.DEFAULT.lookup(COMPLETION_FRAMEWORK_RES_LOOKUP_KEY) ?: return
+    val colors =
+      resources.findPackage(pck)?.findGroup(type)?.findEntries {
+        matchLevel(it, prefix) != NO_MATCH
+      }
+        ?: return
+    colors.forEach {
+      result.add(
+        createAttrValueCompletionItem(pck, type.tagName, it.name, matchLevel(it.name, prefix))
+      )
+    }
+  }
+
+  private fun AttributeResource.hasType(check: FormatFlags): Boolean {
+    return hasType(check.number)
+  }
+
+  private fun AttributeResource.hasType(check: Int): Boolean {
+    return this.typeMask and check != 0
   }
 }
