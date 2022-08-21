@@ -17,6 +17,11 @@
 
 package com.itsaky.androidide.lsp.xml.providers
 
+import com.android.aaptcompiler.AaptResourceType.STYLEABLE
+import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.Reference
+import com.android.aaptcompiler.ResourceGroup
+import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.AbstractServiceProvider
 import com.itsaky.androidide.lsp.api.ICompletionProvider
@@ -42,9 +47,9 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import com.itsaky.attrinfo.models.Attr
 import com.itsaky.sdk.SDKInfo
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
@@ -60,7 +65,9 @@ import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
  *
  * @author Akash Yadav
  */
-class XmlCompletionProvider @JvmOverloads constructor(private val sdkInfo: SDKInfo? = null, settings: IServerSettings) :
+class XmlCompletionProvider
+@JvmOverloads
+constructor(private val sdkInfo: SDKInfo? = null, settings: IServerSettings) :
   AbstractServiceProvider(), ICompletionProvider {
 
   init {
@@ -153,22 +160,69 @@ class XmlCompletionProvider @JvmOverloads constructor(private val sdkInfo: SDKIn
   }
 
   private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
-    if (sdkInfo == null) {
+    val node = document.findNodeAt(position.requireIndex())
+    val styleables =
+      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
+        ?.findPackage("android")
+        ?.findGroup(STYLEABLE)
+        ?: run {
+          log.debug("Cannot find styles in framework resources")
+          return EMPTY
+        }
+
+    val nodeStyleables = findNodeStyleables(node.nodeName, styleables)
+    if (nodeStyleables.isEmpty()) {
       return EMPTY
     }
 
-    val attr = document.findAttrAt(position.requireIndex())
     val list = mutableListOf<CompletionItem>()
-    for (attribute in sdkInfo.attrInfo.attributes.values) {
-      val matchLevel = matchLevel(attribute.name, attr.name)
-      if (matchLevel == NO_MATCH) {
-        continue
+    val attr = document.findAttrAt(position.requireIndex())
+    for (nodeStyleable in nodeStyleables) {
+      for (ref in nodeStyleable.entries) {
+        val matchLevel = matchLevel(ref.name.entry, attr.name)
+        if (matchLevel == NO_MATCH) {
+          continue
+        }
+        list.add(createAttrCompletionItem(ref, matchLevel))
       }
-
-      list.add(createAttrCompletionItem(attribute, matchLevel))
     }
 
     return CompletionResult(list)
+  }
+
+  private fun findNodeStyleables(nodeName: String, styleables: ResourceGroup): Set<Styleable> {
+    val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
+    val result = mutableSetOf<Styleable>()
+
+    // Find the widget
+    val widget =
+      if (nodeName.contains(".")) {
+        widgets.getWidget(nodeName)
+      } else {
+        widgets.findWidgetWithSimpleName(nodeName)
+      }
+        ?: return emptySet()
+
+    // Find the <declare-styleable> for the widget in the resource group
+    val entry =
+      styleables.findEntry(widget.simpleName)?.findValue(ConfigDescription())?.value
+        ?: return emptySet()
+    if (entry is Styleable) {
+      result.add(entry)
+    }
+
+    // Find styleables for all the superclasses
+    for (superclass in widget.superclasses) {
+      val superr = widgets.getWidget(superclass) ?: continue
+      val superEntry =
+        styleables.findEntry(superr.simpleName)?.findValue(ConfigDescription())?.value
+          ?: return emptySet()
+      if (superEntry is Styleable) {
+        result.add(superEntry)
+      }
+    }
+
+    return result
   }
 
   private fun completeAttributeValue(
@@ -216,12 +270,17 @@ class XmlCompletionProvider @JvmOverloads constructor(private val sdkInfo: SDKIn
       this.data = CompletionData().apply { className = widget.qualifiedName }
     }
 
-  private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
+  private fun createAttrCompletionItem(attr: Reference, matchLevel: MatchLevel): CompletionItem =
     CompletionItem().apply {
-      this.label = attr.name
+      var pck = attr.name.pck
+      if (pck == null || pck.isBlank()) {
+        pck = "android"
+      }
+
+      this.label = attr.name.entry!!
       this.kind = FIELD
-      this.detail = "From package '${attr.namespace.packageName}'"
-      this.insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
+      this.detail = "From package '$pck'"
+      this.insertText = "$pck:${attr.name.entry!!}=\"$0\""
       this.insertTextFormat = SNIPPET
       this.sortText = label.toString()
       this.matchLevel = matchLevel
