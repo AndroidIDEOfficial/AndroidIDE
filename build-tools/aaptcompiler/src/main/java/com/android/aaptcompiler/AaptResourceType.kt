@@ -1,7 +1,5 @@
 package com.android.aaptcompiler
 
-import com.android.aaptcompiler.android.ResTableConfig
-
 private const val ANIM_TAG = "anim"
 private const val ANIMATOR_TAG = "animator"
 private const val ARRAY_TAG = "array"
@@ -31,7 +29,7 @@ private const val TRANSITION_TAG = "transition"
 private const val XML_TAG = "xml"
 
 fun resourceTypeFromTag(tag: String) =
-  when(tag) {
+  when (tag) {
     ANIM_TAG -> AaptResourceType.ANIM
     ANIMATOR_TAG -> AaptResourceType.ANIMATOR
     ARRAY_TAG -> AaptResourceType.ARRAY
