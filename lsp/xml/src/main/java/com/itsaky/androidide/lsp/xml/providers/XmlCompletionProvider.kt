@@ -34,8 +34,12 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
+import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.xml.INamespace
+import io.github.rosemoe.sora.text.ContentReference
+import java.io.IOException
+import java.io.Reader
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
@@ -64,7 +68,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
 
   private fun doComplete(params: CompletionParams): CompletionResult {
     val namespace = INamespace.ANDROID
-    val contents = params.requireContents().toString()
+    val contents = toString(contents = params.requireContents())
     val document =
       DOMParser.getInstance().parse(contents, namespace.uri, URIResolverExtensionManager())
     val type = XmlUtils.getNodeType(document, params.position.requireIndex())
@@ -88,6 +92,24 @@ class XmlCompletionProvider(settings: IServerSettings) :
 
     return completer.complete(params, pathData, document, type, prefix)
   }
+
+  private fun toString(contents: CharSequence): String {
+    val reader = getReader(contents)
+    val text = reader.readText()
+    try {
+      reader.close()
+    } catch (e: IOException) {
+      log.warn("Unable to close char sequence reader", e)
+    }
+    return text
+  }
+
+  private fun getReader(contents: CharSequence): Reader =
+    if (contents is ContentReference) {
+      contents.createReader()
+    } else {
+      CharSequenceReader(contents)
+    }
 
   private fun getCompleter(pathData: ResourcePathData, type: NodeType): IXmlCompletionProvider? {
     return when (pathData.type) {

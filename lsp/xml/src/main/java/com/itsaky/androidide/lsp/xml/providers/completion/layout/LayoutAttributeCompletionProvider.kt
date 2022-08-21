@@ -32,8 +32,10 @@ import com.itsaky.androidide.lsp.xml.providers.completion.AttributeCompletionPro
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.eclipse.lemminx.dom.DOMDocument
+import org.eclipse.lemminx.dom.DOMNode
 
 /**
  * Provides attribute completions in layout files.
@@ -61,7 +63,7 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
           return CompletionResult.EMPTY
         }
 
-    val nodeStyleables = findNodeStyleables(node.nodeName, styleables)
+    val nodeStyleables = findNodeStyleables(node, styleables)
     if (nodeStyleables.isEmpty()) {
       return CompletionResult.EMPTY
     }
@@ -81,7 +83,8 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     return CompletionResult(list)
   }
 
-  private fun findNodeStyleables(nodeName: String, styleables: ResourceGroup): Set<Styleable> {
+  private fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
+    val nodeName = node.nodeName
     val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
     val result = mutableSetOf<Styleable>()
 
@@ -95,21 +98,63 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
         ?: return emptySet()
 
     // Find the <declare-styleable> for the widget in the resource group
-    val entry = styleables.findEntry(widget.simpleName)?.findValue(ConfigDescription())?.value
-    if (entry != null && entry is Styleable) {
-      result.add(entry)
-    }
+    addWidgetStyleable(styleables, widget, result)
 
     // Find styleables for all the superclasses
-    for (superclass in widget.superclasses) {
-      val superr = widgets.getWidget(superclass) ?: continue
-      val superEntry =
-        styleables.findEntry(superr.simpleName)?.findValue(ConfigDescription())?.value
-      if (superEntry != null && superEntry is Styleable) {
-        result.add(superEntry)
+    addSuperclassStyleables(styleables, widgets, widget, result)
+
+    if (node.parentNode != null) {
+      val parentName = node.parentNode.nodeName
+      val parentWidget =
+        if (parentName.contains(".")) {
+          widgets.getWidget(parentName)
+        } else {
+          widgets.findWidgetWithSimpleName(parentName)
+        }
+
+      if (parentWidget != null) {
+        addWidgetStyleable(styleables, parentWidget, result, "_Layout")
+        addSuperclassStyleables(styleables, widgets, parentWidget, result, "_Layout")
       }
     }
 
     return result
+  }
+
+  private fun addWidgetStyleable(
+    styleables: ResourceGroup,
+    widget: Widget,
+    result: MutableSet<Styleable>,
+    suffix: String = ""
+  ) {
+    val entry = findStyleableEntry(styleables, "${widget.simpleName}$suffix")
+    if (entry != null) {
+      result.add(entry)
+    }
+  }
+
+  private fun addSuperclassStyleables(
+    styleables: ResourceGroup,
+    widgets: WidgetTable,
+    widget: Widget,
+    result: MutableSet<Styleable>,
+    suffix: String = ""
+  ) {
+    for (superclass in widget.superclasses) {
+      val superr = widgets.getWidget(superclass) ?: continue
+      val superEntry = findStyleableEntry(styleables, "${superr.simpleName}$suffix")
+      if (superEntry != null) {
+        result.add(superEntry)
+      }
+    }
+  }
+
+  private fun findStyleableEntry(styleables: ResourceGroup, simpleName: String): Styleable? {
+    val value = styleables.findEntry(simpleName)?.findValue(ConfigDescription())?.value
+    if (value !is Styleable) {
+      return null
+    }
+
+    return value
   }
 }
