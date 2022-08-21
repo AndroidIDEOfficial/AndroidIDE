@@ -44,8 +44,8 @@ fun findAndroidHome(): String {
     return androidHome
   }
 
-  val os = System.getProperty("os.name")
-  val home = System.getProperty("user.home")
+  val os = System.getProperty("os.name")!!
+  val home = System.getProperty("user.home")!!
   return if (os.contains("Linux")) {
     "$home/Android/Sdk"
   } else {
