@@ -27,14 +27,14 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultVariant
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
+import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
+import com.itsaky.androidide.tooling.api.model.util.extractPackageName
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.CompletableFuture
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Default implementation of [AndroidProject].
@@ -85,8 +85,6 @@ open class AndroidModule(
 
   @Suppress("unused")
   companion object {
-
-    const val UNKNOWN_PACKAGE = "com.itsaky.androidide.unknown_package"
     const val ANDROID_NAMESPACE = "http://schemas.android.com/res/android"
 
     //  Injectable properties to use with -P
@@ -201,20 +199,7 @@ open class AndroidModule(
       return
     }
 
-    val content = manifestFile.readText()
-    val document =
-      DOMParser.getInstance().parse(content, ANDROID_NAMESPACE, URIResolverExtensionManager())
-    val manifest = document.children.first { it.nodeName == "manifest" }
-    if (manifest == null) {
-      shouldLookupPackage = false
-      return
-    }
-
-    val packageAttr = manifest.attributes.getNamedItem("package")
-    if (packageAttr != null) {
-      this.packageName = packageAttr.nodeValue
-    }
-
+    this.packageName = extractPackageName(manifestFile) ?: UNKNOWN_PACKAGE
     this.shouldLookupPackage = false
   }
 

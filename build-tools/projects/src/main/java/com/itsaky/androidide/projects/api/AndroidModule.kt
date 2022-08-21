@@ -251,6 +251,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       Thread {
         getFrameworkResourceTable()
         getResourceTable()
+        getDependencyResourceTables()
       }
     )
     threads.add(Thread(this::getApiVersions))
@@ -333,6 +334,17 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
       }
     }
     return set
+  }
+
+  /** Get the resource tables for external dependencies (not local module project dependencies). */
+  fun getDependencyResourceTables(): Set<ResourceTable> {
+    val result = mutableSetOf<ResourceTable>()
+    libraryMap.values
+      .filter { it.type == ANDROID_LIBRARY && it.androidLibraryData!!.resFolder.exists() }
+      .forEach {
+        ResourceTableRegistry.getInstance().forResourceDir(it.androidLibraryData!!.resFolder)
+      }
+    return result
   }
 
   private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
