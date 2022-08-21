@@ -23,6 +23,7 @@ import com.android.aapt.Resources.Attribute.FormatFlags.DIMENSION
 import com.android.aapt.Resources.Attribute.FormatFlags.ENUM
 import com.android.aapt.Resources.Attribute.FormatFlags.FLAGS
 import com.android.aapt.Resources.Attribute.FormatFlags.INTEGER
+import com.android.aapt.Resources.Attribute.FormatFlags.REFERENCE_VALUE
 import com.android.aapt.Resources.Attribute.FormatFlags.STRING
 import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ATTR
@@ -89,7 +90,7 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
 
     val list = mutableListOf<CompletionItem>()
 
-    if (entry.hasType(FormatFlags.REFERENCE)) {
+    if (entry.typeMask == REFERENCE_VALUE) {
       for (value in AaptResourceType.values()) {
         if (value == UNKNOWN) {
           continue
@@ -98,6 +99,7 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
         addValues("android", value, prefix, list)
       }
     } else {
+      // Check for specific attribute formats
       if (entry.hasType(STRING)) {
         addValues("android", type = AaptResourceType.STRING, prefix = prefix, result = list)
       }

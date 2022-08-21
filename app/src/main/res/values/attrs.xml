@@ -17,7 +17,7 @@
 
 <resources>
   <declare-styleable name="Test">
-    <attr name="testAttr" format="color"/>
+    <attr name="testAttr" format="dimension|reference"/>
     <attr name="testRef" format="reference"/>
   </declare-styleable>
 </resources>
