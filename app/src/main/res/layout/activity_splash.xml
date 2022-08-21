@@ -20,6 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="32dp"
+        android:textAlignment="center"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/secondaryTextColor" />
 
