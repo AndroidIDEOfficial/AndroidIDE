@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "advanced-xml-registry" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch: {}
