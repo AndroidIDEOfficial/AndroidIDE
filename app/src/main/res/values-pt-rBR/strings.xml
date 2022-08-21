@@ -98,15 +98,22 @@
 
     <!-- Templates -->
     <string name="template_basic">Projeto Básico</string>
-    <string name="template_description_basic">Um projeto básico com AppCompat Toolbar e um botão de ação flutuante</string>
-    <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão.  Adequado quando você quer fazer todas as coisas básicas sozinho.</string>
-    <string name="template_description_navigation_drawer">Projeto com barra de ferramentas AppCompat, DrawerLayout e NavigationView</string>
+    <string name="template_description_basic">Um projeto básico com AppCompat Toolbar e um Botão de Ação Flutuante (FAB)</string>
+    <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão. Adequado quando você mesmo quer fazer todas as coisas básicas.</string>
+    <string name="template_description_navigation_drawer">Projeto com AppCompat Toolbar, DrawerLayout e NavigationView</string>
     <string name="template_empty">Projeto vazio</string>
-    <string name="template_navigation_drawer">Projeto navigation drawer</string>
+    <string name="template_navigation_drawer">Projeto com Drawer Navigation</string>
     <string name="template_libgdx">Jogo LibGDX</string>
-    <string name="template_description_libgdx">Projeto de jogo LibGDX configurado para renderizar uma imagem como exemplo.</string>
-    <string name="template_cpp">C++ Nativo</string>
-    <string name="template_cpp_description">Cria um novo projeto com uma atividade vazia configurada para usar JNI</string>
+    <string name="template_description_libgdx">Projeto de jogo LibGDX criado para renderizar uma imagem como exemplo.</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Projeto básico Jetpack Compose hello world.</string>
+    <string name="template_navigation_tabs">Activity Bottom Navigation</string>
+    <string name="template_navigation_tabs_description">Cria uma nova activity com bottom navigation</string>
+    <string name="template_tabs">Activity com abas</string>
+    <string name="template_tabs_description">Cria uma nova activity em branco com abas</string>
+    <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
+    <string name="template_cpp">C++ nativo</string>
+    <string name="template_cpp_description">Cria um novo projeto com uma Activity Vazia configurada para usar JNI</string>
 
     <!-- Files -->
     <string name="save">Salvar</string>
