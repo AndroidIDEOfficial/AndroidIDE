@@ -103,6 +103,7 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     // Find styleables for all the superclasses
     addSuperclassStyleables(styleables, widgets, widget, result)
 
+    // Add attributes provided by the layout params
     if (node.parentNode != null) {
       val parentName = node.parentNode.nodeName
       val parentWidget =
@@ -141,6 +142,15 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     suffix: String = ""
   ) {
     for (superclass in widget.superclasses) {
+
+      // When a ViewGroup is encountered in the superclasses, add the margin layout params
+      if ("android.view.ViewGroup" == superclass) {
+        val marginEntry = findStyleableEntry(styleables, "ViewGroup_MarginLayout")
+        if (marginEntry != null) {
+          result.add(marginEntry)
+        }
+      }
+
       val superr = widgets.getWidget(superclass) ?: continue
       val superEntry = findStyleableEntry(styleables, "${superr.simpleName}$suffix")
       if (superEntry != null) {

@@ -29,15 +29,16 @@ import org.robolectric.RobolectricTestRunner
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelperImpl() {
-  
+
   @Before
-  fun setup () {
+  fun setup() {
     XMLLSPTest.initProjectIfNeeded()
   }
-  
+
   @Test
   fun `attributes from superclasses must be included`() {
-    XMLLSPTest.apply { openFile("../res/layout/TestAttrsFromSuperclass")
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsFromSuperclass")
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
@@ -45,17 +46,39 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(items).contains("scrollbars") // from View
     }
   }
-  
+
   @Test
   fun `attributes from parent's layout params must be included`() {
-    XMLLSPTest.apply { openFile("../res/layout/TestAttrsFromLayoutParams")
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsFromLayoutParams")
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
       assertThat(items).contains("lines") // From TextView
-      assertThat(items).contains("layout_gravity") // from LinearLayout
-      assertThat(items).contains("layout_weight") // from LinearLayout
-      assertThat(items).contains("layout_width") // from ViewGroup
+      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
+    }
+  }
+
+  @Test
+  fun `attributes from parent's margin layout params must be included`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsFromLayoutParams")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("lines") // From TextView
+      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
+      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
 }
