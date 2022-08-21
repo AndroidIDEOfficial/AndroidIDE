@@ -187,8 +187,9 @@
     <!-- Code Editor -->
     <string name="undo">Desfazer</string>
     <string name="redo">Refazer</string>
+ 
     <item name="copy" type="string" tools:override="true">Copiar</item>
-    <item name="text_to_search" type="string">Texto para Pesquisar</item>
+    <item name="text_to_search" type="string">Texto para pesquisar</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Tamanho da fonte do editor</string>
