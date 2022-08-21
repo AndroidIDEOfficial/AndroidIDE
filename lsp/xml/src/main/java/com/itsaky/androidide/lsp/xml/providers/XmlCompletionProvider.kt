@@ -28,7 +28,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
@@ -124,7 +124,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (type) {
       TAG -> LayoutTagCompletionProvider()
       ATTRIBUTE -> LayoutAttributeCompletionProvider()
-      ATTRIBUTE_VALUE -> LayoutAttributeValueCompletionProvider()
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider()
       else -> null
     }
   }

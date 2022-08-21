@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.layout
+package com.itsaky.androidide.lsp.xml.providers.completion.common
 
 import com.android.aapt.Resources.Attribute.FormatFlags
 import com.android.aapt.Resources.Attribute.FormatFlags.BOOLEAN
@@ -40,7 +40,9 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY
 import org.eclipse.lemminx.dom.DOMDocument
@@ -50,9 +52,13 @@ import org.eclipse.lemminx.dom.DOMDocument
  *
  * @author Akash Yadav
  */
-class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
+class AttrValueCompletionProvider : IXmlCompletionProvider() {
 
   private val log = ILogger.newInstance("AttributeValueCompletions")
+
+  override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
+    return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
+  }
 
   override fun doComplete(
     params: CompletionParams,
@@ -108,7 +114,7 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
       if (entry.hasType(INTEGER)) {
         addValues("android", type = AaptResourceType.INTEGER, prefix = prefix, result = list)
       }
-  
+
       if (entry.hasType(COLOR)) {
         addValues("android", type = AaptResourceType.COLOR, prefix = prefix, result = list)
       }
