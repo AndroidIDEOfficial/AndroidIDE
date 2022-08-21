@@ -95,7 +95,7 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
       } else {
         widgets.findWidgetWithSimpleName(nodeName)
       }
-        ?: return emptySet()
+        ?: widgets.getWidget("android.view.View")!!
 
     // Find the <declare-styleable> for the widget in the resource group
     addWidgetStyleable(styleables, widget, result)
