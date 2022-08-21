@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
 import com.android.aapt.Resources.Attribute.FormatFlags
 import com.android.aapt.Resources.Attribute.FormatFlags.BOOLEAN
+import com.android.aapt.Resources.Attribute.FormatFlags.COLOR
 import com.android.aapt.Resources.Attribute.FormatFlags.DIMENSION
 import com.android.aapt.Resources.Attribute.FormatFlags.ENUM
 import com.android.aapt.Resources.Attribute.FormatFlags.FLAGS
@@ -106,6 +107,10 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
 
       if (entry.hasType(INTEGER)) {
         addValues("android", type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+      }
+  
+      if (entry.hasType(COLOR)) {
+        addValues("android", type = AaptResourceType.COLOR, prefix = prefix, result = list)
       }
 
       if (entry.hasType(BOOLEAN)) {

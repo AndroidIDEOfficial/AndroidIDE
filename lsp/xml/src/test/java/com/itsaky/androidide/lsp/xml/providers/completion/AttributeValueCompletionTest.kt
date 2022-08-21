@@ -17,6 +17,14 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
+import com.android.aaptcompiler.AaptResourceType
+import com.android.aaptcompiler.AaptResourceType.ANIM
+import com.android.aaptcompiler.AaptResourceType.BOOL
+import com.android.aaptcompiler.AaptResourceType.DIMEN
+import com.android.aaptcompiler.AaptResourceType.INTEGER
+import com.android.aaptcompiler.AaptResourceType.LAYOUT
+import com.android.aaptcompiler.AaptResourceType.MENU
+import com.android.aaptcompiler.AaptResourceType.STRING
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.xml.CompletionHelper
 import com.itsaky.androidide.lsp.xml.CompletionHelperImpl
@@ -42,10 +50,26 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
 
       val (isIncomplete, items) = complete()
 
-      assertThat(isIncomplete).isFalse()
+      assertThat(isIncomplete).isTrue()
       assertThat(items).isNotEmpty()
+
+      // Check if all the expected color values are present
+      assertThat(items)
+        .containsAtLeast(
+          "@android:color/Blue_700",
+          "@android:color/Blue_800",
+          "@android:color/Teal_700",
+          "@android:color/background_dark",
+          "@android:color/background_light",
+          "@android:color/black",
+          "@android:color/Red_700",
+          "@android:color/Purple_700"
+        )
       
-      assertThat(items).containsAtLeast("@android:color/transparent", "@android:attr/transition")
+      // Check that we do not have any other type of values
+      for (type in setOf(STRING, INTEGER, BOOL, DIMEN, INTEGER, MENU)) {
+        assertThat(items.firstOrNull { it.contains(type.tagName) }).isNull()
+      }
     }
   }
 }
