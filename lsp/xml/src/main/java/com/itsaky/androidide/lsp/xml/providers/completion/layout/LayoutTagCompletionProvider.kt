@@ -29,8 +29,8 @@ import com.itsaky.androidide.lsp.xml.providers.completion.TagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import kotlin.math.max
 import org.eclipse.lemminx.dom.DOMDocument
+import kotlin.math.max
 
 /**
  * [TagCompletionProvider] implementation for providing completing tags in an XML layout file.
@@ -50,14 +50,21 @@ class LayoutTagCompletionProvider : LayoutCompletionProvider() {
     type: NodeType,
     prefix: String
   ): CompletionResult {
+    val newPrefix =
+      if (prefix.startsWith("<")) {
+        prefix.substring(1)
+      } else {
+        prefix
+      }
+
     val widgets =
       Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY)?.getAllWidgets()
         ?: return CompletionResult.EMPTY
     val result = mutableListOf<CompletionItem>()
 
     for (widget in widgets) {
-      val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
-      val nameMatchLevel = matchLevel(widget.qualifiedName, prefix)
+      val simpleNameMatchLevel = matchLevel(widget.simpleName, newPrefix)
+      val nameMatchLevel = matchLevel(widget.qualifiedName, newPrefix)
       if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
         continue
       }
