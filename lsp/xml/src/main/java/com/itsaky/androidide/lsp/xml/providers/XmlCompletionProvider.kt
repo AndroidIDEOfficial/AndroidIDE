@@ -214,8 +214,7 @@ constructor(private val sdkInfo: SDKInfo? = null, settings: IServerSettings) :
       val superr = widgets.getWidget(superclass) ?: continue
       val superEntry =
         styleables.findEntry(superr.simpleName)?.findValue(ConfigDescription())?.value
-          ?: return emptySet()
-      if (superEntry is Styleable) {
+      if (superEntry != null && superEntry is Styleable) {
         result.add(superEntry)
       }
     }
