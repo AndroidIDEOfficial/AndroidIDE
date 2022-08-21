@@ -81,4 +81,25 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
+  
+  @Test
+  fun `attributes must be completed with namespace specified`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsWithNamespace")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("lines") // From TextView
+      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
+      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
+    }
+  }
 }

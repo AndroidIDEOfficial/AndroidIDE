@@ -67,12 +67,16 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     if (nodeStyleables.isEmpty()) {
       return CompletionResult.EMPTY
     }
-
+    
     val list = mutableListOf<CompletionItem>()
     val attr = document.findAttrAt(params.position.requireIndex())
+    val newPrefix =
+      if (attr.name.contains(':')) {
+        attr.name.substringAfterLast(':')
+      } else attr.name
     for (nodeStyleable in nodeStyleables) {
       for (ref in nodeStyleable.entries) {
-        val matchLevel = matchLevel(ref.name.entry!!, attr.name)
+        val matchLevel = matchLevel(ref.name.entry!!, newPrefix)
         if (matchLevel == NO_MATCH) {
           continue
         }
