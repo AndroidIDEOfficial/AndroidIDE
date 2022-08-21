@@ -36,7 +36,7 @@ import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
-const val MIN_MATCH_RATIO = 59
+const val MIN_MATCH_RATIO = 45
 
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
@@ -121,7 +121,7 @@ open class CompletionItem(
   var data: CompletionData?
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
-  
+
   var sortText: String? = sortText
     get() {
       if (field == null) {
@@ -285,6 +285,8 @@ open class CompletionItem(
     if (sortText != other.sortText) return false
     if (insertText != other.insertText) return false
     if (insertTextFormat != other.insertTextFormat) return false
+    if (additionalEditHandler != other.additionalEditHandler) return false
+    if (overrideTypeText != other.overrideTypeText) return false
 
     return true
   }
@@ -300,22 +302,13 @@ open class CompletionItem(
     result = 31 * result + (sortText?.hashCode() ?: 0)
     result = 31 * result + insertText.hashCode()
     result = 31 * result + insertTextFormat.hashCode()
+    result = 31 * result + (additionalEditHandler?.hashCode() ?: 0)
+    result = 31 * result + (overrideTypeText?.hashCode() ?: 0)
     return result
   }
 
   override fun toString(): String {
-    return "CompletionItem(" +
-      "label='$label', " +
-      "detail='$detail', " +
-      "command=$command, " +
-      "kind=$kind, " +
-      "matchLevel=$matchLevel, " +
-      "additionalTextEdits=$additionalTextEdits, " +
-      "data=$data, " +
-      "sortText=$sortText, " +
-      "insertText='$insertText', " +
-      "insertTextFormat=$insertTextFormat" +
-      ")"
+    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$sortText, insertText='$insertText', insertTextFormat=$insertTextFormat, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
 

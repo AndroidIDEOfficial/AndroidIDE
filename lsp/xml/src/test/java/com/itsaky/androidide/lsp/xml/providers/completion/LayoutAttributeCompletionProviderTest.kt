@@ -83,7 +83,7 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
   }
   
   @Test
-  fun `attributes must be completed with namespace specified`() {
+  fun `attributes must be completed when namespace is specified as well`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsWithNamespace")
       val (isIncomplete, items) = complete()
@@ -102,4 +102,22 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
+  
+  @Test
+  fun `attributes must be completed with a partial prefix`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsWithPartialName")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
+    }
+  }
+  
 }

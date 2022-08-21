@@ -79,12 +79,13 @@ class LayoutAttributeValueCompletionProvider : LayoutCompletionProvider() {
 
     val list = mutableListOf<CompletionItem>()
     for (symbol in entry.symbols) {
-      val matchLevel = matchLevel(symbol.symbol.name.entry!!, prefix)
+      val entryName = symbol.symbol.name.entry!!
+      val matchLevel = matchLevel(entryName, prefix)
       if (matchLevel == NO_MATCH && prefix.isNotEmpty()) {
         continue
       }
 
-      list.add(createAttrValueCompletionItem(attrName, symbol.symbol.name.entry!!, matchLevel))
+      list.add(createAttrValueCompletionItem(attrName, entryName, matchLevel))
     }
 
     return CompletionResult(list)

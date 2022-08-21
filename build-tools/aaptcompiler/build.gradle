@@ -58,12 +58,11 @@ dependencies {
     implementation project (':logger')
     implementation project (':build-tools:jaxp')
     
+    api aapt.annotations
     api aapt.common
+    api aapt.proto
+    api google.protobuf
     api project (':build-tools:layoutlib-api')
-    
-    implementation aapt.annotations
-    implementation aapt.proto
-    implementation google.protobuf
     
     testImplementation tests.junit
     testImplementation tests.robolectric
