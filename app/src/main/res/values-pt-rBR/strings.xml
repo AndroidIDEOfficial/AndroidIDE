@@ -348,4 +348,9 @@
     <string name="err_authority_not_allowed">Autoridade \'%s\' não permitida</string>
     <string name="idepref_useIcu_title">Use a biblioteca ICU</string>
     <string name="idepref_useIcu_summary">Use a biblioteca ICU para usar bordas de palavras de recuperação para seleção de palavras de toque duplo e pressionamento longo.</string>
+
+    <!--The text sorrounded with '@@' is spanned as clickable.-->
+    <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
+    <string name="msg_swipe_for_files">Deslize à esquerda para @@arquivos@@.</string>
+    <string name="msg_swipe_for_output">Deslize à cima para @@Saída de compilação@@.</string>
 </resources>
