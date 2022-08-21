@@ -204,10 +204,8 @@ constructor(private val sdkInfo: SDKInfo? = null, settings: IServerSettings) :
         ?: return emptySet()
 
     // Find the <declare-styleable> for the widget in the resource group
-    val entry =
-      styleables.findEntry(widget.simpleName)?.findValue(ConfigDescription())?.value
-        ?: return emptySet()
-    if (entry is Styleable) {
+    val entry = styleables.findEntry(widget.simpleName)?.findValue(ConfigDescription())?.value
+    if (entry != null && entry is Styleable) {
       result.add(entry)
     }
 
