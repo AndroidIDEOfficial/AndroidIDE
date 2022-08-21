@@ -28,10 +28,12 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.utils.CharSequenceReader
@@ -122,6 +124,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (type) {
       TAG -> LayoutTagCompletionProvider()
       ATTRIBUTE -> LayoutAttributeCompletionProvider()
+      ATTRIBUTE_VALUE -> LayoutAttributeValueCompletionProvider()
       else -> null
     }
   }
