@@ -15,10 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers
+package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.lsp.xml.CompletionHelper
+import com.itsaky.androidide.lsp.xml.CompletionHelperImpl
 import com.itsaky.androidide.lsp.xml.XMLLSPTest
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +28,7 @@ import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
-class XMLCompletionProviderTest {
+class XMLCompletionProviderTest : CompletionHelper by CompletionHelperImpl() {
 
   @Before
   fun setup() {
@@ -73,29 +74,6 @@ class XMLCompletionProviderTest {
       assertThat(items).isNotEmpty()
 
       assertThat(items).containsAtLeast("text", "textColor", "textAlignment", "textAllCaps")
-    }
-  }
-
-  private fun complete(): Pair<Boolean, List<String>> {
-    return XMLLSPTest.run {
-      val createCompletionParams = createCompletionParams()
-      val result = server.complete(createCompletionParams)
-      result.isIncomplete to
-        result.items
-          .filter { it.label != null }
-          .map { it.label.toString() }
-          .filter { it.isNotBlank() }
-          .toList()
-    }
-  }
-
-  private fun createCompletionParams(): CompletionParams {
-    return XMLLSPTest.run {
-      val cursor = cursorPosition(true)
-      val completionParams = CompletionParams(cursor, file!!)
-      completionParams.position.index = this.cursor
-      completionParams.content = contents
-      completionParams
     }
   }
 }
