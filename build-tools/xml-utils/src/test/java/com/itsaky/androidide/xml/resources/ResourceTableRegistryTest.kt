@@ -26,10 +26,10 @@ import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.findAndroidJar
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -46,19 +46,20 @@ class ResourceTableRegistryTest {
     val androidJar = findAndroidJar()
     val registry = ResourceTableRegistry.getInstance()
     val resDir = File(androidJar.parentFile, "data/res")
-    val resourceTable = registry.forResourceDir(resDir)
+    val resourceTable = registry.forPackage(ResourceTableRegistry.PCK_ANDROID, resDir)
 
     assertThat(resourceTable).isNotNull()
 
     // Should return same instance unless updated
-    assertThat(registry.forResourceDir(resDir)).isEqualTo(resourceTable)
+    assertThat(registry.forPackage(ResourceTableRegistry.PCK_ANDROID, resDir))
+      .isEqualTo(resourceTable)
 
     resourceTable.apply {
-      assertThat(this!!.packages).hasSize(1)
+      assertThat(this.packages).hasSize(1)
       this.packages.first().apply { assertThat(this.name).isEqualTo("") }
     }
 
-    resourceTable!!.findResource(ResourceName(pck = "", type = STRING, entry = "ok")).apply {
+    resourceTable.findResource(ResourceName(pck = "", type = STRING, entry = "ok")).apply {
       assertThat(this).isNotNull()
       assertThat(this!!.entry).isNotNull()
       assertThat(this.entry.values).isNotEmpty()

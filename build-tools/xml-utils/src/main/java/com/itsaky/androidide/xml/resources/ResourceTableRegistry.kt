@@ -31,7 +31,7 @@ import java.io.File
 interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
-
+    const val PCK_ANDROID = "android"
     @JvmStatic val COMPLETION_MODULE_RES_LOOKUP_KEY = Lookup.Key<Set<ResourceTable>>()
     @JvmStatic val COMPLETION_FRAMEWORK_RES_LOOKUP_KEY = Lookup.Key<ResourceTable>()
 
@@ -39,21 +39,20 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
   }
 
   /**
-   * Get the resource table for the given resource directory. Creates a resource table if not
-   * already created.
+   * Find the resource table by package name. Should not be used for platform resource tables.
    *
-   * @param dir The directory to create resource table for.
+   * @param name The package name for the resource table.
    */
-  fun forResourceDir(dir: File): ResourceTable?
+  fun forPackage(name: String, vararg dirs: File): ResourceTable
 
   /**
-   * Remove the resource table entry for the given resource directory.
+   * Remove the resource table entry for the given package name.
    *
-   * @param dir The resource directory to remove the resource table entry for.
+   * @param packageName The package name to remove the resource table entry for.
    */
-  fun removeTable(dir: File)
+  fun removeTable(packageName: String)
 
   override fun forPlatformDir(platform: File): ResourceTable? {
-    return forResourceDir(File(platform, "data/res"))
+    return forPackage(PCK_ANDROID, File(platform, "data/res"))
   }
 }

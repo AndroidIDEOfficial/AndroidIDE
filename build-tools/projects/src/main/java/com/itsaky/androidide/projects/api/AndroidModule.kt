@@ -28,6 +28,7 @@ import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
@@ -245,7 +246,6 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    */
   fun readResources() {
     // Read resources in parallel
-    val platformDir = getPlatformDir()
     val threads = mutableListOf<Thread>()
     threads.add(
       Thread {
@@ -296,12 +296,11 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   /** Get the resource table for this module i.e. without resource tables for dependent modules. */
   fun getResourceTable(): ResourceTable? {
-    val resDir = mainSourceSet?.sourceProvider?.resDirectories?.firstOrNull() ?: return null
-    val table = ResourceTableRegistry.getInstance().forResourceDir(resDir)
-    if (table != null) {
-      table.packages.firstOrNull()?.name = packageName
+    if (this.packageName == UNKNOWN_PACKAGE) {
+      return null
     }
-    return table
+    val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
+    return ResourceTableRegistry.getInstance().forPackage(this.packageName, *resDirs.toTypedArray())
   }
 
   /**
@@ -312,9 +311,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   fun getFrameworkResourceTable(): ResourceTable? {
     val platformDir = getPlatformDir()
     if (platformDir != null) {
-      val table = ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
-      table?.findPackage("")?.name = "android"
-      return table
+      return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
     }
 
     return null
@@ -326,10 +323,9 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    * @return The set of resource tables. Empty when project is not initalized.
    */
   fun getSourceResourceTables(): Set<ResourceTable> {
-    val set = mutableSetOf<ResourceTable>()
-    getResourceDirectories().forEach {
-      val table = ResourceTableRegistry.getInstance().forResourceDir(it)
-      if (table != null) {
+    val set = mutableSetOf(getResourceTable() ?: return emptySet())
+    getCompileModuleProjects().filterIsInstance<AndroidModule>().forEach {
+      it.getResourceTable()?.also { table ->
         set.add(table)
       }
     }
@@ -342,7 +338,15 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     libraryMap.values
       .filter { it.type == ANDROID_LIBRARY && it.androidLibraryData!!.resFolder.exists() }
       .forEach {
-        ResourceTableRegistry.getInstance().forResourceDir(it.androidLibraryData!!.resFolder)
+        if (it.packageName == UNKNOWN_PACKAGE) {
+          return@forEach
+        }
+        
+        ResourceTableRegistry.getInstance()
+          .forPackage(
+            it.packageName,
+            it.androidLibraryData!!.resFolder,
+          )
       }
     return result
   }

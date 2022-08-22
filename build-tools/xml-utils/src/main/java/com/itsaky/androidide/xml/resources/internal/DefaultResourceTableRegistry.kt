@@ -26,6 +26,7 @@ import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,36 +39,54 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  private var tables = ConcurrentHashMap<String, ResourceTable>()
+  private val tables = ConcurrentHashMap<String, ResourceTable>()
+  private val platformTables = ConcurrentHashMap<String, ResourceTable>()
 
-  override fun forResourceDir(dir: File): ResourceTable? {
-    var table = tables[dir.path]
+  override fun forPackage(name: String, vararg dirs: File): ResourceTable {
+
+    if (name == PCK_ANDROID) {
+      return platformResourceTable(dirs.iterator().next())
+    }
+
+    return tables[name]
+      ?: createTable(*dirs).also {
+        tables[name] = it
+        it.packages.firstOrNull()?.name = name
+      }
+  }
+
+  private fun platformResourceTable(dir: File): ResourceTable {
+    var table = platformTables[dir.path]
     if (table != null) {
       return table
     }
 
-    table = createTable(dir) ?: return null
-    tables[dir.path] = table
+    table = createTable(dir)
+    platformTables[dir.path] = table
     return table
   }
 
-  private fun createTable(resDir: File): ResourceTable? {
-    log.info("Creating resource table for resource directory $resDir")
-    val values = File(resDir, "values")
-    if (!values.exists()) {
-      return null
-    }
+  private fun createTable(vararg resDirs: File): ResourceTable {
+    log.info("Creating resource table for resource directories $resDirs")
 
     val logger = BlameLogger(IDELogger)
     val table = ResourceTable()
     val options =
       TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
-    updateFromDirectory(values, table, options, logger)
+
+    for (resDir in resDirs) {
+      val values = File(resDir, "values")
+      if (!values.exists() || !values.isDirectory) {
+        continue
+      }
+      updateFromDirectory(values, table, options, logger)
+    }
+
     return table
   }
 
-  override fun removeTable(dir: File) {
-    tables.remove(dir.path)
+  override fun removeTable(packageName: String) {
+    tables.remove(packageName)
   }
 
   private fun updateFromDirectory(

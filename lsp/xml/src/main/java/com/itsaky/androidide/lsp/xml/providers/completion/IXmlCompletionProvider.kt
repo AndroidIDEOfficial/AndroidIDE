@@ -40,6 +40,10 @@ import org.eclipse.lemminx.dom.DOMDocument
  */
 abstract class IXmlCompletionProvider {
 
+  companion object {
+    const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res"
+  }
+  
   /**
    * Whether this completion provide can provide completions for the given [pathData].
    *
