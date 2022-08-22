@@ -41,7 +41,8 @@ import org.eclipse.lemminx.dom.DOMDocument
 abstract class IXmlCompletionProvider {
 
   companion object {
-    const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res"
+    const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
+    const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
   
   /**

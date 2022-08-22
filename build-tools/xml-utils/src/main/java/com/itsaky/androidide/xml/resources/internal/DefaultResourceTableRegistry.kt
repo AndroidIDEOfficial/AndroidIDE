@@ -42,31 +42,32 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
   private val tables = ConcurrentHashMap<String, ResourceTable>()
   private val platformTables = ConcurrentHashMap<String, ResourceTable>()
 
-  override fun forPackage(name: String, vararg dirs: File): ResourceTable {
+  override fun forPackage(name: String, vararg dirs: File): ResourceTable? {
 
     if (name == PCK_ANDROID) {
       return platformResourceTable(dirs.iterator().next())
     }
 
     return tables[name]
-      ?: createTable(*dirs).also {
+      ?: createTable(*dirs)?.also {
         tables[name] = it
         it.packages.firstOrNull()?.name = name
       }
   }
 
-  private fun platformResourceTable(dir: File): ResourceTable {
-    var table = platformTables[dir.path]
-    if (table != null) {
-      return table
-    }
-
-    table = createTable(dir)
-    platformTables[dir.path] = table
-    return table
+  private fun platformResourceTable(dir: File): ResourceTable? {
+    return platformTables[dir.path]
+      ?: createTable(dir)?.also {
+        platformTables[dir.path] = it
+        it.packages.firstOrNull()?.name = PCK_ANDROID
+      }
   }
 
-  private fun createTable(vararg resDirs: File): ResourceTable {
+  private fun createTable(vararg resDirs: File): ResourceTable? {
+    if (resDirs.isEmpty()) {
+      return null
+    }
+
     log.info("Creating resource table for resource directories $resDirs")
 
     val logger = BlameLogger(IDELogger)

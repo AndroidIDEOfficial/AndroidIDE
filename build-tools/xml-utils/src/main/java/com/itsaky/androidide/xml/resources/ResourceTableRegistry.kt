@@ -43,8 +43,8 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    *
    * @param name The package name for the resource table.
    */
-  fun forPackage(name: String, vararg dirs: File): ResourceTable
-
+  fun forPackage(name: String, vararg dirs: File): ResourceTable?
+  
   /**
    * Remove the resource table entry for the given package name.
    *
