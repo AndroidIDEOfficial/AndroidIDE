@@ -36,8 +36,8 @@ public class Symbols {
       if (file.getName().endsWith(".java")
           || file.getName().endsWith(".gradle")
           || file.getName().endsWith(".kt")) return javaSymbols();
-
-      if (file.getName().endsWith(".xml")) return xmlSymbols();
+      else if (file.getName().endsWith(".xml")) return xmlSymbols();
+      else return plainTextSymbols();
     }
 
     return new Symbol[0];
@@ -96,6 +96,33 @@ public class Symbols {
       new Symbol("}"),
       new Symbol("_"),
       new Symbol("-")
+    };
+  }
+
+  public static Symbol[] plainTextSymbols() {
+    return new Symbol[] {
+      new Symbol("↹", "\t"),
+      new Symbol("{", "{}"),
+      new Symbol("}"),
+      new Symbol("(", "()"),
+      new Symbol(")"),
+      new Symbol("="),
+      new Symbol("\"", "\"\""),
+      new Symbol("'", "''"),
+      new Symbol("|"),
+      new Symbol("&"),
+      new Symbol("!"),
+      new Symbol("[", "[]"),
+      new Symbol("]"),
+      new Symbol("<", "<>"),
+      new Symbol(">"),
+      new Symbol("+"),
+      new Symbol("-"),
+      new Symbol("/"),
+      new Symbol("~"),
+      new Symbol("`"),
+      new Symbol(":"),
+      new Symbol("_")
     };
   }
 
