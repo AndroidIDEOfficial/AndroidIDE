@@ -40,9 +40,13 @@ class FormatCodeAction() : EditorRelatedAction() {
 
   override fun execAction(data: ActionData): Any {
     val editor = getEditor(data)!!
-    
-    // TODO Add support for range formatting
-    editor.formatCodeAsync()
+    val cursor = editor.text.cursor
+
+    if (cursor.isSelected) {
+      editor.formatCodeAsync(cursor.left(), cursor.right())
+    } else {
+      editor.formatCodeAsync()
+    }
     return true
   }
 }
