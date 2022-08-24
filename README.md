@@ -13,7 +13,7 @@
 ![Repository size](https://img.shields.io/github/repo-size/itsaky/androidide)
 ![CodeFactor](https://www.codefactor.io/repository/github/itsaky/androidide/badge/main)
 ![Commit activity](https://img.shields.io/github/commit-activity/m/itsaky/AndroidIDE)
-![Builds and tests](https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg)  
+![Builds and tests](https://github.com/itsaky/AndroidIDE/actions/workflows/build.yml/badge.svg)  
 ![Latest release](https://img.shields.io/github/v/release/itsaky/AndroidIDE?include_prereleases&label=latest%20release)
 ![Downloads from releases](https://img.shields.io/github/downloads/itsaky/AndroidIDE/total?label=Downloads%20from%20releases)
 ![Downloads from website](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  

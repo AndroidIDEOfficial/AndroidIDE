@@ -55,11 +55,12 @@ class ResourceTableRegistryTest {
       .isEqualTo(resourceTable)
 
     resourceTable.apply {
-      assertThat(this.packages).hasSize(1)
-      this.packages.first().apply { assertThat(this.name).isEqualTo("") }
+      assertThat(this).isNotNull()
+      assertThat(this!!.packages).hasSize(1)
+      this.packages.first().apply { assertThat(this.name).isEqualTo("android") }
     }
 
-    resourceTable.findResource(ResourceName(pck = "", type = STRING, entry = "ok")).apply {
+    resourceTable!!.findResource(ResourceName(pck = "android", type = STRING, entry = "ok")).apply {
       assertThat(this).isNotNull()
       assertThat(this!!.entry).isNotNull()
       assertThat(this.entry.values).isNotEmpty()
@@ -73,7 +74,7 @@ class ResourceTableRegistryTest {
       }
     }
 
-    resourceTable.findResource(ResourceName(pck = "", type = STRING, entry = "cancel")).apply {
+    resourceTable.findResource(ResourceName(pck = "android", type = STRING, entry = "cancel")).apply {
       assertThat(this).isNotNull()
       assertThat(this!!.entry).isNotNull()
       assertThat(this.entry.values).isNotEmpty()
@@ -88,7 +89,7 @@ class ResourceTableRegistryTest {
     }
 
     resourceTable
-      .findResource(ResourceName(pck = "", type = COLOR, entry = "holo_red_dark"))
+      .findResource(ResourceName(pck = "android", type = COLOR, entry = "holo_red_dark"))
       .apply {
         assertThat(this).isNotNull()
         assertThat(this!!.entry).isNotNull()
