@@ -44,7 +44,6 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
-import com.itsaky.androidide.utils.ILogger
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -53,7 +52,7 @@ import org.eclipse.lemminx.dom.DOMDocument
  * @author Akash Yadav
  */
 class AttrValueCompletionProvider : IXmlCompletionProvider() {
-  
+
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
   }
@@ -76,7 +75,7 @@ class AttrValueCompletionProvider : IXmlCompletionProvider() {
     // TODO Currently we do not support completing values for attributes without a namespace
     //  For example, completions will be provided for: 'android:textColor="@@cursor@@"' but
     //  not for 'textColor="@@cursor"'
-    
+
     val namespace =
       attr.namespaceURI
         ?: run {
