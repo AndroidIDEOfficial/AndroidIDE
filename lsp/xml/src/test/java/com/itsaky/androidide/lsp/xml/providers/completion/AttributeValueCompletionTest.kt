@@ -40,7 +40,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
     XMLLSPTest.initProjectIfNeeded()
   }
 
-  @Test // prefix: 'tran"
+  @Test // prefix: '' (emptu)
   fun `values must be completed according to the attribute format`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsValue")
@@ -62,11 +62,25 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
           "@android:color/Red_700",
           "@android:color/Purple_700"
         )
-      
+
       // Check that we do not have any other type of values
       for (type in setOf(STRING, INTEGER, BOOL, DIMEN, INTEGER, MENU)) {
         assertThat(items.firstOrNull { it.contains(type.tagName) }).isNull()
       }
+    }
+  }
+
+  @Test // prefix: '' (emptu)        // for attribute 'material:layout_constraintStart_toStartOf'
+  fun `values must be completed from defined namespaces as well`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueFromNamespace")
+
+      val (isIncomplete, items) = complete()
+
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+
+      assertThat(items).contains("parent")
     }
   }
 }
