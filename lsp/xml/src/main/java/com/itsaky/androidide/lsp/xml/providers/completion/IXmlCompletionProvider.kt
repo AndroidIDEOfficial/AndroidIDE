@@ -19,6 +19,8 @@ package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourcePathData
+import com.android.aaptcompiler.ResourceTable
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -31,6 +33,8 @@ import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -40,11 +44,13 @@ import org.eclipse.lemminx.dom.DOMDocument
  */
 abstract class IXmlCompletionProvider {
 
+  protected val log = ILogger.newInstance("XmlCompletionProvider")
+
   companion object {
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
-  
+
   /**
    * Whether this completion provide can provide completions for the given [pathData].
    *
@@ -125,18 +131,23 @@ abstract class IXmlCompletionProvider {
    */
   protected open fun createAttrCompletionItem(
     attr: Reference,
+    resPkg: String,
+    nsPrefix: String,
     matchLevel: MatchLevel
   ): CompletionItem =
     CompletionItem().apply {
-      var pck = attr.name.pck
-      if (pck == null || pck.isBlank()) {
-        pck = "android"
+      var prefix = nsPrefix
+      if (nsPrefix.isBlank()) {
+        prefix = ""
+      } else if (!nsPrefix.endsWith(':')) {
+        prefix += ":"
       }
-
-      this.label = attr.name.entry!!
+      
+      val title = "$prefix${attr.name.entry!!}"
+      this.label = title
       this.kind = FIELD
-      this.detail = "From package '$pck'"
-      this.insertText = "$pck:${attr.name.entry!!}=\"$0\""
+      this.detail = "From package '$resPkg'"
+      this.insertText = "$title=\"$0\""
       this.insertTextFormat = SNIPPET
       this.sortText = label.toString()
       this.matchLevel = matchLevel
@@ -177,7 +188,7 @@ abstract class IXmlCompletionProvider {
       this.matchLevel = matchLevel
     }
   }
-  
+
   /**
    * Create a completion item for an attribute's value.
    *
@@ -198,5 +209,42 @@ abstract class IXmlCompletionProvider {
       this.insertText = name
       this.matchLevel = matchLevel
     }
+  }
+
+  protected open fun findResourceTables(nsUri: String): Set<ResourceTable> {
+    if (nsUri == NAMESPACE_AUTO) {
+      return findAllModuleResourceTables()
+    }
+
+    val pck = nsUri.substringAfter(NAMESPACE_PREFIX)
+    if (pck.isBlank()) {
+      log.warn("Invalid namespace: $nsUri")
+      return emptySet()
+    }
+
+    if (pck == ResourceTableRegistry.PCK_ANDROID) {
+      val platformResTable =
+        Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
+          ?: run {
+            log.debug("No platform resource table is set")
+            return emptySet()
+          }
+
+      return setOf(platformResTable)
+    }
+
+    val table =
+      ResourceTableRegistry.getInstance().forPackage(pck)
+        ?: run {
+          log.error("Cannot find resource table for package: $pck")
+          return emptySet()
+        }
+
+    return setOf(table)
+  }
+
+  protected open fun findAllModuleResourceTables(): Set<ResourceTable> {
+    // TODO find all resource tables from completing file's module
+    return emptySet()
   }
 }

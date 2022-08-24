@@ -42,8 +42,8 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
-      assertThat(items).contains("singleLine") // From TextView
-      assertThat(items).contains("scrollbars") // from View
+      assertThat(items).contains("android:singleLine") // From TextView
+      assertThat(items).contains("android:scrollbars") // from View
     }
   }
 
@@ -54,10 +54,10 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
-      assertThat(items).contains("lines") // From TextView
-      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
+      assertThat(items).contains("android:lines") // From TextView
+      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
     }
   }
 
@@ -68,17 +68,17 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
-      assertThat(items).contains("lines") // From TextView
-      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
-      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:lines") // From TextView
+      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
+      assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   
@@ -89,17 +89,17 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
-      assertThat(items).contains("lines") // From TextView
-      assertThat(items).contains("layout_gravity") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("layout_width") // from ViewGroup.LayoutParams
-      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:lines") // From TextView
+      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
+      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
+      assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   
@@ -110,14 +110,47 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       val (isIncomplete, items) = complete()
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
-      assertThat(items).contains("layout_margin") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginLeft") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginTop") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginRight") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginBottom") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginStart") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("layout_marginEnd") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
+      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   
+  @Test // prefix: 'layout'
+  fun `attributes from all defined namespaces must be completed`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsWithMultipleNamespaces")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isTrue()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("material:layout_constraintEnd_toEndOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintEnd_toStartOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintStart_toEndOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintStart_toStartOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintHorizontal_bias") // From ConstraintLayout
+      
+    }
+  }
+  
+  @Test // prefix: 'material:layout'
+  fun `attributes from the defined namespace must be completed`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrsWithDefinedNamespace")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isTrue()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("material:layout_constraintEnd_toEndOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintEnd_toStartOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintStart_toEndOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintStart_toStartOf") // From ConstraintLayout
+      assertThat(items).contains("material:layout_constraintHorizontal_bias") // From ConstraintLayout
+      
+      // Attributes no other attributes must be included
+      assertThat(items.filter { !it.startsWith("material:") }).isEmpty()
+    }
+  }
 }

@@ -30,8 +30,6 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.AttributeCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.eclipse.lemminx.dom.DOMDocument
@@ -44,8 +42,6 @@ import org.eclipse.lemminx.dom.DOMNode
  */
 class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
 
-  private val log = ILogger.newInstance(AttributeCompletionProvider::class.java.simpleName)
-
   override fun doComplete(
     params: CompletionParams,
     pathData: ResourcePathData,
@@ -54,43 +50,109 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     prefix: String
   ): CompletionResult {
     val node = document.findNodeAt(params.position.requireIndex())
-    val styleables =
-      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
-        ?.findPackage("android")
-        ?.findGroup(STYLEABLE)
-        ?: run {
-          log.debug("Cannot find styles in framework resources")
-          return CompletionResult.EMPTY
-        }
-
-    val nodeStyleables = findNodeStyleables(node, styleables)
-    if (nodeStyleables.isEmpty()) {
-      return CompletionResult.EMPTY
-    }
-    
-    val list = mutableListOf<CompletionItem>()
     val attr = document.findAttrAt(params.position.requireIndex())
+    val list = mutableListOf<CompletionItem>()
+
     val newPrefix =
       if (attr.name.contains(':')) {
         attr.name.substringAfterLast(':')
       } else attr.name
-    for (nodeStyleable in nodeStyleables) {
+
+    val namespace =
+      attr.namespaceURI
+        ?: run {
+          return completeFromAllNamespaces(node, list, newPrefix)
+        }
+
+    val nsPrefix = attr.nodeName.substringBefore(':')
+    completeForNamespace(namespace, nsPrefix, node, newPrefix, list)
+
+    return CompletionResult(list)
+  }
+
+  private fun completeFromAllNamespaces(
+    node: DOMNode,
+    list: MutableList<CompletionItem>,
+    newPrefix: String
+  ): CompletionResult {
+    val namespaces = mutableSetOf<Pair<String, String>>()
+    var curr: DOMNode? = node
+
+    @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
+    while (curr != null && curr.attributes != null) {
+      for (i in 0 until curr.attributes.length) {
+        val currAttr = curr.getAttributeAtIndex(i)
+        if (currAttr.isXmlns) {
+          namespaces.add(currAttr.localName to currAttr.value)
+        }
+      }
+      curr = curr.parentNode
+    }
+
+    namespaces.forEach { completeForNamespace(it.second, it.first, node, newPrefix, list) }
+
+    return CompletionResult(list)
+  }
+
+  private fun completeForNamespace(
+    namespace: String,
+    nsPrefix: String,
+    node: DOMNode,
+    newPrefix: String,
+    list: MutableList<CompletionItem>
+  ) {
+    val pck = namespace.substringAfter(NAMESPACE_PREFIX)
+
+    val tables = findResourceTables(namespace)
+    if (tables.isEmpty()) {
+      return
+    }
+
+    for (table in tables) {
+      val styleables = table.findPackage(pck)?.findGroup(STYLEABLE) ?: continue
+      val nodeStyleables = findNodeStyleables(node, styleables)
+      if (nodeStyleables.isEmpty()) {
+        continue
+      }
+
+      addFromStyleables(
+        styleables = nodeStyleables,
+        pck = pck,
+        pckPrefix = nsPrefix,
+        prefix = newPrefix,
+        list = list
+      )
+    }
+  }
+
+  private fun addFromStyleables(
+    styleables: Set<Styleable>,
+    pck: String,
+    pckPrefix: String,
+    prefix: String,
+    list: MutableList<CompletionItem>
+  ) {
+    for (nodeStyleable in styleables) {
       for (ref in nodeStyleable.entries) {
-        val matchLevel = matchLevel(ref.name.entry!!, newPrefix)
+        val matchLevel = matchLevel(ref.name.entry!!, prefix)
         if (matchLevel == NO_MATCH) {
           continue
         }
-        list.add(createAttrCompletionItem(ref, matchLevel))
+        list.add(
+          createAttrCompletionItem(
+            attr = ref,
+            resPkg = pck,
+            nsPrefix = pckPrefix,
+            matchLevel = matchLevel
+          )
+        )
       }
     }
-
-    return CompletionResult(list)
   }
 
   private fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
     val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
-    val result = mutableSetOf<Styleable>()
 
     // Find the widget
     val widget =
@@ -99,16 +161,88 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
       } else {
         widgets.findWidgetWithSimpleName(nodeName)
       }
-        ?: widgets.getWidget("android.view.View")!!
+
+    if (widget != null) {
+      // This is a widget from the Android SDK
+      // we can get its superclasses and other stuff
+      return findStyleablesForWidget(styleables, widgets, widget, node)
+    } else if (nodeName.contains('.')) {
+      // Probably a custom view or a view from libraries
+      // If the developer follows the naming convention then only the completions will be provided
+      // This must be called if and only if the tag name is qualified
+      return findStyleablesForName(styleables, node)
+    }
+
+    return emptySet()
+  }
+
+  private fun findStyleablesForName(
+    styleables: ResourceGroup,
+    node: DOMNode,
+    addFromParent: Boolean = false,
+    suffix: String = ""
+  ): Set<Styleable> {
+    val result = mutableSetOf<Styleable>()
+
+    // Styles must be defined by the View class' simple name
+    var name = node.nodeName
+    if (name.contains('.')) {
+      name = name.substringAfterLast('.')
+    }
+
+    // Common attributes for all views
+    addWidgetStyleable(styleables, "View", result)
+
+    // Find the declared styleable
+    val entry = findStyleableEntry(styleables, "$name$suffix")
+    if (entry != null) {
+      result.add(entry)
+    }
+
+    // If the layout params from the parent must be added, check for parent and then add them
+    // Layout param attributes must be added only from the direct parent
+    if (addFromParent) {
+      node.parentNode?.also { result.addAll(findLayoutParams(styleables, node.parentNode)) }
+    }
+
+    return result
+  }
+
+  private fun findLayoutParams(styleables: ResourceGroup, parentNode: DOMNode): Set<Styleable> {
+    val result = mutableSetOf<Styleable>()
+
+    // Add layout params common for all view groups and the ones supporting child margins
+    addWidgetStyleable(styleables, "ViewGroup", result, suffix = "_Layout")
+    addWidgetStyleable(styleables, "ViewGroup", result, suffix = "_MarginLayout")
+
+    var name = parentNode.nodeName
+    if (name.contains('.')) {
+      name = name.substringAfterLast('.')
+    }
+
+    addWidgetStyleable(styleables, name, result, "_Layout")
+
+    return result
+  }
+
+  private fun findStyleablesForWidget(
+    styleables: ResourceGroup,
+    widgets: WidgetTable,
+    widget: Widget,
+    node: DOMNode,
+    adddFromParent: Boolean = true,
+    suffix: String = ""
+  ): Set<Styleable> {
+    val result = mutableSetOf<Styleable>()
 
     // Find the <declare-styleable> for the widget in the resource group
-    addWidgetStyleable(styleables, widget, result)
+    addWidgetStyleable(styleables, widget, result, suffix = suffix)
 
     // Find styleables for all the superclasses
-    addSuperclassStyleables(styleables, widgets, widget, result)
+    addSuperclassStyleables(styleables, widgets, widget, result, suffix = suffix)
 
     // Add attributes provided by the layout params
-    if (node.parentNode != null) {
+    if (adddFromParent && node.parentNode != null) {
       val parentName = node.parentNode.nodeName
       val parentWidget =
         if (parentName.contains(".")) {
@@ -118,8 +252,18 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
         }
 
       if (parentWidget != null) {
-        addWidgetStyleable(styleables, parentWidget, result, "_Layout")
-        addSuperclassStyleables(styleables, widgets, parentWidget, result, "_Layout")
+        result.addAll(
+          findStyleablesForWidget(
+            styleables,
+            widgets,
+            parentWidget,
+            node.parentNode,
+            false,
+            "_Layout"
+          )
+        )
+      } else {
+        result.addAll(findLayoutParams(styleables, node.parentNode))
       }
     }
 
@@ -132,7 +276,16 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     result: MutableSet<Styleable>,
     suffix: String = ""
   ) {
-    val entry = findStyleableEntry(styleables, "${widget.simpleName}$suffix")
+    addWidgetStyleable(styleables, widget.simpleName, result, suffix)
+  }
+
+  private fun addWidgetStyleable(
+    styleables: ResourceGroup,
+    widget: String,
+    result: MutableSet<Styleable>,
+    suffix: String = ""
+  ) {
+    val entry = findStyleableEntry(styleables, "${widget}${suffix}")
     if (entry != null) {
       result.add(entry)
     }
@@ -146,25 +299,18 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     suffix: String = ""
   ) {
     for (superclass in widget.superclasses) {
-
       // When a ViewGroup is encountered in the superclasses, add the margin layout params
       if ("android.view.ViewGroup" == superclass) {
-        val marginEntry = findStyleableEntry(styleables, "ViewGroup_MarginLayout")
-        if (marginEntry != null) {
-          result.add(marginEntry)
-        }
+        addWidgetStyleable(styleables, "ViewGroup", result, suffix = "_MarginLayout")
       }
 
       val superr = widgets.getWidget(superclass) ?: continue
-      val superEntry = findStyleableEntry(styleables, "${superr.simpleName}$suffix")
-      if (superEntry != null) {
-        result.add(superEntry)
-      }
+      addWidgetStyleable(styleables, superr.simpleName, result, suffix = suffix)
     }
   }
 
-  private fun findStyleableEntry(styleables: ResourceGroup, simpleName: String): Styleable? {
-    val value = styleables.findEntry(simpleName)?.findValue(ConfigDescription())?.value
+  private fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
+    val value = styleables.findEntry(name)?.findValue(ConfigDescription())?.value
     if (value !is Styleable) {
       return null
     }

@@ -17,12 +17,9 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
-import com.android.aaptcompiler.AaptResourceType
-import com.android.aaptcompiler.AaptResourceType.ANIM
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
-import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.AaptResourceType.MENU
 import com.android.aaptcompiler.AaptResourceType.STRING
 import com.google.common.truth.Truth.assertThat

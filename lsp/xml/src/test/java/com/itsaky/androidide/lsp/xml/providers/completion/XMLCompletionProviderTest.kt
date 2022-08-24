@@ -73,7 +73,7 @@ class XMLCompletionProviderTest : CompletionHelper by CompletionHelperImpl() {
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
 
-      assertThat(items).containsAtLeast("text", "textColor", "textAlignment", "textAllCaps")
+      assertThat(items).containsAtLeast("android:text", "android:textColor", "android:textAlignment", "android:textAllCaps")
     }
   }
 }

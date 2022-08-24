@@ -17,18 +17,19 @@
 
 package com.itsaky.androidide.lsp.xml
 
+import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 
 /** @author Akash Yadav */
 class CompletionHelperImpl : CompletionHelper {
-  override fun complete(): Pair<Boolean, List<String>> {
+  override fun complete(transform: (CompletionItem) -> CharSequence): Pair<Boolean, List<CharSequence>> {
     return XMLLSPTest.run {
       val createCompletionParams = createCompletionParams()
       val result = server.complete(createCompletionParams)
       result.isIncomplete to
         result.items
           .filter { it.label != null }
-          .map { it.label.toString() }
+          .map { transform(it) }
           .filter { it.isNotBlank() }
           .toList()
     }

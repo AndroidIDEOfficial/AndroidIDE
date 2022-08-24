@@ -35,7 +35,6 @@ import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.aapt.findEntries
-import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.CompletionParams
@@ -46,8 +45,6 @@ import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -56,9 +53,7 @@ import org.eclipse.lemminx.dom.DOMDocument
  * @author Akash Yadav
  */
 class AttrValueCompletionProvider : IXmlCompletionProvider() {
-
-  private val log = ILogger.newInstance("AttributeValueCompletions")
-
+  
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
   }
@@ -78,6 +73,10 @@ class AttrValueCompletionProvider : IXmlCompletionProvider() {
           return EMPTY
         }
 
+    // TODO Currently we do not support completing values for attributes without a namespace
+    //  For example, completions will be provided for: 'android:textColor="@@cursor@@"' but
+    //  not for 'textColor="@@cursor"'
+    
     val namespace =
       attr.namespaceURI
         ?: run {
@@ -99,7 +98,7 @@ class AttrValueCompletionProvider : IXmlCompletionProvider() {
       if (entry !is AttributeResource) {
         continue
       }
-      
+
       addFromTable(table, entry, pck, prefix, list)
     }
 
@@ -160,43 +159,6 @@ class AttrValueCompletionProvider : IXmlCompletionProvider() {
         }
       }
     }
-  }
-
-  private fun findResourceTables(nsUri: String): Set<ResourceTable> {
-    if (nsUri == NAMESPACE_AUTO) {
-      return findAllModuleResourceTables()
-    }
-
-    val pck = nsUri.substringAfter(NAMESPACE_PREFIX)
-    if (pck.isBlank()) {
-      log.warn("Invalid namespace: $nsUri")
-      return emptySet()
-    }
-
-    if (pck == ResourceTableRegistry.PCK_ANDROID) {
-      val platformResTable =
-        Lookup.DEFAULT.lookup(COMPLETION_FRAMEWORK_RES_LOOKUP_KEY)
-          ?: run {
-            log.debug("No platform resource table is set")
-            return emptySet()
-          }
-
-      return setOf(platformResTable)
-    }
-
-    val table =
-      ResourceTableRegistry.getInstance().forPackage(pck)
-        ?: run {
-          log.error("Cannot find resource table for package: $pck")
-          return emptySet()
-        }
-
-    return setOf(table)
-  }
-
-  private fun findAllModuleResourceTables(): Set<ResourceTable> {
-    // TODO find all resource tables from completing file's module
-    return emptySet()
   }
 
   private fun addValues(

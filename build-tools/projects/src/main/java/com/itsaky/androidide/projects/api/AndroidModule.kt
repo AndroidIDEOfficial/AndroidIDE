@@ -35,6 +35,7 @@ import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
 import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.model.util.findPackageName
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -325,9 +326,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   fun getSourceResourceTables(): Set<ResourceTable> {
     val set = mutableSetOf(getResourceTable() ?: return emptySet())
     getCompileModuleProjects().filterIsInstance<AndroidModule>().forEach {
-      it.getResourceTable()?.also { table ->
-        set.add(table)
-      }
+      it.getResourceTable()?.also { table -> set.add(table) }
     }
     return set
   }
@@ -338,10 +337,10 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     libraryMap.values
       .filter { it.type == ANDROID_LIBRARY && it.androidLibraryData!!.resFolder.exists() }
       .forEach {
-        if (it.packageName == UNKNOWN_PACKAGE) {
+        if (it.findPackageName() == UNKNOWN_PACKAGE) {
           return@forEach
         }
-        
+
         ResourceTableRegistry.getInstance()
           .forPackage(
             it.packageName,

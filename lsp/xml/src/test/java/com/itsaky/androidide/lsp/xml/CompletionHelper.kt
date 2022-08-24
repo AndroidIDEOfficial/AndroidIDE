@@ -17,11 +17,15 @@
 
 package com.itsaky.androidide.lsp.xml
 
+import com.itsaky.androidide.lsp.models.CompletionItem
+
 /**
  * Helps with providing completions.
  * @author Akash Yadav
  */
 interface CompletionHelper {
 
-  fun complete(): Pair<Boolean, List<String>>
+  fun complete(
+    transform: (CompletionItem) -> CharSequence = { it.label }
+  ): Pair<Boolean, List<CharSequence>>
 }
