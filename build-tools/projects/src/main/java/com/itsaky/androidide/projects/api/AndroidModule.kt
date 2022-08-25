@@ -333,21 +333,23 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   /** Get the resource tables for external dependencies (not local module project dependencies). */
   fun getDependencyResourceTables(): Set<ResourceTable> {
-    val result = mutableSetOf<ResourceTable>()
-    libraryMap.values
-      .filter { it.type == ANDROID_LIBRARY && it.androidLibraryData!!.resFolder.exists() }
-      .forEach {
-        if (it.findPackageName() == UNKNOWN_PACKAGE) {
-          return@forEach
-        }
-
-        ResourceTableRegistry.getInstance()
-          .forPackage(
-            it.packageName,
-            it.androidLibraryData!!.resFolder,
-          )
-      }
-    return result
+    return mutableSetOf<ResourceTable>().also {
+      it.addAll(
+        libraryMap.values
+          .filter { library ->
+            library.type == ANDROID_LIBRARY &&
+              library.androidLibraryData!!.resFolder.exists() &&
+              library.findPackageName() != UNKNOWN_PACKAGE
+          }
+          .mapNotNull { library ->
+            ResourceTableRegistry.getInstance()
+              .forPackage(
+                library.packageName,
+                library.androidLibraryData!!.resFolder,
+              )
+          }
+      )
+    }
   }
 
   private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile

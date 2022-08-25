@@ -20,6 +20,7 @@ package com.itsaky.androidide.projects.api
 import android.text.TextUtils
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.tooling.api.model.GradleTask
@@ -57,6 +58,10 @@ abstract class ModuleProject(
     const val PROP_USAGE = "org.gradle.usage"
     const val USAGE_API = "java-api"
     const val USAGE_RUNTIME = "java-runtime"
+    
+    
+    @JvmStatic
+    val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
   }
 
   @JvmField val compileJavaSourceClasses = SourceClassTrie()

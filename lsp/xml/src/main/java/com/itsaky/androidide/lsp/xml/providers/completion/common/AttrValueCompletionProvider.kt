@@ -32,6 +32,7 @@ import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.UNKNOWN
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.aapt.findEntries
@@ -88,17 +89,33 @@ class AttrValueCompletionProvider : IXmlCompletionProvider() {
       return EMPTY
     }
 
-    val list = mutableListOf<CompletionItem>()
     val pck = namespace.substringAfter(NAMESPACE_PREFIX)
+    val list = mutableListOf<CompletionItem>()
+    val groups = mutableSetOf<Triple<String, ResourceTable, ResourceGroup>>()
 
     for (table in tables) {
-      val attrs = table.findPackage(pck)?.findGroup(ATTR) ?: continue
-      val entry = attrs.findEntry(attrName)?.findValue(ConfigDescription())?.value ?: continue
+      if (namespace == NAMESPACE_AUTO) {
+        val grps =
+          table.packages.filter { it.name.isNotBlank() }.map { it.name to it.findGroup(ATTR) }
+        for (grp in grps) {
+          grp.second?.also { groups.add(Triple(grp.first, table, it)) }
+        }
+      } else {
+        val grp = table.findPackage(pck)?.findGroup(ATTR) ?: continue
+        groups.add(Triple(pck, table, grp))
+      }
+    }
+
+    for (triple in groups) {
+      val pack = triple.first
+      val table = triple.second
+      val group = triple.third
+      val entry = group.findEntry(attrName)?.findValue(ConfigDescription())?.value ?: continue
       if (entry !is AttributeResource) {
         continue
       }
 
-      addFromTable(table, entry, pck, prefix, list)
+      addFromTable(table, entry, pack, prefix, list)
     }
 
     return CompletionResult(list)

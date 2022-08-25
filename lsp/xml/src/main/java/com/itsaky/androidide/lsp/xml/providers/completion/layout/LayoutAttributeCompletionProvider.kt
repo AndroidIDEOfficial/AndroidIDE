@@ -21,6 +21,7 @@ import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
+import com.android.aaptcompiler.ResourceTablePackage
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -101,28 +102,49 @@ class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
     newPrefix: String,
     list: MutableList<CompletionItem>
   ) {
-    val pck = namespace.substringAfter(NAMESPACE_PREFIX)
 
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
       return
     }
 
+    val pck = namespace.substringAfter(NAMESPACE_PREFIX)
+    val packages = mutableSetOf<ResourceTablePackage>()
     for (table in tables) {
-      val styleables = table.findPackage(pck)?.findGroup(STYLEABLE) ?: continue
-      val nodeStyleables = findNodeStyleables(node, styleables)
-      if (nodeStyleables.isEmpty()) {
-        continue
+      if (namespace == NAMESPACE_AUTO) {
+        packages.addAll(table.packages.filter { it.name.isNotBlank() })
+      } else {
+        val tablePackage = table.findPackage(pck)
+        tablePackage?.also { packages.add(it) }
       }
-
-      addFromStyleables(
-        styleables = nodeStyleables,
-        pck = pck,
-        pckPrefix = nsPrefix,
-        prefix = newPrefix,
-        list = list
-      )
     }
+
+    for (tablePackage in packages) {
+      addFromPackage(tablePackage, node, tablePackage.name, nsPrefix, newPrefix, list)
+    }
+  }
+
+  private fun addFromPackage(
+    tablePackage: ResourceTablePackage?,
+    node: DOMNode,
+    pck: String,
+    nsPrefix: String,
+    newPrefix: String,
+    list: MutableList<CompletionItem>
+  ) {
+    val styleables = tablePackage?.findGroup(STYLEABLE) ?: return
+    val nodeStyleables = findNodeStyleables(node, styleables)
+    if (nodeStyleables.isEmpty()) {
+      return
+    }
+
+    addFromStyleables(
+      styleables = nodeStyleables,
+      pck = pck,
+      pckPrefix = nsPrefix,
+      prefix = newPrefix,
+      list = list
+    )
   }
 
   private fun addFromStyleables(

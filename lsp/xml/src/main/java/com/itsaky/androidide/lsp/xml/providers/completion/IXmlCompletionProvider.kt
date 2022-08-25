@@ -142,7 +142,7 @@ abstract class IXmlCompletionProvider {
       } else if (!nsPrefix.endsWith(':')) {
         prefix += ":"
       }
-      
+
       val title = "$prefix${attr.name.entry!!}"
       this.label = title
       this.kind = FIELD
@@ -244,7 +244,14 @@ abstract class IXmlCompletionProvider {
   }
 
   protected open fun findAllModuleResourceTables(): Set<ResourceTable> {
-    // TODO find all resource tables from completing file's module
-    return emptySet()
+    val lookup = Lookup.DEFAULT
+    val sourceResTables =
+      lookup.lookup(ResourceTableRegistry.COMPLETION_MODULE_RES_LOOKUP_KEY) ?: emptySet()
+    val depResTables =
+      lookup.lookup(ResourceTableRegistry.COMPLETION_DEP_RES_LOOKUP_KEY) ?: emptySet()
+    return mutableSetOf<ResourceTable>().also {
+      it.addAll(sourceResTables)
+      it.addAll(depResTables)
+    }
   }
 }

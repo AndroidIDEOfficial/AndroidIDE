@@ -20,6 +20,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.api.LSPTest
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.widgets.WidgetTable
@@ -39,6 +40,9 @@ object XMLLSPTest : LSPTest() {
     try {
       val module = ProjectManager.app!!
       val lookup = Lookup.DEFAULT
+      
+      lookup.update(ModuleProject.COMPLETION_MODULE_KEY, module)
+      
       val versions = module.getApiVersions()
       if (versions != null) {
         lookup.update(ApiVersions.COMPLETION_LOOKUP_KEY, versions)
@@ -48,15 +52,20 @@ object XMLLSPTest : LSPTest() {
       if (widgets != null) {
         lookup.update(WidgetTable.COMPLETION_LOOKUP_KEY, widgets)
       }
+  
+      val frameworkResources = module.getFrameworkResourceTable()
+      if (frameworkResources != null) {
+        lookup.update(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY, frameworkResources)
+      }
 
       val moduleResources = module.getSourceResourceTables()
       if (moduleResources.isNotEmpty()) {
         lookup.update(ResourceTableRegistry.COMPLETION_MODULE_RES_LOOKUP_KEY, moduleResources)
       }
-
-      val frameworkResources = module.getFrameworkResourceTable()
-      if (frameworkResources != null) {
-        lookup.update(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY, frameworkResources)
+  
+      val depResTables = module.getDependencyResourceTables()
+      if (depResTables.isNotEmpty()) {
+        lookup.update(ResourceTableRegistry.COMPLETION_DEP_RES_LOOKUP_KEY, depResTables)
       }
     } catch (e: Throwable) {
       throw RuntimeException(e)

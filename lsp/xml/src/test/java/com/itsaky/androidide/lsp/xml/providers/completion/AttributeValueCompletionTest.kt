@@ -70,7 +70,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
     }
   }
 
-  @Test // prefix: '' (emptu)        // for attribute 'material:layout_constraintStart_toStartOf'
+  @Test // prefix: '' (empty)        // for attribute 'material:layout_constraintStart_toStartOf'
   fun `values must be completed from defined namespaces as well`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrValueFromNamespace")
@@ -80,6 +80,20 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
 
+      assertThat(items).contains("parent")
+    }
+  }
+  
+  @Test // prefix: '' (empty)        // for attribute 'material:layout_constraintStart_toStartOf'
+  fun `values must be completed from defined auto namespace as well`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueFromNamespaceAuto")
+      
+      val (isIncomplete, items) = complete()
+      
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+      
       assertThat(items).contains("parent")
     }
   }

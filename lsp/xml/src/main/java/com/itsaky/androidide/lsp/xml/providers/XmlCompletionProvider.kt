@@ -81,7 +81,6 @@ class XmlCompletionProvider(settings: IServerSettings) :
     }
 
     val prefix = XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
-    
     if (prefix.isBlank() && type != ATTRIBUTE_VALUE) {
       return EMPTY
     }
