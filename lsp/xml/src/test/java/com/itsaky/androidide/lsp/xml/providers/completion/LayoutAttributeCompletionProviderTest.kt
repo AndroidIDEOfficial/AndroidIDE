@@ -113,9 +113,6 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
