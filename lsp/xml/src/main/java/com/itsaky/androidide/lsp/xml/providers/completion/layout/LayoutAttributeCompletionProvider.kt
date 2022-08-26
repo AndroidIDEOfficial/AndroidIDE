@@ -24,8 +24,8 @@ import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTablePackage
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
-import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
@@ -41,7 +41,8 @@ import org.eclipse.lemminx.dom.DOMNode
  *
  * @author Akash Yadav
  */
-class LayoutAttributeCompletionProvider : AttributeCompletionProvider() {
+class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
+  AttributeCompletionProvider(provider) {
 
   override fun doComplete(
     params: CompletionParams,

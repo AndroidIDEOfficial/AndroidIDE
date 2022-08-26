@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.ResourcePathData
+import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 
@@ -26,7 +27,7 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
  *
  * @author Akash Yadav
  */
-abstract class TagCompletionProvider : IXmlCompletionProvider() {
+abstract class TagCompletionProvider(provider: ICompletionProvider) : IXmlCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == TAG

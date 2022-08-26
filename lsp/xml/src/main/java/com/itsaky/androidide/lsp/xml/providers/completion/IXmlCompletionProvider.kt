@@ -21,6 +21,7 @@ import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -42,13 +43,17 @@ import org.eclipse.lemminx.dom.DOMDocument
  *
  * @author Akash Yadav
  */
-abstract class IXmlCompletionProvider {
+abstract class IXmlCompletionProvider(private val provider: ICompletionProvider) {
 
   protected val log = ILogger.newInstance("XmlCompletionProvider")
 
   companion object {
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
+  }
+  
+  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence) : MatchLevel {
+    return provider.matchLevel(candidate, partial)
   }
 
   /**

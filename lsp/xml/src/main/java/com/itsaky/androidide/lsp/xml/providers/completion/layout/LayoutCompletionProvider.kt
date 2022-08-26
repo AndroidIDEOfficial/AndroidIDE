@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.ResourcePathData
+import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 
@@ -27,7 +28,7 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
  *
  * @author Akash Yadav
  */
-abstract class LayoutCompletionProvider : IXmlCompletionProvider() {
+abstract class LayoutCompletionProvider(provider: ICompletionProvider) : IXmlCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && pathData.type == LAYOUT

@@ -36,7 +36,7 @@ import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
-const val MIN_MATCH_RATIO = 45
+const val DEFAULT_MIN_MATCH_RATIO = 59
 
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
@@ -162,7 +162,8 @@ open class CompletionItem(
     private val LOG = ILogger.newInstance("CompletionItem")
 
     @JvmStatic
-    fun matchLevel(candidate: String, partial: String): MatchLevel {
+    @JvmOverloads
+    fun matchLevel(candidate: String, partial: String, minMatchRatio: Int = DEFAULT_MIN_MATCH_RATIO): MatchLevel {
       if (candidate.startsWith(partial)) {
         return if (candidate.length == partial.length) {
           CASE_SENSITIVE_EQUAL
@@ -182,7 +183,7 @@ open class CompletionItem(
       }
 
       val ratio = FuzzySearch.ratio(candidate, partial)
-      if (ratio > MIN_MATCH_RATIO) {
+      if (ratio > minMatchRatio) {
         return PARTIAL_MATCH
       }
 

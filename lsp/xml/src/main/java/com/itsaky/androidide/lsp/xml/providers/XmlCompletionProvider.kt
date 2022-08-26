@@ -126,9 +126,9 @@ class XmlCompletionProvider(settings: IServerSettings) :
 
   private fun createLayoutCompleter(type: NodeType): IXmlCompletionProvider? {
     return when (type) {
-      TAG -> LayoutTagCompletionProvider()
-      ATTRIBUTE -> LayoutAttributeCompletionProvider()
-      ATTRIBUTE_VALUE -> AttrValueCompletionProvider()
+      TAG -> LayoutTagCompletionProvider(this)
+      ATTRIBUTE -> LayoutAttributeCompletionProvider(this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
       else -> null
     }
   }

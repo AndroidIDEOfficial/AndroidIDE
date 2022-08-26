@@ -33,4 +33,9 @@ public class XMLServerSettings extends PrefBasedServerSettings {
 
     return instance;
   }
+
+  @Override
+  public int completionFuzzyMatchMinRatio() {
+    return 50;
+  }
 }

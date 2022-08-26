@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
 import com.android.aaptcompiler.ResourcePathData
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
-import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
@@ -29,15 +29,16 @@ import com.itsaky.androidide.lsp.xml.providers.completion.TagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import org.eclipse.lemminx.dom.DOMDocument
 import kotlin.math.max
+import org.eclipse.lemminx.dom.DOMDocument
 
 /**
  * [TagCompletionProvider] implementation for providing completing tags in an XML layout file.
  *
  * @author Akash Yadav
  */
-class LayoutTagCompletionProvider : LayoutCompletionProvider() {
+class LayoutTagCompletionProvider(provider: ICompletionProvider) :
+  LayoutCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == TAG
