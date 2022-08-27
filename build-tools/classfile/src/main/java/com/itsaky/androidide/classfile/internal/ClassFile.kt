@@ -19,6 +19,7 @@ package com.itsaky.androidide.classfile.internal
 
 import com.itsaky.androidide.classfile.constants.IConstant
 import com.itsaky.androidide.classfile.IClassFile
+import com.itsaky.androidide.classfile.constants.ClassConstant
 import com.itsaky.androidide.classfile.constants.Utf8Constant
 
 /**
@@ -54,19 +55,29 @@ internal class ClassFile : IClassFile {
   
   override fun getName(): String {
     val entry = constantPool[thisClass]
-    if (entry !is Utf8Constant) {
+    if (entry !is ClassConstant) {
       throw IllegalStateException("Invalid constant at index: '$thisClass'")
     }
     
-    return entry.bytes.decodeToString()
+    val nameEntry = constantPool[entry.nameIndex]
+    if (nameEntry !is Utf8Constant) {
+      throw IllegalStateException("Invalid constant at index: '$thisClass'")
+    }
+    
+    return nameEntry.bytes.decodeToString()
   }
   
   override fun getSuperClassName(): String {
     val entry = constantPool[superClass]
-    if (entry !is Utf8Constant) {
+    if (entry !is ClassConstant) {
       throw IllegalStateException("Invalid constant at index: '$superClass'")
     }
   
-    return entry.bytes.decodeToString()
+    val nameEntry = constantPool[entry.nameIndex]
+    if (nameEntry !is Utf8Constant) {
+      throw IllegalStateException("Invalid constant at index: '$superClass'")
+    }
+  
+    return nameEntry.bytes.decodeToString()
   }
 }

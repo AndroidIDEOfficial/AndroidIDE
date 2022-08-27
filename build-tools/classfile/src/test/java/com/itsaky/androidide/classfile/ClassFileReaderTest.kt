@@ -42,6 +42,9 @@ class ClassFileReaderTest {
     assertThat(file.majorVersion).isEqualTo(55)
     assertThat(file.minorVersion).isEqualTo(0)
     
+    assertThat(file.getName()).isEqualTo("io/github/rosemoe/sora/widget/CodeEditor")
+    assertThat(file.getSuperClassName()).isEqualTo("android/view/View")
+    
     assertThat(file.accessFlags and ClassFileConstants.ACC_PUBLIC).isNotEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_SUPER).isNotEqualTo(0)
     
