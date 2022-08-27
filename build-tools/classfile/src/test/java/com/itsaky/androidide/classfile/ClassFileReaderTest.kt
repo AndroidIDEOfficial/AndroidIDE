@@ -49,7 +49,6 @@ class ClassFileReaderTest {
     assertThat(file.accessFlags and ClassFileConstants.ACC_FINAL).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_ANNOTATION).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_ENUM).isEqualTo(0)
-    assertThat(file.accessFlags and ClassFileConstants.ACC_ENUM).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_INTERFACE).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_MODULE).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_SYNTHETIC).isEqualTo(0)
