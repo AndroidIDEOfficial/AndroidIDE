@@ -197,6 +197,7 @@ open class CompletionItem(
 
   fun getLabel(): String = this.label as String
 
+  // TODO Use edit handler for handling all edits, including this one
   override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
     if (Looper.myLooper() != Looper.getMainLooper()) {
       ThreadUtils.runOnUiThread { performCompletion(editor, text, line, column) }

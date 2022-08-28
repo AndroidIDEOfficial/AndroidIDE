@@ -29,6 +29,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -124,8 +125,11 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       if (match == NO_MATCH) {
         continue
       }
-
-      result.add(createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, entry, match))
+  
+      val item = createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, entry, match)
+      item.insertText = "."
+      item.additionalEditHandler = QualifiedValueEditHandler()
+      result.add(item)
     }
   }
 
