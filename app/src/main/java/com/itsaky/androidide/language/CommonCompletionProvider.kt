@@ -114,17 +114,22 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
   
       val frameworkResources = module.getFrameworkResourceTable()
       if (frameworkResources != null) {
-        lookup.update(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES_LOOKUP_KEY, frameworkResources)
+        lookup.update(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES, frameworkResources)
       }
 
       val moduleResources = module.getSourceResourceTables()
       if (moduleResources.isNotEmpty()) {
-        lookup.update(ResourceTableRegistry.COMPLETION_MODULE_RES_LOOKUP_KEY, moduleResources)
+        lookup.update(ResourceTableRegistry.COMPLETION_MODULE_RES, moduleResources)
       }
       
       val depResTables = module.getDependencyResourceTables()
       if (depResTables.isNotEmpty()) {
-        lookup.update(ResourceTableRegistry.COMPLETION_DEP_RES_LOOKUP_KEY, depResTables)
+        lookup.update(ResourceTableRegistry.COMPLETION_DEP_RES, depResTables)
+      }
+      
+      val manifestAttrTable = module.getManifestAttrTable()
+      if (manifestAttrTable != null) {
+        lookup.update(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES, manifestAttrTable)
       }
     }
   }

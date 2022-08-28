@@ -15,27 +15,34 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.layout
+package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 
+import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ResourcePathData
+import com.itsaky.androidide.aapt.findEntries
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
+import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
-import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
-import kotlin.math.max
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
- * [LayoutCompletionProvider] implementation for providing completing tags in an XML layout file.
+ * Provides tag completion in AndroidManifest.
  *
  * @author Akash Yadav
  */
-open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
-  LayoutCompletionProvider(provider) {
+class ManifestTagCompletionProvider(provider: ICompletionProvider) :
+  ManifestCompletionProvider(provider) {
+
+  companion object {
+    private const val MANIFEST_TAG_PREFIX = "AndroidManifest"
+  }
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == TAG
@@ -55,24 +62,45 @@ open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
         prefix
       }
 
-    return getCompleter(newPrefix).complete(params, pathData, document, type, newPrefix)
+    val styleables =
+      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES)
+        ?.findPackage(ResourceTableRegistry.PCK_ANDROID)
+        ?.findGroup(STYLEABLE)
+        ?: return EMPTY
+
+    val result = mutableListOf<CompletionItem>()
+
+    styleables
+      .findEntries { it.startsWith(MANIFEST_TAG_PREFIX) }
+      .map { transformTagName(it.name) }
+      .forEach {
+        val match = matchLevel(it, newPrefix)
+        if (match == NO_MATCH) {
+          return@forEach
+        }
+
+        result.add(createTagCompletionItem(it, it, match))
+      }
+
+    return CompletionResult(result)
   }
 
-  private fun getCompleter(prefix: String): IXmlCompletionProvider {
-    if (prefix.contains('.')) {
-      return QualifiedTagCompleter(provider)
+  private fun transformTagName(tag: String): String {
+    val name = StringBuilder()
+    var index = MANIFEST_TAG_PREFIX.length
+    while (index < tag.length) {
+      var c = tag[index]
+      if (c.isUpperCase()) {
+        if (index != MANIFEST_TAG_PREFIX.length) {
+          name.append('-')
+        }
+        c = c.lowercaseChar()
+      }
+
+      name.append(c)
+      ++index
     }
 
-    return SimpleTagCompleter(provider)
-  }
-
-  protected fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
-    val simpleNameMatchLevel = matchLevel(simpleName, prefix)
-    val nameMatchLevel = matchLevel(qualifiedName, prefix)
-    if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
-      return NO_MATCH
-    }
-
-    return MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
+    return name.toString()
   }
 }

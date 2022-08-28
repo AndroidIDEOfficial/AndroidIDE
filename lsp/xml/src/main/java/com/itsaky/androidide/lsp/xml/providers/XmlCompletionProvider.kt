@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.providers
 
+import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.extractPathData
@@ -27,9 +28,11 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -84,7 +87,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     if (prefix.isBlank() && type != ATTRIBUTE_VALUE) {
       return EMPTY
     }
-    
+
     val pathData = extractPathData(params.file.toFile())
 
     val completer =
@@ -120,6 +123,30 @@ class XmlCompletionProvider(settings: IServerSettings) :
   private fun getCompleter(pathData: ResourcePathData, type: NodeType): IXmlCompletionProvider? {
     return when (pathData.type) {
       LAYOUT -> createLayoutCompleter(type)
+      null -> createNullTypeCompleter(pathData, type)
+      else -> null
+    }
+  }
+
+  private fun createNullTypeCompleter(
+    pathData: ResourcePathData,
+    type: NodeType
+  ): IXmlCompletionProvider? {
+
+    // In test cases
+    if (ManifestCompletionProvider.canComplete(pathData, type)) {
+      return createManifestCompleter(type)
+    }
+
+    return when (pathData.file.name) {
+      ANDROID_MANIFEST_XML -> createManifestCompleter(type)
+      else -> null
+    }
+  }
+
+  private fun createManifestCompleter(type: NodeType): IXmlCompletionProvider? {
+    return when (type) {
+      TAG -> ManifestTagCompletionProvider(this)
       else -> null
     }
   }

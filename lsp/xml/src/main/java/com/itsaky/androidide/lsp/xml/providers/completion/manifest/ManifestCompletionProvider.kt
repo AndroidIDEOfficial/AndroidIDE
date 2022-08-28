@@ -15,21 +15,34 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion
+package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 
+import com.android.SdkConstants
 import com.android.aaptcompiler.ResourcePathData
 import com.itsaky.androidide.lsp.api.ICompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
+import com.itsaky.androidide.utils.VMUtils
 
 /**
- * Base class for provider which provide XML tag completions.
+ * Base class for completers which provide completions in Android manifest.
  *
  * @author Akash Yadav
  */
-abstract class TagCompletionProvider(provider: ICompletionProvider) : IXmlCompletionProvider(provider) {
+abstract class ManifestCompletionProvider(provider: ICompletionProvider) :
+  IXmlCompletionProvider(provider) {
 
+  companion object {
+    @JvmStatic
+    fun canComplete(pathData: ResourcePathData, type: NodeType) : Boolean {
+      return pathData.file.name == SdkConstants.ANDROID_MANIFEST_XML ||
+          (VMUtils.isJvm() &&
+            pathData.file.name.startsWith("Manifest") &&
+            pathData.file.name.endsWith("_template.xml"))
+    }
+  }
+  
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && type == TAG
+    return super.canProvideCompletions(pathData, type) && canComplete(pathData, type)
   }
 }

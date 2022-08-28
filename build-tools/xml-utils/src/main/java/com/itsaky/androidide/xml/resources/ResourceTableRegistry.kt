@@ -33,9 +33,10 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
     const val PCK_ANDROID = "android"
-    @JvmStatic val COMPLETION_MODULE_RES_LOOKUP_KEY = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_DEP_RES_LOOKUP_KEY = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_FRAMEWORK_RES_LOOKUP_KEY = Lookup.Key<ResourceTable>()
+    @JvmStatic val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
+    @JvmStatic val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
 
     @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
   }

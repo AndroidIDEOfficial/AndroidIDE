@@ -352,5 +352,11 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     }
   }
 
+  /** Get the resource table for the attrs_manifest.xml file. */
+  fun getManifestAttrTable(): ResourceTable? {
+    val platform = getPlatformDir() ?: return null
+    return ResourceTableRegistry.getInstance().getManifestAttrTable(platform)
+  }
+
   private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }
