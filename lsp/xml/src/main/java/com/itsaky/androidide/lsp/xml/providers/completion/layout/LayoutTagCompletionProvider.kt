@@ -25,6 +25,7 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.TagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
@@ -37,7 +38,7 @@ import org.eclipse.lemminx.dom.DOMDocument
  *
  * @author Akash Yadav
  */
-class LayoutTagCompletionProvider(provider: ICompletionProvider) :
+open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
   LayoutCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
@@ -58,24 +59,24 @@ class LayoutTagCompletionProvider(provider: ICompletionProvider) :
         prefix
       }
 
-    val widgets =
-      Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY)?.getAllWidgets()
-        ?: return CompletionResult.EMPTY
-    val result = mutableListOf<CompletionItem>()
+    return getCompleter(newPrefix).complete(params, pathData, document, type, newPrefix)
+  }
 
-    for (widget in widgets) {
-      val simpleNameMatchLevel = matchLevel(widget.simpleName, newPrefix)
-      val nameMatchLevel = matchLevel(widget.qualifiedName, newPrefix)
-      if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
-        continue
-      }
-
-      val matchLevel =
-        MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
-
-      result.add(createTagCompletionItem(widget.simpleName, widget.qualifiedName, matchLevel))
+  private fun getCompleter(prefix: String): IXmlCompletionProvider {
+    if (prefix.contains('.')) {
+      return QualifiedTagCompleter(provider)
     }
 
-    return CompletionResult(result)
+    return SimpleTagCompleter(provider)
+  }
+  
+  protected fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
+    val simpleNameMatchLevel = matchLevel(simpleName, prefix)
+    val nameMatchLevel = matchLevel(qualifiedName, prefix)
+    if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
+      return NO_MATCH
+    }
+    
+    return MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
   }
 }

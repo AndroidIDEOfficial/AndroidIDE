@@ -34,7 +34,7 @@ class DefaultWidgetTable : WidgetTable {
   private val root: WidgetNode = WidgetNode(name = "", isWidget = false)
 
   override fun getWidget(name: String): Widget? {
-    val node = getNode(name)
+    val node = getNode(name)!!
     if (!node.isWidget) {
       return null
     }
@@ -57,11 +57,9 @@ class DefaultWidgetTable : WidgetTable {
     if (node.widget != null) {
       result.add(node.widget)
     }
-    
-    node.children.values.forEach {
-      result.addAll(collectWidgets(it))
-    }
-    
+
+    node.children.values.forEach { result.addAll(collectWidgets(it)) }
+
     return result
   }
 
@@ -97,7 +95,7 @@ class DefaultWidgetTable : WidgetTable {
 
   internal fun putWidget(widget: DefaultWidget) {
     val name = widget.qualifiedName.substringBeforeLast('.')
-    val node = getNode(name)
+    val node = getNode(name)!!
     val existing = node.children[widget.simpleName]
     val newNode = WidgetNode(name = widget.qualifiedName, isWidget = true, widget = widget)
 
@@ -113,25 +111,39 @@ class DefaultWidgetTable : WidgetTable {
     node.children[widget.simpleName] = newNode
   }
 
-  internal fun getNode(name: String): WidgetNode {
+  @JvmOverloads
+  fun getNode(name: String, createIfNotPresent: Boolean = true): WidgetNode? {
     if (name.isBlank()) {
       return root
     }
 
     if (!name.contains('.')) {
-      return root.children.computeIfAbsent(name) { WidgetNode(name = name, isWidget = false) }
+      return if (createIfNotPresent) {
+        root.children.computeIfAbsent(name) { WidgetNode(name = name, isWidget = false) }
+      } else {
+        root.children[name]
+      }
     }
 
     val segments = name.split('.')
-    var node: WidgetNode = root
+    var node: WidgetNode? = root
     for (segment in segments) {
-      node = node.children.computeIfAbsent(segment) { WidgetNode(name = segment, isWidget = false) }
+      if (node == null) {
+        break
+      }
+
+      node =
+        if (createIfNotPresent) {
+          node.children.computeIfAbsent(segment) { WidgetNode(name = segment, isWidget = false) }
+        } else {
+          node.children[segment]
+        }
     }
 
     return node
   }
 
-  internal inner class WidgetNode(
+  inner class WidgetNode(
     val name: String,
     val isWidget: Boolean,
     val widget: DefaultWidget? = null,
