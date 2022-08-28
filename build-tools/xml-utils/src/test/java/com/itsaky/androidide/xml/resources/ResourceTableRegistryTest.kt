@@ -29,10 +29,10 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.findAndroidJar
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -47,6 +47,7 @@ class ResourceTableRegistryTest {
   @Test
   fun `test with simple framework resource parsing`() {
     val androidJar = findAndroidJar()
+    val platform = androidJar.parentFile!!
     val registry = ResourceTableRegistry.getInstance()
     val resDir = File(androidJar.parentFile, "data/res")
     val resourceTable = registry.forPackage(PCK_ANDROID, resDir)
@@ -57,12 +58,95 @@ class ResourceTableRegistryTest {
     assertThat(registry.forPackage(PCK_ANDROID, resDir)).isEqualTo(resourceTable)
 
     // It should also create the manifest attrs table by default
-    registry.getManifestAttrTable(platform = androidJar.parentFile!!).apply {
+    registry.getManifestAttrTable(platform = platform).apply {
       assertThat(this).isNotNull()
       assertThat(this!!.packages).hasSize(1)
       assertThat(this.packages.first().name).isEqualTo(PCK_ANDROID)
       assertThat(findPackage(PCK_ANDROID)!!.findGroup(ATTR)).isNotNull()
       assertThat(findPackage(PCK_ANDROID)!!.findGroup(STYLEABLE)).isNotNull()
+    }
+
+    registry.getActivityActions(platform).apply {
+      assertThat(this).isNotEmpty()
+      assertThat(this)
+        .containsAtLeastElementsIn(
+          arrayOf(
+            "android.app.action.SET_NEW_PASSWORD",
+            "android.app.action.START_ENCRYPTION",
+            "android.intent.action.CARRIER_SETUP",
+            "android.intent.action.CHOOSER",
+            "android.intent.action.MAIN",
+            "android.intent.action.MANAGE_APP_PERMISSION",
+            "android.intent.action.MANAGE_APP_PERMISSIONS"
+          )
+        )
+      assertThat(this.size).isGreaterThan(250) // actual size is 300+
+    }
+
+    registry.getBroadcastActions(platform).apply {
+      assertThat(this).isNotEmpty()
+      assertThat(this)
+        .containsAtLeastElementsIn(
+          arrayOf(
+            "android.telephony.action.SUBSCRIPTION_PLANS_CHANGED",
+            "android.telephony.action.SUBSCRIPTION_SPECIFIC_CARRIER_IDENTITY_CHANGED",
+            "android.telephony.euicc.action.NOTIFY_CARRIER_SETUP_INCOMPLETE",
+            "android.telephony.euicc.action.OTA_STATUS_CHANGED",
+            "android.app.action.USER_ADDED",
+            "android.app.action.USER_REMOVED"
+          )
+        )
+    }
+
+    registry.getServiceActions(platform).apply {
+      assertThat(this).isNotEmpty()
+      assertThat(this)
+        .containsAtLeastElementsIn(
+          arrayOf(
+            "android.telephony.data.DataService",
+            "android.view.InputMethod",
+            "android.intent.action.TTS_SERVICE",
+            "android.media.MediaRoute2ProviderService",
+            "android.service.voice.VoiceInteractionService",
+            "android.service.vr.VrListenerService"
+          )
+        )
+    }
+
+    registry.getCategories(platform).apply {
+      assertThat(this).isNotEmpty()
+      assertThat(this)
+        .containsAtLeastElementsIn(
+          arrayOf(
+            "android.intent.category.HOME",
+            "android.intent.category.HOME_MAIN",
+            "android.intent.category.INFO",
+            "android.intent.category.LAUNCHER",
+            "android.intent.category.LAUNCHER_APP",
+            "android.net.category.EVENT_IKE_ERROR",
+            "android.net.category.EVENT_NETWORK_ERROR",
+            "android.service.quicksettings.action.QS_TILE_PREFERENCES"
+          )
+        )
+    }
+
+    registry.getFeatures(platform).apply {
+      assertThat(this).isNotEmpty()
+      assertThat(this)
+        .containsAtLeastElementsIn(
+          arrayOf(
+            "android.software.vulkan.deqp.level",
+            "android.software.webview",
+            "android.software.window_magnification",
+            "android.sofware.nfc.beam",
+            "android.hardware.strongbox_keystore",
+            "android.hardware.telephony",
+            "android.hardware.telephony.calling",
+            "android.hardware.telephony.carrierlock",
+            "android.hardware.ethernet",
+            "android.hardware.faketouch"
+          )
+        )
     }
 
     resourceTable.apply {

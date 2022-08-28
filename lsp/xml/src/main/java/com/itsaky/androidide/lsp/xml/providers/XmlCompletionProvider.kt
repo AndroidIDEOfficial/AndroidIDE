@@ -32,6 +32,7 @@ import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueComple
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.canCompleteManifest
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
@@ -149,6 +150,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (type) {
       TAG -> ManifestTagCompletionProvider(this)
       ATTRIBUTE -> ManifestAttrCompletionProvider(this)
+      ATTRIBUTE_VALUE -> ManifestAttrValueCompletionProvider(this)
       else -> null
     }
   }

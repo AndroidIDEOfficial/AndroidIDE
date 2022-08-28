@@ -19,8 +19,11 @@ package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.android.aaptcompiler.ResourcePathData
+import com.android.aaptcompiler.ResourceTable
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.utils.VMUtils
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 
 const val MANIFEST_TAG_PREFIX = "AndroidManifest"
 
@@ -29,6 +32,12 @@ fun canCompleteManifest(pathData: ResourcePathData, type: NodeType): Boolean {
     (VMUtils.isJvm() &&
       pathData.file.name.startsWith("Manifest") &&
       pathData.file.name.endsWith("_template.xml"))
+}
+
+fun manifestResourceTable(): Set<ResourceTable> {
+  return setOf(
+    Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES) ?: return emptySet()
+  )
 }
 
 /**

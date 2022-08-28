@@ -62,6 +62,21 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    */
   fun getManifestAttrTable(platform: File): ResourceTable?
 
+  /** Get the list of all activity actions for the given [platform] directory. */
+  fun getActivityActions(platform: File): List<String>
+
+  /** Get the list of all broadcast actions for the given [platform] directory. */
+  fun getBroadcastActions(platform: File): List<String>
+
+  /** Get the list of all service actions for the given [platform] directory. */
+  fun getServiceActions(platform: File): List<String>
+
+  /** Get the list of all categories for the given [platform] directory. */
+  fun getCategories(platform: File): List<String>
+
+  /** Get the list of all features for the given [platform] directory. */
+  fun getFeatures(platform: File): List<String>
+
   override fun forPlatformDir(platform: File): ResourceTable? {
     return forPackage(PCK_ANDROID, File(platform, "data/res"))
   }

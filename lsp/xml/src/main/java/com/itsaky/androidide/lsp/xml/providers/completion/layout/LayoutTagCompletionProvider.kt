@@ -65,14 +65,4 @@ open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
 
     return SimpleTagCompleter(provider)
   }
-
-  protected fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
-    val simpleNameMatchLevel = matchLevel(simpleName, prefix)
-    val nameMatchLevel = matchLevel(qualifiedName, prefix)
-    if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
-      return NO_MATCH
-    }
-
-    return MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
-  }
 }

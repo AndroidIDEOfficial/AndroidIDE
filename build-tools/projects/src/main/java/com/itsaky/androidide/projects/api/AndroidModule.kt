@@ -358,5 +358,33 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     return ResourceTableRegistry.getInstance().getManifestAttrTable(platform)
   }
 
+  /** @see ResourceTableRegistry.getActivityActions */
+  fun getActivityActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getActivityActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getBroadcastActions */
+  fun getBroadcastActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getBroadcastActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getServiceActions */
+  fun getServiceActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getServiceActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getCategories */
+  fun getCategories(): List<String> {
+    return ResourceTableRegistry.getInstance().getCategories(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getFeatures */
+  fun getFeatures(): List<String> {
+    return ResourceTableRegistry.getInstance().getFeatures(getPlatformDir() ?: return emptyList())
+  }
+
   private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }

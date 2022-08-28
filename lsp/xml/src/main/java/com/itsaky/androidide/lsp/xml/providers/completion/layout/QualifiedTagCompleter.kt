@@ -23,6 +23,7 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.utils.ClassTrie

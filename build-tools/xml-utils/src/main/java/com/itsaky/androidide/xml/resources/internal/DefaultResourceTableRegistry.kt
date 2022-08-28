@@ -17,6 +17,11 @@
 
 package com.itsaky.androidide.xml.resources.internal
 
+import com.android.SdkConstants
+import com.android.SdkConstants.FN_INTENT_ACTIONS_ACTIVITY
+import com.android.SdkConstants.FN_INTENT_ACTIONS_BROADCAST
+import com.android.SdkConstants.FN_INTENT_ACTIONS_SERVICE
+import com.android.SdkConstants.FN_INTENT_CATEGORIES
 import com.android.SdkConstants.OS_PLATFORM_ATTRS_MANIFEST_XML
 import com.android.aaptcompiler.BlameLogger
 import com.android.aaptcompiler.ResourceTable
@@ -28,6 +33,11 @@ import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
+import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,11 +48,26 @@ import java.util.concurrent.ConcurrentHashMap
  */
 internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
+  /**
+   * Represents the type of single line entries read from files.
+   *
+   * @property filename The filename which contains the single-line entries.
+   */
+  internal enum class SingleLineValueEntryType(val filename: String) {
+    ACTIVITY_ACTIONS(FN_INTENT_ACTIONS_ACTIVITY),
+    BROADCAST_ACTIONS(FN_INTENT_ACTIONS_BROADCAST),
+    SERVICE_ACTIONS(FN_INTENT_ACTIONS_SERVICE),
+    CATEGORIES(FN_INTENT_CATEGORIES),
+    FEATURES("features.txt")
+  }
+
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   private val tables = ConcurrentHashMap<String, ResourceTable>()
   private val platformTables = ConcurrentHashMap<String, ResourceTable>()
   private val manifestAttrs = ConcurrentHashMap<String, ResourceTable>()
+  private val singleLineValueEntries =
+    ConcurrentHashMap<String, ConcurrentHashMap<SingleLineValueEntryType, List<String>>>()
 
   override fun forPackage(name: String, vararg dirs: File): ResourceTable? {
 
@@ -59,6 +84,11 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
   override fun forPlatformDir(platform: File): ResourceTable? {
     getManifestAttrTable(platform)
+    getActivityActions(platform)
+    getBroadcastActions(platform)
+    getServiceActions(platform)
+    getCategories(platform)
+    getFeatures(platform)
     return super.forPlatformDir(platform)
   }
 
@@ -68,6 +98,70 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
         manifestAttrs[platform.path] = it
         it.packages.firstOrNull()?.name = PCK_ANDROID
       }
+  }
+
+  override fun getActivityActions(platform: File): List<String> {
+    return getSingleLineEntry(platform, ACTIVITY_ACTIONS)
+  }
+
+  override fun getBroadcastActions(platform: File): List<String> {
+    return getSingleLineEntry(platform, BROADCAST_ACTIONS)
+  }
+
+  override fun getServiceActions(platform: File): List<String> {
+    return getSingleLineEntry(platform, SERVICE_ACTIONS)
+  }
+
+  override fun getCategories(platform: File): List<String> {
+    return getSingleLineEntry(platform, CATEGORIES)
+  }
+
+  override fun getFeatures(platform: File): List<String> {
+    return getSingleLineEntry(platform, FEATURES)
+  }
+
+  override fun removeTable(packageName: String) {
+    tables.remove(packageName)
+  }
+
+  override fun clear() {
+    tables.clear()
+  }
+
+  private fun getSingleLineEntry(platform: File, type: SingleLineValueEntryType): List<String> {
+    var entries = singleLineValueEntries[platform.path]
+    if (entries == null) {
+      entries = readSingleLineEntry(platform, type)
+      singleLineValueEntries[platform.path] = entries
+    }
+
+    return entries[type]
+      ?: run {
+        readSingleLineEntriesTo(platform, type, entries)
+        entries[type] ?: emptyList()
+      }
+  }
+
+  private fun readSingleLineEntry(
+    platform: File,
+    type: SingleLineValueEntryType
+  ): ConcurrentHashMap<SingleLineValueEntryType, List<String>> {
+    val map = ConcurrentHashMap<SingleLineValueEntryType, List<String>>()
+    readSingleLineEntriesTo(platform, type, map)
+    return map
+  }
+
+  private fun readSingleLineEntriesTo(
+    platform: File,
+    type: SingleLineValueEntryType,
+    map: ConcurrentHashMap<SingleLineValueEntryType, List<String>>
+  ) {
+    val file = File(platform, "${SdkConstants.FD_DATA}/${type.filename}")
+    if (!file.exists() || !file.canRead()) {
+      return
+    }
+
+    map[type] = file.readLines()
   }
 
   private fun createManifestAttrTable(platform: File): ResourceTable? {
@@ -118,10 +212,6 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
     val options =
       TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
     return options
-  }
-
-  override fun removeTable(packageName: String) {
-    tables.remove(packageName)
   }
 
   private fun updateFromDirectory(
@@ -183,9 +273,5 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
         log.warn("Failed to compile ${pathData.file}", err.message)
       }
     }
-  }
-
-  override fun clear() {
-    tables.clear()
   }
 }

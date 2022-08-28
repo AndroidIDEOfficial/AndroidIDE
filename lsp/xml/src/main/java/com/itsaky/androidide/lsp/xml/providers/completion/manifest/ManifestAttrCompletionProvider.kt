@@ -20,13 +20,10 @@ package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.Styleable
-import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMNode
 
 /**
@@ -41,11 +38,7 @@ class ManifestAttrCompletionProvider(provider: ICompletionProvider) :
     return super.canProvideCompletions(pathData, type) && canCompleteManifest(pathData, type)
   }
 
-  override fun findResourceTables(nsUri: String): Set<ResourceTable> {
-    return setOf(
-      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES) ?: return emptySet()
-    )
-  }
+  override fun findResourceTables(nsUri: String) = manifestResourceTable()
 
   override fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val name = node.nodeName

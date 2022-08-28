@@ -45,14 +45,20 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
+import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
+import org.eclipse.lemminx.dom.DOMNode
 
 /**
  * Provides completions for attribute value in layout XML files.
  *
  * @author Akash Yadav
  */
-class AttrValueCompletionProvider(provider: ICompletionProvider) : IXmlCompletionProvider(provider) {
+open class AttrValueCompletionProvider(provider: ICompletionProvider) :
+  IXmlCompletionProvider(provider) {
+
+  protected lateinit var nodeAtCursor: DOMNode
+  protected lateinit var attrAtCursor: DOMAttr
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
@@ -65,9 +71,10 @@ class AttrValueCompletionProvider(provider: ICompletionProvider) : IXmlCompletio
     type: NodeType,
     prefix: String
   ): CompletionResult {
-    val attr = document.findAttrAt(params.position.requireIndex())
+    this.nodeAtCursor = document.findNodeAt(params.position.requireIndex()) ?: return EMPTY
+    this.attrAtCursor = document.findAttrAt(params.position.requireIndex()) ?: return EMPTY
     val attrName =
-      attr?.localName
+      attrAtCursor.localName
         ?: run {
           log.warn("Cannot find attribute at index ${params.position.index}")
           return EMPTY
@@ -78,9 +85,9 @@ class AttrValueCompletionProvider(provider: ICompletionProvider) : IXmlCompletio
     //  not for 'textColor="@@cursor"'
 
     val namespace =
-      attr.namespaceURI
+      attrAtCursor.namespaceURI
         ?: run {
-          log.warn("Unknown namespace for attribute", attr)
+          log.warn("Unknown namespace for attribute", attrAtCursor)
           return EMPTY
         }
 
@@ -106,6 +113,17 @@ class AttrValueCompletionProvider(provider: ICompletionProvider) : IXmlCompletio
       }
     }
 
+    completeInternal(attrName, prefix, groups, list)
+
+    return CompletionResult(list)
+  }
+
+  protected open fun completeInternal(
+    attrName: String,
+    prefix: String,
+    groups: MutableSet<Triple<String, ResourceTable, ResourceGroup>>,
+    result: MutableList<CompletionItem>
+  ) {
     for (triple in groups) {
       val pack = triple.first
       val table = triple.second
@@ -115,10 +133,8 @@ class AttrValueCompletionProvider(provider: ICompletionProvider) : IXmlCompletio
         continue
       }
 
-      addFromTable(table, entry, pack, prefix, list)
+      addFromTable(table, entry, pack, prefix, result)
     }
-
-    return CompletionResult(list)
   }
 
   private fun addFromTable(
