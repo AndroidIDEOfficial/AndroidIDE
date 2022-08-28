@@ -117,6 +117,23 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
     }
   }
   
+  @Test // prefix: 'padding'
+  fun `duplicate attributes must not be included`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestNoDuplicateAttrs")
+      val (isIncomplete, items) = complete()
+      assertThat(isIncomplete).isFalse()
+      assertThat(items).isNotEmpty()
+      assertThat(items).contains("android:paddingLeft") // from View
+      assertThat(items).contains("android:paddingRight") // from View
+      assertThat(items).contains("android:paddingTop") // from View
+      assertThat(items).contains("android:paddingBottom") // from View
+      assertThat(items).contains("android:paddingStart") // from View
+      assertThat(items).contains("android:paddingEnd") // from View
+      assertThat(items).doesNotContain("android:padding")
+    }
+  }
+  
   @Test // prefix: 'layout'
   fun `attributes from all defined namespaces must be completed`() {
     XMLLSPTest.apply {

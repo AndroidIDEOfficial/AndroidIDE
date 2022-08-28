@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTablePackage
@@ -28,11 +29,13 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
+import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMNode
 
@@ -43,6 +46,9 @@ import org.eclipse.lemminx.dom.DOMNode
  */
 open class AttrCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
+  
+  private lateinit var nodeAtCursor: DOMNode
+  private lateinit var attrAtCursor: DOMAttr
   
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE
@@ -55,23 +61,23 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     type: NodeType,
     prefix: String
   ): CompletionResult {
-    val node = document.findNodeAt(params.position.requireIndex())
-    val attr = document.findAttrAt(params.position.requireIndex())
+    this.nodeAtCursor = document.findNodeAt(params.position.requireIndex()) ?: return EMPTY
+    this.attrAtCursor = document.findAttrAt(params.position.requireIndex()) ?: return EMPTY
     val list = mutableListOf<CompletionItem>()
 
     val newPrefix =
-      if (attr.name.contains(':')) {
-        attr.name.substringAfterLast(':')
-      } else attr.name
+      if (attrAtCursor.name.contains(':')) {
+        attrAtCursor.name.substringAfterLast(':')
+      } else attrAtCursor.name
 
     val namespace =
-      attr.namespaceURI
+      attrAtCursor.namespaceURI
         ?: run {
-          return completeFromAllNamespaces(node, list, newPrefix)
+          return completeFromAllNamespaces(nodeAtCursor, list, newPrefix)
         }
 
-    val nsPrefix = attr.nodeName.substringBefore(':')
-    completeForNamespace(namespace, nsPrefix, node, newPrefix, list)
+    val nsPrefix = attrAtCursor.nodeName.substringBefore(':')
+    completeForNamespace(namespace, nsPrefix, nodeAtCursor, newPrefix, list)
 
     return CompletionResult(list)
   }
@@ -162,7 +168,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     for (nodeStyleable in styleables) {
       for (ref in nodeStyleable.entries) {
         val matchLevel = matchLevel(ref.name.entry!!, prefix)
-        if (matchLevel == NO_MATCH) {
+        if (matchLevel == NO_MATCH || hasAttr(pckPrefix, ref)) {
           continue
         }
         list.add(
@@ -176,7 +182,11 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
       }
     }
   }
-
+  
+  protected open fun hasAttr(prefix: String, ref: Reference): Boolean {
+    return this.nodeAtCursor.hasAttribute("${prefix}:${ref.name.entry}")
+  }
+  
   protected open fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
     val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
