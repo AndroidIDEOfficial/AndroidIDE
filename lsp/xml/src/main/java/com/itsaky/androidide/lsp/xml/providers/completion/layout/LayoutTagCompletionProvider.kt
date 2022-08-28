@@ -35,10 +35,10 @@ import org.eclipse.lemminx.dom.DOMDocument
  * @author Akash Yadav
  */
 open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
-  LayoutCompletionProvider(provider) {
+  IXmlCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && type == TAG
+    return super.canProvideCompletions(pathData, type) && canCompleteLayout(pathData, type) && type == TAG
   }
 
   override fun doComplete(

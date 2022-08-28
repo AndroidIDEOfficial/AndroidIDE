@@ -15,22 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion
+package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
+import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.ResourcePathData
-import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
-import java.nio.file.Path
 
 /**
- * Base class for providing attribute completions in XML file.
- *
  * @author Akash Yadav
  */
-abstract class AttributeCompletionProvider(provider: ICompletionProvider) : IXmlCompletionProvider(provider) {
 
-  override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE
-  }
+fun canCompleteLayout(pathData: ResourcePathData, type: NodeType) : Boolean {
+  return pathData.type == LAYOUT
 }

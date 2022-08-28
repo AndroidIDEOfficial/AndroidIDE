@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.layout
+package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.ConfigDescription
@@ -29,8 +29,8 @@ import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.lsp.xml.providers.completion.AttributeCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import org.eclipse.lemminx.dom.DOMDocument
@@ -41,9 +41,13 @@ import org.eclipse.lemminx.dom.DOMNode
  *
  * @author Akash Yadav
  */
-class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
-  AttributeCompletionProvider(provider) {
-
+open class AttrCompletionProvider(provider: ICompletionProvider) :
+  IXmlCompletionProvider(provider) {
+  
+  override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
+    return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE
+  }
+  
   override fun doComplete(
     params: CompletionParams,
     pathData: ResourcePathData,
@@ -96,7 +100,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     return CompletionResult(list)
   }
 
-  private fun completeForNamespace(
+  protected open fun completeForNamespace(
     namespace: String,
     nsPrefix: String,
     node: DOMNode,
@@ -125,7 +129,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun addFromPackage(
+  protected open fun addFromPackage(
     tablePackage: ResourceTablePackage?,
     node: DOMNode,
     pck: String,
@@ -148,7 +152,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     )
   }
 
-  private fun addFromStyleables(
+  protected open fun addFromStyleables(
     styleables: Set<Styleable>,
     pck: String,
     pckPrefix: String,
@@ -173,7 +177,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
+  protected open fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
     val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
 
@@ -199,7 +203,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     return emptySet()
   }
 
-  private fun findStyleablesForName(
+  protected open fun findStyleablesForName(
     styleables: ResourceGroup,
     node: DOMNode,
     addFromParent: Boolean = false,
@@ -231,7 +235,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     return result
   }
 
-  private fun findLayoutParams(styleables: ResourceGroup, parentNode: DOMNode): Set<Styleable> {
+  protected open fun findLayoutParams(styleables: ResourceGroup, parentNode: DOMNode): Set<Styleable> {
     val result = mutableSetOf<Styleable>()
 
     // Add layout params common for all view groups and the ones supporting child margins
@@ -248,7 +252,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     return result
   }
 
-  private fun findStyleablesForWidget(
+  protected open fun findStyleablesForWidget(
     styleables: ResourceGroup,
     widgets: WidgetTable,
     widget: Widget,
@@ -293,7 +297,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     return result
   }
 
-  private fun addWidgetStyleable(
+  protected open fun addWidgetStyleable(
     styleables: ResourceGroup,
     widget: Widget,
     result: MutableSet<Styleable>,
@@ -302,7 +306,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     addWidgetStyleable(styleables, widget.simpleName, result, suffix)
   }
 
-  private fun addWidgetStyleable(
+  protected open fun addWidgetStyleable(
     styleables: ResourceGroup,
     widget: String,
     result: MutableSet<Styleable>,
@@ -314,7 +318,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun addSuperclassStyleables(
+  protected open fun addSuperclassStyleables(
     styleables: ResourceGroup,
     widgets: WidgetTable,
     widget: Widget,
@@ -332,7 +336,7 @@ class LayoutAttributeCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
+  protected open fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
     val value = styleables.findEntry(name)?.findValue(ConfigDescription())?.value
     if (value !is Styleable) {
       return null

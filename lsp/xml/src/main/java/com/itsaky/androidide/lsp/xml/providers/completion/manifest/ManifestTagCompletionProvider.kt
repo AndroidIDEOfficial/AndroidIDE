@@ -27,6 +27,7 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -38,14 +39,12 @@ import org.eclipse.lemminx.dom.DOMDocument
  * @author Akash Yadav
  */
 class ManifestTagCompletionProvider(provider: ICompletionProvider) :
-  ManifestCompletionProvider(provider) {
-
-  companion object {
-    private const val MANIFEST_TAG_PREFIX = "AndroidManifest"
-  }
+  IXmlCompletionProvider(provider) {
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && type == TAG
+    return super.canProvideCompletions(pathData, type) &&
+      canCompleteManifest(pathData, type) &&
+      type == TAG
   }
 
   override fun doComplete(
@@ -72,7 +71,7 @@ class ManifestTagCompletionProvider(provider: ICompletionProvider) :
 
     styleables
       .findEntries { it.startsWith(MANIFEST_TAG_PREFIX) }
-      .map { transformTagName(it.name) }
+      .map { transformToTagName(it.name) }
       .forEach {
         val match = matchLevel(it, newPrefix)
         if (match == NO_MATCH) {
@@ -83,24 +82,5 @@ class ManifestTagCompletionProvider(provider: ICompletionProvider) :
       }
 
     return CompletionResult(result)
-  }
-
-  private fun transformTagName(tag: String): String {
-    val name = StringBuilder()
-    var index = MANIFEST_TAG_PREFIX.length
-    while (index < tag.length) {
-      var c = tag[index]
-      if (c.isUpperCase()) {
-        if (index != MANIFEST_TAG_PREFIX.length) {
-          name.append('-')
-        }
-        c = c.lowercaseChar()
-      }
-
-      name.append(c)
-      ++index
-    }
-
-    return name.toString()
   }
 }

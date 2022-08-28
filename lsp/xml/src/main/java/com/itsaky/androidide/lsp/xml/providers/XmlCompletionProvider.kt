@@ -29,10 +29,11 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttributeCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.canCompleteManifest
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -134,7 +135,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   ): IXmlCompletionProvider? {
 
     // In test cases
-    if (ManifestCompletionProvider.canComplete(pathData, type)) {
+    if (canCompleteManifest(pathData, type)) {
       return createManifestCompleter(type)
     }
 
@@ -147,6 +148,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   private fun createManifestCompleter(type: NodeType): IXmlCompletionProvider? {
     return when (type) {
       TAG -> ManifestTagCompletionProvider(this)
+      ATTRIBUTE -> ManifestAttrCompletionProvider(this)
       else -> null
     }
   }
@@ -154,7 +156,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   private fun createLayoutCompleter(type: NodeType): IXmlCompletionProvider? {
     return when (type) {
       TAG -> LayoutTagCompletionProvider(this)
-      ATTRIBUTE -> LayoutAttributeCompletionProvider(this)
+      ATTRIBUTE -> LayoutAttrCompletionProvider(this)
       ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
       else -> null
     }

@@ -15,34 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.manifest
+package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
-import com.android.SdkConstants
 import com.android.aaptcompiler.ResourcePathData
 import com.itsaky.androidide.lsp.api.ICompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.AttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
-import com.itsaky.androidide.utils.VMUtils
 
 /**
- * Base class for completers which provide completions in Android manifest.
+ * Attribute completion provider for layout files.
  *
  * @author Akash Yadav
  */
-abstract class ManifestCompletionProvider(provider: ICompletionProvider) :
-  IXmlCompletionProvider(provider) {
+class LayoutAttrCompletionProvider(provider: ICompletionProvider) :
+  AttrCompletionProvider(provider) {
 
-  companion object {
-    @JvmStatic
-    fun canComplete(pathData: ResourcePathData, type: NodeType) : Boolean {
-      return pathData.file.name == SdkConstants.ANDROID_MANIFEST_XML ||
-          (VMUtils.isJvm() &&
-            pathData.file.name.startsWith("Manifest") &&
-            pathData.file.name.endsWith("_template.xml"))
-    }
-  }
-  
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && canComplete(pathData, type)
+    return super.canProvideCompletions(pathData, type) && canCompleteLayout(pathData, type)
   }
 }

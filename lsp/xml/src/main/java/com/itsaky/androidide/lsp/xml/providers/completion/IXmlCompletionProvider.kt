@@ -45,7 +45,7 @@ import org.eclipse.lemminx.dom.DOMDocument
  */
 abstract class IXmlCompletionProvider(private val provider: ICompletionProvider) {
 
-  protected val log = ILogger.newInstance("XmlCompletionProvider")
+  protected val log: ILogger = ILogger.newInstance("XmlCompletionProvider")
 
   companion object {
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
