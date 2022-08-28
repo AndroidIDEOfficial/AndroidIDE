@@ -18,9 +18,7 @@
 package com.itsaky.androidide.lsp.xml.providers.completion.layout
 
 import com.android.aaptcompiler.ResourcePathData
-import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
-import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
@@ -29,7 +27,6 @@ import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.TagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
-import com.itsaky.androidide.xml.widgets.WidgetTable
 import kotlin.math.max
 import org.eclipse.lemminx.dom.DOMDocument
 
@@ -69,14 +66,14 @@ open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
 
     return SimpleTagCompleter(provider)
   }
-  
+
   protected fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
     val simpleNameMatchLevel = matchLevel(simpleName, prefix)
     val nameMatchLevel = matchLevel(qualifiedName, prefix)
     if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
       return NO_MATCH
     }
-    
+
     return MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
   }
 }

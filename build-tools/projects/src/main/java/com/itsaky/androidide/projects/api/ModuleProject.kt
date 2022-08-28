@@ -59,7 +59,6 @@ abstract class ModuleProject(
     const val USAGE_API = "java-api"
     const val USAGE_RUNTIME = "java-runtime"
     
-    
     @JvmStatic
     val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
   }

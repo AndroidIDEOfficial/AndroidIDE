@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.xml.resources.internal
 
+import com.android.SdkConstants.OS_PLATFORM_ATTRS_MANIFEST_XML
 import com.android.aaptcompiler.BlameLogger
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.TableExtractor
@@ -41,6 +42,7 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
   private val tables = ConcurrentHashMap<String, ResourceTable>()
   private val platformTables = ConcurrentHashMap<String, ResourceTable>()
+  private val manifestAttrs = ConcurrentHashMap<String, ResourceTable>()
 
   override fun forPackage(name: String, vararg dirs: File): ResourceTable? {
 
@@ -53,6 +55,33 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
         tables[name] = it
         it.packages.firstOrNull()?.name = name
       }
+  }
+
+  override fun forPlatformDir(platform: File): ResourceTable? {
+    getManifestAttrTable(platform)
+    return super.forPlatformDir(platform)
+  }
+
+  override fun getManifestAttrTable(platform: File): ResourceTable? {
+    return manifestAttrs[platform.path]
+      ?: createManifestAttrTable(platform)?.also {
+        manifestAttrs[platform.path] = it
+        it.packages.firstOrNull()?.name = PCK_ANDROID
+      }
+  }
+
+  private fun createManifestAttrTable(platform: File): ResourceTable? {
+    val attrs = File(platform, OS_PLATFORM_ATTRS_MANIFEST_XML)
+    if (!attrs.exists()) {
+      return null
+    }
+
+    val logger = BlameLogger(IDELogger)
+    val table = ResourceTable(logger = logger)
+    val options = getDefaultOptions()
+    extractTable(attrs, table, options, logger)
+
+    return table
   }
 
   private fun platformResourceTable(dir: File): ResourceTable? {
@@ -72,8 +101,7 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
     val logger = BlameLogger(IDELogger)
     val table = ResourceTable()
-    val options =
-      TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
+    val options = getDefaultOptions()
 
     for (resDir in resDirs) {
       val values = File(resDir, "values")
@@ -84,6 +112,12 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
     }
 
     return table
+  }
+
+  private fun getDefaultOptions(): TableExtractorOptions {
+    val options =
+      TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
+    return options
   }
 
   override fun removeTable(packageName: String) {
@@ -111,7 +145,23 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
     options: TableExtractorOptions,
     logger: BlameLogger
   ) {
-    val pathData = extractPathData(it)
+
+    if (it.path.endsWith(OS_PLATFORM_ATTRS_MANIFEST_XML)) {
+      // This is stored in another resource table
+      return
+    }
+
+    extractTable(it, table, options, logger)
+    return
+  }
+
+  private fun extractTable(
+    file: File,
+    table: ResourceTable,
+    options: TableExtractorOptions,
+    logger: BlameLogger
+  ) {
+    val pathData = extractPathData(file)
     if (pathData.extension != "xml") {
       // Cannot parse any other file types
       return

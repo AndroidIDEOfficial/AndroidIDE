@@ -17,19 +17,22 @@
 package com.itsaky.androidide.xml.resources
 
 import android.graphics.Color
+import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.COLOR
 import com.android.aaptcompiler.AaptResourceType.STRING
+import com.android.aaptcompiler.AaptResourceType.STYLEABLE
 import com.android.aaptcompiler.BasicString
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.findAndroidJar
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -46,13 +49,21 @@ class ResourceTableRegistryTest {
     val androidJar = findAndroidJar()
     val registry = ResourceTableRegistry.getInstance()
     val resDir = File(androidJar.parentFile, "data/res")
-    val resourceTable = registry.forPackage(ResourceTableRegistry.PCK_ANDROID, resDir)
+    val resourceTable = registry.forPackage(PCK_ANDROID, resDir)
 
     assertThat(resourceTable).isNotNull()
 
     // Should return same instance unless updated
-    assertThat(registry.forPackage(ResourceTableRegistry.PCK_ANDROID, resDir))
-      .isEqualTo(resourceTable)
+    assertThat(registry.forPackage(PCK_ANDROID, resDir)).isEqualTo(resourceTable)
+
+    // It should also create the manifest attrs table by default
+    registry.getManifestAttrTable(platform = androidJar.parentFile!!).apply {
+      assertThat(this).isNotNull()
+      assertThat(this!!.packages).hasSize(1)
+      assertThat(this.packages.first().name).isEqualTo(PCK_ANDROID)
+      assertThat(findPackage(PCK_ANDROID)!!.findGroup(ATTR)).isNotNull()
+      assertThat(findPackage(PCK_ANDROID)!!.findGroup(STYLEABLE)).isNotNull()
+    }
 
     resourceTable.apply {
       assertThat(this).isNotNull()
@@ -74,19 +85,21 @@ class ResourceTableRegistryTest {
       }
     }
 
-    resourceTable.findResource(ResourceName(pck = "android", type = STRING, entry = "cancel")).apply {
-      assertThat(this).isNotNull()
-      assertThat(this!!.entry).isNotNull()
-      assertThat(this.entry.values).isNotEmpty()
-      this.entry.values.firstOrNull().apply {
+    resourceTable
+      .findResource(ResourceName(pck = "android", type = STRING, entry = "cancel"))
+      .apply {
         assertThat(this).isNotNull()
-        assertThat(this!!.value).isNotNull()
-        this.value.apply {
-          assertThat(this).isInstanceOf(BasicString::class.java)
-          assertThat(this.toString()).isEqualTo("Cancel")
+        assertThat(this!!.entry).isNotNull()
+        assertThat(this.entry.values).isNotEmpty()
+        this.entry.values.firstOrNull().apply {
+          assertThat(this).isNotNull()
+          assertThat(this!!.value).isNotNull()
+          this.value.apply {
+            assertThat(this).isInstanceOf(BasicString::class.java)
+            assertThat(this.toString()).isEqualTo("Cancel")
+          }
         }
       }
-    }
 
     resourceTable
       .findResource(ResourceName(pck = "android", type = COLOR, entry = "holo_red_dark"))

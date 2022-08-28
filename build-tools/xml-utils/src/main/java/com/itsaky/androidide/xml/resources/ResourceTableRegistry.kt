@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.xml.resources
 
+import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.xml.registry.XmlRegistry
@@ -45,13 +46,20 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
    * @param name The package name for the resource table.
    */
   fun forPackage(name: String, vararg dirs: File): ResourceTable?
-  
+
   /**
    * Remove the resource table entry for the given package name.
    *
    * @param packageName The package name to remove the resource table entry for.
    */
   fun removeTable(packageName: String)
+
+  /**
+   * Get the resource group which corresponds to the attributes for `AndroidManifest.xml`.
+   *
+   * @return The [ResourceGroup] or null if not found or not available.
+   */
+  fun getManifestAttrTable(platform: File): ResourceTable?
 
   override fun forPlatformDir(platform: File): ResourceTable? {
     return forPackage(PCK_ANDROID, File(platform, "data/res"))
