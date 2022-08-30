@@ -74,6 +74,15 @@ class ClassFileReader(val stream: InputStream) {
     file.accessFlags = input.readUnsignedShort()
     file.thisClass = input.readUnsignedShort()
     file.superClass = input.readUnsignedShort()
+    
+    val interfaceCount = input.readUnsignedShort()
+    file.interfaces = IntArray(interfaceCount)
+    
+    index = 0
+    while (index < interfaceCount) {
+      file.interfaces[index] = input.readUnsignedShort()
+      ++index
+    }
 
     return file
   }

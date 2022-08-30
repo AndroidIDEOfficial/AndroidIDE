@@ -53,6 +53,8 @@ internal class ClassFile : IClassFile {
    */
   override var superClass: Int = -1
   
+  override var interfaces: IntArray = IntArray(0)
+  
   override fun getName(): String {
     val entry = constantPool[thisClass]
     if (entry !is ClassConstant) {

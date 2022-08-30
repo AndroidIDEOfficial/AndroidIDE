@@ -36,19 +36,22 @@ interface IClassFile {
 
   /** Access flags for the class. */
   val accessFlags: Int
-  
+
   /**
    * The index in the constant pool which corresponds to the internal representation of the name of
    * this class.
    */
   val thisClass: Int
-  
+
   /**
    * The index in the constant pool which corresponds to the internal representation of the name of
    * the super class of this class.
    */
   val superClass: Int
-  
+
+  /** The interfaces that this class implements. */
+  val interfaces: IntArray
+
   /** Get the string representation of this class' name. */
   fun getName(): String
 
