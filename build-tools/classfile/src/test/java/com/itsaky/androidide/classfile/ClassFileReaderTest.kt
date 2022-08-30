@@ -18,36 +18,53 @@
 package com.itsaky.androidide.classfile
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.classfile.constants.ClassConstant
+import com.itsaky.androidide.classfile.constants.Utf8Constant
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.File
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 @RunWith(JUnit4::class)
 class ClassFileReaderTest {
-  
+
   // Extension changed to .txt to prevent git from ignoring this file
   private val codeEditor = File("./src/test/resources/CodeEditor.class.txt")
-  
+
   @Test
-  fun `basic test` () {
+  fun `basic test`() {
     val input = codeEditor.inputStream()
     val reader = ClassFileReader(input)
     val file = reader.read()
-    
+
     assertThat(file).isNotNull()
     assertThat(file.majorVersion).isEqualTo(55)
     assertThat(file.minorVersion).isEqualTo(0)
-    
+
     assertThat(file.getName()).isEqualTo("io/github/rosemoe/sora/widget/CodeEditor")
     assertThat(file.getSuperClassName()).isEqualTo("android/view/View")
-    
+
+    file.interfaces
+      .map { file.constantPool[it] }
+      .filterIsInstance<ClassConstant>()
+      .map { file.constantPool[it.nameIndex] }
+      .filterIsInstance<Utf8Constant>()
+      .map { it.bytes.decodeToString() }
+      .apply {
+        assertThat(this).isNotEmpty()
+        assertThat(this.size).isEqualTo(3)
+        assertThat(this)
+          .containsExactly(
+            "io/github/rosemoe/sora/text/ContentListener",
+            "io/github/rosemoe/sora/text/FormatThread\$FormatResultReceiver",
+            "io/github/rosemoe/sora/text/LineRemoveListener"
+          )
+      }
+
     assertThat(file.accessFlags and ClassFileConstants.ACC_PUBLIC).isNotEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_SUPER).isNotEqualTo(0)
-    
+
     assertThat(file.accessFlags and ClassFileConstants.ACC_ABSTRACT).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_FINAL).isEqualTo(0)
     assertThat(file.accessFlags and ClassFileConstants.ACC_ANNOTATION).isEqualTo(0)
