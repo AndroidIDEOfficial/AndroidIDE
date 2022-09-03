@@ -85,7 +85,6 @@ dependencies {
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric
-    testImplementation tests.mockito
     androidTestImplementation tests.androidx_junit
     androidTestImplementation tests.androidx_espresso
     androidTestImplementation tests.google_truth
