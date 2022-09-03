@@ -30,11 +30,29 @@ public class ClassFileConstants {
   /** Declared public; may be accessed from outside its package. */
   public static final int ACC_PUBLIC = 0x0001;
 
+  /**
+   * Declared private; accessible only within the defining class and other classes belonging to the
+   * same nest
+   */
+  public static final int ACC_PRIVATE = 0x0002;
+
+  /** Declared protected; may be accessed within subclasses. */
+  public static final int ACC_PROTECTED = 0x0004;
+
+  /** Declared static. */
+  public static final int ACC_STATIC = 0x0008;
+  
   /** Declared final; no subclasses allowed. */
   public static final int ACC_FINAL = 0x0010;
-
+  
   /** Treat superclass methods specially when invoked by the invokespecial instruction. */
   public static final int ACC_SUPER = 0x0020;
+
+  /** Declared volatile; cannot be cached */
+  public static final int ACC_VOLATILE = 0x0040;
+
+  /** Declared transient; not written or read by a persistent object manager. */
+  public static final int ACC_TRANSIENT = 0x0080;
 
   /** Is an interface, not a class. */
   public static final int ACC_INTERFACE = 0x0200;
@@ -53,7 +71,7 @@ public class ClassFileConstants {
 
   /** Is a module, not a class or interface. */
   public static final int ACC_MODULE = 0x8000;
-  
+
   public static final String ATTR_CONSTANT_VALUE = "ConstantValue";
   public static final String ATTR_CODE = "Code";
   public static final String ATTR_EXCEPTIONS = "Exceptions";
@@ -69,13 +87,17 @@ public class ClassFileConstants {
   public static final String ATTR_LOCAL_VARIABLE_TYPE_TABLE = "LocalVariableTypeTable";
   public static final String ATTR_RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
   public static final String ATTR_RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations";
-  public static final String ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations";
-  public static final String ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations";
+  public static final String ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS =
+      "RuntimeVisibleParameterAnnotations";
+  public static final String ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS =
+      "RuntimeInvisibleParameterAnnotations";
   public static final String ATTR_ANNOTATION_DEFAULT = "AnnotationDefault";
   public static final String ATTR_STACK_MAP_TABLE = "StackMapTable";
   public static final String ATTR_BOOTSTRAP_METHODS = "BootstrapMethods";
-  public static final String ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS = "RuntimeVisibleTypeAnnotations";
-  public static final String ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS = "RuntimeInvisibleTypeAnnotations";
+  public static final String ATTR_RUNTIME_VISIBLE_TYPE_ANNOTATIONS =
+      "RuntimeVisibleTypeAnnotations";
+  public static final String ATTR_RUNTIME_INVISIBLE_TYPE_ANNOTATIONS =
+      "RuntimeInvisibleTypeAnnotations";
   public static final String ATTR_METHOD_PARAMETERS = "MethodParameters";
   public static final String ATTR_MODULE = "Module";
   public static final String ATTR_MODULE_PACKAGES = "ModulePackages";
