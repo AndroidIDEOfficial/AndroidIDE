@@ -33,6 +33,9 @@ class Utf8Constant : IConstant {
   var bytes: ByteArray = ByteArray(0)
     private set
 
+  /** Get the string represented by this constant. */
+  fun content() = this.bytes.decodeToString()
+
   override fun read(input: DataInputStream) {
     val length = input.readUnsignedShort()
     this.bytes = ByteArray(length)
@@ -56,6 +59,6 @@ class Utf8Constant : IConstant {
   }
 
   override fun toString(): String {
-    return "Utf8Constant(type=$type, bytes=${bytes.contentToString()}, bytesAsString=${bytes.decodeToString()})"
+    return "Utf8Constant(type=$type, bytes=${bytes.contentToString()}, bytesAsString=${content()})"
   }
 }

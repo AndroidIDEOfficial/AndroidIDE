@@ -22,6 +22,7 @@ import com.itsaky.androidide.classfile.constants.IConstant.Type.DOUBLE
 import com.itsaky.androidide.classfile.constants.IConstant.Type.LONG
 import com.itsaky.androidide.classfile.internal.ClassFile
 import com.itsaky.androidide.classfile.internal.NullConstant
+import com.itsaky.androidide.classfile.internal.NullField
 import java.io.DataInputStream
 import java.io.InputStream
 
@@ -31,7 +32,7 @@ import java.io.InputStream
  *
  * @author Akash Yadav
  */
-class ClassFileReader(val stream: InputStream) {
+class ClassFileReader(private val stream: InputStream) {
 
   /**
    * Read the class file.
@@ -48,13 +49,15 @@ class ClassFileReader(val stream: InputStream) {
     }
 
     val file = ClassFile()
-    file.minorVersion = input.readUnsignedShort()
-    file.majorVersion = input.readUnsignedShort()
-
-    if (file.majorVersion >= 56 && file.minorVersion != 0 && file.minorVersion != 65535) {
+    val minorVersion = input.readUnsignedShort()
+    val majorVersion = input.readUnsignedShort()
+    
+    if (majorVersion >= 56 && minorVersion != 0 && minorVersion != 65535) {
       // When major version is >= 56, minor version must be 0 or 65535
-      throw IllegalStateException("Invalid class file minor version: '${file.minorVersion}'")
+      throw IllegalStateException("Invalid class file minor version: '${minorVersion}'")
     }
+  
+    file.version = ClassFileVersion.get(majorVersion, minorVersion)
 
     val poolCount = input.readUnsignedShort()
     file.constantPool = Array(poolCount) { NullConstant }
@@ -63,24 +66,33 @@ class ClassFileReader(val stream: InputStream) {
     while (index < poolCount) {
       val constant = readPoolConstant(input)
       file.constantPool[index] = constant
-  
+
       if (constant.type == LONG || constant.type == DOUBLE) {
         ++index
       }
-      
+
       ++index
     }
 
     file.accessFlags = input.readUnsignedShort()
     file.thisClass = input.readUnsignedShort()
     file.superClass = input.readUnsignedShort()
-    
+
     val interfaceCount = input.readUnsignedShort()
     file.interfaces = IntArray(interfaceCount)
-    
+
     index = 0
     while (index < interfaceCount) {
       file.interfaces[index] = input.readUnsignedShort()
+      ++index
+    }
+
+    val fieldCount = input.readUnsignedShort()
+    file.fields = Array(fieldCount) { NullField }
+
+    index = 0
+    while (index < fieldCount) {
+      file.fields[index] = IFieldInfo.read(input, file)
       ++index
     }
 

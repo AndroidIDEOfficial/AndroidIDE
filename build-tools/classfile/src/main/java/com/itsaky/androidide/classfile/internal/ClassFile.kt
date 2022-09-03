@@ -17,8 +17,11 @@
 
 package com.itsaky.androidide.classfile.internal
 
+import com.itsaky.androidide.classfile.ClassFileVersion
+import com.itsaky.androidide.classfile.ClassFileVersion.JAVA_1_0
 import com.itsaky.androidide.classfile.constants.IConstant
 import com.itsaky.androidide.classfile.IClassFile
+import com.itsaky.androidide.classfile.IFieldInfo
 import com.itsaky.androidide.classfile.constants.ClassConstant
 import com.itsaky.androidide.classfile.constants.Utf8Constant
 
@@ -29,31 +32,13 @@ import com.itsaky.androidide.classfile.constants.Utf8Constant
  */
 internal class ClassFile : IClassFile {
   
-  /** Major version of the class file. */
-  override var majorVersion: Int = 0
-
-  /** Minor version of the class file. */
-  override var minorVersion: Int = 0
-
-  /** The constant pool. */
+  override var version: ClassFileVersion = JAVA_1_0
   override var constantPool: Array<IConstant> = emptyArray()
-
-  /** Access flags for the class. */
   override var accessFlags: Int = 0
-
-  /**
-   * The index in the constant pool which corresponds to the internal representation of the name of
-   * this class.
-   */
   override var thisClass: Int = -1
-
-  /**
-   * The index in the constant pool which corresponds to the internal representation of the name of
-   * the super class of this class.
-   */
   override var superClass: Int = -1
-  
   override var interfaces: IntArray = IntArray(0)
+  override var fields: Array<IFieldInfo> = emptyArray()
   
   override fun getName(): String {
     val entry = constantPool[thisClass]

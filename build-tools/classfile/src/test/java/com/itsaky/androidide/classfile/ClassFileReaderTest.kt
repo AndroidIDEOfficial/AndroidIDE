@@ -39,8 +39,7 @@ class ClassFileReaderTest {
     val file = reader.read()
 
     assertThat(file).isNotNull()
-    assertThat(file.majorVersion).isEqualTo(55)
-    assertThat(file.minorVersion).isEqualTo(0)
+    assertThat(file.version).isEqualTo(ClassFileVersion.JAVA_11)
 
     assertThat(file.getName()).isEqualTo("io/github/rosemoe/sora/widget/CodeEditor")
     assertThat(file.getSuperClassName()).isEqualTo("android/view/View")

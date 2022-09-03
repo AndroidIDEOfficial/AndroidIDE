@@ -25,11 +25,9 @@ import com.itsaky.androidide.classfile.constants.IConstant
  * @author Akash Yadav
  */
 interface IClassFile {
-  /** Major version of the class file. */
-  val majorVersion: Int
 
-  /** Minor version of the class file. */
-  val minorVersion: Int
+  /** The class file version. */
+  val version: ClassFileVersion
 
   /** The constant pool. */
   val constantPool: Array<IConstant>
@@ -51,6 +49,9 @@ interface IClassFile {
 
   /** The interfaces that this class implements. */
   val interfaces: IntArray
+
+  /** The fields of this class. */
+  val fields: Array<IFieldInfo>
 
   /** Get the string representation of this class' name. */
   fun getName(): String
