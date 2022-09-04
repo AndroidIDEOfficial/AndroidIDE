@@ -291,7 +291,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     ) // For LSP actions, as they cannot access IDEEditor class
     data.put(File::class.java, editor.file)
     data.put(DiagnosticItem::class.java, getDiagnosticAtCursor())
-    data.put(com.itsaky.androidide.models.Range::class.java, editor.cursorRange)
+    data.put(com.itsaky.androidide.models.Range::class.java, editor.cursorLSPRange)
     data.put(
       JavaLanguageServer::class.java,
       ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
@@ -308,7 +308,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   protected open fun getMenu(): Menu = menu
 
   private fun getDiagnosticAtCursor(): DiagnosticItem? {
-    val start = editor.cursorRange.start
+    val start = editor.cursorLSPRange.start
     return editor.languageClient?.getDiagnosticAt(editor.file, start.line, start.column)
   }
 

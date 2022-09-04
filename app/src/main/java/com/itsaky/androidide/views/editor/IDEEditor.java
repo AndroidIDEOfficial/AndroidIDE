@@ -714,7 +714,7 @@ public class IDEEditor extends CodeEditor {
         CompletableFuture.supplyAsync(
             () ->
                 languageServer.expandSelection(
-                    new ExpandSelectionParams(getFile().toPath(), getCursorRange())));
+                    new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
 
     future.whenComplete(
         ((range, throwable) -> {
@@ -735,7 +735,7 @@ public class IDEEditor extends CodeEditor {
    *
    * @return The {@link Range} of the cursor.
    */
-  public Range getCursorRange() {
+  public Range getCursorLSPRange() {
     final var cursor = getCursor();
     final var start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
     final var end = new Position(cursor.getRightLine(), cursor.getRightColumn());
@@ -748,7 +748,7 @@ public class IDEEditor extends CodeEditor {
    * @return The {@link Position} of the cursor.
    */
   @SuppressWarnings("unused")
-  public Position getCursorAsLSPPosition() {
+  public Position getCursorLSPPosition() {
     return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
   }
 
