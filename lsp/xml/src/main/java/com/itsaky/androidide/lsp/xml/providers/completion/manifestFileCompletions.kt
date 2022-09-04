@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.manifest
+package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.android.aaptcompiler.ResourcePathData

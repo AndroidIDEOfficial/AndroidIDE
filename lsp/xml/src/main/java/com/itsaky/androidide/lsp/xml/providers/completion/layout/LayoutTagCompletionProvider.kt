@@ -21,12 +21,10 @@ import com.android.aaptcompiler.ResourcePathData
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
-import com.itsaky.androidide.lsp.models.MatchLevel
-import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteLayout
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
-import kotlin.math.max
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**

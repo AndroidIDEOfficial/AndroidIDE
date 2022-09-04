@@ -34,7 +34,7 @@ import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagComple
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.manifest.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -43,12 +43,14 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
 import java.io.IOException
 import java.io.Reader
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import kotlin.io.path.name
 
 /**
  * Completion provider for XML files.
@@ -66,7 +68,10 @@ class XmlCompletionProvider(settings: IServerSettings) :
 
   override fun complete(params: CompletionParams): CompletionResult {
     return try {
-      doComplete(params)
+      val watch = StopWatch("Complete at ${params.file.name}:${params.position.line}:${params.position.column}")
+      doComplete(params).also {
+        watch.log()
+      }
     } catch (error: Throwable) {
       log.error("An error occurred while computing XML completions", error)
       EMPTY

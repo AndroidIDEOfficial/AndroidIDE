@@ -156,7 +156,7 @@ class ManifestAttrValueCompletionProviderTest : CompletionHelper by CompletionHe
         "ManifestPermissionCompletionTest",
         arrayOf(
           "WRITE_EXTERNAL_STORAGE",
-          "WRITE_LOCK",
+          "WAKE_LOCK",
           "WRITE_CONTACTS",
           "WRITE_SETTINGS",
           "WRITE_SECURE_SETTINGS",
@@ -165,7 +165,19 @@ class ManifestAttrValueCompletionProviderTest : CompletionHelper by CompletionHe
       )
     }
   }
-
+  
+  @Test
+  fun `resource references value completion test`() {
+    XMLLSPTest.apply {
+      assertHasSingleLineEntries(
+        "ManifestResourceReferenceCompletionTest",
+        arrayOf(
+          "@drawable/ic_launcher"
+        )
+      )
+    }
+  }
+  
   private fun XMLLSPTest.assertHasSingleLineEntries(file: String, expect: Array<String>) {
     openFile("completion/$file")
     val (incomplete, items) = complete()

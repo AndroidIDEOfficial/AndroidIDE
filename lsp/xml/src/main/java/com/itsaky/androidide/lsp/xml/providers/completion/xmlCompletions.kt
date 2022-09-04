@@ -17,9 +17,13 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
+import com.android.aaptcompiler.ResourceTable
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import org.eclipse.lemminx.dom.DOMNode
 import kotlin.math.min
 
 fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
@@ -30,4 +34,25 @@ fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel
   }
 
   return MatchLevel.values()[min(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
+}
+
+fun platformResourceTable(): ResourceTable? {
+  return Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
+}
+
+fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
+  val namespaces = mutableSetOf<Pair<String, String>>()
+  var curr: DOMNode? = node
+  
+  @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
+  while (curr != null && curr.attributes != null) {
+    for (i in 0 until curr.attributes.length) {
+      val currAttr = curr.getAttributeAtIndex(i)
+      if (currAttr.isXmlns) {
+        namespaces.add(currAttr.localName to currAttr.value)
+      }
+    }
+    curr = curr.parentNode
+  }
+  return namespaces
 }

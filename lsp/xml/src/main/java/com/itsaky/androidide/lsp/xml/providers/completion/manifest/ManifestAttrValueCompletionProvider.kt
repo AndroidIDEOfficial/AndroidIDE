@@ -34,6 +34,7 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -73,18 +74,20 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       if (match == NO_MATCH) {
         continue
       }
-  
-      val item = createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, value.name, match)
+
+      val item =
+        createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, value.name, match)
       item.insertText = "."
       item.additionalEditHandler = QualifiedValueEditHandler()
       item.overrideTypeText = "Permission"
-      
+
       // Show API information
       item.kind = FIELD
-      item.data = CompletionData().apply { 
-        this.className = SdkConstants.CLASS_MANIFEST_PERMISSION
-        this.memberName = value.name
-      }
+      item.data =
+        CompletionData().apply {
+          this.className = SdkConstants.CLASS_MANIFEST_PERMISSION
+          this.memberName = value.name
+        }
       result.add(item)
     }
   }

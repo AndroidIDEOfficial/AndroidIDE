@@ -23,6 +23,9 @@ import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
+import com.itsaky.androidide.lsp.xml.providers.completion.transformToEntryName
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import org.eclipse.lemminx.dom.DOMNode
 

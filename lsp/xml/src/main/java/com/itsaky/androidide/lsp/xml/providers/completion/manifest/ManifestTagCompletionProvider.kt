@@ -28,6 +28,9 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.MANIFEST_TAG_PREFIX
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.providers.completion.transformToTagName
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry

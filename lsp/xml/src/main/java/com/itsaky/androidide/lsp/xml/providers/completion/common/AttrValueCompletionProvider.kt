@@ -24,6 +24,7 @@ import com.android.aapt.Resources.Attribute.FormatFlags.DIMENSION
 import com.android.aapt.Resources.Attribute.FormatFlags.ENUM
 import com.android.aapt.Resources.Attribute.FormatFlags.FLAGS
 import com.android.aapt.Resources.Attribute.FormatFlags.INTEGER
+import com.android.aapt.Resources.Attribute.FormatFlags.REFERENCE
 import com.android.aapt.Resources.Attribute.FormatFlags.STRING
 import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ATTR
@@ -45,9 +46,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
-import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
-import org.eclipse.lemminx.dom.DOMNode
 
 /**
  * Provides completions for attribute value in layout XML files.
@@ -56,9 +55,6 @@ import org.eclipse.lemminx.dom.DOMNode
  */
 open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
-
-  protected lateinit var nodeAtCursor: DOMNode
-  protected lateinit var attrAtCursor: DOMAttr
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
@@ -71,8 +67,6 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     type: NodeType,
     prefix: String
   ): CompletionResult {
-    this.nodeAtCursor = document.findNodeAt(params.position.requireIndex()) ?: return EMPTY
-    this.attrAtCursor = document.findAttrAt(params.position.requireIndex()) ?: return EMPTY
     val attrName =
       attrAtCursor.localName
         ?: run {
@@ -145,37 +139,31 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     list: MutableList<CompletionItem>
   ) {
     if (entry.typeMask == FormatFlags.REFERENCE_VALUE) {
-      for (value in AaptResourceType.values()) {
-        if (value == UNKNOWN) {
-          continue
-        }
-
-        addValues(table, pck, value, prefix, list)
-      }
+      completeReferences(table, pck, prefix, list)
     } else {
       // Check for specific attribute formats
       if (entry.hasType(STRING)) {
-        addValues(table, pck, type = AaptResourceType.STRING, prefix = prefix, result = list)
+        addValues(type = AaptResourceType.STRING, prefix = prefix, result = list)
       }
 
       if (entry.hasType(INTEGER)) {
-        addValues(table, pck, type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+        addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
       }
 
       if (entry.hasType(COLOR)) {
-        addValues(table, pck, type = AaptResourceType.COLOR, prefix = prefix, result = list)
+        addValues(type = AaptResourceType.COLOR, prefix = prefix, result = list)
       }
 
       if (entry.hasType(BOOLEAN)) {
-        addValues(table, pck, type = BOOL, prefix = prefix, result = list)
+        addValues(type = BOOL, prefix = prefix, result = list)
       }
 
       if (entry.hasType(DIMENSION)) {
-        addValues(table, pck, type = DIMEN, prefix = prefix, result = list)
+        addValues(type = DIMEN, prefix = prefix, result = list)
       }
 
       if (entry.hasType(INTEGER)) {
-        addValues(table, pck, type = AaptResourceType.INTEGER, prefix = prefix, result = list)
+        addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
       }
 
       if (entry.hasType(ENUM) || entry.hasType(FLAGS)) {
@@ -190,25 +178,53 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           )
         }
       }
+
+      if (entry.hasType(REFERENCE)) {
+        completeReferences(table, pck, prefix, list)
+      }
+    }
+  }
+
+  private fun completeReferences(
+    table: ResourceTable,
+    pck: String,
+    prefix: String,
+    list: MutableList<CompletionItem>
+  ) {
+    for (value in AaptResourceType.values()) {
+      if (value == UNKNOWN) {
+        continue
+      }
+
+      addValues(value, prefix, list)
     }
   }
 
   private fun addValues(
-    resources: ResourceTable,
-    pck: String,
     type: AaptResourceType,
     prefix: String,
     result: MutableList<CompletionItem>
   ) {
     val entries =
-      resources.findPackage(pck)?.findGroup(type)?.findEntries {
-        matchLevel(it, prefix) != NO_MATCH
+      allNamespaces
+        .flatMap { findResourceTables(it.second) }
+        .flatMap { table ->
+          table.packages.map { pck ->
+            pck.name to pck.findGroup(type)?.findEntries { s -> matchLevel(s, prefix) != NO_MATCH }
+          }
+        }
+        .toHashSet()
+    entries.forEach { pair ->
+      pair.second?.forEach {
+        result.add(
+          createAttrValueCompletionItem(
+            pair.first,
+            type.tagName,
+            it.name,
+            matchLevel(it.name, prefix)
+          )
+        )
       }
-        ?: return
-    entries.forEach {
-      result.add(
-        createAttrValueCompletionItem(pck, type.tagName, it.name, matchLevel(it.name, prefix))
-      )
     }
   }
 

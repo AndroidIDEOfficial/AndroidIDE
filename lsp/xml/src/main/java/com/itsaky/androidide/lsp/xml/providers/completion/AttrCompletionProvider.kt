@@ -47,9 +47,6 @@ import org.eclipse.lemminx.dom.DOMNode
 open class AttrCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
   
-  private lateinit var nodeAtCursor: DOMNode
-  private lateinit var attrAtCursor: DOMAttr
-  
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE
   }
@@ -61,8 +58,6 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     type: NodeType,
     prefix: String
   ): CompletionResult {
-    this.nodeAtCursor = document.findNodeAt(params.position.requireIndex()) ?: return EMPTY
-    this.attrAtCursor = document.findAttrAt(params.position.requireIndex()) ?: return EMPTY
     val list = mutableListOf<CompletionItem>()
 
     val newPrefix =
@@ -87,25 +82,12 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     list: MutableList<CompletionItem>,
     newPrefix: String
   ): CompletionResult {
-    val namespaces = mutableSetOf<Pair<String, String>>()
-    var curr: DOMNode? = node
-
-    @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
-    while (curr != null && curr.attributes != null) {
-      for (i in 0 until curr.attributes.length) {
-        val currAttr = curr.getAttributeAtIndex(i)
-        if (currAttr.isXmlns) {
-          namespaces.add(currAttr.localName to currAttr.value)
-        }
-      }
-      curr = curr.parentNode
-    }
-
+    val namespaces = findAllNamespaces(node)
     namespaces.forEach { completeForNamespace(it.second, it.first, node, newPrefix, list) }
 
     return CompletionResult(list)
   }
-
+  
   protected open fun completeForNamespace(
     namespace: String,
     nsPrefix: String,

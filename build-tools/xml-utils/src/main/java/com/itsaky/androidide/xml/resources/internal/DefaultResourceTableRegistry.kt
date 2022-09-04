@@ -23,8 +23,12 @@ import com.android.SdkConstants.FN_INTENT_ACTIONS_BROADCAST
 import com.android.SdkConstants.FN_INTENT_ACTIONS_SERVICE
 import com.android.SdkConstants.FN_INTENT_CATEGORIES
 import com.android.SdkConstants.OS_PLATFORM_ATTRS_MANIFEST_XML
+import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.BlameLogger
+import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
+import com.android.aaptcompiler.Source
 import com.android.aaptcompiler.TableExtractor
 import com.android.aaptcompiler.TableExtractorOptions
 import com.android.aaptcompiler.extractPathData
@@ -69,16 +73,20 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
   private val singleLineValueEntries =
     ConcurrentHashMap<String, ConcurrentHashMap<SingleLineValueEntryType, List<String>>>()
 
-  override fun forPackage(name: String, vararg dirs: File): ResourceTable? {
+  override fun forPackage(name: String, vararg resDirs: File): ResourceTable? {
 
     if (name == PCK_ANDROID) {
-      return platformResourceTable(dirs.iterator().next())
+      return platformResourceTable(resDirs.iterator().next())
     }
 
     return tables[name]
-      ?: createTable(*dirs)?.also {
+      ?: createTable(*resDirs)?.also {
         tables[name] = it
         it.packages.firstOrNull()?.name = name
+        
+        resDirs.forEach { resDir ->
+          addFileReferences(it, name, resDir)
+        }
       }
   }
 
@@ -180,9 +188,11 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
   private fun platformResourceTable(dir: File): ResourceTable? {
     return platformTables[dir.path]
-      ?: createTable(dir)?.also {
-        platformTables[dir.path] = it
-        it.packages.firstOrNull()?.name = PCK_ANDROID
+      ?: createTable(dir)?.also { table ->
+        platformTables[dir.path] = table
+        table.packages.firstOrNull()?.name = PCK_ANDROID
+        
+        addFileReferences(table, PCK_ANDROID, dir)
       }
   }
 
@@ -207,11 +217,27 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
 
     return table
   }
-
+  
+  private fun addFileReferences(table: ResourceTable, pck: String, resDir: File) {
+    resDir.listFiles()?.forEach { dir ->
+      if (dir.name.startsWith(SdkConstants.FD_RES_VALUES)) {
+        return@forEach
+      }
+      
+      dir.listFiles()?.forEach { file ->
+        var typeName = dir.name
+        if (typeName.contains('-')) {
+          typeName = typeName.substringBefore('-')
+        }
+        
+        val resName = ResourceName(pck, AaptResourceType.valueOf(typeName.uppercase()), file.nameWithoutExtension)
+        table.addFileReference(resName, ConfigDescription(), Source(file.path), file.path)
+      }
+    }
+  }
+  
   private fun getDefaultOptions(): TableExtractorOptions {
-    val options =
-      TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
-    return options
+    return TableExtractorOptions(translatable = true, errorOnPositionalArgs = false, visibility = PUBLIC)
   }
 
   private fun updateFromDirectory(

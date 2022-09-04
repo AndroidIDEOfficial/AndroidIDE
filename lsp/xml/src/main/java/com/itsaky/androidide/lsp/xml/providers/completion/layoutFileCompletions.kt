@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.layout
+package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.ResourcePathData

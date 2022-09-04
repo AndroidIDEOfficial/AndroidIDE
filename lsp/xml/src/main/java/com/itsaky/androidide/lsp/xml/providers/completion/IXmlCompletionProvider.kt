@@ -36,7 +36,9 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
+import org.eclipse.lemminx.dom.DOMNode
 
 /**
  * Base class for all XML completion providers.
@@ -46,13 +48,16 @@ import org.eclipse.lemminx.dom.DOMDocument
 abstract class IXmlCompletionProvider(private val provider: ICompletionProvider) {
 
   protected val log: ILogger = ILogger.newInstance("XmlCompletionProvider")
+  protected lateinit var nodeAtCursor: DOMNode
+  protected lateinit var attrAtCursor: DOMAttr
+  protected lateinit var allNamespaces: Set<Pair<String, String>>
 
   companion object {
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
-  
-  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence) : MatchLevel {
+
+  protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
     return provider.matchLevel(candidate, partial)
   }
 
@@ -86,6 +91,11 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       return CompletionResult.EMPTY
     }
 
+    this.nodeAtCursor =
+      document.findNodeAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
+    this.attrAtCursor =
+      document.findAttrAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
+    this.allNamespaces = findAllNamespaces(this.nodeAtCursor)
     return doComplete(params, pathData, document, type, prefix)
   }
 
@@ -175,7 +185,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   ): CompletionItem {
     val sb = StringBuilder()
     sb.append("@")
-    if (pck.isNotBlank()) {
+    if (pck.isNotBlank() && pck == ResourceTableRegistry.PCK_ANDROID) {
       sb.append(pck)
       sb.append(":")
     }
@@ -250,10 +260,8 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
   protected open fun findAllModuleResourceTables(): Set<ResourceTable> {
     val lookup = Lookup.DEFAULT
-    val sourceResTables =
-      lookup.lookup(ResourceTableRegistry.COMPLETION_MODULE_RES) ?: emptySet()
-    val depResTables =
-      lookup.lookup(ResourceTableRegistry.COMPLETION_DEP_RES) ?: emptySet()
+    val sourceResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_MODULE_RES) ?: emptySet()
+    val depResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_DEP_RES) ?: emptySet()
     return mutableSetOf<ResourceTable>().also {
       it.addAll(sourceResTables)
       it.addAll(depResTables)
