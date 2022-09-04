@@ -198,7 +198,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = text
       this.detail = "From package '$pck'"
       this.kind = VALUE
-      this.sortText = text
+      this.sortText = if (pck == ResourceTableRegistry.PCK_ANDROID) "zzz$text" else text
       this.insertText = text
       this.matchLevel = matchLevel
     }
