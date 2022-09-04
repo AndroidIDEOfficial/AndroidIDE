@@ -21,7 +21,7 @@ ext {
             glide      : 'com.github.bumptech.glide:glide:4.13.2',
             glide_ap   : 'com.github.bumptech.glide:compiler:4.13.2',
             quickaction: 'com.github.piruin:quickaction:2.4.3',
-            jsoup      : 'org.jsoup:jsoup:1.15.2',
+            jsoup      : 'org.jsoup:jsoup:1.15.3',
             antlr4     : 'org.antlr:antlr4-runtime:4.9.3',
             javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.4',
             lang3      : 'org.apache.commons:commons-lang3:3.12.0',
