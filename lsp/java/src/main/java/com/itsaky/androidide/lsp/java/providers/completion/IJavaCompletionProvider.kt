@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
+import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
@@ -157,6 +158,7 @@ abstract class IJavaCompletionProvider(
     overloads: List<ExecutableElement>,
     addParens: Boolean,
     matchLevel: MatchLevel,
+    partial: String
   ): CompletionItem {
     abortIfCancelled()
     abortCompletionIfCancelled()
@@ -181,6 +183,7 @@ abstract class IJavaCompletionProvider(
         item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
       }
       item.insertTextFormat = SNIPPET // Snippet
+      item.snippetDescription = describeSnippet(partial)
     }
     return item
   }

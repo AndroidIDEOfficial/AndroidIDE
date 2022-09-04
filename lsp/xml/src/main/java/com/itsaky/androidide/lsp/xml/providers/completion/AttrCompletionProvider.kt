@@ -158,7 +158,8 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
             attr = ref,
             resPkg = pck,
             nsPrefix = pckPrefix,
-            matchLevel = matchLevel
+            matchLevel = matchLevel,
+            partial = prefix
           )
         )
       }

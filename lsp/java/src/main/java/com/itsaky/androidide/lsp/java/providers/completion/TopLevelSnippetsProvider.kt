@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker
+import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.parser.ParseTask
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.SNIPPET
@@ -66,8 +67,6 @@ class TopLevelSnippetsProvider {
     name = name.substring(0, name.length - ".java".length)
     return snippetItem("class $name", "class $name {\n    $0\n}", describeSnippet(prefix))
   }
-
-  private fun describeSnippet(prefix: String) = SnippetDescription(prefix.length)
 
   private fun packageSnippet(prefix: String, file: Path): CompletionItem? {
     abortIfCancelled()

@@ -22,6 +22,7 @@ import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
+import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.models.Command
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -152,6 +153,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
    */
   protected open fun createAttrCompletionItem(
     attr: Reference,
+    partial: String,
     resPkg: String,
     nsPrefix: String,
     matchLevel: MatchLevel
@@ -170,6 +172,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.detail = "From package '$resPkg'"
       this.insertText = "$title=\"$0\""
       this.insertTextFormat = SNIPPET
+      this.snippetDescription = describeSnippet(partial)
       this.sortText = label.toString()
       this.matchLevel = matchLevel
       this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
