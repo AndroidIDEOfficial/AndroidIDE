@@ -30,7 +30,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
  */
 class QualifiedValueEditHandler : IEditHandler {
 
-  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int) {
+  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int) {
     val cursor = editor.cursor
     val text = editor.text
     val line = cursor.leftLine

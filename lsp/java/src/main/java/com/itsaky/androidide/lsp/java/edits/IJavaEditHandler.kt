@@ -33,7 +33,7 @@ import java.nio.file.Path
  */
 abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
 
-  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int) {
+  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int) {
     val compiler = JavaCompilerProvider.get(ProjectManager.findModuleForFile(file) ?: return)
     if (compiler != null) {
       performEdits(compiler, editor, item)

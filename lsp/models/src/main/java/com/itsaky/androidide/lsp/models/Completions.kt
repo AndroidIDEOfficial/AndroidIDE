@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.lsp.models
 
-import android.os.Looper
-import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
 import com.itsaky.androidide.lsp.edits.DefaultEditHandler
 import com.itsaky.androidide.lsp.edits.IEditHandler
@@ -30,9 +28,9 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_PREFIX
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.models.MatchLevel.PARTIAL_MATCH
-import com.itsaky.androidide.lsp.util.RewriteHelper
 import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.utils.ILogger
+import io.github.rosemoe.sora.lang.completion.snippet.CodeSnippet
+import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -144,6 +142,7 @@ open class CompletionItem(
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
   var editHandler: IEditHandler = DefaultEditHandler()
   var additionalEditHandler: IEditHandler? = null
+  var snippetDescription: SnippetDescription? = null
   var overrideTypeText: String? = null
 
   constructor() :
@@ -161,11 +160,14 @@ open class CompletionItem(
     )
 
   companion object {
-    private val LOG = ILogger.newInstance("CompletionItem")
 
     @JvmStatic
     @JvmOverloads
-    fun matchLevel(candidate: String, partial: String, minMatchRatio: Int = DEFAULT_MIN_MATCH_RATIO): MatchLevel {
+    fun matchLevel(
+      candidate: String,
+      partial: String,
+      minMatchRatio: Int = DEFAULT_MIN_MATCH_RATIO
+    ): MatchLevel {
       if (candidate.startsWith(partial)) {
         return if (candidate.length == partial.length) {
           CASE_SENSITIVE_EQUAL
@@ -198,9 +200,13 @@ open class CompletionItem(
   }
 
   fun getLabel(): String = this.label as String
-  
+
+  override fun performCompletion(editor: CodeEditor, text: Content, position: CharPosition) {
+    editHandler.performEdits(this, editor, text, position.line, position.column, position.index)
+  }
+
   override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
-    editHandler.performEdits(this, editor, text, line, column)
+    throw UnsupportedOperationException()
   }
 
   override fun compareTo(other: CompletionItem): Int {
@@ -221,6 +227,7 @@ open class CompletionItem(
     if (sortText != other.sortText) return false
     if (insertText != other.insertText) return false
     if (insertTextFormat != other.insertTextFormat) return false
+    if (editHandler != other.editHandler) return false
     if (additionalEditHandler != other.additionalEditHandler) return false
     if (overrideTypeText != other.overrideTypeText) return false
 
@@ -238,15 +245,24 @@ open class CompletionItem(
     result = 31 * result + (sortText?.hashCode() ?: 0)
     result = 31 * result + insertText.hashCode()
     result = 31 * result + insertTextFormat.hashCode()
+    result = 31 * result + editHandler.hashCode()
     result = 31 * result + (additionalEditHandler?.hashCode() ?: 0)
     result = 31 * result + (overrideTypeText?.hashCode() ?: 0)
     return result
   }
 
   override fun toString(): String {
-    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$sortText, insertText='$insertText', insertTextFormat=$insertTextFormat, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
+    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$sortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
+
+data class SnippetDescription
+@JvmOverloads
+constructor(
+  val selectedLength: Int,
+  val deleteSelected: Boolean = true,
+  val snippet: CodeSnippet? = null
+)
 
 data class CompletionData(
   var className: String,
