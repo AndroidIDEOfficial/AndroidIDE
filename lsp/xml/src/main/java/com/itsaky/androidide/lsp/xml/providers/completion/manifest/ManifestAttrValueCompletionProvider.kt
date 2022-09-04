@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion.manifest
 
+import com.android.SdkConstants
 import com.android.SdkConstants.ANDROID_NS_NAME_PREFIX
 import com.android.SdkConstants.ATTR_NAME
 import com.android.SdkConstants.TAG_ACTIVITY
@@ -27,13 +28,16 @@ import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
+import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
+import com.itsaky.androidide.xml.permissions.Permission
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 
 /**
@@ -54,11 +58,35 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       when (this.nodeAtCursor.nodeName) {
         "action" -> completeActionName(prefix, result)
         "category" -> completeCategory(prefix, result)
-        //          "uses-permission" -> completePermission(prefix, result)
+        "uses-permission" -> completePermission(prefix, result)
         "uses-feature" -> completeFeature(prefix, result)
       }
     }
     super.completeInternal(attrName, prefix, groups, result)
+  }
+
+  // TODO we could add an action using the actions registry to make it easier to add permissions
+  //  with a GUI interface
+  private fun completePermission(prefix: String, result: MutableList<CompletionItem>) {
+    for (value in Permission.values()) {
+      val match = match(value.name, value.constant, prefix)
+      if (match == NO_MATCH) {
+        continue
+      }
+  
+      val item = createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, value.name, match)
+      item.insertText = "."
+      item.additionalEditHandler = QualifiedValueEditHandler()
+      item.overrideTypeText = "Permission"
+      
+      // Show API information
+      item.kind = FIELD
+      item.data = CompletionData().apply { 
+        this.className = SdkConstants.CLASS_MANIFEST_PERMISSION
+        this.memberName = value.name
+      }
+      result.add(item)
+    }
   }
 
   private fun completeActionName(prefix: String, result: MutableList<CompletionItem>) {
@@ -125,7 +153,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       if (match == NO_MATCH) {
         continue
       }
-  
+
       val item = createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, entry, match)
       item.insertText = "."
       item.additionalEditHandler = QualifiedValueEditHandler()

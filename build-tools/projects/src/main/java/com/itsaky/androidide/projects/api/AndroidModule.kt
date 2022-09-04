@@ -118,7 +118,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   override var moduleData: SimpleModuleData? = null
-
+  
   init {
     type = Android
   }

@@ -148,6 +148,23 @@ class ManifestAttrValueCompletionProviderTest : CompletionHelper by CompletionHe
       )
     }
   }
+  
+  @Test
+  fun `permission value completion test`() {
+    XMLLSPTest.apply {
+      assertHasSingleLineEntries(
+        "ManifestPermissionCompletionTest",
+        arrayOf(
+          "WRITE_EXTERNAL_STORAGE",
+          "WRITE_LOCK",
+          "WRITE_CONTACTS",
+          "WRITE_SETTINGS",
+          "WRITE_SECURE_SETTINGS",
+          "WRITE_VOICEMAIL"
+        )
+      )
+    }
+  }
 
   private fun XMLLSPTest.assertHasSingleLineEntries(file: String, expect: Array<String>) {
     openFile("completion/$file")

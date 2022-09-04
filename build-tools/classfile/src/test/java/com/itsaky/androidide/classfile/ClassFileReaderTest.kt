@@ -62,7 +62,9 @@ class ClassFileReaderTest {
 
   private fun checkFIelds(file: IClassFile) {
     file.fields
-      .firstOrNull { (file.constantPool[it.nameIndex] as Utf8Constant).content() == "mTextActionWindow" }
+      .firstOrNull {
+        (file.constantPool[it.nameIndex] as Utf8Constant).content() == "mTextActionWindow"
+      }
       .apply {
         assertThat(this).isNotNull()
 
@@ -70,8 +72,9 @@ class ClassFileReaderTest {
         assertThat(name).isEqualTo("mTextActionWindow")
 
         val descriptor = (file.constantPool[this.descriptorIndex] as Utf8Constant).content()
-        assertThat(descriptor).isEqualTo("Lio/github/rosemoe/sora/widget/component/EditorTextActionWindow;")
-  
+        assertThat(descriptor)
+          .isEqualTo("Lio/github/rosemoe/sora/widget/component/EditorTextActionWindow;")
+
         assertThat(this.accessFlags and ClassFileConstants.ACC_PROTECTED).isNotEqualTo(0)
         assertThat(this.accessFlags and ClassFileConstants.ACC_PRIVATE).isEqualTo(0)
         assertThat(this.accessFlags and ClassFileConstants.ACC_PUBLIC).isEqualTo(0)
