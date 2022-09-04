@@ -22,6 +22,7 @@ import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.projects.ProjectManager
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
@@ -32,10 +33,10 @@ import java.nio.file.Path
  */
 abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
 
-  override fun performEdits(editor: CodeEditor, completionItem: com.itsaky.androidide.lsp.models.CompletionItem) {
+  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int) {
     val compiler = JavaCompilerProvider.get(ProjectManager.findModuleForFile(file) ?: return)
     if (compiler != null) {
-      performEdits(compiler, editor, completionItem)
+      performEdits(compiler, editor, item)
     }
   }
 
@@ -50,6 +51,6 @@ abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
   abstract fun performEdits(
     compiler: JavaCompilerService,
     editor: CodeEditor,
-    completionItem: com.itsaky.androidide.lsp.models.CompletionItem
+    completionItem: CompletionItem
   )
 }

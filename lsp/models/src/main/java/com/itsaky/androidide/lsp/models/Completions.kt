@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.models
 import android.os.Looper
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
+import com.itsaky.androidide.lsp.edits.DefaultEditHandler
 import com.itsaky.androidide.lsp.edits.IEditHandler
 import com.itsaky.androidide.lsp.models.CompletionItemKind.NONE
 import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
@@ -141,6 +142,7 @@ open class CompletionItem(
     }
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
+  var editHandler: IEditHandler = DefaultEditHandler()
   var additionalEditHandler: IEditHandler? = null
   var overrideTypeText: String? = null
 
@@ -196,77 +198,9 @@ open class CompletionItem(
   }
 
   fun getLabel(): String = this.label as String
-
-  // TODO Use edit handler for handling all edits, including this one
+  
   override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      ThreadUtils.runOnUiThread { performCompletion(editor, text, line, column) }
-      return
-    }
-
-    val start = getIdentifierStart(text.getLine(line), column)
-    val shift = insertText.contains("$0")
-
-    text.delete(line, start, line, column)
-
-    if (text.contains("\n")) {
-      val lines = insertText.split("\\\n")
-      var i = 0
-      lines.forEach {
-        var commit = it
-        if (i != 0) {
-          commit = "\n" + commit
-        }
-        editor.commitText(commit)
-        i++
-      }
-    } else {
-      editor.commitText(text)
-    }
-
-    if (shift) {
-      val l = editor.cursor.leftLine
-      val t = editor.text.getLineString(l)
-      val c = t.lastIndexOf("$0")
-
-      if (c != -1) {
-        editor.setSelection(l, c)
-        editor.text.delete(l, c, l, c + 2)
-      }
-    }
-
-    text.beginBatchEdit()
-    if (additionalEditHandler != null) {
-      additionalEditHandler!!.performEdits(editor, this)
-    } else if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
-      RewriteHelper.performEdits(additionalTextEdits!!, editor)
-    }
-
-    text.beginBatchEdit()
-    executeCommand(editor)
-  }
-
-  private fun executeCommand(editor: CodeEditor) {
-    try {
-      val klass = editor::class.java
-      val method = klass.getMethod("executeCommand", Command::class.java)
-      method.isAccessible = true
-      method.invoke(editor, command)
-    } catch (th: Throwable) {
-      LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
-    }
-  }
-
-  private fun getIdentifierStart(text: CharSequence, end: Int): Int {
-    var start = end
-    while (start > 0) {
-      if (Character.isJavaIdentifierPart(text[start - 1])) {
-        start--
-        continue
-      }
-      break
-    }
-    return start
+    editHandler.performEdits(this, editor, text, line, column)
   }
 
   override fun compareTo(other: CompletionItem): Int {

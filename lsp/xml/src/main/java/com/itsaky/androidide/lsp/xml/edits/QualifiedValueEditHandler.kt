@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.xml.edits
 
 import com.itsaky.androidide.lsp.edits.IEditHandler
 import com.itsaky.androidide.lsp.models.CompletionItem
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 
 /**
@@ -29,7 +30,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
  */
 class QualifiedValueEditHandler : IEditHandler {
 
-  override fun performEdits(editor: CodeEditor, completionItem: CompletionItem) {
+  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int) {
     val cursor = editor.cursor
     val text = editor.text
     val line = cursor.leftLine
@@ -40,7 +41,7 @@ class QualifiedValueEditHandler : IEditHandler {
     
     // Do not use CompletionItem.insertText as it is always '.'
     editor.commitText(
-      completionItem.label
+      item.label
     )
   }
   private fun getIdentifierStart(text: CharSequence, end: Int): Int {
