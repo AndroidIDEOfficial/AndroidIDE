@@ -39,37 +39,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
   fun setup() {
     XMLLSPTest.initProjectIfNeeded()
   }
-  
-  @Test // prefix: '' (empty)
-  fun `reference values must be completed according to the attribute format`() {
-    XMLLSPTest.apply {
-      openFile("../res/layout/TestAttrsRefValue")
-      
-      val (isIncomplete, items) = complete()
-      
-      assertThat(isIncomplete).isTrue()
-      assertThat(items).isNotEmpty()
-      
-      // Check if all the expected color values are present
-      assertThat(items)
-        .containsAtLeast(
-          "@android:color/Blue_700",
-          "@android:color/Blue_800",
-          "@android:color/Teal_700",
-          "@android:color/background_dark",
-          "@android:color/background_light",
-          "@android:color/black",
-          "@android:color/Red_700",
-          "@android:color/Purple_700"
-        )
-      
-      // Check that we do not have any other type of values
-      for (type in setOf(STRING, INTEGER, BOOL, DIMEN, INTEGER, MENU)) {
-        assertThat(items.firstOrNull { it.contains(type.tagName) }).isNull()
-      }
-    }
-  }
-  
+
   @Test // prefix: '' (empty)
   fun `values must be completed according to the attribute format`() {
     XMLLSPTest.apply {
@@ -87,8 +57,6 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
           "@android:color/Blue_800",
           "@android:color/Teal_700",
           "@android:color/background_dark",
-          "@android:color/background_light",
-          "@android:color/black",
           "@android:color/Red_700",
           "@android:color/Purple_700"
         )
@@ -107,7 +75,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
 
       val (isIncomplete, items) = complete()
 
-      assertThat(isIncomplete).isFalse()
+      assertThat(isIncomplete).isTrue()
       assertThat(items).isNotEmpty()
 
       assertThat(items).contains("parent")
@@ -121,7 +89,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       
       val (isIncomplete, items) = complete()
       
-      assertThat(isIncomplete).isFalse()
+      assertThat(isIncomplete).isTrue()
       assertThat(items).isNotEmpty()
       
       assertThat(items).contains("parent")

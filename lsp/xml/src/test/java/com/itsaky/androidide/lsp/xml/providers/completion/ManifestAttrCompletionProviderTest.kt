@@ -53,7 +53,7 @@ class ManifestAttrCompletionProviderTest : CompletionHelper by CompletionHelperI
       assertThat(incomplete).isFalse()
       assertThat(items)
         .containsAtLeast(
-          "android:allowBackup",
+          "android:allowClearUserData",
           "android:allowClearUserDataOnFailedRestore",
           "android:allowAudioPlaybackCapture",
           "android:allowNativeHeapPointerTagging",

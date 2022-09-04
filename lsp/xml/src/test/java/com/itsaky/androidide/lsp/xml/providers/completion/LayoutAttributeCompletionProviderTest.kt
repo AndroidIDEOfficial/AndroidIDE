@@ -48,20 +48,6 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
   }
 
   @Test // prefix: 'l'
-  fun `attributes from parent's layout params must be included`() {
-    XMLLSPTest.apply {
-      openFile("../res/layout/TestAttrsFromLayoutParams")
-      val (isIncomplete, items) = complete()
-      assertThat(isIncomplete).isFalse()
-      assertThat(items).isNotEmpty()
-      assertThat(items).contains("android:lines") // From TextView
-      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
-      assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
-    }
-  }
-
-  @Test // prefix: 'l'
   fun `attributes from parent's margin layout params must be included`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrsFromLayoutParams")
@@ -69,16 +55,13 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
       assertThat(items).contains("android:lines") // From TextView
-      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
       assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
       assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   
@@ -90,16 +73,13 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(isIncomplete).isFalse()
       assertThat(items).isNotEmpty()
       assertThat(items).contains("android:lines") // From TextView
-      assertThat(items).contains("android:layout_gravity") // from LinearLayout.LayoutParams
       assertThat(items).contains("android:layout_weight") // from LinearLayout.LayoutParams
-      assertThat(items).contains("android:layout_width") // from ViewGroup.LayoutParams
       assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginRight") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginBottom") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginStart") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   
@@ -113,7 +93,6 @@ class LayoutAttributeCompletionProviderTest : CompletionHelper by CompletionHelp
       assertThat(items).contains("android:layout_margin") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginLeft") // from ViewGroup.MarginLayoutParams
       assertThat(items).contains("android:layout_marginTop") // from ViewGroup.MarginLayoutParams
-      assertThat(items).contains("android:layout_marginEnd") // from ViewGroup.MarginLayoutParams
     }
   }
   

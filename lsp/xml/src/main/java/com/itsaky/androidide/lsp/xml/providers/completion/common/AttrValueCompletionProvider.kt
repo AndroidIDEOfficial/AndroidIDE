@@ -35,13 +35,13 @@ import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
-import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.aapt.findEntries
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
+import com.itsaky.androidide.lsp.models.CompletionResult.Companion.MAX_ITEMS
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
@@ -92,18 +92,18 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
     val pck = namespace.substringAfter(NAMESPACE_PREFIX)
     val list = mutableListOf<CompletionItem>()
-    val groups = mutableSetOf<Triple<String, ResourceTable, ResourceGroup>>()
+    val groups = mutableSetOf<Pair<String, ResourceGroup>>()
 
     for (table in tables) {
       if (namespace == NAMESPACE_AUTO) {
         val grps =
           table.packages.filter { it.name.isNotBlank() }.map { it.name to it.findGroup(ATTR) }
         for (grp in grps) {
-          grp.second?.also { groups.add(Triple(grp.first, table, it)) }
+          grp.second?.also { groups.add(grp.first to it) }
         }
       } else {
         val grp = table.findPackage(pck)?.findGroup(ATTR) ?: continue
-        groups.add(Triple(pck, table, grp))
+        groups.add((pck to grp))
       }
     }
 
@@ -115,31 +115,29 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   protected open fun completeInternal(
     attrName: String,
     prefix: String,
-    groups: MutableSet<Triple<String, ResourceTable, ResourceGroup>>,
+    groups: MutableSet<Pair<String, ResourceGroup>>,
     result: MutableList<CompletionItem>
   ) {
-    for (triple in groups) {
-      val pack = triple.first
-      val table = triple.second
-      val group = triple.third
+    for (pair in groups) {
+      val pack = pair.first
+      val group = pair.second
       val entry = group.findEntry(attrName)?.findValue(ConfigDescription())?.value ?: continue
       if (entry !is AttributeResource) {
         continue
       }
 
-      addFromTable(table, entry, pack, prefix, result)
+      addFromTable(entry, pack, prefix, result)
     }
   }
 
   private fun addFromTable(
-    table: ResourceTable,
     entry: AttributeResource,
     pck: String,
     prefix: String,
     list: MutableList<CompletionItem>
   ) {
     if (entry.typeMask == FormatFlags.REFERENCE_VALUE) {
-      completeReferences(table, pck, prefix, list)
+      completeReferences(prefix, list)
     } else {
       // Check for specific attribute formats
       if (entry.hasType(STRING)) {
@@ -180,17 +178,12 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       }
 
       if (entry.hasType(REFERENCE)) {
-        completeReferences(table, pck, prefix, list)
+        completeReferences(prefix, list)
       }
     }
   }
 
-  private fun completeReferences(
-    table: ResourceTable,
-    pck: String,
-    prefix: String,
-    list: MutableList<CompletionItem>
-  ) {
+  private fun completeReferences(prefix: String, list: MutableList<CompletionItem>) {
     for (value in AaptResourceType.values()) {
       if (value == UNKNOWN) {
         continue
@@ -205,6 +198,10 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     prefix: String,
     result: MutableList<CompletionItem>
   ) {
+    if (result.size >= MAX_ITEMS + 1) {
+      return
+    }
+
     val entries =
       allNamespaces
         .flatMap { findResourceTables(it.second) }
@@ -216,6 +213,10 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
         .toHashSet()
     entries.forEach { pair ->
       pair.second?.forEach {
+        if (result.size >= MAX_ITEMS + 1) {
+          return
+        }
+
         result.add(
           createAttrValueCompletionItem(
             pair.first,

@@ -33,6 +33,8 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -93,8 +95,12 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
     this.nodeAtCursor =
       document.findNodeAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
-    this.attrAtCursor =
-      document.findAttrAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
+
+    if (type == ATTRIBUTE_VALUE || type == ATTRIBUTE) {
+      this.attrAtCursor =
+        document.findAttrAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
+    }
+    
     this.allNamespaces = findAllNamespaces(this.nodeAtCursor)
     return doComplete(params, pathData, document, type, prefix)
   }
@@ -221,7 +227,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = name
       this.detail = "From package '$pck'"
       this.kind = VALUE
-      this.sortText = name
+      this.sortText = "000$name"
       this.insertText = name
       this.matchLevel = matchLevel
     }

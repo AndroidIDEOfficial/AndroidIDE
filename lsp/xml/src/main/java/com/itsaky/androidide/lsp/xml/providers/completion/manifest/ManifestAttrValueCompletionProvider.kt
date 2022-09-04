@@ -52,7 +52,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   override fun completeInternal(
     attrName: String,
     prefix: String,
-    groups: MutableSet<Triple<String, ResourceTable, ResourceGroup>>,
+    groups: MutableSet<Pair<String, ResourceGroup>>,
     result: MutableList<CompletionItem>
   ) {
     if (this.attrAtCursor.nodeName == /*android:name*/ "${ANDROID_NS_NAME_PREFIX}${ATTR_NAME}") {
@@ -170,6 +170,8 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   override fun findResourceTables(nsUri: String): Set<ResourceTable> {
-    return manifestResourceTable()
+    val tables = manifestResourceTable().toMutableSet()
+    tables.addAll(super.findResourceTables(nsUri))
+    return tables
   }
 }
