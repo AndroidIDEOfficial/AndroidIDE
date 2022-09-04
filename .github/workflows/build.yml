@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "main", "advanced-xml-registry" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch: {}
@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew testDebugUnitTest --continue
+        run: ./gradlew testDebug --continue
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
