@@ -33,6 +33,8 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
+import com.itsaky.androidide.lsp.xml.edits.TagEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
@@ -101,7 +103,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.attrAtCursor =
         document.findAttrAt(params.position.requireIndex()) ?: return CompletionResult.EMPTY
     }
-    
+
     this.allNamespaces = findAllNamespaces(this.nodeAtCursor)
     return doComplete(params, pathData, document, type, prefix)
   }
@@ -140,6 +142,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = simpleName
       this.detail = qualifiedName
       this.sortText = label.toString()
+      this.editHandler = TagEditHandler()
       this.matchLevel = matchLevel
       this.kind = CLASS
       this.data = CompletionData().apply { className = qualifiedName }
@@ -210,6 +213,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.overrideTypeText = type.uppercase()
       this.sortText = if (pck == ResourceTableRegistry.PCK_ANDROID) "zzz$text" else text
       this.insertText = text
+      this.editHandler = QualifiedValueEditHandler()
       this.matchLevel = matchLevel
     }
   }
@@ -232,6 +236,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.kind = VALUE
       this.sortText = "000$name"
       this.insertText = name
+      this.editHandler = QualifiedValueEditHandler()
       this.matchLevel = matchLevel
     }
   }

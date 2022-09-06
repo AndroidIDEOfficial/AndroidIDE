@@ -49,20 +49,27 @@ open class DefaultEditHandler : IEditHandler {
       ThreadUtils.runOnUiThread { performEditsInternal(item, editor, text, line, column, index) }
       return
     }
-  
+
     performEditsInternal(item, editor, text, line, column, index)
   }
-  
-  private fun performEditsInternal(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int) {
+
+  private fun performEditsInternal(
+    item: CompletionItem,
+    editor: CodeEditor,
+    text: Content,
+    line: Int,
+    column: Int,
+    index: Int
+  ) {
     if (item.insertTextFormat == SNIPPET) {
       insertSnippet(item, editor, text, line, column, index)
       return
     }
-    
+
     val start = getIdentifierStart(text.getLine(line), column)
     text.delete(line, start, line, column)
     editor.commitText(item.insertText)
-  
+
     text.beginBatchEdit()
     if (item.additionalEditHandler != null) {
       item.additionalEditHandler!!.performEdits(item, editor, text, line, column, index)
@@ -70,11 +77,18 @@ open class DefaultEditHandler : IEditHandler {
       RewriteHelper.performEdits(item.additionalTextEdits!!, editor)
     }
     text.beginBatchEdit()
-    
+
     executeCommand(editor, item.command)
   }
-  
-  protected open fun insertSnippet(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int) {
+
+  protected open fun insertSnippet(
+    item: CompletionItem,
+    editor: CodeEditor,
+    text: Content,
+    line: Int,
+    column: Int,
+    index: Int
+  ) {
     item.snippetDescription!!
     val snippet = CodeSnippetParser.parse(item.insertText)
     val prefixLength = item.snippetDescription!!.selectedLength
@@ -86,7 +100,7 @@ open class DefaultEditHandler : IEditHandler {
     }
     editor.snippetController.startSnippet(actionIndex, snippet, selectedText)
   }
-  
+
   protected open fun executeCommand(editor: CodeEditor, command: Command?) {
     if (command == null) {
       return
@@ -104,7 +118,7 @@ open class DefaultEditHandler : IEditHandler {
   protected open fun getIdentifierStart(text: CharSequence, end: Int): Int {
     var start = end
     while (start > 0) {
-      if (Character.isJavaIdentifierPart(text[start - 1])) {
+      if (isPartialPart(text[start - 1])) {
         start--
         continue
       }
@@ -112,4 +126,6 @@ open class DefaultEditHandler : IEditHandler {
     }
     return start
   }
+
+  protected open fun isPartialPart(c: Char) = Character.isJavaIdentifierPart(c)
 }
