@@ -31,6 +31,7 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
+import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
@@ -77,8 +78,8 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
 
       val item =
         createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, value.name, match)
-      item.insertText = "."
-      item.additionalEditHandler = QualifiedValueEditHandler()
+      item.insertText = value.constant
+      item.insertTextFormat = PLAIN_TEXT
       item.overrideTypeText = "Permission"
 
       // Show API information
@@ -158,8 +159,8 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       }
 
       val item = createEnumOrFlagCompletionItem(ResourceTableRegistry.PCK_ANDROID, entry, match)
-      item.insertText = "."
-      item.additionalEditHandler = QualifiedValueEditHandler()
+      item.insertText = entry
+      item.insertTextFormat = PLAIN_TEXT
       result.add(item)
     }
   }
