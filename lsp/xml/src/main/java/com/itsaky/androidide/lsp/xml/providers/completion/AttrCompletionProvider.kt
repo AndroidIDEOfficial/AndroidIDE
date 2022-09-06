@@ -29,13 +29,11 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
-import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import org.eclipse.lemminx.dom.DOMAttr
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMNode
 
@@ -46,11 +44,11 @@ import org.eclipse.lemminx.dom.DOMNode
  */
 open class AttrCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
-  
+
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE
   }
-  
+
   override fun doComplete(
     params: CompletionParams,
     pathData: ResourcePathData,
@@ -87,15 +85,17 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
 
     return CompletionResult(list)
   }
-  
+
   protected open fun completeForNamespace(
-    namespace: String,
+    namespace: String?,
     nsPrefix: String,
     node: DOMNode,
     newPrefix: String,
     list: MutableList<CompletionItem>
   ) {
-
+    if (namespace == null) {
+      return
+    }
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
       return
@@ -165,11 +165,11 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
       }
     }
   }
-  
+
   protected open fun hasAttr(prefix: String, ref: Reference): Boolean {
     return this.nodeAtCursor.hasAttribute("${prefix}:${ref.name.entry}")
   }
-  
+
   protected open fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
     val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
@@ -228,7 +228,10 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     return result
   }
 
-  protected open fun findLayoutParams(styleables: ResourceGroup, parentNode: DOMNode): Set<Styleable> {
+  protected open fun findLayoutParams(
+    styleables: ResourceGroup,
+    parentNode: DOMNode
+  ): Set<Styleable> {
     val result = mutableSetOf<Styleable>()
 
     // Add layout params common for all view groups and the ones supporting child margins

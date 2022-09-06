@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.common
+package com.itsaky.androidide.lsp.xml.providers.completion
 
 import com.android.aapt.Resources.Attribute.FormatFlags
 import com.android.aapt.Resources.Attribute.FormatFlags.BOOLEAN
@@ -33,8 +33,9 @@ import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.UNKNOWN
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.ConfigDescription
-import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourcePathData
+import com.android.aaptcompiler.ResourceTable
+import com.android.aaptcompiler.ResourceTablePackage
 import com.itsaky.androidide.aapt.findEntries
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -43,9 +44,9 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.MAX_ITEMS
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -92,80 +93,99 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
     val pck = namespace.substringAfter(NAMESPACE_PREFIX)
     val list = mutableListOf<CompletionItem>()
-    val groups = mutableSetOf<Pair<String, ResourceGroup>>()
 
-    for (table in tables) {
-      if (namespace == NAMESPACE_AUTO) {
-        val grps =
-          table.packages.filter { it.name.isNotBlank() }.map { it.name to it.findGroup(ATTR) }
-        for (grp in grps) {
-          grp.second?.also { groups.add(grp.first to it) }
+    val attr =
+      findAttr(tables, namespace, pck, attrName)
+        ?: run {
+          log.warn(
+            "No attribute found with name '$attrName' in package '${if (namespace == NAMESPACE_AUTO) "<auto>" else pck}'"
+          )
+          return EMPTY
         }
-      } else {
-        val grp = table.findPackage(pck)?.findGroup(ATTR) ?: continue
-        groups.add((pck to grp))
-      }
-    }
 
-    completeInternal(attrName, prefix, groups, list)
+    addValuesForAttr(attr, pck, prefix, list)
 
     return CompletionResult(list)
   }
+  
+  protected open fun resTableForFindAttr() = platformResourceTable()
 
-  protected open fun completeInternal(
-    attrName: String,
-    prefix: String,
-    groups: MutableSet<Pair<String, ResourceGroup>>,
-    result: MutableList<CompletionItem>
-  ) {
-    for (pair in groups) {
-      val pack = pair.first
-      val group = pair.second
-      val entry = group.findEntry(attrName)?.findValue(ConfigDescription())?.value ?: continue
-      if (entry !is AttributeResource) {
-        continue
-      }
+  private fun findAttr(
+    tables: Set<ResourceTable>,
+    namespace: String,
+    pck: String,
+    attr: String
+  ): AttributeResource? {
+    if (namespace != NAMESPACE_AUTO && pck == ResourceTableRegistry.PCK_ANDROID) {
+      // AndroidX dependencies include attribute declarations with the 'android' package
+      // Those must not be included when completing values
+      val attrEntry =
+        resTableForFindAttr()!!
+          .findPackage(ResourceTableRegistry.PCK_ANDROID)
+          ?.findGroup(ATTR)
+          ?.findEntry(attr)
+          ?.findValue(ConfigDescription())
+          ?.value
+      return if (attrEntry is AttributeResource) attrEntry else null
+    }
 
-      addFromTable(entry, pack, prefix, result)
+    return if (namespace == NAMESPACE_AUTO) {
+      findAttr(tables.flatMap { it.packages }, attr)
+    } else {
+      findAttr(tables.mapNotNull { it.findPackage(pck) }, attr)
     }
   }
 
-  private fun addFromTable(
-    entry: AttributeResource,
+  private fun findAttr(
+    packages: Collection<ResourceTablePackage>,
+    attr: String
+  ): AttributeResource? {
+    for (pck in packages) {
+      val entry =
+        pck.findGroup(ATTR)?.findEntry(attr)?.findValue(ConfigDescription())?.value ?: continue
+      if (entry is AttributeResource) {
+        return entry
+      }
+    }
+    return null
+  }
+
+  private fun addValuesForAttr(
+    attr: AttributeResource,
     pck: String,
     prefix: String,
     list: MutableList<CompletionItem>
   ) {
-    if (entry.typeMask == FormatFlags.REFERENCE_VALUE) {
+    if (attr.typeMask == FormatFlags.REFERENCE_VALUE) {
       completeReferences(prefix, list)
     } else {
       // Check for specific attribute formats
-      if (entry.hasType(STRING)) {
+      if (attr.hasType(STRING)) {
         addValues(type = AaptResourceType.STRING, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(INTEGER)) {
+      if (attr.hasType(INTEGER)) {
         addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(COLOR)) {
+      if (attr.hasType(COLOR)) {
         addValues(type = AaptResourceType.COLOR, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(BOOLEAN)) {
+      if (attr.hasType(BOOLEAN)) {
         addValues(type = BOOL, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(DIMENSION)) {
+      if (attr.hasType(DIMENSION)) {
         addValues(type = DIMEN, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(INTEGER)) {
+      if (attr.hasType(INTEGER)) {
         addValues(type = AaptResourceType.INTEGER, prefix = prefix, result = list)
       }
 
-      if (entry.hasType(ENUM) || entry.hasType(FLAGS)) {
-        for (symbol in entry.symbols) {
+      if (attr.hasType(ENUM) || attr.hasType(FLAGS)) {
+        for (symbol in attr.symbols) {
           val matchLevel = matchLevel(symbol.symbol.name.entry!!, prefix)
           if (matchLevel == NO_MATCH && prefix.isNotEmpty()) {
             continue
@@ -177,7 +197,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
         }
       }
 
-      if (entry.hasType(REFERENCE)) {
+      if (attr.hasType(REFERENCE)) {
         completeReferences(prefix, list)
       }
     }
@@ -211,12 +231,9 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           }
         }
         .toHashSet()
+
     entries.forEach { pair ->
       pair.second?.forEach {
-        if (result.size >= MAX_ITEMS + 1) {
-          return
-        }
-
         result.add(
           createAttrValueCompletionItem(
             pair.first,
@@ -227,6 +244,13 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
         )
       }
     }
+  }
+
+  override fun findResourceTables(nsUri: String): Set<ResourceTable> {
+    // When completing values, all namespaces must be included
+    val tables = HashSet(findAllModuleResourceTables())
+    tables.addAll(super.findResourceTables(nsUri))
+    return tables
   }
 
   private fun AttributeResource.hasType(check: FormatFlags): Boolean {

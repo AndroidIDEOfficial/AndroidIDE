@@ -53,12 +53,11 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       // Check if all the expected color values are present
       assertThat(items)
         .containsAtLeast(
-          "@android:color/Blue_700",
-          "@android:color/Blue_800",
-          "@android:color/Teal_700",
-          "@android:color/background_dark",
-          "@android:color/Red_700",
-          "@android:color/Purple_700"
+          "@color/abc_background_cache_hint_selector_material_dark",
+          "@color/abc_background_cache_hint_selector_material_light",
+          "@color/abc_btn_colored_borderless_text_material",
+          "@color/abc_btn_colored_text_material",
+          "@color/abc_color_highlight_material"
         )
 
       // Check that we do not have any other type of values
@@ -81,17 +80,17 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       assertThat(items).contains("parent")
     }
   }
-  
+
   @Test // prefix: '' (empty)        // for attribute 'material:layout_constraintStart_toStartOf'
   fun `values must be completed from defined auto namespace as well`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrValueFromNamespaceAuto")
-      
+
       val (isIncomplete, items) = complete()
-      
+
       assertThat(isIncomplete).isTrue()
       assertThat(items).isNotEmpty()
-      
+
       assertThat(items).contains("parent")
     }
   }

@@ -166,17 +166,16 @@ class ManifestAttrValueCompletionProviderTest : CompletionHelper by CompletionHe
     }
   }
   
-  @Test
+  @Test // prefix: 'ic_l'
   fun `resource references value completion test`() {
     XMLLSPTest.apply {
-//      assertHasSingleLineEntries(
-//        "ManifestResourceReferenceCompletionTest",
-//        arrayOf(
-//          "@mipmap/ic_launcher",
-//          "@mipmap/ic_launcher_background",
-//          "@mipmap/ic_launcher_foreground"
-//        )
-//      )
+      assertHasSingleLineEntries(
+        "ManifestResourceReferenceCompletionTest",
+        arrayOf(
+          "@drawable/ic_launcher_background",
+          "@drawable/ic_launcher_foreground"
+        )
+      )
     }
   }
   

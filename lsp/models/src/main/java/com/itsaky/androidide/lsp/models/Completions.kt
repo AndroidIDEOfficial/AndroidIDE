@@ -57,7 +57,7 @@ data class CompletionParams(var position: Position, var file: Path) {
   }
 }
 
-open class CompletionResult(items: List<CompletionItem>) {
+open class CompletionResult(items: Collection<CompletionItem>) {
   val items: List<CompletionItem> = run {
     var temp = items.toMutableList()
     temp.sort()

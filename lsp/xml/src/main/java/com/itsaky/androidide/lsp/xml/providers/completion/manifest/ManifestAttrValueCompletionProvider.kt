@@ -24,23 +24,27 @@ import com.android.SdkConstants.TAG_ACTIVITY
 import com.android.SdkConstants.TAG_INTENT_FILTER
 import com.android.SdkConstants.TAG_RECEIVER
 import com.android.SdkConstants.TAG_SERVICE
-import com.android.aaptcompiler.ResourceGroup
+import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
+import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
-import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
-import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
 import com.itsaky.androidide.lsp.xml.providers.completion.match
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.xml.permissions.Permission
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import org.eclipse.lemminx.dom.DOMDocument
 
 /**
  * Completes attribute values in manifest file.
@@ -50,26 +54,33 @@ import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   AttrValueCompletionProvider(provider) {
 
-  override fun completeInternal(
-    attrName: String,
-    prefix: String,
-    groups: MutableSet<Pair<String, ResourceGroup>>,
-    result: MutableList<CompletionItem>
-  ) {
+  override fun doComplete(
+    params: CompletionParams,
+    pathData: ResourcePathData,
+    document: DOMDocument,
+    type: NodeType,
+    prefix: String
+  ): CompletionResult {
     if (this.attrAtCursor.nodeName == /*android:name*/ "${ANDROID_NS_NAME_PREFIX}${ATTR_NAME}") {
-      when (this.nodeAtCursor.nodeName) {
-        "action" -> completeActionName(prefix, result)
-        "category" -> completeCategory(prefix, result)
-        "uses-permission" -> completePermission(prefix, result)
-        "uses-feature" -> completeFeature(prefix, result)
+      return when (this.nodeAtCursor.nodeName) {
+        "action" -> completeActionName(prefix)
+        "category" -> completeCategory(prefix)
+        "uses-permission" -> completePermission(prefix)
+        "uses-feature" -> completeFeature(prefix)
+        else -> return super.doComplete(params, pathData, document, type, prefix)
       }
     }
-    super.completeInternal(attrName, prefix, groups, result)
+    return super.doComplete(params, pathData, document, type, prefix)
+  }
+  
+  override fun resTableForFindAttr(): ResourceTable? {
+    return manifestResourceTable().firstOrNull()
   }
 
   // TODO we could add an action using the actions registry to make it easier to add permissions
   //  with a GUI interface
-  private fun completePermission(prefix: String, result: MutableList<CompletionItem>) {
+  private fun completePermission(prefix: String): CompletionResult {
+    val result = mutableListOf<CompletionItem>()
     for (value in Permission.values()) {
       val match = match(value.name, value.constant, prefix)
       if (match == NO_MATCH) {
@@ -91,12 +102,14 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
         }
       result.add(item)
     }
+    return CompletionResult(result)
   }
 
-  private fun completeActionName(prefix: String, result: MutableList<CompletionItem>) {
-    val parent = this.nodeAtCursor.parentNode ?: return
-    val parentOfParent = parent.parentNode ?: return
+  private fun completeActionName(prefix: String): CompletionResult {
+    val parent = this.nodeAtCursor.parentNode ?: return EMPTY
+    val parentOfParent = parent.parentNode ?: return EMPTY
 
+    val result = mutableListOf<CompletionItem>()
     if (parent.nodeName == TAG_INTENT_FILTER) {
       when (parentOfParent.nodeName) {
         TAG_ACTIVITY -> completeActivityActions(prefix, result)
@@ -104,6 +117,8 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
         TAG_SERVICE -> completeServiceActions(prefix, result)
       }
     }
+
+    return CompletionResult(result)
   }
 
   private fun completeServiceActions(prefix: String, result: MutableList<CompletionItem>) {
@@ -127,18 +142,22 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  private fun completeCategory(prefix: String, result: MutableList<CompletionItem>) {
+  private fun completeCategory(prefix: String): CompletionResult {
+    val result = mutableListOf<CompletionItem>()
     val mod = getModule()
     if (mod is AndroidModule) {
       addMatches(prefix, mod.getCategories(), result)
     }
+    return CompletionResult(result)
   }
 
-  private fun completeFeature(prefix: String, result: MutableList<CompletionItem>) {
+  private fun completeFeature(prefix: String): CompletionResult {
+    val result = mutableListOf<CompletionItem>()
     val mod = getModule()
     if (mod is AndroidModule) {
       addMatches(prefix, mod.getFeatures(), result)
     }
+    return CompletionResult(result)
   }
 
   private fun addMatches(

@@ -28,7 +28,7 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.common.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
