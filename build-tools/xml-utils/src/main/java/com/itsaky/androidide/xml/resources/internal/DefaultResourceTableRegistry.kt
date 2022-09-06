@@ -65,7 +65,7 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
     FEATURES("features.txt")
   }
 
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(ResourceTableRegistry::class.java.simpleName)
 
   private val tables = ConcurrentHashMap<String, ResourceTable>()
   private val platformTables = ConcurrentHashMap<String, ResourceTable>()
@@ -296,7 +296,7 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
       try {
         extractor.extract(stream)
       } catch (err: Exception) {
-        log.warn("Failed to compile ${pathData.file}", err.message)
+        log.warn("Failed to compile ${pathData.file}")
       }
     }
   }

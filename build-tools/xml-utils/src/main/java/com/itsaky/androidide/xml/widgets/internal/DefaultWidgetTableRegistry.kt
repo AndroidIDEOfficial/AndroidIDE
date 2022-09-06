@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
 internal object DefaultWidgetTableRegistry : WidgetTableRegistry {
 
   private val tables = ConcurrentHashMap<String, WidgetTable>()
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  private val log = ILogger.newInstance(WidgetTableRegistry::class.java.simpleName)
 
   override fun forPlatformDir(platform: File): WidgetTable? {
     var table = tables[platform.path]
