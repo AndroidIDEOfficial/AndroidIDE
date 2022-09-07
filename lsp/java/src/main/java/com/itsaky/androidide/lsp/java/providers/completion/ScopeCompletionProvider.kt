@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
+import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
@@ -186,6 +187,7 @@ class ScopeCompletionProvider(
     item.sortText = item.label.toString()
     item.insertText = insertText
     item.insertTextFormat = SNIPPET
+    item.snippetDescription = describeSnippet(partial)
     item.matchLevel = matchLevel
     item.data = data(task, method, 1)
     if (item.additionalTextEdits == null) {
