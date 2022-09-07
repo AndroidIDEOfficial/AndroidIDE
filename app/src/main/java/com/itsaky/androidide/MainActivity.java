@@ -73,7 +73,8 @@ public class MainActivity extends StudioActivity {
     TaskExecutor.executeAsyncProvideError(
         () -> {
           final var input =
-              new File(Environment.PROJECTS_DIR, "TestApp/app/src/main/res/layout/activity_main.xml");
+              new File(
+                  Environment.PROJECTS_DIR, "TestApp/app/src/main/res/layout/activity_main.xml");
           final var output = Environment.PROJECTS_DIR;
 
           final var watch = new StopWatch("Compile sample resource");

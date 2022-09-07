@@ -128,7 +128,7 @@ public class StudioApp extends BaseApplication {
   public IResourceTable getResourceTable() {
     return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
   }
-  
+
   public AttrInfo attrInfo() {
     return sdkInfo.getAttrInfo();
   }

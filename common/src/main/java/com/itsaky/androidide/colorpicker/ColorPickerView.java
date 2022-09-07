@@ -168,7 +168,6 @@ public class ColorPickerView extends LinearLayout {
    * @param hexCode The hex color code.
    * @see #setColor(int)
    */
-
   public void setColor(final String hexCode) {
     setColor(parseColor(hexCode));
   }
@@ -194,7 +193,6 @@ public class ColorPickerView extends LinearLayout {
    *
    * @param color The new color value.
    */
-
   public void setColor(int color) {
     this.alpha = alpha(color);
     this.red = red(color);

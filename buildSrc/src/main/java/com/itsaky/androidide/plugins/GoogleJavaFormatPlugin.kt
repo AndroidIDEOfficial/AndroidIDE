@@ -19,6 +19,9 @@ package com.itsaky.androidide.plugins
 
 import com.google.googlejavaformat.java.Formatter
 import com.google.googlejavaformat.java.JavaFormatterOptions
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -26,9 +29,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Collections
 import java.util.stream.Collectors
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 
 /**
  * Plugin for formatting the Java source files using google-java-format.
@@ -36,6 +36,19 @@ import org.gradle.api.logging.Logger
  * @author Akash Yadav
  */
 class GoogleJavaFormatPlugin : Plugin<Project> {
+
+  companion object {
+    private val excludeProjects =
+      listOf(
+        ":build-tools:aaptcompiler",
+        ":build-tools:google-java-format",
+        ":build-tools:jaxp",
+        ":build-tools:jdt",
+        ":build-tools:xml-dom",
+        ":build-tools:xml-formatter",
+        ":lexers"
+      )
+  }
 
   override fun apply(target: Project) {
     target.tasks.register("formatJavaSources") {
@@ -50,6 +63,12 @@ class GoogleJavaFormatPlugin : Plugin<Project> {
 
         var formattingChanges = false
         target.rootProject.subprojects.forEach { sub ->
+          
+          if (sub.path in excludeProjects) {
+            logger.warn("Project '${sub.path}' will not be formatted.")
+            return@doLast
+          }
+          
           val sources = walkForSources(sub.file("src/main/java").toPath(), logger).toMutableSet()
           sources.addAll(walkForSources(sub.file("src/test/java").toPath(), logger))
 
