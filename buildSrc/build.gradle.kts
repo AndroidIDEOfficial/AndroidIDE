@@ -20,11 +20,13 @@ plugins {
 }
 
 repositories {
-    google()
-    gradlePluginPortal()
-    mavenCentral()
+  google()
+  gradlePluginPortal()
+  mavenCentral()
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation(gradleApi())
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+  implementation("com.google.googlejavaformat:google-java-format:1.15.0")
 }

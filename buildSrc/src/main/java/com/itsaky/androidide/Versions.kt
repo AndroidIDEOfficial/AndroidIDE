@@ -25,19 +25,19 @@ package com.itsaky.androidide
 object Versions {
 
   /** The compile SDK version. */
-  val compileSdk = 32
+  const val compileSdk = 32
 
   /** The build tools version. */
-  val buildTools = "31.0.0"
+  const val buildTools = "31.0.0"
 
   /** The minimum SDK version. */
-  val minSdk = 26
+  const val minSdk = 26
 
   /** The target SDK version. */
-  val targetSdk = 28
+  const val targetSdk = 28
 
   /** The version code. */
-  val versionCode = 212
+  const val versionCode = 212
 
   /**
    * The version name for the IDE. When in CI build, includes the [releaseVersionName], branch name
@@ -53,5 +53,5 @@ object Versions {
   }
 
   /** The release version name. */
-  val releaseVersionName = "2.1.2-beta"
+  const val releaseVersionName = "2.1.2-beta"
 }
