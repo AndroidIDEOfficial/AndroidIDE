@@ -47,6 +47,6 @@ object CI {
       .start()
       .inputStream
       .bufferedReader()
-      .readText()
+      .readText().trim()
   }
 }
