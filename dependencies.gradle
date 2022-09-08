@@ -33,7 +33,7 @@ ext {
     
     androidx = [
             annotation       : 'androidx.annotation:annotation:1.4.0',
-            appcompat        : 'androidx.appcompat:appcompat:1.4.2',
+            appcompat        : 'androidx.appcompat:appcompat:1.5.1',
             cardview         : 'androidx.cardview:cardview:1.0.0',
             constraintlayout : 'androidx.constraintlayout:constraintlayout:2.1.4',
             coordinatorlayout: 'androidx.coordinatorlayout:coordinatorlayout:1.2.0',
