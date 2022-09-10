@@ -18,6 +18,8 @@
 package com.itsaky.androidide.lsp.xml.providers
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
+import com.android.aaptcompiler.AaptResourceType.ANIM
+import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.extractPathData
@@ -27,14 +29,19 @@ import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
-import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.providers.completion.common.CommonAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.utils.AnimTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.DrawableTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
+import com.itsaky.androidide.lsp.xml.utils.NoOpTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -46,10 +53,10 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import java.io.IOException
-import java.io.Reader
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import java.io.IOException
+import java.io.Reader
 import kotlin.io.path.name
 
 /**
@@ -131,10 +138,25 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (pathData.type) {
       LAYOUT -> createLayoutCompleter(type)
       null -> createNullTypeCompleter(pathData, type)
+      else -> createCommonCompleter(pathData, type)
+    }
+  }
+  
+  private fun createCommonCompleter(pathData: ResourcePathData, type: NodeType): IXmlCompletionProvider? {
+    return when(type) {
+      ATTRIBUTE -> CommonAttrCompletionProvider( tagTransformerFor(pathData),this)
       else -> null
     }
   }
-
+  
+  private fun tagTransformerFor(pathData: ResourcePathData): ITagTransformer {
+    return when(pathData.type) {
+      ANIM -> AnimTagTransformer
+      DRAWABLE -> DrawableTagTransformer
+      else -> NoOpTagTransformer
+    }
+  }
+  
   private fun createNullTypeCompleter(
     pathData: ResourcePathData,
     type: NodeType

@@ -15,39 +15,35 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.manifest
+package com.itsaky.androidide.lsp.xml.providers.completion.common
 
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceGroup
-import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrCompletionProvider
-import com.itsaky.androidide.lsp.xml.providers.completion.MANIFEST_TAG_PREFIX
-import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
-import com.itsaky.androidide.lsp.xml.providers.completion.manifestResourceTable
-import com.itsaky.androidide.lsp.xml.providers.completion.transformToEntryName
-import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
 import org.eclipse.lemminx.dom.DOMNode
 
 /**
- * Provides attribution completion for AndroidManifest.
+ * Provides attribute completion for all other resource types.
  *
+ * @property tagTransform A function which returns the styleable entry name for the given tag name
+ * (first param) and its parent's tag name (second param).
  * @author Akash Yadav
  */
-class ManifestAttrCompletionProvider(provider: ICompletionProvider) :
-  AttrCompletionProvider(provider) {
-
-  override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
-    return super.canProvideCompletions(pathData, type) && canCompleteManifest(pathData, type)
-  }
-
-  override fun findResourceTables(nsUri: String) = manifestResourceTable()
+internal class CommonAttrCompletionProvider(
+  private val tagTransform: ITagTransformer,
+  provider: ICompletionProvider
+) : AttrCompletionProvider(provider) {
 
   override fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val name = node.nodeName
     val styleable =
-      styleables.findEntry(transformToEntryName(name, MANIFEST_TAG_PREFIX))?.findValue(ConfigDescription())?.value
+      styleables
+        .findEntry(tagTransform.transform(name, nodeAtCursor.parentNode?.nodeName ?: ""))
+        ?.findValue(ConfigDescription())
+        ?.value
     if (styleable != null && styleable is Styleable) {
       return setOf(styleable)
     }

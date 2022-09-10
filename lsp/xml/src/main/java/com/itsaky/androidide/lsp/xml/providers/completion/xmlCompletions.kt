@@ -56,3 +56,58 @@ fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
   }
   return namespaces
 }
+
+/**
+ * Transforms entry name to tag name.
+ *
+ * For example: `AndroidManifestUsesPermission` -> `uses-permission`
+ */
+fun transformToTagName(entryName: String, prefix: String = ""): String {
+  val name = StringBuilder()
+  var index = prefix.length
+  while (index < entryName.length) {
+    var c = entryName[index]
+    if (c.isUpperCase()) {
+      if (index != prefix.length) {
+        name.append('-')
+      }
+      c = c.lowercaseChar()
+    }
+    
+    name.append(c)
+    ++index
+  }
+  return name.toString()
+}
+
+/**
+ * Transforms entry name to tag name.
+ *
+ * For example: `uses-permission` -> `AndroidManifestUsesPermission`
+ */
+fun transformToEntryName(tagName: String, prefix: String = ""): String {
+  if (tagName == "manifest") {
+    return MANIFEST_TAG_PREFIX
+  }
+  
+  val name = StringBuilder(prefix)
+  
+  var index = 0
+  var capitalize = false
+  while (index < tagName.length) {
+    var c = tagName[index]
+    if (c == '-') {
+      capitalize = true
+      ++index
+      continue
+    }
+    if (index == 0 || capitalize) {
+      c = c.uppercaseChar()
+      capitalize = false
+    }
+    name.append(c)
+    ++index
+  }
+  
+  return name.toString()
+}

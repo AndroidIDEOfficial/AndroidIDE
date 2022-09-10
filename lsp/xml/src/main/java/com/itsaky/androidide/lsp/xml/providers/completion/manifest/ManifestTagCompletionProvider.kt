@@ -74,7 +74,7 @@ class ManifestTagCompletionProvider(provider: ICompletionProvider) :
 
     styleables
       .findEntries { it.startsWith(MANIFEST_TAG_PREFIX) }
-      .map { transformToTagName(it.name) }
+      .map { transformToTagName(it.name, MANIFEST_TAG_PREFIX) }
       .forEach {
         val match = matchLevel(it, newPrefix)
         if (match == NO_MATCH) {
