@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.lsp.xml.utils
 
-import com.android.SdkConstants
 import com.itsaky.androidide.lsp.xml.providers.completion.transformToEntryName
 
 /** Transforms tag names to styleable entry names. */

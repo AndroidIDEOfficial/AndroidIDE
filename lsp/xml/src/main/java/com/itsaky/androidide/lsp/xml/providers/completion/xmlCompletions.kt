@@ -43,9 +43,15 @@ fun platformResourceTable(): ResourceTable? {
 fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
   val namespaces = mutableSetOf<Pair<String, String>>()
   var curr: DOMNode? = node
-
-  @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
-  while (curr != null && curr.attributes != null) {
+  
+  while (curr != null && !curr.isOwnerDocument) {
+    
+    @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
+    if (curr.attributes == null) {
+      curr = curr.parentNode
+      continue
+    }
+    
     for (i in 0 until curr.attributes.length) {
       val currAttr = curr.getAttributeAtIndex(i)
       if (currAttr.isXmlns) {
