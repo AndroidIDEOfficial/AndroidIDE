@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.xml.utils
 import com.itsaky.androidide.lsp.xml.providers.completion.transformToEntryName
 
 /** Transforms tag names to styleable entry names. */
-internal interface ITagTransformer {
+interface ITagTransformer {
   /** Returns the styleable entry name for the given tag name and its parent's tag name. */
   fun transform(tag: String, parent: String = ""): String
 }
@@ -64,6 +64,15 @@ internal object AnimTagTransformer : ITagTransformer {
       tag.endsWith("Interpolator") -> ""
       else -> "Animation"
     }
+  }
+}
+
+internal object TransitionTagTransformer: ITagTransformer {
+  override fun transform(tag: String, parent: String): String {
+    if (tag == "target") {
+      return TRANSITION_TARGET
+    }
+    return transformToEntryName(tag)
   }
 }
 

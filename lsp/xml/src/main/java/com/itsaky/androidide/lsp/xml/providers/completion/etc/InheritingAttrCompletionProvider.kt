@@ -15,9 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.providers.completion.common
+package com.itsaky.androidide.lsp.xml.providers.completion.etc
 
-import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.Styleable
 import com.itsaky.androidide.lsp.api.ICompletionProvider
@@ -26,28 +25,31 @@ import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
 import org.eclipse.lemminx.dom.DOMNode
 
 /**
- * Provides attribute completion for all other resource types.
+ * Provides attribute completion for entries which inherit attributes from other entries.
  *
- * @property tagTransform A function which returns the styleable entry name for the given tag name
- * (first param) and its parent's tag name (second param).
  * @author Akash Yadav
  */
-open class CommonAttrCompletionProvider(
-  protected val tagTransform: ITagTransformer,
+class InheritingAttrCompletionProvider(
+  private val parentProvider: (String) -> List<String> = { emptyList() },
+  private val tagTransform: ITagTransformer,
   provider: ICompletionProvider
 ) : AttrCompletionProvider(provider) {
 
   override fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
+    val nodeStyleables = mutableSetOf<Styleable>()
     val name = node.nodeName
-    val styleable =
-      styleables
-        .findEntry(tagTransform.transform(name, nodeAtCursor.parentNode?.nodeName ?: ""))
-        ?.findValue(ConfigDescription())
-        ?.value
-    if (styleable != null && styleable is Styleable) {
-      return setOf(styleable)
-    }
+    val entryName = tagTransform.transform(name, nodeAtCursor.parentNode?.nodeName ?: "")
+    val styleable = findStyleableEntry(styleables, entryName)
+    styleable?.let { nodeStyleables.add(it) }
 
-    return emptySet()
+    val parents = parentProvider(entryName)
+    if (parents.isNotEmpty()) {
+      parents.forEach {
+        findStyleableEntry(styleables, it)?.let { parentStyleable ->
+          nodeStyleables.add(parentStyleable)
+        }
+      }
+    }
+    return nodeStyleables
   }
 }
