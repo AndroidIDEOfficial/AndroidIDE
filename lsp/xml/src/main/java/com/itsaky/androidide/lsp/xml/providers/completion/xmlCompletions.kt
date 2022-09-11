@@ -23,8 +23,8 @@ import com.itsaky.androidide.lsp.models.CompletionItem.Companion.matchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import org.eclipse.lemminx.dom.DOMNode
 import kotlin.math.min
+import org.eclipse.lemminx.dom.DOMNode
 
 fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel {
   val simpleNameMatchLevel = matchLevel(simpleName, prefix)
@@ -43,7 +43,7 @@ fun platformResourceTable(): ResourceTable? {
 fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
   val namespaces = mutableSetOf<Pair<String, String>>()
   var curr: DOMNode? = node
-  
+
   @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
   while (curr != null && curr.attributes != null) {
     for (i in 0 until curr.attributes.length) {
@@ -73,7 +73,7 @@ fun transformToTagName(entryName: String, prefix: String = ""): String {
       }
       c = c.lowercaseChar()
     }
-    
+
     name.append(c)
     ++index
   }
@@ -81,7 +81,7 @@ fun transformToTagName(entryName: String, prefix: String = ""): String {
 }
 
 /**
- * Transforms entry name to tag name.
+ * Transforms tag name to entry name.
  *
  * For example: `uses-permission` -> `AndroidManifestUsesPermission`
  */
@@ -89,9 +89,9 @@ fun transformToEntryName(tagName: String, prefix: String = ""): String {
   if (tagName == "manifest") {
     return MANIFEST_TAG_PREFIX
   }
-  
+
   val name = StringBuilder(prefix)
-  
+
   var index = 0
   var capitalize = false
   while (index < tagName.length) {
@@ -108,6 +108,6 @@ fun transformToEntryName(tagName: String, prefix: String = ""): String {
     name.append(c)
     ++index
   }
-  
+
   return name.toString()
 }

@@ -36,6 +36,10 @@ internal object DrawableTagTransformer : ITagTransformer {
     if (tag == "corners") {
       return "DrawableCorners"
     }
+    
+    if (parent == "item") {
+      return toEntry(tag)
+    }
 
     val prefix =
       if (parent.isNotEmpty()) {
