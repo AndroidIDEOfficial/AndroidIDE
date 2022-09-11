@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.xml.providers
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.android.aaptcompiler.AaptResourceType.ANIM
+import com.android.aaptcompiler.AaptResourceType.ANIMATOR
 import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.AaptResourceType.TRANSITION
@@ -41,6 +42,7 @@ import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrC
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrValueCompletionProvider
 import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
 import com.itsaky.androidide.lsp.xml.utils.AnimTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.AnimatorTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.DrawableTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
 import com.itsaky.androidide.lsp.xml.utils.NoOpTagTransformer
@@ -169,6 +171,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   private fun tagTransformerFor(pathData: ResourcePathData): ITagTransformer {
     return when (pathData.type) {
       ANIM -> AnimTagTransformer
+      ANIMATOR -> AnimatorTagTransformer
       DRAWABLE -> DrawableTagTransformer
       else -> NoOpTagTransformer
     }

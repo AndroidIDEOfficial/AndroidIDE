@@ -31,12 +31,18 @@ internal object NoOpTagTransformer : ITagTransformer {
   }
 }
 
+internal open class SimpleTagTransformer : ITagTransformer {
+  override fun transform(tag: String, parent: String): String {
+    return transformToEntryName(tag)
+  }
+}
+
 internal object DrawableTagTransformer : ITagTransformer {
   override fun transform(tag: String, parent: String): String {
     if (tag == "corners") {
       return "DrawableCorners"
     }
-    
+
     if (parent == "item") {
       return toEntry(tag)
     }
@@ -71,12 +77,18 @@ internal object AnimTagTransformer : ITagTransformer {
   }
 }
 
-internal object TransitionTagTransformer: ITagTransformer {
+internal object AnimatorTagTransformer : SimpleTagTransformer() {
+  override fun transform(tag: String, parent: String): String {
+    return toEntry(tag)
+  }
+}
+
+internal object TransitionTagTransformer : SimpleTagTransformer() {
   override fun transform(tag: String, parent: String): String {
     if (tag == "target") {
       return TRANSITION_TARGET
     }
-    return transformToEntryName(tag)
+    return super.transform(tag, parent)
   }
 }
 
@@ -93,8 +105,10 @@ private fun toEntry(tag: String): String {
   when (tag) {
     "selector" -> return "StateList"
     "animated-selector" -> return "AnimatedStateList"
-    "animation" -> return "Animation"
     "shape" -> return "Gradient"
+    "set" -> return "AnimatorSet"
+    "keyframe" -> return "KeyFrame"
+    "objectAnimator" -> return "PropertyAnimator"
   }
 
   return transformToEntryName(tag)
