@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.text.HtmlCompat;
 
+import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.app.IDEApplication;
@@ -59,12 +60,7 @@ public class MainActivity extends IDEActivity {
     super.onCreate(savedInstanceState);
 
     if (!IDEApplication.isAbiSupported()) {
-      final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-      builder.setTitle(R.string.title_device_not_supported);
-      builder.setMessage(R.string.msg_device_not_supported);
-      builder.setCancelable(false);
-      builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
-      builder.create().show();
+      showDeviceNotSupported();
       return;
     }
 
@@ -78,6 +74,57 @@ public class MainActivity extends IDEActivity {
         .beginTransaction()
         .replace(id.container, new MainFragment(), MainFragment.TAG)
         .commit();
+  }
+
+  @Override
+  protected void onStorageGranted() {}
+
+  @Override
+  protected void onStorageDenied() {
+    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
+    finishAffinity();
+  }
+
+  @Override
+  protected void preSetContentLayout() {
+    SplashScreen.installSplashScreen(this);
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
+
+  private void showDialogInstallJdkSdk() {
+    final var dp24 = SizeUtils.dp2px(24);
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(string.title_warning);
+    final var view = new TextView(this);
+    view.setPaddingRelative(dp24, dp24, dp24, dp24);
+    view.setText(
+        HtmlCompat.fromHtml(
+            getString(string.msg_require_install_jdk_and_android_sdk),
+            HtmlCompat.FROM_HTML_MODE_COMPACT));
+    view.setMovementMethod(LinkMovementMethod.getInstance());
+    builder.setView(view);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
+    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.show();
+  }
+
+  private void openTerminal() {
+    startActivity(new Intent(this, TerminalActivity.class));
+  }
+
+  private void showDeviceNotSupported() {
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(string.title_device_not_supported);
+    builder.setMessage(string.msg_device_not_supported);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
+    builder.create().show();
   }
 
   private void openLastProject() {
@@ -127,47 +174,6 @@ public class MainActivity extends IDEActivity {
   public void openProject(@NonNull File root) {
     ProjectManager.INSTANCE.setProjectPath(root.getAbsolutePath());
     startActivity(new Intent(this, EditorActivity.class));
-  }
-
-  @Override
-  protected void onStorageGranted() {}
-
-  @Override
-  protected void onStorageDenied() {
-    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
-    finishAffinity();
-  }
-
-  @Override
-  protected void preSetContentLayout() {
-    SplashScreen.installSplashScreen(this);
-  }
-
-  @Override
-  protected View bindLayout() {
-    binding = ActivityMainBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
-
-  private void showDialogInstallJdkSdk() {
-    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(string.title_warning);
-    TextView view = new TextView(this);
-    view.setPadding(10, 10, 10, 10);
-    view.setText(
-        HtmlCompat.fromHtml(
-            getString(string.msg_require_install_jdk_and_android_sdk),
-            HtmlCompat.FROM_HTML_MODE_COMPACT));
-    view.setMovementMethod(LinkMovementMethod.getInstance());
-    builder.setView(view);
-    builder.setCancelable(false);
-    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
-    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
-    builder.show();
-  }
-
-  private void openTerminal() {
-    startActivity(new Intent(this, TerminalActivity.class));
   }
 
   private boolean checkToolsIsInstalled() {
