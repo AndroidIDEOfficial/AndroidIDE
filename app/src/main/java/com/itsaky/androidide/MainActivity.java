@@ -46,7 +46,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
-import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -73,28 +72,6 @@ public class MainActivity extends IDEActivity {
         .beginTransaction()
         .replace(id.container, new MainFragment(), MainFragment.TAG)
         .commit();
-
-    TaskExecutor.executeAsyncProvideError(
-        () -> {
-          final var input =
-              new File(
-                  Environment.PROJECTS_DIR, "TestApp/app/src/main/res/layout/activity_main.xml");
-          final var output = Environment.PROJECTS_DIR;
-
-          final var watch = new StopWatch("Compile sample resource");
-          ResourceCompiler.compileResource(
-              input,
-              output,
-              new ResourceCompilerOptions(),
-              new BlameLogger(new StdLogger(StdLogger.Level.VERBOSE), str -> str));
-          watch.log();
-          return true;
-        },
-        (result, error) -> {
-          if (error != null) {
-            LOG.error("XML compilation error", error);
-          }
-        });
   }
 
   private void openLastProject() {
@@ -103,15 +80,8 @@ public class MainActivity extends IDEActivity {
 
   private void tryOpenLastProject() {
     if (!getAutoOpenProjects()) {
-      Constants.SPLASH_TO_MAIN = false;
       return;
     }
-
-    if (!Constants.SPLASH_TO_MAIN) {
-      return;
-    }
-
-    Constants.SPLASH_TO_MAIN = false;
 
     final var openedProject = getLastOpenedProject();
     if (NO_OPENED_PROJECT.equals(openedProject)) {
@@ -126,7 +96,6 @@ public class MainActivity extends IDEActivity {
 
     final var project = new File(openedProject);
     if (!project.exists()) {
-      getApp();
       ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
@@ -159,7 +128,6 @@ public class MainActivity extends IDEActivity {
 
   @Override
   protected void onStorageDenied() {
-    getApp();
     ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
     finishAffinity();
   }
