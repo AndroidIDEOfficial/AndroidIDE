@@ -23,8 +23,8 @@ import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.toaster.Toaster.Type.ERROR
+import com.itsaky.toaster.toast
 import java.io.File
 
 open class BaseFragment : Fragment() {
@@ -41,18 +41,17 @@ open class BaseFragment : Fragment() {
 
   private val startForResult =
     registerForActivityResult(StartActivityForResult()) {
-      val app = IDEApplication.getInstance()
       val context = requireContext()
       val uri = it?.data?.data ?: return@registerForActivityResult
       val pickedDir = DocumentFile.fromTreeUri(context, uri)
 
       if (pickedDir == null) {
-        app.toast(getString(string.err_invalid_data_by_intent), ERROR)
+        toast(getString(string.err_invalid_data_by_intent), ERROR)
         return@registerForActivityResult
       }
 
       if (!pickedDir.exists()) {
-        app.toast(getString(string.msg_picked_isnt_dir), ERROR)
+        toast(getString(string.msg_picked_isnt_dir), ERROR)
         return@registerForActivityResult
       }
 
@@ -61,7 +60,7 @@ open class BaseFragment : Fragment() {
       val authority = docUri.authority
 
       if (!allowedAuthorities.contains(authority)) {
-        app.toast(getString(string.err_authority_not_allowed, authority), ERROR)
+        toast(getString(string.err_authority_not_allowed, authority), ERROR)
         return@registerForActivityResult
       }
 
@@ -71,7 +70,7 @@ open class BaseFragment : Fragment() {
         } else {
           val split = docId.split(':')
           if ("primary" != split[0]) {
-            app.toast(getString(string.msg_select_from_primary_storage), ERROR)
+            toast(getString(string.msg_select_from_primary_storage), ERROR)
             return@registerForActivityResult
           }
 
@@ -79,7 +78,7 @@ open class BaseFragment : Fragment() {
         }
 
       if (!dir.exists() || !dir.isDirectory) {
-        app.toast(getString(string.err_invalid_data_by_intent), ERROR)
+        toast(getString(string.err_invalid_data_by_intent), ERROR)
         return@registerForActivityResult
       }
 

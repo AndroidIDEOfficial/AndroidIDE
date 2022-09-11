@@ -20,6 +20,8 @@
 
 package com.itsaky.androidide;
 
+import static com.itsaky.androidide.R.id;
+import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
@@ -51,17 +53,13 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import java.io.File;
 
 public class MainActivity extends IDEActivity {
   private ActivityMainBinding binding;
-  
-  @Override
-  protected void preSetContentLayout() {
-    SplashScreen.installSplashScreen(this);
-  }
-  
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -73,7 +71,7 @@ public class MainActivity extends IDEActivity {
 
     getSupportFragmentManager()
         .beginTransaction()
-        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
+        .replace(id.container, new MainFragment(), MainFragment.TAG)
         .commit();
 
     TaskExecutor.executeAsyncProvideError(
@@ -121,13 +119,15 @@ public class MainActivity extends IDEActivity {
     }
 
     if (TextUtils.isEmpty(openedProject)) {
-      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      getApp();
+      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
     final var project = new File(openedProject);
     if (!project.exists()) {
-      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      getApp();
+      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
@@ -141,11 +141,11 @@ public class MainActivity extends IDEActivity {
 
   private void askProjectOpenPermission(File root) {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.title_confirm_open_project);
-    builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
+    builder.setTitle(string.title_confirm_open_project);
+    builder.setMessage(getString(string.msg_confirm_open_project, root.getAbsolutePath()));
     builder.setCancelable(false);
-    builder.setPositiveButton(R.string.yes, (d, w) -> openProject(root));
-    builder.setNegativeButton(R.string.no, null);
+    builder.setPositiveButton(string.yes, (d, w) -> openProject(root));
+    builder.setNegativeButton(string.no, null);
     builder.show();
   }
 
@@ -159,8 +159,14 @@ public class MainActivity extends IDEActivity {
 
   @Override
   protected void onStorageDenied() {
-    getApp().toast(R.string.msg_storage_denied, Toaster.Type.ERROR);
+    getApp();
+    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
     finishAffinity();
+  }
+
+  @Override
+  protected void preSetContentLayout() {
+    SplashScreen.installSplashScreen(this);
   }
 
   @Override
@@ -171,12 +177,12 @@ public class MainActivity extends IDEActivity {
 
   private void showDialogInstallJdkSdk() {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.title_warning);
+    builder.setTitle(string.title_warning);
     TextView view = new TextView(this);
     view.setPadding(10, 10, 10, 10);
     view.setText(
         HtmlCompat.fromHtml(
-            getString(R.string.msg_require_install_jdk_and_android_sdk),
+            getString(string.msg_require_install_jdk_and_android_sdk),
             HtmlCompat.FROM_HTML_MODE_COMPACT));
     view.setMovementMethod(LinkMovementMethod.getInstance());
     builder.setView(view);

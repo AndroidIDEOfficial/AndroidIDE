@@ -29,7 +29,6 @@ import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
-import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.eventbus.events.Event
@@ -51,14 +50,15 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.SUCCESS
+import com.itsaky.toaster.toast
 import com.unnamed.b.atv.model.TreeNode
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern.compile
 import java.util.regex.Pattern.quote
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Handles events related to files in filetree.
@@ -131,7 +131,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     when (option.id) {
       ID_COPY_PATH -> {
         ClipboardUtils.copyText("[AndroidIDE] Copied File Path", file.absolutePath)
-        IDEApplication.getInstance().toast(string.copied, SUCCESS)
+        toast(string.copied, SUCCESS)
       }
       ID_RENAME_FILE -> renameFile(context, file)
       ID_DELETE_FILE -> delete(context, file)
@@ -221,7 +221,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
-        IDEApplication.getInstance().toast(string.msg_get_package_failed, ERROR)
+        toast(string.msg_get_package_failed, ERROR)
         return@setPositiveButton
       }
 
@@ -271,17 +271,16 @@ class FileTreeActionHandler : BaseEventHandler() {
     fileName: String,
     packagePath: String
   ) {
-    val app = IDEApplication.getInstance()
     val dir = directory.toString().replace("java/$packagePath", "res/layout/")
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
     val newFileLayout = File(dir, layoutName)
     if (newFileLayout.exists()) {
-      app.toast(string.msg_file_exists, ERROR)
+      toast(string.msg_file_exists, ERROR)
       return
     }
 
     if (!FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
-      app.toast(string.msg_file_creation_failed, ERROR)
+      toast(string.msg_file_creation_failed, ERROR)
       return
     }
 
@@ -370,25 +369,24 @@ class FileTreeActionHandler : BaseEventHandler() {
     name: String,
     content: String
   ): Boolean {
-    val app = IDEApplication.getInstance()
     if (name.length !in 1..40 || name.startsWith("/")) {
-      app.toast(string.msg_invalid_name, ERROR)
+      toast(string.msg_invalid_name, ERROR)
       return false
     }
 
     val newFile = File(directory, name)
     if (newFile.exists()) {
-      app.toast(string.msg_file_exists, ERROR)
+      toast(string.msg_file_exists, ERROR)
       return false
     }
     if (!FileIOUtils.writeFileFromString(newFile, content)) {
-      app.toast(string.msg_file_creation_failed, ERROR)
+      toast(string.msg_file_creation_failed, ERROR)
       return false
     }
 
     notifyFileCreated(newFile, context)
     // TODO Notify language servers about file created event
-    app.toast(string.msg_file_created, SUCCESS)
+    toast(string.msg_file_created, SUCCESS)
     if (lastHeld != null) {
       val node = TreeNode(newFile)
       node.viewHolder = FileTreeViewHolder(context)
@@ -402,7 +400,6 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun createNewFolder(context: Context, currentDir: File) {
-    val app = IDEApplication.getInstance()
     val binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(context))
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     binding.name.editText!!.setHint(string.folder_name)
@@ -414,22 +411,22 @@ class FileTreeActionHandler : BaseEventHandler() {
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
       if (name.length !in 1..40 || name.startsWith("/")) {
-        app.toast(string.msg_invalid_name, ERROR)
+        toast(string.msg_invalid_name, ERROR)
         return@setPositiveButton
       }
 
       val newDir = File(currentDir, name)
       if (newDir.exists()) {
-        app.toast(string.msg_folder_exists, ERROR)
+        toast(string.msg_folder_exists, ERROR)
         return@setPositiveButton
       }
 
       if (!newDir.mkdirs()) {
-        app.toast(string.msg_folder_creation_failed, ERROR)
+        toast(string.msg_folder_creation_failed, ERROR)
         return@setPositiveButton
       }
 
-      app.toast(string.msg_folder_created, SUCCESS)
+      toast(string.msg_folder_created, SUCCESS)
       if (lastHeld != null) {
         val node = TreeNode(newDir)
         node.viewHolder = FileTreeViewHolder(context)
@@ -444,7 +441,6 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun delete(context: Context, file: File) {
-    val app = IDEApplication.getInstance()
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     builder
       .setNegativeButton(string.no, null)
@@ -458,15 +454,15 @@ class FileTreeActionHandler : BaseEventHandler() {
 
           val deleted = it ?: false
 
-          app.toast(
+          toast(
             if (deleted) string.deleted else string.delete_failed,
             if (deleted) SUCCESS else ERROR
           )
-  
+
           if (!deleted) {
             return@executeAsync
           }
-          
+
           notifyFileDeleted(file, context)
           // TODO Notify language servers about file delete event
           if (lastHeld != null) {
@@ -476,7 +472,7 @@ class FileTreeActionHandler : BaseEventHandler() {
           } else {
             requestFileListing()
           }
-  
+
           if (context is EditorActivity) {
             val frag = context.getEditorForFile(file)
             if (frag != null) {
@@ -498,7 +494,6 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun renameFile(context: Context, file: File) {
-    val app = IDEApplication.getInstance()
     val binding: LayoutDialogTextInputBinding =
       LayoutDialogTextInputBinding.inflate(LayoutInflater.from(context))
     val builder = DialogUtils.newMaterialDialogBuilder(context)
@@ -512,14 +507,11 @@ class FileTreeActionHandler : BaseEventHandler() {
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
       val renamed = name.length in 1..40 && FileUtils.rename(file, name)
-      app.toast(
-        if (renamed) string.renamed else string.rename_failed,
-        if (renamed) SUCCESS else ERROR
-      )
+      toast(if (renamed) string.renamed else string.rename_failed, if (renamed) SUCCESS else ERROR)
       if (!renamed) {
         return@setPositiveButton
       }
-      
+
       notifyFileRenamed(file, context)
       // TODO Notify language servers about file rename event
       if (lastHeld != null) {

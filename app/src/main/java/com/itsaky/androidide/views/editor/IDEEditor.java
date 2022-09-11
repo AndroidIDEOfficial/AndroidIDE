@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.R.*;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
 
 import android.app.Dialog;
@@ -30,7 +31,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
-import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
@@ -54,6 +54,7 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -379,7 +380,7 @@ public class IDEEditor extends CodeEditor {
 
     final ProgressDialog pd =
         ProgressDialog.show(
-            getContext(), null, getContext().getString(R.string.msg_finding_definition));
+            getContext(), null, getContext().getString(string.msg_finding_definition));
 
     try {
       final CompletableFuture<DefinitionResult> future =
@@ -446,7 +447,7 @@ public class IDEEditor extends CodeEditor {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          IDEApplication.getInstance().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
+          ToasterKt.toast(string.msg_no_definition, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -547,7 +548,7 @@ public class IDEEditor extends CodeEditor {
     @SuppressWarnings("deprecation")
     final ProgressDialog pd =
         ProgressDialog.show(
-            getContext(), null, getContext().getString(R.string.msg_finding_references));
+            getContext(), null, getContext().getString(string.msg_finding_references));
 
     try {
       final var future =
@@ -613,7 +614,7 @@ public class IDEEditor extends CodeEditor {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          IDEApplication.getInstance().toast(R.string.msg_no_references, Toaster.Type.ERROR);
+          ToasterKt.toast(string.msg_no_references, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -709,7 +710,7 @@ public class IDEEditor extends CodeEditor {
     //noinspection deprecation
     final var pd =
         ProgressDialog.show(
-            getContext(), null, getContext().getString(R.string.please_wait), true, false);
+            getContext(), null, getContext().getString(string.please_wait), true, false);
     final CompletableFuture<Range> future =
         CompletableFuture.supplyAsync(
             () ->

@@ -34,6 +34,7 @@ import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.toaster.Toaster
+import com.itsaky.toaster.toast
 import com.sun.source.tree.ClassTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
@@ -64,11 +65,9 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
           if (error != null) {
             log.error("Unable to generate setters and getters", error)
             ThreadUtils.runOnUiThread {
-              BaseApplication.getBaseInstance()
-                .toast(
-                  data[Context::class.java]!!.getString(
-                    R.string.msg_cannot_generate_setters_getters
-                  ),
+                toast(data[Context::class.java]!!.getString(
+                  R.string.msg_cannot_generate_setters_getters
+                ),
                   Toaster.Type.ERROR
                 )
             }
