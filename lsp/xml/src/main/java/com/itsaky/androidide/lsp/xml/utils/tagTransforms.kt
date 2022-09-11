@@ -43,12 +43,8 @@ internal object DrawableTagTransformer : ITagTransformer {
       return "DrawableCorners"
     }
 
-    if (parent == "item") {
-      return toEntry(tag)
-    }
-
     val prefix =
-      if (parent.isNotEmpty()) {
+      if (parent == "item" || parent.isNotEmpty()) {
         toEntry(parent).run { if (startsWith('#')) toEntry(tag) else this }
       } else tag
     val suffix =
