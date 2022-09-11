@@ -16,6 +16,11 @@
   -->
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_launcher_background"/>
-    <item android:drawable="@drawable/ic_launcher_foreground"/>
+  <item>
+    <shape android:shape="oval">
+      <size android:width="24dp" android:height="24dp"/>
+      <solid android:color="@color/primaryColor"/>
+    </shape>
+  </item>
+  <item android:drawable="@mipmap/ic_launcher_foreground"/>
 </layer-list>

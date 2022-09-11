@@ -111,6 +111,7 @@ dependencies {
     implementation common.jsoup
     
     // AndroidX
+    implementation androidx.splashscreen
     implementation androidx.annotation
     implementation androidx.appcompat
     implementation androidx.cardview

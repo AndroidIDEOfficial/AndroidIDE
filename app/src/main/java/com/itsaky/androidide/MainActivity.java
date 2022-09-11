@@ -33,6 +33,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.splashscreen.SplashScreen;
 import androidx.core.text.HtmlCompat;
 
 import com.android.aaptcompiler.BlameLogger;
@@ -55,7 +56,12 @@ import java.io.File;
 
 public class MainActivity extends StudioActivity {
   private ActivityMainBinding binding;
-
+  
+  @Override
+  protected void preSetContentLayout() {
+    SplashScreen.installSplashScreen(this);
+  }
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
