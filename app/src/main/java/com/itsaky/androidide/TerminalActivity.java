@@ -37,7 +37,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -64,7 +64,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Map;
 
-public class TerminalActivity extends StudioActivity
+public class TerminalActivity extends IDEActivity
     implements TerminalViewClient, TerminalSessionClient {
 
   public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";

@@ -81,8 +81,8 @@ import com.itsaky.androidide.actions.ActionsRegistry;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
-import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
@@ -156,7 +156,7 @@ import kotlin.Unit;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
-public class EditorActivity extends StudioActivity
+public class EditorActivity extends IDEActivity
     implements TabLayout.OnTabSelectedListener,
         NavigationView.OnNavigationItemSelectedListener,
         DiagnosticClickListener,
@@ -1526,7 +1526,7 @@ public class EditorActivity extends StudioActivity
               .map(Project::getProjectDir)
               .collect(Collectors.toList());
     } catch (Throwable e) {
-      StudioApp.getInstance().toast(getString(R.string.msg_no_modules), Toaster.Type.ERROR);
+      IDEApplication.getInstance().toast(getString(R.string.msg_no_modules), Toaster.Type.ERROR);
       moduleDirs = Collections.emptyList();
     }
 

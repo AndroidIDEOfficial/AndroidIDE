@@ -26,14 +26,13 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
@@ -195,7 +194,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "activity=" + activity(),
           "editor=" + editor,
           "action=" + action);
-      StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+      IDEApplication.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
       return;
     }
 
@@ -213,7 +212,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-            StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            IDEApplication.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
           } else {
             editor.executeCommand(action.getCommand());
           }

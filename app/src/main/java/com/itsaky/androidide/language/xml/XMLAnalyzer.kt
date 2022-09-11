@@ -19,7 +19,7 @@ package com.itsaky.androidide.language.xml
 
 import android.graphics.Color
 import com.google.common.collect.EvictingQueue
-import com.itsaky.androidide.app.StudioApp
+import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.language.incremental.BaseIncrementalAnalyzeManager
 import com.itsaky.androidide.language.incremental.IncrementalToken
 import com.itsaky.androidide.language.incremental.LineState
@@ -93,7 +93,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
   override fun generateSpans(
     tokens: LineTokenizeResult<LineState, IncrementalToken>,
   ): MutableList<Span> {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     val parser = CommonParseUtils(app.resourceTable, app.resources.displayMetrics)
     val spans = mutableListOf<Span>()
     var previous = XMLLexer.SEA_WS
@@ -127,7 +127,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
             val textVar = text.replace("\"", "")
             if (isColorValue(textVar)) {
               val color: Int =
-                parser.parseColor(textVar, StudioApp.getInstance().applicationContext)
+                parser.parseColor(textVar, IDEApplication.getInstance().applicationContext)
               val span = Span.obtain(offset + 1, makeStyle(LITERAL))
               span.setUnderlineColor(color)
               spans.add(span)
@@ -164,7 +164,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
             val textVar: String = token.text
             if (isColorValue(textVar)) {
               val color: Int =
-                parser.parseColor(textVar, StudioApp.getInstance().applicationContext)
+                parser.parseColor(textVar, IDEApplication.getInstance().applicationContext)
               val span = Span.obtain(offset, makeStyle(TEXT_NORMAL))
               span.setUnderlineColor(color)
               spans.add(span)

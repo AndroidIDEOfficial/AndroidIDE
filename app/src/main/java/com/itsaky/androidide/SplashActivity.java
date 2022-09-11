@@ -26,13 +26,13 @@ import android.os.Handler;
 import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.ActivitySplashBinding;
 import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.utils.DialogUtils;
 
-public class SplashActivity extends StudioActivity {
+public class SplashActivity extends IDEActivity {
   private static final Handler mHandler = new Handler();
   private final Runnable mRunnable =
       () -> {
@@ -67,7 +67,7 @@ public class SplashActivity extends StudioActivity {
   }
 
   private void proceed() {
-    if (!StudioApp.isAbiSupported()) {
+    if (!IDEApplication.isAbiSupported()) {
       final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
       builder.setTitle(R.string.title_device_not_supported);
       builder.setMessage(R.string.msg_device_not_supported);

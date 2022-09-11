@@ -30,7 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
@@ -446,7 +446,7 @@ public class IDEEditor extends CodeEditor {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          StudioApp.getInstance().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
+          IDEApplication.getInstance().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -613,7 +613,7 @@ public class IDEEditor extends CodeEditor {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          StudioApp.getInstance().toast(R.string.msg_no_references, Toaster.Type.ERROR);
+          IDEApplication.getInstance().toast(R.string.msg_no_references, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }

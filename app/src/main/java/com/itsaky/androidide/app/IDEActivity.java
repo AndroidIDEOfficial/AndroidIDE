@@ -20,10 +20,8 @@ package com.itsaky.androidide.app;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 
-import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -31,56 +29,31 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.ILogger;
 
-public abstract class StudioActivity extends AppCompatActivity {
-  public static final String TAG = "StudioActivity";
+public abstract class IDEActivity extends AppCompatActivity {
   public static final int REQCODE_STORAGE = 1009;
   protected static ILogger LOG = ILogger.newInstance("StudioActivity");
-  private boolean toRequestStorage = true;
-
-  public void loadFrament(Fragment frag, View view) {
-    loadFragment(frag, view.getId());
-  }
-
+  
   public void loadFragment(Fragment fragment, int id) {
     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.replace(id, fragment);
     transaction.commit();
   }
 
-  public StudioApp getApp() {
-    return (StudioApp) getApplication();
+  public IDEApplication getApp() {
+    return (IDEApplication) getApplication();
   }
-
-  public int getColorPrimary() {
-    return getTypedValueForAttr(R.attr.colorPrimary).data;
-  }
-
-  public TypedValue getTypedValueForAttr(@AttrRes int attrRes) {
-    TypedValue typedValue = new TypedValue();
-    getTheme().resolveAttribute(attrRes, typedValue, true);
-    return typedValue;
-  }
-
-  public int getColorPrimaryDark() {
-    return getTypedValueForAttr(R.attr.colorPrimaryDark).data;
-  }
-
-  public int getColorAccent() {
-    return getTypedValueForAttr(R.attr.colorAccent).data;
-  }
-
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     preSetContentLayout();
     setContentView(bindLayout());
-    onSetContentView();
-
-    if (toRequestStorage && !isStoragePermissionGranted()) {
+  
+    if (!isStoragePermissionGranted()) {
       requestStorage();
+      return;
     }
 
     if (isStoragePermissionGranted()) {
@@ -128,12 +101,6 @@ public abstract class StudioActivity extends AppCompatActivity {
   protected void onStorageDenied() {}
 
   protected void preSetContentLayout() {}
-
-  protected void onSetContentView() {}
-
+  
   protected abstract View bindLayout();
-
-  protected void doNotRequestStorage() {
-    this.toRequestStorage = false;
-  }
 }

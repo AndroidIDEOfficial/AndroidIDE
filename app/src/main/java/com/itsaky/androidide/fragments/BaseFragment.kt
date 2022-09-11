@@ -23,7 +23,7 @@ import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.app.StudioApp
+import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.toaster.Toaster.Type.ERROR
 import java.io.File
 
@@ -41,7 +41,7 @@ open class BaseFragment : Fragment() {
 
   private val startForResult =
     registerForActivityResult(StartActivityForResult()) {
-      val app = StudioApp.getInstance()
+      val app = IDEApplication.getInstance()
       val context = requireContext()
       val uri = it?.data?.data ?: return@registerForActivityResult
       val pickedDir = DocumentFile.fromTreeUri(context, uri)

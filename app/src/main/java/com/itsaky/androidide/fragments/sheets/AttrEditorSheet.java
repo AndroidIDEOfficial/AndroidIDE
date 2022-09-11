@@ -31,7 +31,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
 import com.itsaky.androidide.adapters.XMLAttributeListAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
@@ -129,7 +129,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
     final var format = attribute.findFormat();
     if (format == -1) {
-      StudioApp.getInstance().toast(getString(R.string.msg_no_attr_format), Toaster.Type.ERROR);
+      IDEApplication.getInstance().toast(getString(R.string.msg_no_attr_format), Toaster.Type.ERROR);
       LOG.error(getString(R.string.msg_no_attr_format), attribute);
       return;
     }
@@ -195,7 +195,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         tag = "View";
       }
 
-      final var attrs = StudioApp.getInstance().attrInfo();
+      final var attrs = IDEApplication.getInstance().attrInfo();
       final var style = attrs.getStyle(tag);
       if (style == null) {
         LOG.error("Unable to retrieve attributes for tag:", tag);
@@ -206,7 +206,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
       attributes.addAll(style.attributes);
       attributes.addAll(attrs.NO_PARENT.attributes);
 
-      final var widgetInfo = StudioApp.getInstance().widgetInfo();
+      final var widgetInfo = IDEApplication.getInstance().widgetInfo();
       final var widget = widgetInfo.getWidgetBySimpleName(tag);
       if (widget != null) {
         for (var superclass : widget.superclasses) {
@@ -267,7 +267,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                           && mDeletionFailedListener.onDeletionFailed(this.selectedView);
                 }
                 if (!handled) {
-                  StudioApp.getInstance()
+                  IDEApplication.getInstance()
                       .toast(getString(R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
                 } else {
                   dismiss();
@@ -277,7 +277,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
           .show();
     } else if (position == 2) { // Select parent
       if (this.selectedView.getParent() == null) {
-        StudioApp.getInstance().toast(getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
+        IDEApplication.getInstance().toast(getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
         return;
       }
 

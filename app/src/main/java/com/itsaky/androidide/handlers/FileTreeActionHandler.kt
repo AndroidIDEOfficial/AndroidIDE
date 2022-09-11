@@ -29,7 +29,7 @@ import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
-import com.itsaky.androidide.app.StudioApp
+import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.eventbus.events.Event
@@ -131,7 +131,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     when (option.id) {
       ID_COPY_PATH -> {
         ClipboardUtils.copyText("[AndroidIDE] Copied File Path", file.absolutePath)
-        StudioApp.getInstance().toast(string.copied, SUCCESS)
+        IDEApplication.getInstance().toast(string.copied, SUCCESS)
       }
       ID_RENAME_FILE -> renameFile(context, file)
       ID_DELETE_FILE -> delete(context, file)
@@ -221,7 +221,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
-        StudioApp.getInstance().toast(string.msg_get_package_failed, ERROR)
+        IDEApplication.getInstance().toast(string.msg_get_package_failed, ERROR)
         return@setPositiveButton
       }
 
@@ -271,7 +271,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     fileName: String,
     packagePath: String
   ) {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     val dir = directory.toString().replace("java/$packagePath", "res/layout/")
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
     val newFileLayout = File(dir, layoutName)
@@ -370,7 +370,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     name: String,
     content: String
   ): Boolean {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     if (name.length !in 1..40 || name.startsWith("/")) {
       app.toast(string.msg_invalid_name, ERROR)
       return false
@@ -402,7 +402,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun createNewFolder(context: Context, currentDir: File) {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     val binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(context))
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     binding.name.editText!!.setHint(string.folder_name)
@@ -444,7 +444,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun delete(context: Context, file: File) {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     builder
       .setNegativeButton(string.no, null)
@@ -498,7 +498,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun renameFile(context: Context, file: File) {
-    val app = StudioApp.getInstance()
+    val app = IDEApplication.getInstance()
     val binding: LayoutDialogTextInputBinding =
       LayoutDialogTextInputBinding.inflate(LayoutInflater.from(context))
     val builder = DialogUtils.newMaterialDialogBuilder(context)

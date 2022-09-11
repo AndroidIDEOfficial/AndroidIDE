@@ -50,7 +50,7 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.language.cpp.CppLanguage;
@@ -371,7 +371,7 @@ public class CodeEditorView extends FrameLayout {
       return;
     }
 
-    final var prefs = StudioApp.getInstance().getPrefManager();
+    final var prefs = IDEApplication.getInstance().getPrefManager();
     switch (event.getKey()) {
       case FONT_SIZE:
         onFontSizePrefChanged();

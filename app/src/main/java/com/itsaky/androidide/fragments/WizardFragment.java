@@ -20,7 +20,7 @@ import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.WizardTemplateAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.FragmentWizardBinding;
 import com.itsaky.androidide.databinding.LayoutLoadingWizardBinding;
 import com.itsaky.androidide.databinding.SetupFooterBinding;
@@ -131,7 +131,7 @@ public class WizardFragment extends BaseFragment {
               if (mProgressSheet != null && mProgressSheet.isShowing()) {
                 mProgressSheet.dismiss();
               }
-              StudioApp.getInstance().toast(message, Toaster.Type.ERROR);
+              IDEApplication.getInstance().toast(message, Toaster.Type.ERROR);
             });
 
     mViewModel
@@ -174,7 +174,7 @@ public class WizardFragment extends BaseFragment {
     if (mProgressSheet != null && mProgressSheet.isShowing()) {
       mProgressSheet.dismiss();
     }
-    StudioApp.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
+    IDEApplication.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
 
     if (mListener != null) {
       getParentFragmentManager().popBackStack();
@@ -221,7 +221,7 @@ public class WizardFragment extends BaseFragment {
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
       return Integer.parseInt(sdk);
     } catch (Exception e) {
-      StudioApp.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
+      IDEApplication.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
     }
     return -1;
   }
@@ -254,7 +254,7 @@ public class WizardFragment extends BaseFragment {
       final String cppToolChain =
           getCppToolchans().get(detailsBinding.etToolchain.getText().toString());
 
-      PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+      PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
       manager.putInt(PREF_MIN_SDK_INDEX_KEY, minSdkIndex);
       manager.putInt(PREF_TERGET_SDK_INDEX_KEY, targetSdkIndex);
       manager.putString(PREF_PACKAGE_DOMAIN_KEY, AndroidUtils.getPackageDomain(packageName));
@@ -335,7 +335,7 @@ public class WizardFragment extends BaseFragment {
   }
 
   private void showDetailsView() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     List<String> languages = new ArrayList<>();
     if (mCurrentTemplate != null) {
@@ -405,7 +405,7 @@ public class WizardFragment extends BaseFragment {
   }
 
   private void initDetailsView() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     detailsBinding
         .tilAppName
@@ -466,7 +466,7 @@ public class WizardFragment extends BaseFragment {
   }
 
   private void setSaveLocation() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     String saveProjectPath =
         manager.getString(PREF_SAVE_PROJECT_DIR_KEY, Environment.PROJECTS_DIR.getAbsolutePath())

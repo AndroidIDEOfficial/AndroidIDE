@@ -29,7 +29,7 @@ import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
 
@@ -131,10 +131,10 @@ public class IDEPreferences extends BasePreferenceFragment
         showChangelog();
         break;
       case KEY_TELEGRAM:
-        StudioApp.getInstance().openTelegramGroup();
+        IDEApplication.getInstance().openTelegramGroup();
         break;
       case KEY_ISSUES:
-        StudioApp.getInstance().openGitHub();
+        IDEApplication.getInstance().openGitHub();
         break;
       case KEY_ABOUT:
         startActivity(new Intent(getContext(), AboutActivity.class));
@@ -153,7 +153,7 @@ public class IDEPreferences extends BasePreferenceFragment
       startActivity(intent);
     } catch (Throwable th) {
       LOG.error("Unable to start activity to show changelog", th);
-      StudioApp.getInstance().toast("Unable to start activity", Toaster.Type.ERROR);
+      IDEApplication.getInstance().toast("Unable to start activity", Toaster.Type.ERROR);
     }
   }
 }

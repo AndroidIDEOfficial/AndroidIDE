@@ -30,7 +30,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
@@ -155,7 +155,7 @@ public class ProjectWriter {
       throws Exception {
     callback = listener;
     notifyBegin();
-    final StudioApp instance = StudioApp.getInstance();
+    final IDEApplication instance = IDEApplication.getInstance();
     final File tempDir = instance.getTempProjectDir();
     final File projectDir = new File(details.savePath);
     if (projectDir.exists()) {
@@ -204,7 +204,7 @@ public class ProjectWriter {
 
   private static void unzipTemplate(File zipFile, File location, NewProjectDetails details)
       throws IOException {
-    final StudioApp instance = StudioApp.getInstance();
+    final IDEApplication instance = IDEApplication.getInstance();
     int size;
     final int BUFFER_SIZE = 2048;
     byte[] buffer = new byte[BUFFER_SIZE];

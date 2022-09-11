@@ -25,11 +25,11 @@ import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
 import com.itsaky.androidide.fragments.preferences.IDEPreferences;
 
-public class PreferencesActivity extends StudioActivity {
+public class PreferencesActivity extends IDEActivity {
 
   private ActivityPreferencesBinding binding;
   private IDEPreferences mPref;

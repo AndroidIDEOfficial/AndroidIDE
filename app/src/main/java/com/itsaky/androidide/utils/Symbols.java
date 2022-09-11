@@ -19,7 +19,6 @@ package com.itsaky.androidide.utils;
 
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
 

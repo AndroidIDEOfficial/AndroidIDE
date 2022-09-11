@@ -41,7 +41,7 @@ import com.android.aaptcompiler.ResourceCompiler;
 import com.android.aaptcompiler.ResourceCompilerOptions;
 import com.android.utils.StdLogger;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
 import com.itsaky.androidide.models.Constants;
@@ -54,7 +54,7 @@ import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 
-public class MainActivity extends StudioActivity {
+public class MainActivity extends IDEActivity {
   private ActivityMainBinding binding;
   
   @Override

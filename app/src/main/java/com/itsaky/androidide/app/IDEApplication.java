@@ -27,7 +27,6 @@ import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
@@ -42,15 +41,15 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class StudioApp extends BaseApplication {
+public class IDEApplication extends BaseApplication {
 
   private static final ILogger LOG = ILogger.newInstance("StudioApp");
-  private static StudioApp instance;
+  private static IDEApplication instance;
   private static SDKInfo sdkInfo;
   private IResourceTable mResTable;
   private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-  public static StudioApp getInstance() {
+  public static IDEApplication getInstance() {
     return instance;
   }
 
@@ -95,7 +94,7 @@ public class StudioApp extends BaseApplication {
         () -> {
           if (sdkInfo == null) {
             try {
-              sdkInfo = new SDKInfo(StudioApp.this);
+              sdkInfo = new SDKInfo(IDEApplication.this);
             } catch (Throwable th) {
               LOG.error(getString(R.string.err_init_sdkinfo), th);
             }
