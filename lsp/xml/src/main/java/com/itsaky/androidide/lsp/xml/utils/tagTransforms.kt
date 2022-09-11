@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.utils
 
+import com.android.SdkConstants
 import com.itsaky.androidide.lsp.xml.providers.completion.transformToEntryName
 
 /** Transforms tag names to styleable entry names. */
@@ -89,6 +90,12 @@ internal object TransitionTagTransformer : SimpleTagTransformer() {
       return TRANSITION_TARGET
     }
     return super.transform(tag, parent)
+  }
+}
+
+internal object MenuTagTransformer : ITagTransformer {
+  override fun transform(tag: String, parent: String): String {
+    return transformToEntryName(tag, "Menu")
   }
 }
 

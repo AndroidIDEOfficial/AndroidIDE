@@ -22,6 +22,7 @@ import com.android.aaptcompiler.AaptResourceType.ANIM
 import com.android.aaptcompiler.AaptResourceType.ANIMATOR
 import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
+import com.android.aaptcompiler.AaptResourceType.MENU
 import com.android.aaptcompiler.AaptResourceType.TRANSITION
 import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.extractPathData
@@ -45,6 +46,7 @@ import com.itsaky.androidide.lsp.xml.utils.AnimTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.AnimatorTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.DrawableTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
+import com.itsaky.androidide.lsp.xml.utils.MenuTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.NoOpTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.TransitionTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
@@ -59,11 +61,11 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.IOException
 import java.io.Reader
 import kotlin.io.path.name
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Completion provider for XML files.
@@ -154,6 +156,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
     return when (type) {
       ATTRIBUTE ->
         InheritingAttrCompletionProvider(::forTransitionAttr, TransitionTagTransformer, this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
       else -> null
     }
   }
@@ -164,6 +167,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   ): IXmlCompletionProvider? {
     return when (type) {
       ATTRIBUTE -> CommonAttrCompletionProvider(tagTransformerFor(pathData), this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
       else -> null
     }
   }
@@ -173,6 +177,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
       ANIM -> AnimTagTransformer
       ANIMATOR -> AnimatorTagTransformer
       DRAWABLE -> DrawableTagTransformer
+      MENU -> MenuTagTransformer
       else -> NoOpTagTransformer
     }
   }
