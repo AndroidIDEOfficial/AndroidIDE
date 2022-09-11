@@ -38,19 +38,14 @@ import androidx.annotation.NonNull;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.text.HtmlCompat;
 
-import com.android.aaptcompiler.BlameLogger;
-import com.android.aaptcompiler.ResourceCompiler;
-import com.android.aaptcompiler.ResourceCompilerOptions;
-import com.android.utils.StdLogger;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
 import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.toaster.Toaster;
 import com.itsaky.toaster.ToasterKt;
 
@@ -62,6 +57,17 @@ public class MainActivity extends IDEActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    if (!IDEApplication.isAbiSupported()) {
+      final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+      builder.setTitle(R.string.title_device_not_supported);
+      builder.setMessage(R.string.msg_device_not_supported);
+      builder.setCancelable(false);
+      builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
+      builder.create().show();
+      return;
+    }
+
     if (!checkToolsIsInstalled()) {
       showDialogInstallJdkSdk();
     } else {

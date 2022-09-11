@@ -46,5 +46,4 @@ public class Constants {
           + "\n    \"PGDN\""
           + "\n  ]"
           + "\n]";
-  public static boolean SPLASH_TO_MAIN = false;
 }
