@@ -44,7 +44,7 @@ ext {
             vectors          : 'androidx.vectordrawable:vectordrawable:1.1.0',
             animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
             multidex         : 'androidx.multidex:multidex:2.0.1',
-            ktx              : 'androidx.core:core-ktx:1.8.0',
+            ktx              : 'androidx.core:core-ktx:1.9.0',
             lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.1.6',
             splashscreen     : 'androidx.core:core-splashscreen:1.0.0'
     ]
