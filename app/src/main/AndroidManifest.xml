@@ -21,7 +21,6 @@
     android:largeHeap="true"
     android:preserveLegacyExternalStorage="true"
     android:requestLegacyExternalStorage="true"
-    android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     tools:ignore="UnusedAttribute,MediaCapabilities">
