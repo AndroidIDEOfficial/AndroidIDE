@@ -17,41 +17,62 @@
 
 package com.itsaky.androidide.lsp.xml.providers
 
-import com.itsaky.androidide.utils.CharSequenceReader
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.attrinfo.models.Attr
+import com.android.SdkConstants.ANDROID_MANIFEST_XML
+import com.android.aaptcompiler.AaptResourceType.ANIM
+import com.android.aaptcompiler.AaptResourceType.ANIMATOR
+import com.android.aaptcompiler.AaptResourceType.DRAWABLE
+import com.android.aaptcompiler.AaptResourceType.LAYOUT
+import com.android.aaptcompiler.AaptResourceType.MENU
+import com.android.aaptcompiler.AaptResourceType.TRANSITION
+import com.android.aaptcompiler.ResourcePathData
+import com.android.aaptcompiler.extractPathData
 import com.itsaky.androidide.lsp.api.AbstractServiceProvider
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.api.IServerSettings
-import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
-import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
-import com.itsaky.androidide.lsp.models.CompletionItemKind.VALUE
+import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
-import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
-import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.IXmlCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.canCompleteManifest
+import com.itsaky.androidide.lsp.xml.providers.completion.common.CommonAttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.etc.InheritingAttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutAttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.layout.LayoutTagCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestAttrValueCompletionProvider
+import com.itsaky.androidide.lsp.xml.providers.completion.manifest.ManifestTagCompletionProvider
+import com.itsaky.androidide.lsp.xml.utils.AnimTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.AnimatorTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.DrawableTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.ITagTransformer
+import com.itsaky.androidide.lsp.xml.utils.MenuTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.NoOpTagTransformer
+import com.itsaky.androidide.lsp.xml.utils.TransitionTagTransformer
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
-import com.itsaky.sdk.SDKInfo
-import com.itsaky.widgets.models.Widget
+import com.itsaky.androidide.lsp.xml.utils.forTransitionAttr
+import com.itsaky.androidide.utils.CharSequenceReader
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.IOException
 import java.io.Reader
-import kotlin.math.max
+import kotlin.io.path.name
 
 /**
- * Completion provider for XMl files.
+ * Completion provider for XML files.
  *
  * @author Akash Yadav
  */
-class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSettings) :
+class XmlCompletionProvider(settings: IServerSettings) :
   AbstractServiceProvider(), ICompletionProvider {
 
   init {
@@ -60,33 +81,48 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  override fun complete(params: com.itsaky.androidide.lsp.models.CompletionParams): com.itsaky.androidide.lsp.models.CompletionResult {
+  override fun complete(params: CompletionParams): CompletionResult {
     return try {
-      // TODO When the completion will be namespace-aware, we will then need to use
-      //   'params.module'
-
-      // val namespace =
-      // INamespace.forPackageName((params.module as AndroidModule).packageName)
-
-      val namespace = INamespace.ANDROID
-      val contents = toString(params.requireContents())
-      val document =
-        DOMParser.getInstance().parse(contents, namespace.uri, URIResolverExtensionManager())
-      val type = XmlUtils.getNodeType(document, params.position.requireIndex())
-
-      if (type == UNKNOWN) {
-        log.warn("Unknown node type. CompletionParams:", params)
-        return EMPTY
-      }
-
-      val prefix =
-        XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
-
-      completeImpl(params, document, prefix, type)
+      val watch =
+        StopWatch(
+          "Complete at ${params.file.name}:${params.position.line}:${params.position.column}"
+        )
+      doComplete(params).also { watch.log() }
     } catch (error: Throwable) {
       log.error("An error occurred while computing XML completions", error)
       EMPTY
     }
+  }
+
+  private fun doComplete(params: CompletionParams): CompletionResult {
+    val namespace = INamespace.ANDROID
+    val contents = toString(contents = params.requireContents())
+    val document =
+      DOMParser.getInstance().parse(contents, namespace.uri, URIResolverExtensionManager())
+    val type = XmlUtils.getNodeType(document, params.position.requireIndex())
+
+    if (type == UNKNOWN) {
+      log.warn("Unknown node type. Aborting completion.")
+      return EMPTY
+    }
+
+    val prefix = XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
+    if (prefix.isBlank() && type != ATTRIBUTE_VALUE) {
+      return EMPTY
+    }
+
+    val pathData = extractPathData(params.file.toFile())
+
+    val completer =
+      getCompleter(pathData, type)
+        ?: run {
+          log.error(
+            "No completer available for resource type '${pathData.type}' and node type '$type'"
+          )
+          return EMPTY
+        }
+
+    return completer.complete(params, pathData, document, type, prefix)
   }
 
   private fun toString(contents: CharSequence): String {
@@ -107,132 +143,76 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
       CharSequenceReader(contents)
     }
 
-  private fun completeImpl(
-    params: com.itsaky.androidide.lsp.models.CompletionParams,
-    document: DOMDocument,
-    prefix: String,
-    type: NodeType,
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
+  private fun getCompleter(pathData: ResourcePathData, type: NodeType): IXmlCompletionProvider? {
+    return when (pathData.type) {
+      LAYOUT -> createLayoutCompleter(type)
+      TRANSITION -> createTransitionCompleter(type)
+      null -> createNullTypeCompleter(pathData, type)
+      else -> createCommonCompleter(pathData, type)
+    }
+  }
+
+  private fun createTransitionCompleter(type: NodeType): IXmlCompletionProvider? {
     return when (type) {
-      TAG ->
-        completeTags(
-          if (prefix.startsWith("<")) {
-            prefix.substring(1)
-          } else {
-            prefix
-          }
-        )
-      ATTRIBUTE -> completeAttributes(document, params.position)
-      ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix, params.position)
-      else -> EMPTY
+      ATTRIBUTE ->
+        InheritingAttrCompletionProvider(::forTransitionAttr, TransitionTagTransformer, this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
+      else -> null
     }
   }
 
-  private fun completeTags(prefix: String): com.itsaky.androidide.lsp.models.CompletionResult {
-    val widgets = sdkInfo.widgetInfo.widgets
-    val result = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
-
-    for (widget in widgets) {
-      val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
-      val nameMatchLevel = matchLevel(widget.name, prefix)
-      if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
-        continue
-      }
-
-      val matchLevel =
-        com.itsaky.androidide.lsp.models.MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
-
-      result.add(createTagCompletionItem(widget, matchLevel))
+  private fun createCommonCompleter(
+    pathData: ResourcePathData,
+    type: NodeType
+  ): IXmlCompletionProvider? {
+    return when (type) {
+      ATTRIBUTE -> CommonAttrCompletionProvider(tagTransformerFor(pathData), this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
+      else -> null
     }
-
-    return com.itsaky.androidide.lsp.models.CompletionResult(result)
   }
 
-  private fun completeAttributes(document: DOMDocument, position: com.itsaky.androidide.models.Position): com.itsaky.androidide.lsp.models.CompletionResult {
-    // TODO Provide attributes based on current node and it's direct parent node
-    //   For example, if the current node is a 'TextView', provide attributes applicable to
-    //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
-    //   attributes related to LinearLayout LayoutParams.
-
-    // TODO Provided attributes from declared namespaces only
-    val attr = document.findAttrAt(position.requireIndex())
-    val list = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
-    for (attribute in sdkInfo.attrInfo.attributes.values) {
-      val matchLevel = matchLevel(attribute.name, attr.name)
-      if (matchLevel == NO_MATCH) {
-        continue
-      }
-
-      list.add(createAttrCompletionItem(attribute, matchLevel))
+  private fun tagTransformerFor(pathData: ResourcePathData): ITagTransformer {
+    return when (pathData.type) {
+      ANIM -> AnimTagTransformer
+      ANIMATOR -> AnimatorTagTransformer
+      DRAWABLE -> DrawableTagTransformer
+      MENU -> MenuTagTransformer
+      else -> NoOpTagTransformer
     }
-
-    return com.itsaky.androidide.lsp.models.CompletionResult(list)
   }
 
-  private fun completeAttributeValue(
-    document: DOMDocument,
-    prefix: String,
-    position: com.itsaky.androidide.models.Position
-  ): com.itsaky.androidide.lsp.models.CompletionResult {
-    val attr = document.findAttrAt(position.requireIndex())
+  private fun createNullTypeCompleter(
+    pathData: ResourcePathData,
+    type: NodeType
+  ): IXmlCompletionProvider? {
 
-    // TODO Provide attribute values based on namespace URI
-    //   For example, if the package name of the namespace of this attribute refers to a library
-    //   dependency/module, check for values in the respective dependency
-    //   Currently, only the attributes from the 'android' package name are suggested
-
-    val name = attr.localName ?: return EMPTY
-    val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
-    val items = mutableListOf<com.itsaky.androidide.lsp.models.CompletionItem>()
-    for (value in attribute.possibleValues) {
-      val matchLevel = matchLevel(value, prefix)
-
-      // It might happen that the completion request is triggered but the prefix is empty
-      // For example, a completion request is triggered when the user selects an attribute
-      // completion item.
-      // In such cases, 'prefix' is an empty string.
-      // So, we still have to provide completions
-      if (prefix.isEmpty() || matchLevel != NO_MATCH) {
-        items.add(createAttrValueCompletionItem(attr.name, value, matchLevel))
-      }
+    // In test cases
+    if (canCompleteManifest(pathData, type)) {
+      return createManifestCompleter(type)
     }
 
-    return com.itsaky.androidide.lsp.models.CompletionResult(items)
+    return when (pathData.file.name) {
+      ANDROID_MANIFEST_XML -> createManifestCompleter(type)
+      else -> null
+    }
   }
 
-  private fun createTagCompletionItem(widget: Widget, matchLevel: com.itsaky.androidide.lsp.models.MatchLevel): com.itsaky.androidide.lsp.models.CompletionItem =
-    com.itsaky.androidide.lsp.models.CompletionItem().apply {
-      this.label = widget.simpleName
-      this.detail = widget.name
-      this.sortText = label.toString()
-      this.matchLevel = matchLevel
-      this.kind = CLASS
-      this.data = com.itsaky.androidide.lsp.models.CompletionData().apply { className = widget.name }
+  private fun createManifestCompleter(type: NodeType): IXmlCompletionProvider? {
+    return when (type) {
+      TAG -> ManifestTagCompletionProvider(this)
+      ATTRIBUTE -> ManifestAttrCompletionProvider(this)
+      ATTRIBUTE_VALUE -> ManifestAttrValueCompletionProvider(this)
+      else -> null
     }
+  }
 
-  private fun createAttrCompletionItem(attr: Attr, matchLevel: com.itsaky.androidide.lsp.models.MatchLevel): com.itsaky.androidide.lsp.models.CompletionItem =
-    com.itsaky.androidide.lsp.models.CompletionItem().apply {
-      this.label = attr.name
-      this.kind = FIELD
-      this.detail = "From package '${attr.namespace.packageName}'"
-      this.insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
-      this.insertTextFormat = SNIPPET
-      this.sortText = label.toString()
-      this.matchLevel = matchLevel
-      this.command = com.itsaky.androidide.lsp.models.Command("Trigger completion request", com.itsaky.androidide.lsp.models.Command.TRIGGER_COMPLETION)
-    }
-
-  private fun createAttrValueCompletionItem(
-    attrName: String,
-    value: String,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel
-  ): com.itsaky.androidide.lsp.models.CompletionItem {
-    return com.itsaky.androidide.lsp.models.CompletionItem().apply {
-      this.label = value
-      this.detail = "Value for '$attrName'"
-      this.kind = VALUE
-      this.sortText = label.toString()
-      this.matchLevel = matchLevel
+  private fun createLayoutCompleter(type: NodeType): IXmlCompletionProvider? {
+    return when (type) {
+      TAG -> LayoutTagCompletionProvider(this)
+      ATTRIBUTE -> LayoutAttrCompletionProvider(this)
+      ATTRIBUTE_VALUE -> AttrValueCompletionProvider(this)
+      else -> null
     }
   }
 }

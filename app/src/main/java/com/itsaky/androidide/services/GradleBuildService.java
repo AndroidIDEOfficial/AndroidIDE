@@ -120,13 +120,13 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         PendingIntent.getActivity(this, 0, launch, PendingIntent.FLAG_UPDATE_CURRENT);
     final Notification.Builder builder =
         new Notification.Builder(this, BaseApplication.NOTIFICATION_GRADLE_BUILD_SERVICE)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.drawable.ic_launcher_notification)
             .setTicker(ticker)
             .setWhen(System.currentTimeMillis())
             .setContentTitle(title)
             .setContentText(message)
             .setContentIntent(intent);
-    
+
     // Checking whether to add a ProgressBar to the notification
     if (isProgress) {
       // Add ProgressBar to Notification

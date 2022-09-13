@@ -19,12 +19,13 @@ package com.itsaky.androidide.language.java;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -58,7 +59,7 @@ public class JavaLanguage extends IDELanguage {
 
   @Override
   protected ILanguageServer getLanguageServer() {
-    return StudioApp.getInstance().getJavaLanguageServer();
+    return ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID);
   }
 
   @Override

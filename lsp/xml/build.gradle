@@ -70,6 +70,7 @@ dependencies {
     implementation project (':lexers')
     implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
+    implementation project (':build-tools:xml-utils')
     implementation project (':sdk-info')
     
     implementation androidx.ktx
@@ -84,7 +85,6 @@ dependencies {
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric
-    testImplementation tests.mockito
     androidTestImplementation tests.androidx_junit
     androidTestImplementation tests.androidx_espresso
     androidTestImplementation tests.google_truth

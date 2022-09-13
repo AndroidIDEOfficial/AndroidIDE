@@ -200,7 +200,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(FIXME_COMMENT, 0xffffab00);
     setColor(COMMENT, 0xffbdbdbd);
   }
-  
+
   @Override
   public boolean isDark() {
     return true;

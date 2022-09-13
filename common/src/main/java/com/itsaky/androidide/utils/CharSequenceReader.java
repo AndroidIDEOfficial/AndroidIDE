@@ -135,7 +135,6 @@ public class CharSequenceReader extends Reader implements Serializable {
     return subSequence.toString();
   }
   /** Close resets the file back to the start and removes any marked position. */
-
   @Override
   public void close() {
     idx = start;
@@ -156,7 +155,6 @@ public class CharSequenceReader extends Reader implements Serializable {
    *
    * @return The end index in the character sequence (exclusive).
    */
-
   private int end() {
     /*
      * end == null for de-serialized instances that were serialized before start and end were added.

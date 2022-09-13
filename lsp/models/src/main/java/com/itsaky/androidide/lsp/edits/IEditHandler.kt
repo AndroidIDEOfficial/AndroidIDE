@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.edits
 
 import com.itsaky.androidide.lsp.models.CompletionItem
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 
 /**
@@ -31,5 +32,5 @@ interface IEditHandler {
    * Performs the edits on the given [editor].
    * @param editor The editor to perform edits on.
    */
-  fun performEdits(editor: CodeEditor, completionItem: com.itsaky.androidide.lsp.models.CompletionItem)
+  fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int)
 }

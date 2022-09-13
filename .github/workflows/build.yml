@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew testDebugUnitTest --continue
+        run: ./gradlew testDebug --continue
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v2

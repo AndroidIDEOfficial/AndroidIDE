@@ -24,6 +24,7 @@ import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -74,6 +75,7 @@ public abstract class StudioActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    preSetContentLayout();
     setContentView(bindLayout());
     onSetContentView();
 
@@ -112,12 +114,11 @@ public abstract class StudioActivity extends AppCompatActivity {
 
   @Override
   public void onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (requestCode == REQCODE_STORAGE) {
-      if (grantResults != null
-          && grantResults.length > 0
-          && grantResults[0] == PackageManager.PERMISSION_GRANTED) onStorageGranted();
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        onStorageGranted();
       else onStorageDenied();
     }
   }
@@ -125,6 +126,8 @@ public abstract class StudioActivity extends AppCompatActivity {
   protected void onStorageAlreadyGranted() {}
 
   protected void onStorageDenied() {}
+
+  protected void preSetContentLayout() {}
 
   protected void onSetContentView() {}
 

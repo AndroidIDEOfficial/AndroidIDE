@@ -59,18 +59,12 @@ public class XMLLanguageServer implements ILanguageServer {
   public static final String SERVER_ID = "xml";
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public SDKInfo sdkInfo;
 
   private ILanguageClient client;
   private IServerSettings settings;
-  private boolean canProvideCompletions = false;
 
   public XMLLanguageServer() {}
-
-  public void setupSDK(@NonNull final SDKInfo info) {
-    this.sdkInfo = info;
-    this.canProvideCompletions = true;
-  }
+  
 
   @Override
   public String getServerId() {
@@ -103,10 +97,10 @@ public class XMLLanguageServer implements ILanguageServer {
   @Override
   public CompletionResult complete(final CompletionParams params) {
     final ICompletionProvider completionProvider;
-    if (!getSettings().completionsEnabled() || !canProvideCompletions) {
+    if (!getSettings().completionsEnabled()) {
       completionProvider = new NoCompletionsProvider();
     } else {
-      completionProvider = new XmlCompletionProvider(this.sdkInfo, this.getSettings());
+      completionProvider = new XmlCompletionProvider(this.getSettings());
     }
     return completionProvider.complete(params);
   }

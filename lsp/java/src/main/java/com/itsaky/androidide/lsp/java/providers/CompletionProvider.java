@@ -173,7 +173,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     abortIfCancelled();
     abortCompletionIfCancelled();
-    new TopLevelSnippetsProvider().complete(task, result);
+    new TopLevelSnippetsProvider().complete(params.requirePrefix(), task, result);
     logCompletionDuration(started, result);
 
     abortIfCancelled();

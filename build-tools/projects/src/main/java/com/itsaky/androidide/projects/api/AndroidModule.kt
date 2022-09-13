@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.android.aaptcompiler.ResourceTable
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
@@ -27,13 +28,20 @@ import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
 import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.model.util.findPackageName
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import com.itsaky.androidide.xml.versions.ApiVersions
+import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
+import com.itsaky.androidide.xml.widgets.WidgetTable
+import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import java.io.File
 
 /**
@@ -110,7 +118,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   override var moduleData: SimpleModuleData? = null
-
+  
   init {
     type = Android
   }
@@ -232,4 +240,151 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
     return result
   }
+
+  /**
+   * Reads the resource files are creates the [com.android.aaptcompiler.ResourceTable] instances for
+   * the corresponding resource directories.
+   */
+  fun readResources() {
+    // Read resources in parallel
+    val threads = mutableListOf<Thread>()
+    threads.add(
+      Thread {
+        getFrameworkResourceTable()
+        getResourceTable()
+        getDependencyResourceTables()
+      }
+    )
+    threads.add(Thread(this::getApiVersions))
+    threads.add(Thread(this::getWidgetTable))
+
+    for (thread in threads) {
+      thread.start()
+    }
+
+    for (thread in threads) {
+      thread.join()
+    }
+  }
+
+  /**
+   * Get the [ApiVersions] instance for this module.
+   *
+   * @return The [ApiVersions] for this module.
+   */
+  fun getApiVersions(): ApiVersions? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return ApiVersionsRegistry.getInstance().forPlatformDir(platformDir)
+    }
+
+    return null
+  }
+
+  /**
+   * Get the [WidgetTable] instance for this module.
+   *
+   * @return The [WidgetTable] for this module.
+   */
+  fun getWidgetTable(): WidgetTable? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return WidgetTableRegistry.getInstance().forPlatformDir(platformDir)
+    }
+
+    return null
+  }
+
+  /** Get the resource table for this module i.e. without resource tables for dependent modules. */
+  fun getResourceTable(): ResourceTable? {
+    if (this.packageName == UNKNOWN_PACKAGE) {
+      return null
+    }
+    val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
+    return ResourceTableRegistry.getInstance().forPackage(this.packageName, *resDirs.toTypedArray())
+  }
+
+  /**
+   * Get the [ResourceTable] instance for this module's compile SDK.
+   *
+   * @return The [ApiVersions] for this module.
+   */
+  fun getFrameworkResourceTable(): ResourceTable? {
+    val platformDir = getPlatformDir()
+    if (platformDir != null) {
+      return ResourceTableRegistry.getInstance().forPlatformDir(platformDir)
+    }
+
+    return null
+  }
+
+  /**
+   * Get the resource tables for this module as well as it's dependent modules.
+   *
+   * @return The set of resource tables. Empty when project is not initalized.
+   */
+  fun getSourceResourceTables(): Set<ResourceTable> {
+    val set = mutableSetOf(getResourceTable() ?: return emptySet())
+    getCompileModuleProjects().filterIsInstance<AndroidModule>().forEach {
+      it.getResourceTable()?.also { table -> set.add(table) }
+    }
+    return set
+  }
+
+  /** Get the resource tables for external dependencies (not local module project dependencies). */
+  fun getDependencyResourceTables(): Set<ResourceTable> {
+    return mutableSetOf<ResourceTable>().also {
+      it.addAll(
+        libraryMap.values
+          .filter { library ->
+            library.type == ANDROID_LIBRARY &&
+              library.androidLibraryData!!.resFolder.exists() &&
+              library.findPackageName() != UNKNOWN_PACKAGE
+          }
+          .mapNotNull { library ->
+            ResourceTableRegistry.getInstance()
+              .forPackage(
+                library.packageName,
+                library.androidLibraryData!!.resFolder,
+              )
+          }
+      )
+    }
+  }
+
+  /** Get the resource table for the attrs_manifest.xml file. */
+  fun getManifestAttrTable(): ResourceTable? {
+    val platform = getPlatformDir() ?: return null
+    return ResourceTableRegistry.getInstance().getManifestAttrTable(platform)
+  }
+
+  /** @see ResourceTableRegistry.getActivityActions */
+  fun getActivityActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getActivityActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getBroadcastActions */
+  fun getBroadcastActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getBroadcastActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getServiceActions */
+  fun getServiceActions(): List<String> {
+    return ResourceTableRegistry.getInstance()
+      .getServiceActions(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getCategories */
+  fun getCategories(): List<String> {
+    return ResourceTableRegistry.getInstance().getCategories(getPlatformDir() ?: return emptyList())
+  }
+
+  /** @see ResourceTableRegistry.getFeatures */
+  fun getFeatures(): List<String> {
+    return ResourceTableRegistry.getInstance().getFeatures(getPlatformDir() ?: return emptyList())
+  }
+
+  private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }

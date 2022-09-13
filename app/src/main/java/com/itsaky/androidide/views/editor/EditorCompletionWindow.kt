@@ -65,7 +65,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     try {
       super.select(pos)
     } catch (e: Throwable) {
-      log.warn("Unable to select completion item at $pos")
+      log.warn("Unable to select completion item at $pos", e)
     }
   }
 
@@ -73,7 +73,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     try {
       super.select()
     } catch (e: Throwable) {
-      log.warn("Unable to select completion item")
+      log.warn("Unable to select completion item", e)
     }
   }
 

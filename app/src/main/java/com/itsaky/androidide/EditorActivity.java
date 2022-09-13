@@ -127,6 +127,9 @@ import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.androidide.xml.resources.ResourceTableRegistry;
+import com.itsaky.androidide.xml.versions.ApiVersionsRegistry;
+import com.itsaky.androidide.xml.widgets.WidgetTableRegistry;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.toaster.Toaster;
 
@@ -1011,6 +1014,9 @@ public class EditorActivity extends StudioActivity
     unbindService(mGradleServiceConnection);
     super.onDestroy();
     Lookup.DEFAULT.unregister(BuildService.class);
+    ApiVersionsRegistry.getInstance().clear();
+    ResourceTableRegistry.getInstance().clear();
+    WidgetTableRegistry.getInstance().clear();
     mBinding = null;
     mViewModel = null;
   }
@@ -1131,11 +1137,11 @@ public class EditorActivity extends StudioActivity
               1500);
     }
   }
-  
+
   private void setupNoEditorView() {
-    
+
     mBinding.noEditorSummary.setMovementMethod(new LinkMovementMethod());
-    
+
     final var filesSpan =
         new ClickableSpan() {
           @Override
@@ -1146,38 +1152,40 @@ public class EditorActivity extends StudioActivity
           }
         };
 
-    final var bottomSheetSpan = new ClickableSpan() {
-      @Override
-      public void onClick(@NonNull final View widget) {
-        if (mEditorBottomSheet != null) {
-          mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
-      }
-    };
-    
+    final var bottomSheetSpan =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull final View widget) {
+            if (mEditorBottomSheet != null) {
+              mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }
+          }
+        };
+
     final var sb = new SpannableStringBuilder();
     appendClickableSpan(sb, R.string.msg_swipe_for_files, filesSpan);
     appendClickableSpan(sb, R.string.msg_swipe_for_output, bottomSheetSpan);
     mBinding.noEditorSummary.setText(sb);
   }
-  
-  private void appendClickableSpan(final SpannableStringBuilder sb, @StringRes final int textRes, final ClickableSpan span) {
+
+  private void appendClickableSpan(
+      final SpannableStringBuilder sb, @StringRes final int textRes, final ClickableSpan span) {
     final var str = getString(textRes);
-    final var split = str.split("@@",3);
-    
+    final var split = str.split("@@", 3);
+
     if (split.length != 3) {
       // Not a valid format
       sb.append(str);
       sb.append('\n');
       return;
     }
-    
+
     sb.append(split[0]);
     sb.append(split[1], span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     sb.append(split[2]);
     sb.append('\n');
   }
-  
+
   private void setupBottomSheetShareOutputFAB() {
     mBinding.bottomSheet.shareOutputFab.setOnClickListener(
         v -> {

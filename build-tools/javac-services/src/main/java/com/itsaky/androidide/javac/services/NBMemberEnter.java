@@ -56,7 +56,7 @@ public class NBMemberEnter extends MemberEnter {
   public NBMemberEnter(Context context, boolean backgroundScan) {
     super(context);
     cancelService = CancelService.instance(context);
-    trees = NBJavacTrees.instance(context);
+    trees = JavacTrees.instance(context);
     this.backgroundScan = backgroundScan;
   }
 

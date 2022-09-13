@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.api;
 
+import com.itsaky.androidide.lsp.models.CompletionsKt;
+
 /**
  * Settings contain preferences for the language server. Clients can use settings to enable/disable
  * specific features of a server.
@@ -83,4 +85,13 @@ public interface IServerSettings {
    * @return {@code true} if enabled, {@code false} otherwise.
    */
   boolean shouldMatchAllLowerCase();
+
+  /**
+   * The minimum match ratio that is needed for the completions to be considered as 'matched'.
+   *
+   * @return The match ratio. Betweeen 0 and 100.
+   */
+  default int completionFuzzyMatchMinRatio() {
+    return CompletionsKt.DEFAULT_MIN_MATCH_RATIO;
+  }
 }
