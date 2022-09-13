@@ -22,6 +22,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.provider.Settings;
+import android.net.Uri;
+import android.content.Intent;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
@@ -125,7 +128,14 @@ public abstract class StudioActivity extends AppCompatActivity {
 
   protected void onStorageAlreadyGranted() {}
 
-  protected void onStorageDenied() {}
+  protected void onStorageDenied() {
+    final Intent AppSettings =
+        new Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName()));
+    AppSettings.addCategory(Intent.CATEGORY_DEFAULT);
+    AppSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    startActivityForResult(AppSettings, 55);
+  }
 
   protected void preSetContentLayout() {}
 
