@@ -24,6 +24,16 @@
     <item name="android:fontFamily">@font/josefin_sans</item>
   </style>
 
+  <style name="AppTheme.Splash" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/primaryColor</item>
+    <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
+    <item name="windowSplashScreenAnimationDuration">200</item>
+    <item name="postSplashScreenTheme">@style/AppTheme</item>
+    <item name="android:statusBarColor">@color/primaryColor</item>
+    <item name="android:navigationBarColor">@color/primaryColor</item>
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
   <style name="AppTheme.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
     <item name="buttonTint">@color/secondaryColor</item>
   </style>

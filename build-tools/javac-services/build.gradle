@@ -20,6 +20,7 @@ android {
         }
     }
     
+    // Must be set to Java 8
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

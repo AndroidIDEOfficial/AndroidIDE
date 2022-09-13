@@ -20,7 +20,6 @@ package com.itsaky.androidide.projects.classpath
 import com.google.common.collect.ImmutableSet
 import com.itsaky.androidide.javac.services.fs.CachedJarFileSystem
 import com.itsaky.androidide.javac.services.fs.CachingJarFileSystemProvider
-import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.nio.file.FileVisitResult
 import java.nio.file.FileVisitResult.CONTINUE
@@ -48,15 +47,18 @@ class JarFsClasspathReader : IClasspathReader {
           emptySet(),
           Int.MAX_VALUE,
           object : SimpleFileVisitor<Path>() {
-            
-            override fun preVisitDirectory(dir: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+
+            override fun preVisitDirectory(
+              dir: Path?,
+              attrs: BasicFileAttributes?
+            ): FileVisitResult {
               return if (fs.storeJARPackageDir(dir)) {
                 CONTINUE
               } else {
                 SKIP_SUBTREE
               }
             }
-            
+
             override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
               var name = file.pathString
               if (!name.endsWith(".class")) {
@@ -64,9 +66,6 @@ class JarFsClasspathReader : IClasspathReader {
               }
 
               name = name.substringBeforeLast(".class")
-              if (name.length <= 1) {
-                return CONTINUE
-              }
 
               if (name.startsWith('/')) {
                 name = name.substring(1)

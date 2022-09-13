@@ -57,7 +57,7 @@ public class ClassInfo extends Info {
    */
   public MethodInfo getMethod(String name, String[] parameters) {
 
-    /** Convert parameter types to their binary version */
+    // Convert parameter types to their binary version
     final String[] parameterTypes = new String[parameters.length];
     for (int i = 0; i < parameters.length; i++) {
       String paramType = parameters[i];
@@ -68,24 +68,19 @@ public class ClassInfo extends Info {
     for (Map.Entry<String, MethodInfo> entry : methods.entrySet()) {
       MethodInfo method = entry.getValue();
 
-      /** Check if this method's simple name is what we are looking for */
+      // Check if this method's simple name is what we are looking for
       if (method != null && method.simpleName.trim().equals(name.trim())) {
 
-        /**
-         * Get parameter types of this method Takes binary representation, returns binary
-         * representation
-         */
+        // Get parameter types of this method
+        // Takes binary representation, returns binary representation
         String[] paramTypes = Signature.getParameterTypes(method.name);
 
-        /** Join the parameters to check if they are equal This is just more efficient */
+        // Join the parameters to check if they are equal This is just more efficient
         final String params1 = TextUtils.join(",", paramTypes);
         final String params2 = TextUtils.join(",", parameterTypes);
 
-        if (params1.equals(params2)) {
-
-          /** We found what we were looking for! */
-          return method;
-        }
+        // We found what we were looking for!
+        if (params1.equals(params2)) return method;
       }
     }
     return null;

@@ -56,10 +56,6 @@ private constructor(
           name
         }
 
-      if (name == "com.itsaky.androidide.zipfs.ZipCoder") {
-        println()
-      }
-
       val isAnonymous = simpleName.isDigitsOnly()
       val isLocal = simpleName[0].isDigit() && simpleName.contains(Regex("[A-Za-z]"))
       val isInner = !isTopLevel && !isLocal && !isAnonymous

@@ -131,7 +131,7 @@ class MemberSelectCompletionProvider(
     scope: Scope,
     type: DeclaredType,
     isStatic: Boolean,
-    partialName: String,
+    partial: String,
     endsWithParen: Boolean,
   ): CompletionResult {
     val trees = Trees.instance(task.task)
@@ -147,7 +147,7 @@ class MemberSelectCompletionProvider(
       if (member.kind == CONSTRUCTOR) {
         continue
       }
-      val matchLevel = matchLevel(member.simpleName, partialName)
+      val matchLevel = matchLevel(member.simpleName, partial)
       if (matchLevel == NO_MATCH) {
         continue
       }
@@ -176,16 +176,16 @@ class MemberSelectCompletionProvider(
         continue
       }
 
-      list.add(method(task, value, !endsWithParen, matchLevel))
+      list.add(method(task, value, !endsWithParen, matchLevel, partial))
     }
 
     if (isStatic) {
-      list.add(keyword("class", partialName, 100))
+      list.add(keyword("class", partial, 100))
     }
 
     if (!isStatic && isEnclosingClass(type, scope)) {
-      list.add(keyword("this", partialName, 100))
-      list.add(keyword("super", partialName, 100))
+      list.add(keyword("this", partial, 100))
+      list.add(keyword("super", partial, 100))
     }
 
     return CompletionResult(list)

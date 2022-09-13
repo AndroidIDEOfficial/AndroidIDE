@@ -18,6 +18,7 @@
 package com.itsaky.androidide.lsp.java.providers.completion
 
 import com.itsaky.androidide.lsp.api.IServerSettings
+import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
@@ -32,6 +33,7 @@ import com.itsaky.androidide.lsp.java.utils.ScopeHelper
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
+import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
@@ -101,7 +103,7 @@ class ScopeCompletionProvider(
       if (member.kind == METHOD) {
         val method = member as ExecutableElement
         val parentPath = path.parentPath /*method*/.parentPath /*class*/
-        list.add(overrideIfPossible(task, parentPath, method, endsWithParen, matchLevel))
+        list.add(overrideIfPossible(task, parentPath, method, endsWithParen, matchLevel, partial))
       } else {
         list.add(item(task, member, matchLevel))
       }
@@ -126,11 +128,12 @@ class ScopeCompletionProvider(
     parentPath: TreePath,
     method: ExecutableElement,
     endsWithParen: Boolean,
-    matchLevel: com.itsaky.androidide.lsp.models.MatchLevel,
+    matchLevel: MatchLevel,
+    partial: String
   ): CompletionItem {
     if (parentPath.leaf.kind != CLASS) {
       // Can only override if the cursor is directly in a class declaration
-      return method(task, listOf(method), !endsWithParen, matchLevel)
+      return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     }
 
     abortIfCancelled()
@@ -139,7 +142,7 @@ class ScopeCompletionProvider(
     val parentElement =
       Trees.instance(task.task).getElement(parentPath)
         ?: // Can't get further information for overriding this method
-      return method(task, listOf(method), !endsWithParen, matchLevel)
+      return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     val type = parentElement.asType() as DeclaredType
     val enclosing = method.enclosingElement
     val isFinalClass = enclosing.modifiers.contains(FINAL)
@@ -154,7 +157,7 @@ class ScopeCompletionProvider(
         parentPath.leaf !is ClassTree
     ) {
       // Override is not possible
-      return method(task, listOf(method), !endsWithParen, matchLevel)
+      return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     }
 
     // Print the method details and the annotations
@@ -166,7 +169,7 @@ class ScopeCompletionProvider(
       builder = buildMethod(method, types, type)
     } catch (error: Throwable) {
       log.error("Cannot override method:", method.simpleName, error.message)
-      return method(task, listOf(method), !endsWithParen, matchLevel)
+      return method(task, listOf(method), !endsWithParen, matchLevel, partial)
     }
 
     val imports = mutableSetOf<String>()
@@ -184,6 +187,7 @@ class ScopeCompletionProvider(
     item.sortText = item.label.toString()
     item.insertText = insertText
     item.insertTextFormat = SNIPPET
+    item.snippetDescription = describeSnippet(partial)
     item.matchLevel = matchLevel
     item.data = data(task, method, 1)
     if (item.additionalTextEdits == null) {

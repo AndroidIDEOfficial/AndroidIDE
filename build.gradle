@@ -1,5 +1,24 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import com.google.googlejavaformat.java.Formatter
 import com.google.googlejavaformat.java.JavaFormatterOptions
+import com.itsaky.androidide.Versions
+import com.itsaky.androidide.plugins.AndroidIDEPlugin
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -11,12 +30,12 @@ buildscript {
     apply from: "dependencies.gradle"
     
     project.ext {
-        compileSdk = 32
-        buildTools = "31.0.0"
-        minSdk = 26
-        targetSdk = 28
-        versionCode = 212
-        versionName = "2.1.2-beta"
+        compileSdk = Versions.INSTANCE.compileSdk
+        buildTools = Versions.INSTANCE.buildTools
+        minSdk = Versions.INSTANCE.minSdk
+        targetSdk = Versions.INSTANCE.targetSdk
+        versionCode = Versions.INSTANCE.versionCode
+        versionName = Versions.INSTANCE.versionName
         packageName = "com.itsaky.androidide"
         
         javaSourceVersion = JavaVersion.VERSION_11
@@ -24,13 +43,13 @@ buildscript {
     }
     
     repositories {
-        mavenLocal()
+        mavenLocal ()
         
         // Do not use mavenCentral()
         maven {
             url 'https://repo1.maven.org/maven2'
         }
-    
+        
         // Do not use google()
         maven {
             url 'https://maven.google.com'
@@ -48,7 +67,6 @@ buildscript {
     dependencies {
         classpath classpaths.agp
         classpath classpaths.kotlin_gradle_plugin
-        classpath classpaths.google_java_format
         classpath classpaths.oss_licenses
         classpath google.guava_jre
     }
@@ -56,14 +74,7 @@ buildscript {
 
 subprojects {
     apply plugin: 'kotlin-kapt'
-    
-    afterEvaluate {
-        tasks.register ("checkTranslations", task -> {
-            doLast {
-                checkTranslations (project)
-            }
-        })
-    }
+    apply plugin: AndroidIDEPlugin
 }
 
 allprojects {
@@ -75,7 +86,7 @@ allprojects {
     }
     
     repositories {
-        mavenLocal()
+        mavenLocal ()
         
         // Do not use mavenCentral()
         maven {
@@ -97,172 +108,12 @@ allprojects {
     }
 }
 
-private void checkTranslations (Project project) {
-    def php = new File ("/usr/bin/php")
-    if (!php.exists ()) {
-        project.logger.lifecycle ("'${php.absolutePath}' not found. Skipping translation check.")
-        return
-    }
-    
-    def resDir = project.file ("src/main/res")
-    def strings = new File (resDir, "values/strings.xml")
-    def reportDir = new File (project.rootProject.buildDir, "translation-reports")
-    reportDir.delete ()
-    
-    if (!resDir.exists () || !strings.exists ()) {
-        project.logger.info ("Default strings.xml file does not exist for project '${project.name}'")
-        return
-    }
-    
-    def translationDirs = resDir.listFiles ((FileFilter) (file -> {
-        return file.isDirectory () && file.getName ().startsWith ("values-")
-    }))
-    
-    for (def dir : translationDirs) {
-        final var translation = new File (dir, "strings.xml")
-        if (!translation.exists ()) {
-            project.logger.info ("No translation file specifed for '${dir.name}'. Skipping..")
-            return
-        }
-        
-        def out = new File (reportDir, "${project.path.replace (':', '/')}/${dir.name}.txt")
-        if (!out.parentFile.exists ()) {
-            out.parentFile.mkdirs ()
-        }
-        
-        if (out.exists ()) {
-            out.delete ()
-        }
-        
-        out.createNewFile ()
-        
-        def result = exec {
-            ignoreExitValue true
-            standardOutput new FileOutputStream (out)
-            commandLine "${php.absolutePath}",
-                    "${project.rootProject.file (".tools/strings-check.php")}",
-                    "${strings.absolutePath}",
-                    "${translation.absolutePath}"
-        }
-        
-        if (result.getExitValue () == 0) {
-            out.delete ()
-        } else {
-            project.logger.lifecycle ("Translation report for '${project.path}/${dir.name}' is written to '${out.absolutePath}'")
-        }
-    }
-}
 
 task clean (type: Delete) {
     delete rootProject.buildDir
 }
 
-Collection<String> walkForSources (Path dir) {
-    try {
-        
-        if (!Files.exists (dir)) {
-            return Collections.emptySet ()
-        }
-        
-        return Files.walk (dir)
-                .filter (path -> !Files.isDirectory (path))
-                .filter (path -> Files.isReadable (path) && Files.isWritable (path))
-                .map (path -> path.toFile ())
-                .map (file -> file.absolutePath)
-                .filter (path -> path.endsWith (".java"))
-                .filter (path -> !path.endsWith ("_template.java"))
-                .collect (Collectors.toSet ())
-    } catch (Throwable error) {
-        getLogger ().error ("Could not walk directory for java sources: ${dir.toString ()}", error)
-        return Collections.emptySet ()
-    }
-}
-
-boolean doJavaFormat (Formatter formatter, String path) {
-    try {
-        final def file = Paths.get (path)
-        final def content = Files.readAllBytes (file)
-        final def utf8Decoded = new String (content, StandardCharsets.UTF_8.name ())
-        final def formatted = formatter.formatSource (utf8Decoded)
-        if (utf8Decoded == formatted) {
-            getLogger ().info ("{}: UP-TO-DATE", file)
-            return true
-        }
-        
-        byte[] utf8Encoded = formatted.getBytes (StandardCharsets.UTF_8.name ())
-        Files.write (file, utf8Encoded)
-        println ("${path}: Formatted successfully!")
-        return true
-    } catch (Throwable th) {
-        getLogger ().error ("Failed to format ${path}", th)
-        return false
-    }
-}
-
 task formatJavaSources () {
     doLast {
-        def jarName = "google-java-format-1.15.0-all-deps"
-        def jar = rootProject.file (".tools/${jarName}.jar")
-        
-        if (!jar.exists ()) {
-            getLogger ().info ("google-java-format JAR file not found. Skipping format task...")
-            return
-        }
-        
-        boolean formattingChanges = false
-        rootProject.subprojects.forEach (sub -> {
-            def sources = walkForSources (sub.file ("src/main/java").toPath ())
-            sources.addAll (walkForSources (sub.file ("src/test/java").toPath ()))
-            
-            final def formatter = new Formatter (
-                    JavaFormatterOptions
-                            .builder ()
-                            .style (JavaFormatterOptions.Style.GOOGLE)
-                            .formatJavadoc (true)
-                            .build ()
-            )
-            
-            for (def path : sources) {
-                if (doJavaFormat (formatter, path)) {
-                    formattingChanges = true
-                }
-            }
-        })
-        
-        if (!formattingChanges) {
-            getLogger ().info ("No formatting changes.")
-            return
-        }
-        
-        // ---------------- Stage Changes -------------------
-        def out = new ByteArrayOutputStream ()
-        def exit = rootProject.exec {
-            ignoreExitValue true
-            standardOutput out
-            errorOutput standardOutput
-            commandLine "git", "add", "."
-        }
-        
-        if (exit.exitValue != 0) {
-            getLogger ().error ("Unable to stage changes. Process terminated with exit code ${exit.exitValue}")
-            getLogger ().error (out.toString ())
-            return
-        }
-        
-        // ----------------- Commit Changes --------------------
-        out = new ByteArrayOutputStream ()
-        exit = rootProject.exec {
-            ignoreExitValue true
-            standardOutput out
-            errorOutput standardOutput
-            commandLine "git", "commit", "-m", "[Gradle] Format java source code"
-        }
-        
-        if (exit.exitValue == 0) {
-            getLogger ().info ("Changes committed successfully.")
-        } else {
-            getLogger ().error ("Failed to commit changes. Process terminated with exit code ${exit.exitValue}")
-            getLogger ().error (out.toString ())
-        }
     }
 }

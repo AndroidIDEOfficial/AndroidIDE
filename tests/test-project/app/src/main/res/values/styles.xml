@@ -13,4 +13,15 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+    <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialDialog.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialDialog.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/MaterialAlertDialog.PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/MaterialAlertDialog.NegativeButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/MaterialAlertDialog.NeutralButtonStyle</item>
+        <item name="android:windowEnterAnimation">@animator/dialog_in</item>
+        <item name="android:windowExitAnimation">@animator/dialog_out</item>
+    </style>
 </resources>

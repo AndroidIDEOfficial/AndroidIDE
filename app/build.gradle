@@ -72,6 +72,8 @@ android {
                          'META-INF/CHANGES',
                          'META-INF/README.md',
                          'about_files/LICENSE-2.0.txt',
+                         'META-INF/AL2.0',
+                         'META-INF/LGPL2.1',
                          'plugin.xml',
                          'plugin.properties',
                          'about.mappings',
@@ -103,14 +105,13 @@ dependencies {
     implementation common.utilcode
     implementation common.glide
     implementation common.quickaction
-    implementation common.bll
-    implementation common.xml2json
     implementation google.gson
     implementation google.guava
     
     implementation common.jsoup
     
     // AndroidX
+    implementation androidx.splashscreen
     implementation androidx.annotation
     implementation androidx.appcompat
     implementation androidx.cardview
@@ -130,6 +131,8 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
+    implementation project (':build-tools:aaptcompiler')
+    implementation project (':build-tools:xml-utils')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
     implementation project (':build-tools:projects')

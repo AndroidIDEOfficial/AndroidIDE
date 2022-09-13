@@ -53,7 +53,7 @@ import java.nio.file.Path;
  */
 public interface ICompletionProvider {
 
-  int MIN_MATCH_RATIO = CompletionsKt.MIN_MATCH_RATIO;
+  int MIN_MATCH_RATIO = CompletionsKt.DEFAULT_MIN_MATCH_RATIO;
 
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);
@@ -68,7 +68,14 @@ public interface ICompletionProvider {
   }
 
   default MatchLevel matchLevel(CharSequence candidate, CharSequence partial) {
-    return CompletionItem.matchLevel(candidate.toString(), partial.toString());
+    var matchRatio = CompletionsKt.DEFAULT_MIN_MATCH_RATIO;
+    if (this instanceof AbstractServiceProvider) {
+      matchRatio = ((AbstractServiceProvider) this).getSettings().completionFuzzyMatchMinRatio();
+    }
+
+    if (matchRatio < 0 || matchRatio > 100) matchRatio = CompletionsKt.DEFAULT_MIN_MATCH_RATIO;
+
+    return CompletionItem.matchLevel(candidate.toString(), partial.toString(), matchRatio);
   }
 
   /**

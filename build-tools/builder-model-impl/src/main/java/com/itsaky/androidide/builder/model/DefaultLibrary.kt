@@ -35,4 +35,18 @@ class DefaultLibrary : Library, Serializable {
 
   /** Dependencies of this library. */
   val dependencies = mutableSetOf<String>()
+
+  /**
+   * Whether an attempt should be made to lookup this library's package name.
+   *
+   * FOR INTERNAL USE ONLY!
+   */
+  var lookupPackage: Boolean = true
+
+  /**
+   * The package name of this library. MUST NOT be accesed directly. Use
+   * `DefaultLibrary.findPackageName()` method defined in the `:build-tools:tooling-api-models`
+   * module.
+   */
+  var packageName: String = ""
 }

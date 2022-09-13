@@ -262,7 +262,7 @@ class ImportCompletionProvider(
     task: CompileTask,
     type: TypeElement,
     path: TreePath,
-    incomplete: String
+    partial: String
   ): MutableList<CompletionItem> {
 
     abortIfCancelled()
@@ -289,7 +289,7 @@ class ImportCompletionProvider(
         continue
       }
 
-      val match = matchLevel(member.simpleName, incomplete)
+      val match = matchLevel(member.simpleName, partial)
       if (match == NO_MATCH) {
         continue
       }
@@ -313,7 +313,7 @@ class ImportCompletionProvider(
       }
 
       if (member.kind == METHOD) {
-        list.add(method(task, listOf(member as MethodSymbol), false, match))
+        list.add(method(task, listOf(member as MethodSymbol), false, match, partial))
         continue
       }
 

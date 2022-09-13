@@ -110,7 +110,7 @@ class StaticImportCompletionProvider(
         continue
       }
 
-      list.add(method(task, value, !endsWithParen, matchLevel))
+      list.add(method(task, value, !endsWithParen, matchLevel, partial))
     }
 
     log.info("...found " + list.size + " static imports")

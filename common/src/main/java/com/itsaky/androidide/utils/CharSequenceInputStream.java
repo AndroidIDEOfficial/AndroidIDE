@@ -122,7 +122,6 @@ public class CharSequenceInputStream extends InputStream {
    * @return the count of bytes that can be read without blocking (or returning EOF).
    * @throws IOException if an error occurs (probably not possible).
    */
-
   @Override
   public int available() throws IOException {
     // The cached entries are in bbuf; since encoding always creates at least one byte
@@ -154,7 +153,6 @@ public class CharSequenceInputStream extends InputStream {
    *
    * @throws CharacterCodingException an error encoding data.
    */
-
   private void fillBuffer() throws CharacterCodingException {
     this.bBuf.compact();
     final CoderResult result = this.charsetEncoder.encode(this.cBuf, this.bBuf, true);

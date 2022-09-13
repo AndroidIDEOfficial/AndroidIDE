@@ -168,7 +168,7 @@ class MemberReferenceCompletionProvider(
         continue
       }
 
-      list.add(method(task, value, false, matchLevel))
+      list.add(method(task, value, false, matchLevel, partial))
     }
 
     if (isStatic) {

@@ -17,9 +17,8 @@
 
 package com.itsaky.androidide.lsp.models
 
-import android.os.Looper
-import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.fuzzysearch.FuzzySearch
+import com.itsaky.androidide.lsp.edits.DefaultEditHandler
 import com.itsaky.androidide.lsp.edits.IEditHandler
 import com.itsaky.androidide.lsp.models.CompletionItemKind.NONE
 import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
@@ -29,14 +28,14 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.MatchLevel.CASE_SENSITIVE_PREFIX
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.models.MatchLevel.PARTIAL_MATCH
-import com.itsaky.androidide.lsp.util.RewriteHelper
 import com.itsaky.androidide.models.Position
-import com.itsaky.androidide.utils.ILogger
+import io.github.rosemoe.sora.lang.completion.snippet.CodeSnippet
+import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 
-const val MIN_MATCH_RATIO = 59
+const val DEFAULT_MIN_MATCH_RATIO = 59
 
 data class CompletionParams(var position: Position, var file: Path) {
   var content: CharSequence? = null
@@ -58,7 +57,7 @@ data class CompletionParams(var position: Position, var file: Path) {
   }
 }
 
-open class CompletionResult(items: List<CompletionItem>) {
+open class CompletionResult(items: Collection<CompletionItem>) {
   val items: List<CompletionItem> = run {
     var temp = items.toMutableList()
     temp.sort()
@@ -121,7 +120,7 @@ open class CompletionItem(
   var data: CompletionData?
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
-  
+
   var sortText: String? = sortText
     get() {
       if (field == null) {
@@ -141,7 +140,9 @@ open class CompletionItem(
     }
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
+  var editHandler: IEditHandler = DefaultEditHandler()
   var additionalEditHandler: IEditHandler? = null
+  var snippetDescription: SnippetDescription? = null
   var overrideTypeText: String? = null
 
   constructor() :
@@ -159,10 +160,14 @@ open class CompletionItem(
     )
 
   companion object {
-    private val LOG = ILogger.newInstance("CompletionItem")
 
     @JvmStatic
-    fun matchLevel(candidate: String, partial: String): MatchLevel {
+    @JvmOverloads
+    fun matchLevel(
+      candidate: String,
+      partial: String,
+      minMatchRatio: Int = DEFAULT_MIN_MATCH_RATIO
+    ): MatchLevel {
       if (candidate.startsWith(partial)) {
         return if (candidate.length == partial.length) {
           CASE_SENSITIVE_EQUAL
@@ -182,7 +187,7 @@ open class CompletionItem(
       }
 
       val ratio = FuzzySearch.ratio(candidate, partial)
-      if (ratio > MIN_MATCH_RATIO) {
+      if (ratio > minMatchRatio) {
         return PARTIAL_MATCH
       }
 
@@ -196,75 +201,12 @@ open class CompletionItem(
 
   fun getLabel(): String = this.label as String
 
+  override fun performCompletion(editor: CodeEditor, text: Content, position: CharPosition) {
+    editHandler.performEdits(this, editor, text, position.line, position.column, position.index)
+  }
+
   override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      ThreadUtils.runOnUiThread { performCompletion(editor, text, line, column) }
-      return
-    }
-
-    val start = getIdentifierStart(text.getLine(line), column)
-    val shift = insertText.contains("$0")
-
-    text.delete(line, start, line, column)
-
-    if (text.contains("\n")) {
-      val lines = insertText.split("\\\n")
-      var i = 0
-      lines.forEach {
-        var commit = it
-        if (i != 0) {
-          commit = "\n" + commit
-        }
-        editor.commitText(commit)
-        i++
-      }
-    } else {
-      editor.commitText(text)
-    }
-
-    if (shift) {
-      val l = editor.cursor.leftLine
-      val t = editor.text.getLineString(l)
-      val c = t.lastIndexOf("$0")
-
-      if (c != -1) {
-        editor.setSelection(l, c)
-        editor.text.delete(l, c, l, c + 2)
-      }
-    }
-
-    text.beginBatchEdit()
-    if (additionalEditHandler != null) {
-      additionalEditHandler!!.performEdits(editor, this)
-    } else if (additionalTextEdits != null && additionalTextEdits!!.isNotEmpty()) {
-      RewriteHelper.performEdits(additionalTextEdits!!, editor)
-    }
-
-    text.beginBatchEdit()
-    executeCommand(editor)
-  }
-
-  private fun executeCommand(editor: CodeEditor) {
-    try {
-      val klass = editor::class.java
-      val method = klass.getMethod("executeCommand", Command::class.java)
-      method.isAccessible = true
-      method.invoke(editor, command)
-    } catch (th: Throwable) {
-      LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
-    }
-  }
-
-  private fun getIdentifierStart(text: CharSequence, end: Int): Int {
-    var start = end
-    while (start > 0) {
-      if (Character.isJavaIdentifierPart(text[start - 1])) {
-        start--
-        continue
-      }
-      break
-    }
-    return start
+    throw UnsupportedOperationException()
   }
 
   override fun compareTo(other: CompletionItem): Int {
@@ -285,6 +227,9 @@ open class CompletionItem(
     if (sortText != other.sortText) return false
     if (insertText != other.insertText) return false
     if (insertTextFormat != other.insertTextFormat) return false
+    if (editHandler != other.editHandler) return false
+    if (additionalEditHandler != other.additionalEditHandler) return false
+    if (overrideTypeText != other.overrideTypeText) return false
 
     return true
   }
@@ -300,24 +245,24 @@ open class CompletionItem(
     result = 31 * result + (sortText?.hashCode() ?: 0)
     result = 31 * result + insertText.hashCode()
     result = 31 * result + insertTextFormat.hashCode()
+    result = 31 * result + editHandler.hashCode()
+    result = 31 * result + (additionalEditHandler?.hashCode() ?: 0)
+    result = 31 * result + (overrideTypeText?.hashCode() ?: 0)
     return result
   }
 
   override fun toString(): String {
-    return "CompletionItem(" +
-      "label='$label', " +
-      "detail='$detail', " +
-      "command=$command, " +
-      "kind=$kind, " +
-      "matchLevel=$matchLevel, " +
-      "additionalTextEdits=$additionalTextEdits, " +
-      "data=$data, " +
-      "sortText=$sortText, " +
-      "insertText='$insertText', " +
-      "insertTextFormat=$insertTextFormat" +
-      ")"
+    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$sortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
+
+data class SnippetDescription
+@JvmOverloads
+constructor(
+  val selectedLength: Int,
+  val deleteSelected: Boolean = true,
+  val snippet: CodeSnippet? = null
+)
 
 data class CompletionData(
   var className: String,

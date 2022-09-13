@@ -31,5 +31,7 @@ dependencies {
     implementation androidx.appcompat
     implementation google.material
     
+    implementation project(path: ':build-tools:jdt')
+    
     compileOnly project (":common")
 }

@@ -17,30 +17,23 @@
  */
 package com.itsaky.androidide.language.xml;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.views.editor.IDEEditor;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
-import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
-import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
-import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
@@ -58,41 +51,9 @@ public class XMLLanguage extends IDELanguage {
     this.newlineHandlers = new NewlineHandler[0];
   }
 
-  @NonNull
-  @Override
-  public AnalyzeManager getAnalyzeManager() {
-    return analyzer;
-  }
-
-  @Override
-  public int getInterruptionLevel() {
-    return INTERRUPTION_LEVEL_STRONG;
-  }
-
-  @Override
-  public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
-    final var text = content.getLine(line).substring(0, column);
-    return getIndentAdvance(text.trim());
-  }
-
-  @Override
-  public SymbolPairMatch getSymbolPairs() {
-    return new SymbolPairMatch.DefaultSymbolPairs();
-  }
-
-  @Override
-  public NewlineHandler[] getNewlineHandlers() {
-    return newlineHandlers;
-  }
-
-  @Override
-  public void destroy() {
-    analyzer = null;
-  }
-
   @Override
   protected ILanguageServer getLanguageServer() {
-    return StudioApp.getInstance().getXMLLanguageServer();
+    return ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID);
   }
 
   @Override
@@ -125,5 +86,37 @@ public class XMLLanguage extends IDELanguage {
       LOG.error("Failed to compute indent advance", e);
     }
     return 0;
+  }
+
+  @NonNull
+  @Override
+  public AnalyzeManager getAnalyzeManager() {
+    return analyzer;
+  }
+
+  @Override
+  public int getInterruptionLevel() {
+    return INTERRUPTION_LEVEL_STRONG;
+  }
+
+  @Override
+  public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
+    final var text = content.getLine(line).substring(0, column);
+    return getIndentAdvance(text.trim());
+  }
+
+  @Override
+  public SymbolPairMatch getSymbolPairs() {
+    return new SymbolPairMatch.DefaultSymbolPairs();
+  }
+
+  @Override
+  public NewlineHandler[] getNewlineHandlers() {
+    return newlineHandlers;
+  }
+
+  @Override
+  public void destroy() {
+    analyzer = null;
   }
 }
