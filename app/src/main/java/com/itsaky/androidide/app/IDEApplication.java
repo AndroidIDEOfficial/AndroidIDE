@@ -44,7 +44,7 @@ import java.util.concurrent.CompletionException;
 
 public class IDEApplication extends BaseApplication {
 
-  private static final ILogger LOG = ILogger.newInstance("StudioApp");
+  private static final ILogger LOG = ILogger.newInstance("IDEApplication");
   private static IDEApplication instance;
   private static SDKInfo sdkInfo;
   private IResourceTable mResTable;
