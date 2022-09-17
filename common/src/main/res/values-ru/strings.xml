@@ -16,12 +16,12 @@
   -->
 
 <resources>
-    <string name="title_gradle_service_notification_channel">Служба сборки Android IDE Gradle</string>
+    <string name="title_gradle_service_notification_channel">Служба сборки AndroidIDE Gradle</string>
     <string name="msg_hex_color_code">HEX-код</string>
     <string name="msg_color_picker_pick">Выбрать</string>
     <string name="msg_chmod_exec">Настройка разрешений для исполняемого файла&#8230;</string>
     <string name="msg_linking">Связывание %1$s с %2$s</string>
-    <string name="msg_extracting_hooks">Извлечение hook библиотек&#8230;</string>
+    <string name="msg_extracting_hooks">Извлечение hook-библиотек&#8230;</string>
     <string name="msg_empty_package">Пустое имя пакета</string>
     <string name="msg_package_is_not_valid">Недопустимое имя пакета</string>
     <string name="msg_package_is_to_long">Длинное имя пакета</string>
