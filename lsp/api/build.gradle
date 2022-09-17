@@ -51,6 +51,9 @@ kapt {
 }
 
 dependencies {
+    
+    kapt common.eventbus_ap
+    
     implementation common.editor
     implementation project (':build-tools:fuzzysearch')
     implementation project (':eventbus-events')

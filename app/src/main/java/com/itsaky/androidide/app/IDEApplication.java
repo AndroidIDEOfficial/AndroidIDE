@@ -23,6 +23,7 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.events.AppEventsIndex;
+import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
 import com.itsaky.androidide.projects.ProjectResourceTable;
@@ -63,6 +64,7 @@ public class IDEApplication extends BaseApplication {
     EventBus.builder()
         .addIndex(new AppEventsIndex())
         .addIndex(new ProjectsApiEventsIndex())
+        .addIndex(new LspApiEventsIndex())
         .addIndex(new LspJavaEventsIndex())
         .installDefaultEventBus();
 
