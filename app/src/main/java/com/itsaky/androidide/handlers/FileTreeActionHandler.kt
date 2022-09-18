@@ -25,6 +25,7 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.IntentUtils
+import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
@@ -167,7 +168,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun openWithExternalApp(context: Context, file: File) {
-    com.itsaky.androidide.utils.shareFile(context, file, "*/*")
+    shareFile(context, file, "*/*")
   }
 
   private fun createNewFile(context: Context, file: File) {
