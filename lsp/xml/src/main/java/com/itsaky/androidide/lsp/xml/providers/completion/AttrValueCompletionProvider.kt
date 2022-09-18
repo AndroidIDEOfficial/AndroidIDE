@@ -47,6 +47,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
+import java.util.regex.Pattern
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -56,6 +57,9 @@ import org.eclipse.lemminx.dom.DOMDocument
  */
 open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
+
+  private val unqualifiedRefMatcher by lazy { Pattern.compile("@(\\w+)/(.*)") }
+  private val qualifiedRef by lazy { Pattern.compile("@((\\w|\\.)+):(\\w+)/(.*)") }
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
@@ -103,11 +107,36 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           return EMPTY
         }
 
-    addValuesForAttr(attr, pck, prefix, list)
+    val value = this.attrAtCursor.value
+    if (!value.startsWith('@')) {
+      addValuesForAttr(attr, pck, prefix, list)
+      return CompletionResult(list)
+    }
 
-    return CompletionResult(list)
+    var matcher = qualifiedRef.matcher(value)
+    if (matcher.matches()) {
+      val valPck = matcher.group(1)
+      val typeStr = matcher.group(3)
+      val valType = AaptResourceType.values().firstOrNull { it.tagName == typeStr } ?: return EMPTY
+      val newPrefix = matcher.group(4) ?: ""
+      addValues(valType, newPrefix, list) { it == valPck }
+      return CompletionResult(list)
+    }
+
+    matcher = unqualifiedRefMatcher.matcher(value)
+    if (matcher.matches()) {
+      val typeStr = matcher.group(1)
+      val newPrefix = matcher.group(2) ?: ""
+      val valType = AaptResourceType.values().firstOrNull { it.tagName == typeStr } ?: return EMPTY
+      addValues(valType, newPrefix, list)
+      return CompletionResult(list)
+    }
+
+    return EMPTY
   }
-  
+
+  private fun listResTypes(): List<String> = AaptResourceType.values().map { it.tagName }
+
   protected open fun resTableForFindAttr() = platformResourceTable()
 
   private fun findAttr(
@@ -216,7 +245,8 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   private fun addValues(
     type: AaptResourceType,
     prefix: String,
-    result: MutableList<CompletionItem>
+    result: MutableList<CompletionItem>,
+    checkPck: (String) -> Boolean = { true }
   ) {
     if (result.size >= MAX_ITEMS + 1) {
       return
@@ -226,9 +256,14 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       allNamespaces
         .flatMap { findResourceTables(it.second) }
         .flatMap { table ->
-          table.packages.map { pck ->
-            pck.name to pck.findGroup(type)?.findEntries { s -> matchLevel(s, prefix) != NO_MATCH }
-          }
+          table.packages
+            .filter { checkPck(it.name) }
+            .map { pck ->
+              pck.name to
+                pck.findGroup(type)?.findEntries { entryName ->
+                  matchLevel(entryName, prefix) != NO_MATCH
+                }
+            }
         }
         .toHashSet()
 
