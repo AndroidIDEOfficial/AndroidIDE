@@ -142,6 +142,7 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
   }
 
   @Test // prefix: '@com.itsaky.test.app:string/ap'       // for attribute 'android:text'
+  // TestAttrValueWithQualifiedRefWithIncompleteType
   fun `test value completion with qualified reference prefix (test with custom package not android)`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrValueWithQualifiedRefPrefix2")
@@ -161,6 +162,43 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
           "@android:string/app_category_video"
         )
         .forEach { assertThat(items).doesNotContain(it) }
+    }
+  }
+
+  @Test // prefix: '@android:s'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete type`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompleteType")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items).containsAtLeast("string", "style", "styleable")
+    }
+  }
+
+  @Test // prefix: '@c'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete type or package`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompleteTypeOrPck")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items)
+        .containsAtLeast(
+          /*resource type*/ "color",
+          /*pck*/ "com.google.android.material",
+          /*pck*/ "com.itsaky.test.app"
+        )
+    }
+  }
+
+  @Test // prefix: '@com.'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete package`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompletePck")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items).doesNotContain("color")
+      assertThat(items)
+        .containsAtLeast(/*pck*/ "com.google.android.material", /*pck*/ "com.itsaky.test.app")
     }
   }
 }

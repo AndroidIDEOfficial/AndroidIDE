@@ -232,7 +232,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   ): CompletionItem {
     return CompletionItem().apply {
       this.label = name
-      this.detail = "From package '$pck'"
+      this.detail = if (pck.isBlank()) "" else "From package '$pck'"
       this.kind = VALUE
       this.sortText = "000$name"
       this.insertText = name

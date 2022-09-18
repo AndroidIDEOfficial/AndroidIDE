@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.xml.providers.completion
 
+import com.android.SdkConstants.ANDROID_URI
 import com.android.aapt.Resources.Attribute.FormatFlags
 import com.android.aapt.Resources.Attribute.FormatFlags.BOOLEAN
 import com.android.aapt.Resources.Attribute.FormatFlags.COLOR
@@ -44,6 +45,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.MAX_ITEMS
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -60,6 +62,8 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
   private val unqualifiedRefMatcher by lazy { Pattern.compile("@(\\w+)/(.*)") }
   private val qualifiedRef by lazy { Pattern.compile("@((\\w|\\.)+):(\\w+)/(.*)") }
+  private val qualifiedRefWithIncompleteType by lazy { Pattern.compile("@((\\w|\\.)+):(\\w*)") }
+  private val qualifiedRefWithIncompletePckOrType by lazy { Pattern.compile("@((\\w|\\.)*)") }
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
@@ -108,11 +112,15 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
         }
 
     val value = this.attrAtCursor.value
+
+    // If user is directly typing the entry name. For example 'app_name'
     if (!value.startsWith('@')) {
       addValuesForAttr(attr, pck, prefix, list)
       return CompletionResult(list)
     }
 
+    // If user is typign entry with package name and resource type. For example
+    // '@com.itsaky.test.app:string/app_name' or '@android:string/ok'
     var matcher = qualifiedRef.matcher(value)
     if (matcher.matches()) {
       val valPck = matcher.group(1)
@@ -123,6 +131,32 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       return CompletionResult(list)
     }
 
+    // If user is typing qualified reference but with incomplete type
+    // For example: '@android:str' or '@com.itsaky.test.app:str'
+    matcher = qualifiedRefWithIncompleteType.matcher(value)
+    if (matcher.matches()) {
+      val valPck = matcher.group(1)!!
+      val incompleteType = matcher.group(3) ?: ""
+      addResourceTypes(valPck, incompleteType, list)
+      return CompletionResult(list)
+    }
+
+    // If user is typing qualified reference but with incomplete type or package name
+    // For example: '@android:str' or '@str'
+    matcher = qualifiedRefWithIncompletePckOrType.matcher(value)
+    if (matcher.matches()) {
+      val valPck = matcher.group(1)!!
+
+      if (!valPck.contains('.')) {
+        addResourceTypes("", valPck, list)
+      }
+
+      addPackages(valPck, list)
+
+      return CompletionResult(list)
+    }
+
+    // If user is typing entry name with resource type. For example '@string/app_name'
     matcher = unqualifiedRefMatcher.matcher(value)
     if (matcher.matches()) {
       val typeStr = matcher.group(1)
@@ -133,6 +167,36 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     }
 
     return EMPTY
+  }
+
+  private fun addPackages(incompletePck: String, list: MutableList<CompletionItem>) {
+    val packages =
+      findResourceTables(ANDROID_URI).flatMap {
+        it.packages.filter { pck -> matchLevel(pck.name, incompletePck) != NO_MATCH }
+      }
+    packages.forEach {
+      val match = matchLevel(it.name, incompletePck)
+      val item = createEnumOrFlagCompletionItem(it.name, it.name, match)
+      item.editHandler = QualifiedValueEditHandler()
+      list.add(item)
+    }
+  }
+
+  private fun addResourceTypes(
+    pck: String,
+    incompleteType: String,
+    list: MutableList<CompletionItem>
+  ) {
+    listResTypes().forEach {
+      val match = matchLevel(it, incompleteType)
+      if (match == NO_MATCH && incompleteType.isNotBlank()) {
+        return@forEach
+      }
+
+      val item = createEnumOrFlagCompletionItem(pck, it, match)
+      item.overrideTypeText = "Resource type"
+      list.add(item)
+    }
   }
 
   private fun listResTypes(): List<String> = AaptResourceType.values().map { it.tagName }
