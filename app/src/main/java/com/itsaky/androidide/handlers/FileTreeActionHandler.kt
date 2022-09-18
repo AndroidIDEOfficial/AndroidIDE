@@ -167,7 +167,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun openWithExternalApp(context: Context, file: File) {
-    shareFile(context, file, "*/*")
+    com.itsaky.androidide.utils.shareFile(context, file, "*/*")
   }
 
   private fun createNewFile(context: Context, file: File) {
