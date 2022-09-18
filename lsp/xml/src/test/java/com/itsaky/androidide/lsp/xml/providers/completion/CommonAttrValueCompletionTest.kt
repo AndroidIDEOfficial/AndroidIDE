@@ -30,43 +30,39 @@ import org.robolectric.annotation.Config
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class CommonAttrCompletionProviderTest : CompletionHelper by CompletionHelperImpl() {
+class CommonAttrValueCompletionTest : CompletionHelper by CompletionHelperImpl() {
 
   @Before fun setup() = XMLLSPTest.initProjectIfNeeded()
 
   @Test
-  fun `test simple drawable attributes`() {
+  fun `test simple drawable attr value completion`() {
     XMLLSPTest.apply {
-      openFile("../res/drawable/TestDrawableAttrs")
+      openFile("../res/drawable/TestDrawableAttrValue")
       val (incomplete, items) = complete()
       assertThat(incomplete).isFalse()
-      assertThat(items).contains("android:shape")
+      assertThat(items).containsAtLeast("rectangle", "oval", "line", "ring")
     }
   }
 
-  @Test // prefix: 'f' in a <translate> tag
+  @Test // prefix: '' in a <set> tag
   fun `test simple anim attributes`() {
     XMLLSPTest.apply {
-      openFile("../res/anim/TestSimpleAttributes")
+      openFile("../res/anim/TestSimpleAttrValue")
       val (incomplete, items) = complete()
-      assertThat(incomplete).isFalse()
-      assertThat(items).containsAtLeast("android:fromXDelta", "android:fromYDelta")
+      // Only integer values
+      assertThat(items.filter { it.startsWith("@integer/") || it.startsWith("@android:integer/") })
+        .hasSize(items.size)
     }
   }
 
-  @Test // prefix: 'm' in a <arcMotion> tag
+  @Test // prefix: '' in a <arcMotion> tag for android:duration attr
   fun `test simple transition attributes`() {
     XMLLSPTest.apply {
-      openFile("../res/transition/TestSimpleAttributes")
+      openFile("../res/transition/TestSimpleAttrValue")
       val (incomplete, items) = complete()
-      assertThat(incomplete).isFalse()
-      assertThat(items)
-        .containsAtLeast(
-          "android:matchOrder",
-          "android:minimumHorizontalAngle",
-          "android:minimumVerticalAngle",
-          "android:maximumAngle"
-        )
+      // Only integer values
+      assertThat(items.filter { it.startsWith("@integer/") || it.startsWith("@android:integer/") })
+        .hasSize(items.size)
     }
   }
 }
