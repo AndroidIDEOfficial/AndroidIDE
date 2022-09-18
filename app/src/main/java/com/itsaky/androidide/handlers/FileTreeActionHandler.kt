@@ -159,7 +159,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       )
     }
 
-    if (file.isDirectory) {
+    if (file.isFile) {
       fragment.addOption(SheetOption(ID_OPEN_WITH_EXTERNAL_APP, R.drawable.ic_open_with_external_app, string.open_with_external_app, file))
     }
 
