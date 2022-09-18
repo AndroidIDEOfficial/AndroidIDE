@@ -167,8 +167,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun openWithExternalApp(context: Context, file: File) {
-    val intent: Intent = IntentUtils.getInstallAppIntent(file)
-    context.startActivity(intent)
+    shareFile(context, file, "*/*")
   }
 
   private fun createNewFile(context: Context, file: File) {
