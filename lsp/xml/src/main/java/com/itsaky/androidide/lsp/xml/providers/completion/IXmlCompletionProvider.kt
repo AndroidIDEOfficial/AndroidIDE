@@ -31,6 +31,7 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
@@ -142,6 +143,8 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = simpleName
       this.detail = qualifiedName
       this.sortText = label.toString()
+      this.insertText = qualifiedName
+      this.insertTextFormat = PLAIN_TEXT
       this.editHandler = TagEditHandler()
       this.matchLevel = matchLevel
       this.kind = CLASS

@@ -88,6 +88,7 @@ import java.util.concurrent.CompletableFuture;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
+import io.github.rosemoe.sora.text.LineSeparator;
 import io.github.rosemoe.sora.widget.component.Magnifier;
 
 /**
@@ -115,6 +116,7 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.getProps().autoCompletionOnComposing = true;
     this.binding.editor.setDividerWidth(SizeUtils.dp2px(1));
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
+    this.binding.editor.setLineSeparator(LineSeparator.LF);
     this.binding.editor.subscribeEvent(
         ContentChangeEvent.class, ((event, unsubscribe) -> handleContentChange(event)));
 
