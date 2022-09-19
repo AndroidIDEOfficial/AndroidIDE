@@ -15,7 +15,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="action_import_classes">इंपोर्ट क्लास/क्लासेज</string>
     <string name="action_generate_setters_getters">जेनरेट सेटर्स/गेटर्स</string>
     <string name="action_add_throws">एड \'थ्रोज\'</string>
@@ -42,6 +42,8 @@
     <string name="action_goto_definition">परिभाषा पर जाएं</string>
     <string name="action_find_references">संदर्भ खोजें</string>
     <string name="action_generate_toString">जेनरेट toString()</string>
+    <string name="action_remove_unused_imports">अनयूज्ड इंपोर्ट्स हटाएं</string>
+    <string name="action_organize_imports">इंपोर्ट्स व्यवस्थित करें</string>
     <string name="msg_cannot_generate_toString">toString() इंप्लीमेंटेशन जेनरेट करने में असमर्थ</string>
     <string name="msg_toString_overridden">toString() पहले से ही ओवरराइड है</string>
     <string name="action_generate_missing_constructor">मिसिंग कंस्ट्रक्टर जेनरेट करें</string>
