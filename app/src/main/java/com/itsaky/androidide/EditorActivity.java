@@ -188,22 +188,19 @@ public class EditorActivity extends IDEActivity
   private ActivityResultLauncher<Intent> mUIDesignerLauncher;
   private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
-  private GradleBuildService mBuildService;
   private final ServiceConnection mGradleServiceConnection =
       new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-          mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
-          Lookup.DEFAULT.register(BuildService.class, mBuildService);
+          final var buildService = ((GradleBuildService.GradleServiceBinder) service).getService();
           LOG.info("Gradle build service has been started...");
-          mBuildService
+          buildService
               .setEventListener(mBuildEventListener)
               .startToolingServer(() -> initializeProject());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-          mBuildService = null;
           LOG.info("Disconnected from Gradle build service...");
         }
       };
@@ -752,7 +749,7 @@ public class EditorActivity extends IDEActivity
     }
 
     if (canProcessResources) {
-      ProjectManager.INSTANCE.generateSources(mBuildService);
+      ProjectManager.INSTANCE.generateSources();
     }
 
     return result.gradleSaved;
@@ -806,7 +803,8 @@ public class EditorActivity extends IDEActivity
   }
 
   public void notifySyncNeeded() {
-    if (mBuildService != null && !mBuildService.isBuildInProgress()) {
+    final var buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE);
+    if (buildService != null && !buildService.isBuildInProgress()) {
       getSyncBanner()
           .setNegative(android.R.string.cancel, null)
           .setPositive(android.R.string.ok, v -> initializeProject())
@@ -834,8 +832,14 @@ public class EditorActivity extends IDEActivity
 
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(this::preProjectInit);
-
-    final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
+  
+    final var buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE);
+    if (buildService == null) {
+      LOG.error("No build service found. Cannot initialize project.");
+      return;
+    }
+    
+    final var future = buildService.initializeProject(projectDir.getAbsolutePath());
     future.whenCompleteAsync(
         (result, error) -> {
           if (result == null || error != null) {
@@ -879,13 +883,9 @@ public class EditorActivity extends IDEActivity
   public AlertDialog getFindInProjectDialog() {
     return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
   }
-
-  public GradleBuildService getBuildService() {
-    return mBuildService;
-  }
-
+  
   protected void onProjectInitialized() {
-    ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
+    ProjectManager.INSTANCE.setupProject();
     ProjectManager.INSTANCE.notifyProjectUpdate();
 
     //noinspection ConstantConditions
@@ -1019,7 +1019,7 @@ public class EditorActivity extends IDEActivity
     }
     unbindService(mGradleServiceConnection);
     super.onDestroy();
-    Lookup.DEFAULT.unregister(BuildService.class);
+    Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE);
     ApiVersionsRegistry.getInstance().clear();
     ResourceTableRegistry.getInstance().clear();
     WidgetTableRegistry.getInstance().clear();

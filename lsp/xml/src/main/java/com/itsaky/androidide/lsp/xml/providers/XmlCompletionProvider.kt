@@ -61,11 +61,10 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import java.io.IOException
-import java.io.Reader
-import kotlin.io.path.name
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import java.io.Reader
+import kotlin.io.path.name
 
 /**
  * Completion provider for XML files.
@@ -126,9 +125,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   }
 
   private fun toString(contents: CharSequence): String {
-   return getReader(contents).use {
-     it.readText()
-    }
+    return getReader(contents).use { it.readText() }
   }
 
   private fun getReader(contents: CharSequence): Reader =

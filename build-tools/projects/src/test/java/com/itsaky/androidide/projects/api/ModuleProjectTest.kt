@@ -18,7 +18,9 @@
 package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
@@ -38,7 +40,9 @@ class ModuleProjectTest {
   fun test() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
     server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
-    ProjectManager.setupProject(project)
+    
+    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    ProjectManager.setupProject()
 
     verifyProjectManagerAPIs()
 

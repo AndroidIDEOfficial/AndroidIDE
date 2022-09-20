@@ -22,6 +22,7 @@ import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
@@ -48,7 +49,8 @@ object ProjectManager : EventReceiver {
   var rootProject: Project? = null
   var app: AndroidModule? = null
 
-  fun setupProject(project: IProject) {
+  @JvmOverloads
+  fun setupProject(project: IProject = Lookup.DEFAULT.lookup(BuildService.KEY_PROJECT_PROXY)!!) {
     val caching = CachingProject(project)
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
@@ -74,7 +76,8 @@ object ProjectManager : EventReceiver {
     return projectPath
   }
 
-  fun generateSources(builder: BuildService?) {
+  @JvmOverloads
+  fun generateSources(builder: BuildService? = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)) {
     if (builder == null) {
       log.warn("Cannot generate sources. BuildService is null.")
       return
@@ -203,7 +206,7 @@ object ProjectManager : EventReceiver {
   }
 
   private fun generateSourcesIfNecessary(event: FileEvent) {
-    val builder = event[BuildService::class.java] ?: return
+    val builder = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) ?: return
     val file = event.file
     if (!isResource(file)) {
       return

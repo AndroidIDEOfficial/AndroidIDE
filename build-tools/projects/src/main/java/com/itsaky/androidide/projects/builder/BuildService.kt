@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.projects.builder
 
+import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.lookup.Lookup.Key
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
@@ -29,6 +32,18 @@ import java.util.concurrent.CompletableFuture
  * @author Akash Yadav
  */
 interface BuildService {
+
+  companion object {
+
+    /** Key that can be used to retrieve the [BuildService] instance using the [Lookup] API. */
+    @JvmField val KEY_BUILD_SERVICE = Key<BuildService>()
+
+    /**
+     * Key that can be used to retrieve the instance of Tooling API's [IProject] model using the
+     * [Lookup] API.
+     */
+    @JvmField val KEY_PROJECT_PROXY = Key<IProject>()
+  }
 
   /** Whether a build is in progress or not. */
   val isBuildInProgress: Boolean
@@ -66,7 +81,7 @@ interface BuildService {
    */
   fun executeProjectTasks(
     projectPath: String,
-    vararg tasks: String
+    vararg tasks: String,
   ): CompletableFuture<TaskExecutionResult>
 
   /** Cancel any running build. */

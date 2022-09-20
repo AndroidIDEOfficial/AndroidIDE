@@ -62,7 +62,7 @@ class SaveFileAction() : EditorRelatedAction() {
       val result = context.saveAllResult()
 
       if (result.xmlSaved) {
-        ProjectManager.generateSources(context.buildService)
+        ProjectManager.generateSources()
       }
 
       if (result.gradleSaved) {

@@ -565,9 +565,6 @@ class FileTreeActionHandler : BaseEventHandler() {
 
   private fun Event.putData(context: Context): Event {
     put(Context::class.java, context)
-    if (context is EditorActivity) {
-      put(BuildService::class.java, context.buildService)
-    }
     return this
   }
 }
