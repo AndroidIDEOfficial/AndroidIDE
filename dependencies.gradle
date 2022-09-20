@@ -72,7 +72,7 @@ ext {
             apis          : 'xml-apis:xml-apis:2.0.2',
             remark        : 'com.kotcrab.remark:remark:1.2.0',
             resolver      : 'xml-resolver:xml-resolver:1.2',
-            lsp4j         : 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0',
+            lsp4j         : 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.15.0',
             jb_annotations: 'org.jetbrains:annotations:23.0.0'
     ]
     
