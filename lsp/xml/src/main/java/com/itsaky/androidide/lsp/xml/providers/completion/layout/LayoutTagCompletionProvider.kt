@@ -51,6 +51,8 @@ open class LayoutTagCompletionProvider(val provider: ICompletionProvider) :
         prefix.substring(1)
       } else {
         prefix
+      }.let {
+        if (it.contains('.')) it.substringAfterLast('.') else it
       }
 
     return getCompleter(newPrefix).complete(params, pathData, document, type, newPrefix)
