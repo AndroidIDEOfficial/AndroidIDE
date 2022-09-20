@@ -184,7 +184,7 @@
     <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
     <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
     <string name="msg_storage_granted">Разрешение на взаимодействие с памятью получено!</string>
-    <string name="open_with_external_app">Открыть с помощью стороннего приложения</string>
+    <string name="open_with">Открыть с помощью...</string>
 
     <!-- Code Editor -->
     <string name="undo">Отмена действия</string>

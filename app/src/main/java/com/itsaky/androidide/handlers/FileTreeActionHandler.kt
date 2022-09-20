@@ -85,7 +85,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     const val ID_DELETE_FILE = 2
     const val ID_NEW_FILE = 3
     const val ID_NEW_FOLDER = 4
-    const val ID_OPEN_WITH_EXTERNAL_APP = 5
+    const val ID_OPEN_WITH = 5
   }
 
   @Subscribe(threadMode = MAIN)
@@ -139,7 +139,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       ID_DELETE_FILE -> delete(context, file)
       ID_NEW_FILE -> createNewFile(context, file)
       ID_NEW_FOLDER -> createNewFolder(context, file)
-      ID_OPEN_WITH_EXTERNAL_APP -> openWithExternalApp(context, file)
+      ID_OPEN_WITH -> openWith(context, file)
     }
   }
 
@@ -161,13 +161,13 @@ class FileTreeActionHandler : BaseEventHandler() {
     }
 
     if (file.isFile) {
-      fragment.addOption(SheetOption(ID_OPEN_WITH_EXTERNAL_APP, R.drawable.ic_open_with_external_app, string.open_with_external_app, file))
+      fragment.addOption(SheetOption(ID_OPEN_WITH, R.drawable.ic_open_with, string.open_with, file))
     }
 
     return fragment
   }
 
-  private fun openWithExternalApp(context: Context, file: File) {
+  private fun openWith(context: Context, file: File) {
     shareFile(context, file, "*/*")
   }
 
