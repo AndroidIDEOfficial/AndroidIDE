@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide
 
+import org.gradle.api.JavaVersion
+
 /**
  * Version constants for the IDE.
  *
@@ -51,6 +53,9 @@ object Versions {
     }
     version
   }
+
+  /** The source and target Java compatibility. */
+  val javaVersion = JavaVersion.VERSION_11
 
   /** The release version name. */
   const val releaseVersionName = "2.1.2-beta"

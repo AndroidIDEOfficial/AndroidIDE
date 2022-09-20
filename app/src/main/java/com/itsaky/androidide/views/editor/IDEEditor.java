@@ -16,7 +16,7 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.R.*;
+import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
 
 import android.app.Dialog;
@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
@@ -69,7 +68,7 @@ import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
-public class IDEEditor extends CodeEditor {
+public class IDEEditor extends CodeEditor implements com.itsaky.androidide.editor.IEditor {
 
   public static final String KEY_FILE = "editor_file";
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
@@ -77,6 +76,7 @@ public class IDEEditor extends CodeEditor {
   private IDEEditorSearcher searcher;
   private int fileVersion;
   private File file;
+  private boolean isModified;
   private ILanguageServer languageServer;
   private SignatureHelpWindow signatureHelpWindow;
   private DiagnosticWindow diagnosticWindow;
@@ -97,8 +97,9 @@ public class IDEEditor extends CodeEditor {
   public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
 
-    actionsMenu = new EditorActionsMenu(this);
-    actionsMenu.init();
+    this.isModified = false;
+    this.actionsMenu = new EditorActionsMenu(this);
+    this.actionsMenu.init();
 
     final var window = new EditorCompletionWindow(this);
     window.setAdapter(new CompletionListAdapter());
@@ -140,6 +141,7 @@ public class IDEEditor extends CodeEditor {
    *
    * @return The file instance.
    */
+  @Override
   public File getFile() {
     return file;
   }
@@ -173,50 +175,16 @@ public class IDEEditor extends CodeEditor {
     EventBus.getDefault().post(openEvent);
   }
 
-  /**
-   * Notify the language server that the content of this file has been changed.
-   *
-   * @param event The content change event.
-   */
-  private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (getFile() == null || languageServer == null) {
-      return;
-    }
-
-    CompletableFuture.runAsync(
-        () -> {
-          dispatchDocumentChangeEvent(event);
-          checkForSignatureHelp(event);
-        });
-  }
-
-  /**
-   * Checks if the content change event should trigger signature help. Signature help trigger
-   * characters are :
-   *
-   * <ul>
-   *   <li><code>'('</code> (parentheses)
-   *   <li><code>','</code> (comma)
-   * </ul>
-   *
-   * @param event The content change event.
-   */
-  private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
-    if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-        || event.getChangedText().length() != 1) {
-      return;
-    }
-
-    final var ch = event.getChangedText().charAt(0);
-    if (ch == '(' || ch == ',') {
-      signatureHelp();
-    }
+  @Override
+  public boolean isModified() {
+    return isModified;
   }
 
   /**
    * If any language server is set, requests signature help at the cursor's position. On a valid
    * response, shows the signature help in a popup window.
    */
+  @Override
   public void signatureHelp() {
     if (languageServer != null && getFile() != null) {
       final CompletableFuture<SignatureHelp> future =
@@ -248,6 +216,7 @@ public class IDEEditor extends CodeEditor {
    *
    * @param help The signature help data to show.
    */
+  @Override
   public void showSignatureHelp(SignatureHelp help) {
     getSignatureHelpWindow().setupAndDisplay(help);
   }
@@ -260,68 +229,165 @@ public class IDEEditor extends CodeEditor {
     return signatureHelpWindow;
   }
 
-  protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
-    if (getFile() == null) {
-      return;
-    }
-
-    final var file = getFile().toPath();
-    var type = ChangeType.INSERT;
-    if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
-      type = ChangeType.DELETE;
-    } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      type = ChangeType.NEW_TEXT;
-    }
-
-    var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
-    if (type == ChangeType.DELETE) {
-      changeDelta = -changeDelta;
-    }
-
-    final var start = event.getChangeStart();
-    final var end = event.getChangeEnd();
-    final var changeRange =
-        new Range(
-            new Position(start.line, start.column, start.index),
-            new Position(end.line, end.column, end.index));
-
-    final var changeEvent =
-        new DocumentChangeEvent(
-            file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
-    EventBus.getDefault().post(changeEvent);
-  }
-
-  public static int createInputFlags() {
-    var flags =
-        EditorInfo.TYPE_CLASS_TEXT
-            | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-            | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
-    if (getVisiblePasswordFlag()) {
-      flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
-    }
-
-    return flags;
-  }
-
-  public void analyze() {
-    if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
-      CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
-          .whenComplete(
-              (diagnostics, throwable) -> {
-                if (languageClient != null) {
-                  languageClient.publishDiagnostics(diagnostics);
-                }
-              });
-    }
-  }
-
   /**
    * Set the selection of this editor to the given position.
    *
    * @param position The position to select.
    */
+  @Override
   public void setSelection(@NonNull Position position) {
     setSelection(position.getLine(), position.getColumn());
+  }
+
+  /**
+   * Set selection to the given range.
+   *
+   * @param range The range to select.
+   */
+  @Override
+  public void setSelection(@NonNull Range range) {
+    if (isValidRange(range)) {
+      setSelectionRegion(
+          range.getStart().getLine(),
+          range.getStart().getColumn(),
+          range.getEnd().getLine(),
+          range.getEnd().getColumn());
+    }
+  }
+
+  /**
+   * Get the cursor's selection range in the form of {@link Range}.
+   *
+   * @return The {@link Range} of the cursor.
+   */
+  @Override
+  public Range getCursorLSPRange() {
+    final var cursor = getCursor();
+    final var start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
+    final var end = new Position(cursor.getRightLine(), cursor.getRightColumn());
+    return new Range(start, end);
+  }
+
+  /**
+   * Get the cursor's position in the form of {@link Position}.
+   *
+   * @return The {@link Position} of the cursor.
+   */
+  @Override
+  @SuppressWarnings("unused")
+  public Position getCursorLSPPosition() {
+    return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+  }
+
+  /**
+   * Validates the range if it is invalid and returns a valid range.
+   *
+   * @param range Th range to validate.
+   * @return A new, validated range.
+   */
+  @Override
+  public Range validateRange(@NonNull final Range range) {
+    final var start = range.getStart();
+    final var end = range.getEnd();
+
+    if (start.getLine() < 0) {
+      start.setLine(0);
+    } else if (start.getLine() >= getText().getLineCount()) {
+      start.setLine(getText().getLineCount() - 1);
+    }
+
+    if (end.getLine() < 0) {
+      end.setLine(0);
+    } else if (end.getLine() >= getText().getLineCount()) {
+      end.setLine(getText().getLineCount() - 1);
+    }
+
+    if (end.getLine() < start.getLine()) {
+      var l = end.getLine();
+      var l2 = start.getLine();
+      start.setLine(l);
+      end.setLine(l2);
+    }
+
+    if (start.getColumn() < 0) {
+      start.setColumn(0);
+    } else if (start.getColumn() >= getText().getColumnCount(start.getLine())) {
+      start.setColumn(getText().getColumnCount(start.getLine()) - 1);
+    }
+
+    if (end.getColumn() < 0) {
+      end.setColumn(0);
+    } else if (end.getColumn() >= getText().getColumnCount(end.getLine())) {
+      end.setColumn(getText().getColumnCount(end.getLine()) - 1);
+    }
+
+    if (end.getColumn() < start.getColumn()) {
+      final var c = start.getColumn();
+      final var c2 = end.getColumn();
+      start.setColumn(c2);
+      end.setColumn(c);
+    }
+
+    return new Range(start, end);
+  }
+
+  /**
+   * Checks if the given range is valid for this editor's text.
+   *
+   * @param range The range to check.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  @Override
+  public boolean isValidRange(final Range range) {
+    if (range == null) {
+      return false;
+    }
+
+    final var start = range.getStart();
+    final var end = range.getEnd();
+
+    return isValidPosition(start)
+        && isValidPosition(end)
+        && start.compareTo(end) < 0; // make sure start position is before end position
+  }
+
+  /**
+   * Checks if the given position is valid for this editor's text.
+   *
+   * @param position The position to check.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  @Override
+  public boolean isValidPosition(final Position position) {
+    if (position == null) {
+      return false;
+    }
+
+    return isValidLine(position.getLine())
+        && isValidColumn(position.getLine(), position.getColumn());
+  }
+
+  /**
+   * Checks if the given line is valid for this editor's text.
+   *
+   * @param line The line to check.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  @Override
+  public boolean isValidLine(int line) {
+    return line >= 0 && line < getText().getLineCount();
+  }
+
+  /**
+   * Checks if the given column is valid for this editor's text.
+   *
+   * @param line The line of the column to check.
+   * @param column The column to check.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  @Override
+  public boolean isValidColumn(int line, int column) {
+    return column >= 0 && column < getText().getColumnCount(line);
   }
 
   /**
@@ -331,6 +397,7 @@ public class IDEEditor extends CodeEditor {
    * @param server The server to set. Provide <code>null</code> to disable all the language server
    *     features.
    */
+  @Override
   public void setLanguageServer(ILanguageServer server) {
     this.languageServer = server;
 
@@ -345,6 +412,7 @@ public class IDEEditor extends CodeEditor {
    * @param text The text to append.
    * @return The line at which the text was appended.
    */
+  @Override
   public int append(CharSequence text) {
     final var content = getText();
     if (getLineCount() <= 0) {
@@ -360,6 +428,7 @@ public class IDEEditor extends CodeEditor {
   }
 
   /** Set the selection of the editor's cursor to the last line of the it's content. */
+  @Override
   public void goToEnd() {
     final var line = getText().getLineCount() - 1;
     setSelection(line, 0);
@@ -372,6 +441,7 @@ public class IDEEditor extends CodeEditor {
    * <p>If the server returns a valid response, and the file specified in the response is same the
    * file in this editor, the range specified in the response will be selected.
    */
+  @Override
   @SuppressWarnings({"deprecation", "unused"})
   public void findDefinition() {
     if (getFile() == null) {
@@ -453,76 +523,6 @@ public class IDEEditor extends CodeEditor {
   }
 
   /**
-   * Set selection to the given range.
-   *
-   * @param range The range to select.
-   */
-  public void setSelection(@NonNull Range range) {
-    if (isValidRange(range)) {
-      setSelectionRegion(
-          range.getStart().getLine(),
-          range.getStart().getColumn(),
-          range.getEnd().getLine(),
-          range.getEnd().getColumn());
-    }
-  }
-
-  /**
-   * Checks if the given range is valid for this editor's text.
-   *
-   * @param range The range to check.
-   * @return <code>true</code> if valid, <code>false</code> otherwise.
-   */
-  public boolean isValidRange(final Range range) {
-    if (range == null) {
-      return false;
-    }
-
-    final var start = range.getStart();
-    final var end = range.getEnd();
-
-    return isValidPosition(start)
-        && isValidPosition(end)
-        && start.compareTo(end) < 0; // make sure start position is before end position
-  }
-
-  /**
-   * Checks if the given position is valid for this editor's text.
-   *
-   * @param position The position to check.
-   * @return <code>true</code> if valid, <code>false</code> otherwise.
-   */
-  public boolean isValidPosition(final Position position) {
-    if (position == null) {
-      return false;
-    }
-
-    return isValidLine(position.getLine())
-        && isValidColumn(position.getLine(), position.getColumn());
-  }
-
-  /**
-   * Checks if the given line is valid for this editor's text.
-   *
-   * @param line The line to check.
-   * @return <code>true</code> if valid, <code>false</code> otherwise.
-   */
-  public boolean isValidLine(int line) {
-    return line >= 0 && line < getText().getLineCount();
-  }
-
-  /**
-   * Checks if the given column is valid for this editor's text.
-   *
-   * @param line The line of the column to check.
-   * @param column The column to check.
-   * @return <code>true</code> if valid, <code>false</code> otherwise.
-   */
-  public boolean isValidColumn(int line, int column) {
-    return column >= 0 && column < getText().getColumnCount(line);
-  }
-
-  /**
    * Dismisses the given dialog on the UI thread.
    *
    * @param dialog The dialog to dismiss.
@@ -539,6 +539,7 @@ public class IDEEditor extends CodeEditor {
    * <p>If the server returns a valid response, that response is forwarded to the {@link
    * IDELanguageClientImpl}.
    */
+  @Override
   @SuppressWarnings("unused")
   public void findReferences() {
     if (getFile() == null) {
@@ -619,20 +620,43 @@ public class IDEEditor extends CodeEditor {
         });
   }
 
-  /** Notify the language server that the file in this editor is about to be closed. */
-  public void close() {
-    if (getFile() == null) {
-      LOG.info("No language server is available for this file");
+  /**
+   * Requests the language server to provided a semantically larger selection than the current
+   * selection. If a valid response is received, that range will be selected.
+   */
+  @Override
+  public void expandSelection() {
+    if (languageServer == null || getFile() == null) {
+      LOG.error("Cannot expand selection. Language server or file is null");
       return;
     }
 
-    dispatchDocumentCloseEvent();
+    //noinspection deprecation
+    final var pd =
+        ProgressDialog.show(
+            getContext(), null, getContext().getString(string.please_wait), true, false);
+    final CompletableFuture<Range> future =
+        CompletableFuture.supplyAsync(
+            () ->
+                languageServer.expandSelection(
+                    new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
 
-    actionsMenu.unsubscribeEvents();
-    ensureWindowsDismissed();
+    future.whenComplete(
+        ((range, throwable) -> {
+          pd.dismiss();
+
+          if (throwable != null) {
+            LOG.error("Error computing expanded selection range", throwable);
+            return;
+          }
+
+          //noinspection ConstantConditions
+          ThreadUtils.runOnUiThread(() -> setSelection(range));
+        }));
   }
 
   /** Ensures that all the windows are dismissed. */
+  @Override
   public void ensureWindowsDismissed() {
     if (getDiagnosticWindow().isShowing()) {
       getDiagnosticWindow().dismiss();
@@ -647,6 +671,121 @@ public class IDEEditor extends CodeEditor {
         actionsMenu.dismiss();
       }
     }
+  }
+
+  /**
+   * Notify the language server that the content of this file has been changed.
+   *
+   * @param event The content change event.
+   */
+  private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
+    if (getFile() == null || languageServer == null) {
+      return;
+    }
+
+    if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+      isModified = true;
+    }
+    CompletableFuture.runAsync(
+        () -> {
+          dispatchDocumentChangeEvent(event);
+          checkForSignatureHelp(event);
+        });
+  }
+
+  /**
+   * Checks if the content change event should trigger signature help. Signature help trigger
+   * characters are :
+   *
+   * <ul>
+   *   <li><code>'('</code> (parentheses)
+   *   <li><code>','</code> (comma)
+   * </ul>
+   *
+   * @param event The content change event.
+   */
+  private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
+    if (event.getAction() != ContentChangeEvent.ACTION_INSERT
+        || event.getChangedText().length() != 1) {
+      return;
+    }
+
+    final var ch = event.getChangedText().charAt(0);
+    if (ch == '(' || ch == ',') {
+      signatureHelp();
+    }
+  }
+
+  protected void dispatchDocumentChangeEvent(final ContentChangeEvent event) {
+    if (getFile() == null) {
+      return;
+    }
+
+    final var file = getFile().toPath();
+    var type = ChangeType.INSERT;
+    if (event.getAction() == ContentChangeEvent.ACTION_DELETE) {
+      type = ChangeType.DELETE;
+    } else if (event.getAction() == ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+      type = ChangeType.NEW_TEXT;
+    }
+
+    var changeDelta = type == ChangeType.NEW_TEXT ? 0 : event.getChangedText().length();
+    if (type == ChangeType.DELETE) {
+      changeDelta = -changeDelta;
+    }
+
+    final var start = event.getChangeStart();
+    final var end = event.getChangeEnd();
+    final var changeRange =
+        new Range(
+            new Position(start.line, start.column, start.index),
+            new Position(end.line, end.column, end.index));
+
+    final var changeEvent =
+        new DocumentChangeEvent(
+            file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
+    EventBus.getDefault().post(changeEvent);
+  }
+
+  public static int createInputFlags() {
+    var flags =
+        EditorInfo.TYPE_CLASS_TEXT
+            | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+            | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    if (getVisiblePasswordFlag()) {
+      flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+    }
+
+    return flags;
+  }
+
+  public void markUnmodified() {
+    this.isModified = false;
+  }
+
+  public void analyze() {
+    if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
+      CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
+          .whenComplete(
+              (diagnostics, throwable) -> {
+                if (languageClient != null) {
+                  languageClient.publishDiagnostics(diagnostics);
+                }
+              });
+    }
+  }
+
+  /** Notify the language server that the file in this editor is about to be closed. */
+  public void notifyClose() {
+    if (getFile() == null) {
+      LOG.info("No language server is available for this file");
+      return;
+    }
+
+    dispatchDocumentCloseEvent();
+
+    actionsMenu.unsubscribeEvents();
+    ensureWindowsDismissed();
   }
 
   protected void dispatchDocumentCloseEvent() {
@@ -697,113 +836,6 @@ public class IDEEditor extends CodeEditor {
     }
   }
 
-  /**
-   * Requests the language server to provided a semantically larger selection than the current
-   * selection. If a valid response is received, that range will be selected.
-   */
-  public void expandSelection() {
-    if (languageServer == null || getFile() == null) {
-      LOG.error("Cannot expand selection. Language server or file is null");
-      return;
-    }
-
-    //noinspection deprecation
-    final var pd =
-        ProgressDialog.show(
-            getContext(), null, getContext().getString(string.please_wait), true, false);
-    final CompletableFuture<Range> future =
-        CompletableFuture.supplyAsync(
-            () ->
-                languageServer.expandSelection(
-                    new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
-
-    future.whenComplete(
-        ((range, throwable) -> {
-          pd.dismiss();
-
-          if (throwable != null) {
-            LOG.error("Error computing expanded selection range", throwable);
-            return;
-          }
-
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(() -> setSelection(range));
-        }));
-  }
-
-  /**
-   * Get the cursor's selection range in the form of {@link Range}.
-   *
-   * @return The {@link Range} of the cursor.
-   */
-  public Range getCursorLSPRange() {
-    final var cursor = getCursor();
-    final var start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
-    final var end = new Position(cursor.getRightLine(), cursor.getRightColumn());
-    return new Range(start, end);
-  }
-
-  /**
-   * Get the cursor's position in the form of {@link Position}.
-   *
-   * @return The {@link Position} of the cursor.
-   */
-  @SuppressWarnings("unused")
-  public Position getCursorLSPPosition() {
-    return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
-  }
-
-  /**
-   * Validates the range if it is invalid and returns a valid range.
-   *
-   * @param range Th range to validate.
-   * @return A new, validated range.
-   */
-  public Range validateRange(@NonNull final Range range) {
-    final var start = range.getStart();
-    final var end = range.getEnd();
-
-    if (start.getLine() < 0) {
-      start.setLine(0);
-    } else if (start.getLine() >= getText().getLineCount()) {
-      start.setLine(getText().getLineCount() - 1);
-    }
-
-    if (end.getLine() < 0) {
-      end.setLine(0);
-    } else if (end.getLine() >= getText().getLineCount()) {
-      end.setLine(getText().getLineCount() - 1);
-    }
-
-    if (end.getLine() < start.getLine()) {
-      var l = end.getLine();
-      var l2 = start.getLine();
-      start.setLine(l);
-      end.setLine(l2);
-    }
-
-    if (start.getColumn() < 0) {
-      start.setColumn(0);
-    } else if (start.getColumn() >= getText().getColumnCount(start.getLine())) {
-      start.setColumn(getText().getColumnCount(start.getLine()) - 1);
-    }
-
-    if (end.getColumn() < 0) {
-      end.setColumn(0);
-    } else if (end.getColumn() >= getText().getColumnCount(end.getLine())) {
-      end.setColumn(getText().getColumnCount(end.getLine()) - 1);
-    }
-
-    if (end.getColumn() < start.getColumn()) {
-      final var c = start.getColumn();
-      final var c2 = end.getColumn();
-      start.setColumn(c2);
-      end.setColumn(c);
-    }
-
-    return new Range(start, end);
-  }
-
   @Override
   public IDEEditorSearcher getSearcher() {
     return searcher;
@@ -828,6 +860,7 @@ public class IDEEditor extends CodeEditor {
       return;
     }
 
+    isModified = false;
     final var saveEvent = new DocumentSaveEvent(getFile().toPath());
     EventBus.getDefault().post(saveEvent);
   }

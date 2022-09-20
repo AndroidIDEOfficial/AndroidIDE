@@ -58,7 +58,6 @@ import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
-import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
@@ -72,20 +71,15 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.text.LineSeparator;
@@ -102,13 +96,11 @@ public class CodeEditorView extends FrameLayout {
   private static final ILogger LOG = ILogger.newInstance("CodeEditorView");
   private final File file;
   private final LayoutCodeEditorBinding binding;
-  private boolean isModified;
 
   public CodeEditorView(
       @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
-    this.isModified = false;
 
     this.binding = LayoutCodeEditorBinding.inflate(LayoutInflater.from(context));
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
@@ -117,8 +109,6 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setDividerWidth(SizeUtils.dp2px(1));
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.setLineSeparator(LineSeparator.LF);
-    this.binding.editor.subscribeEvent(
-        ContentChangeEvent.class, ((event, unsubscribe) -> handleContentChange(event)));
 
     this.binding.diagnosticTextContainer.setVisibility(GONE);
 
@@ -160,73 +150,6 @@ public class CodeEditorView extends FrameLayout {
   @Nullable
   public File getFile() {
     return file;
-  }
-
-  private void handleContentChange(@NonNull ContentChangeEvent event) {
-    isModified = true;
-
-    if (event.getAction() == ContentChangeEvent.ACTION_INSERT) {
-      final var editor = event.getEditor();
-      final var content = event.getChangedText();
-      final var endLine = event.getChangeEnd().line;
-      final var endColumn = event.getChangeEnd().column;
-      if (file.getName().endsWith(".xml")) {
-        boolean isOpen = false;
-        try {
-          isOpen = editor.getText().charAt(editor.getCursor().getLeft() - 2) == '<';
-        } catch (Throwable th) {
-          LOG.error(th);
-        }
-
-        if (isOpen && "/".contentEquals(content)) {
-          closeCurrentTag(editor.getText().toString(), endLine, endColumn);
-        }
-      }
-    }
-  }
-
-  private void closeCurrentTag(String text, int line, int col) {
-    try {
-      XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(text)));
-      Token token;
-      boolean wasSlash = false, wasOpen = false;
-      ArrayList<String> currentNames = new ArrayList<>();
-      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-        final int type = token.getType();
-        if (type == XMLLexer.OPEN) {
-          wasOpen = true;
-        } else if (type == XMLLexer.Name) {
-          if (wasOpen && wasSlash && currentNames.size() > 0) {
-            currentNames.remove(0);
-          } else if (wasOpen) {
-            currentNames.add(0, token.getText());
-            wasOpen = false;
-          }
-        } else if (type == XMLLexer.OPEN_SLASH) {
-          int l = token.getLine() - 1;
-          int c = token.getCharPositionInLine();
-          if (l == line && c == col) {
-            break;
-          } else if (currentNames.size() > 0) {
-            currentNames.remove(0);
-          }
-        } else if (type == XMLLexer.SLASH_CLOSE || type == XMLLexer.SPECIAL_CLOSE) {
-          if (currentNames.size() > 0 && token.getText().trim().endsWith("/>")) {
-            currentNames.remove(0);
-          }
-        } else if (type == XMLLexer.SLASH) {
-          wasSlash = true;
-        } else {
-          wasOpen = wasSlash = false;
-        }
-      }
-
-      if (currentNames.size() > 0) {
-        binding.editor.getText().insert(line, col + 2, currentNames.get(0));
-      }
-    } catch (Throwable th) {
-      LOG.error("Unable to close current tag", th);
-    }
   }
 
   public IDEEditor getEditor() {
@@ -363,7 +286,7 @@ public class CodeEditorView extends FrameLayout {
    * <p>Marks this editor as unmodified. Used only when the activity is being destroyed.
    */
   public void markUnmodified() {
-    isModified = false;
+    binding.editor.markUnmodified();
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN)
@@ -421,7 +344,6 @@ public class CodeEditorView extends FrameLayout {
     try {
       FileUtil.writeFile(file, text);
       notifySaved();
-      isModified = false;
       return true;
     } catch (IOException io) {
       LOG.error("Failed to save file", file, io);
@@ -430,7 +352,7 @@ public class CodeEditorView extends FrameLayout {
   }
 
   public boolean isModified() {
-    return isModified;
+    return binding.editor.isModified();
   }
 
   private void notifySaved() {
@@ -473,7 +395,6 @@ public class CodeEditorView extends FrameLayout {
 
   /** Mark this files as saved. Even if it not saved. */
   public void markAsSaved() {
-    isModified = false;
     notifySaved();
   }
 

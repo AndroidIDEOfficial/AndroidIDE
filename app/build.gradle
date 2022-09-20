@@ -133,6 +133,7 @@ dependencies {
     // Local projects here
     implementation project (':build-tools:aaptcompiler')
     implementation project (':build-tools:xml-utils')
+    implementation project (':editor')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
     implementation project (':build-tools:projects')

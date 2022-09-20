@@ -617,7 +617,7 @@ public class EditorActivity extends IDEActivity
       }
 
       if (editor != null && editor.getEditor() != null) {
-        editor.getEditor().close();
+        editor.getEditor().notifyClose();
         editor.getEditor().release();
       } else {
         LOG.error("Cannot save file before close. Editor instance is null");
@@ -657,7 +657,7 @@ public class EditorActivity extends IDEActivity
       for (int i = 0; i < count; i++) {
         final var editor = getEditorAtIndex(i);
         if (editor != null && editor.getEditor() != null) {
-          editor.getEditor().close();
+          editor.getEditor().notifyClose();
         } else {
           LOG.error("Unable to close file at index:", i);
         }
