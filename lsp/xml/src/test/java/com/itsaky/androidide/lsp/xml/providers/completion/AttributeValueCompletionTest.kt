@@ -142,7 +142,6 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
   }
 
   @Test // prefix: '@com.itsaky.test.app:string/ap'       // for attribute 'android:text'
-  // TestAttrValueWithQualifiedRefWithIncompleteType
   fun `test value completion with qualified reference prefix (test with custom package not android)`() {
     XMLLSPTest.apply {
       openFile("../res/layout/TestAttrValueWithQualifiedRefPrefix2")

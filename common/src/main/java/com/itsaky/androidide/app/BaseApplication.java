@@ -49,7 +49,7 @@ public abstract class BaseApplication extends MultiDexApplication {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
-  public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
+  public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
   public static final String WEBSITE = "https://androidide.com";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
