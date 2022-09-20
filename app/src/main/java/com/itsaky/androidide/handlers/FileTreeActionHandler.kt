@@ -25,6 +25,7 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.IntentUtils
+import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
@@ -84,6 +85,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     const val ID_DELETE_FILE = 2
     const val ID_NEW_FILE = 3
     const val ID_NEW_FOLDER = 4
+    const val ID_OPEN_WITH = 5
   }
 
   @Subscribe(threadMode = MAIN)
@@ -137,6 +139,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       ID_DELETE_FILE -> delete(context, file)
       ID_NEW_FILE -> createNewFile(context, file)
       ID_NEW_FOLDER -> createNewFolder(context, file)
+      ID_OPEN_WITH -> openWith(context, file)
     }
   }
 
@@ -157,7 +160,15 @@ class FileTreeActionHandler : BaseEventHandler() {
       )
     }
 
+    if (file.isFile) {
+      fragment.addOption(SheetOption(ID_OPEN_WITH, R.drawable.ic_open_with, string.open_with, file))
+    }
+
     return fragment
+  }
+
+  private fun openWith(context: Context, file: File) {
+    shareFile(context, file, "*/*")
   }
 
   private fun createNewFile(context: Context, file: File) {

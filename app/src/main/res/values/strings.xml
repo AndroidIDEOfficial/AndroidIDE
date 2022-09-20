@@ -183,6 +183,7 @@
   <string name="msg_failed_list_files">Failed to list project files!</string>
   <string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
   <string name="msg_storage_granted">Storage permissions granted!</string>
+  <string name="open_with">Open with...</string>
 
   <!-- Code Editor -->
   <string name="undo">Undo</string>
