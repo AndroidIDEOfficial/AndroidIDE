@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="./images/header.png" style="width: 70%;"/><br><br>
+  <img src="./images/header_dark.png#gh-dark-mode-only" style="width: 70%;"/><br><br>
+  <img src="./images/header_light.png#gh-light-mode-only" style="width: 70%;"/><br><br>
   <img src="./images/banner.png"/>
 </p><br>
 
