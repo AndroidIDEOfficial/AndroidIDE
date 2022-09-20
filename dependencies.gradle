@@ -61,7 +61,7 @@ ext {
     ]
     
     aapt = [
-            common        : 'com.android.tools:common:30.2.2',
+            common        : 'com.android.tools:common:30.3.0',
             annotations   : 'com.android.tools:annotations:30.2.2',
             jb_annotations: 'org.jetbrains:annotations:13.0',
             proto         : 'com.android.tools.build:aapt2-proto:7.2.2-7984345'
