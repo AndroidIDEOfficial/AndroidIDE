@@ -1019,7 +1019,7 @@ public class EditorActivity extends IDEActivity
     }
     unbindService(mGradleServiceConnection);
     super.onDestroy();
-    Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE);
+    Lookup.DEFAULT.unregisterAll();
     ApiVersionsRegistry.getInstance().clear();
     ResourceTableRegistry.getInstance().clear();
     WidgetTableRegistry.getInstance().clear();

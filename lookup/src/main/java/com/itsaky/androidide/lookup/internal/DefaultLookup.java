@@ -85,6 +85,11 @@ public final class DefaultLookup implements Lookup {
     registerOrUpdate(key, instance, true);
   }
 
+  @Override
+  public void unregisterAll() {
+    services.clear();
+  }
+
   @SuppressWarnings("unchecked")
   private <T> void registerOrUpdate(final Key<T> key, final T instance, boolean update) {
     final T existing = (T) services.put(key, instance);
