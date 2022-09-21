@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.providers;
 
+import static com.itsaky.androidide.lsp.api.HelpersKt.describeSnippet;
 import static com.itsaky.androidide.progress.ProgressManager.abortIfCancelled;
 
 import androidx.annotation.NonNull;
@@ -85,7 +86,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     super.applySettings(settings);
     return this;
   }
-  
+
   @Override
   public boolean canComplete(Path file) {
     return ICompletionProvider.super.canComplete(file) && DocumentUtils.isJavaFile(file);
@@ -124,7 +125,11 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     if (this.cache != null && this.cache.canUseCache(params)) {
       final String prefix = params.requirePrefix();
       final String partial = partialIdentifier(prefix, prefix.length());
-      final CompletionResult result = CompletionResult.filter(this.cache.getResult(), partial);
+      final CompletionResult result =
+          CompletionResult.mapAndFilter(
+              this.cache.getResult(),
+              partial,
+              item -> item.setSnippetDescription(describeSnippet(partial)));
 
       result.markCached();
 

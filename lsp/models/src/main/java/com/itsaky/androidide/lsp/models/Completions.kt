@@ -34,6 +34,7 @@ import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
+import java.util.function.Consumer
 
 const val DEFAULT_MIN_MATCH_RATIO = 59
 
@@ -77,8 +78,10 @@ open class CompletionResult(items: Collection<CompletionItem>) {
     var TRIM_TO_MAX = true
 
     @JvmStatic
-    fun filter(src: CompletionResult, partial: String): CompletionResult {
+    @JvmOverloads
+    fun mapAndFilter(src: CompletionResult, partial: String, map: Consumer<CompletionItem> = Consumer {  }): CompletionResult {
       val newItems = src.items.toMutableList()
+      newItems.forEach(map)
       newItems.removeIf { !it.label.startsWith(partial) }
       return CompletionResult(newItems)
     }
