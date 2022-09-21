@@ -487,6 +487,7 @@ public class EditorActivity extends IDEActivity
   private void onEditorContentChanged(ContentChangeEvent event, Unsubscribe unsubscribe) {
     if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
       mViewModel.setFilesModified(true);
+      invalidateOptionsMenu();
     }
   }
 
@@ -740,7 +741,6 @@ public class EditorActivity extends IDEActivity
     SaveResult result = saveAllResult();
 
     if (notify) {
-      getApp();
       toast(string.all_saved, Toaster.Type.SUCCESS);
     }
 
