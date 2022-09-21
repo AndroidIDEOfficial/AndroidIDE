@@ -76,8 +76,8 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
   public void onBindViewHolder(@NonNull VH holder, int position) {
     if (symbols == null || symbols[position] == null) return;
     final Symbol symbol = symbols[position];
-    holder.binding.symbol.setText(symbol.label);
-    holder.binding.symbol.setOnClickListener(__ -> insertSymbol(symbol.commit, symbol.offset));
+    holder.binding.symbol.setText(symbol.getLabel());
+    holder.binding.symbol.setOnClickListener(__ -> insertSymbol(symbol.getCommit(), symbol.getOffset()));
   }
 
   @Override

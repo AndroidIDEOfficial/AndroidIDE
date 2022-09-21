@@ -28,6 +28,7 @@ import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.PRINTABLE_C
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.TAB_SIZE;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_SOFT_TAB;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getAutoSave;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getCompletionsMatchLower;
@@ -43,6 +44,7 @@ import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getGoogleCo
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getTabSize;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
+import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseSoftTab;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getWordwrap;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.setDrawEmptyLineWs;
@@ -84,6 +86,7 @@ public class EditorPreferences extends BasePreferenceFragment
 
     final var fontSize = new Preference(getContext());
     final var nonPrintable = new Preference(getContext());
+    final var useSoftTab = new SwitchPreference(getContext());
     final var tabSize = new Preference(getContext());
     final var drawHex = new SwitchPreference(getContext());
     final var wordWrap = new SwitchPreference(getContext());
@@ -118,7 +121,12 @@ public class EditorPreferences extends BasePreferenceFragment
     nonPrintable.setKey(PRINTABLE_CHARS);
     nonPrintable.setTitle(R.string.idepref_editor_paintingflags_title);
     nonPrintable.setSummary(R.string.idepref_editor_paintingflags_summary);
-
+  
+    useSoftTab.setIcon(R.drawable.ic_space);
+    useSoftTab.setKey(USE_SOFT_TAB);
+    useSoftTab.setTitle(getString(R.string.idepref_editor_useSoftTabs_title));
+    useSoftTab.setSummary(getString(R.string.idepref_editor_useSoftTabs_summary));
+    
     tabSize.setIcon(R.drawable.ic_tab);
     tabSize.setKey(TAB_SIZE);
     tabSize.setTitle(R.string.title_tab_size);
@@ -162,6 +170,7 @@ public class EditorPreferences extends BasePreferenceFragment
     commonCategory.setTitle(getString(R.string.idepref_editor_category_common));
     commonCategory.addPreference(fontSize);
     commonCategory.addPreference(fontLigatures);
+    commonCategory.addPreference(useSoftTab);
     commonCategory.addPreference(tabSize);
     commonCategory.addPreference(wordWrap);
     commonCategory.addPreference(magnifier);
@@ -180,6 +189,7 @@ public class EditorPreferences extends BasePreferenceFragment
     fontSize.setOnPreferenceClickListener(this);
     fontLigatures.setOnPreferenceChangeListener(this);
     nonPrintable.setOnPreferenceClickListener(this);
+    useSoftTab.setOnPreferenceChangeListener(this);
     tabSize.setOnPreferenceClickListener(this);
     drawHex.setOnPreferenceChangeListener(this);
     autoSave.setOnPreferenceChangeListener(this);
@@ -191,6 +201,7 @@ public class EditorPreferences extends BasePreferenceFragment
     useIcu.setOnPreferenceChangeListener(this);
 
     fontLigatures.setChecked(getFontLigatures());
+    useSoftTab.setChecked(getUseSoftTab());
     drawHex.setChecked(getDrawHex());
     autoSave.setChecked(getAutoSave());
     completionsMatchLower.setChecked(getCompletionsMatchLower());

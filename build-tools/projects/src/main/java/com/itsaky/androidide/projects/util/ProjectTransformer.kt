@@ -29,7 +29,6 @@ import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.IProject.Type.Unknown
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.utils.ILogger
-import java.util.Collections
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -51,8 +50,9 @@ class ProjectTransformer {
         projectDir = project.projectDir.get(),
         buildDir = project.buildDir.get(),
         buildScript = project.buildScript.get(),
-        
-        // As these lists will never change, we could make these thread-safe with CopyOnWriteArrayList
+
+        // As these lists will never change, we could make these thread-safe with
+        // CopyOnWriteArrayList
         tasks = CopyOnWriteArrayList(project.tasks.get() ?: listOf()),
         subModules = CopyOnWriteArrayList(transform(project.listModules().get(), project))
       )

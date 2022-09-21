@@ -354,4 +354,6 @@
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
   <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
+  <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
+  <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
 </resources>
