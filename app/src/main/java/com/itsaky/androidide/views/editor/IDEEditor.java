@@ -763,6 +763,10 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     this.isModified = false;
   }
 
+  public void markModified() {
+    this.isModified = true;
+  }
+
   public void analyze() {
     if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
       CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))

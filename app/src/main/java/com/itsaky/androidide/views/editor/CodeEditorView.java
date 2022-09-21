@@ -289,6 +289,15 @@ public class CodeEditorView extends FrameLayout {
     binding.editor.markUnmodified();
   }
 
+  /**
+   * For internal use only!
+   *
+   * <p>Marks this editor as modified.
+   */
+  public void markModified() {
+    binding.editor.markModified();
+  }
+
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
   public void onPreferenceChanged(PreferenceChangeEvent event) {
