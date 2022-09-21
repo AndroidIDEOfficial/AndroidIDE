@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-    <!-- AndroidIDE -->
-    <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE usa uma construção modificada do JDK que é licenciada sob a GNU General Public License v2.0. O código fonte e a licença do JDK estão disponíveis em :</string>
-    <string name="title_open_source_licenses">Licenças de código aberto</string>
-    <string name="msg_about_licensed_under">Licenciado sob:</string>
-    <string name="about_option_email">E-mail</string>
-    <string name="about_option_website">Website</string>
-    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-    <string name="about_footer">AndroidIDE %1$s para %2$s</string>
-    <string name="about_subtitle">Simplesmente, uma IDE para Android</string>
-    <string name="msg_get_package_failed">Falha ao extrair o nome do pacote!</string>
-    <string name="msg_share_app">AndroidIDE é um ambiente de desenvolvimento integrado para construir aplicativos Android no seu Smartphone Android. Ele suporta :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Autoconclusão avançada de Java\n4. Conclusão automática de XML \n5. Suporte a Kotlin e muito mais.\n\nInstale AndroidIDE em https://androidide.com</string>
-    <string name="msg_need_help">Se você estiver enfrentando problemas durante o uso do AndroidIDE ou com a construção de aplicativos Android, você pode se juntar ao Grupo de Telegramas para pedir ajuda lá.\n\nVocê também pode enviar sugestões em nosso e-mail.</string>
-    <string name="discuss_amp_help">Discutir &amp; ajuda</string>
-    <string name="title_github">GitHub</string>
-    <string name="need_help">Precisa de ajuda?</string>
-    <string name="other">Outro</string>
-    <string name="share_with_friends">Compartilhe com amigos</string>
-    <string name="ide_preferences">Preferências da IDE</string>
-    <string name="discussions_on_telegram">Discussões no Telegram</string>
-    <string name="msg_empty_view">Não tenho nada para lhe mostrar...</string>
-    <string name="btn_terminal">Terminal</string>
-    <string name="reset">Redefinir</string>
-    <string name="app_logs">Logs de aplicativos</string>
-    <string name="ide_logs">Registros da IDE</string>
-    <string name="label_splash_image">Imagem inicial</string>
-    <string name="get_started">Começar</string>
+  <!-- AndroidIDE -->
+  <string name="app_name">AndroidIDE</string>
+  <string name="license_jdk">AndroidIDE usa uma construção modificada do JDK que é licenciada sob a GNU General Public License v2.0. O código fonte e a licença do JDK estão disponíveis em :</string>
+  <string name="title_open_source_licenses">Licenças de código aberto</string>
+  <string name="msg_about_licensed_under">Licenciado sob:</string>
+  <string name="about_option_email">E-mail</string>
+  <string name="about_option_website">Website</string>
+  <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
+  <string name="about_footer">AndroidIDE %1$s para %2$s</string>
+  <string name="about_subtitle">Simplesmente, uma IDE para Android</string>
+  <string name="msg_get_package_failed">Falha ao extrair o nome do pacote!</string>
+  <string name="msg_share_app">AndroidIDE é um ambiente de desenvolvimento integrado para construir aplicativos Android no seu Smartphone. Ele suporta :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Autocomplete avançado de Java\n4. Autocomplete automático de XML \n5. Suporte a Kotlin e muito mais.\n\nInstale AndroidIDE em https://androidide.com</string>
+  <string name="msg_need_help">Se você estiver enfrentando problemas durante o uso do AndroidIDE ou com a construção de aplicativos Android, você pode se juntar ao Grupo do Telegram para pedir ajuda lá.\n\nVocê também pode enviar sugestões em nosso e-mail.</string>
+  <string name="discuss_amp_help">Discutir &amp; ajuda</string>
+  <string name="title_github">GitHub</string>
+  <string name="need_help">Precisa de ajuda?</string>
+  <string name="other">Outro</string>
+  <string name="share_with_friends">Compartilhe com amigos</string>
+  <string name="ide_preferences">Configurações da IDE</string>
+  <string name="discussions_on_telegram">Discussões no Telegram</string>
+  <string name="msg_empty_view">Não tenho nada para lhe mostrar...</string>
+  <string name="btn_terminal">Terminal</string>
+  <string name="reset">Redefinir</string>
+  <string name="app_logs">Logs de aplicativos</string>
+  <string name="ide_logs">Registros da IDE</string>
+  <string name="label_splash_image">Imagem inicial</string>
+  <string name="get_started">Começar</string>
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Incapaz de realizar uma correção rápida</string>
