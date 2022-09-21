@@ -185,45 +185,45 @@
   <string name="msg_storage_granted">Permissões de armazenamento concedidas!</string>
   <string name="open_with">Abrir com...</string>
 
-    <!-- Code Editor -->
-    <string name="undo">Desfazer</string>
-    <string name="redo">Refazer</string>
+  <!-- Code Editor -->
+  <string name="undo">Desfazer</string>
+  <string name="redo">Refazer</string>
  
-    <item name="copy" type="string" tools:override="true">Copiar</item>
-    <item name="text_to_search" type="string">Texto para pesquisar</item>
+  <item name="copy" type="string" tools:override="true">Copiar</item>
+  <item name="text_to_search" type="string">Texto para pesquisar</item>
 
-    <!-- Preferences -->
-    <string name="title_change_text_size">Tamanho da fonte do editor</string>
-    <string name="idepref_about_title">Sobre o AndroidIDE</string>
-    <string name="idepref_build_clearCache_title">Limpar caches do Gradle</string>
-    <string name="idepref_build_clearCache_summary">Limpar o diretório de caches Gradle. Isto excluirá todas as dependências baixadas pela Gradle. Os arquivos requeridos serão baixados novamente na próxima compilação.</string>
-    <string name="idepref_build_customgradlecommands_title">Comandos adicionais do Gradle</string>
-    <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
-    <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
-    <string name="idepref_editor_fontsize_summary">Tamanho da fonte do editor</string>
-    <string name="idepref_editor_paintingflags_title">Bandeiras de pintura não imprimíveis</string>
-    <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres não imprimíveis devem ser desenhados pelo editor</string>
-    <string name="idepref_editor_drawhexcolors_title">Desenhe sequências de cores hexadecimais</string>
-    <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
-    <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
-    <string name="idepref_editor_word_wrap_summary">Use o wordwrap do editor</string>
-    <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
-    <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
-    <string name="idepref_editor_title">Editor</string>
-    <string name="idepref_build_title">Construir &amp; Rodar</string>
-    <string name="title_open_projects">Abrir último projeto</string>
-    <string name="msg_open_projects">Se verificado, a IDE se lembrará do último projeto aberto e será reaberto na próxima partida.</string>
-    <string name="title_confirm_project_open">Confirme a abertura do projeto</string>
-    <string name="msg_confirm_project_open">Pergunte antes de abrir o último projeto aberto.</string>
-    <string name="title_default_shell">Usar o sistema shell em terminal</string>
-    <string name="msg_default_shell">Se marcado, \'/system/bin/sh\' será usado no terminal.</string>
-    <string name="title_general">Em geral</string>
-    <string name="title_tab_size">Tamanho do TAB</string>
-    <string name="msg_tab_size">Especificar o número de espaços para TAB</string>
-    <string name="msg_preferences">Preferências</string>
-    <string name="pref_changelog">Registro de alterações</string>
-    <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
-    <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle. Se você excluí-lo, a próxima compilação pode demorar um pouco mais do que o normal, pois o Gradle fará o download dos arquivos necessários novamente.\nIMPORTANTE: Isso também excluirá o AAPT2. Você precisará reinstalá-lo, caso contrário, ocorrerá uma falha de compilação.\n\nTem certeza de que deseja excluir os caches?</string>
+  <!-- Preferences -->
+  <string name="title_change_text_size">Tamanho da fonte do editor</string>
+  <string name="idepref_about_title">Sobre o AndroidIDE</string>
+  <string name="idepref_build_clearCache_title">Limpar caches do Gradle</string>
+  <string name="idepref_build_clearCache_summary">Limpar o diretório de caches Gradle. Isto excluirá todas as dependências baixadas pela Gradle. Os arquivos requeridos serão baixados novamente na próxima compilação.</string>
+  <string name="idepref_build_customgradlecommands_title">Comandos adicionais do Gradle</string>
+  <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
+  <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
+  <string name="idepref_editor_fontsize_summary">Tamanho da fonte do editor</string>
+  <string name="idepref_editor_paintingflags_title">Bandeiras de pintura não imprimíveis</string>
+  <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres não imprimíveis devem ser desenhados pelo editor</string>
+  <string name="idepref_editor_drawhexcolors_title">Desenhe sequências de cores hexadecimais</string>
+  <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
+  <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
+  <string name="idepref_editor_word_wrap_summary">Use quebra de linha no editor</string>
+  <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
+  <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
+  <string name="idepref_editor_title">Editor</string>
+  <string name="idepref_build_title">Construir &amp; Compilar</string>
+  <string name="title_open_projects">Abrir último projeto</string>
+  <string name="msg_open_projects">Se habilitado, a IDE se lembrará do último projeto aberto e será reaberto na próxima vez.</string>
+  <string name="title_confirm_project_open">Confirme a abertura do projeto</string>
+  <string name="msg_confirm_project_open">Pergunte antes de abrir o último projeto aberto.</string>
+  <string name="title_default_shell">Usar o sistema shell no terminal</string>
+  <string name="msg_default_shell">Se habilitado, \'/system/bin/sh\' será usado no terminal.</string>
+  <string name="title_general">Em geral</string>
+  <string name="title_tab_size">Tamanho do TAB</string>
+  <string name="msg_tab_size">Especificar o número de espaços para TAB</string>
+  <string name="msg_preferences">Configurações</string>
+  <string name="pref_changelog">Registro de alterações</string>
+  <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
+  <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle. Se você excluí-lo, a próxima compilação pode demorar um pouco mais do que o normal, pois o Gradle fará o download dos arquivos necessários novamente.\nIMPORTANTE: Isso também excluirá o AAPT2. Você precisará reinstalá-lo, caso contrário, ocorrerá uma falha de compilação.\n\nTem certeza de que deseja excluir os caches?</string>
 
     <!-- Error Messages used while Logging -->
     <string name="err_init_sdkinfo">Não foi possível inicializar as informações do SDK</string>
