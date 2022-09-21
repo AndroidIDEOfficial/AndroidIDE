@@ -29,17 +29,17 @@
   <string name="label_splash_image">Imagem inicial</string>
   <string name="get_started">Começar</string>
 
-    <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_cannot_perform_fix">Incapaz de realizar uma correção rápida</string>
-    <string name="msg_performing_actions">Executando ação de código…</string>
-    <string name="msg_api_info_since">Desde a API %d</string>
-    <string name="msg_api_info_removed">Removido na API %d</string>
-    <string name="msg_api_info_deprecated">Obsoleto na API %d</string>
-    <string name="msg_finding_references">Encontrando referências…</string>
-    <string name="msg_finding_definition">Encontrando definição…</string>
-    <string name="msg_no_definition">Definição não encontrada</string>
-    <string name="msg_no_references">Nenhuma referência encontrada</string>
-    <string name="view_diags">Diagnóstico</string>
+  <!-- LSP, Diagnostics & Completions -->
+  <string name="msg_cannot_perform_fix">Incapaz de realizar uma correção rápida</string>
+  <string name="msg_performing_actions">Executando ação de código…</string>
+  <string name="msg_api_info_since">Desde a API %d</string>
+  <string name="msg_api_info_removed">Removido na API %d</string>
+  <string name="msg_api_info_deprecated">Obsoleto na API %d</string>
+  <string name="msg_finding_references">Encontrando referências…</string>
+  <string name="msg_finding_definition">Encontrando definição…</string>
+  <string name="msg_no_definition">Definição não encontrada</string>
+  <string name="msg_no_references">Nenhuma referência encontrada</string>
+  <string name="view_diags">Diagnóstico</string>
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Instalação falhada</string>
