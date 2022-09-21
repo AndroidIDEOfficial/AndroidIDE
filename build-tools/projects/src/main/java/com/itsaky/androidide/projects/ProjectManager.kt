@@ -17,6 +17,7 @@
 package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.eventbus.events.EventReceiver
+import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileEvent
@@ -30,12 +31,15 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import java.io.File
-import java.nio.file.Path
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.ASYNC
 import org.greenrobot.eventbus.ThreadMode.BACKGROUND
+import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.extension
+import kotlin.io.path.isDirectory
+import kotlin.io.path.pathString
 
 /**
  * Manages projects in AndroidIDE.
@@ -55,16 +59,13 @@ object ProjectManager : EventReceiver {
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
-      this.rootProject!!
-        .subModules
-        .filterIsInstance(ModuleProject::class.java)
-        .forEach {
-          it.indexSourcesAndClasspaths()
-  
-          if (it is AndroidModule) {
-            it.readResources()
-          }
+      this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
+        it.indexSourcesAndClasspaths()
+
+        if (it is AndroidModule) {
+          it.readResources()
         }
+      }
     }
   }
 
@@ -77,7 +78,9 @@ object ProjectManager : EventReceiver {
   }
 
   @JvmOverloads
-  fun generateSources(builder: BuildService? = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)) {
+  fun generateSources(
+    builder: BuildService? = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+  ) {
     if (builder == null) {
       log.warn("Cannot generate sources. BuildService is null.")
       return
@@ -172,10 +175,6 @@ object ProjectManager : EventReceiver {
     return false
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////
-  ////// TODO Subscribe to file creation/deletion/rename events and update source map //////
-  //////////////////////////////////////////////////////////////////////////////////////////
-
   private fun isInitialized() = rootProject != null
 
   private fun checkInit(): Boolean {
@@ -185,6 +184,35 @@ object ProjectManager : EventReceiver {
 
     log.warn("Project is not initialized yet!")
     return false
+  }
+
+  @Suppress("unused")
+  @Subscribe(threadMode = ASYNC)
+  fun onFileSaved(event: DocumentSaveEvent) {
+    event.file.apply {
+      if (isDirectory()) {
+        return@apply
+      }
+
+      if (extension != "xml") {
+        return@apply
+      }
+
+      val module = findModuleForFile(this) ?: return@apply
+      if (module !is AndroidModule) {
+        return@apply
+      }
+
+      val isResource =
+        module.mainSourceSet?.sourceProvider?.resDirectories?.any {
+          this.pathString.contains(it.path)
+        }
+          ?: false
+
+      if (isResource) {
+        module.updateResourceTable()
+      }
+    }
   }
 
   @Suppress("unused")
