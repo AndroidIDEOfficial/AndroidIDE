@@ -77,24 +77,24 @@
   <string name="title_first_build">Primeira compilação</string>
   <string name="msg_first_build">Esta é a primeira vez que se compila depois de instalar o AndroidIDE. A primeira compilação geralmente leva tempo, pois a Gradle baixa todas as dependências e plugins. Este processo pode demorar cerca de 10-15 minutos. Mas isto depende totalmente de sua conexão de rede.\n\nPor favor, seja paciente...</string>
 
-    <!-- Project -->
-    <string name="create_project">Criar projeto</string>
-    <string name="minimum_sdk">SDK mínimo</string>
-    <string name="target_sdk">SDK de destino</string>
-    <string name="new_project">Novo projeto</string>
-    <string name="package_name">Nome do pacote</string>
-    <string name="project_app_name">Nome do aplicativo</string>
-    <string name="msg_create_new_project_greeting">Comece seu novo projeto fantástico!</string>
-    <string name="title_confirm_open_project">Abrir último projeto?</string>
-    <string name="msg_confirm_open_project">Você quer que eu abra o último projeto aberto? O projeto aberto foi:\n%s</string>
-    <string name="group_project">Projeto</string>
-    <string name="title_close_project">Fechar este projeto</string>
-    <string name="msg_opened_project_does_not_exist">O último projeto aberto não existe!</string>
-    <string name="msg_create_new_project">Criar novo projeto</string>
-    <string name="msg_open_existing_project">Abrir projeto existente</string>
-    <string name="title_confirm_project_close">Fechar projeto</string>
-    <string name="msg_confirm_project_close">Você tem certeza de que quer encerrar este projeto? Todos os daemons Gradle iniciados serão interrompidos após o encerramento deste projeto.</string>
-    <string name="project_exists">Já existe um projeto com o mesmo nome!</string>
+  <!-- Project -->
+  <string name="create_project">Criar projeto</string>
+  <string name="minimum_sdk">SDK mínimo</string>
+  <string name="target_sdk">SDK de destino</string>
+  <string name="new_project">Novo projeto</string>
+  <string name="package_name">Nome do pacote</string>
+  <string name="project_app_name">Nome do aplicativo</string>
+  <string name="msg_create_new_project_greeting">Comece seu novo projeto fantástico!</string>
+  <string name="title_confirm_open_project">Abrir último projeto?</string>
+  <string name="msg_confirm_open_project">Você quer que eu abra o último projeto aberto? O projeto aberto foi:\n%s</string>
+  <string name="group_project">Projeto</string>
+  <string name="title_close_project">Fechar este projeto</string>
+  <string name="msg_opened_project_does_not_exist">O último projeto aberto não existe!</string>
+  <string name="msg_create_new_project">Criar novo projeto</string>
+  <string name="msg_open_existing_project">Abrir projeto existente</string>
+  <string name="title_confirm_project_close">Fechar projeto</string>
+  <string name="msg_confirm_project_close">Você tem certeza de que quer encerrar este projeto? Todos os daemons Gradle iniciados serão interrompidos após o encerramento deste projeto.</string>
+  <string name="project_exists">Já existe um projeto com o mesmo nome!</string>
 
     <!-- Templates -->
     <string name="template_basic">Projeto Básico</string>
