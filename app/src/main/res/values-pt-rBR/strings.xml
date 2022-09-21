@@ -50,32 +50,32 @@
   <string name="title_device_not_supported">Dispositivo não suportado</string>
   <string name="msg_device_not_supported">Infelizmente, seu dispositivo não é compatível no momento. Lamentamos o inconveniente.\n\nABIs de CPU compatíveis: aarch64 e armeabi-v7a</string>
 
-    <!-- Project Builder -->
-    <string name="lint">Lint</string>
-    <string name="lint_debug">lintDebug</string>
-    <string name="lint_release">lintRelease</string>
-    <string name="build">Construir</string>
-    <string name="build_debug">assembleDebug</string>
-    <string name="build_output">Saída de compilação</string>
-    <string name="build_release">assembleRelease</string>
-    <string name="lint_tasks">Link tasks</string>
-    <string name="clean_amp_build">Limpar &amp; construir</string>
-    <string name="clean_project">Limpar</string>
-    <string name="create_aab">Criar AAB</string>
-    <string name="build_tasks">Criar tarefas</string>
-    <string name="quick_run_debug">Rápida execução</string>
-    <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
-    <string name="preparing">Preparando</string>
-    <string name="preparing_first">Preparando. A primeira construção pode levar até 10-15 minutos!</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão. Gradle v7.4 será baixado se necessário.</string>
-    <string name="msg_getting_daemom_status">Obtendo o status de Daemon, por favor aguarde...</string>
-    <string name="gradle_daemon_status">Status do daemon Gradle</string>
-    <string name="title_install_apks">Instalar APK(s)</string>
-    <string name="title_clear_output">Limpar saída</string>
-    <string name="run">Rodar</string>
-    <string name="gradle">Gradle</string>
-    <string name="title_first_build">Primeira construção</string>
-    <string name="msg_first_build">Esta é a primeira vez que se constrói depois de instalar o AndroidIDE. A primeira compilação geralmente leva tempo, pois a Gradle baixa todas as dependências e plugins. Este processo pode demorar cerca de 10-15 minutos. Mas isto depende totalmente de sua conexão de rede.\n\nPor favor, seja paciente...</string>
+  <!-- Project Builder -->
+  <string name="lint">Lint</string>
+  <string name="lint_debug">lintDebug</string>
+  <string name="lint_release">lintRelease</string>
+  <string name="build">Compilar</string>
+  <string name="build_debug">assembleDebug</string>
+  <string name="build_output">Logs de compilação</string>
+  <string name="build_release">assembleRelease</string>
+  <string name="lint_tasks">Lint</string>
+  <string name="clean_amp_build">Limpar &amp; construir</string>
+  <string name="clean_project">Limpar</string>
+  <string name="create_aab">Criar AAB</string>
+  <string name="build_tasks">Compilar</string>
+  <string name="quick_run_debug">Rápida execução</string>
+  <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
+  <string name="preparing">Preparando</string>
+  <string name="preparing_first">Preparando. A primeira compilação pode levar até 10-15 minutos!</string>
+  <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão. Gradle v7.4 será baixado se necessário.</string>
+  <string name="msg_getting_daemom_status">Obtendo o status de Daemon, por favor aguarde...</string>
+  <string name="gradle_daemon_status">Status do daemon Gradle</string>
+  <string name="title_install_apks">Instalar APK(s)</string>
+  <string name="title_clear_output">Limpar logs</string>
+  <string name="run">Compilar</string>
+  <string name="gradle">Gradle</string>
+  <string name="title_first_build">Primeira compilação</string>
+  <string name="msg_first_build">Esta é a primeira vez que se compila depois de instalar o AndroidIDE. A primeira compilação geralmente leva tempo, pois a Gradle baixa todas as dependências e plugins. Este processo pode demorar cerca de 10-15 minutos. Mas isto depende totalmente de sua conexão de rede.\n\nPor favor, seja paciente...</string>
 
     <!-- Project -->
     <string name="create_project">Criar projeto</string>
