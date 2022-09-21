@@ -355,4 +355,6 @@
     <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
     <string name="msg_swipe_for_files">Проведите влево для просмотра @@файлов@@.</string>
     <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
+    <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
+    <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
 </resources>
