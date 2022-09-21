@@ -32,7 +32,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.EditorActivityActions
 import com.itsaky.androidide.utils.Environment
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 import org.greenrobot.eventbus.EventBus
 
 /**
@@ -66,7 +66,6 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
 
   override fun onStop(owner: LifecycleOwner) {
     unregister(fileActionsHandler, FileManager, ProjectManager)
-
     dispatchEvent(OnStopEvent())
   }
 

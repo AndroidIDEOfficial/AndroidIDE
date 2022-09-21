@@ -973,9 +973,12 @@ public class EditorActivity extends IDEActivity
   @Override
   protected void onResume() {
     super.onResume();
-
+    
+    // Actions are cleared when the activity is paused to avoid holding references to the activity
+    // So, when resumed, they should be registered and inflated again.
     EditorActivityActions.register(this);
-
+    invalidateOptionsMenu();
+    
     try {
       if (mFileTreeFragment != null) {
         mFileTreeFragment.listProjectFiles();
