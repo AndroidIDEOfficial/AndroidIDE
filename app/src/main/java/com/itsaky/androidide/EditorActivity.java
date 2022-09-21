@@ -729,7 +729,6 @@ public class EditorActivity extends IDEActivity
       mUIDesignerLauncher.launch(intent);
     } catch (Throwable th) {
       LOG.error(getString(string.err_cannot_preview_layout), th);
-      getApp();
       toast(string.msg_cannot_preview_layout, Toaster.Type.ERROR);
     }
   }
@@ -833,13 +832,13 @@ public class EditorActivity extends IDEActivity
 
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(this::preProjectInit);
-  
+
     final var buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE);
     if (buildService == null) {
       LOG.error("No build service found. Cannot initialize project.");
       return;
     }
-    
+
     final var future = buildService.initializeProject(projectDir.getAbsolutePath());
     future.whenCompleteAsync(
         (result, error) -> {
@@ -884,7 +883,7 @@ public class EditorActivity extends IDEActivity
   public AlertDialog getFindInProjectDialog() {
     return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
   }
-  
+
   protected void onProjectInitialized() {
     ProjectManager.INSTANCE.setupProject();
     ProjectManager.INSTANCE.notifyProjectUpdate();
@@ -983,7 +982,6 @@ public class EditorActivity extends IDEActivity
       }
     } catch (Throwable th) {
       LOG.error("Failed to update files list", th);
-      getApp();
       toast(string.msg_failed_list_files, Toaster.Type.ERROR);
     }
   }
@@ -1310,7 +1308,6 @@ public class EditorActivity extends IDEActivity
   @SuppressWarnings("deprecation")
   private void shareText(String text, String type) {
     if (TextUtils.isEmpty(text)) {
-      getApp();
       toast(getString(string.msg_output_text_extraction_failed), Toaster.Type.ERROR);
       return;
     }
@@ -1406,7 +1403,6 @@ public class EditorActivity extends IDEActivity
         saveAll();
       } else {
         final var msg = getString(string.msg_invalid_designer_result);
-        getApp();
         toast(msg, Toaster.Type.ERROR);
         LOG.error(msg, "Data returned by UI Designer is null or is invalid.");
       }
@@ -1440,7 +1436,6 @@ public class EditorActivity extends IDEActivity
   }
 
   private void startServices() {
-
     if (bindService(
         new Intent(this, GradleBuildService.class),
         mGradleServiceConnection,
@@ -1524,7 +1519,6 @@ public class EditorActivity extends IDEActivity
     final var rootProject = ProjectManager.INSTANCE.getRootProject();
     if (rootProject == null) {
       LOG.warn("No root project model found. Is the project initialized?");
-      getApp();
       toast(getString(string.msg_project_not_initialized), Toaster.Type.ERROR);
       return null;
     }
@@ -1576,7 +1570,6 @@ public class EditorActivity extends IDEActivity
           final String text =
               Objects.requireNonNull(binding.input.getEditText()).getText().toString().trim();
           if (text.isEmpty()) {
-            getApp();
             toast(string.msg_empty_search_query, Toaster.Type.ERROR);
             return;
           }
@@ -1607,7 +1600,6 @@ public class EditorActivity extends IDEActivity
           }
 
           if (searchDirs.isEmpty()) {
-            getApp();
             toast(string.msg_select_search_modules, Toaster.Type.ERROR);
           } else {
             dialog.dismiss();
