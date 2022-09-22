@@ -24,6 +24,7 @@ import static com.blankj.utilcode.util.DeviceUtils.getModel;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -143,6 +144,9 @@ public class CrashReportFragment extends Fragment {
         + "\n"
         + "Device: "
         + getModel()
+        + "\n"
+        + "SDK: "
+        + Build.VERSION.SDK_INT
         + "\n"
         + "App version: "
         + getAppVersionName()
