@@ -145,7 +145,10 @@ public class CrashReportFragment extends Fragment {
         + "Device: "
         + getModel()
         + "\n"
-        + "SDK: "
+        + "ABI: "
+        + BaseApplication.getArch()
+        + "\n"
+        + "SDK version: "
         + Build.VERSION.SDK_INT
         + "\n"
         + "App version: "
