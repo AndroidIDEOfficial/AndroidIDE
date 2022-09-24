@@ -168,6 +168,7 @@
     <string name="copy_path">Копировать путь</string>
     <string name="rename_file">Переименовать</string>
     <string name="delete_file">Удалить</string>
+    <string name="open_with">Открыть с помощью...</string>
     <string name="file_options">Действия с файлом</string>
     <string name="action_closeAll">Закрыть все</string>
     <string name="action_closeOthers">Закрыть остальные</string>
@@ -186,7 +187,6 @@
     <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
     <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
     <string name="msg_storage_granted">Разрешение на взаимодействие с памятью получено!</string>
-    <string name="open_with">Открыть с помощью...</string>
 
     <!-- Code Editor -->
     <string name="undo">Отмена действия</string>
@@ -196,8 +196,9 @@
     <item name="text_to_search" type="string">Текст для поиска</item>
 
     <!-- Preferences -->
-    <string name="title_change_text_size">Размер шрифта редактора</string>
+    <string name="msg_preferences">Настройки</string>
     <string name="idepref_about_title">О AndroidIDE</string>
+    <string name="title_change_text_size">Размер шрифта редактора</string>
     <string name="idepref_build_clearCache_title">Очистить кэш Gradle</string>
     <string name="idepref_build_clearCache_summary">Очистить директорию кэша Gradle. Это удалит все зависимости, скачанные Gradle. Необходимые файлы будут вновь скачаны при следующей сборке.</string>
     <string name="idepref_build_customgradlecommands_title">Дополнительные команды Gradle</string>
@@ -219,7 +220,6 @@
     <string name="title_general">Основное</string>
     <string name="title_tab_size">Размер TAB</string>
     <string name="msg_tab_size">Укажите, сколько пробелов будет напечатано при нажатии TAB.</string>
-    <string name="msg_preferences">Настройки</string>
     <string name="pref_changelog">Список изменений</string>
     <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора:</string>
     <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вам нужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
@@ -253,9 +253,9 @@
     <string name="msg_cannot_preview_layout">Невозможно осуществить предпросмотр разметки!</string>
     <string name="title_preview_layout">Предпросмотр разметки</string>
     <string name="label_ui_designer_content">Содержание дизайнера Main UI</string>
+    <string name="widget_group_android">Android</string>
     <string name="widget_textview">TextView</string>
     <string name="widget_button">Button</string>
-    <string name="widget_group_android">Android</string>
     <string name="widget_checkbox">CheckBox</string>
     <string name="widget_checked_textview">CheckedTextView</string>
     <string name="widget_edittext">EditText</string>
@@ -357,4 +357,6 @@
     <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
     <string name="msg_swipe_for_files">Проведите влево для просмотра @@файлов@@.</string>
     <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
+    <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
+    <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
 </resources>
