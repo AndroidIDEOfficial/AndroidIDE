@@ -6,7 +6,7 @@
     <string name="title_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="msg_about_licensed_under">Lizenziert unter:</string>
     <string name="about_option_email">Email</string>
-    <string name="about_option_website">Webseite</string>
+    <string name="about_option_website">Internetseite</string>
     <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
     <string name="about_footer">AndroidIDE %1$s f&#xFC;r %2$s</string>
     <string name="about_subtitle">Die IDE f&#xFC;r Android Ger&#xE4;te</string>
@@ -48,13 +48,13 @@
     <string name="title_device_not_supported">Ger&#xE4;t nicht unterst&#xFC;tzt</string>
     <string name="msg_device_not_supported">Leider wird Ihr Ger&#xE4;t derzeit nicht unterst&#xFC;tzt. Wir entschuldigen uns f&#xFC;r die Unannehmlichkeiten.\n\nUnterst&#xFC;tzte CPU-ABIs: aarch64 und armeabi-v7a</string>
     <!-- Project Builder -->
-    <string name="lint">Fussel</string>
+    <string name="lint">Lint</string>
     <string name="lint_debug">lintDebug</string>
     <string name="lint_release">lintRelease</string>
     <string name="build">Bauen</string>
     <string name="build_debug">AssembleDebug</string>
-    <string name="build_output">Ausgabe erstellen</string>
-    <string name="build_release">montierenRelease</string>
+    <string name="build_output">Build output</string>
+    <string name="build_release">assembleRelease</string>
     <string name="lint_tasks">Lint-Aufgaben</string>
     <string name="clean_amp_build">Clean &amp; build</string>
     <string name="clean_project">S&#xE4;ubern</string>
