@@ -46,7 +46,7 @@
   <string name="get_ready_for_something_awesome">Get ready for something awesome !</string>
   <string name="msg_picked_isnt_dir">Picked file is not a directory!</string>
   <string name="msg_pick_single_file">Please choose only one directory</string>
-  <string name="please_wait">Please wait for a moment …</string>
+  <string name="please_wait">Please wait for a moment …</string>
   <string name="title_device_not_supported">Device Not Supported</string>
   <string name="msg_device_not_supported">Unfortunately, your device is not supported at the moment. We are sorry for the inconvenience.\n\nSupported CPU ABIs: aarch64 and armeabi-v7a</string>
 
@@ -75,7 +75,7 @@
   <string name="run">Run</string>
   <string name="gradle">Gradle</string>
   <string name="title_first_build">First Build</string>
-  <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10–15 minutes. But this totally depends on your network connection.\n\nPlease be patient …</string>
+  <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10–15 minutes. But this totally depends on your network connection.\n\nPlease be patient …</string>
 
   <!-- Project -->
   <string name="create_project">Create project</string>
@@ -105,14 +105,14 @@
   <string name="template_navigation_drawer">Navigation drawer project</string>
   <string name="template_libgdx">LibGDX Game</string>
   <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
-  <string name="template_compose">Jetpack Compose</string>
-  <string name="template_description_compose">Basic Jetpack Compose hello world project.</string>
+  <string name="template_compose" translatable="false">Jetpack Compose</string>
+  <string name="template_description_compose" translatable="false">Basic Jetpack Compose hello world project.</string>
   <string name="template_navigation_tabs">Bottom Navigation Activity</string>
   <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
-  <string name="template_tabs">Tabbed Activity</string>
+  <string name="template_tabs" translatable="false">Tabbed Activity</string>
   <string name="template_tabs_description">Creates a new blank activity with tabs</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
-  <string name="template_cpp">Native C++</string>
+  <string name="template_fragment_and_viewmodel" translatable="false">Fragment + ViewModel</string>
+  <string name="template_cpp" translatable="false">Native C++</string>
   <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
   <string name="template_no_activity">No Activity</string>
   <string name="template_no_activity_description">Creates a new project without activity</string>
@@ -207,7 +207,7 @@
   <string name="idepref_editor_paintingflags_summary">Choose what non-printable characters should be drawn by the editor</string>
   <string name="idepref_editor_drawhexcolors_title">Draw hex color strings</string>
   <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
-  <string name="idepref_editor_word_wrap_title">Word Wrap</string>
+  <string name="idepref_editor_word_wrap_title" translatable="false">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Use wordwrap of the editor</string>
   <string name="idepref_editor_use_magnifier_title">Enable Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
@@ -350,7 +350,7 @@
   <string name="msg_select_from_primary_storage">Select a directory from primary storage</string>
   <string name="err_authority_not_allowed">Authority \'%s\' not allowed</string>
   <string name="idepref_useIcu_title">Use ICU lib</string>
-  <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
+  <string name="idepref_useIcu_summary" translatable="false">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
 
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
