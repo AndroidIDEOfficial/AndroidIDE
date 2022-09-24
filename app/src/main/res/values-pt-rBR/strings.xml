@@ -114,6 +114,8 @@
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">C++ nativo</string>
   <string name="template_cpp_description">Cria um novo projeto com uma Activity Vazia configurada para usar JNI</string>
+  <string name="template_no_activity">Sem Activity</string>
+  <string name="template_no_activity_description">Cria um novo projeto sem activity</string>
 
   <!-- Files -->
   <string name="save">Salvar</string>
@@ -355,5 +357,5 @@
   <string name="msg_swipe_for_files">Deslize à esquerda para @@arquivos@@.</string>
   <string name="msg_swipe_for_output">Deslize à cima para @@logs de compilação@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar soft tab</string>
-  <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\t).</string>
+  <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\\t).</string>
 </resources>
