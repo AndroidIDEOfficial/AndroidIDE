@@ -175,8 +175,8 @@
     <string name="open_with">Öffnen mit...</string>
     <string name="undo">R&#xFC;ckg&#xE4;ngig machen</string>
     <string name="redo">Wiederholen</string>
-    <item name="copy" type="string" tools:override="true">Copy</item>
-    <item name="text_to_search" type="string">Text to search</item>
+    <item name="copy" type="string" tools:override="true">Kopieren</item>
+    <item name="text_to_search" type="string">Text zum suchen</item>
     <!-- Preferences -->
     <string name="title_change_text_size">Editor Schriftgr&#xF6;&#xDF;e</string>
     <string name="idepref_about_title">&#xDC;ber AndroidIDE</string>
