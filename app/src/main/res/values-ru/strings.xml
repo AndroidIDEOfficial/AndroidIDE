@@ -116,6 +116,8 @@
     <string name="template_cpp">Нативный проект на C++</string>
     <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
     <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
+    <string name="template_no_activity">Проект без активности</string>
+    <string name="template_no_activity_description">Создаёт новый проект без активности</string>
 
     <!-- Files -->
     <string name="save">Сохранить</string>
