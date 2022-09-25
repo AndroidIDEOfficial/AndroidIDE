@@ -25,7 +25,6 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.IntentUtils
-import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
@@ -44,22 +43,24 @@ import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
-import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.ProjectWriter
+import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.SUCCESS
 import com.itsaky.toaster.toast
 import com.unnamed.b.atv.model.TreeNode
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern.compile
 import java.util.regex.Pattern.quote
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
+import javax.lang.model.SourceVersion
 
 /**
  * Handles events related to files in filetree.
@@ -224,10 +225,27 @@ class FileTreeActionHandler : BaseEventHandler() {
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     val binding: LayoutCreateFileJavaBinding =
       LayoutCreateFileJavaBinding.inflate(LayoutInflater.from(context))
+    binding.name.editText?.addTextChangedListener(
+      object : SingleTextWatcher() {
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+          if (isValidJavaName(s)) {
+            binding.name.isErrorEnabled = true
+            binding.name.error = context.getString(string.msg_invalid_name)
+          } else {
+            binding.name.isErrorEnabled = false
+          }
+        }
+      }
+    )
     builder.setView(binding.root)
     builder.setTitle(string.new_java_class)
     builder.setPositiveButton(string.text_create) { dialogInterface, _ ->
       dialogInterface.dismiss()
+      if (binding.name.isErrorEnabled) {
+        toast(string.msg_invalid_name, ERROR)
+        return@setPositiveButton
+      }
+      
       val name: String = binding.name.editText!!.text.toString().trim()
       val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
@@ -266,7 +284,10 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.setCancelable(false)
     builder.create().show()
   }
-
+  
+  private fun isValidJavaName(s: CharSequence?) =
+    s == null || !SourceVersion.isName(s) || SourceVersion.isKeyword(s)
+  
   private fun createLayoutRes(context: Context, file: File) {
     createNewFileWithContent(
       context,

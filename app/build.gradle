@@ -131,11 +131,12 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
-    implementation project (':build-tools:aaptcompiler')
-    implementation project (':build-tools:xml-utils')
     implementation project (':editor')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
+    implementation project (':build-tools:aaptcompiler')
+    implementation project (':build-tools:javac-services')
+    implementation project (':build-tools:xml-utils')
     implementation project (':build-tools:projects')
     implementation project (':build-tools:tooling-api')
     implementation project (':lookup')
