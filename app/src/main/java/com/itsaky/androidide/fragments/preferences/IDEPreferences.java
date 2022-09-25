@@ -110,7 +110,8 @@ public class IDEPreferences extends BasePreferenceFragment
     screen.addPreference(about);
 
     github.setOnPreferenceClickListener(this);
-    telegram.setOnPreferenceClickListener(this);
+    tg_channel.setOnPreferenceClickListener(this);
+    tg_group.setOnPreferenceClickListener(this);
     changelog.setOnPreferenceClickListener(this);
     about.setOnPreferenceClickListener(this);
   }
