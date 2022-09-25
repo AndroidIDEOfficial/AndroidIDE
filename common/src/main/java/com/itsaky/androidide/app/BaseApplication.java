@@ -181,11 +181,11 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
   
   public void openTelegramGroup(){
-    openTelegram(BaseApplication.TELEGRAM_GROUP_URL)
+    openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
   }
   
   public void openTelegramChannel(){
-    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL)
+    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
   }
   
   public void openGitHub() {
