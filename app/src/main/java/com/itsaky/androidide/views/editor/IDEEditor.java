@@ -679,12 +679,11 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * @param event The content change event.
    */
   private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (getFile() == null || languageServer == null) {
-      return;
-    }
-
     if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
       isModified = true;
+    }
+    if (getFile() == null || languageServer == null) {
+      return;
     }
     CompletableFuture.runAsync(
         () -> {
