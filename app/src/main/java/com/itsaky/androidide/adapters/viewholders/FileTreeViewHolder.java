@@ -90,7 +90,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
   protected LinearLayout applyPadding(
       final TreeNode node, final LayoutFiletreeItemBinding binding, final int padding) {
     final var root = binding.getRoot();
-    root.setPadding(
+    root.setPaddingRelative(
         root.getPaddingLeft() + (padding * (node.getLevel() - 1)),
         root.getPaddingTop(),
         root.getPaddingRight(),
