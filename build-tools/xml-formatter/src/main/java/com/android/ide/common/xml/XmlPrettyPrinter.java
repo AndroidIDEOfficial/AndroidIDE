@@ -94,9 +94,21 @@ public class XmlPrettyPrinter {
     mPrefs = prefs;
     mStyle = style;
     if (lineSeparator == null) {
-      lineSeparator = SdkUtils.getLineSeparator();
+      lineSeparator = getSysLineSeparator();
     }
     mLineSeparator = lineSeparator;
+  }
+
+  private static String sLineSeparator;
+
+  @NotNull
+  public static String getSysLineSeparator() {
+    if (sLineSeparator == null) {
+      // This is guaranteed to exist:
+      sLineSeparator = System.getProperty("line.separator"); // $NON-NLS-1$
+    }
+
+    return sLineSeparator;
   }
 
   /**
@@ -205,7 +217,7 @@ public class XmlPrettyPrinter {
         node,
         XmlFormatPreferences.defaults(),
         XmlFormatStyle.get(node),
-        SdkUtils.getLineSeparator(),
+        getSysLineSeparator(),
         endWithNewline);
   }
 

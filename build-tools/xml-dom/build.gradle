@@ -32,12 +32,11 @@ dependencies {
     }
     
     implementation project (path: ':build-tools:jsonrpc')
+    implementation project(path: ':build-tools:jaxp')
     
     implementation common.jsoup
     implementation google.guava_jre
     implementation google.gson
-    implementation xml.xercesImpl
-    implementation xml.apis
     implementation xml.remark
     implementation xml.resolver
 }

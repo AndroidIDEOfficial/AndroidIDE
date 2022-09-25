@@ -144,8 +144,10 @@ abstract class ModuleProject(
       val sourceDir = it.toPath()
       it
         .walk()
-        .filter { file -> file.isFile && file.exists() && DocumentUtils.isJavaFile(file.toPath()) }
-        .map { file -> file.toPath() }
+        .filter { file ->
+          file.isFile && file.exists() && DocumentUtils.isJavaFile(file.toPath()) }
+        .map { file ->
+          file.toPath() }
         .forEach { file ->
           this.compileJavaSourceClasses.append(file, sourceDir)
           count++

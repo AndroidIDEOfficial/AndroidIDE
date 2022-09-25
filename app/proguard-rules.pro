@@ -20,3 +20,27 @@
 
 # JSONRpc
 -keep class org.eclipse.lsp4j.** { *; }
+
+# EventBus
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+
+# Accessed reflectively
+-keep class io.github.rosemoe.sora.widget.component.EditorAutoCompletion {
+    io.github.rosemoe.sora.widget.component.EditorCompletionAdapter adapter;
+    int currentSelection;
+}
+-keep class com.itsaky.androidide.projects.util.StringSearch {
+    packageName(java.nio.file.Path);
+}
+
+# JAXP
+-keep class jaxp.** { *; }
+-keep class org.w3c.** { *; }
+-keep class org.xml.** { *; }
