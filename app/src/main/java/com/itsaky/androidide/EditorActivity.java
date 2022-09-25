@@ -1402,7 +1402,7 @@ public class EditorActivity extends IDEActivity
       final var data = result.getData();
       if (data != null && data.hasExtra(DesignerActivity.KEY_GENERATED_CODE)) {
         final var code = data.getStringExtra(DesignerActivity.KEY_GENERATED_CODE);
-        editor.getEditor().setText(code);
+        editor.getEditor().replaceContent(code);
         editor.markModified();
         saveAll();
       } else {

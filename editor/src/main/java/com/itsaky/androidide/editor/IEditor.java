@@ -146,6 +146,13 @@ public interface IEditor {
    */
   int append(CharSequence text);
 
+  /**
+   * Replaces the editor's existing content with the given content.
+   *
+   * @param newContent The new content to set to the editor.
+   */
+  void replaceContent(CharSequence newContent);
+
   /** Set the selection of the editor's cursor to the last line of the it's content. */
   void goToEnd();
 

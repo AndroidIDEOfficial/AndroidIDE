@@ -26,6 +26,7 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
@@ -388,6 +389,14 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   @Override
   public boolean isValidColumn(int line, int column) {
     return column >= 0 && column < getText().getColumnCount(line);
+  }
+
+  @Override
+  @UiThread
+  public void replaceContent(final CharSequence newContent) {
+    final var lastLine = getText().getLineCount() - 1;
+    final var lastColumn = getText().getColumnCount(lastLine);
+    getText().replace(0, 0, lastLine, lastColumn, newContent == null ? "" : newContent);
   }
 
   /**
