@@ -25,12 +25,7 @@ java {
 }
 
 dependencies {
-    api files ('libs/org.eclipse.lemminx-0.21.0.jar')
-    
-    api (xml.lsp4j) {
-        exclude group: 'org.eclipse.lsp4j', module: 'org.eclipse.lsp4j.jsonrpc'
-    }
-    
+    implementation project (path: ':shared')
     implementation project (path: ':build-tools:jsonrpc')
     implementation project(path: ':build-tools:jaxp')
     
