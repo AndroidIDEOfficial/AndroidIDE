@@ -21,6 +21,11 @@
 # JSONRpc
 -keep class org.eclipse.lemminx.uriresolver.URIResolverExtensionManager { *; }
 
+# JAXP
+-keep class jaxp.** { *; }
+-keep class org.w3c.** { *; }
+-keep class org.xml.** { *; }
+
 # EventBus
 -keepattributes *Annotation*
 -keepclassmembers class ** {
@@ -39,8 +44,9 @@
 -keep class com.itsaky.androidide.projects.util.StringSearch {
     packageName(java.nio.file.Path);
 }
-
-# JAXP
--keep class jaxp.** { *; }
--keep class org.w3c.** { *; }
--keep class org.xml.** { *; }
+-keep class * implements org.antlr.v4.runtime.Lexer {
+    <init>(...);
+}
+-keep class * extends com.itsaky.androidide.lsp.java.providers.completion.IJavaCompletionProvider {
+    <init>(...);
+}
