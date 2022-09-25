@@ -51,3 +51,9 @@
     <init>(...);
 }
 -keep class com.itsaky.androidide.editor.IEditor { *; }
+-keep class * implements com.itsaky.inflater.IAttributeAdapter { *; }
+-keep class * extends com.itsaky.inflater.drawable.IDrawableParser {
+    <init>(...);
+    android.graphics.drawable.Drawable parse();
+    android.graphics.drawable.Drawable parseDrawable();
+}
