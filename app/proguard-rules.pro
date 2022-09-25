@@ -50,3 +50,4 @@
 -keep class * extends com.itsaky.androidide.lsp.java.providers.completion.IJavaCompletionProvider {
     <init>(...);
 }
+-keep class com.itsaky.androidide.editor.IEditor { *; }
