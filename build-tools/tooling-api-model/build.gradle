@@ -32,8 +32,9 @@ repositories {
 
 dependencies {
     implementation project (path: ':logger')
-    implementation project (path: ':build-tools:jsonrpc')
-    implementation project (path: ':build-tools:xml-dom')
+    
+    api project (path: ':build-tools:jsonrpc')
+    api project (path: ':build-tools:xml-dom')
     api project (path: ':build-tools:builder-model-impl')
     
     implementation common.jkotlin

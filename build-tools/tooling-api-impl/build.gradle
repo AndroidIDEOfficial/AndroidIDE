@@ -64,7 +64,6 @@ repositories {
 }
 
 dependencies {
-    implementation project (path: ':logger')
     implementation project (path: ':build-tools:tooling-api')
     
     implementation common.jkotlin

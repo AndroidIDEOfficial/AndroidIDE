@@ -19,7 +19,7 @@
 -keep class com.itsaky.androidide.builder.model.** { *; }
 
 # JSONRpc
--keep class org.eclipse.lsp4j.** { *; }
+-keep class org.eclipse.lemminx.uriresolver.URIResolverExtensionManager { *; }
 
 # EventBus
 -keepattributes *Annotation*

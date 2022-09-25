@@ -31,8 +31,6 @@ import kotlin.io.path.nameWithoutExtension
 open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : ClassTrie(root) {
   
   companion object {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    
     @JvmStatic
     private val pkgNameMethod by lazy {
       Class.forName("com.itsaky.androidide.projects.util.StringSearch")
@@ -42,7 +40,6 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
     @JvmStatic
     private fun packageName(file: Path): String {
       return try { pkgNameMethod.invoke(null, file) as String } catch (error: Throwable) {
-        log.error(error)
         throw RuntimeException(error)
       }
     }

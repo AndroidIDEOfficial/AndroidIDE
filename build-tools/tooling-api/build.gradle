@@ -26,16 +26,16 @@ java {
 }
 
 dependencies {
-    implementation project (path: ':logger')
+    api project (path: ':logger')
     api project (path: ':build-tools:jsonrpc')
     api project (path: ':build-tools:tooling-api-model')
     api project (path: ':build-tools:tooling-api-events')
     
+    api google.gson
     implementation common.jkotlin
     
     testImplementation tests.junit
     testImplementation tests.google_truth
-    api google.gson
 }
 
 repositories {
