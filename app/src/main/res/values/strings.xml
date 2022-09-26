@@ -21,6 +21,7 @@
   <string name="share_with_friends">Share with Friends</string>
   <string name="ide_preferences">IDE preferences</string>
   <string name="discussions_on_telegram">Discussions on Telegram</string>
+  <string name="official_tg_channel">Official Telegram Channel</string>
   <string name="msg_empty_view">I have nothing to show you…</string>
   <string name="btn_terminal">Terminal</string>
   <string name="reset">Reset</string>

@@ -49,6 +49,7 @@ public abstract class BaseApplication extends MultiDexApplication {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
+  public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
   public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
   public static final String WEBSITE = "https://androidide.com";
   public static final String EMAIL = "contact@androidide.com";
@@ -158,25 +159,33 @@ public abstract class BaseApplication extends MultiDexApplication {
     return Environment.PROJECTS_DIR;
   }
   
-  public void openTelegramGroup() {
+  public void openTelegram(String url) {
     try {
       Intent open = new Intent();
       open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(BaseApplication.TELEGRAM_GROUP_URL));
+      open.setData(Uri.parse(url));
       open.setPackage("org.telegram.messenger");
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
-    } catch (Throwable th) {
+    } catch (Throwable th1) {
       try {
         Intent open = new Intent();
         open.setAction(Intent.ACTION_VIEW);
-        open.setData(Uri.parse(BaseApplication.TELEGRAM_GROUP_URL));
+        open.setData(Uri.parse(url));
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(open);
       } catch (Throwable th2) {
         ToasterKt.toast(th2.getMessage(), Toaster.Type.ERROR);
       }
     }
+  }
+  
+  public void openTelegramGroup(){
+    openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
+  }
+  
+  public void openTelegramChannel(){
+    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
   }
   
   public void openGitHub() {

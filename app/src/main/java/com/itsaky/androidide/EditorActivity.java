@@ -546,6 +546,8 @@ public class EditorActivity extends IDEActivity
     final int id = p1.getItemId();
     if (id == R.id.editornav_discuss) {
       getApp().openTelegramGroup();
+    } else if (id == R.id.editornav_channel) {
+      getApp().openTelegramChannel();
     } else if (id == R.id.editornav_suggest) {
       getApp().openGitHub();
     } else if (id == R.id.editornav_needHelp) {
