@@ -89,6 +89,10 @@ android {
     }
 }
 
+configurations.all {
+    exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
+}
+
 kapt {
     arguments {
         arg ('eventBusIndex', 'com.itsaky.androidide.events.AppEventsIndex')
