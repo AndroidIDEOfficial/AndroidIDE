@@ -61,14 +61,9 @@ public class ApkMetadata {
 
       // This sometimes might be a redirect to the listing file
       // So we have to handle this case too.
-      final var redirectedFile = ListingFileRedirect.maybeExtractRedirectedFile(listingFIle);
-      if (redirectedFile != null) {
-        listingFIle = redirectedFile;
-      }
-
-      final var dir = listingFIle.getParentFile();
-      final var metadata =
-          JSONUtility.gson.fromJson(new FileReader(listingFIle), ApkMetadata.class);
+      final var redirectedFile = ListingFileRedirect.getListingFile(listingFIle).getAbsoluteFile();
+      final var dir = redirectedFile.getParentFile();
+      final var metadata = JSONUtility.gson.fromJson(new FileReader(redirectedFile), ApkMetadata.class);
       if (!isValid(metadata)) {
         LOG.warn("Invalid APK metadata:", metadata);
         return null;
@@ -128,13 +123,11 @@ public class ApkMetadata {
         LOG.warn("Skipping output element because file is not APK:", element);
         continue;
       }
-
-      if (element.getOutputFile().endsWith(".apk")) {
-        atLeastOneApk = true;
-        break;
-      }
+  
+      atLeastOneApk = true;
+      break;
     }
-
+    
     LOG.debug("Output metadata validation succeeded");
     return atLeastOneApk;
   }
