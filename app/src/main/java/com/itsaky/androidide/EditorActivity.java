@@ -517,6 +517,7 @@ public class EditorActivity extends IDEActivity
     editorView.onEditorSelected();
     mViewModel.setCurrentFile(position, editorView.getFile());
     refreshSymbolInput(editorView);
+    invalidateOptionsMenu();
   }
 
   @Override
