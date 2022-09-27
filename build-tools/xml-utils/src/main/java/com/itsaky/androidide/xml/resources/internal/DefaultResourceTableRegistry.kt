@@ -201,7 +201,7 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
       return null
     }
 
-    log.info("Creating resource table for resource directories $resDirs")
+    log.info("Creating resource table for ${resDirs.size} resource directories")
 
     val logger = BlameLogger(IDELogger)
     val table = ResourceTable()
