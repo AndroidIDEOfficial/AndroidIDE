@@ -106,7 +106,7 @@ public abstract class IDELanguage implements Language {
 
   @Override
   public boolean useTab() {
-    return false;
+    return !EditorPreferencesKt.getUseSoftTab();
   }
 
   @NonNull
