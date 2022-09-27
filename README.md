@@ -16,8 +16,7 @@
 ![Commit activity](https://img.shields.io/github/commit-activity/m/AndroidIDEOfficial/AndroidIDE)
 ![Builds and tests](https://github.com/AndroidIDEOfficial/AndroidIDE/actions/workflows/build.yml/badge.svg)  
 ![Latest release](https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&label=latest%20release)
-![Downloads from releases](https://img.shields.io/github/downloads/AndroidIDEOfficial/AndroidIDE/total?label=Downloads%20from%20releases)
-![Downloads from website](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  
+![Total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![Telegram](https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white)
 
