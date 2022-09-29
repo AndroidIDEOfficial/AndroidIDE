@@ -1,1 +1,5 @@
 
+<resources>
+    <string name="paste_text">لصق</string>
+    <string name="copy_text">نسخ</string>
+</resources>
