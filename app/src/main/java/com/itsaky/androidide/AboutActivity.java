@@ -25,14 +25,14 @@ import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AboutActivity extends StudioActivity {
+public class AboutActivity extends IDEActivity {
 
   public static final String JDK_SOURCE = "https://github.com/itsaky/OpenJDK-Android";
   private ActivityAboutBinding binding;

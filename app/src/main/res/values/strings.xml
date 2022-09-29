@@ -21,6 +21,7 @@
   <string name="share_with_friends">Share with Friends</string>
   <string name="ide_preferences">IDE preferences</string>
   <string name="discussions_on_telegram">Discussions on Telegram</string>
+  <string name="official_tg_channel">Official Telegram Channel</string>
   <string name="msg_empty_view">I have nothing to show you…</string>
   <string name="btn_terminal">Terminal</string>
   <string name="reset">Reset</string>
@@ -114,6 +115,8 @@
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
+  <string name="template_no_activity">No Activity</string>
+  <string name="template_no_activity_description">Creates a new project without activity</string>
 
   <!-- Files -->
   <string name="save">Save</string>
@@ -183,6 +186,7 @@
   <string name="msg_failed_list_files">Failed to list project files!</string>
   <string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
   <string name="msg_storage_granted">Storage permissions granted!</string>
+  <string name="open_with">Open with...</string>
 
   <!-- Code Editor -->
   <string name="undo">Undo</string>
@@ -353,4 +357,6 @@
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
   <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
+  <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
+  <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
 </resources>

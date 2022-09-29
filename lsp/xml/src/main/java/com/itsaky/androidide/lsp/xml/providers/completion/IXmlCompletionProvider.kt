@@ -31,8 +31,10 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.lsp.xml.edits.AttrValueEditHandler
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.edits.TagEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
@@ -142,6 +144,8 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = simpleName
       this.detail = qualifiedName
       this.sortText = label.toString()
+      this.insertText = qualifiedName
+      this.insertTextFormat = PLAIN_TEXT
       this.editHandler = TagEditHandler()
       this.matchLevel = matchLevel
       this.kind = CLASS
@@ -213,7 +217,8 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.overrideTypeText = type.uppercase()
       this.sortText = if (pck == ResourceTableRegistry.PCK_ANDROID) "zzz$text" else text
       this.insertText = text
-      this.editHandler = QualifiedValueEditHandler()
+      this.insertTextFormat = PLAIN_TEXT
+      this.editHandler = AttrValueEditHandler()
       this.matchLevel = matchLevel
     }
   }
@@ -232,7 +237,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   ): CompletionItem {
     return CompletionItem().apply {
       this.label = name
-      this.detail = "From package '$pck'"
+      this.detail = if (pck.isBlank()) "" else "From package '$pck'"
       this.kind = VALUE
       this.sortText = "000$name"
       this.insertText = name

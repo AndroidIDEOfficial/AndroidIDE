@@ -16,7 +16,7 @@
  */
 package com.itsaky.androidide.ui.edit;
 
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.values.ValuesTable;
 import com.itsaky.inflater.values.ValuesTableFactory;
@@ -53,6 +53,6 @@ public abstract class BaseSuggestionProvider implements IValueSuggestionProvider
   }
 
   protected IResourceTable getResourceTable() {
-    return StudioApp.getInstance().getResourceTable();
+    return IDEApplication.getInstance().getResourceTable();
   }
 }

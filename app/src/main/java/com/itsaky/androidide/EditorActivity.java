@@ -20,8 +20,12 @@
 package com.itsaky.androidide;
 
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
+import static com.itsaky.androidide.R.color;
+import static com.itsaky.androidide.R.drawable;
+import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setLastOpenedProject;
+import static com.itsaky.toaster.ToasterKt.toast;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -81,8 +85,7 @@ import com.itsaky.androidide.actions.ActionsRegistry;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
-import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
@@ -156,7 +159,7 @@ import kotlin.Unit;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
-public class EditorActivity extends StudioActivity
+public class EditorActivity extends IDEActivity
     implements TabLayout.OnTabSelectedListener,
         NavigationView.OnNavigationItemSelectedListener,
         DiagnosticClickListener,
@@ -185,22 +188,20 @@ public class EditorActivity extends StudioActivity
   private ActivityResultLauncher<Intent> mUIDesignerLauncher;
   private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
-  private GradleBuildService mBuildService;
   private final ServiceConnection mGradleServiceConnection =
       new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-          mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
-          Lookup.DEFAULT.register(BuildService.class, mBuildService);
+          final var buildService = ((GradleBuildService.GradleServiceBinder) service).getService();
           LOG.info("Gradle build service has been started...");
-          mBuildService
+          Lookup.DEFAULT.register(BuildService.KEY_BUILD_SERVICE, buildService);
+          buildService
               .setEventListener(mBuildEventListener)
               .startToolingServer(() -> initializeProject());
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-          mBuildService = null;
           LOG.info("Disconnected from Gradle build service...");
         }
       };
@@ -294,7 +295,7 @@ public class EditorActivity extends StudioActivity
 
   public void showDaemonStatus() {
     ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t));
-    shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
+    shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)));
     shell.bgAppend(
         String.format(
             "cd '%s' && sh gradlew --status",
@@ -309,7 +310,7 @@ public class EditorActivity extends StudioActivity
         ? mDaemonStatusFragment =
             new TextSheetFragment()
                 .setTextSelectable(true)
-                .setTitleText(R.string.gradle_daemon_status)
+                .setTitleText(string.gradle_daemon_status)
         : mDaemonStatusFragment;
   }
 
@@ -350,8 +351,8 @@ public class EditorActivity extends StudioActivity
   public void showFirstBuildNotice() {
     DialogUtils.newMaterialDialogBuilder(this)
         .setPositiveButton(android.R.string.ok, null)
-        .setTitle(R.string.title_first_build)
-        .setMessage(R.string.msg_first_build)
+        .setTitle(string.title_first_build)
+        .setMessage(string.msg_first_build)
         .setCancelable(false)
         .create()
         .show();
@@ -487,6 +488,7 @@ public class EditorActivity extends StudioActivity
   private void onEditorContentChanged(ContentChangeEvent event, Unsubscribe unsubscribe) {
     if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
       mViewModel.setFilesModified(true);
+      invalidateOptionsMenu();
     }
   }
 
@@ -515,6 +517,7 @@ public class EditorActivity extends StudioActivity
     editorView.onEditorSelected();
     mViewModel.setCurrentFile(position, editorView.getFile());
     refreshSymbolInput(editorView);
+    invalidateOptionsMenu();
   }
 
   @Override
@@ -544,6 +547,8 @@ public class EditorActivity extends StudioActivity
     final int id = p1.getItemId();
     if (id == R.id.editornav_discuss) {
       getApp().openTelegramGroup();
+    } else if (id == R.id.editornav_channel) {
+      getApp().openTelegramChannel();
     } else if (id == R.id.editornav_suggest) {
       getApp().openGitHub();
     } else if (id == R.id.editornav_needHelp) {
@@ -551,7 +556,7 @@ public class EditorActivity extends StudioActivity
     } else if (id == R.id.editornav_settings) {
       startActivity(new Intent(this, PreferencesActivity.class));
     } else if (id == R.id.editornav_share) {
-      startActivity(getShareTextIntent(getString(R.string.msg_share_app)));
+      startActivity(getShareTextIntent(getString(string.msg_share_app)));
     } else if (id == R.id.editornav_close_project) {
       confirmProjectClose();
     } else if (id == R.id.editornav_terminal) {
@@ -614,7 +619,7 @@ public class EditorActivity extends StudioActivity
       }
 
       if (editor != null && editor.getEditor() != null) {
-        editor.getEditor().close();
+        editor.getEditor().notifyClose();
         editor.getEditor().release();
       } else {
         LOG.error("Cannot save file before close. Editor instance is null");
@@ -654,7 +659,7 @@ public class EditorActivity extends StudioActivity
       for (int i = 0; i < count; i++) {
         final var editor = getEditorAtIndex(i);
         if (editor != null && editor.getEditor() != null) {
-          editor.getEditor().close();
+          editor.getEditor().notifyClose();
         } else {
           LOG.error("Unable to close file at index:", i);
         }
@@ -726,8 +731,8 @@ public class EditorActivity extends StudioActivity
       LOG.info("Launching UI Designer...");
       mUIDesignerLauncher.launch(intent);
     } catch (Throwable th) {
-      LOG.error(getString(R.string.err_cannot_preview_layout), th);
-      getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
+      LOG.error(getString(string.err_cannot_preview_layout), th);
+      toast(string.msg_cannot_preview_layout, Toaster.Type.ERROR);
     }
   }
 
@@ -739,7 +744,7 @@ public class EditorActivity extends StudioActivity
     SaveResult result = saveAllResult();
 
     if (notify) {
-      getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
+      toast(string.all_saved, Toaster.Type.SUCCESS);
     }
 
     if (result.gradleSaved) {
@@ -747,7 +752,7 @@ public class EditorActivity extends StudioActivity
     }
 
     if (canProcessResources) {
-      ProjectManager.INSTANCE.generateSources(mBuildService);
+      ProjectManager.INSTANCE.generateSources();
     }
 
     return result.gradleSaved;
@@ -801,7 +806,8 @@ public class EditorActivity extends StudioActivity
   }
 
   public void notifySyncNeeded() {
-    if (mBuildService != null && !mBuildService.isBuildInProgress()) {
+    final var buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE);
+    if (buildService != null && !buildService.isBuildInProgress()) {
       getSyncBanner()
           .setNegative(android.R.string.cancel, null)
           .setPositive(android.R.string.ok, v -> initializeProject())
@@ -812,11 +818,11 @@ public class EditorActivity extends StudioActivity
   public MaterialBanner getSyncBanner() {
     return mBinding
         .syncBanner
-        .setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
-        .setBannerBackgroundColor(ContextCompat.getColor(this, R.color.primaryLightColor))
-        .setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
-        .setIcon(R.drawable.ic_sync)
-        .setContentText(R.string.msg_sync_needed);
+        .setContentTextColor(ContextCompat.getColor(this, color.primaryTextColor))
+        .setBannerBackgroundColor(ContextCompat.getColor(this, color.primaryLightColor))
+        .setButtonTextColor(ContextCompat.getColor(this, color.secondaryColor))
+        .setIcon(drawable.ic_sync)
+        .setContentText(string.msg_sync_needed);
   }
 
   public void initializeProject() {
@@ -830,12 +836,18 @@ public class EditorActivity extends StudioActivity
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(this::preProjectInit);
 
-    final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
+    final var buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE);
+    if (buildService == null) {
+      LOG.error("No build service found. Cannot initialize project.");
+      return;
+    }
+
+    final var future = buildService.initializeProject(projectDir.getAbsolutePath());
     future.whenCompleteAsync(
         (result, error) -> {
           if (result == null || error != null) {
             LOG.error("An error occurred initializing the project with Tooling API", error);
-            setStatus(getString(R.string.msg_project_initialization_failed));
+            setStatus(getString(string.msg_project_initialization_failed));
             return;
           }
 
@@ -875,12 +887,8 @@ public class EditorActivity extends StudioActivity
     return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
   }
 
-  public GradleBuildService getBuildService() {
-    return mBuildService;
-  }
-
   protected void onProjectInitialized() {
-    ProjectManager.INSTANCE.setupProject(mBuildService.projectProxy);
+    ProjectManager.INSTANCE.setupProject();
     ProjectManager.INSTANCE.notifyProjectUpdate();
 
     //noinspection ConstantConditions
@@ -894,7 +902,7 @@ public class EditorActivity extends StudioActivity
     }
 
     initialSetup();
-    setStatus(getString(R.string.msg_project_initialized));
+    setStatus(getString(string.msg_project_initialized));
     mViewModel.isInitializing.setValue(false);
 
     if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
@@ -968,16 +976,19 @@ public class EditorActivity extends StudioActivity
   @Override
   protected void onResume() {
     super.onResume();
-
+    
+    // Actions are cleared when the activity is paused to avoid holding references to the activity
+    // So, when resumed, they should be registered and inflated again.
     EditorActivityActions.register(this);
-
+    invalidateOptionsMenu();
+    
     try {
       if (mFileTreeFragment != null) {
         mFileTreeFragment.listProjectFiles();
       }
     } catch (Throwable th) {
       LOG.error("Failed to update files list", th);
-      getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);
+      toast(string.msg_failed_list_files, Toaster.Type.ERROR);
     }
   }
 
@@ -1013,7 +1024,7 @@ public class EditorActivity extends StudioActivity
     }
     unbindService(mGradleServiceConnection);
     super.onDestroy();
-    Lookup.DEFAULT.unregister(BuildService.class);
+    Lookup.DEFAULT.unregisterAll();
     ApiVersionsRegistry.getInstance().clear();
     ResourceTableRegistry.getInstance().clear();
     WidgetTableRegistry.getInstance().clear();
@@ -1022,7 +1033,7 @@ public class EditorActivity extends StudioActivity
   }
 
   private void preProjectInit() {
-    setStatus(getString(R.string.msg_initializing_project));
+    setStatus(getString(string.msg_initializing_project));
     mViewModel.isInitializing.setValue(true);
   }
 
@@ -1073,8 +1084,8 @@ public class EditorActivity extends StudioActivity
             this,
             mBinding.editorDrawerLayout,
             mBinding.editorToolbar,
-            R.string.app_name,
-            R.string.app_name);
+            string.app_name,
+            string.app_name);
     mBinding.editorDrawerLayout.addDrawerListener(toggle);
     mBinding.startNav.setNavigationItemSelectedListener(this);
     toggle.syncState();
@@ -1163,8 +1174,8 @@ public class EditorActivity extends StudioActivity
         };
 
     final var sb = new SpannableStringBuilder();
-    appendClickableSpan(sb, R.string.msg_swipe_for_files, filesSpan);
-    appendClickableSpan(sb, R.string.msg_swipe_for_output, bottomSheetSpan);
+    appendClickableSpan(sb, string.msg_swipe_for_files, filesSpan);
+    appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan);
     mBinding.noEditorSummary.setText(sb);
   }
 
@@ -1203,7 +1214,7 @@ public class EditorActivity extends StudioActivity
           final var filename = outputFragment.getFilename();
           //noinspection deprecation
           final var progress =
-              ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
+              ProgressDialog.show(EditorActivity.this, null, getString(string.please_wait));
           TaskExecutor.executeAsync(
               outputFragment::getContent,
               text -> {
@@ -1215,7 +1226,7 @@ public class EditorActivity extends StudioActivity
 
   private void setupBottomSheetClearFAB() {
     TooltipCompat.setTooltipText(
-        mBinding.bottomSheet.clearFab, getString(R.string.title_clear_output));
+        mBinding.bottomSheet.clearFab, getString(string.title_clear_output));
     mBinding.bottomSheet.clearFab.setOnClickListener(
         v -> {
           final var fragment =
@@ -1303,11 +1314,11 @@ public class EditorActivity extends StudioActivity
   @SuppressWarnings("deprecation")
   private void shareText(String text, String type) {
     if (TextUtils.isEmpty(text)) {
-      getApp().toast(getString(R.string.msg_output_text_extraction_failed), Toaster.Type.ERROR);
+      toast(getString(string.msg_output_text_extraction_failed), Toaster.Type.ERROR);
       return;
     }
 
-    final var pd = ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
+    final var pd = ProgressDialog.show(this, null, getString(string.please_wait), true, false);
     TaskExecutor.executeAsyncProvideError(
         () -> writeTempFile(text, type),
         (result, error) -> {
@@ -1367,8 +1378,8 @@ public class EditorActivity extends StudioActivity
     final var builder =
         DialogUtils.newYesNoDialog(
             this,
-            getString(R.string.title_files_unsaved), // title
-            getString(R.string.msg_files_unsaved, TextUtils.join("\n", mapped)), // message
+            getString(string.title_files_unsaved), // title
+            getString(string.msg_files_unsaved, TextUtils.join("\n", mapped)), // message
             (dialog, which) -> { // 'yes' click
               dialog.dismiss();
               saveAll(true);
@@ -1394,11 +1405,12 @@ public class EditorActivity extends StudioActivity
       final var data = result.getData();
       if (data != null && data.hasExtra(DesignerActivity.KEY_GENERATED_CODE)) {
         final var code = data.getStringExtra(DesignerActivity.KEY_GENERATED_CODE);
-        editor.getEditor().setText(code);
+        editor.getEditor().replaceContent(code);
+        editor.markModified();
         saveAll();
       } else {
-        final var msg = getString(R.string.msg_invalid_designer_result);
-        getApp().toast(msg, Toaster.Type.ERROR);
+        final var msg = getString(string.msg_invalid_designer_result);
+        toast(msg, Toaster.Type.ERROR);
         LOG.error(msg, "Data returned by UI Designer is null or is invalid.");
       }
     } else {
@@ -1431,7 +1443,6 @@ public class EditorActivity extends StudioActivity
   }
 
   private void startServices() {
-
     if (bindService(
         new Intent(this, GradleBuildService.class),
         mGradleServiceConnection,
@@ -1498,11 +1509,11 @@ public class EditorActivity extends StudioActivity
 
   private void confirmProjectClose() {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.title_confirm_project_close);
-    builder.setMessage(R.string.msg_confirm_project_close);
-    builder.setNegativeButton(R.string.no, null);
+    builder.setTitle(string.title_confirm_project_close);
+    builder.setMessage(string.msg_confirm_project_close);
+    builder.setNegativeButton(string.no, null);
     builder.setPositiveButton(
-        R.string.yes,
+        string.yes,
         (d, w) -> {
           d.dismiss();
           closeProject(true);
@@ -1515,7 +1526,7 @@ public class EditorActivity extends StudioActivity
     final var rootProject = ProjectManager.INSTANCE.getRootProject();
     if (rootProject == null) {
       LOG.warn("No root project model found. Is the project initialized?");
-      getApp().toast(getString(R.string.msg_project_not_initialized), Toaster.Type.ERROR);
+      toast(getString(string.msg_project_not_initialized), Toaster.Type.ERROR);
       return null;
     }
 
@@ -1526,7 +1537,7 @@ public class EditorActivity extends StudioActivity
               .map(Project::getProjectDir)
               .collect(Collectors.toList());
     } catch (Throwable e) {
-      StudioApp.getInstance().toast(getString(R.string.msg_no_modules), Toaster.Type.ERROR);
+      toast(getString(string.msg_no_modules), Toaster.Type.ERROR);
       moduleDirs = Collections.emptyList();
     }
 
@@ -1557,16 +1568,16 @@ public class EditorActivity extends StudioActivity
     }
 
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.menu_find_project);
+    builder.setTitle(string.menu_find_project);
     builder.setView(binding.getRoot());
     builder.setCancelable(false);
     builder.setPositiveButton(
-        R.string.menu_find,
+        string.menu_find,
         (dialog, which) -> {
           final String text =
               Objects.requireNonNull(binding.input.getEditText()).getText().toString().trim();
           if (text.isEmpty()) {
-            getApp().toast(R.string.msg_empty_search_query, Toaster.Type.ERROR);
+            toast(string.msg_empty_search_query, Toaster.Type.ERROR);
             return;
           }
 
@@ -1596,10 +1607,10 @@ public class EditorActivity extends StudioActivity
           }
 
           if (searchDirs.isEmpty()) {
-            getApp().toast(R.string.msg_select_search_modules, Toaster.Type.ERROR);
+            toast(string.msg_select_search_modules, Toaster.Type.ERROR);
           } else {
             dialog.dismiss();
-            getProgressSheet(R.string.msg_searching_project)
+            getProgressSheet(string.msg_searching_project)
                 .show(getSupportFragmentManager(), "search_in_project_progress");
             RecursiveFileSearcher.searchRecursiveAsync(
                 text, extensionList, searchDirs, this::handleSearchResults);
@@ -1618,25 +1629,24 @@ public class EditorActivity extends StudioActivity
 
   private void showNeedHelpDialog() {
     MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.need_help);
-    builder.setMessage(R.string.msg_need_help);
+    builder.setTitle(string.need_help);
+    builder.setMessage(string.msg_need_help);
     builder.setPositiveButton(android.R.string.ok, null);
     builder.create().show();
   }
 
   private void createQuickActions() {
     ActionItem closeThis =
-        new ActionItem(
-            ACTION_ID_CLOSE, getString(R.string.action_closeThis), R.drawable.ic_close_this);
+        new ActionItem(ACTION_ID_CLOSE, getString(string.action_closeThis), drawable.ic_close_this);
     ActionItem closeOthers =
         new ActionItem(
-            ACTION_ID_OTHERS, getString(R.string.action_closeOthers), R.drawable.ic_close_others);
+            ACTION_ID_OTHERS, getString(string.action_closeOthers), drawable.ic_close_others);
     ActionItem closeAll =
-        new ActionItem(ACTION_ID_ALL, getString(R.string.action_closeAll), R.drawable.ic_close_all);
+        new ActionItem(ACTION_ID_ALL, getString(string.action_closeAll), drawable.ic_close_all);
     mTabCloseAction = new QuickAction(this, QuickAction.HORIZONTAL);
     mTabCloseAction.addActionItem(closeThis, closeOthers, closeAll);
-    mTabCloseAction.setColorRes(R.color.tabAction_background);
-    mTabCloseAction.setTextColorRes(R.color.tabAction_text);
+    mTabCloseAction.setColorRes(color.tabAction_background);
+    mTabCloseAction.setTextColorRes(color.tabAction_text);
 
     mTabCloseAction.setOnActionItemClickListener(
         (item) -> {

@@ -23,17 +23,16 @@ import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.stmt.ReturnStmt
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.toaster.Toaster
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
+import com.itsaky.toaster.toast
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
@@ -44,7 +43,7 @@ import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.TreeInfo
 import com.sun.tools.javac.util.Names
 import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 import javax.lang.model.element.VariableElement
 
 /**
@@ -66,11 +65,10 @@ class GenerateToStringMethodAction : FieldBasedAction() {
           if (error != null) {
             log.error("Unable to generate toString() implementation", error)
             ThreadUtils.runOnUiThread {
-              BaseApplication.getBaseInstance()
-                .toast(
-                  data[Context::class.java]!!.getString(R.string.msg_cannot_generate_toString),
-                  Toaster.Type.ERROR
-                )
+              toast(
+                data[Context::class.java]!!.getString(R.string.msg_cannot_generate_toString),
+                ERROR
+              )
             }
             return@whenComplete
           }
@@ -106,8 +104,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
   ) {
     if (isToStringOverridden(task, type)) {
       ThreadUtils.runOnUiThread {
-        BaseApplication.getBaseInstance()
-          .toast(data[Context::class.java]!!.getString(string.msg_toString_overridden), ERROR)
+        toast(data[Context::class.java]!!.getString(string.msg_toString_overridden), ERROR)
       }
       log.warn("toString() method has already been overridden in class ${type.simpleName}")
       return

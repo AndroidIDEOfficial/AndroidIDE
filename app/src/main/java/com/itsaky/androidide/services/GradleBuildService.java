@@ -47,6 +47,7 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.builder.BuildService;
@@ -91,7 +92,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
   private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
   private final IBinder mBinder = new GradleServiceBinder();
-  public IProject projectProxy;
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
   private Thread toolingServerThread;
@@ -518,10 +518,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         GradleBuildService.this.startServerOutputReader(serverStreams.err);
         GradleBuildService.this.server = (IToolingApiServer) launcher.getRemoteProxy();
-        GradleBuildService.this.projectProxy = (IProject) launcher.getRemoteProxy();
+        Lookup.DEFAULT.register(KEY_PROJECT_PROXY, ((IProject) launcher.getRemoteProxy()));
+
         GradleBuildService.this.isToolingServerStarted = true;
 
-        ProjectManager.INSTANCE.setupProject(GradleBuildService.this.projectProxy);
+        ProjectManager.INSTANCE.setupProject();
 
         if (listener != null) {
           listener.onServerStarted();

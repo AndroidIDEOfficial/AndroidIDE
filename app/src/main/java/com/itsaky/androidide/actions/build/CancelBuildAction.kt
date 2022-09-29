@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
+import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
@@ -38,26 +40,27 @@ class CancelBuildAction() : EditorActivityAction() {
 
   override fun prepare(data: ActionData) {
     super.prepare(data)
-    
+
     if (!visible) {
       return
     }
-    
+
     val context = getActivity(data)
-    if (context == null || context.buildService == null) {
+    val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    if (context == null || buildService == null) {
       markInvisible()
       return
     }
-    
+
     visible = true
-    enabled = context.buildService.isBuildInProgress
+    enabled = buildService.isBuildInProgress
   }
 
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
-
     log.info("Sending build cancellation request...")
-    context.buildService.cancelCurrentBuild().whenComplete { result, error ->
+    Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)?.cancelCurrentBuild()?.whenComplete {
+      result,
+      error ->
       if (error != null) {
         log.error("Failed to send build cancellation request", error)
         return@whenComplete

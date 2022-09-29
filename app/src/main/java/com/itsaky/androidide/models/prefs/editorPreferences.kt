@@ -38,6 +38,7 @@ const val FLAG_PASSWORD = "idepref_editor_flagPassword"
 const val WORD_WRAP = "idepref_editor_word_wrap"
 const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
+const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
 
 var completionsMatchLower: Boolean
   get() = prefManager.getBoolean(COMPLETIONS_MATCH_LOWER, false)
@@ -133,4 +134,10 @@ var useIcu: Boolean
   get() = prefManager.getBoolean(USE_ICU, false)
   set(value) {
     prefManager.putBoolean(USE_ICU, value)
+  }
+
+var useSoftTab: Boolean
+  get() = prefManager.getBoolean(USE_SOFT_TAB, true)
+  set(value) {
+    prefManager.putBoolean(USE_SOFT_TAB, value)
   }

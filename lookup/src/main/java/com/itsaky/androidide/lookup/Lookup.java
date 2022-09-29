@@ -102,6 +102,9 @@ public interface Lookup {
    */
   <T> void update(Key<T> key, T instance);
 
+  /** Unregister all registered services. */
+  void unregisterAll();
+
   /**
    * The key that is used to register services in the table.
    *

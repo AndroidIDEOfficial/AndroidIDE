@@ -23,6 +23,7 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.match
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -48,26 +49,35 @@ class QualifiedTagCompleter(provider: ICompletionProvider) : LayoutTagCompletion
     val result = mutableListOf<CompletionItem>()
     val (widgets, module) = doLookup()
     var fqn = prefix
-    if (fqn.endsWith('.')) {
+    if (prefix.endsWith('.')) {
       fqn = fqn.substringBeforeLast('.')
     }
 
-    widgets.getNode(fqn)?.children?.values?.forEach {
-      val qualifiedName = "${fqn}.${it.name}"
+    widgets.getNode(name = fqn, createIfNotPresent = false)?.children?.values?.forEach {
+      val qualifiedName = "$fqn.${it.name}"
       val match = match(it.name, qualifiedName, prefix)
       result.add(createTagCompletionItem(it.name, qualifiedName, match))
     }
-    
+
     addFromTrie(module.compileClasspathClasses, fqn, prefix, result)
     addFromTrie(module.compileJavaSourceClasses, fqn, prefix, result)
 
     return CompletionResult(result)
   }
-  
-  private fun addFromTrie(trie: ClassTrie, fqn: String, prefix: String, result: MutableList<CompletionItem>) {
-    val node = trie.findNode(fqn) ?: return
+
+  private fun addFromTrie(
+    trie: ClassTrie,
+    fqn: String,
+    prefix: String,
+    result: MutableList<CompletionItem>
+  ) {
+    val node = trie.findNode(fqn) ?: trie.findNode(fqn.substringBeforeLast('.')) ?: return
     node.children.values.forEach {
       val match = match(it.name, it.qualifiedName, prefix)
+      if (match == NO_MATCH) {
+        return@forEach
+      }
+      
       result.add(createTagCompletionItem(it.name, it.qualifiedName, match))
     }
   }

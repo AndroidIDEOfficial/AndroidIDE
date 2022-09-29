@@ -17,6 +17,7 @@
 package com.itsaky.androidide.language;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -24,6 +25,7 @@ import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 
 import java.nio.file.Paths;
@@ -42,7 +44,8 @@ import io.github.rosemoe.sora.text.ContentReference;
  * @author Akash Yadav
  */
 public abstract class IDELanguage implements Language {
-
+  
+  private static final ILogger LOG = ILogger.newInstance("IDELanguage");
   private Formatter formatter;
 
   @Override
@@ -68,10 +71,12 @@ public abstract class IDELanguage implements Language {
       final @NonNull Bundle extraArguments) {
     final var server = getLanguageServer();
     if (server == null) {
+      LOG.warn("Cannot provide completions. No language server available.");
       return;
     }
 
     if (!extraArguments.containsKey(IDEEditor.KEY_FILE)) {
+      LOG.warn("Cannot provide completions. No file provided.");
       return;
     }
 
@@ -101,7 +106,7 @@ public abstract class IDELanguage implements Language {
 
   @Override
   public boolean useTab() {
-    return false;
+    return !EditorPreferencesKt.getUseSoftTab();
   }
 
   @NonNull

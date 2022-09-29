@@ -1,42 +1,16 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+import com.itsaky.androidide.Versions
 
-android {
-    namespace "com.itsaky.androidide.shared"
-    compileSdkVersion rootProject.ext.compileSdk
-    buildToolsVersion rootProject.ext.buildTools
-    
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdk
-        targetSdkVersion rootProject.ext.targetSdk
-    }
-    
-    buildFeatures.viewBinding true
-    
-    compileOptions {
-        sourceCompatibility rootProject.ext.javaSourceVersion
-        targetCompatibility rootProject.ext.javaTargetVersion
-    }
-    
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    
-    buildTypes {
-        release {
-            minifyEnabled true
-        }
-    }
-    
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-    }
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = rootProject.ext.javaSourceVersion
+    targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
 dependencies {
     implementation google.guava
-    
     implementation project(path: ':logger')
 }

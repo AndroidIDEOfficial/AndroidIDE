@@ -29,6 +29,7 @@ import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.IProject.Type.Unknown
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Transforms project models from tooling API to the projects API.
@@ -42,18 +43,19 @@ class ProjectTransformer {
   fun transform(project: IProject): Project? {
     try {
       val path = project.projectPath.get()
-      val root =
-        Project(
-          name = project.name.get(),
-          description = project.description.get() ?: "",
-          path = path,
-          projectDir = project.projectDir.get(),
-          buildDir = project.buildDir.get(),
-          buildScript = project.buildScript.get(),
-          tasks = project.tasks.get() ?: listOf()
-        )
-      (root.subModules as MutableList).addAll(transform(project.listModules().get(), project))
-      return root
+      return Project(
+        name = project.name.get(),
+        description = project.description.get() ?: "",
+        path = path,
+        projectDir = project.projectDir.get(),
+        buildDir = project.buildDir.get(),
+        buildScript = project.buildScript.get(),
+
+        // As these lists will never change, we could make these thread-safe with
+        // CopyOnWriteArrayList
+        tasks = CopyOnWriteArrayList(project.tasks.get() ?: listOf()),
+        subModules = CopyOnWriteArrayList(transform(project.listModules().get(), project))
+      )
     } catch (error: Throwable) {
       log.error("Unable to transform project", error)
       return null

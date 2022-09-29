@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 
-import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
@@ -38,8 +37,8 @@ import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
-import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import org.jetbrains.annotations.Contract;
 
@@ -50,11 +49,11 @@ public abstract class BaseApplication extends MultiDexApplication {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
-  public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
+  public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
+  public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
   public static final String WEBSITE = "https://androidide.com";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
-  private StudioUtils mUtils;
   private PreferenceManager mPrefsManager;
 
   public static BaseApplication getBaseInstance() {
@@ -66,16 +65,11 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   public static boolean isAarch64() {
-    return /*!isAndroid12() && */ Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    return Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
   }
 
   public static boolean isArmv7a() {
     return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
-  }
-
-  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
-  public static boolean isAndroid12() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
   }
 
   @Nullable
@@ -93,6 +87,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void onCreate() {
     instance = this;
     Environment.init();
+    ToasterKt.init();
     super.onCreate();
 
     mPrefsManager = new PreferenceManager(this);
@@ -163,48 +158,36 @@ public abstract class BaseApplication extends MultiDexApplication {
   public File getProjectsDir() {
     return Environment.PROJECTS_DIR;
   }
-
-  public void toast(int msg, Toaster.Type type) {
-    getUtils().toast(msg, type);
-  }
-
-  public StudioUtils getUtils() {
-    return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
-  }
-
-  public void toastLong(String msg, Toaster.Type type) {
-    getUtils().toastLong(msg, type);
-  }
-
-  public void toastLong(int msg, Toaster.Type type) {
-    getUtils().toastLong(msg, type);
-  }
-
-  public void openTelegramGroup() {
+  
+  public void openTelegram(String url) {
     try {
       Intent open = new Intent();
       open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(BaseApplication.TELEGRAM_GROUP_URL));
+      open.setData(Uri.parse(url));
       open.setPackage("org.telegram.messenger");
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
-    } catch (Throwable th) {
+    } catch (Throwable th1) {
       try {
         Intent open = new Intent();
         open.setAction(Intent.ACTION_VIEW);
-        open.setData(Uri.parse(BaseApplication.TELEGRAM_GROUP_URL));
+        open.setData(Uri.parse(url));
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(open);
       } catch (Throwable th2) {
-        toast(th2.getMessage(), Toaster.Type.ERROR);
+        ToasterKt.toast(th2.getMessage(), Toaster.Type.ERROR);
       }
     }
   }
-
-  public void toast(String msg, Toaster.Type type) {
-    getUtils().toast(msg, type);
+  
+  public void openTelegramGroup(){
+    openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
   }
-
+  
+  public void openTelegramChannel(){
+    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
+  }
+  
   public void openGitHub() {
     try {
       Intent open = new Intent();
@@ -213,7 +196,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      toast(th.getMessage(), Toaster.Type.ERROR);
+      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 
@@ -225,7 +208,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      toast(th.getMessage(), Toaster.Type.ERROR);
+      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 
@@ -237,7 +220,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      toast(th.getMessage(), Toaster.Type.ERROR);
+      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 }

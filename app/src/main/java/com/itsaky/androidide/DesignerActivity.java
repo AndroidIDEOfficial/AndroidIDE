@@ -55,7 +55,7 @@ import androidx.transition.TransitionSet;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
 import com.itsaky.androidide.fragments.sheets.AttrEditorSheet;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -86,7 +86,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-public class DesignerActivity extends StudioActivity
+public class DesignerActivity extends IDEActivity
     implements WidgetItemAdapter.OnDragStartListener,
         AttrEditorSheet.OnViewDeletionFailedListener,
         ILayoutInflater.ContextProvider {

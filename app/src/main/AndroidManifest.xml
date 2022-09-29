@@ -12,7 +12,7 @@
   <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
   <application
-    android:name=".app.StudioApp"
+    android:name=".app.IDEApplication"
     android:allowBackup="false"
     android:allowNativeHeapPointerTagging="false"
     android:hardwareAccelerated="true"

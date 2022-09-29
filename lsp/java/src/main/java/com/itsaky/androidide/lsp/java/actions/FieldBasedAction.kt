@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.actions
 
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
@@ -27,12 +26,14 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
+import com.itsaky.toaster.toast
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.Tree.Kind.VARIABLE
 import com.sun.source.tree.VariableTree
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 import javax.lang.model.element.Modifier.STATIC
 
 /**
@@ -49,7 +50,11 @@ abstract class FieldBasedAction : BaseCodeAction() {
 
     if (
       !visible ||
-        !hasRequiredData(data, com.itsaky.androidide.models.Range::class.java, CodeEditor::class.java) ||
+        !hasRequiredData(
+          data,
+          com.itsaky.androidide.models.Range::class.java,
+          CodeEditor::class.java
+        ) ||
         ProjectManager.rootProject == null
     ) {
       markInvisible()
@@ -126,11 +131,7 @@ abstract class FieldBasedAction : BaseCodeAction() {
     }
 
     if (result.isEmpty()) {
-      BaseApplication.getBaseInstance()
-        .toast(
-          data[Context::class.java]!!.getString(R.string.msg_no_fields_found),
-          Toaster.Type.INFO
-        )
+      toast(data[Context::class.java]!!.getString(R.string.msg_no_fields_found), Toaster.Type.INFO)
       return
     }
 
@@ -171,11 +172,10 @@ abstract class FieldBasedAction : BaseCodeAction() {
       dialog.dismiss()
 
       if (checkedNames.isEmpty()) {
-        BaseApplication.getBaseInstance()
-          .toast(
-            data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
-            Toaster.Type.ERROR
-          )
+        toast(
+          data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
+          Toaster.Type.ERROR
+        )
         return@setPositiveButton
       }
 

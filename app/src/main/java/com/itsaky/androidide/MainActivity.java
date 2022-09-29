@@ -20,6 +20,8 @@
 
 package com.itsaky.androidide;
 
+import static com.itsaky.androidide.R.id;
+import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
@@ -36,35 +38,32 @@ import androidx.annotation.NonNull;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.text.HtmlCompat;
 
-import com.android.aaptcompiler.BlameLogger;
-import com.android.aaptcompiler.ResourceCompiler;
-import com.android.aaptcompiler.ResourceCompilerOptions;
-import com.android.utils.StdLogger;
+import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
-import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.StopWatch;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import java.io.File;
 
-public class MainActivity extends StudioActivity {
+public class MainActivity extends IDEActivity {
   private ActivityMainBinding binding;
-  
-  @Override
-  protected void preSetContentLayout() {
-    SplashScreen.installSplashScreen(this);
-  }
-  
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    if (!IDEApplication.isAbiSupported()) {
+      showDeviceNotSupported();
+      return;
+    }
+
     if (!checkToolsIsInstalled()) {
       showDialogInstallJdkSdk();
     } else {
@@ -73,30 +72,59 @@ public class MainActivity extends StudioActivity {
 
     getSupportFragmentManager()
         .beginTransaction()
-        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
+        .replace(id.container, new MainFragment(), MainFragment.TAG)
         .commit();
+  }
 
-    TaskExecutor.executeAsyncProvideError(
-        () -> {
-          final var input =
-              new File(
-                  Environment.PROJECTS_DIR, "TestApp/app/src/main/res/layout/activity_main.xml");
-          final var output = Environment.PROJECTS_DIR;
+  @Override
+  protected void onStorageGranted() {}
 
-          final var watch = new StopWatch("Compile sample resource");
-          ResourceCompiler.compileResource(
-              input,
-              output,
-              new ResourceCompilerOptions(),
-              new BlameLogger(new StdLogger(StdLogger.Level.VERBOSE), str -> str));
-          watch.log();
-          return true;
-        },
-        (result, error) -> {
-          if (error != null) {
-            LOG.error("XML compilation error", error);
-          }
-        });
+  @Override
+  protected void onStorageDenied() {
+    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
+    finishAffinity();
+  }
+
+  @Override
+  protected void preSetContentLayout() {
+    SplashScreen.installSplashScreen(this);
+  }
+
+  @Override
+  protected View bindLayout() {
+    binding = ActivityMainBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
+
+  private void showDialogInstallJdkSdk() {
+    final var dp24 = SizeUtils.dp2px(24);
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(string.title_warning);
+    final var view = new TextView(this);
+    view.setPaddingRelative(dp24, dp24, dp24, dp24);
+    view.setText(
+        HtmlCompat.fromHtml(
+            getString(string.msg_require_install_jdk_and_android_sdk),
+            HtmlCompat.FROM_HTML_MODE_COMPACT));
+    view.setMovementMethod(LinkMovementMethod.getInstance());
+    builder.setView(view);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
+    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.show();
+  }
+
+  private void openTerminal() {
+    startActivity(new Intent(this, TerminalActivity.class));
+  }
+
+  private void showDeviceNotSupported() {
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(string.title_device_not_supported);
+    builder.setMessage(string.msg_device_not_supported);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
+    builder.create().show();
   }
 
   private void openLastProject() {
@@ -105,15 +133,8 @@ public class MainActivity extends StudioActivity {
 
   private void tryOpenLastProject() {
     if (!getAutoOpenProjects()) {
-      Constants.SPLASH_TO_MAIN = false;
       return;
     }
-
-    if (!Constants.SPLASH_TO_MAIN) {
-      return;
-    }
-
-    Constants.SPLASH_TO_MAIN = false;
 
     final var openedProject = getLastOpenedProject();
     if (NO_OPENED_PROJECT.equals(openedProject)) {
@@ -121,13 +142,14 @@ public class MainActivity extends StudioActivity {
     }
 
     if (TextUtils.isEmpty(openedProject)) {
-      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      getApp();
+      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
     final var project = new File(openedProject);
     if (!project.exists()) {
-      getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
@@ -141,53 +163,17 @@ public class MainActivity extends StudioActivity {
 
   private void askProjectOpenPermission(File root) {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.title_confirm_open_project);
-    builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
+    builder.setTitle(string.title_confirm_open_project);
+    builder.setMessage(getString(string.msg_confirm_open_project, root.getAbsolutePath()));
     builder.setCancelable(false);
-    builder.setPositiveButton(R.string.yes, (d, w) -> openProject(root));
-    builder.setNegativeButton(R.string.no, null);
+    builder.setPositiveButton(string.yes, (d, w) -> openProject(root));
+    builder.setNegativeButton(string.no, null);
     builder.show();
   }
 
   public void openProject(@NonNull File root) {
     ProjectManager.INSTANCE.setProjectPath(root.getAbsolutePath());
     startActivity(new Intent(this, EditorActivity.class));
-  }
-
-  @Override
-  protected void onStorageGranted() {}
-
-  @Override
-  protected void onStorageDenied() {
-    getApp().toast(R.string.msg_storage_denied, Toaster.Type.ERROR);
-    finishAffinity();
-  }
-
-  @Override
-  protected View bindLayout() {
-    binding = ActivityMainBinding.inflate(getLayoutInflater());
-    return binding.getRoot();
-  }
-
-  private void showDialogInstallJdkSdk() {
-    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-    builder.setTitle(R.string.title_warning);
-    TextView view = new TextView(this);
-    view.setPadding(10, 10, 10, 10);
-    view.setText(
-        HtmlCompat.fromHtml(
-            getString(R.string.msg_require_install_jdk_and_android_sdk),
-            HtmlCompat.FROM_HTML_MODE_COMPACT));
-    view.setMovementMethod(LinkMovementMethod.getInstance());
-    builder.setView(view);
-    builder.setCancelable(false);
-    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
-    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
-    builder.show();
-  }
-
-  private void openTerminal() {
-    startActivity(new Intent(this, TerminalActivity.class));
   }
 
   private boolean checkToolsIsInstalled() {

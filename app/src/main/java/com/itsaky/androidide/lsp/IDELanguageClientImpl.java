@@ -19,6 +19,8 @@
  */
 package com.itsaky.androidide.lsp;
 
+import static com.itsaky.androidide.R.*;
+
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -26,14 +28,12 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
@@ -54,6 +54,7 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -195,7 +196,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "activity=" + activity(),
           "editor=" + editor,
           "action=" + action);
-      StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+      ToasterKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
       return;
     }
 
@@ -203,7 +204,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
     progress.setSubMessageEnabled(false);
     progress.setWelcomeTextEnabled(false);
     progress.setCancelable(false);
-    progress.setMessage(activity().getString(R.string.msg_performing_actions));
+    progress.setMessage(activity().getString(string.msg_performing_actions));
     progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
 
     TaskExecutor.executeAsyncProvideError(
@@ -213,7 +214,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-            StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            ToasterKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
           } else {
             editor.executeCommand(action.getCommand());
           }
@@ -348,7 +349,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         fileDiagnostics = fileDiagnostics.subList(0, MAX_DIAGNOSTIC_ITEMS_PER_FILE);
       }
       DiagnosticGroup group =
-          new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiagnostics);
+          new DiagnosticGroup(drawable.ic_language_java, file, fileDiagnostics);
       groups.add(group);
     }
     return groups;
@@ -474,7 +475,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
   private void showAvailableQuickfixes(IDEEditor editor, List<CodeActionItem> actions) {
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(activity());
-    builder.setTitle(R.string.msg_code_actions);
+    builder.setTitle(string.msg_code_actions);
     builder.setItems(
         asArray(actions),
         (d, w) -> {

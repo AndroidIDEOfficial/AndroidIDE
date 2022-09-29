@@ -20,11 +20,11 @@ package com.itsaky.androidide;
 import android.os.Bundle;
 import android.view.View;
 
-import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityCrashHandlerBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
 
-public class CrashHandlerActivity extends StudioActivity {
+public class CrashHandlerActivity extends IDEActivity {
 
   public static final String REPORT_ACTION = "com.itsaky.androidide.REPORT_CRASH";
   public static final String TRACE_KEY = "crash_trace";

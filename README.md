@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="./images/header.png" style="width: 70%;"/><br><br>
+  <img src="./images/header_dark.png#gh-dark-mode-only" style="width: 70%;"/><br><br>
+  <img src="./images/header_light.png#gh-light-mode-only" style="width: 70%;"/><br><br>
   <img src="./images/banner.png"/>
 </p><br>
 
@@ -11,12 +12,11 @@
 
 ![Minimum required SDK](https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252)
 ![Repository size](https://img.shields.io/github/repo-size/itsaky/androidide)
-![CodeFactor](https://www.codefactor.io/repository/github/itsaky/androidide/badge/main)
-![Commit activity](https://img.shields.io/github/commit-activity/m/itsaky/AndroidIDE)
-![Builds and tests](https://github.com/itsaky/AndroidIDE/actions/workflows/build.yml/badge.svg)  
-![Latest release](https://img.shields.io/github/v/release/itsaky/AndroidIDE?include_prereleases&label=latest%20release)
-![Downloads from releases](https://img.shields.io/github/downloads/itsaky/AndroidIDE/total?label=Downloads%20from%20releases)
-![Downloads from website](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  
+![CodeFactor](https://www.codefactor.io/repository/github/androidideofficial/androidide/badge/main)
+![Commit activity](https://img.shields.io/github/commit-activity/m/AndroidIDEOfficial/AndroidIDE)
+![Builds and tests](https://github.com/AndroidIDEOfficial/AndroidIDE/actions/workflows/build.yml/badge.svg)  
+![Latest release](https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&label=latest%20release)
+![Total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![Telegram](https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white)
 
@@ -51,10 +51,10 @@ in the terminal i.e. no GUI interface for `git`.
 
 ## Installation
 
-- Download the AndroidIDE APK from [releases](https://github.com/itsaky/AndroidIDE/releases). You
-  can also download APKs from [GitHub actions](https://github.com/itsaky/AndroidIDE/actions).
+- Download the AndroidIDE APK from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
+  can also download APKs from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions).
 - Follow the
-  instructions [here](https://github.com/itsaky/androidide-build-tools#installing-in-androidide) to
+  instructions [here](https://github.com/AndroidIDEOfficial/androidide-build-tools#installing-in-androidide) to
   install the build tools.
 
 ## Limitations

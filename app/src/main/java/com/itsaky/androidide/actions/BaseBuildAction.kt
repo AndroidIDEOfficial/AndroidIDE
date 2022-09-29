@@ -33,7 +33,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
 
   protected val log: ILogger = ILogger.newInstance(javaClass.simpleName)
   protected val buildService: BuildService?
-    get() = Lookup.DEFAULT.lookup(BuildService::class.java)
+    get() = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
 
   override fun prepare(data: ActionData) {
     val context = getActivity(data)

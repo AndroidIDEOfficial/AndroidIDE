@@ -4,6 +4,8 @@
     <item name="actionOverflowButtonStyle">@style/AppTheme.Toolbar.OverflowButton</item>
     <item name="colorPrimary">@color/primaryColor</item>
     <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+    <item name="colorOnPrimary">@color/secondaryDarkColor</item>
+    <item name="colorPrimaryContainer">@color/secondaryColor</item>
     <item name="colorAccent">@color/secondaryColor</item>
     <item name="colorSurface">@color/surfaceColor</item>
     <item name="colorButtonNormal">@color/secondaryColor</item>
@@ -22,6 +24,7 @@
     <item name="android:textColorSecondary">@color/secondaryTextColor</item>
     <item name="android:windowBackground">@color/content_background</item>
     <item name="android:fontFamily">@font/josefin_sans</item>
+    <item name="switchPreferenceStyle">@style/AppTheme.SwitchPreference</item>
   </style>
 
   <style name="AppTheme.Splash" parent="Theme.SplashScreen">
@@ -32,6 +35,10 @@
     <item name="android:statusBarColor">@color/primaryColor</item>
     <item name="android:navigationBarColor">@color/primaryColor</item>
     <item name="android:windowLightStatusBar">false</item>
+  </style>
+
+  <style name="AppTheme.SwitchPreference" parent="Preference.SwitchPreference.Material">
+    <item name="android:widgetLayout">@layout/preference_widget_materialswitch</item>
   </style>
 
   <style name="AppTheme.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">

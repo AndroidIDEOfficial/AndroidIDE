@@ -1,7 +1,16 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="title_gradle_service_notification_channel">AndroidIDE ग्रेडल बिल्ड सर्विस</string>
     <string name="msg_hex_color_code">हेक्स कलर कोड</string>
     <string name="msg_color_picker_pick">चुने</string>
     <string name="msg_chmod_exec">एक्सेक्यूटबले अनुमति सेट कर रहा है…</string>
     <string name="msg_linking">%2$s %1$s से लिंक हो रहा है</string>
-    <string name="msg_extracting_hooks">libhook लाइब्रेरीज एक्सट्रेक्ट हो रही है…</string>
+    <string name="msg_extracting_hooks">hook लाइब्रेरीज एक्सट्रेक्ट हो रही है…</string>
+    <string name="msg_empty_package">पैकेज का नाम खाली है</string>
+    <string name="msg_package_is_not_valid">पैकेज का नाम मान्य नहीं है</string>
+    <string name="msg_package_is_to_long">पैकेज का नाम लंबा है</string>
+    <string name="msg_package_not_valid_char_1">वर्ण \'_\' पैकेज सेगमेंट में पहला वर्ण नहीं हो सकता</string>
+    <string name="msg_package_not_use_digit_first">एक अंक पैकेज सेगमेंट में पहला अक्षर नहीं हो सकता</string>
+    <string name="msg_package_not_valid_char_2">Android एप्लिकेशन पैकेज नामों में वर्ण "%1$s" की अनुमति नहीं है</string>
+    <string name="msg_package_mus_have_dot">पैकेज में कम से कम एक \'.\' सेपरेटर होना चाहिए</string>
+    
 </resources>

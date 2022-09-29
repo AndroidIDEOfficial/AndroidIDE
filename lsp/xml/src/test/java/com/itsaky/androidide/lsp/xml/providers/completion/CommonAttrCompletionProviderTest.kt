@@ -27,16 +27,13 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 class CommonAttrCompletionProviderTest : CompletionHelper by CompletionHelperImpl() {
-  
-  @Before
-  fun setup() = XMLLSPTest.initProjectIfNeeded()
-  
+
+  @Before fun setup() = XMLLSPTest.initProjectIfNeeded()
+
   @Test
   fun `test simple drawable attributes`() {
     XMLLSPTest.apply {
@@ -44,6 +41,32 @@ class CommonAttrCompletionProviderTest : CompletionHelper by CompletionHelperImp
       val (incomplete, items) = complete()
       assertThat(incomplete).isFalse()
       assertThat(items).contains("android:shape")
+    }
+  }
+
+  @Test // prefix: 'f' in a <translate> tag
+  fun `test simple anim attributes`() {
+    XMLLSPTest.apply {
+      openFile("../res/anim/TestSimpleAttributes")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items).containsAtLeast("android:fromXDelta", "android:fromYDelta")
+    }
+  }
+
+  @Test // prefix: 'm' in a <arcMotion> tag
+  fun `test simple transition attributes`() {
+    XMLLSPTest.apply {
+      openFile("../res/transition/TestSimpleAttributes")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items)
+        .containsAtLeast(
+          "android:matchOrder",
+          "android:minimumHorizontalAngle",
+          "android:minimumVerticalAngle",
+          "android:maximumAngle"
+        )
     }
   }
 }

@@ -63,7 +63,6 @@ import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
-import java.io.IOException
 import java.io.Reader
 import kotlin.io.path.name
 
@@ -126,14 +125,7 @@ class XmlCompletionProvider(settings: IServerSettings) :
   }
 
   private fun toString(contents: CharSequence): String {
-    val reader = getReader(contents)
-    val text = reader.readText()
-    try {
-      reader.close()
-    } catch (e: IOException) {
-      log.warn("Unable to close char sequence reader", e)
-    }
-    return text
+    return getReader(contents).use { it.readText() }
   }
 
   private fun getReader(contents: CharSequence): Reader =

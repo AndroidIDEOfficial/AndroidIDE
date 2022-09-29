@@ -25,6 +25,7 @@ java {
 }
 
 dependencies {
+    implementation aapt.common
     implementation google.guava_jre
     implementation xml.jb_annotations
 }

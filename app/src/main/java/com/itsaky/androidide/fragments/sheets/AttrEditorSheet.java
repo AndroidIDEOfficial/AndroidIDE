@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import static com.itsaky.androidide.R.drawable;
+import static com.itsaky.androidide.R.string;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,10 +31,9 @@ import androidx.annotation.Nullable;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
 import com.itsaky.androidide.adapters.XMLAttributeListAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
@@ -44,6 +46,7 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import org.jetbrains.annotations.Contract;
 
@@ -92,11 +95,10 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     if (VIEW_ACTIONS.isEmpty()) {
       Collections.addAll(
           VIEW_ACTIONS,
-          IconTextListItem.create(getString(R.string.msg_viewaction_add_attr), R.drawable.ic_add),
+          IconTextListItem.create(getString(string.msg_viewaction_add_attr), drawable.ic_add),
+          IconTextListItem.create(getString(string.title_viewaction_delete), drawable.ic_delete),
           IconTextListItem.create(
-              getString(R.string.title_viewaction_delete), R.drawable.ic_delete),
-          IconTextListItem.create(
-              getString(R.string.msg_viewaction_select_parent), R.drawable.ic_view_select_parent));
+              getString(string.msg_viewaction_select_parent), drawable.ic_view_select_parent));
     }
 
     setupViewData();
@@ -129,8 +131,8 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
     final var format = attribute.findFormat();
     if (format == -1) {
-      StudioApp.getInstance().toast(getString(R.string.msg_no_attr_format), Toaster.Type.ERROR);
-      LOG.error(getString(R.string.msg_no_attr_format), attribute);
+      ToasterKt.toast(getString(string.msg_no_attr_format), Toaster.Type.ERROR);
+      LOG.error(getString(string.msg_no_attr_format), attribute);
       return;
     }
 
@@ -195,7 +197,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         tag = "View";
       }
 
-      final var attrs = StudioApp.getInstance().attrInfo();
+      final var attrs = IDEApplication.getInstance().attrInfo();
       final var style = attrs.getStyle(tag);
       if (style == null) {
         LOG.error("Unable to retrieve attributes for tag:", tag);
@@ -206,7 +208,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
       attributes.addAll(style.attributes);
       attributes.addAll(attrs.NO_PARENT.attributes);
 
-      final var widgetInfo = StudioApp.getInstance().widgetInfo();
+      final var widgetInfo = IDEApplication.getInstance().widgetInfo();
       final var widget = widgetInfo.getWidgetBySimpleName(tag);
       if (widget != null) {
         for (var superclass : widget.superclasses) {
@@ -267,8 +269,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                           && mDeletionFailedListener.onDeletionFailed(this.selectedView);
                 }
                 if (!handled) {
-                  StudioApp.getInstance()
-                      .toast(getString(R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
+                  ToasterKt.toast(getString(string.msg_view_deletion_failed), Toaster.Type.ERROR);
                 } else {
                   dismiss();
                 }
@@ -277,7 +278,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
           .show();
     } else if (position == 2) { // Select parent
       if (this.selectedView.getParent() == null) {
-        StudioApp.getInstance().toast(getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
+        ToasterKt.toast(getString(string.msg_no_view_parent), Toaster.Type.ERROR);
         return;
       }
 

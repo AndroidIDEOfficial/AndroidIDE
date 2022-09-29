@@ -94,4 +94,110 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       assertThat(items).contains("parent")
     }
   }
+
+  @Test // prefix: '@string/ap'       // for attribute 'android:text'
+  // TestAttrValueWithQualifiedRefPrefix
+  fun `test value completion with unqualified reference prefix`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithRefPrefix")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+
+      assertThat(items)
+        .containsAtLeast(
+          "@string/app_name",
+          "@string/appbar_scrolling_view_behavior",
+          "@android:string/app_category_audio",
+          "@android:string/app_category_game",
+          "@android:string/app_category_image",
+          "@android:string/app_category_maps",
+          "@android:string/app_category_news",
+          "@android:string/app_category_social",
+          "@android:string/app_category_video"
+        )
+    }
+  }
+
+  @Test // prefix: '@android:string/ap'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefPrefix")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+
+      assertThat(items).doesNotContain("@string/app_name")
+      assertThat(items).doesNotContain("@string/appbar_scrolling_view_behavior")
+
+      assertThat(items)
+        .containsAtLeast(
+          "@android:string/app_category_audio",
+          "@android:string/app_category_game",
+          "@android:string/app_category_image",
+          "@android:string/app_category_maps",
+          "@android:string/app_category_news",
+          "@android:string/app_category_social",
+          "@android:string/app_category_video"
+        )
+    }
+  }
+
+  @Test // prefix: '@com.itsaky.test.app:string/ap'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix (test with custom package not android)`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefPrefix2")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+
+      assertThat(items).contains("@string/app_name")
+      assertThat(items).doesNotContain("@string/appbar_scrolling_view_behavior")
+
+      arrayOf(
+          "@android:string/app_category_audio",
+          "@android:string/app_category_game",
+          "@android:string/app_category_image",
+          "@android:string/app_category_maps",
+          "@android:string/app_category_news",
+          "@android:string/app_category_social",
+          "@android:string/app_category_video"
+        )
+        .forEach { assertThat(items).doesNotContain(it) }
+    }
+  }
+
+  @Test // prefix: '@android:s'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete type`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompleteType")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items).containsAtLeast("string", "style", "styleable")
+    }
+  }
+
+  @Test // prefix: '@c'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete type or package`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompleteTypeOrPck")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items)
+        .containsAtLeast(
+          /*resource type*/ "color",
+          /*pck*/ "com.google.android.material",
+          /*pck*/ "com.itsaky.test.app"
+        )
+    }
+  }
+
+  @Test // prefix: '@com.'       // for attribute 'android:text'
+  fun `test value completion with qualified reference prefix with incomplete package`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/TestAttrValueWithQualifiedRefWithIncompletePck")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      assertThat(items).doesNotContain("color")
+      assertThat(items)
+        .containsAtLeast(/*pck*/ "com.google.android.material", /*pck*/ "com.itsaky.test.app")
+    }
+  }
 }

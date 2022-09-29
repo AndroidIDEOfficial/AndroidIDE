@@ -1,5 +1,7 @@
 package com.itsaky.androidide.fragments;
 
+import static com.itsaky.androidide.R.string;
+
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -18,9 +20,8 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.WizardTemplateAdapter;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.FragmentWizardBinding;
 import com.itsaky.androidide.databinding.LayoutLoadingWizardBinding;
 import com.itsaky.androidide.databinding.SetupFooterBinding;
@@ -36,6 +37,7 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.SingleTextWatcher;
 import com.itsaky.androidide.viewmodel.WizardViewModel;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.toaster.ToasterKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -131,7 +133,7 @@ public class WizardFragment extends BaseFragment {
               if (mProgressSheet != null && mProgressSheet.isShowing()) {
                 mProgressSheet.dismiss();
               }
-              StudioApp.getInstance().toast(message, Toaster.Type.ERROR);
+              ToasterKt.toast(message, Toaster.Type.ERROR);
             });
 
     mViewModel
@@ -174,7 +176,7 @@ public class WizardFragment extends BaseFragment {
     if (mProgressSheet != null && mProgressSheet.isShowing()) {
       mProgressSheet.dismiss();
     }
-    StudioApp.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
+    ToasterKt.toast(string.project_created_successfully, Toaster.Type.SUCCESS);
 
     if (mListener != null) {
       getParentFragmentManager().popBackStack();
@@ -221,7 +223,7 @@ public class WizardFragment extends BaseFragment {
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
       return Integer.parseInt(sdk);
     } catch (Exception e) {
-      StudioApp.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
+      ToasterKt.toast(e.getMessage(), Toaster.Type.ERROR);
     }
     return -1;
   }
@@ -254,7 +256,7 @@ public class WizardFragment extends BaseFragment {
       final String cppToolChain =
           getCppToolchans().get(detailsBinding.etToolchain.getText().toString());
 
-      PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+      PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
       manager.putInt(PREF_MIN_SDK_INDEX_KEY, minSdkIndex);
       manager.putInt(PREF_TERGET_SDK_INDEX_KEY, targetSdkIndex);
       manager.putString(PREF_PACKAGE_DOMAIN_KEY, AndroidUtils.getPackageDomain(packageName));
@@ -329,13 +331,13 @@ public class WizardFragment extends BaseFragment {
     templatesBinding.getRoot().setVisibility(View.VISIBLE);
     detailsBinding.tilToolchain.setVisibility(View.GONE);
     footerBinding.nextButton.setVisibility(View.GONE);
-    footerBinding.nextButton.setText(R.string.next);
-    footerBinding.exitButton.setText(R.string.exit);
-    binding.wizardDescriptionId.setText(R.string.new_project);
+    footerBinding.nextButton.setText(string.next);
+    footerBinding.exitButton.setText(string.exit);
+    binding.wizardDescriptionId.setText(string.new_project);
   }
 
   private void showDetailsView() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     List<String> languages = new ArrayList<>();
     if (mCurrentTemplate != null) {
@@ -349,7 +351,7 @@ public class WizardFragment extends BaseFragment {
 
     final var packageName =
         manager.getString(PREF_PACKAGE_DOMAIN_KEY, "com.example").concat(".myapplication");
-    detailsBinding.etAppName.setText(R.string.template_def_app_name);
+    detailsBinding.etAppName.setText(string.template_def_app_name);
     detailsBinding.etPackageName.setText(packageName);
     detailsBinding.tilLanguage.setEnabled(languages.size() != 1);
 
@@ -399,13 +401,13 @@ public class WizardFragment extends BaseFragment {
     detailsBinding.getRoot().setVisibility(View.VISIBLE);
     templatesBinding.getRoot().setVisibility(View.GONE);
     binding.wizardDescriptionId.setText(mCurrentTemplate.getName());
-    footerBinding.nextButton.setText(R.string.create_project);
+    footerBinding.nextButton.setText(string.create_project);
     footerBinding.nextButton.setVisibility(View.VISIBLE);
-    footerBinding.exitButton.setText(R.string.previous);
+    footerBinding.exitButton.setText(string.previous);
   }
 
   private void initDetailsView() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     detailsBinding
         .tilAppName
@@ -466,7 +468,7 @@ public class WizardFragment extends BaseFragment {
   }
 
   private void setSaveLocation() {
-    PreferenceManager manager = StudioApp.getInstance().getPrefManager();
+    PreferenceManager manager = IDEApplication.getInstance().getPrefManager();
 
     String saveProjectPath =
         manager.getString(PREF_SAVE_PROJECT_DIR_KEY, Environment.PROJECTS_DIR.getAbsolutePath())
@@ -490,10 +492,10 @@ public class WizardFragment extends BaseFragment {
   private void verifyAppName(Editable editable, boolean isAddToPackage) {
     String name = editable.toString().trim();
     if (TextUtils.isEmpty(name)) {
-      detailsBinding.tilAppName.setError(getString(R.string.wizard_error_name_empty));
+      detailsBinding.tilAppName.setError(getString(string.wizard_error_name_empty));
       return;
     } else if (!AndroidUtils.validateNameChecker(AndroidUtils.trimWhiteSpace(name))) {
-      detailsBinding.tilAppName.setError(getString(R.string.wizard_error_name_illegal));
+      detailsBinding.tilAppName.setError(getString(string.wizard_error_name_illegal));
       return;
     } else {
       detailsBinding.tilAppName.setErrorEnabled(false);
@@ -519,8 +521,8 @@ public class WizardFragment extends BaseFragment {
   private void showDialogNdkNotSupportedOfficially() {
     DialogUtils.newMaterialDialogBuilder(requireContext())
         .setPositiveButton(android.R.string.ok, null)
-        .setTitle(R.string.title_warning)
-        .setMessage(R.string.msg_ndk_currently_unsupported)
+        .setTitle(string.title_warning)
+        .setMessage(string.msg_ndk_currently_unsupported)
         .setCancelable(false)
         .create()
         .show();

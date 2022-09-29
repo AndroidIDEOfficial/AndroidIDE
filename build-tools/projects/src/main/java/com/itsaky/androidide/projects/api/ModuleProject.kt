@@ -58,9 +58,8 @@ abstract class ModuleProject(
     const val PROP_USAGE = "org.gradle.usage"
     const val USAGE_API = "java-api"
     const val USAGE_RUNTIME = "java-runtime"
-    
-    @JvmStatic
-    val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
+
+    @JvmStatic val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
   }
 
   @JvmField val compileJavaSourceClasses = SourceClassTrie()
@@ -109,35 +108,35 @@ abstract class ModuleProject(
     indexSources()
     indexClasspaths()
   }
-  
+
   internal fun indexClasspaths() {
-    
+
     this.compileClasspathClasses.clear()
-    
+
     val watch = StopWatch("Indexing classpaths")
     val paths = getCompileClasspaths().filter { it.exists() }
-  
+
     for (path in paths) {
       // Use 'getCanonicalFile' just to be sure that caches are stored with correct keys
       // See JavacFileManager.getContainer(Path) for more details
       CacheFSInfoSingleton.cache(CacheFSInfoSingleton.getCanonicalFile(path.toPath()))
     }
-  
+
     val topLevelClasses = JarFsClasspathReader().listClasses(paths).filter { it.isTopLevel }
     topLevelClasses.forEach { this.compileClasspathClasses.append(it.name) }
-  
+
     watch.log()
     log.debug("Found ${topLevelClasses.size} classpaths.")
-  
+
     if (this is AndroidModule) {
       BootClasspathProvider.update(bootClassPaths.map { it.path })
     }
   }
-  
+
   internal fun indexSources() {
-    
+
     this.compileJavaSourceClasses.clear()
-    
+
     val watch = StopWatch("Indexing sources")
     var count = 0
     getCompileSourceDirectories().forEach {
@@ -151,11 +150,11 @@ abstract class ModuleProject(
           count++
         }
     }
-  
+
     watch.log()
     log.debug("Found $count source files.")
   }
-  
+
   fun getSourceFilesInDir(dir: Path): List<SourceNode> =
     this.compileJavaSourceClasses.getSourceFilesInDir(dir)
 
@@ -220,11 +219,11 @@ abstract class ModuleProject(
       .findInPackage(packageName)
       .filterIsInstance(SourceNode::class.java)
   }
-  
-  open fun isFromThisModule(file: File) : Boolean {
+
+  open fun isFromThisModule(file: File): Boolean {
     return isFromThisModule(file.toPath())
   }
-  
+
   open fun isFromThisModule(file: Path): Boolean {
     // TODO This can be probably improved
     return file.startsWith(this.projectDir.toPath())

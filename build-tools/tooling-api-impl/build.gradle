@@ -64,10 +64,11 @@ repositories {
 }
 
 dependencies {
-    implementation project (path: ':logger')
     implementation project (path: ':build-tools:tooling-api')
     
     implementation common.jkotlin
+    implementation xml.xercesImpl
+    implementation xml.apis
     implementation 'org.gradle:gradle-tooling-api:7.5.1'
     
     testImplementation project (path: ':build-tools:tooling-api-testing')

@@ -43,6 +43,7 @@ import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import java.io.File
+import java.util.concurrent.CompletableFuture
 
 /**
  * A [Project] model implementation for Android modules which is exposed to other modules and
@@ -302,6 +303,22 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     }
     val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
     return ResourceTableRegistry.getInstance().forPackage(this.packageName, *resDirs.toTypedArray())
+  }
+  
+  /**
+   * Updates the resource table for this module.
+   */
+  fun updateResourceTable() {
+    if (this.packageName == UNKNOWN_PACKAGE) {
+      return
+    }
+    
+    CompletableFuture.runAsync {
+      val tableRegistry = ResourceTableRegistry.getInstance()
+      val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return@runAsync
+      tableRegistry.removeTable(this.packageName)
+      tableRegistry.forPackage(this.packageName, *resDirs.toTypedArray())
+    }
   }
 
   /**

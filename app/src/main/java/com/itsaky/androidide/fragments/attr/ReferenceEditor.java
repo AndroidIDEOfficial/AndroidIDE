@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.databinding.LayoutReferenceAttrEditorBinding;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
@@ -61,7 +61,7 @@ public class ReferenceEditor extends AbstractReferenceEditor {
 
   @Override
   protected List<String> computeReferenceItems() {
-    final var resTable = StudioApp.getInstance().getResourceTable();
+    final var resTable = IDEApplication.getInstance().getResourceTable();
     final var list = new ArrayList<>(resTable.listResourceNames(null));
 
     final var tables = ValuesTableFactory.getAllTables();

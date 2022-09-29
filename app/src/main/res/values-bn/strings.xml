@@ -21,6 +21,7 @@
     <string name="share_with_friends">বন্ধুদের সাথে শেয়ার করুন</string>
     <string name="ide_preferences">IDE-এর পছন্দ</string>
     <string name="discussions_on_telegram">টেলিগ্রামে আলোচনা</string>
+    <string name="official_tg_channel">অফিসিয়াল টেলিগ্রাম চ্যানেল</string>
     <string name="msg_empty_view">আপনাকে দেখানোর মতো আমার কাছে কিছুই নেই…</string>
     <string name="btn_terminal">টার্মিনাল</string>
     <string name="reset">রিসেট করুন</string>
@@ -150,6 +151,7 @@
     <string name="file_name">ফাইলের নাম</string>
     <string name="new_name">নতুন নাম</string>
     <string name="new_file">নতুন ফাইল</string>
+    <string name="create_auto_layout">স্বয়ংক্রিয়ভাবে লেআউট ফাইল তৈরি করুন</string>
     <string name="new_java_class">নতুন জাভা ক্লাস</string>
     <string name="new_xml_resource">নতুন XML resource</string>
     <string name="new_folder">নতুন ফোল্ডার</string>
@@ -182,6 +184,7 @@
     <string name="msg_failed_list_files">প্রকল্প ফাইল তালিকাভুক্ত করতে ব্যর্থ!</string>
     <string name="msg_storage_denied">সঞ্চয়স্থানের অনুমতি ছাড়া এগোনো যাবে না</string>
     <string name="msg_storage_granted">সঞ্চয়স্থানের অনুমতি দেওয়া হয়েছে!</string>
+    <string name="open_with">অন্য অ্যাপ দিয়ে খুলুন...</string>
 
     <!-- Code Editor -->
     <string name="undo">Undo</string>
@@ -346,4 +349,11 @@
     <string name="err_authority_not_allowed">কর্তৃপক্ষ \'%s\' অনুমোদিত নয়</string>
     <string name="idepref_useIcu_title">ICU lib ব্যবহার করুন</string>
     <string name="idepref_useIcu_summary">ডাবল-ট্যাপ এবং দীর্ঘক্ষণ চাপা শব্দ নির্বাচনের জন্য ICU লাইব্রেরি ব্যবহার করুন৷</string>
+
+    <!--The text sorrounded with '@@' is spanned as clickable.-->
+    <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
+    <string name="msg_swipe_for_files">@@ফাইল গুলি@@র জন্য বাম দিকে সোয়াইপ করুন।</string>
+    <string name="msg_swipe_for_output">@@বিল্ড আউটপুট@@ এর জন্য উপরে সোয়াইপ করুন।</string>
+    <string name="idepref_editor_useSoftTabs_title">সফ্ট ট্যাব ব্যবহার করুন</string>
+    <string name="idepref_editor_useSoftTabs_summary">ট্যাব অক্ষরের (\\t) পরিবর্তে স্পেস ব্যবহার করবেন কিনা তা বেছে নিন।</string>
 </resources>

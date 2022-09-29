@@ -18,6 +18,10 @@
         android:id="@+id/editornav_group_discuss"
         android:title="@string/discuss_amp_help">
         <item
+            android:id="@+id/editornav_channel"
+            android:icon="@drawable/ic_telegram"
+            android:title="@string/official_tg_channel" />
+        <item
             android:id="@+id/editornav_discuss"
             android:icon="@drawable/ic_telegram"
             android:title="@string/discussions_on_telegram" />

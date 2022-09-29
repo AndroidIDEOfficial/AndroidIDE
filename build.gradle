@@ -38,8 +38,8 @@ buildscript {
         versionName = Versions.INSTANCE.versionName
         packageName = "com.itsaky.androidide"
         
-        javaSourceVersion = JavaVersion.VERSION_11
-        javaTargetVersion = JavaVersion.VERSION_11
+        javaSourceVersion = Versions.INSTANCE.javaVersion
+        javaTargetVersion = Versions.INSTANCE.javaVersion
     }
     
     repositories {

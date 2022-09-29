@@ -29,7 +29,7 @@ import kotlin.io.path.nameWithoutExtension
  * @author Akash Yadav
  */
 open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : ClassTrie(root) {
-
+  
   companion object {
     @JvmStatic
     private val pkgNameMethod by lazy {
@@ -39,7 +39,9 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
 
     @JvmStatic
     private fun packageName(file: Path): String {
-      return pkgNameMethod.invoke(null, file) as String
+      return try { pkgNameMethod.invoke(null, file) as String } catch (error: Throwable) {
+        throw RuntimeException(error)
+      }
     }
   }
 

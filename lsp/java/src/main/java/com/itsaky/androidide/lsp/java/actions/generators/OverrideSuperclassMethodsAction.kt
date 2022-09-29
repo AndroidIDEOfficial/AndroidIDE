@@ -19,7 +19,6 @@ package com.itsaky.androidide.lsp.java.actions.generators
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
@@ -35,11 +34,13 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
+import com.itsaky.toaster.toast
 import com.sun.source.tree.MethodTree
 import com.sun.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.*
-import java.util.concurrent.*
+import java.util.Arrays
+import java.util.Optional
+import java.util.concurrent.CompletableFuture
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
@@ -63,7 +64,14 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, com.itsaky.androidide.models.Range::class.java, CodeEditor::class.java)) {
+    if (
+      !visible ||
+        !hasRequiredData(
+          data,
+          com.itsaky.androidide.models.Range::class.java,
+          CodeEditor::class.java
+        )
+    ) {
       markInvisible()
       return
     }
@@ -135,11 +143,10 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
   override fun postExec(data: ActionData, result: Any) {
     if (result !is List<*> || result.isEmpty() || position < 0) {
       log.warn("Unable to find any overridable method")
-      BaseApplication.getBaseInstance()
-        .toast(
-          data[Context::class.java]!!.getString(R.string.msg_no_overridable_methods),
-          Toaster.Type.ERROR
-        )
+      toast(
+        data[Context::class.java]!!.getString(R.string.msg_no_overridable_methods),
+        Toaster.Type.ERROR
+      )
       return
     }
 
@@ -161,11 +168,10 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
       dialog.dismiss()
 
       if (checkedMethods.isEmpty()) {
-        BaseApplication.getBaseInstance()
-          .toast(
-            data[Context::class.java]!!.getString(R.string.msg_no_methods_selected),
-            Toaster.Type.ERROR
-          )
+        toast(
+          data[Context::class.java]!!.getString(R.string.msg_no_methods_selected),
+          Toaster.Type.ERROR
+        )
         return@setPositiveButton
       }
 
@@ -176,11 +182,10 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
             log.error("An error occurred overriding methods")
 
             ThreadUtils.runOnUiThread {
-              BaseApplication.getBaseInstance()
-                .toast(
-                  data[Context::class.java]!!.getString(R.string.msg_cannot_override_methods),
-                  Toaster.Type.ERROR
-                )
+              toast(
+                data[Context::class.java]!!.getString(R.string.msg_cannot_override_methods),
+                Toaster.Type.ERROR
+              )
             }
           }
         }

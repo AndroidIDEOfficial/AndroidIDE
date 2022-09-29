@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutColorAttrEditorBinding;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -66,8 +66,8 @@ public class ColorEditor extends AbstractReferenceEditor {
     try {
       CommonParseUtils parser =
           new CommonParseUtils(
-              StudioApp.getInstance().getResourceTable(),
-              StudioApp.getInstance().getApplicationContext().getResources().getDisplayMetrics());
+              IDEApplication.getInstance().getResourceTable(),
+              IDEApplication.getInstance().getApplicationContext().getResources().getDisplayMetrics());
       final var col = parser.parseColor(attribute.getValue(), requireContext());
       this.binding.colorPreview.setCardBackgroundColor(col);
     } catch (Throwable th) {
@@ -115,7 +115,7 @@ public class ColorEditor extends AbstractReferenceEditor {
             .map("@android:color/"::concat)
             .collect(Collectors.toList()));
 
-    final var resTable = StudioApp.getInstance().getResourceTable();
+    final var resTable = IDEApplication.getInstance().getResourceTable();
     list.addAll(resTable.listResourceNames("color"));
 
     return list;

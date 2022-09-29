@@ -23,10 +23,12 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.eventbus.events.editor.ChangeType.DELETE
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
@@ -76,6 +78,8 @@ abstract class LSPTest {
       ToolingApiTestLauncher().launchServer(implDir = FileProvider.implModule().pathString)
     this.toolingProject = project
     this.toolingServer = server
+    
+    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
 
     server
       .initialize(InitializeProjectMessage(FileProvider.projectRoot().toFile().absolutePath))
@@ -86,7 +90,7 @@ abstract class LSPTest {
     registerServer()
     FileManager.register()
     ProjectManager.register()
-    ProjectManager.setupProject(project)
+    ProjectManager.setupProject()
 
     // We need to manually setup the language server with the project here
     // ProjectManager.notifyProjectUpdate()

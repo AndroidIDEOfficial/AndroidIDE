@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.managers.PreferenceManager;
 
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
@@ -43,12 +43,12 @@ public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
     if (v != null) {
       v.setBackgroundColor(
           ContextCompat.getColor(
-              StudioApp.getInstance(), com.itsaky.androidide.R.color.content_background));
+              IDEApplication.getInstance(), com.itsaky.androidide.R.color.content_background));
     }
     return v;
   }
 
   protected PreferenceManager getPrefManager() {
-    return StudioApp.getInstance().getPrefManager();
+    return IDEApplication.getInstance().getPrefManager();
   }
 }

@@ -59,8 +59,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -87,6 +87,10 @@ android {
         abortOnError false
         disable 'VectorPath', 'NestedWeights', 'ContentDescription', 'SmallSp'
     }
+}
+
+configurations.all {
+    exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
 }
 
 kapt {
@@ -131,10 +135,12 @@ dependencies {
     implementation common.kotlin
     
     // Local projects here
-    implementation project (':build-tools:aaptcompiler')
-    implementation project (':build-tools:xml-utils')
+    implementation project (':editor')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
+    implementation project (':build-tools:aaptcompiler')
+    implementation project (':build-tools:javac-services')
+    implementation project (':build-tools:xml-utils')
     implementation project (':build-tools:projects')
     implementation project (':build-tools:tooling-api')
     implementation project (':lookup')

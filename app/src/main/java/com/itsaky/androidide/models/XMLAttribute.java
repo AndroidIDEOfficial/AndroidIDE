@@ -22,7 +22,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.impl.UiAttribute;
@@ -120,7 +120,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
       return getFormat();
     }
 
-    final var attrs = StudioApp.getInstance().attrInfo();
+    final var attrs = IDEApplication.getInstance().attrInfo();
     this.attr = attrs.getAttribute(getAttributeName());
     if (this.attr != null) {
       this.format = this.attr.format;
