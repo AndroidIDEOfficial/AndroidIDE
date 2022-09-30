@@ -26,7 +26,7 @@ ext {
             javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.4',
             lang3      : 'org.apache.commons:commons-lang3:3.12.0',
             io         : 'commons-io:commons-io:2.11.0',
-            kotlin     : 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.10',
+            kotlin     : 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20',
             jkotlin    : 'org.jetbrains.kotlin:kotlin-stdlib-jdk8',
             eventbus_ap: 'org.greenrobot:eventbus-annotation-processor:3.3.1'
     ]
