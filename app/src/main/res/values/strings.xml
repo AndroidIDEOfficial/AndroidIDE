@@ -117,6 +117,8 @@
   <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
   <string name="template_no_activity">No Activity</string>
   <string name="template_no_activity_description">Creates a new project without activity</string>
+  <string name="template_library">Library Template</string>
+  <string name="template_library_description">Creates a new library project</string>
 
   <!-- Files -->
   <string name="save">Save</string>
