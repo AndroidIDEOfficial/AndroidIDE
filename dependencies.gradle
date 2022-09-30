@@ -19,7 +19,7 @@ ext {
             editor     : 'io.github.Rosemoe.sora-editor:editor:0.17.1',
             utilcode   : 'com.blankj:utilcodex:1.31.0',
             glide      : 'com.github.bumptech.glide:glide:4.13.2',
-            glide_ap   : 'com.github.bumptech.glide:compiler:4.13.2',
+            glide_ap   : 'com.github.bumptech.glide:compiler:4.14.1',
             quickaction: 'com.github.piruin:quickaction:2.4.3',
             jsoup      : 'org.jsoup:jsoup:1.15.3',
             antlr4     : 'org.antlr:antlr4-runtime:4.9.3',
