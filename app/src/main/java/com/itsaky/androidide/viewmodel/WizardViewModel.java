@@ -127,15 +127,15 @@ public class WizardViewModel extends AndroidViewModel {
                 .setDescription(
                     getApplication().getApplicationContext(), R.string.template_no_activity_description)
                 .setImageId(R.drawable.template_no_activity),
-        libTemplate =
+        androidLibrary =
             new ProjectTemplate()
                 .setId(10)
                 .setSupportJava(true)
                 .setSupportKotlin(true)
-                .setName(getApplication().getApplicationContext(), R.string.template_library)
+                .setName(getApplication().getApplicationContext(), R.string.template_android_library)
                 .setDescription(
-                    getApplication().getApplicationContext(), R.string.template_library_description)
-                .setImageId(R.drawable.template_library);
+                    getApplication().getApplicationContext(), R.string.template_android_library_description)
+                .setImageId(R.drawable.template_android_library);
 
     mTemplates.add(noActivity);
     mTemplates.add(empty);
@@ -147,7 +147,7 @@ public class WizardViewModel extends AndroidViewModel {
     mTemplates.add(cppWizard);
     mTemplates.add(compose);
     mTemplates.add(libgdx);
-    mTemplates.add(libTemplate);
+    mTemplates.add(androidLibrary);
 
     mProjectTemplatesList.postValue(mTemplates);
     mLoadingState.postValue(false);
