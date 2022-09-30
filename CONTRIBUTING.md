@@ -1,18 +1,18 @@
 # Contributing
 
-This document outlines how to propose a change to AndrodIDE. By contributing to this project, you
-agree to abide the terms specified in [CODE OF CONDUCT](./CODE_OF_CONDUCT.md).
+This document outlines how to propose a change to AndroidIDE. By contributing to this project, you
+agree to abide the terms specified in the [CODE OF CONDUCT](./CODE_OF_CONDUCT.md).
 
 ## Requirements
 
 - Android Studio.
 - JDK 11 (prefer the one bundled with Android Studio). Newer versions are not recommended.
 
-## Build the project.
+## Build the project
 
 Open the project in Android Studio. No extra steps are needed for this.
 
-It is possible to build AndroidIDE in AndroidIDE iteself. But, as it might a too heavy task for an Android device to build the AndroidIDE project, Android Studio is always recommended.
+It is possible to build AndroidIDE in AndroidIDE iteself. But, as it might be a too heavy task for an Android device to be able to build the project, Android Studio is always recommended.
 
 ## Source code format
 
@@ -38,9 +38,9 @@ To contribute to this project,
 
 ## Issues & Pull requests
 
-Use the issue/PR templates when possible. Provide a proper title and a clear description for the
+Use the issue/PR templates whenever possible. Provide a proper title and a clear description of the
 issue/PR. For bug reports, provide a step-by-step procedure to reproduce the issue. Always put crash
-logs, build outputs, etc in `code blocks`.
+logs, build outputs, etc. in `code blocks`.
 
 
 ## Contact us
