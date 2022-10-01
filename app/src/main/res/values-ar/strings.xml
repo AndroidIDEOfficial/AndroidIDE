@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?> 
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation"> 
  
   <!-- AndroidIDE --> 
@@ -22,7 +22,7 @@
   <string name="ide_preferences">تفضيلات IDE</string> 
   <string name="discussions_on_telegram">مناقشات على Telegram</string> 
   <string name="msg_empty_view">ليس لدي ما أعرضه لك ...</string> 
-  <string name="btn_terminal">Terminal</string> 
+  <string name="btn_terminal">تيرمينال</string> 
   <string name="reset">إعادة ضبط</string> 
   <string name="app_logs">سجلات التطبيق</string> 
   <string name="ide_logs">سجلات IDE</string> 
@@ -32,9 +32,9 @@
   <!-- LSP, Diagnostics & Completions --> 
   <string name="msg_cannot_perform_fix">غير قادر على أداء الإصلاح السريع</string> 
   <string name="msg_performing_actions">تنفيذ إجراء التعليمات البرمجية ...</string> 
-  <string name="msg_api_info_since">Since API %d</string> 
-  <string name="msg_api_info_removed">Removed in API %d</string> 
-  <string name="msg_api_info_deprecated">Deprecated in API %d</string> 
+  <string name="msg_api_info_since">منذ API %d</string> 
+  <string name="msg_api_info_removed">محذوف في API %d</string> 
+  <string name="msg_api_info_deprecated">غير معتمد في API %d</string> 
   <string name="msg_finding_references">جارٍ البحث عن المراجع ...</string> 
   <string name="msg_finding_definition">جارٍ البحث عن التعريف ...</string> 
   <string name="msg_no_definition">التعريف غير موجود</string> 
@@ -53,7 +53,7 @@
   <!-- Project Builder --> 
   <string name="lint">لينت</string> 
   <string name="lint_debug">لينت</string> 
-  <string name="lint_release">lintRelease</string> 
+  <string name="lint_release">لينت الاصدار</string> 
   <string name="build">يبني</string> 
   <string name="build_debug">تجميع</string> 
   <string name="build_output">بناء الناتج</string> 
@@ -189,8 +189,8 @@
   <string name="undo">الغاء التحميل</string> 
   <string name="redo">إعادة</string> 
  
-  <item name="copy" type="string" tools:override="true">Copy</item> 
-  <item name="text_to_search" type="string">Text to search</item> 
+  <item name="copy" type="string" tools:override="true">نسخ</item> 
+  <item name="text_to_search" type="string">نص للبحث</item> 
  
   <!-- Preferences --> 
   <string name="title_change_text_size">حجم خط المحرر</string> 
@@ -352,7 +352,7 @@
  
   <!--The text sorrounded with '@@' is spanned as clickable.--> 
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.--> 
-  <string name="msg_swipe_for_files">اسحب لليسار لـfiles.</string> 
-  <string name="msg_swipe_for_output">اسحب لأعلى لـbuild output.</string> 
+  <string name="msg_swipe_for_files">@@اسحب لليسار للملفات</string> 
+  <string name="msg_swipe_for_output">@@اسحب للأعلى لعرض البناء</string> 
 </resources> 
 
