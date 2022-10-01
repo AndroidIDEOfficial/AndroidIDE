@@ -1,5 +1,5 @@
 <resources>
     <string name="msg_cannot_create_view">غير قادر على صنع مظهر: %s</string>
-    <string name="err_no_attr_adapter">No attribute adapter implementation found for %s</string>
-    <string name="msg_view_not_supported">View %s is not supported currently.</string>
+    <string name="err_no_attr_adapter">لا خاصية (attribute) موجودة بالاسم %s</string>
+    <string name="msg_view_not_supported">المظهر %s غير مدعوم حاليا.</string>
 </resources>
