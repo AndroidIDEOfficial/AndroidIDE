@@ -53,6 +53,7 @@ public class ToolsManager {
 
     CompletableFuture.runAsync(
             () -> {
+              writeNoMediaFile();
               copyBusyboxIfNeeded();
               extractLogsenderIfNeeded();
               extractAapt2();
@@ -73,7 +74,20 @@ public class ToolsManager {
               }
             });
   }
-
+  
+  private static void writeNoMediaFile() {
+    final var noMedia = new File(BaseApplication.getBaseInstance().getProjectsDir(), ".nomedia");
+    if (!noMedia.exists()) {
+      try {
+        if (!noMedia.createNewFile()) {
+          LOG.error("Failed to create .nomedia file in projects directory");
+        }
+      } catch (IOException e) {
+        LOG.error("Failed to create .nomedia file in projects directory");
+      }
+    }
+  }
+  
   private static void extractAndroidJar() {
     if (!Environment.ANDROID_JAR.exists()) {
       ResourceUtils.copyFileFromAssets(
