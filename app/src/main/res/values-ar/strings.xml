@@ -352,7 +352,7 @@
  
   <!--The text sorrounded with '@@' is spanned as clickable.--> 
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.--> 
-  <string name="msg_swipe_for_files">@@اسحب لليسار للملفات</string> 
-  <string name="msg_swipe_for_output">@@اسحب للأعلى لعرض البناء</string> 
+  <string name="msg_swipe_for_files">@@اسحب لليسار @@للملفات</string> 
+  <string name="msg_swipe_for_output">@@اسحب للأعلى لعرض @@البناء</string> 
 </resources> 
 
