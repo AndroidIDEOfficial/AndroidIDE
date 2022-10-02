@@ -521,16 +521,7 @@ public class EditorActivity extends IDEActivity
   }
 
   @Override
-  public void onTabUnselected(@NonNull TabLayout.Tab tab) {
-    final var position = tab.getPosition();
-    final var editorView = getEditorAtIndex(position);
-    if (editorView != null) {
-      final var editor = editorView.getEditor();
-      if (editor != null) {
-        editor.ensureWindowsDismissed();
-      }
-    }
-  }
+  public void onTabUnselected(@NonNull TabLayout.Tab tab) {}
 
   @Override
   public void onTabReselected(@NonNull TabLayout.Tab tab) {

@@ -22,10 +22,12 @@ import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisibleP
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -664,6 +666,14 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
         }));
   }
 
+  @Override
+  protected void onFocusChanged(final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    if (!gainFocus) {
+      ensureWindowsDismissed();
+    }
+  }
+  
   /** Ensures that all the windows are dismissed. */
   @Override
   public void ensureWindowsDismissed() {
