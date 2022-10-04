@@ -32,7 +32,7 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 public class IDEPreferences extends BasePreferenceFragment
     implements Preference.OnPreferenceClickListener {
@@ -165,7 +165,7 @@ public class IDEPreferences extends BasePreferenceFragment
       startActivity(intent);
     } catch (Throwable th) {
       LOG.error("Unable to start activity to show changelog", th);
-      ToasterKt.toast("Unable to start activity", Toaster.Type.ERROR);
+      ToastUtilsKt.toast("Unable to start activity", Toaster.Type.ERROR);
     }
   }
 }

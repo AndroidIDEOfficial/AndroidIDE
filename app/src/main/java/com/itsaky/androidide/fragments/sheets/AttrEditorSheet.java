@@ -46,7 +46,7 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import org.jetbrains.annotations.Contract;
 
@@ -131,7 +131,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
     final var format = attribute.findFormat();
     if (format == -1) {
-      ToasterKt.toast(getString(string.msg_no_attr_format), Toaster.Type.ERROR);
+      ToastUtilsKt.toast(getString(string.msg_no_attr_format), Toaster.Type.ERROR);
       LOG.error(getString(string.msg_no_attr_format), attribute);
       return;
     }
@@ -269,7 +269,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                           && mDeletionFailedListener.onDeletionFailed(this.selectedView);
                 }
                 if (!handled) {
-                  ToasterKt.toast(getString(string.msg_view_deletion_failed), Toaster.Type.ERROR);
+                  ToastUtilsKt.toast(getString(string.msg_view_deletion_failed), Toaster.Type.ERROR);
                 } else {
                   dismiss();
                 }
@@ -278,7 +278,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
           .show();
     } else if (position == 2) { // Select parent
       if (this.selectedView.getParent() == null) {
-        ToasterKt.toast(getString(string.msg_no_view_parent), Toaster.Type.ERROR);
+        ToastUtilsKt.toast(getString(string.msg_no_view_parent), Toaster.Type.ERROR);
         return;
       }
 

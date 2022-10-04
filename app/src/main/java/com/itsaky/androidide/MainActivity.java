@@ -48,7 +48,7 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import java.io.File;
 
@@ -81,7 +81,7 @@ public class MainActivity extends IDEActivity {
 
   @Override
   protected void onStorageDenied() {
-    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
+    ToastUtilsKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
     finishAffinity();
   }
 
@@ -143,13 +143,13 @@ public class MainActivity extends IDEActivity {
 
     if (TextUtils.isEmpty(openedProject)) {
       getApp();
-      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      ToastUtilsKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
     final var project = new File(openedProject);
     if (!project.exists()) {
-      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      ToastUtilsKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 

@@ -31,7 +31,6 @@ import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -54,7 +53,7 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -196,7 +195,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "activity=" + activity(),
           "editor=" + editor,
           "action=" + action);
-      ToasterKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+      ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
       return;
     }
 
@@ -214,7 +213,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-            ToasterKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
           } else {
             editor.executeCommand(action.getCommand());
           }

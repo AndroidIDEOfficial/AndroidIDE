@@ -25,7 +25,7 @@ import static com.itsaky.androidide.R.drawable;
 import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setLastOpenedProject;
-import static com.itsaky.toaster.ToasterKt.toast;
+import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;

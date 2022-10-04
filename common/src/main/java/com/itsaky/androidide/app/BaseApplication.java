@@ -38,7 +38,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import org.jetbrains.annotations.Contract;
 
@@ -87,7 +87,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void onCreate() {
     instance = this;
     Environment.init();
-    ToasterKt.init();
+    ToastUtilsKt.init();
     super.onCreate();
 
     mPrefsManager = new PreferenceManager(this);
@@ -175,7 +175,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(open);
       } catch (Throwable th2) {
-        ToasterKt.toast(th2.getMessage(), Toaster.Type.ERROR);
+        ToastUtilsKt.toast(th2.getMessage(), Toaster.Type.ERROR);
       }
     }
   }
@@ -196,7 +196,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 
@@ -208,7 +208,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 
@@ -220,7 +220,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th) {
-      ToasterKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
     }
   }
 }
