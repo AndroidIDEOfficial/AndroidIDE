@@ -125,7 +125,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     item.icon = action.icon
 
     if (item.icon != null) {
-      item.icon.alpha = if (action.enabled) 255 else 76
+      item.icon!!.alpha = if (action.enabled) 255 else 76
       item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
     } else {
       item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)

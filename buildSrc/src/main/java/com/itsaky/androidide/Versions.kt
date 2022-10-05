@@ -27,7 +27,7 @@ import org.gradle.api.JavaVersion
 object Versions {
 
   /** The compile SDK version. */
-  const val compileSdk = 32
+  const val compileSdk = 33
 
   /** The build tools version. */
   const val buildTools = "31.0.0"

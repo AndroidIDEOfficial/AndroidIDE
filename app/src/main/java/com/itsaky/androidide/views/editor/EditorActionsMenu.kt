@@ -376,14 +376,14 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     return widest
   }
 
-  private class ActionsListAdapter(val menu: Menu, val forceShowTitle: Boolean = false) :
+  private class ActionsListAdapter(val menu: Menu?, val forceShowTitle: Boolean = false) :
     RecyclerView.Adapter<ActionsListAdapter.VH>() {
 
     override fun getItemCount(): Int {
-      return menu.size()
+      return menu?.size() ?: 0
     }
 
-    fun getItem(position: Int): MenuItem = menu.getItem(position)
+    fun getItem(position: Int): MenuItem? = menu?.getItem(position)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
       return VH(
@@ -392,7 +392,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-      val item = getItem(position)
+      val item = getItem(position) ?: return
       holder.binding.root.text = if (forceShowTitle) item.title else ""
       holder.binding.root.tooltipText = item.title
       holder.binding.root.icon =
