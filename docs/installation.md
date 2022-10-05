@@ -23,20 +23,11 @@ Install the JDK, SDK and commandline tools for sdk.
     ```bash
     chmod +x ./install.sh
     ```
-- Start the installation process by executing the script :
-```
-Usage:
-./install.sh [options...]
-
-Options :
--i <ver>  Set the installation directory. Defaults to $HOME.
--s <ver>  Android SDK version to download. Defaults to `33.0.1`.
--c        Download Android SDK with command line tools. Defaults to false.
--j <ver>  Choose whether to install JDK 11 or JDK 17. Please note that JDK 17 must be preferred. This option will be removed in future.
--m <link> Manifest file URL. Defaults to 'manifest.json' in 'androidide-build-tools' GitHub repository.
--p <pkgm> Package manager. Defaults to 'pkg'.
-```
-- After you execute the script, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process.
+- Start the installation process by executing the script with :
+    ```
+    ./install.sh -c
+    ```
+- After you execute the script, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process. Execute the script with `-h` argument to see a list of options you can use to customize the installation.
 - After successful installation, `Downloads completed. You are ready to go!` will be printed.
 
 [^cheat]:
