@@ -29,7 +29,7 @@ import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.util.TreePath
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
+import java.util.Objects
 
 /**
  * Completes class names.
@@ -72,7 +72,9 @@ class ClassNamesCompletionProvider(
 
     abortIfCancelled()
     abortCompletionIfCancelled()
-    for (className in compiler.publicTopLevelTypes()) {
+
+    val topLevelTypes = compiler.publicTopLevelTypes()
+    for (className in topLevelTypes) {
       val matchLevel = matchLevel(simpleName(className), partial)
       if (matchLevel == NO_MATCH) {
         continue
@@ -82,14 +84,9 @@ class ClassNamesCompletionProvider(
         continue
       }
 
-      if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
-        break
-      }
-
       list.add(classItem(imports, file, className, matchLevel))
       uniques.add(className)
     }
-
     abortIfCancelled()
     abortCompletionIfCancelled()
     for (t in root.typeDecls) {
