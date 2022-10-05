@@ -115,6 +115,8 @@
     <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
     <string name="template_cpp">নেটিভ C++</string>
     <string name="template_cpp_description">JNI ব্যবহার করার জন্য কনফিগার করা একটি খালি কার্যকলাপ সহ একটি নতুন প্রকল্প তৈরি করে</string>
+    <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
+    <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
 
     <!-- Files -->
     <string name="save">সেভ</string>
