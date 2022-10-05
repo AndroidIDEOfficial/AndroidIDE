@@ -28,6 +28,8 @@ Format.
 
 Before proposing a change, it is always recommended to open an issue and discuss it with the maintainers.
 
+**The `main` branch is protected and requires all the commits to be signed with your GPG key and the commit history to be linear.** See [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
+
 To contribute to this project,
 
 - Fork the repo.
