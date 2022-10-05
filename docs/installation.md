@@ -43,5 +43,5 @@ Options :
     Cheatsheet : 
     - One command to setup the terminal and to install build tools.
         ```bash
-        cd && pkg up && pkg in wget && wget https://raw.githubusercontent.com/AndroidIDEOfficial/androidide-build-tools/main/install.sh && chmod +x ./install.sh && ./install.sh -c && cd
+        cd && pkg up && pkg in wget && wget https://raw.githubusercontent.com/AndroidIDEOfficial/androidide-build-tools/main/install.sh && chmod +x ./install.sh && ./install.sh -c
         ```
