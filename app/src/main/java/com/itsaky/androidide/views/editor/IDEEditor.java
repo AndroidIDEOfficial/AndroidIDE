@@ -18,6 +18,7 @@ package com.itsaky.androidide.views.editor;
 
 import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -56,7 +57,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -528,7 +528,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          ToasterKt.toast(string.msg_no_definition, Toaster.Type.ERROR);
+          toast(string.msg_no_definition, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -626,7 +626,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          ToasterKt.toast(string.msg_no_references, Toaster.Type.ERROR);
+          toast(string.msg_no_references, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -667,13 +667,14 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   }
 
   @Override
-  protected void onFocusChanged(final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+  protected void onFocusChanged(
+      final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (!gainFocus) {
       ensureWindowsDismissed();
     }
   }
-  
+
   /** Ensures that all the windows are dismissed. */
   @Override
   public void ensureWindowsDismissed() {
