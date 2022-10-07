@@ -134,6 +134,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
     if (action.getShowAsActionFlags(data) != -1) {
       item.setShowAsAction(action.getShowAsActionFlags(data))
     }
+    
+    action.createActionView(data)?.let {
+      item.actionView = it
+    }
 
     if (action !is ActionMenu) {
       item.setOnMenuItemClickListener {

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.actions
 
 import android.graphics.drawable.Drawable
+import android.view.View
 
 /**
  * An action that can be registered using the [ActionsRegistry]
@@ -83,6 +84,13 @@ interface ActionItem {
     visible = false
     enabled = false
   }
+
+  /**
+   * Create custom action view for this action item.
+   *
+   * @return The custom action view or `null`.
+   */
+  fun createActionView(data: ActionData): View? = null
 
   /** Location where an action item will be shown. */
   enum class Location(val id: String) {
