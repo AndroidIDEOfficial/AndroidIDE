@@ -20,15 +20,15 @@ package com.itsaky.androidide.lsp.java.compiler;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.CloseUtils;
+import com.itsaky.androidide.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
@@ -80,47 +80,34 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
     AndroidFsProviderImpl.INSTANCE.init();
 
     if (module == null) {
-      setFallbackPlatformClasspath();
       return;
     }
 
+    // Must be set before setting classpaths
+    System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, Environment.JAVA_HOME.getAbsolutePath());
+    
     setLocationLogError(StandardLocation.SOURCE_PATH, module.getCompileSourceDirectories());
-
-    final Set<File> classpaths = configureClasspaths(module);
-    setLocationLogError(StandardLocation.CLASS_PATH, classpaths);
-
+    setLocationLogError(StandardLocation.CLASS_PATH, configureClasspaths(module));
     listLocations(EnumSet.of(StandardLocation.CLASS_PATH, StandardLocation.PLATFORM_CLASS_PATH));
   }
 
   @NonNull
   private Set<File> configureClasspaths(final ModuleProject module) {
     if (module == null) {
-      setFallbackPlatformClasspath();
-      return emptySet();
-    }
-
-    final Set<File> classpaths = module.getCompileClasspaths();
-    if (!(module instanceof AndroidModule)) {
-      setFallbackPlatformClasspath();
       return emptySet();
     }
   
-    final AndroidModule androidModule = (AndroidModule) module;
-    classpaths.addAll(androidModule.getBootClassPaths());
-    
-    setLocationLogError(StandardLocation.PLATFORM_CLASS_PATH, androidModule.getBootClassPaths());
-    return classpaths;
+    if (module instanceof AndroidModule) {
+      final AndroidModule androidModule = (AndroidModule) module;
+      setLocationLogError(StandardLocation.PLATFORM_CLASS_PATH, androidModule.getBootClassPaths());
+    }
+  
+    return module.getCompileClasspaths();
   }
 
   private static JavacFileManager createDelegateFileManager() {
     return JavacTool.create()
         .getStandardFileManager(LOG::debug, Locale.getDefault(), StandardCharsets.UTF_8);
-  }
-
-  protected void setFallbackPlatformClasspath() {
-    // TODO Module system must be enabled for Java modules instead of setting Platform Classpath
-    setLocationLogError(
-        StandardLocation.PLATFORM_CLASS_PATH, Collections.singleton(Environment.ANDROID_JAR));
   }
 
   public void setLocationLogError(Location location, Iterable<File> searchPath) {

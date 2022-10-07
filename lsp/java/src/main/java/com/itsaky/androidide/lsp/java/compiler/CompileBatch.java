@@ -17,6 +17,13 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
+import static com.itsaky.androidide.config.JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME;
+import static com.itsaky.androidide.config.JavacConfigProvider.disableModules;
+import static com.itsaky.androidide.config.JavacConfigProvider.enableModules;
+import static com.itsaky.androidide.config.JavacConfigProvider.setLatestSourceVersion;
+import static com.itsaky.androidide.config.JavacConfigProvider.setLatestSupportedSourceVersion;
+import static com.itsaky.androidide.utils.Environment.JAVA_HOME;
+
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
@@ -26,10 +33,11 @@ import com.itsaky.androidide.javac.services.compiler.ReusableBorrow;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
@@ -133,21 +141,18 @@ public class CompileBatch implements AutoCloseable {
   @NonNull
   private List<String> options() {
     List<String> options = new ArrayList<>();
-
-    // TODO Boot classpath must be different in java projects
-    //  Also, java modules must be enabled in java projects
-    System.setProperty(
-        JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, Environment.JAVA_HOME.getAbsolutePath());
-    JavacConfigProvider.setLatestSourceVersion(SourceVersion.RELEASE_8);
-    JavacConfigProvider.setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
-
-    JavacConfigProvider.disableModules();
-
-    LOG.debug(
-        JavacConfigProvider.getJavaHome(),
-        JavacConfigProvider.isModulesEnabled(),
-        SourceVersion.latest(),
-        SourceVersion.latestSupported());
+    
+    // This won't be used if the current module is Android module project
+    System.setProperty(PROP_ANDROIDIDE_JAVA_HOME, JAVA_HOME.getAbsolutePath());
+    if (this.parent.module != null && this.parent.module.getType() == IProject.Type.Android) {
+      setLatestSourceVersion(SourceVersion.RELEASE_8);
+      setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
+      disableModules();
+    } else {
+      setLatestSourceVersion(SourceVersion.RELEASE_11);
+      setLatestSupportedSourceVersion(SourceVersion.RELEASE_11);
+      enableModules();
+    }
 
     setupCompileOptions(parent.module, options);
     Collections.addAll(options, "-proc:none", "-g");
