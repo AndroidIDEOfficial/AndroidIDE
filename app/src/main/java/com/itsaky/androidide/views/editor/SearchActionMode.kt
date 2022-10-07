@@ -18,23 +18,15 @@
 package com.itsaky.androidide.views.editor
 
 import android.annotation.SuppressLint
-import android.app.SearchManager
 import android.content.Context
-import android.text.TextUtils
-import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.widget.SearchView
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
-import com.itsaky.androidide.app.IDEActivity
-import io.github.rosemoe.sora.R
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 
 /**
  * Action mode for find and replace functions in editor.

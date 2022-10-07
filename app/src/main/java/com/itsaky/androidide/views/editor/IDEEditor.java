@@ -872,7 +872,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   public void beginSearchMode() {
     final var callback = new SearchActionMode(this);
     if (getContext() instanceof AppCompatActivity) {
-      startActionMode(callback);
+      ((AppCompatActivity)getContext()).startSupportActionMode(callback);
     } else {
       LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
     }
