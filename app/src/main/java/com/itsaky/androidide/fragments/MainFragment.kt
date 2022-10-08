@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.PreferencesActivity
 import com.itsaky.androidide.R
+import com.itsaky.androidide.R.string
 import com.itsaky.androidide.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
+import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
@@ -32,19 +34,20 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     val createProject =
-      MainScreenAction(R.string.create_project, R.drawable.ic_add) { showCreateProject() }
+      MainScreenAction(string.create_project, R.drawable.ic_add) { showCreateProject() }
     val openProject =
-      MainScreenAction(R.string.msg_open_existing_project, R.drawable.ic_folder) { pickDirectory() }
+      MainScreenAction(string.msg_open_existing_project, R.drawable.ic_folder) { pickDirectory() }
     val openTerminal =
-      MainScreenAction(R.string.btn_terminal, R.drawable.ic_terminal) {
+      MainScreenAction(string.btn_terminal, R.drawable.ic_terminal) {
         startActivity(Intent(requireActivity(), TerminalActivity::class.java))
       }
     val preferences =
       MainScreenAction(R.string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
-
-    binding!!.actions.layoutManager = LinearLayoutManager(requireContext())
+    val sponsor = MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) { BaseApplication.getBaseInstance().openSponsors() }
+    val docs = MainScreenAction(string.btn_docs, R.drawable.ic_docs) { BaseApplication.getBaseInstance().openDocs() }
+    
     binding!!.actions.adapter =
-      MainActionsListAdapter(listOf(createProject, openProject, openTerminal, preferences))
+      MainActionsListAdapter(listOf(createProject, openProject, openTerminal, preferences, docs, sponsor))
   }
 
   override fun onDestroyView() {

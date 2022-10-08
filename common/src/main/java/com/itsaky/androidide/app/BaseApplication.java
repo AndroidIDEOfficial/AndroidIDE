@@ -37,8 +37,8 @@ import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
-import com.itsaky.toaster.Toaster;
 import com.itsaky.toaster.ToastUtilsKt;
+import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
 
@@ -52,6 +52,10 @@ public abstract class BaseApplication extends MultiDexApplication {
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
   public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
   public static final String WEBSITE = "https://androidide.com";
+  public static final String SPONSOR_URL = "https://androidide.com/donate.php";
+  
+  // TODO Replace when available on website
+  public static final String DOCS_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE/tree/main/docs";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
@@ -158,6 +162,46 @@ public abstract class BaseApplication extends MultiDexApplication {
   public File getProjectsDir() {
     return Environment.PROJECTS_DIR;
   }
+
+  public void openTelegramGroup() {
+    openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
+  }
+
+  public void openTelegramChannel() {
+    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
+  }
+
+  public void openGitHub() {
+    openUrl(GITHUB_URL);
+  }
+
+  public void openWebsite() {
+    openUrl(WEBSITE);
+  }
+
+  public void openSponsors() {
+    openUrl(SPONSOR_URL);
+  }
+  
+  public void openDocs() {
+    openUrl(DOCS_URL);
+  }
+
+  public void emailUs() {
+    openUrl("mailto:" + EMAIL);
+  }
+
+  public void openUrl(String url) {
+    try {
+      Intent open = new Intent();
+      open.setAction(Intent.ACTION_VIEW);
+      open.setData(Uri.parse(url));
+      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(open);
+    } catch (Throwable th) {
+      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
+    }
+  }
   
   public void openTelegram(String url) {
     try {
@@ -168,59 +212,7 @@ public abstract class BaseApplication extends MultiDexApplication {
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       startActivity(open);
     } catch (Throwable th1) {
-      try {
-        Intent open = new Intent();
-        open.setAction(Intent.ACTION_VIEW);
-        open.setData(Uri.parse(url));
-        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(open);
-      } catch (Throwable th2) {
-        ToastUtilsKt.toast(th2.getMessage(), Toaster.Type.ERROR);
-      }
-    }
-  }
-  
-  public void openTelegramGroup(){
-    openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
-  }
-  
-  public void openTelegramChannel(){
-    openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
-  }
-  
-  public void openGitHub() {
-    try {
-      Intent open = new Intent();
-      open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(BaseApplication.GITHUB_URL));
-      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(open);
-    } catch (Throwable th) {
-      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
-    }
-  }
-
-  public void openWebsite() {
-    try {
-      Intent open = new Intent();
-      open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(BaseApplication.WEBSITE));
-      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(open);
-    } catch (Throwable th) {
-      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
-    }
-  }
-
-  public void emailUs() {
-    try {
-      Intent open = new Intent();
-      open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse("mailto:" + EMAIL));
-      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(open);
-    } catch (Throwable th) {
-      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      openUrl(url);
     }
   }
 }

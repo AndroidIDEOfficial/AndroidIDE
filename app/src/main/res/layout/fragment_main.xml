@@ -18,7 +18,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0.25"
+    app:layout_constraintVertical_bias="0.2"
     app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo" />
 
   <TextView
@@ -51,7 +51,7 @@
 
   <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/actions"
-    android:layout_width="wrap_content"
+    android:layout_width="0dp"
     android:layout_height="0dp"
     android:layout_marginTop="16dp"
     android:layout_marginBottom="16dp"
@@ -59,6 +59,7 @@
     app:layout_constraintEnd_toEndOf="@id/greetingText"
     app:layout_constraintStart_toStartOf="@id/greetingText"
     app:layout_constraintTop_toBottomOf="@id/greetingText"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:listitem="@layout/layout_main_action_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

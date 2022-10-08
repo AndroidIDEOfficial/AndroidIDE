@@ -359,4 +359,6 @@
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
+  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_docs">Documentation</string>
 </resources>
