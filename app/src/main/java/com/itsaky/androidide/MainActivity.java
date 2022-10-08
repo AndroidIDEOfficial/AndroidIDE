@@ -111,6 +111,7 @@ public class MainActivity extends IDEActivity {
     builder.setCancelable(false);
     builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
     builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.setNeutralButton(string.btn_docs, (d, w) -> getApp().openDocs());
     builder.show();
   }
 
