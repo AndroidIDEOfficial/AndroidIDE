@@ -8,8 +8,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  local_test_job:
-    name: Running local tests
+  setup_source:
+    name: Setup source
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,11 +18,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Print Java version
-        run: javac -version
-      - name: Change wrapper permissions
+      - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
-      - name: Restore Cache
+      - name: Restore cache
         uses: actions/cache@v2
         with:
           path: |
@@ -31,6 +29,25 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+  build_apk:
+    name: Building the APK
+    needs: setup_source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assemble Debug
+        run: ./gradlew assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: apk-debug
+          path: app/build/outputs/apk/debug/**.apk
+
+  unit_test_debug:
+    name: Run local tests
+    needs: build_apk
+    runs-on: ubuntu-latest
+    steps:
       - name: Run debug tests
         run: ./gradlew testDebug --continue
       - name: Upload Test Reports
@@ -39,29 +56,3 @@ jobs:
         with:
           name: test-reports
           path: '**/build/reports/tests/'
-
-  build_job:
-    name: Building the APK
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Restore Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-      - name: Assemble Debug
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v2
-        with:
-          name: apk-debug
-          path: app/build/outputs/apk/debug/**.apk
