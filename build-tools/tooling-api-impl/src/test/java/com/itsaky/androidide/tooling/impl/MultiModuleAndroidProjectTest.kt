@@ -41,7 +41,7 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient())
+    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient("7.3.0"))
     server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
     doAssertions(project, server)
   }
@@ -149,7 +149,7 @@ class MultiModuleAndroidProjectTest {
       return
     }
 
-    val versions = listOf("7.2.0", "7.2.1", "7,2,2", "7.3.0")
+    val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0")
     val client = MultiVersionTestClient()
     for (version in versions) {
       client.version = version
