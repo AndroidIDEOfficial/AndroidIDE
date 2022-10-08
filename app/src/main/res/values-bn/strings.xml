@@ -360,4 +360,7 @@
     <string name="idepref_editor_useSoftTabs_summary">ট্যাব অক্ষরের (\\t) পরিবর্তে স্পেস ব্যবহার করবেন কিনা তা বেছে নিন।</string>
     <string name="btn_sponsor">স্পন্সর</string>
     <string name="btn_docs">ডকুমেন্টেশন</string>
+    <string name="btn_close">বন্ধ করুন</string>
+    <string name="msg_ignore_case">Case উপেক্ষা করুন</string>
+    <string name="msg_use_regex">regex ব্যবহার করুন</string>
 </resources>
