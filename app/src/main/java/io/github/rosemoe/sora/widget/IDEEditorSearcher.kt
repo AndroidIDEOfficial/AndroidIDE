@@ -50,6 +50,10 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
       throw RuntimeException("Unable get instance of editor", error)
     }
   }
+  
+  fun updateSearchOptions(searchOptions: SearchOptions) {
+    this.searchOptions = searchOptions
+  }
 
   fun replaceAllAsync(replacement: String): CompletableFuture<Void> {
     markSearching()

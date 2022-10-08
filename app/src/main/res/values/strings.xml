@@ -361,4 +361,7 @@
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
   <string name="btn_sponsor">Sponsor</string>
   <string name="btn_docs">Documentation</string>
+  <string name="btn_close">Close</string>
+  <string name="msg_ignore_case">Ignore case</string>
+  <string name="msg_use_regex">Use regex</string>
 </resources>

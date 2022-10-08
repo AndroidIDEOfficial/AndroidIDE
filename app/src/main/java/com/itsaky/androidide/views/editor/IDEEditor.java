@@ -870,12 +870,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
 
   @Override
   public void beginSearchMode() {
-    final var callback = new SearchActionMode(this);
-    if (getContext() instanceof AppCompatActivity) {
-      ((AppCompatActivity)getContext()).startSupportActionMode(callback);
-    } else {
-      LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
-    }
+    throw new UnsupportedOperationException("Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
   }
 
   protected void dispatchDocumentSaveEvent() {

@@ -105,10 +105,7 @@ interface ActionItem {
      * Location marker for action items shown in 'Code actions' submenu in editor's text action
      * menu.
      */
-    EDITOR_CODE_ACTIONS("editor.codeActions"),
-
-    /** Location marker for action items show in 'Find & Replace' action mode menu in editor. */
-    EDITOR_SEARCH_ACTION_MODE("editor.searchActionMode");
+    EDITOR_CODE_ACTIONS("editor.codeActions");
 
     override fun toString(): String {
       return id

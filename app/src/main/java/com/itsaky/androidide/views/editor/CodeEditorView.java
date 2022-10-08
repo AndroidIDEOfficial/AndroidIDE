@@ -41,8 +41,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.widget.FrameLayout;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,6 +71,7 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.utils.SingleTextWatcher;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 
@@ -83,6 +87,7 @@ import java.util.concurrent.CompletableFuture;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.text.LineSeparator;
+import io.github.rosemoe.sora.widget.EditorSearcher;
 import io.github.rosemoe.sora.widget.component.Magnifier;
 
 /**
@@ -91,18 +96,20 @@ import io.github.rosemoe.sora.widget.component.Magnifier;
  * @author Akash Yadav
  */
 @SuppressLint("ViewConstructor") // This view is always dynamically created.
-public class CodeEditorView extends FrameLayout {
+public class CodeEditorView extends LinearLayout {
 
   private static final ILogger LOG = ILogger.newInstance("CodeEditorView");
   private final File file;
   private final LayoutCodeEditorBinding binding;
+  private final EditorSearchLayout searchLayout;
 
   public CodeEditorView(
       @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
 
-    this.binding = LayoutCodeEditorBinding.inflate(LayoutInflater.from(context));
+    final var inflater = LayoutInflater.from(context);
+    this.binding = LayoutCodeEditorBinding.inflate(inflater);
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
     this.binding.editor.setHighlightCurrentBlock(true);
     this.binding.editor.getProps().autoCompletionOnComposing = true;
@@ -110,10 +117,16 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.setLineSeparator(LineSeparator.LF);
 
+    this.searchLayout = new EditorSearchLayout(context, this.binding.editor);
+
     this.binding.diagnosticTextContainer.setVisibility(GONE);
 
     removeAllViews();
-    addView(this.binding.getRoot());
+    setOrientation(VERTICAL);
+
+    addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
+    addView(
+        this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
     selection.validate();
     CompletableFuture.runAsync(
@@ -399,7 +412,12 @@ public class CodeEditorView extends FrameLayout {
   }
 
   public void beginSearch() {
-    binding.editor.beginSearchMode();
+    if (this.binding == null || searchLayout == null) {
+      LOG.warn("Editor layout is null content=" + binding + ", searchLayout=" + searchLayout);
+      return;
+    }
+    
+    searchLayout.beginSearchMode();
   }
 
   /** Mark this files as saved. Even if it not saved. */
