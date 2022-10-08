@@ -29,6 +29,7 @@ import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -159,27 +160,6 @@ class MultiModuleAndroidProjectTest {
       doAssertions(project = project, server = server)
       server.shutdown().get()
       MultiVersionTestClient.buildFile.delete()
-    }
-  }
-
-  class MultiVersionTestClient(var version: String = "7.2.0") :
-    ToolingApiTestLauncher.TestClient() {
-
-    companion object {
-      val buildTemplateFile = File("../../tests/test-project/build.gradle.in")
-      val buildFile = File(buildTemplateFile.parentFile, "build.gradle")
-    }
-
-    override fun prepareBuild() {
-      super.prepareBuild()
-      var contents = buildTemplateFile.bufferedReader().readText()
-      contents = contents.replace("@@TOOLING_API_TEST_AGP_VERSION@@", this.version)
-      contents = "/* DO NOT EDIT - Automatically generated file */\n${contents.trim()}"
-      val writer = buildFile.bufferedWriter()
-      writer.use {
-        it.write(contents)
-        it.flush()
-      }
     }
   }
 }
