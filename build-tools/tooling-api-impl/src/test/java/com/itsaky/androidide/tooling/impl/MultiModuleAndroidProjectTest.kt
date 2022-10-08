@@ -141,7 +141,7 @@ class MultiModuleAndroidProjectTest {
    */
   @Test
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
-    val isCi = System.getenv("CI").let { it == "true" }
+    val isCi = System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
     if (!isCi) {
       println("Skipping project initialization test with multiple AGP versions")
       println("This test is supposed to run only in CI environment")
