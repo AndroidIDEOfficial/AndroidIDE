@@ -359,4 +359,9 @@
   <string name="msg_swipe_for_output">Deslize à cima para @@logs de compilação@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\\t).</string>
+  <string name="btn_sponsor">Patrocinador</string>
+  <string name="btn_docs">Documentação</string>
+  <string name="btn_close">Fechar</string>
+  <string name="msg_ignore_case">Ignorar o caso</string>
+  <string name="msg_use_regex">Usar regex</string>
 </resources>
