@@ -158,7 +158,6 @@ class MultiModuleAndroidProjectTest {
         .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
         .get()
       doAssertions(project = project, server = server)
-      server.shutdown().get()
       MultiVersionTestClient.buildFile.delete()
     }
   }
