@@ -26,7 +26,7 @@ class DefaultVariant : Variant, Serializable {
   override var androidTestArtifact: DefaultAndroidArtifact? = null
   override var displayName: String = ""
   override var isInstantAppCompatible: Boolean = false
-  var desugaredMethods: List<File> = emptyList()
+  override var desugaredMethods: List<File> = emptyList()
   override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
   override var name: String = ""
   override var testFixturesArtifact: DefaultAndroidArtifact? = null

@@ -11,7 +11,6 @@ jobs:
   local_test_job:
     name: Running local tests
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -44,7 +43,6 @@ jobs:
   build_job:
     name: Building the APK
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2

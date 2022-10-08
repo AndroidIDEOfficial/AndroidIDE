@@ -1,7 +1,6 @@
 buildscript {
     ext {
-        build_gradle_version = "7.2.0"
-        println ("Build Gradle version: '${build_gradle_version}'")
+        build_gradle_version = "@@TOOLING_API_TEST_AGP_VERSION@@"
     }
     
     project.ext {

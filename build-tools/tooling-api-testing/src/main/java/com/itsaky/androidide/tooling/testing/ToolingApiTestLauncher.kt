@@ -92,7 +92,7 @@ class ToolingApiTestLauncher {
     }
   }
 
-  class TestClient : IToolingApiClient {
+  open class TestClient : IToolingApiClient {
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun logMessage(line: LogLine) {
       log.log(line.priority, line.formattedTagAndMessage())

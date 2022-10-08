@@ -20,28 +20,32 @@ package com.itsaky.androidide.tooling.impl
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.GsonBuilder
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
+import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.model.AndroidModule
 import com.itsaky.androidide.tooling.api.model.JavaModule
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
-import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
 class MultiModuleAndroidProjectTest {
 
   @Test
-  fun testProjectInit() {
-    val (server, project) = ToolingApiTestLauncher().launchServer()
+  fun `test simple multi module project initialization`() {
+    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient())
     server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
+    doAssertions(project, server)
+  }
+
+  private fun doAssertions(project: IProject, server: IToolingApiServer) {
     assertThat(project).isNotNull()
     assertThat(project.type.get()).isEqualTo(Gradle)
     // As the returned project is just a proxy,
@@ -51,10 +55,6 @@ class MultiModuleAndroidProjectTest {
     val app = project.findByPath(":app").get()
     assertThat(app).isNotNull()
     assertThat(app).isInstanceOf(AndroidModule::class.java)
-    GsonBuilder().apply {
-      ToolingApiLauncher.configureGson(this)
-      println(create().toJson(app))
-    }
     assertThat((app as AndroidModule).javaCompileOptions).isNotNull()
     assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
     assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
@@ -133,7 +133,53 @@ class MultiModuleAndroidProjectTest {
     assertThat(anotherJavaLib).isInstanceOf(JavaModule::class.java)
     assertThat((anotherJavaLib as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("1.8")
     assertThat(anotherJavaLib.compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
+  }
 
-    server.shutdown().get()
+  /**
+   * Tests the functionality of the tooling API implementation against multiple versions of the
+   * Android Gradle Plugin. This test runs only in the CI environment.
+   */
+  @Test
+  fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
+    val isCi = System.getenv("CI").let { it == "true" }
+    if (!isCi) {
+      println("Skipping project initialization test with multiple AGP versions")
+      println("This test is supposed to run only in CI environment")
+      return
+    }
+
+    val versions = listOf("7.2.0", "7.2.1", "7,2,2", "7.3.0")
+    val client = MultiVersionTestClient()
+    for (version in versions) {
+      client.version = version
+      val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
+      server
+        .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
+        .get()
+      doAssertions(project = project, server = server)
+      server.shutdown().get()
+      MultiVersionTestClient.buildFile.delete()
+    }
+  }
+
+  class MultiVersionTestClient(var version: String = "7.2.0") :
+    ToolingApiTestLauncher.TestClient() {
+
+    companion object {
+      val buildTemplateFile = File("../../tests/test-project/build.gradle.in")
+      val buildFile = File(buildTemplateFile.parentFile, "build.gradle")
+    }
+
+    override fun prepareBuild() {
+      super.prepareBuild()
+      var contents = buildTemplateFile.bufferedReader().readText()
+      contents = contents.replace("@@TOOLING_API_TEST_AGP_VERSION@@", this.version)
+      contents = "/* DO NOT EDIT - Automatically generated file */\n${contents.trim()}"
+      val writer = buildFile.bufferedWriter()
+      writer.use {
+        it.write(contents)
+        it.flush()
+      }
+    }
   }
 }
