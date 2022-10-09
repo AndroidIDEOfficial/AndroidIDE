@@ -49,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
@@ -166,6 +167,7 @@ public class EditorActivity extends IDEActivity
         EditorActivityProvider {
 
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
+  private static final float EDITOR_CONTAINER_SCALE_FACTOR = 0.87f;
   private static final String KEY_PROJECT_PATH = "saved_projectPath";
   private static final int ACTION_ID_CLOSE = 100;
   private static final int ACTION_ID_OTHERS = 101;
@@ -1080,6 +1082,8 @@ public class EditorActivity extends IDEActivity
     mBinding.editorDrawerLayout.addDrawerListener(toggle);
     mBinding.startNav.setNavigationItemSelectedListener(this);
     toggle.syncState();
+    
+    mBinding.editorDrawerLayout.setChildId(mBinding.realContainer.getId());
   }
 
   private void toggleProgressBarVisibility(final boolean visible) {
@@ -1280,8 +1284,22 @@ public class EditorActivity extends IDEActivity
           @Override
           public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             mBinding.bottomSheet.textContainer.setAlpha(1f - slideOffset);
+            
+            final var editorScale = 1 - (slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR));
+            mBinding.viewContainer.setScaleX(editorScale);
+            mBinding.viewContainer.setScaleY(editorScale);
           }
         });
+    
+    final var observer = new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        mBinding.viewContainer.setPivotY(0f);
+        mBinding.viewContainer.setPivotX(mBinding.viewContainer.getWidth() / 2f);
+        mBinding.viewContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+      }
+    };
+    mBinding.viewContainer.getViewTreeObserver().addOnGlobalLayoutListener(observer);
   }
 
   private void setupBottomSheetPager() {

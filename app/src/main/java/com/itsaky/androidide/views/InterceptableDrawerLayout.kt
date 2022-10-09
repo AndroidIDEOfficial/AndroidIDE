@@ -30,7 +30,7 @@ import androidx.drawerlayout.widget.DrawerLayout
  *
  * @author Akash Yadav
  */
-class InterceptableDrawerLayout : DrawerLayout {
+open class InterceptableDrawerLayout : DrawerLayout {
   private val rect: Rect = Rect()
 
   constructor(context: Context) : super(context)
