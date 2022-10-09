@@ -1,15 +1,13 @@
 package com.itsaky.androidide.lsp.xml.providers;
 
-import com.android.ide.common.xml.XmlFormatPreferences;
-import com.android.ide.common.xml.XmlFormatStyle;
-import com.android.ide.common.xml.XmlPrettyPrinter;
-import com.android.utils.XmlUtils;
 import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.FormatCodeParams;
+import com.itsaky.androidide.lsp.xml.providers.format.XMLFormatter;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
 
-import org.w3c.dom.Document;
+import org.eclipse.lemminx.dom.DOMParser;
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager;
 
 public class CodeFormatProvider {
 
@@ -19,19 +17,16 @@ public class CodeFormatProvider {
     final CharSequence input = params.getContent();
     final var watch = new StopWatch("Formatting XML code");
     try {
-      Document document = XmlUtils.parseDocument(input.toString(), true);
-
-      XmlFormatStyle style = XmlFormatStyle.get(document);
-      String prettyPrinted =
-          XmlPrettyPrinter.prettyPrint(
-              document, XmlFormatPreferences.defaults(), style, null, false);
-
-      watch.log();
-      return CodeFormatResult.forWholeContent(input, prettyPrinted);
-
-    } catch (Throwable e) {
-      LOG.error("Failed to format code.", e);
+      final var document =
+          DOMParser.getInstance()
+              .parse(input.toString(), "UTF-8", new URIResolverExtensionManager());
+      final var edits = new XMLFormatter().format(document, params.getRange());
+      return new CodeFormatResult(false, edits);
+    } catch (Throwable error) {
+      LOG.error("Error formatting code using DOM formatter", error);
       return CodeFormatResult.NONE;
+    } finally {
+      watch.log();
     }
   }
 }

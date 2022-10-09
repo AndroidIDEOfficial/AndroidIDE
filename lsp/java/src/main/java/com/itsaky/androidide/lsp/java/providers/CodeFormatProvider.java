@@ -91,7 +91,7 @@ public class CodeFormatProvider {
       edit.setNewText(replacement.getReplacementString());
       edit.setStart(range.lowerEndpoint());
       edit.setEnd(range.upperEndpoint());
-      result.getReplacements().add(edit);
+      result.getIndexedTextEdits().add(edit);
     }
     return result;
   }
