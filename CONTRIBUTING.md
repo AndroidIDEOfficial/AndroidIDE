@@ -12,7 +12,7 @@ agree to abide the terms specified in the [CODE OF CONDUCT](./CODE_OF_CONDUCT.md
 
 Open the project in Android Studio. No extra steps are needed for this.
 
-It is possible to build AndroidIDE in AndroidIDE iteself. But, as it might be a too heavy task for an Android device to be able to build the project, Android Studio is always recommended.
+It is possible to build AndroidIDE in AndroidIDE itself. But, as it might be a too heavy task for an Android device to be able to build the project, Android Studio is always recommended.
 
 ## Source code format
 
@@ -41,8 +41,8 @@ To contribute to this project,
 ## Issues & Pull requests
 
 Use the issue/PR templates whenever possible. Provide a proper title and a clear description of the
-issue/PR. For bug reports, provide a step-by-step procedure to reproduce the issue. Always put crash
-logs, build outputs, etc. in `code blocks`.
+issue/PR. For bug reports, provide a step-by-step procedure to reproduce the issue. Always put things like crash
+logs, and build outputs in `code blocks`.
 
 
 ## Contact us
