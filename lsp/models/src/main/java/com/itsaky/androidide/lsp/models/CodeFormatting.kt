@@ -42,7 +42,7 @@ constructor(val replacements: MutableList<IndexedTextEdit> = mutableListOf()) {
     @JvmStatic
     fun forWholeContent(content: CharSequence, formatted: CharSequence): CodeFormatResult {
       val replacements = mutableListOf<IndexedTextEdit>()
-      replacements.add(IndexedTextEdit(0, content.length - 1, formatted))
+      replacements.add(IndexedTextEdit(0, content.length, formatted))
       return CodeFormatResult(replacements)
     }
   }
