@@ -27,7 +27,8 @@ Install the JDK, SDK and commandline tools for sdk.
     ```
     ./install.sh -c
     ```
-- After you execute the script, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process. Execute the script with `-h` argument to see a list of options you can use to customize the installation.
+    Execute the script with `-h` argument to see a list of options you can use to customize the installation.
+- After you execute the script, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process.
 - After successful installation, `Downloads completed. You are ready to go!` will be printed.
 
 [^cheat]:
