@@ -57,3 +57,8 @@
     android.graphics.drawable.Drawable parse();
     android.graphics.drawable.Drawable parseDrawable();
 }
+
+# APK Metadata
+-keep class com.itsaky.androidide.models.ApkMetadata { *; }
+-keep class com.itsaky.androidide.models.ArtifactType { *; }
+-keep class com.itsaky.androidide.models.MetadataElement { *; }

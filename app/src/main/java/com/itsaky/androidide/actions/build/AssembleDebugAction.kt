@@ -75,6 +75,7 @@ open class AssembleDebugAction() : BaseBuildAction() {
           return@execTasks
         }
 
+        log.verbose("Parsing metadata")
         val apkFile = ApkMetadata.findApkFile(outputListingFile)
         if (apkFile == null) {
           log.error("No apk file specified in output listing file:", outputListingFile)
