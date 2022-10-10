@@ -33,7 +33,7 @@ import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.lsp.xml.utils.XMLBuilder;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 
 import org.eclipse.lemminx.commons.BadLocationException;
 import org.eclipse.lemminx.commons.TextDocument;

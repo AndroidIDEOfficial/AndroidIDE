@@ -16,7 +16,7 @@
  */
 package com.itsaky.androidide.lsp.java.models;
 
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.GOOGLE_CODE_STYLE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.GOOGLE_CODE_STYLE;
 
 import androidx.annotation.NonNull;
 

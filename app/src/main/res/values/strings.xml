@@ -364,4 +364,14 @@
   <string name="btn_close">Close</string>
   <string name="msg_ignore_case">Ignore case</string>
   <string name="msg_use_regex">Use regex</string>
+  <string name="idepref_buildnrun_summary">Configure the Gradle build</string>
+  <string name="configure">Configure</string>
+  <string name="about">About</string>
+  <string name="idepref_github_summary">AndroidIDE is open source!</string>
+  <string name="idepref_channel_summary">Subscribe for latest updates.</string>
+  <string name="idepref_group_summary">Discuss featues, bugs and improvements here.</string>
+  <string name="idepref_changelog_summary">What\'s new in this version?</string>
+  <string name="idepref_about_summary">More about AndroidIDE.</string>
+  <string name="idepref_general_summary">General IDE configuration.</string>
+  <string name="idepref_editor_summary">Configure the editor.</string>
 </resources>

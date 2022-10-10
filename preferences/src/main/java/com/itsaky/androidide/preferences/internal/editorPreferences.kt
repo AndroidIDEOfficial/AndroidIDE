@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.models.prefs
+package com.itsaky.androidide.preferences.internal
 
 const val COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower"
 const val GOOGLE_CODE_STYLE = "idepref_editor_java_googleCodeStyle"
@@ -77,12 +77,6 @@ var drawLineBreak: Boolean
   get() = prefManager.getBoolean(FLAG_LINE_BREAK, false)
   set(value) {
     prefManager.putBoolean(FLAG_LINE_BREAK, value)
-  }
-
-var drawHex: Boolean
-  get() = prefManager.getBoolean(DRAW_HEX, true)
-  set(value) {
-    prefManager.putBoolean(DRAW_HEX, value)
   }
 
 var fontSize: Float

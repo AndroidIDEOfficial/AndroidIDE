@@ -22,10 +22,10 @@ package com.itsaky.androidide;
 
 import static com.itsaky.androidide.R.id;
 import static com.itsaky.androidide.R.string;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getLastOpenedProject;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getAutoOpenProjects;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getConfirmProjectOpen;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getLastOpenedProject;
 
 import android.content.Intent;
 import android.os.Bundle;

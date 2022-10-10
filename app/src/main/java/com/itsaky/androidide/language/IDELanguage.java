@@ -17,14 +17,13 @@
 package com.itsaky.androidide.language;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 

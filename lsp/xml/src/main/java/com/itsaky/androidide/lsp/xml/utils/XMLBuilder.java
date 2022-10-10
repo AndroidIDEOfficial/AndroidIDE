@@ -29,7 +29,7 @@ package com.itsaky.androidide.lsp.xml.utils;
 import static org.eclipse.lemminx.utils.StringUtils.normalizeSpace;
 
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 
 import org.eclipse.lemminx.dom.DOMAttr;
 import org.eclipse.lemminx.dom.DOMComment;

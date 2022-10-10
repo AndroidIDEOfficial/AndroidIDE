@@ -27,6 +27,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.multidex.BuildConfig;
 import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
@@ -36,6 +37,7 @@ import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
@@ -59,6 +61,8 @@ public abstract class BaseApplication extends MultiDexApplication {
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
+  
+  private static final ILogger LOG = ILogger.newInstance("BaseApplication");
 
   public static BaseApplication getBaseInstance() {
     return instance;
@@ -166,7 +170,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void openTelegramGroup() {
     openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
   }
-
+  
   public void openTelegramChannel() {
     openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
   }

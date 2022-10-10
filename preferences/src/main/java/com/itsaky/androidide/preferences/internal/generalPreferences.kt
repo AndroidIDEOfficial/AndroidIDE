@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.models.prefs
+package com.itsaky.androidide.preferences.internal
 
 const val IS_FIRST_PROJECT_BUILD = "project_isFirstBuild"
 const val OPEN_PROJECTS = "idepref_general_autoOpenProjects"

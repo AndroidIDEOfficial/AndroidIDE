@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.models.prefs
+package com.itsaky.androidide.preferences.internal
 
 // Defined in PreferenceManager so that it could be accessible from Environment class
 import com.itsaky.androidide.managers.PreferenceManager.KEY_TP_FIX
