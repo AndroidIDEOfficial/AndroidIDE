@@ -7,13 +7,13 @@ Guide, tips and tricks and general information about AndroidIDE.
 AndroidIDE is an **Integrated Development Environment (IDE)** to build Gradle based Android projects on Android devices.
 
 #### [Installation](./installation.md)
-&nbsp;&nbsp;&nbsp;&nbsp; Installation guide.
+&emsp; Installation guide.
 
 #### [Getting started](./getting_started.md)
-&nbsp;&nbsp;&nbsp;&nbsp; Getting started guide for newbies.
+&emsp; Getting started guide for newbies.
 
 #### [User interface](./user_interface.md)
-&nbsp;&nbsp;&nbsp;&nbsp; How to use the application.
+&emsp; How to use the application.
 #### 
 
 ## Important links
