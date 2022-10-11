@@ -10,7 +10,7 @@ Keyboard shortcuts you can use in the editor.
 - `Terminal`: Open terminal with project root directory.
 - `Close this project`: Close the project and editor.
 #### 2nd group
-Here is some links and help dialog.
+&emsp; Here is some links and help dialog.
 #### 3rd group
 - `IDE Preferences`: Open Preferences screen.
 - `Share with Friends`: Share AndroidIDE.
