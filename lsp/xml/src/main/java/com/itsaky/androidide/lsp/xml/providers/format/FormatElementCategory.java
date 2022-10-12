@@ -38,7 +38,7 @@ package com.itsaky.androidide.lsp.xml.providers.format;
 public enum FormatElementCategory {
 
 	/**
-	 * In the ignore space category, all whitespace is considered insignificant.
+	 * In the Ignore space category, all whitespace is considered insignificant.
 	 * This generally applies to content that consists only of elements nested
 	 * inside other elements, with no text content.
 	 */

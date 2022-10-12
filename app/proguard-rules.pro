@@ -68,3 +68,6 @@
 -keepclassmembers class * implements android.os.Parcelable {
   public static final android.os.Parcelable$Creator CREATOR;
 }
+
+# Used in preferences
+-keep enum com.itsaky.androidide.lsp.xml.models.EmptyElements { *; }

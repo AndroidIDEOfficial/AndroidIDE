@@ -46,7 +46,7 @@ fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {
   
   while (curr != null && !curr.isOwnerDocument) {
     
-    @Suppress("SENSELESS_COMPARISON") // attributes might be null. ignore warning
+    @Suppress("SENSELESS_COMPARISON") // attributes might be null. Ignore warning
     if (curr.attributes == null) {
       curr = curr.parentNode
       continue

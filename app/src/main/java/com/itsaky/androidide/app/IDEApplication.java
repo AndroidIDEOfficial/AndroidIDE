@@ -28,6 +28,7 @@ import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
+import com.itsaky.androidide.preferences.internal.XmlPreferencesKt;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.attrinfo.AttrInfo;

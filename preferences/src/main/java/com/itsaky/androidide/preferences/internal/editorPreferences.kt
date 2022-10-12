@@ -43,12 +43,6 @@ var completionsMatchLower: Boolean
     prefManager.putBoolean(COMPLETIONS_MATCH_LOWER, value)
   }
 
-var googleCodeStyle: Boolean
-  get() = prefManager.getBoolean(GOOGLE_CODE_STYLE, false)
-  set(value) {
-    prefManager.putBoolean(GOOGLE_CODE_STYLE, value)
-  }
-
 var drawLeadingWs: Boolean
   get() = prefManager.getBoolean(FLAG_WS_LEADING, false)
   set(value) {

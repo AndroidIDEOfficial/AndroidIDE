@@ -67,7 +67,7 @@ public class DOMElementFormatter {
     int indentLevel = parentConstraints.getIndentLevel();
     int nb = formatStartTagElement(element, parentConstraints, emptyElements, end, edits);
 
-    if (emptyElements == EmptyElements.ignore) {
+    if (emptyElements == EmptyElements.Ignore) {
       // Format children of the element
       XMLFormattingConstraints constraints = new XMLFormattingConstraints();
       constraints.copyConstraints(parentConstraints);
@@ -147,10 +147,10 @@ public class DOMElementFormatter {
 
       boolean formatted = false;
       switch (emptyElements) {
-        case expand:
+        case Expand:
           {
             if (element.isSelfClosed()) {
-              // expand empty element: <example /> -> <example></example>
+              // Expand empty element: <example /> -> <example></example>
               StringBuilder tag = new StringBuilder();
               tag.append(">");
               tag.append("</");
@@ -172,11 +172,11 @@ public class DOMElementFormatter {
             }
             break;
           }
-        case collapse:
+        case Collapse:
           {
-            // collapse empty element: <example></example> -> <example />
+            // Collapse empty element: <example></example> -> <example />
             if (!element.isSelfClosed() && (end == -1 || element.getEndTagOpenOffset() + 1 < end)) {
-              // Do not collapse if range is does not cover the element
+              // Do not Collapse if range is does not cover the element
               StringBuilder tag = new StringBuilder();
               if (isSpaceBeforeEmptyCloseTag()) {
                 tag.append(" ");
@@ -400,18 +400,18 @@ public class DOMElementFormatter {
    */
   private EmptyElements getEmptyElements(DOMElement element) {
     EmptyElements emptyElements = getEmptyElements();
-    if (emptyElements != EmptyElements.ignore) {
+    if (emptyElements != EmptyElements.Ignore) {
       if (element.isClosed() && element.isEmpty()) {
         // Element is empty and closed
         switch (emptyElements) {
-          case expand:
-          case collapse:
+          case Expand:
+          case Collapse:
             {
               if (isPreserveEmptyContent()) {
                 // preserve content
                 if (element.hasChildNodes()) {
                   // The element is empty and contains somes spaces which must be preserved
-                  return EmptyElements.ignore;
+                  return EmptyElements.Ignore;
                 }
               }
               return emptyElements;
@@ -421,7 +421,7 @@ public class DOMElementFormatter {
         }
       }
     }
-    return EmptyElements.ignore;
+    return EmptyElements.Ignore;
   }
 
   /**

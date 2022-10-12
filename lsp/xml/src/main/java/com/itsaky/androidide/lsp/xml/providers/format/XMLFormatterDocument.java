@@ -449,15 +449,15 @@ public class XMLFormatterDocument {
 
       EmptyElements emptyElements = getEmptyElements(element);
       switch (emptyElements) {
-        case expand:
-          // expand empty element: <example /> -> <example></example>
+        case Expand:
+          // Expand empty element: <example /> -> <example></example>
           xmlBuilder.closeStartElement();
           // end tag element is done, only if the element is closed
           // the format, doesn't fix the close tag
           this.xmlBuilder.endElement(tag, true);
           break;
-        case collapse:
-          // collapse empty element: <example></example> -> <example />
+        case Collapse:
+          // Collapse empty element: <example></example> -> <example />
           formatElementStartTagSelfCloseBracket(element);
           break;
         default:
@@ -630,18 +630,18 @@ public class XMLFormatterDocument {
    * @return the option to use to generate empty elements.
    */
   private EmptyElements getEmptyElements(DOMElement element) {
-    if (this.emptyElements != EmptyElements.ignore) {
+    if (this.emptyElements != EmptyElements.Ignore) {
       if (element.isClosed() && element.isEmpty()) {
         // Element is empty and closed
         switch (this.emptyElements) {
-          case expand:
-          case collapse:
+          case Expand:
+          case Collapse:
             {
               if (this.sharedSettings.getFormattingOptions().getPreserveEmptyContent()) {
                 // preserve content
                 if (element.hasChildNodes()) {
                   // The element is empty and contains somes spaces which must be preserved
-                  return EmptyElements.ignore;
+                  return EmptyElements.Ignore;
                 }
               }
               return this.emptyElements;
@@ -651,7 +651,7 @@ public class XMLFormatterDocument {
         }
       }
     }
-    return EmptyElements.ignore;
+    return EmptyElements.Ignore;
   }
 
   private static boolean formatDTD(

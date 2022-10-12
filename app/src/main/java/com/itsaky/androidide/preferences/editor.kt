@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
 import android.view.LayoutInflater
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,7 +28,6 @@ import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
-import com.itsaky.androidide.preferences.internal.GOOGLE_CODE_STYLE
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
 import com.itsaky.androidide.preferences.internal.USE_ICU
@@ -45,7 +43,6 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
-import com.itsaky.androidide.preferences.internal.googleCodeStyle
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useIcu
 import com.itsaky.androidide.preferences.internal.useMagnifier
@@ -64,6 +61,7 @@ class EditorPreferences(
   init {
     addPreference(CommonConfigurations())
     addPreference(JavaCodeConfigurations())
+    addPreference(XMLPreferences())
   }
 }
 
@@ -85,17 +83,6 @@ private class CommonConfigurations(
     addPreference(AutoSave())
     addPreference(VisibiblePasswordFlag())
     addPreference(CompletionsMatchLower())
-  }
-}
-
-@Parcelize
-private class JavaCodeConfigurations(
-  override val key: String = "idepref_editor_java",
-  override val title: Int = string.idepref_editor_category_java,
-  override val children: List<IPreference> = mutableListOf(),
-) : IPreferenceGroup() {
-  init {
-    addPreference(GoogleCodeStyle())
   }
 }
 
@@ -142,19 +129,7 @@ private class FontLigatures(
   override val title: Int = string.idepref_editor_ligatures_title,
   override val summary: Int? = string.idepref_editor_ligatures_summary,
   override val icon: Int? = drawable.ic_font_ligatures,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = fontLigatures
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    fontLigatures = newValue as Boolean? ?: fontLigatures
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::fontLigatures::set, getValue = ::fontLigatures::get)
 
 @Parcelize
 private class UseSoftTab(
@@ -162,19 +137,7 @@ private class UseSoftTab(
   override val title: Int = string.idepref_editor_useSoftTabs_title,
   override val summary: Int? = string.idepref_editor_useSoftTabs_summary,
   override val icon: Int? = drawable.ic_space,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = useSoftTab
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    useSoftTab = newValue as Boolean? ?: useSoftTab
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::useSoftTab::set, getValue = ::useSoftTab::get)
 
 @Parcelize
 private class TabSize(
@@ -244,19 +207,7 @@ private class WordWrap(
   override val title: Int = string.idepref_editor_word_wrap_title,
   override val summary: Int? = string.idepref_editor_word_wrap_summary,
   override val icon: Int? = drawable.ic_wrap_text,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = wordwrap
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    wordwrap = newValue as Boolean? ?: wordwrap
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::wordwrap::set, getValue = ::wordwrap::get)
 
 @Parcelize
 private class UseMagnifier(
@@ -264,19 +215,7 @@ private class UseMagnifier(
   override val title: Int = string.idepref_editor_use_magnifier_title,
   override val summary: Int? = string.idepref_editor_use_magnifier_summary,
   override val icon: Int? = drawable.ic_loupe,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = useMagnifier
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    useMagnifier = newValue as Boolean? ?: useMagnifier
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::useMagnifier::set, getValue = ::useMagnifier::get)
 
 @Parcelize
 private class AutoSave(
@@ -284,19 +223,7 @@ private class AutoSave(
   override val title: Int = string.idepref_editor_autoSave_title,
   override val summary: Int? = string.idepref_editor_autoSave_summary,
   override val icon: Int? = drawable.ic_save,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = autoSave
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    autoSave = newValue as Boolean? ?: autoSave
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::autoSave::set, getValue = ::autoSave::get)
 
 @Parcelize
 private class CompletionsMatchLower(
@@ -304,39 +231,11 @@ private class CompletionsMatchLower(
   override val title: Int = string.idepref_java_matchLower_title,
   override val summary: Int? = string.idepref_java_matchLower_summary,
   override val icon: Int? = drawable.ic_text_lower,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = completionsMatchLower
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    completionsMatchLower = newValue as Boolean? ?: completionsMatchLower
-    return true
-  }
-}
-
-@Parcelize
-private class GoogleCodeStyle(
-  override val key: String = GOOGLE_CODE_STYLE,
-  override val title: Int = string.idepref_java_useGoogleStyle_title,
-  override val summary: Int? = string.idepref_java_useGoogleStyle_summary,
-  override val icon: Int? = drawable.ic_format_code,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = googleCodeStyle
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    googleCodeStyle = newValue as Boolean? ?: googleCodeStyle
-    return true
-  }
-}
+) :
+  SwitchPreference(
+    setValue = ::completionsMatchLower::set,
+    getValue = ::completionsMatchLower::get
+  )
 
 @Parcelize
 private class VisibiblePasswordFlag(
@@ -344,19 +243,7 @@ private class VisibiblePasswordFlag(
   override val title: Int = string.idepref_visiblePassword_title,
   override val summary: Int? = string.idepref_editor_paintingflags_summary,
   override val icon: Int? = drawable.ic_password_input,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = visiblePasswordFlag
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    visiblePasswordFlag = newValue as Boolean? ?: visiblePasswordFlag
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::visiblePasswordFlag::set, getValue = ::visiblePasswordFlag::get)
 
 @Parcelize
 private class UseICU(
@@ -364,16 +251,4 @@ private class UseICU(
   override val title: Int = string.idepref_useIcu_title,
   override val summary: Int? = string.idepref_useIcu_summary,
   override val icon: Int? = drawable.ic_expand_selection,
-) : SwitchPreference() {
-
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = useIcu
-    return preference
-  }
-
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    useIcu = newValue as Boolean? ?: useIcu
-    return true
-  }
-}
+) : SwitchPreference(setValue = ::useIcu::set, getValue = ::useIcu::get)

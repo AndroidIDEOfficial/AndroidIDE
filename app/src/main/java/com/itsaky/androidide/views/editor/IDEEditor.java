@@ -637,7 +637,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   @Override
   public void expandSelection() {
     if (languageServer == null || getFile() == null) {
-      LOG.error("Cannot expand selection. Language server or file is null");
+      LOG.error("Cannot Expand selection. Language server or file is null");
       return;
     }
 

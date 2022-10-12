@@ -25,9 +25,22 @@ import androidx.preference.Preference
  *
  * @author Akash Yadav
  */
-abstract class SwitchPreference : BasePreference() {
-
+abstract class SwitchPreference
+@JvmOverloads
+constructor(val setValue: ((Boolean) -> Unit)? = null, val getValue: (() -> Boolean)? = null) :
+  BasePreference() {
   override fun onCreatePreference(context: Context): Preference {
-    return androidx.preference.SwitchPreference(context)
+    val pref = androidx.preference.SwitchPreference(context)
+    pref.isChecked = prefValue()
+    return pref
+  }
+  
+  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
+    setValue?.let { it(newValue as Boolean? ?: prefValue()) }
+    return true
+  }
+  
+  private fun prefValue(): Boolean {
+    return getValue?.let { it() } ?: false
   }
 }
