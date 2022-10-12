@@ -284,7 +284,7 @@ public class GroovyAutoComplete {
     others.add("fatal");
     others.add("error");
     others.add("warning");
-    others.add("Ignore");
+    others.add("ignore");
     others.add("informational");
     others.add("baseline");
     others.add("checkTestSources");
