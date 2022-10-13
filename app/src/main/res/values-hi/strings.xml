@@ -12,8 +12,8 @@
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">बस, एक IDE Android के लिए</string>
     <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
-    <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n AndroidIDE यहा से डाउनलोड करे https://androidide.com </string>
-    <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
+    <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर Android ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n AndroidIDE यहा से डाउनलोड करे https://androidide.com </string>
+    <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या Android ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
     <string name="discuss_amp_help">चर्चा और मदद</string>
     <string name="title_github">GitHub</string>
     <string name="need_help">मदद की ज़रूरत है?</string>
@@ -69,13 +69,13 @@
     <string name="preparing_first">तैयार कर रहे हैं। पहले निर्माण में 10&#8211;15 मिनट तक लग सकते हैं!</string>
     <string name="msg_installing_gradlew">ग्रैडल व्रैपर उपलब्ध नहीं है!\nडिफ़ॉल्ट इंस्टॉल किया जा रहा है। यदि आवश्यक हो तो ग्रैडल v7.4 डाउनलोड किया जाएगा।</string>
     <string name="msg_getting_daemom_status">डेमॉन की स्थिति, कृपया प्रतीक्षा करें&#8230;</string>
-    <string name="gradle_daemon_status">ग्रेडल डेमॉन की स्थिति</string>
+    <string name="gradle_daemon_status">ग्रैडल डेमॉन की स्थिति</string>
     <string name="title_install_apks">APK इंस्टॉल करें</string>
     <string name="title_clear_output">क्लियर आउटपुट</string>
     <string name="run">रन</string>
     <string name="gradle">ग्रैडल</string>
     <string name="title_first_build">फर्स्ट बिल्ड</string>
-    <string name="msg_first_build">AndroidIDE इंस्टॉल करने के बाद यह पहली बार बिल्ड है। पहले निर्माण में आमतौर पर समय लगता है क्योंकि ग्रेडल सभी डिपेंडेंसीज और प्लगइन्स को डाउनलोड करता है। इस प्रक्रिया में लगभग 10&#8211;15 मिनट का समय लग सकता है। लेकिन यह पूरी तरह से आपके नेटवर्क कनेक्शन पर निर्भर करता है।\n\nकृपया धैर्य रखें &#8230;</string>
+    <string name="msg_first_build">AndroidIDE इंस्टॉल करने के बाद यह पहली बार बिल्ड है। पहले निर्माण में आमतौर पर समय लगता है क्योंकि ग्रैडल सभी डिपेंडेंसीज और प्लगइन्स को डाउनलोड करता है। इस प्रक्रिया में लगभग 10&#8211;15 मिनट का समय लग सकता है। लेकिन यह पूरी तरह से आपके नेटवर्क कनेक्शन पर निर्भर करता है।\n\nकृपया धैर्य रखें &#8230;</string>
 
     <!-- Project -->
     <string name="create_project">प्रोजेक्ट बनाएं</string>
@@ -93,7 +93,7 @@
     <string name="msg_create_new_project">नया प्रोजेक्ट बनाएं</string>
     <string name="msg_open_existing_project">मौजूदा प्रोजेक्ट खोलें</string>
     <string name="title_confirm_project_close">प्रोजेक्ट बंद करें</string>
-    <string name="msg_confirm_project_close">क्या आप वाकई इस प्रोजेक्ट को बंद करना चाहते हैं? इस प्रोजेक्ट के बंद होने के बाद सभी शुरू किए गए ग्रेडल डेमॉन को रोक दिया जाएगा।</string>
+    <string name="msg_confirm_project_close">क्या आप वाकई इस प्रोजेक्ट को बंद करना चाहते हैं? इस प्रोजेक्ट के बंद होने के बाद सभी शुरू किए गए ग्रैडल डेमॉन को रोक दिया जाएगा।</string>
     <string name="project_exists">इसी नाम का एक प्रोजेक्ट पहले से मौजूद है!</string>
 
     <!-- Templates -->
@@ -102,16 +102,16 @@
     <string name="template_description_empty">डिफ़ॉल्ट टूलबार वाला एक खाली प्रोजेक्ट। उपयुक्त जब आप सभी बुनियादी चीजें स्वयं करना चाहते हैं।</string>
     <string name="template_description_navigation_drawer">AppCompat टूलबार, DrawerLayout और NavigationView के साथ प्रोजेक्ट</string>
     <string name="template_empty">खाली प्रोजेक्ट</string>
-    <string name="template_navigation_drawer">नेविगेशन ड्रायर प्रोजेक्ट</string>
+    <string name="template_navigation_drawer">Navigation Drawer प्रोजेक्ट</string>
     <string name="template_libgdx">LibGDX गेम</string>
     <string name="template_description_libgdx">एक उदाहरण के रूप में एक छवि प्रस्तुत करने के लिए स्थापित LibGDX गेम प्रोजेक्ट।</string>
-    <string name="template_compose">जेटपैक कम्पोज</string>
-    <string name="template_description_compose">बुनियादी जेटपैक कम्पोज हेलो वर्ल्ड प्रोजेक्ट।</string>
-    <string name="template_navigation_tabs">बॉटम नेविगेशन एक्टिविटी</string>
+    <string name="template_compose">Jetpack compose</string>
+    <string name="template_description_compose">बुनियादी Jetpack compose हेलो वर्ल्ड प्रोजेक्ट।</string>
+    <string name="template_navigation_tabs">Bottom Navigation Activity</string>
     <string name="template_navigation_tabs_description">बॉटम नेविगेशन के साथ एक नई एक्टिविटी बनाता है</string>
-    <string name="template_tabs">टैब्ड एक्टिविटी</string>
+    <string name="template_tabs">Tabbed Activity</string>
     <string name="template_tabs_description">टैब के साथ एक नई खाली एक्टिविटी बनाता है</string>
-    <string name="template_fragment_and_viewmodel">फ्रैगमेंट + व्यूमॉडल</string>
+    <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
     <string name="template_cpp">नेटिव C++</string>
     <string name="template_cpp_description">JNI का उपयोग करने के लिए कॉन्फ़िगर की गई खाली एक्टिविटी के साथ एक नया प्रोजेक्ट बनाता है</string>
 
@@ -194,9 +194,9 @@
     <!-- Preferences -->
     <string name="title_change_text_size">एडिटर के फ़ॉन्ट का साइज</string>
     <string name="idepref_about_title">AndroidIDE के बारे में</string>
-    <string name="idepref_build_clearCache_title">क्लियर ग्रेडल कैश</string>
-    <string name="idepref_build_clearCache_summary">ग्रेडल कैश डायरेक्ट्री साफ़ करें। यह ग्रेडल द्वारा डाउनलोड की गई सभी डिपेंडेंसीज को हटा देगा। आवश्यक फ़ाइलें अगले निर्माण में फिर से डाउनलोड की जाएंगी।</string>
-    <string name="idepref_build_customgradlecommands_title">अतिरिक्त ग्रेडल कमांड्स</string>
+    <string name="idepref_build_clearCache_title">क्लियर ग्रैडल कैश</string>
+    <string name="idepref_build_clearCache_summary">ग्रैडल कैश डायरेक्ट्री साफ़ करें। यह ग्रैडल द्वारा डाउनलोड की गई सभी डिपेंडेंसीज को हटा देगा। आवश्यक फ़ाइलें अगले निर्माण में फिर से डाउनलोड की जाएंगी।</string>
+    <string name="idepref_build_customgradlecommands_title">अतिरिक्त ग्रैडल कमांड्स</string>
     <string name="idepref_build_customgradlecommands_summary">अतिरिक्त कमांड्स चुनें जो प्रत्येक कार्य को निष्पादित करते समय जोड़े जाएंगे</string>
     <string name="idepref_editor_fontsize_title">फॉन्ट साइज</string>
     <string name="idepref_editor_fontsize_summary">एडिटर का फ़ॉन्ट साइज</string>
@@ -222,7 +222,7 @@
     <string name="msg_preferences">Preferences</string>
     <string name="pref_changelog">Changelog</string>
     <string name="msg_editor_font_size">कृपया एडिटर का डिफ़ॉल्ट फ़ॉन्ट साइज चुनें :</string>
-    <string name="msg_clear_cache">यह ग्रेडल द्वारा बनाई गई कैश डायरेक्टरी को हटा देगा। यदि आप इसे हटाते हैं, तो अगली बिल्ड में सामान्य से थोड़ा अधिक समय लग सकता है क्योंकि ग्रेडल आवश्यक फ़ाइलों को फिर से डाउनलोड करेगा।\nमहत्वपूर्ण: यह AAPT2 को भी हटा देगा। आपको इसे पुनः इंस्टॉल करने की आवश्यकता होगी अन्यथा अगला निर्माण विफल होने की संभावना है।।\n\nक्या आप सुनिश्चित हैं कि आप कैश हटाना चाहते हैं?</string>
+    <string name="msg_clear_cache">यह ग्रैडल द्वारा बनाई गई कैश डायरेक्टरी को हटा देगा। यदि आप इसे हटाते हैं, तो अगली बिल्ड में सामान्य से थोड़ा अधिक समय लग सकता है क्योंकि ग्रैडल आवश्यक फ़ाइलों को फिर से डाउनलोड करेगा।\nमहत्वपूर्ण: यह AAPT2 को भी हटा देगा। आपको इसे पुनः इंस्टॉल करने की आवश्यकता होगी अन्यथा अगला निर्माण विफल होने की संभावना है।।\n\nक्या आप सुनिश्चित हैं कि आप कैश हटाना चाहते हैं?</string>
 
     <!-- Error Messages used while Logging -->
     <string name="err_init_sdkinfo">SDK जानकारी प्रारंभ करने में असमर्थ</string>
@@ -262,7 +262,7 @@
     <string name="title_generating_xml"> XML कोड जनरेट किया जा रहा है</string>
     <string name="title_code_generation_failed">कोड जनरेशन विफल</string>
     <string name="msg_code_generation_failed">XML कोड जनरेट करने में विफल। क्या आप वैसे भी बाहर निकलना चाहेंगे?</string>
-    <string name="msg_invalid_designer_result">UI Designer ने अमान्य परिणाम लौटाया</string>
+    <string name="msg_invalid_designer_result">UI डिजाइनर ने अमान्य परिणाम लौटाया</string>
     <string name="msg_swipe_up">बिल्ड आउटपुट, लॉग आदि के लिए ऊपर की ओर स्वाइप करें।</string>
     <string name="msg_ide_crashed">AndroidIDE क्रैश हो गया</string>
     <string name="msg_report_crash">कृपया निम्नलिखित स्टैकट्रेस के साथ गिटहब पर एक मुद्दा खोलें :</string>
@@ -297,24 +297,24 @@
     <string name="msg_file_tree">फ़ाइल ट्री</string>
     <string name="hint_color_resource">रंग रिसोर्स</string>
     <string name="title_color_picker">रंग पीकर</string>
-    <string name="hint_string_value">स्ट्रिंग वैल्यू</string>
-    <string name="hint_string_resource">स्ट्रिंग रिसोर्स</string>
+    <string name="hint_string_value">String वैल्यू</string>
+    <string name="hint_string_resource">String रिसोर्स</string>
     <string name="hint_resource_reference">कोई रिसोर्स संदर्भ</string>
     <string name="msg_code_actions">कोड क्रियाएं</string>
-    <string name="title_format_code">फ़ॉर्मेट कोड</string>
-    <string name="idepref_java_useGoogleStyle_title">गुगल जावा स्टाइल कोड फ़ॉर्मेट का प्रयोग करें</string>
-    <string name="idepref_java_useGoogleStyle_summary">जावा सोर्स कोड को फ़ॉर्मेट करने के लिए गुगल जावा स्टाइल कोड फ़ॉर्मेट कॉन्फ़िगरेशन का उपयोग करें।</string>
+    <string name="title_format_code">Format कोड</string>
+    <string name="idepref_java_useGoogleStyle_title">गुगल जावा स्टाइल कोड Format का प्रयोग करें</string>
+    <string name="idepref_java_useGoogleStyle_summary">जावा सोर्स कोड को Format करने के लिए गुगल जावा स्टाइल कोड Format कॉन्फ़िगरेशन का उपयोग करें।</string>
     <string name="idepref_visiblePassword_title">दृश्यमान पासवर्ड फ्लेग</string>
     <string name="idepref_visiblePassword_summary">एडिटर में दृश्यमान पासवर्ड इनपुट टाइप फ्लेग के लिए उपयोग करें। यह सुनिश्चित करता है कि सॉफ्ट कीबोर्ड द्वारा कोई सुझाव प्रस्तावित नहीं किया गया है।</string>
     <string name="previous">पहले का</string>
     <string name="msg_replacing">बदला जा रहा है…</string>
-    <string name="title_gradle_service_notification_ticker">ग्रेडल बिल्ड सर्विस शुरू हुई है</string>
-    <string name="title_gradle_service_notification">ग्रेडल बिल्ड सर्विस</string>
-    <string name="msg_gradle_service_notification">AndroidIDE की ग्रेडल बिल्ड सर्विस बैकग्राउंड में चल रही है।</string>
+    <string name="title_gradle_service_notification_ticker">ग्रैडल बिल्ड सर्विस शुरू हुई है</string>
+    <string name="title_gradle_service_notification">ग्रैडल बिल्ड सर्विस</string>
+    <string name="msg_gradle_service_notification">AndroidIDE की ग्रैडल बिल्ड सर्विस बैकग्राउंड में चल रही है।</string>
     <string name="title_cancel_build">बिल्ड रद्द करें</string>
     <string name="title_warning">चेतावनी</string>
     <string name="msg_ndk_currently_unsupported">NDK वर्तमान में आधिकारिक रूप से सपोर्ट नहीं करता। यह टेम्प्लेट आपके द्वारा NDK सेट करने के बाद ही काम करता है</string>
-    <string name="msg_initializing_project">Initializing प्रोजेक्ट</string>
+    <string name="msg_initializing_project">प्रोजेक्ट initialize हो रहा है</string>
     <string name="msg_project_initialized">प्रोजेक्ट initialized</string>
     <string name="msg_project_initialization_failed">प्रोजेक्ट initialization विफल रहा</string>
     <string name="msg_project_not_initialized">प्रोजेक्ट initialize नहीं हुई है</string>
@@ -331,10 +331,10 @@
     <string name="exit">बाहर निकले</string>
     <string name="idepref_title_tpFix">JDK 11 टैग पॉइंटर्स फिक्स</string>
     <string name="idepref_msg_tpFix">Android 11 में JDK 11 के लिए टैग पॉइंटर्स समस्या को ठीक करने के लिए LD_PRELOAD को libhook.so पर सेट करें [डेप्रीकेटेड - JDK 17 का उपयोग करना पसंद करें].</string>
-    <string name="idepref_title_customGradleInstallation">कस्टम ग्रेडल इंस्टॉलेशन</string>
-    <string name="idepref_msg_customGradleInstallation">बिल्ड में उपयोग करने के लिए एक कस्टम ग्रेडल इंस्टॉलेशन निर्दिष्ट करें। यह gradle-wrapper.properties में निर्दिष्ट संस्करण को ओवरराइड करता है।</string>
-    <string name="msg_gradle_installation_path">ग्रेडल इंस्टॉलेशन पथ</string>
-    <string name="msg_gradle_installation_input_help">ग्रेडल रैपर का उपयोग करने के लिए खाली छोड़ दें।</string>
+    <string name="idepref_title_customGradleInstallation">कस्टम ग्रैडल इंस्टॉलेशन</string>
+    <string name="idepref_msg_customGradleInstallation">बिल्ड में उपयोग करने के लिए एक कस्टम ग्रैडल इंस्टॉलेशन निर्दिष्ट करें। यह gradle-wrapper.properties में निर्दिष्ट संस्करण को ओवरराइड करता है।</string>
+    <string name="msg_gradle_installation_path">ग्रैडल इंस्टॉलेशन पथ</string>
+    <string name="msg_gradle_installation_input_help">ग्रैडल रैपर का उपयोग करने के लिए खाली छोड़ दें।</string>
     <string name="msg_require_install_jdk_and_android_sdk">IDE के काम करने के लिए आपको JDK और Android SDK इंस्टॉल करने की आवश्यकता है। इंस्टॉल करने के लिए क्लिक करे \'हां\' और <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">इन निर्देशों का पालन करें</a>]]></string>
     
     <string name="build_status_idle">कोई निर्माण प्रगति पर नहीं है</string>
@@ -343,11 +343,11 @@
     <string name="build_status_sucess">निर्माण सफल हुआ</string>
     <string name="msg_output_text_extraction_failed">एडिटर से टेक्स्ट प्राप्त करने में विफल रहे</string>
     <string name="template_def_app_name">मेरा एप्लीकेशन</string>
-    <string name="err_invalid_data_by_intent">इन्टेंट ने इंवालिड डेटा रिटर्न किया</string>
+    <string name="err_invalid_data_by_intent">Intent ने invalid डेटा रिटर्न किया</string>
     <string name="msg_select_from_primary_storage">प्राइमरी स्टोरेज से एक डायरेक्टरी का चयन करें</string>
     <string name="err_authority_not_allowed">अथॉरिटी \'%s\' अलाउ नही है</string>
     <string name="idepref_useIcu_title">ICU लिब का प्रयोग करें</string>
-    <string name="idepref_useIcu_summary">डबल-टैप करके या लंबे समय क्लिक करके शब्द चयन के लिए शब्द किनारों को पुनः प्राप्त करने के लिए ICU लाइब्रेरी का उपयोग करें।</string>
+    <string name="idepref_useIcu_summary">डबल-टैप करके या लंबे समय तक क्लिक करके शब्द चयन के लिए शब्द किनारों को पुनः प्राप्त करने के लिए ICU लाइब्रेरी का उपयोग करें।</string>
 
     <!--The text sorrounded with '@@' is spanned as clickable.-->
     <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
