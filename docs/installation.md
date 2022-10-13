@@ -9,7 +9,7 @@ Before getting started, please make sure that your Android device meets the mini
 - At least 4GB of free space is recommended. Around 1.5GB for installation and rest for other dependencies that you might need to download depending on your project.
 
 ## Setup the terminal [^cheat]
-- Open AndroidIDE terminal. It will install the bootstrap packages.
+- Open AndroidIDE [terminal](./user_interface#terminal). It will install the bootstrap packages.
 - Then run `pkg update` to update packages to latest version.
 
 ## Build Tools Installation [^cheat]
