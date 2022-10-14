@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
   <!-- AndroidIDE -->
@@ -8,8 +9,8 @@
   <string name="about_option_email">邮件</string>
   <string name="about_option_website">网站</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
-  <string name="about_subtitle">Simply, an IDE for Android</string>
+  <string name="about_footer">AndroidIDE %1$s (%2$s)</string>
+  <string name="about_subtitle">简单地说，一款适用于 Android 的 IDE</string>
   <string name="msg_get_package_failed">获取包名失败!</string>
   <string name="msg_share_app">AndroidIDE是一个用于在Android设备上构建Android应用的集成开发环境。它支持： \n1. Gradle \n2. OpenJDK 17.0-22\n3. 先进的Java自动补全\n4. XML自动补全 \n5. Kotlin支持，还有更多\n\n请从这里下载AndroidIDE：https://androidide.com</string>
   <string name="msg_need_help">如果您在使用AndroidIDE构建应用时遇到任何问题，您可以加入Telegram群组寻求帮助。\n\n您也可以通过电子邮件对我们提出建议。</string>
@@ -20,6 +21,7 @@
   <string name="share_with_friends">分享给朋友</string>
   <string name="ide_preferences">环境设置</string>
   <string name="discussions_on_telegram">在 Telegram 上讨论</string>
+  <string name="official_tg_channel">官方 Telegram 频道</string>
   <string name="msg_empty_view">没有已可以显示的呢&#8230;</string>
   <string name="btn_terminal">终端</string>
   <string name="reset">重置</string>
@@ -113,6 +115,8 @@
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">创建一个使用 JNI 空白 Activity 的新项目</string>
+  <string name="template_no_activity">无 Activity</string>
+  <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
 
   <!-- Files -->
   <string name="save">保存</string>
@@ -149,6 +153,7 @@
   <string name="file_name">文件名称</string>
   <string name="new_name">新名称</string>
   <string name="new_file">新文件</string>
+  <string name="create_auto_layout">自动创建布局文件</string>
   <string name="new_java_class">新Java类</string>
   <string name="new_xml_resource">新XML资源文件</string>
   <string name="new_folder">新文件夹</string>
@@ -180,7 +185,8 @@
   <string name="msg_checking_storage_permissions">正在检查存储权限</string>
   <string name="msg_failed_list_files">无法列出项目文件列表!</string>
   <string name="msg_storage_denied">没有存储权限，无法继续</string>
-  <string name="msg_storage_granted">存储权限已许可!</string>
+  <string name="msg_storage_granted">已授予存储权限!</string>
+  <string name="open_with">打开方式&#8230;</string>
 
   <!-- Code Editor -->
   <string name="undo">撤销</string>
@@ -308,7 +314,7 @@
   <string name="msg_replacing">替换中&#8230;</string>
   <string name="title_gradle_service_notification_ticker">Gradle 构建服务已启动</string>
   <string name="title_gradle_service_notification">Gradle 构建服务</string>
-  <string name="msg_gradle_service_notification">AndroidIDE 的 Gradle 构建服务正在后台运行。</string>
+  <string name="msg_gradle_service_notification">AndroidIDE 的 Gradle 构建服务正在后台运行</string>
   <string name="title_cancel_build">停止构建</string>
   <string name="title_warning">警告</string>
   <string name="msg_ndk_currently_unsupported">NDK 目前并不被官方支持，这个模板只有在你设置好 NDK 后才能工作</string>
@@ -329,9 +335,9 @@
   <string name="exit">离开</string>
   <string name="idepref_title_tpFix">JDK 11 标记指针修复</string>
   <string name="idepref_msg_tpFix">设置 LD_PRELOAD 为 libhook.so 在安卓 11 中修复 JDK 11 标记指针问题 【废弃 - 推荐使用 JDK 17】</string>
-  <string name="idepref_title_customGradleInstallation">自定义 Gradle 程序</string>
-  <string name="idepref_msg_customGradleInstallation">指定用于构建的自定义 Gradle 程序，这将会覆盖 gradle-wrapper.properties 中指定的版本</string>
-  <string name="msg_gradle_installation_path">Gradle 程序路径</string>
+  <string name="idepref_title_customGradleInstallation">自定义 Gradle</string>
+  <string name="idepref_msg_customGradleInstallation">指定用于构建的自定义 Gradle 路径，这将会覆盖 gradle-wrapper.properties 中指定的版本</string>
+  <string name="msg_gradle_installation_path">Gradle 路径</string>
   <string name="msg_gradle_installation_input_help">留空将使用 Gradle 包装器</string>
   <string name="msg_require_install_jdk_and_android_sdk">您需要先安装 JDK 和 Android SDK，IDE才能工作。若安装，请点击“是”，并按照说明操作。<![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 
@@ -343,5 +349,63 @@
   <string name="template_def_app_name">My Application</string>
   <string name="err_invalid_data_by_intent">Intent 返回了无效数据</string>
   <string name="msg_select_from_primary_storage">从内部存储中选择目录</string>
-  <string name="err_authority_not_allowed">权限“%s”不允许</string>
+  <string name="err_authority_not_allowed">权限“%s”不被允许</string>
+  <string name="idepref_useIcu_title">使用 ICU 库</string>
+  <string name="idepref_useIcu_summary">使用 ICU 库以检索字词边缘进行双击和长按字词的选择</string>
+
+  <!--The text sorrounded with '@@' is spanned as clickable.-->
+  <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
+  <string name="msg_swipe_for_files">左滑打开 @@文件列表@@</string>
+  <string name="msg_swipe_for_output">上滑查看 @@构建输出@@</string>
+  <string name="idepref_editor_useSoftTabs_title">使用空格</string>
+  <string name="idepref_editor_useSoftTabs_summary">设置是否使用多个空格代替制表符 (\\t)</string>
+  <string name="btn_sponsor">捐赠</string>
+  <string name="btn_docs">文档</string>
+  <string name="btn_close">关闭</string>
+  <string name="msg_ignore_case">忽略大小写</string>
+  <string name="msg_use_regex">使用正则表达式</string>
+  <string name="idepref_buildnrun_summary">Gradle 构建配置</string>
+  <string name="configure">配置</string>
+  <string name="about">关于</string>
+  <string name="idepref_github_summary">AndroidIDE 是开源的!</string>
+  <string name="idepref_channel_summary">订阅以获取最新更新</string>
+  <string name="idepref_group_summary">在这里讨论 功能、改进 和 Bug</string>
+  <string name="idepref_changelog_summary">此版本有什么新内容?</string>
+  <string name="idepref_about_summary">更多关于 AndroidIDE</string>
+  <string name="idepref_general_summary">常规 IDE 配置</string>
+  <string name="idepref_editor_summary">编辑器 配置</string>
+  <string name="xml">XML</string>
+  <string name="idepref_xml_trimFinalNewLine_title">删除 末尾新行</string>
+  <string name="idepref_xml_insertFinalNewLine_title">插入 末尾新行</string>
+  <string name="idepref_xml_trimFinalNewLine_summary">删除文件末尾多余的空行</string>
+  <string name="idepref_xml_insertFinalNewLine_summary">在文件末尾插入新的空行</string>
+  <string name="idepref_xml_splitAttributes_title">拆分属性</string>
+  <string name="idepref_xml_splitAttributes_summary">在新行上格式化属性</string>
+  <string name="idepref_xml_joinCDataLines_title">加入 CDATA 行</string>
+  <string name="idepref_xml_joinCDataLines_summary">规范化 CDATA 中的内容</string>
+  <string name="idepref_xml_joinComment_title">加入注释行</string>
+  <string name="idepref_xml_joinComment_summary">规范化注释中的内容</string>
+  <string name="idepref_xml_joinContent_title">加入内容行</string>
+  <string name="idepref_xml_joinContent_summary">规范化元素中的内容</string>
+  <string name="idepref_xml_spaceBeforeEmptyClose_title">闭合标签前空格</string>
+  <string name="idepref_xml_spaceBeforeEmptyClose_summary">在自闭合标签结束括号前插入空白</string>
+  <string name="idepref_xml_preserveEmptyContent_title">保留空内容</string>
+  <string name="idepref_xml_preserveEmptyContent_summary">在元素中保留空内容 (空格、新行、制表符等)</string>
+  <string name="idepref_xml_preserveAttrLineBreaks_title">保留属性换行符</string>
+  <string name="idepref_xml_preserveAttrLineBreaks_summary">保留属性之间的换行符</string>
+  <string name="idepref_xml_closingBrackNewLine_title">新行右括号</string>
+  <string name="idepref_xml_closingBrackNewLine_summary">在新行上放置 右方括号</string>
+  <string name="idepref_xml_trimTrailingWs_title">删除行末空格</string>
+  <string name="idepref_xml_trimTrailingWs_summary">删除每行末尾多余的空格</string>
+  <string name="idepref_editor_formatterOptions">格式化选项</string>
+  <string name="idepref_maxLineWidth_title">最大行宽</string>
+  <string name="idepref_maxLineWidth_summary">每行字符数最高上限</string>
+  <string name="idepref_splitAttrIndentSize_title">拆分属性缩进大小</string>
+  <string name="idepref_splitAttrIndentSize_summary">要为拆分属性编制索引的空格数</string>
+  <string name="idepref_preservedNewLines_title">新线保留</string>
+  <string name="idepref_preservedNewLines_summary">应保留连续换行符的最大数目</string>
+  <string name="idepref_emptyElements_title">空元素行为</string>
+  <string name="idepref_emptyElements_summary">选择空元素的格式化行为</string>
+  <string name="xml_formatting_options">XML 格式化选项</string>
+  <string name="xml_formatting_options_summary">XML 格式化配置</string>
 </resources>
