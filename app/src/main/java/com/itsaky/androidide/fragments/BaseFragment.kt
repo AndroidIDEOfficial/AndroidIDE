@@ -92,7 +92,7 @@ open class BaseFragment : Fragment() {
     this.startForResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
   }
 
-  interface OnDirectoryPickedCallback {
+  fun interface OnDirectoryPickedCallback {
     fun onDirectoryPicked(file: File)
   }
 }

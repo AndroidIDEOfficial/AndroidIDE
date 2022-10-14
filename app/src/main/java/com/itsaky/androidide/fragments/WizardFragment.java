@@ -37,7 +37,7 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.SingleTextWatcher;
 import com.itsaky.androidide.viewmodel.WizardViewModel;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -133,7 +133,7 @@ public class WizardFragment extends BaseFragment {
               if (mProgressSheet != null && mProgressSheet.isShowing()) {
                 mProgressSheet.dismiss();
               }
-              ToasterKt.toast(message, Toaster.Type.ERROR);
+              ToastUtilsKt.toast(message, Toaster.Type.ERROR);
             });
 
     mViewModel
@@ -176,7 +176,7 @@ public class WizardFragment extends BaseFragment {
     if (mProgressSheet != null && mProgressSheet.isShowing()) {
       mProgressSheet.dismiss();
     }
-    ToasterKt.toast(string.project_created_successfully, Toaster.Type.SUCCESS);
+    ToastUtilsKt.toast(string.project_created_successfully, Toaster.Type.SUCCESS);
 
     if (mListener != null) {
       getParentFragmentManager().popBackStack();
@@ -223,7 +223,7 @@ public class WizardFragment extends BaseFragment {
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
       return Integer.parseInt(sdk);
     } catch (Exception e) {
-      ToasterKt.toast(e.getMessage(), Toaster.Type.ERROR);
+      ToastUtilsKt.toast(e.getMessage(), Toaster.Type.ERROR);
     }
     return -1;
   }

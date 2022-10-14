@@ -18,14 +18,14 @@
 package com.itsaky.androidide.services;
 
 import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.getGradleInstallationDir;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isBuildCacheEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isDebugEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isInfoEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isOfflineEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isScanEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isStacktraceEnabled;
-import static com.itsaky.androidide.models.prefs.BuildPreferencesKt.isWarningModeAllEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.getGradleInstallationDir;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isBuildCacheEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isDebugEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isInfoEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isOfflineEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isScanEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isStacktraceEnabled;
+import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isWarningModeAllEnabled;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import android.app.Notification;

@@ -22,10 +22,10 @@ package com.itsaky.androidide;
 
 import static com.itsaky.androidide.R.id;
 import static com.itsaky.androidide.R.string;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getAutoOpenProjects;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getConfirmProjectOpen;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getLastOpenedProject;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getAutoOpenProjects;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getConfirmProjectOpen;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getLastOpenedProject;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,7 +48,7 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
+import com.itsaky.toaster.ToastUtilsKt;
 
 import java.io.File;
 
@@ -81,7 +81,7 @@ public class MainActivity extends IDEActivity {
 
   @Override
   protected void onStorageDenied() {
-    ToasterKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
+    ToastUtilsKt.toast(string.msg_storage_denied, Toaster.Type.ERROR);
     finishAffinity();
   }
 
@@ -111,6 +111,7 @@ public class MainActivity extends IDEActivity {
     builder.setCancelable(false);
     builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
     builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.setNeutralButton(string.btn_docs, (d, w) -> getApp().openDocs());
     builder.show();
   }
 
@@ -143,13 +144,13 @@ public class MainActivity extends IDEActivity {
 
     if (TextUtils.isEmpty(openedProject)) {
       getApp();
-      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      ToastUtilsKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 
     final var project = new File(openedProject);
     if (!project.exists()) {
-      ToasterKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
+      ToastUtilsKt.toast(string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
       return;
     }
 

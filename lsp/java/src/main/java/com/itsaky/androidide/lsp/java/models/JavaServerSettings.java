@@ -16,11 +16,13 @@
  */
 package com.itsaky.androidide.lsp.java.models;
 
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.GOOGLE_CODE_STYLE;
+
 import androidx.annotation.NonNull;
 
 import com.google.googlejavaformat.java.JavaFormatterOptions;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.lsp.util.PrefBasedServerSettings;
+import com.itsaky.androidide.managers.PreferenceManager;
 
 /**
  * Server settings for the java language server.
@@ -29,8 +31,7 @@ import com.itsaky.androidide.lsp.util.PrefBasedServerSettings;
  */
 public class JavaServerSettings extends PrefBasedServerSettings {
 
-  public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE =
-      "idepref_editor_java_googleCodeStyle";
+  public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE = GOOGLE_CODE_STYLE;
   public static final int CODE_STYLE_AOSP = 0;
   public static final int CODE_STYLE_GOOGLE = 1;
   private static JavaServerSettings instance;

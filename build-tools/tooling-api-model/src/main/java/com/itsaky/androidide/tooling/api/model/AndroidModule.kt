@@ -59,7 +59,7 @@ open class AndroidModule(
   override val variants: Collection<DefaultVariant> = emptyList(),
   override val viewBindingOptions: DefaultViewBindingOptions?,
   override val lintChecksJars: List<File>,
-  val modelSyncFiles: List<DefaultModelSyncFile>,
+  override val modelSyncFiles: List<DefaultModelSyncFile>,
   val simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
 ) :
   IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),

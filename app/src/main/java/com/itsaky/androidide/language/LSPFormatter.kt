@@ -58,13 +58,26 @@ class LSPFormatter(val server: ILanguageServer? = null) : AsyncFormatter() {
       return cursorRange
     }
 
-    val result = server.formatCode(FormatCodeParams(text, rangeToFormat?.asRange() ?: Range.NONE))
-    if (result == CodeFormatResult.NONE || result.replacements.isEmpty()) {
+    val result =
+      server.formatCode(FormatCodeParams(text, rangeToFormat?.asRange() ?: text.wholeRange()))
+    if (result == CodeFormatResult.NONE || ((result.isIndexed && result.indexedTextEdits.isEmpty()) || result.edits.isEmpty())) {
       // Deselect the selected content
       return TextRange(cursorRange.start, cursorRange.start)
     }
 
-    result.replacements.forEach { text.replace(it.start, it.end, it.newText) }
+    if (result.isIndexed) {
+      result.indexedTextEdits.forEach { text.replace(it.start, it.end, it.newText) }
+    } else {
+      result.edits.forEach {
+        text.replace(
+          it.range.start.line,
+          it.range.start.column,
+          it.range.end.line,
+          it.range.end.column,
+          it.newText
+        )
+      }
+    }
 
     // Deselect the selected content
     return TextRange(cursorRange.start, cursorRange.start)
@@ -76,6 +89,10 @@ private fun TextRange.asRange(): Range {
     it.start = this.start.asPosition()
     it.end = this.end.asPosition()
   }
+}
+
+private fun Content.wholeRange(): Range {
+  return Range(Position(0, 0), Position(lineCount - 1, getColumnCount(lineCount - 1)))
 }
 
 private fun CharPosition.asPosition(): Position {

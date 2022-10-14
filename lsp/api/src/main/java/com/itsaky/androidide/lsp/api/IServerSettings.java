@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.api;
 
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.COMPLETIONS_MATCH_LOWER;
+
 import com.itsaky.androidide.lsp.models.CompletionsKt;
 
 /**
@@ -27,7 +29,7 @@ import com.itsaky.androidide.lsp.models.CompletionsKt;
  */
 public interface IServerSettings {
 
-  String KEY_COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower";
+  String KEY_COMPLETIONS_MATCH_LOWER = COMPLETIONS_MATCH_LOWER;
 
   /**
    * Called by language server to check if the completions are enabled. If not enabled, the server

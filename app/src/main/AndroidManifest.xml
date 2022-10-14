@@ -21,8 +21,9 @@
     android:largeHeap="true"
     android:preserveLegacyExternalStorage="true"
     android:requestLegacyExternalStorage="true"
+    android:resizeableActivity="false"
     android:supportsRtl="true"
-    android:theme="@style/AppTheme"
+    android:theme="@style/Theme.AndroidIDE"
     tools:ignore="UnusedAttribute,MediaCapabilities">
     <activity
       android:name=".CrashHandlerActivity"
@@ -98,9 +99,9 @@
 
     <activity
       android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-      android:theme="@style/AppTheme" />
+      android:theme="@style/Theme.AndroidIDE" />
     <activity
       android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-      android:theme="@style/AppTheme" />
+      android:theme="@style/Theme.AndroidIDE" />
   </application>
 </manifest>

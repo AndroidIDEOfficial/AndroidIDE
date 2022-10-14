@@ -182,6 +182,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(LOG_TEXT_WARNING, 0xffFFEB3B);
     setColor(LOG_TEXT_INFO, 0xff4CAF50);
     setColor(LOG_TEXT_DEBUG, 0xfff5f5f5);
+    setColor(LOG_TEXT_VERBOSE, 0xff4fc3f7);
     setColor(LOG_PRIORITY_FG_ERROR, 0xff000000);
     setColor(LOG_PRIORITY_FG_WARNING, 0xff000000);
     setColor(LOG_PRIORITY_FG_INFO, 0xffffffff);

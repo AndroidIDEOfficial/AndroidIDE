@@ -18,14 +18,17 @@
 package com.itsaky.androidide.app;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
+import com.itsaky.androidide.preferences.internal.XmlPreferencesKt;
 import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.attrinfo.AttrInfo;
@@ -33,6 +36,8 @@ import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
 import com.itsaky.sdk.SDKInfo;
+import com.itsaky.toaster.ToastUtilsKt;
+import com.itsaky.toaster.Toaster;
 import com.itsaky.widgets.WidgetInfo;
 
 import org.greenrobot.eventbus.EventBus;
@@ -136,5 +141,19 @@ public class IDEApplication extends BaseApplication {
 
   public WidgetInfo widgetInfo() {
     return sdkInfo.getWidgetInfo();
+  }
+
+  public void showChangelog() {
+    final var intent = new Intent(Intent.ACTION_VIEW);
+    intent.setData(
+        Uri.parse(
+            BaseApplication.GITHUB_URL.concat("/releases/tag/v").concat(BuildConfig.VERSION_NAME)));
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    try {
+      startActivity(intent);
+    } catch (Throwable th) {
+      LOG.error("Unable to start activity to show changelog", th);
+      ToastUtilsKt.toast("Unable to start activity", Toaster.Type.ERROR);
+    }
   }
 }

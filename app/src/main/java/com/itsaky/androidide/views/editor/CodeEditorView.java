@@ -16,33 +16,33 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_LINE_BREAK;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_PASSWORD;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_INNER;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_LEADING;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_TRAILING;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_LIGATURES;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_SIZE;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawEmptyLineWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawInnerWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLeadingWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLineBreak;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawTrailingWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontLigatures;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontSize;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_LINE_BREAK;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_PASSWORD;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_INNER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_LEADING;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_TRAILING;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_LIGATURES;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.WORD_WRAP;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawEmptyLineWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawInnerWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawLeadingWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawLineBreak;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawTrailingWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontLigatures;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseIcu;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseMagnifier;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,7 +63,7 @@ import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
@@ -91,18 +91,20 @@ import io.github.rosemoe.sora.widget.component.Magnifier;
  * @author Akash Yadav
  */
 @SuppressLint("ViewConstructor") // This view is always dynamically created.
-public class CodeEditorView extends FrameLayout {
+public class CodeEditorView extends LinearLayout {
 
   private static final ILogger LOG = ILogger.newInstance("CodeEditorView");
   private final File file;
   private final LayoutCodeEditorBinding binding;
+  private final EditorSearchLayout searchLayout;
 
   public CodeEditorView(
       @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
 
-    this.binding = LayoutCodeEditorBinding.inflate(LayoutInflater.from(context));
+    final var inflater = LayoutInflater.from(context);
+    this.binding = LayoutCodeEditorBinding.inflate(inflater);
     this.binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
     this.binding.editor.setHighlightCurrentBlock(true);
     this.binding.editor.getProps().autoCompletionOnComposing = true;
@@ -110,10 +112,16 @@ public class CodeEditorView extends FrameLayout {
     this.binding.editor.setColorScheme(new SchemeAndroidIDE());
     this.binding.editor.setLineSeparator(LineSeparator.LF);
 
+    this.searchLayout = new EditorSearchLayout(context, this.binding.editor);
+
     this.binding.diagnosticTextContainer.setVisibility(GONE);
 
     removeAllViews();
-    addView(this.binding.getRoot());
+    setOrientation(VERTICAL);
+
+    addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
+    addView(
+        this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
     selection.validate();
     CompletableFuture.runAsync(
@@ -399,7 +407,12 @@ public class CodeEditorView extends FrameLayout {
   }
 
   public void beginSearch() {
-    binding.editor.beginSearchMode();
+    if (this.binding == null || searchLayout == null) {
+      LOG.warn("Editor layout is null content=" + binding + ", searchLayout=" + searchLayout);
+      return;
+    }
+    
+    searchLayout.beginSearchMode();
   }
 
   /** Mark this files as saved. Even if it not saved. */

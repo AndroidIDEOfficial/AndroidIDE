@@ -27,6 +27,7 @@ import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.util.concurrent.*
@@ -92,7 +93,7 @@ class ToolingApiTestLauncher {
     }
   }
 
-  class TestClient : IToolingApiClient {
+  open class TestClient : IToolingApiClient {
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun logMessage(line: LogLine) {
       log.log(line.priority, line.formattedTagAndMessage())
@@ -114,6 +115,27 @@ class ToolingApiTestLauncher {
 
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
       CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
+  }
+  
+  class MultiVersionTestClient(var version: String = "7.2.0") :
+    ToolingApiTestLauncher.TestClient() {
+    
+    companion object {
+      val buildTemplateFile = File("../../tests/test-project/build.gradle.in")
+      val buildFile = File(buildTemplateFile.parentFile, "build.gradle")
+    }
+    
+    override fun prepareBuild() {
+      super.prepareBuild()
+      var contents = buildTemplateFile.bufferedReader().readText()
+      contents = contents.replace("@@TOOLING_API_TEST_AGP_VERSION@@", this.version)
+      contents = "/* DO NOT EDIT - Automatically generated file */\n${contents.trim()}"
+      val writer = buildFile.bufferedWriter()
+      writer.use {
+        it.write(contents)
+        it.flush()
+      }
+    }
   }
 
   private class Reader(val input: InputStream) : Runnable {

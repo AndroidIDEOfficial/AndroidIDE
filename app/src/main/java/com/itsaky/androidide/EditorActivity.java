@@ -23,9 +23,9 @@ import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
 import static com.itsaky.androidide.R.color;
 import static com.itsaky.androidide.R.drawable;
 import static com.itsaky.androidide.R.string;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.NO_OPENED_PROJECT;
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.setLastOpenedProject;
-import static com.itsaky.toaster.ToasterKt.toast;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.setLastOpenedProject;
+import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -49,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
@@ -109,7 +110,7 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.projects.builder.BuildService;
@@ -166,6 +167,7 @@ public class EditorActivity extends IDEActivity
         EditorActivityProvider {
 
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
+  private static final float EDITOR_CONTAINER_SCALE_FACTOR = 0.87f;
   private static final String KEY_PROJECT_PATH = "saved_projectPath";
   private static final int ACTION_ID_CLOSE = 100;
   private static final int ACTION_ID_OTHERS = 101;
@@ -521,16 +523,7 @@ public class EditorActivity extends IDEActivity
   }
 
   @Override
-  public void onTabUnselected(@NonNull TabLayout.Tab tab) {
-    final var position = tab.getPosition();
-    final var editorView = getEditorAtIndex(position);
-    if (editorView != null) {
-      final var editor = editorView.getEditor();
-      if (editor != null) {
-        editor.ensureWindowsDismissed();
-      }
-    }
-  }
+  public void onTabUnselected(@NonNull TabLayout.Tab tab) {}
 
   @Override
   public void onTabReselected(@NonNull TabLayout.Tab tab) {
@@ -1089,6 +1082,8 @@ public class EditorActivity extends IDEActivity
     mBinding.editorDrawerLayout.addDrawerListener(toggle);
     mBinding.startNav.setNavigationItemSelectedListener(this);
     toggle.syncState();
+    
+    mBinding.editorDrawerLayout.setChildId(mBinding.realContainer.getId());
   }
 
   private void toggleProgressBarVisibility(final boolean visible) {
@@ -1289,8 +1284,22 @@ public class EditorActivity extends IDEActivity
           @Override
           public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             mBinding.bottomSheet.textContainer.setAlpha(1f - slideOffset);
+            
+            final var editorScale = 1 - (slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR));
+            mBinding.viewContainer.setScaleX(editorScale);
+            mBinding.viewContainer.setScaleY(editorScale);
           }
         });
+    
+    final var observer = new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override
+      public void onGlobalLayout() {
+        mBinding.viewContainer.setPivotY(0f);
+        mBinding.viewContainer.setPivotX(mBinding.viewContainer.getWidth() / 2f);
+        mBinding.viewContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+      }
+    };
+    mBinding.viewContainer.getViewTreeObserver().addOnGlobalLayoutListener(observer);
   }
 
   private void setupBottomSheetPager() {

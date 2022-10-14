@@ -17,8 +17,8 @@
  */
 package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.models.prefs.tabSize
-import com.itsaky.androidide.models.prefs.useSoftTab
+import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.internal.useSoftTab
 import com.itsaky.androidide.views.SymbolInputView.Symbol
 import java.io.File
 

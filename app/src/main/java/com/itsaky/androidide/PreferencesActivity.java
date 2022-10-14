@@ -27,12 +27,17 @@ import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
-import com.itsaky.androidide.fragments.preferences.IDEPreferences;
+import com.itsaky.androidide.fragments.IDEPreferencesFragment;
+import com.itsaky.androidide.preferences.AboutPreferences;
+import com.itsaky.androidide.preferences.ConfigurationPreferences;
+import com.itsaky.androidide.preferences.IDEPreferences;
+
+import java.util.ArrayList;
 
 public class PreferencesActivity extends IDEActivity {
 
   private ActivityPreferencesBinding binding;
-  private IDEPreferences mPref;
+  private IDEPreferencesFragment rootFragment;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +49,16 @@ public class PreferencesActivity extends IDEActivity {
 
     binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-    loadFragment(getPrefsFragment());
+    final var prefs = IDEPreferences.INSTANCE;
+    prefs.getChildren().clear();
+    prefs.addPreference(new ConfigurationPreferences());
+    prefs.addPreference(new AboutPreferences());
+
+    final var args = new Bundle();
+    args.putParcelableArrayList(
+        IDEPreferencesFragment.EXTRA_CHILDREN, new ArrayList<>(prefs.getChildren()));
+    getRootFragment().setArguments(args);
+    loadFragment(getRootFragment());
   }
 
   @Override
@@ -53,8 +67,8 @@ public class PreferencesActivity extends IDEActivity {
     return binding.getRoot();
   }
 
-  private IDEPreferences getPrefsFragment() {
-    return mPref == null ? mPref = new IDEPreferences() : mPref;
+  private IDEPreferencesFragment getRootFragment() {
+    return rootFragment == null ? rootFragment = new IDEPreferencesFragment() : rootFragment;
   }
 
   private void loadFragment(Fragment frag) {

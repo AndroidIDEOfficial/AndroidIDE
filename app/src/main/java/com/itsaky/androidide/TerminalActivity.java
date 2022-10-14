@@ -17,7 +17,7 @@
  */
 package com.itsaky.androidide;
 
-import static com.itsaky.androidide.models.prefs.GeneralPreferencesKt.getUseSystemShell;
+import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getUseSystemShell;
 import static com.itsaky.androidide.utils.Environment.BIN_DIR;
 import static com.itsaky.androidide.utils.Environment.HOME;
 import static com.itsaky.androidide.utils.Environment.LOGIN_SHELL;
@@ -42,7 +42,7 @@ import com.itsaky.androidide.databinding.ActivityTerminalBinding;
 import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.models.Constants;
-import com.itsaky.androidide.models.prefs.GeneralPreferencesKt;
+import com.itsaky.androidide.preferences.internal.GeneralPreferencesKt;
 import com.itsaky.androidide.utils.BootstrapInstaller;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;

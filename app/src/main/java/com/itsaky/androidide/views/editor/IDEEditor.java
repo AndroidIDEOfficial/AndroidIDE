@@ -17,17 +17,19 @@
 package com.itsaky.androidide.views.editor;
 
 import static com.itsaky.androidide.R.string;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
@@ -54,7 +56,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToasterKt;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -526,7 +527,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          ToasterKt.toast(string.msg_no_definition, Toaster.Type.ERROR);
+          toast(string.msg_no_definition, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -624,7 +625,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          ToasterKt.toast(string.msg_no_references, Toaster.Type.ERROR);
+          toast(string.msg_no_references, Toaster.Type.ERROR);
           pd.dismiss();
         });
   }
@@ -636,7 +637,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   @Override
   public void expandSelection() {
     if (languageServer == null || getFile() == null) {
-      LOG.error("Cannot expand selection. Language server or file is null");
+      LOG.error("Cannot Expand selection. Language server or file is null");
       return;
     }
 
@@ -662,6 +663,15 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
           //noinspection ConstantConditions
           ThreadUtils.runOnUiThread(() -> setSelection(range));
         }));
+  }
+
+  @Override
+  protected void onFocusChanged(
+      final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    if (!gainFocus) {
+      ensureWindowsDismissed();
+    }
   }
 
   /** Ensures that all the windows are dismissed. */
@@ -859,12 +869,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
 
   @Override
   public void beginSearchMode() {
-    final var callback = new SearchActionMode(this);
-    if (getContext() instanceof AppCompatActivity) {
-      startActionMode(callback);
-    } else {
-      LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
-    }
+    throw new UnsupportedOperationException("Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
   }
 
   protected void dispatchDocumentSaveEvent() {

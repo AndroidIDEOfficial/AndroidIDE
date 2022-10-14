@@ -33,6 +33,7 @@ import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
@@ -75,7 +76,7 @@ abstract class LSPTest {
     }
 
     val (server, project) =
-      ToolingApiTestLauncher().launchServer(implDir = FileProvider.implModule().pathString)
+      ToolingApiTestLauncher().launchServer(implDir = FileProvider.implModule().pathString, client = MultiVersionTestClient())
     this.toolingProject = project
     this.toolingServer = server
     

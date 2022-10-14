@@ -18,6 +18,7 @@
 package com.itsaky.androidide.actions
 
 import android.graphics.drawable.Drawable
+import android.view.View
 
 /**
  * An action that can be registered using the [ActionsRegistry]
@@ -84,6 +85,13 @@ interface ActionItem {
     enabled = false
   }
 
+  /**
+   * Create custom action view for this action item.
+   *
+   * @return The custom action view or `null`.
+   */
+  fun createActionView(data: ActionData): View? = null
+
   /** Location where an action item will be shown. */
   enum class Location(val id: String) {
 
@@ -97,10 +105,7 @@ interface ActionItem {
      * Location marker for action items shown in 'Code actions' submenu in editor's text action
      * menu.
      */
-    EDITOR_CODE_ACTIONS("editor.codeActions"),
-
-    /** Location marker for action items show in 'Find & Replace' action mode menu in editor. */
-    EDITOR_SEARCH_ACTION_MODE("editor.searchActionMode");
+    EDITOR_CODE_ACTIONS("editor.codeActions");
 
     override fun toString(): String {
       return id

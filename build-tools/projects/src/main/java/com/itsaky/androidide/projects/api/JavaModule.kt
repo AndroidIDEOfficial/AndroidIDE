@@ -23,6 +23,7 @@ import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
+import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import java.io.File
 
@@ -112,13 +113,10 @@ class JavaModule(
   override fun getCompileClasspaths(): Set<File> {
     val classpaths = getModuleClasspaths().toMutableSet()
     getCompileModuleProjects().forEach { classpaths.addAll(it.getCompileClasspaths()) }
+    classpaths.addAll(getDependencyClasspaths())
     return classpaths
   }
-
-  // TODO IdeaDependency.getExported() always returns false
-  //   Find out its cause and handle exported dependencies here.
-  //
-  //  Currently transitive dependencies are not included in this.
+  
   override fun getCompileModuleProjects(): List<ModuleProject> {
     val root = ProjectManager.rootProject ?: return emptyList()
     return this.dependencies
@@ -126,5 +124,9 @@ class JavaModule(
       .filter { it.scope == SCOPE_COMPILE }
       .mapNotNull { root.findByPath(it.projectPath) }
       .filterIsInstance(ModuleProject::class.java)
+  }
+  
+  fun getDependencyClasspaths(): Set<File> {
+    return this.dependencies.filterIsInstance<JavaModuleExternalDependency>().mapNotNull { it.jarFile }.toHashSet()
   }
 }

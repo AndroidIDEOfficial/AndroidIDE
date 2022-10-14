@@ -108,17 +108,16 @@ public class NBClassFinder extends ClassFinder {
                   throw constr.newInstance(
                       sym,
                       (Supplier<JCDiagnostic>)
-                          () -> {
-                            return diagFactory.create(
-                                log.currentSource(),
-                                new SimpleDiagnosticPosition(0),
-                                DiagnosticInfo.of(
-                                    DiagnosticType.ERROR,
-                                    "compiler",
-                                    "cant.resolve",
-                                    "package",
-                                    "java.lang"));
-                          },
+                          () ->
+                              diagFactory.create(
+                                  log.currentSource(),
+                                  new SimpleDiagnosticPosition(0),
+                                  DiagnosticInfo.of(
+                                      DiagnosticType.ERROR,
+                                      "compiler",
+                                      "cant.resolve",
+                                      "package",
+                                      "java.lang")),
                       dcfh);
                 } catch (ClassNotFoundException
                     | NoSuchMethodException

@@ -12,7 +12,7 @@ agree to abide the terms specified in the [CODE OF CONDUCT](./CODE_OF_CONDUCT.md
 
 Open the project in Android Studio. No extra steps are needed for this.
 
-It is possible to build AndroidIDE in AndroidIDE iteself. But, as it might be a too heavy task for an Android device to be able to build the project, Android Studio is always recommended.
+It is possible to build AndroidIDE in AndroidIDE itself. But, as it might be a too heavy task for an Android device to be able to build the project, Android Studio is always recommended.
 
 ## Source code format
 
@@ -28,6 +28,8 @@ Format.
 
 Before proposing a change, it is always recommended to open an issue and discuss it with the maintainers.
 
+**The `main` branch is protected and requires all the commits to be signed with your GPG key and the commit history to be linear.** See [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches).
+
 To contribute to this project,
 
 - Fork the repo.
@@ -39,8 +41,8 @@ To contribute to this project,
 ## Issues & Pull requests
 
 Use the issue/PR templates whenever possible. Provide a proper title and a clear description of the
-issue/PR. For bug reports, provide a step-by-step procedure to reproduce the issue. Always put crash
-logs, build outputs, etc. in `code blocks`.
+issue/PR. For bug reports, provide a step-by-step procedure to reproduce the issue. Always put things like crash
+logs, and build outputs in `code blocks`.
 
 
 ## Contact us

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  style="@style/Widget.Material3.Button.TextButton.Icon"
+  android:layout_width="match_parent"
+  android:layout_height="56dp"
+  android:layout_marginTop="4dp"
+  android:layout_marginBottom="4dp"
+  android:elevation="0dp"
+  android:ellipsize="end"
+  android:singleLine="true"
+  android:textAlignment="textStart"
+  android:textColor="@color/primaryTextColor"
+  android:textSize="14sp"
+  android:textStyle="bold"
+  app:iconPadding="8dp"
+  app:iconTint="@color/primaryTextColor"
+  tools:icon="@drawable/ic_add"
+  tools:text="@string/msg_create_new_project" />

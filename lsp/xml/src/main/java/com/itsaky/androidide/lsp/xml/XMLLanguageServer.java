@@ -108,7 +108,7 @@ public class XMLLanguageServer implements ILanguageServer {
   @NonNull
   public IServerSettings getSettings() {
     if (settings == null) {
-      settings = XMLServerSettings.getInstance();
+      settings = XMLServerSettings.INSTANCE;
     }
 
     return settings;

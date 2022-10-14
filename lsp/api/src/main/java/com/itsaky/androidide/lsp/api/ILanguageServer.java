@@ -173,7 +173,7 @@ public interface ILanguageServer {
    */
   @NonNull
   default CodeFormatResult formatCode(FormatCodeParams params) {
-    return new CodeFormatResult(Collections.emptyList());
+    return new CodeFormatResult(false, Collections.emptyList());
   }
 
   /**

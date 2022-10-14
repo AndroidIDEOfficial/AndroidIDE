@@ -10,6 +10,18 @@ java {
     targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 dependencies {
     implementation google.guava
     implementation project(path: ':logger')

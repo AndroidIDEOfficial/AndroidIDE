@@ -30,7 +30,6 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
-import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
@@ -42,11 +41,12 @@ import com.itsaky.androidide.events.FileContextMenuItemClickEvent
 import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
+import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.androidide.utils.IntentUtils.shareFile
+import com.itsaky.androidide.utils.IntentUtils.startIntent
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.toaster.Toaster.Type.ERROR
@@ -169,7 +169,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   }
 
   private fun openWith(context: Context, file: File) {
-    shareFile(context, file, "*/*")
+    startIntent(context, file, "*/*", Intent.ACTION_VIEW)
   }
 
   private fun createNewFile(context: Context, file: File) {
@@ -245,7 +245,7 @@ class FileTreeActionHandler : BaseEventHandler() {
         toast(string.msg_invalid_name, ERROR)
         return@setPositiveButton
       }
-      
+
       val name: String = binding.name.editText!!.text.toString().trim()
       val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
@@ -284,10 +284,10 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.setCancelable(false)
     builder.create().show()
   }
-  
+
   private fun isValidJavaName(s: CharSequence?) =
     s == null || !SourceVersion.isName(s) || SourceVersion.isKeyword(s)
-  
+
   private fun createLayoutRes(context: Context, file: File) {
     createNewFileWithContent(
       context,

@@ -25,7 +25,19 @@ java {
     targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
 dependencies {
     implementation common.jkotlin
-    api "com.android.tools.build:builder-model:${project.property ("androidide.tooling.supportedAgpVersion")}"
+    api "com.android.tools.build:builder-model:7.3.0"
 }
