@@ -18,4 +18,4 @@ Open the documentation of AndroidIDE.
 You can support this project.
 
 ## Editor
-Read the editor docs [here](./editor).
+Read the editor docs [here](./editor#readme).
