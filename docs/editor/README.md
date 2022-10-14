@@ -2,7 +2,7 @@
 Editor is one of the the main components of an IDE.
 <!-- AndroidIDE uses Sora as it's code editor. -->
 
-## [Key Bindings](./key-bindings.md)
+## [Key Bindings](./key-bindings.md#readme)
 Keyboard shortcuts you can use in the editor.
 
 ## Sidebar
@@ -18,7 +18,7 @@ Keyboard shortcuts you can use in the editor.
 ## Options Menu
 Top right options and three-dot(`⋮`) menu.
 - `Quick run(▷)`: Runs `assembleDebug` and installs the debug apk (if permission is given).
-- `Run(▶)`: Various Gradle actions. Check [here](./actions.md).
+- `Run(▶)`: Various Gradle actions. Check [here](./actions.md#readme).
 - `Find`:
     - `Find in file`: Find and replace in the file which is opened in the editor.
     - `Find in project`: Find in all the files in  the selected project modules. <br/>&emsp; You can also filter the files with their extensions seperated by '|' .
@@ -27,7 +27,7 @@ Top right options and three-dot(`⋮`) menu.
 - `Cancel build`: If any build action is running, cancel it.
 - `Sync project`: Sync the project and it's dependencies.
 
-## [BottomSheet](bottomsheet.md)
+## [BottomSheet](bottomsheet.md#readme)
 Swipe up to open the bottomsheet. You can find the
 [Build Output](./bottomsheet.md#build-output),
 [App Logs](./bottomsheet.md#app-logs),

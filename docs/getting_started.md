@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide shows how to get started with AndroidIDE and build an Android application. Before proceeding, please make sure that you have installed the build tools. If not, see [the installation guide](./installation.md).
+This guide shows how to get started with AndroidIDE and build an Android application. Before proceeding, please make sure that you have installed the build tools. If not, see [the installation guide](./installation.md#readme).
 
 ## Creating a new project
 
