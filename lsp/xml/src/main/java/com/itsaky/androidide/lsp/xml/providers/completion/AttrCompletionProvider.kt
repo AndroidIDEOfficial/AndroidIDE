@@ -190,7 +190,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
       // Probably a custom view or a view from libraries
       // If the developer follows the naming convention then only the completions will be provided
       // This must be called if and only if the tag name is qualified
-      return findStyleablesForName(styleables, node)
+      return findStyleablesForName(styleables, node, true)
     }
 
     return emptySet()
@@ -211,7 +211,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     }
 
     // Common attributes for all views
-    addWidgetStyleable(styleables, "View", result)
+    addWidgetStyleable(styleables = styleables, widget = "View", result = result)
 
     // Find the declared styleable
     val entry = findStyleableEntry(styleables, "$name$suffix")
