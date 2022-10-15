@@ -1013,7 +1013,7 @@ public class EditorActivity extends IDEActivity
     try {
       unregisterReceiver(mLogReceiver);
     } catch (Throwable th) {
-      LOG.error("Failed to unregister LogReceiver", th);
+      LOG.error("Failed to release resources", th);
     }
     unbindService(mGradleServiceConnection);
     super.onDestroy();
@@ -1475,12 +1475,14 @@ public class EditorActivity extends IDEActivity
   }
 
   private void stopServices() {
-
-    if (IDELanguageClientImpl.isInitialized()) {
-      IDELanguageClientImpl.shutdown();
+    try {
+      if (IDELanguageClientImpl.isInitialized()) {
+        IDELanguageClientImpl.shutdown();
+      }
+      shutdownLanguageServers();
+    } catch (Throwable err) {
+      LOG.error("Unable to stop editor services. Please report this issue.", err);
     }
-
-    shutdownLanguageServers();
   }
 
   private void shutdownLanguageServers() {

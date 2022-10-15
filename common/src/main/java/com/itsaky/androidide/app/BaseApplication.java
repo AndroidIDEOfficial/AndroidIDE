@@ -144,13 +144,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
         ThrowableUtils.getFullStackTrace(th));
   }
-
-  @NonNull
-  @Contract(" -> new")
-  public final File getLogSenderDir() {
-    return new File(getRootDir(), "logsender");
-  }
-
+  
   public final File getTempProjectDir() {
     return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
   }
@@ -158,11 +152,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public PreferenceManager getPrefManager() {
     return mPrefsManager;
   }
-
-  public File[] listProjects() {
-    return getProjectsDir().listFiles(File::isDirectory);
-  }
-
+  
   public File getProjectsDir() {
     return Environment.PROJECTS_DIR;
   }
@@ -195,28 +185,31 @@ public abstract class BaseApplication extends MultiDexApplication {
     openUrl("mailto:" + EMAIL);
   }
 
+  
   public void openUrl(String url) {
-    try {
-      Intent open = new Intent();
-      open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(url));
-      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(open);
-    } catch (Throwable th) {
-      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
-    }
+    openUrl(url, null);
   }
   
   public void openTelegram(String url) {
+    openUrl(url, "org.telegram.messenger");
+  }
+  
+  public void openUrl(String url, String pkg) {
     try {
       Intent open = new Intent();
       open.setAction(Intent.ACTION_VIEW);
       open.setData(Uri.parse(url));
-      open.setPackage("org.telegram.messenger");
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      if (pkg != null) {
+        open.setPackage(pkg);
+      }
       startActivity(open);
-    } catch (Throwable th1) {
-      openUrl(url);
+    } catch (Throwable th) {
+      if (pkg != null) {
+        openUrl(url);
+      } else {
+        ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      }
     }
   }
 }

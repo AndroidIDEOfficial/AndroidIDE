@@ -20,6 +20,7 @@ package com.itsaky.androidide.javac.services.fs
 import com.itsaky.androidide.zipfs2.ZipFileSystem
 import com.itsaky.androidide.zipfs2.ZipFileSystemProvider
 import com.sun.tools.javac.file.RelativePath.RelativeDirectory
+import java.io.IOException
 import java.nio.file.Path
 import javax.lang.model.SourceVersion
 
@@ -33,7 +34,7 @@ class CachedJarFileSystem(
   zfpath: Path?,
   env: MutableMap<String, *>?
 ) : ZipFileSystem(provider, zfpath, env) {
-
+  
   internal val packages = mutableMapOf<RelativeDirectory, Path>()
 
   override fun close() {
@@ -41,6 +42,7 @@ class CachedJarFileSystem(
     // This is called manually by the Java LSP
   }
 
+  @Throws(IOException::class)
   fun doClose() {
     super.close()
   }
