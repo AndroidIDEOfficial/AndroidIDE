@@ -34,9 +34,7 @@ import io.github.rosemoe.sora.text.TextRange
  * @author Akash Yadav
  */
 class LSPFormatter(val server: ILanguageServer? = null) : AsyncFormatter() {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   override fun formatAsync(text: Content, cursorRange: TextRange): TextRange {
     return doFormat(text, cursorRange)
   }
