@@ -19,17 +19,14 @@
  */
 package com.itsaky.androidide.lsp;
 
-import static com.itsaky.androidide.R.*;
-
-import android.view.View;
+import static com.itsaky.androidide.R.drawable;
+import static com.itsaky.androidide.R.string;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
@@ -40,6 +37,8 @@ import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.lsp.models.Command;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
+import com.itsaky.androidide.lsp.models.ShowDocumentParams;
+import com.itsaky.androidide.lsp.models.ShowDocumentResult;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.lsp.util.DiagnosticUtil;
 import com.itsaky.androidide.models.DiagnosticGroup;
@@ -47,13 +46,12 @@ import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
-import com.itsaky.toaster.Toaster;
 import com.itsaky.toaster.ToastUtilsKt;
+import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -76,7 +74,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
   public static final int MAX_DIAGNOSTIC_FILES = 10;
   public static final int MAX_DIAGNOSTIC_ITEMS_PER_FILE = 20;
-  protected static final Gson gson = new Gson();
   protected static final ILogger LOG = ILogger.newInstance("AbstractLanguageClient");
   private static IDELanguageClientImpl mInstance;
   private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
@@ -115,15 +112,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   public static boolean isInitialized() {
     return mInstance != null;
   }
-
-  public void hideDiagnostics() {
-    if (activity() == null || activity().getDiagnosticBinding() == null) {
-      return;
-    }
-
-    activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
-  }
-
+  
   @Override
   public void publishDiagnostics(DiagnosticResult result) {
     if (result == DiagnosticResult.NO_UPDATE) {
@@ -266,15 +255,14 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   private void editInEditor(final IDEEditor editor, final TextEdit edit) {
-    final Range range = edit.getRange();
-    final int startLine = range.getStart().getLine();
-    final int startCol = range.getStart().getColumn();
-    final int endLine = range.getEnd().getLine();
-    final int endCol = range.getEnd().getColumn();
-
     activity()
         .runOnUiThread(
             () -> {
+              final Range range = edit.getRange();
+              final int startLine = range.getStart().getLine();
+              final int startCol = range.getStart().getColumn();
+              final int endLine = range.getEnd().getLine();
+              final int endCol = range.getEnd().getColumn();
               if (startLine == endLine && startCol == endCol) {
                 editor.getText().insert(startLine, startCol, edit.getNewText());
               } else {
@@ -284,10 +272,10 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   @Override
-  public com.itsaky.androidide.lsp.models.ShowDocumentResult showDocument(
-      com.itsaky.androidide.lsp.models.ShowDocumentParams params) {
+  public ShowDocumentResult showDocument(
+      ShowDocumentParams params) {
     boolean success = false;
-    final var result = new com.itsaky.androidide.lsp.models.ShowDocumentResult(false);
+    final var result = new ShowDocumentResult(false);
     if (activity() == null) {
       return result;
     }
@@ -347,8 +335,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
         fileDiagnostics = fileDiagnostics.subList(0, MAX_DIAGNOSTIC_ITEMS_PER_FILE);
       }
-      DiagnosticGroup group =
-          new DiagnosticGroup(drawable.ic_language_java, file, fileDiagnostics);
+      DiagnosticGroup group = new DiagnosticGroup(drawable.ic_language_java, file, fileDiagnostics);
       groups.add(group);
     }
     return groups;
@@ -456,49 +443,8 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private CodeEditorView findEditorByFile(File file) {
     return activity().getEditorForFile(file);
   }
-
-  private void hideBottomDiagnosticView(final File file) {
-    if (activity() == null || file == null) {
-      return;
-    }
-
-    final var frag = findEditorByFile(file);
-    if (frag == null || frag.getBinding() == null) {
-      return;
-    }
-
-    frag.getBinding().diagnosticTextContainer.setVisibility(View.GONE);
-    frag.getBinding().diagnosticText.setVisibility(View.GONE);
-    frag.getBinding().diagnosticText.setClickable(false);
-  }
-
-  private void showAvailableQuickfixes(IDEEditor editor, List<CodeActionItem> actions) {
-    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(activity());
-    builder.setTitle(string.msg_code_actions);
-    builder.setItems(
-        asArray(actions),
-        (d, w) -> {
-          d.dismiss();
-          hideDiagnostics();
-          hideBottomDiagnosticView(editor.getFile());
-          performCodeAction(editor, actions.get(w));
-        });
-    builder.show();
-  }
-
-  private CharSequence[] asArray(List<CodeActionItem> actions) {
-    final String[] arr = new String[actions.size()];
-    for (int i = 0; i < actions.size(); i++) {
-      arr[i] = actions.get(i).getTitle();
-    }
-    return arr;
-  }
-
+  
   private Unit noOp(final Object obj) {
     return Unit.INSTANCE;
-  }
-
-  private void execCommand(IDEEditor editor, Command command) {
-    editor.executeCommand(command);
   }
 }

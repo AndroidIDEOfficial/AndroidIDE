@@ -102,7 +102,7 @@ var trimTrailingWhitespace: Boolean
 var maxLineWidth: Int
   get() = prefManager.getInt(MAX_LINE_WIDTH, 80)
   set(value) {
-    prefManager.putInt(TRIM_TRAILING_WHITESPACE, value)
+    prefManager.putInt(MAX_LINE_WIDTH, value)
   }
 
 var preservedNewLines: Int
