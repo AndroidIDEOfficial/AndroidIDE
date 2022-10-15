@@ -54,7 +54,7 @@ ext {
             gson                : 'com.google.code.gson:gson:2.9.1',
             guava               : 'com.google.guava:guava:31.1-android',
             guava_jre           : 'com.google.guava:guava:31.1-jre',
-            auto_val_annotations: 'com.google.auto.value:auto-value-annotations:1.9',
+            auto_val_annotations: 'com.google.auto.value:auto-value-annotations:1.10',
             auto_val_ap         : 'com.google.auto.value:auto-value:1.9',
             oss_licenses        : 'com.google.android.gms:play-services-oss-licenses:17.0.0',
             protobuf            : 'com.google.protobuf:protobuf-java:3.10.0'
