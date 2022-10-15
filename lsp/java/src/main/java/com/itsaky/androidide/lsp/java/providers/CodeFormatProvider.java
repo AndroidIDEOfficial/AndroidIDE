@@ -84,7 +84,7 @@ public class CodeFormatProvider {
   }
 
   private CodeFormatResult createResult(final ImmutableList<Replacement> replacements) {
-    final CodeFormatResult result = new CodeFormatResult();
+    final CodeFormatResult result = new CodeFormatResult(true);
     for (final Replacement replacement : replacements) {
       final com.google.common.collect.Range<Integer> range = replacement.getReplaceRange();
       final IndexedTextEdit edit = new IndexedTextEdit();
