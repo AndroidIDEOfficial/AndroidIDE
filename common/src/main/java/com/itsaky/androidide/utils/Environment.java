@@ -213,17 +213,6 @@ public final class Environment {
     ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
     ENV_VARS.put("TERM", "screen");
 
-    // If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
-    // else set it to $SYSROOT/lib
-    String ld = System.getenv("LD_LIBRARY_PATH");
-    if (ld == null || ld.trim().length() <= 0) {
-      ld = "";
-    } else {
-      ld += File.pathSeparator;
-    }
-    ld += LIB_DIR.getAbsolutePath();
-    ENV_VARS.put("LD_LIBRARY_PATH", ld);
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         && BaseApplication.isAarch64()
         && LIB_HOOK.exists()
