@@ -39,14 +39,6 @@ object XmlUtils {
   
   private val log = ILogger.newInstance("XmlUtils")
   
-  private val parserFactory: XmlPullParserFactory =
-    try {
-      XmlPullParserFactory.newInstance()
-    } catch (e: XmlPullParserException) {
-      log.error("Unable to create pull parser factory")
-      throw RuntimeException(e)
-    }
-  
   fun isTag(node: DOMNode, index: Int): Boolean {
     var name = node.nodeName
     if (name.isNullOrBlank()) {
