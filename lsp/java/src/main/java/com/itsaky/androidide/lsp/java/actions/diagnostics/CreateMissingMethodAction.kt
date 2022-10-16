@@ -17,9 +17,13 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.CreateMissingMethod
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
@@ -27,7 +31,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
-class CreateMissingMethodAction : BaseCodeAction() {
+class CreateMissingMethodAction : BaseJavaCodeAction() {
   override val id: String = "lsp_java_createMissingMethod"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.MISSING_METHOD.id
@@ -38,7 +42,10 @@ class CreateMissingMethodAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (
+      !visible ||
+        !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)
+    ) {
       markInvisible()
       return
     }

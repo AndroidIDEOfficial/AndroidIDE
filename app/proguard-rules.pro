@@ -71,3 +71,4 @@
 
 # Used in preferences
 -keep enum com.itsaky.androidide.lsp.xml.models.EmptyElements { *; }
+-keep enum com.itsaky.androidide.xml.permissions.Permission { *; }

@@ -93,7 +93,6 @@ public class XMLFormatterDocument {
   public List<? extends TextEdit> format() throws BadLocationException {
     this.fullDomDocument =
         DOMParser.getInstance().parse(textDocument.getText(), textDocument.getUri(), null, false);
-
     if (isRangeFormatting()) {
       setupRangeFormatting(range);
     } else {

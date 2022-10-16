@@ -17,9 +17,13 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.RemoveClass
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
@@ -27,7 +31,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
-class RemoveClassAction : BaseCodeAction() {
+class RemoveClassAction : BaseJavaCodeAction() {
   override val id: String = "lsp_java_removeClass"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.UNUSED_CLASS.id

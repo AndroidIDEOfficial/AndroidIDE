@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.actions
+package com.itsaky.androidide.actions.locations
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -25,11 +25,9 @@ import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
 
 /** @author Akash Yadav */
-open class CodeActionsMenu : ActionMenu {
-
-  companion object {
-    const val ID = "editor_text_codeActions"
-  }
+object CodeActionsMenu : ActionMenu {
+  
+  const val ID = "editor_text_codeActions"
 
   override val children: MutableSet<ActionItem> = mutableSetOf()
   override val id: String = ID

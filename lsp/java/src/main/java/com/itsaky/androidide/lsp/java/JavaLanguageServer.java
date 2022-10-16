@@ -141,7 +141,7 @@ public class JavaLanguageServer implements ILanguageServer {
   @Override
   public void setupWithProject(@NonNull final Project project) {
 
-    LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
+    LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.INSTANCE);
 
     // Once we have project initialized
     // Destory the NO_MODULE_COMPILER instance

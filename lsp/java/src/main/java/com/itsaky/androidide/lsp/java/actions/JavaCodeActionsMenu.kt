@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.actions
 
-import com.itsaky.androidide.lsp.actions.CodeActionsMenu
+import com.itsaky.androidide.actions.ActionItem
+import com.itsaky.androidide.lsp.actions.IActionsMenuProvider
 import com.itsaky.androidide.lsp.java.actions.common.CommentAction
 import com.itsaky.androidide.lsp.java.actions.common.FindReferencesAction
 import com.itsaky.androidide.lsp.java.actions.common.GoToDefinitionAction
@@ -40,29 +41,34 @@ import com.itsaky.androidide.lsp.java.actions.generators.GenerateSettersAndGette
 import com.itsaky.androidide.lsp.java.actions.generators.GenerateToStringMethodAction
 import com.itsaky.androidide.lsp.java.actions.generators.OverrideSuperclassMethodsAction
 
-/** @author Akash Yadav */
-class JavaCodeActionsMenu : CodeActionsMenu() {
-  init {
-    addAction(CommentAction())
-    addAction(UncommentAction())
-    addAction(GoToDefinitionAction())
-    addAction(FindReferencesAction())
-    addAction(AddImportAction())
-    addAction(ImplementAbstractMethodsAction())
-    addAction(VariableToStatementAction())
-    addAction(FieldToBlockAction())
-    addAction(RemoveClassAction())
-    addAction(RemoveMethodAction())
-    addAction(RemoveUnusedThrowsAction())
-    addAction(CreateMissingMethodAction())
-    addAction(SuppressUncheckedWarningAction())
-    addAction(AddThrowsAction())
-    addAction(GenerateSettersAndGettersAction())
-    addAction(OverrideSuperclassMethodsAction())
-    addAction(GenerateMissingConstructorAction())
-    addAction(GenerateConstructorAction())
-    addAction(GenerateToStringMethodAction())
-    addAction(RemoveUnusedImportsAction())
-    addAction(OrganizeImportsAction())
-  }
+/**
+ * Java code actions.
+ * @author Akash Yadav
+ */
+object JavaCodeActionsMenu : IActionsMenuProvider {
+
+  override val actions: List<ActionItem> =
+    listOf(
+      CommentAction(),
+      UncommentAction(),
+      GoToDefinitionAction(),
+      FindReferencesAction(),
+      AddImportAction(),
+      ImplementAbstractMethodsAction(),
+      VariableToStatementAction(),
+      FieldToBlockAction(),
+      RemoveClassAction(),
+      RemoveMethodAction(),
+      RemoveUnusedThrowsAction(),
+      CreateMissingMethodAction(),
+      SuppressUncheckedWarningAction(),
+      AddThrowsAction(),
+      GenerateSettersAndGettersAction(),
+      OverrideSuperclassMethodsAction(),
+      GenerateMissingConstructorAction(),
+      GenerateConstructorAction(),
+      GenerateToStringMethodAction(),
+      RemoveUnusedImportsAction(),
+      OrganizeImportsAction()
+    )
 }

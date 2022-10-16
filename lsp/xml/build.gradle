@@ -66,6 +66,7 @@ dependencies {
     implementation common.editor
     implementation common.utilcode
     
+    implementation project (':actions')
     implementation project (':lsp:api')
     implementation project (':lexers')
     implementation project (':build-tools:xml-dom')
@@ -75,6 +76,7 @@ dependencies {
     
     implementation androidx.ktx
     implementation common.kotlin
+    implementation google.material
     
     testImplementation project (':build-tools:projects')
     testImplementation project (':build-tools:tooling-api')

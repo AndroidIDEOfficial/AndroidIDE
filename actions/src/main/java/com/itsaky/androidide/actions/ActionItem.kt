@@ -65,27 +65,6 @@ interface ActionItem {
   fun getShowAsActionFlags(data: ActionData): Int = -1
 
   /**
-   * Checks if the given [ActionData] has instances of the given [types].
-   *
-   * @param data The data to check.
-   * @param types The type of objects to look for.
-   * @return `true` if the [data] has the given [types], `false` otherwise.
-   */
-  fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
-    for (type in types) {
-      data.get(type) ?: return false
-    }
-
-    return true
-  }
-
-  /** Marks this action item as invisible. */
-  fun markInvisible() {
-    visible = false
-    enabled = false
-  }
-
-  /**
    * Create custom action view for this action item.
    *
    * @return The custom action view or `null`.

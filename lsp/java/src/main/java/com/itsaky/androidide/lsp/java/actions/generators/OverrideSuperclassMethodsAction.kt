@@ -19,9 +19,14 @@ package com.itsaky.androidide.lsp.java.actions.generators
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.newDialogBuilder
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider
 import com.itsaky.androidide.lsp.java.parser.ParseTask
@@ -54,7 +59,7 @@ import javax.tools.JavaFileObject
  *
  * @author Akash Yadav
  */
-class OverrideSuperclassMethodsAction : BaseCodeAction() {
+class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
   override val titleTextRes: Int = R.string.action_override_superclass_methods
   override val id: String = "lsp_java_overrideSuperclassMethods"
   override var label: String = ""

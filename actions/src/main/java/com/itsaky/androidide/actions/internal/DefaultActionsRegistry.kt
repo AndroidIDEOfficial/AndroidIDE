@@ -23,6 +23,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.locations.CodeActionsMenu
 import com.itsaky.androidide.utils.ILogger
 import java.util.concurrent.*
 
@@ -36,6 +37,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
   private val log = ILogger.newInstance("DefaultActionsRegistry")
   private val actions: MutableMap<String, MutableMap<String, ActionItem>> = mutableMapOf()
   private val listeners = mutableSetOf<ActionExecListener>()
+  
+  init {
+    registerAction(CodeActionsMenu)
+  }
 
   override fun getActions(location: ActionItem.Location): MutableMap<String, ActionItem> {
     if (actions[location.id] == null) {

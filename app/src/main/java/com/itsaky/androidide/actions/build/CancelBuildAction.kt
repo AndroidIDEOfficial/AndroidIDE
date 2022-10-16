@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.utils.ILogger

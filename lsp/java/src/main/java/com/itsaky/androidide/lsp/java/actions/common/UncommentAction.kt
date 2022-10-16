@@ -17,11 +17,12 @@
 package com.itsaky.androidide.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 
 /** @author Akash Yadav */
-class UncommentAction : BaseCodeAction() {
+class UncommentAction : BaseJavaCodeAction() {
   override val id: String = "lsp_java_uncommentLine"
   override var label: String = ""
 

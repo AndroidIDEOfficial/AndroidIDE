@@ -17,9 +17,11 @@
 package com.itsaky.androidide.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 
@@ -28,7 +30,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class FindReferencesAction : BaseCodeAction() {
+class FindReferencesAction : BaseJavaCodeAction() {
   override val titleTextRes: Int = R.string.action_find_references
   override val id: String = "lsp_java_findReferences"
   override var label: String = ""

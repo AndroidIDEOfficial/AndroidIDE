@@ -19,9 +19,11 @@ package com.itsaky.androidide.lsp.java.actions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
@@ -29,15 +31,13 @@ import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
-import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
-import java.nio.file.Path
 
 /**
  * Base class for java code actions
  * @author Akash Yadav
  */
-abstract class BaseCodeAction : ActionItem {
+abstract class BaseJavaCodeAction : ActionItem {
   override var visible: Boolean = true
   override var enabled: Boolean = true
   override var icon: Drawable? = null
@@ -45,9 +45,7 @@ abstract class BaseCodeAction : ActionItem {
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
 
   protected abstract val titleTextRes: Int
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   override fun prepare(data: ActionData) {
 
     if (
@@ -64,25 +62,6 @@ abstract class BaseCodeAction : ActionItem {
     val file = requireFile(data)
     visible = DocumentUtils.isJavaFile(file.toPath())
     enabled = visible
-  }
-
-  fun requireFile(data: ActionData): File {
-    return data.get(File::class.java) ?: throw IllegalArgumentException("No file instance provided")
-  }
-
-  fun requirePath(data: ActionData): Path {
-    return requireFile(data).toPath()
-  }
-
-  fun requireEditor(data: ActionData): CodeEditor {
-    return data.get(CodeEditor::class.java)
-      ?: throw IllegalArgumentException("An editor instance is required but none was provided")
-  }
-
-  fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
-    val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
-    val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
-    return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
   }
 
   fun performCodeAction(data: ActionData, result: Rewrite) {
