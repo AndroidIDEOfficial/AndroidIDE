@@ -364,7 +364,7 @@
   <string name="btn_close">Close</string>
   <string name="msg_ignore_case">Ignore case</string>
   <string name="msg_use_regex">Use regex</string>
-  <string name="idepref_buildnrun_summary">Configure the Gradle build</string>
+  <string name="idepref_buildnrun_summary">Configure the Gradle build.</string>
   <string name="configure">Configure</string>
   <string name="about">About</string>
   <string name="idepref_github_summary">AndroidIDE is open source!</string>
@@ -390,7 +390,7 @@
   <string name="idepref_xml_spaceBeforeEmptyClose_title">Space before empty close tag</string>
   <string name="idepref_xml_spaceBeforeEmptyClose_summary">Insert whitespace before self closing tag end bracket.</string>
   <string name="idepref_xml_preserveEmptyContent_title">Preserve empty content</string>
-  <string name="idepref_xml_preserveEmptyContent_summary">Present empty content inside elements (whitespaces, new lines, tabs, etc).</string>
+  <string name="idepref_xml_preserveEmptyContent_summary">Preserve empty content inside elements (whitespaces, new lines, tabs, etc).</string>
   <string name="idepref_xml_preserveAttrLineBreaks_title">Preserve attribute line breaks</string>
   <string name="idepref_xml_preserveAttrLineBreaks_summary">Preserve line breaks between attributes.</string>
   <string name="idepref_xml_closingBrackNewLine_title">Closing bracket on new line</string>
