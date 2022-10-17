@@ -241,13 +241,13 @@
     <string name="widget_edittext">EditText</string>
     <string name="widget_image_button">ImageButton</string>
     <string name="widget_image_view">ImageView</string>
-    <string name="widget_progressbar">Progress bar</string>
-    <string name="widget_radio_button">Radio button</string>
+    <string name="widget_progressbar">ProgressBar</string>
+    <string name="widget_radio_button">RadioButton</string>
     <string name="widget_seekbar">Seekbar</string>
     <string name="widget_spinner">Spinner</string>
     <string name="widget_group_layouts">Layouts</string>
-    <string name="layout_linear">Linear layout</string>
-    <string name="layout_relative">Relative layout</string>
+    <string name="layout_linear">LinearLayout</string>
+    <string name="layout_relative">RelativeLayout</string>
     <string name="msg_applicable_attrs">Attributes लागू करे</string>
     <string name="msg_attr_editor_actions">एक्शन्स</string>
     <string name="title_viewaction_delete">डिलीट</string>
