@@ -50,7 +50,7 @@ ext {
     ]
     
     google = [
-            material            : 'com.google.android.material:material:1.7.0-rc01',
+            material            : 'com.google.android.material:material:1.8.0-alpha01',
             gson                : 'com.google.code.gson:gson:2.9.1',
             guava               : 'com.google.guava:guava:31.1-android',
             guava_jre           : 'com.google.guava:guava:31.1-jre',
