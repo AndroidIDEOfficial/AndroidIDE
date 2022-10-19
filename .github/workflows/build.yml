@@ -5,10 +5,12 @@ on:
     branches: [ "main" ]
     paths-ignore:
       - '**.md'
+      - 'fastlane/**'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - '**.md'
+      - 'fastlane/**'
   workflow_dispatch: {}
 
 jobs:
