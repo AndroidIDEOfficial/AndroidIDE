@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.androidide.views.editor.IDEEditor;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
@@ -122,8 +122,8 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
     editor.setEditorLanguage(new EmptyLanguage());
     editor.setWordwrap(false);
     editor.setUndoEnabled(false);
-    editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
-    editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+    editor.setTypefaceLineNumber(TypefaceUtilsKt.jetbrainsMono());
+    editor.setTypefaceText(TypefaceUtilsKt.jetbrainsMono());
     editor.setTextSize(12);
     return editor;
   }

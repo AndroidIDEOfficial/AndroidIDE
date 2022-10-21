@@ -40,7 +40,7 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.utils.TypefaceUtils
+import com.itsaky.androidide.utils.jetbrainsMono
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.lang.completion.CompletionItem
@@ -80,7 +80,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionLabel.text = label
     binding.completionType.text = type
     binding.completionDetail.text = desc
-    binding.completionIconText.setTypeface(TypefaceUtils.jetbrainsMono(), Typeface.BOLD)
+    binding.completionIconText.setTypeface(jetbrainsMono(), Typeface.BOLD)
     if (desc.isEmpty()) {
       binding.completionDetail.visibility = View.GONE
     }
