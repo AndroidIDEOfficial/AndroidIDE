@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.handlers
 
+import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -43,7 +44,9 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
+import com.itsaky.androidide.services.ApkInstallationResultReceiver
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.IntentUtils.startIntent
@@ -102,8 +105,7 @@ class FileTreeActionHandler : BaseEventHandler() {
 
     val context = event[Context::class.java]!! as EditorActivity
     if (event.file.name.endsWith(".apk")) {
-      val intent: Intent = IntentUtils.getInstallAppIntent(event.file)
-      context.startActivity(intent)
+      ApkInstaller.installApk(context, ApkInstallationResultReceiver.createSender(context), event.file)
       return
     }
     context.openFile(event.file)

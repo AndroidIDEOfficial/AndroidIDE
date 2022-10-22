@@ -25,6 +25,8 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.models.ApkMetadata
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.services.ApkInstallationResultReceiver
+import com.itsaky.androidide.utils.ApkInstaller
 import java.io.File
 
 /** @author Akash Yadav */
@@ -109,8 +111,8 @@ open class AssembleDebugAction() : BaseBuildAction() {
         log.error("APK file does not exist!")
         return@runOnUiThread
       }
-
-      IntentUtils.getInstallAppIntent(apk).let { activity.startActivity(it) }
+  
+      ApkInstaller.installApk(activity, ApkInstallationResultReceiver.createSender(activity), apk)
     }
   }
 }

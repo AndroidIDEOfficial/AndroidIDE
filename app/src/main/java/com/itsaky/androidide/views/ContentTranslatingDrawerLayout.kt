@@ -29,7 +29,7 @@ import com.itsaky.androidide.utils.ILogger
  *
  * @author Akash Yadav
  */
-class ContentScalingDrawerLayout : InterceptableDrawerLayout {
+class ContentTranslatingDrawerLayout : InterceptableDrawerLayout {
   constructor(context: Context) : super(context)
   constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
   constructor(
@@ -38,7 +38,7 @@ class ContentScalingDrawerLayout : InterceptableDrawerLayout {
     defStyleAttr: Int
   ) : super(context, attrs, defStyleAttr)
 
-  private val log = ILogger.newInstance("ContentScalingDrawerLayout")
+  private val log = ILogger.newInstance("ContentTranslatingDrawerLayout")
 
   companion object {
     const val MAX_SCALE = 0.2f

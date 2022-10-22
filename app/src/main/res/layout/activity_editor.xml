@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsaky.androidide.views.ContentScalingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.views.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/editor_drawerLayout"
@@ -139,4 +139,4 @@
 
   </com.google.android.material.navigation.NavigationView>
 
-</com.itsaky.androidide.views.ContentScalingDrawerLayout>
+</com.itsaky.androidide.views.ContentTranslatingDrawerLayout>
