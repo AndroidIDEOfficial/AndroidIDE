@@ -41,6 +41,7 @@ class ApkInstallationResultReceiver : BroadcastReceiver() {
     @JvmStatic
     fun createSender(context: Context): IntentSender {
       val intent = Intent(context, ApkInstallationResultReceiver::class.java)
+      intent.action = INSTALL_PACKAGE_ACTION
       return PendingIntent.getBroadcast(
           context,
           INSTALL_PACKAGE_REQ_CODE,
@@ -52,7 +53,7 @@ class ApkInstallationResultReceiver : BroadcastReceiver() {
   }
 
   override fun onReceive(context: Context?, intent: Intent?) {
-    if (context == null || intent == null) {
+    if (context == null || intent == null || intent.action != INSTALL_PACKAGE_ACTION) {
       log.warn("Invalid broadcast received", "action=${intent?.action}")
       return
     }
