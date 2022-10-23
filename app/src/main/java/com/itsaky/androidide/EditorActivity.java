@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInstaller;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -75,6 +76,7 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.itsaky.androidide.actions.ActionData;
 import com.itsaky.androidide.actions.ActionsRegistry;
@@ -114,10 +116,13 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.InstallationResultHandler;
 import com.itsaky.androidide.utils.IntentUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
+import com.itsaky.androidide.utils.SingleSessionCallback;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
+import com.itsaky.androidide.views.EditorBottomSheet;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
@@ -960,6 +965,64 @@ public class EditorActivity extends IDEActivity
     WidgetTableRegistry.getInstance().clear();
     mBinding = null;
     mViewModel = null;
+  }
+
+  @Override
+  protected void onNewIntent(final Intent intent) {
+    super.onNewIntent(intent);
+    final var packageName = InstallationResultHandler.onResult(this, intent);
+    if (packageName != null) {
+      Snackbar.make(
+          mBinding.realContainer,
+          string.msg_action_open_application,
+          Snackbar.LENGTH_LONG)
+        .setAction(
+          string.yes,
+          v -> {
+            final var manager = getPackageManager();
+            final var launchIntent = manager.getLaunchIntentForPackage(packageName);
+            if (launchIntent != null) {
+              startActivity(launchIntent);
+            }
+          })
+        .show();
+    }
+    
+  }
+
+  public PackageInstaller.SessionCallback installationSessionCallback() {
+    return new SingleSessionCallback() {
+
+      @Override
+      public void onCreated(final int sessionId) {
+        LOG.debug("on session created:", sessionId);
+        if (mBinding != null) {
+          mBinding.bottomSheet.setActionText(getString(string.msg_installing_apk));
+          mBinding.bottomSheet.setActionProgress(0);
+          mBinding.bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION);
+        }
+      }
+
+      @Override
+      public void onProgressChanged(final int sessionId, final float progress) {
+        if (mBinding != null) {
+          mBinding.bottomSheet.setActionProgress((int) (progress * 100f));
+        }
+      }
+
+      @Override
+      public void onFinished(final int sessionId, final boolean success) {
+        if (mBinding != null) {
+          mBinding.bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER);
+          mBinding.bottomSheet.setActionProgress(0);
+          if (!success) {
+            Snackbar.make(
+                mBinding.realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
+              .show();
+          }
+        }
+      }
+    };
   }
 
   private void preProjectInit() {

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.views
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
@@ -35,7 +34,6 @@ import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.viewpager2.widget.ViewPager2
 import com.blankj.utilcode.util.KeyboardUtils
-import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -45,6 +43,7 @@ import com.itsaky.androidide.R.string
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
+import com.itsaky.androidide.databinding.LayoutBottomActionBinding
 import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding
 import com.itsaky.androidide.fragments.ShareableOutputFragment
 import com.itsaky.androidide.models.LogLine
@@ -80,25 +79,26 @@ constructor(
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
 
   private var binding: LayoutEditorBottomSheetBinding
+  private var action: LayoutBottomActionBinding
   private var symbolInput: SymbolInputView
-  
+
   val pagerAdapter: EditorBottomSheetTabAdapter
 
   val tabs: TabLayout
     get() = binding.tabs
-  
+
   val pager: ViewPager2
     get() = binding.pager
-  
+
   val headerContainer: ViewFlipper
     get() = binding.headerContainer
 
   private val log = ILogger.newInstance("EditorBottomSheet")
 
   companion object {
-    private const val CHILD_SYMBOL_INPUT = 0
-    private const val CHILD_HEADER = 1
-    private const val CHILD_INSTALLATION_PROGRESS = 2
+    const val CHILD_SYMBOL_INPUT = 0
+    const val CHILD_HEADER = 1
+    const val CHILD_ACTION = 2
   }
 
   private fun initialize(context: FragmentActivity) {
@@ -161,12 +161,15 @@ constructor(
     if (context !is FragmentActivity) {
       throw IllegalArgumentException("EditorBottomSheet must be set up with a FragmentActivity")
     }
-    
-    binding = LayoutEditorBottomSheetBinding.inflate(LayoutInflater.from(context))
+
+    val inflater = LayoutInflater.from(context)
+    binding = LayoutEditorBottomSheetBinding.inflate(inflater)
+    action = LayoutBottomActionBinding.inflate(inflater)
     symbolInput = SymbolInputView(context)
     pagerAdapter = EditorBottomSheetTabAdapter(context)
 
     binding.headerContainer.addView(symbolInput, CHILD_SYMBOL_INPUT, LayoutParams(-1, -2))
+    binding.headerContainer.addView(action.root, CHILD_ACTION, LayoutParams(-1, -2))
     binding.pager.adapter = pagerAdapter
 
     removeAllViews()
@@ -174,37 +177,41 @@ constructor(
 
     initialize(context)
   }
-  
+
+  fun showChild(index: Int) {
+    binding.headerContainer.displayedChild = index
+  }
+
+  fun setActionText(text: CharSequence) {
+    action.actionText.text = text
+  }
+
+  fun setActionProgress(progress: Int) {
+    action.progress.setProgressCompat(progress, true)
+  }
+
   fun appendApkLog(line: LogLine) {
     pagerAdapter.logFragment?.appendLog(line)
   }
-  
+
   fun appendBuildOut(str: String?) {
     pagerAdapter.buildOutputFragment?.appendOutput(str)
   }
-  
+
   fun handleDiagnosticsResultVisibility(errorVisible: Boolean) {
-    ThreadUtils.runOnUiThread {
-      pagerAdapter.diagnosticsFragment?.handleResultVisibility(errorVisible)
-    }
+    runOnUiThread { pagerAdapter.diagnosticsFragment?.handleResultVisibility(errorVisible) }
   }
-  
+
   fun handleSearchResultVisibility(errorVisible: Boolean) {
-    ThreadUtils.runOnUiThread {
-      pagerAdapter.searchResultFragment?.handleResultVisibility(errorVisible)
-    }
+    runOnUiThread { pagerAdapter.searchResultFragment?.handleResultVisibility(errorVisible) }
   }
-  
+
   fun setDiagnosticsAdapter(adapter: DiagnosticsAdapter) {
-    runOnUiThread {
-        pagerAdapter.diagnosticsFragment?.setAdapter(adapter)
-      }
+    runOnUiThread { pagerAdapter.diagnosticsFragment?.setAdapter(adapter) }
   }
-  
+
   fun setSearchResultAdapter(adapter: SearchListAdapter) {
-    runOnUiThread {
-      pagerAdapter.searchResultFragment?.setAdapter(adapter)
-    }
+    runOnUiThread { pagerAdapter.searchResultFragment?.setAdapter(adapter) }
   }
 
   fun refreshSymbolInput(editor: CodeEditorView) {
@@ -228,7 +235,7 @@ constructor(
   }
 
   fun setStatus(text: CharSequence, @GravityInt gravity: Int) {
-    ThreadUtils.runOnUiThread {
+    runOnUiThread {
       binding.let {
         it.statusText.gravity = gravity
         it.statusText.text = text

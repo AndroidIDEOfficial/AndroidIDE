@@ -50,6 +50,7 @@
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".EditorActivity"
+      android:launchMode="singleTop"
       android:configChanges="orientation|screenSize|uiMode"
       android:windowSoftInputMode="adjustResize" />
     <activity
@@ -94,15 +95,6 @@
       tools:ignore="ExportedReceiver">
       <intent-filter>
         <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
-      </intent-filter>
-    </receiver>
-    <receiver
-      android:name=".services.ApkInstallationResultReceiver"
-      android:enabled="true"
-      android:exported="true"
-      tools:ignore="ExportedReceiver">
-      <intent-filter>
-        <action android:name="com.itsaky.androidide.installer.INSTALL_PACKAGE" />
       </intent-filter>
     </receiver>
 

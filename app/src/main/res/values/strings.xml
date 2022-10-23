@@ -408,4 +408,7 @@
   <string name="idepref_emptyElements_summary">Choose the formatting behavior for empty elements.</string>
   <string name="xml_formatting_options">XML formatting options</string>
   <string name="xml_formatting_options_summary">Configure the XML formatter</string>
+  <string name="msg_installing_apk">Installing APK...</string>
+  <string name="msg_installed_successfully">Installed successfully</string>
+  <string name="msg_action_open_application">Do you want to open the application?</string>
 </resources>

@@ -15,59 +15,58 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services
+package com.itsaky.androidide.utils
 
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.EditorActivity
+import java.util.function.Consumer
 
 /**
- * Receives APK installation results.
+ * Handles result of APK installation.
  *
  * @author Akash Yadav
  */
-class ApkInstallationResultReceiver : BroadcastReceiver() {
+object InstallationResultHandler {
 
-  private val log = ILogger.newInstance("InstallationResultReceiver")
+  private val log = ILogger.newInstance("InstallationResultHandler")
+  private const val INSTALL_PACKAGE_REQ_CODE = 2304
+  private const val INSTALL_PACKAGE_ACTION = "com.itsaky.androidide.installer.INSTALL_PACKAGE"
 
-  companion object {
-    const val INSTALL_PACKAGE_REQ_CODE = 2304
-    const val INSTALL_PACKAGE_ACTION = "com.itsaky.androidide.installer.INSTALL_PACKAGE"
-
-    @JvmStatic
-    fun createSender(context: Context): IntentSender {
-      val intent = Intent(context, ApkInstallationResultReceiver::class.java)
-      intent.action = INSTALL_PACKAGE_ACTION
-      return PendingIntent.getBroadcast(
-          context,
-          INSTALL_PACKAGE_REQ_CODE,
-          intent,
-          PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        .intentSender
-    }
+  @JvmStatic
+  fun createEditorActivitySender(context: Context): IntentSender {
+    val intent = Intent(context, EditorActivity::class.java)
+    intent.action = INSTALL_PACKAGE_ACTION
+    return PendingIntent.getActivity(
+        context,
+        INSTALL_PACKAGE_REQ_CODE,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT
+      )
+      .intentSender
   }
-
-  override fun onReceive(context: Context?, intent: Intent?) {
+  
+  @JvmStatic
+  fun onResult(context: Context?, intent: Intent?) : String? {
     if (context == null || intent == null || intent.action != INSTALL_PACKAGE_ACTION) {
       log.warn("Invalid broadcast received", "action=${intent?.action}")
-      return
+      return null
     }
 
     val extras =
       intent.extras
         ?: run {
           log.warn("Invalid intent received in broadcast")
-          return
+          return null
         }
-
+  
+    val packageName = extras.getString(PackageInstaller.EXTRA_PACKAGE_NAME)
     val status = extras.getInt(PackageInstaller.EXTRA_STATUS)
     val message = extras.getString(PackageInstaller.EXTRA_STATUS_MESSAGE)
-    when (status) {
+    return when (status) {
       PackageInstaller.STATUS_PENDING_USER_ACTION -> {
         extras.get(Intent.EXTRA_INTENT)?.let {
           if (it is Intent) {
@@ -77,17 +76,26 @@ class ApkInstallationResultReceiver : BroadcastReceiver() {
             context.startActivity(it)
           }
         }
+        null
       }
-      PackageInstaller.STATUS_SUCCESS -> log.info("Package installed successfully!")
+      PackageInstaller.STATUS_SUCCESS -> {
+        log.info("Package installed successfully!")
+        packageName
+      }
       PackageInstaller.STATUS_FAILURE,
       PackageInstaller.STATUS_FAILURE_ABORTED,
       PackageInstaller.STATUS_FAILURE_BLOCKED,
       PackageInstaller.STATUS_FAILURE_CONFLICT,
       PackageInstaller.STATUS_FAILURE_INCOMPATIBLE,
       PackageInstaller.STATUS_FAILURE_INVALID,
-      PackageInstaller.STATUS_FAILURE_STORAGE ->
+      PackageInstaller.STATUS_FAILURE_STORAGE -> {
         log.error("Package installation failed with status code", status, "and message:", message)
-      else -> log.warn("Invalid status code received in broadcast:", status)
+        null
+      }
+      else -> {
+        log.warn("Invalid status code received in broadcast:", status)
+        null
+      }
     }
   }
 }

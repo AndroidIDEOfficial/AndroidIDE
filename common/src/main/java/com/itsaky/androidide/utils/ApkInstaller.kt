@@ -21,6 +21,8 @@ import android.content.Context
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.Session
+import android.content.pm.PackageInstaller.SessionCallback
+import com.itsaky.androidide.tasks.executeAsync
 import java.io.File
 import java.io.IOException
 
@@ -33,6 +35,9 @@ object ApkInstaller {
 
   private val log = ILogger.newInstance("ApkInstaller")
 
+  const val PROGRESS_UPDATE_DELAY = 100
+  // ms
+
   /**
    * Starts a session-based package installation workflow.
    *
@@ -42,20 +47,30 @@ object ApkInstaller {
    * @param apk The APK file to install.
    */
   @JvmStatic
-  fun installApk(context: Context, sender: IntentSender, apk: File) {
+  fun installApk(context: Context, sender: IntentSender, apk: File, callback: SessionCallback) {
     if (!apk.exists() || !apk.isFile || apk.extension != "apk") {
       log.error("File is not an APK:", apk)
       return
     }
+
     var session: Session? = null
     try {
-      val installer = context.packageManager.packageInstaller
+      val installer =
+        context.packageManager.packageInstaller.apply { registerSessionCallback(callback) }
       val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
       val sessionId = installer.createSession(params)
       session = installer.openSession(sessionId)
-      addToSession(session, apk)
-      session.commit(sender)
-      log.info("Started package install session")
+      executeAsync(
+        callable = {
+          addToSession(session, apk)
+          session
+        }
+      ) {
+        it?.let {
+          it.commit(sender)
+          log.info("Started package install session")
+        }
+      }
     } catch (io: IOException) {
       log.error("Package installation failed", io)
     } catch (runtime: RuntimeException) {
@@ -65,13 +80,19 @@ object ApkInstaller {
   }
 
   private fun addToSession(session: Session, apk: File) {
-    session.openWrite(apk.name, 0, apk.length()).use { outStream ->
+    val length = apk.length()
+    if (length == 0L) {
+      throw RuntimeException("File is empty (has length 0)")
+    }
+    session.openWrite(apk.name, 0, length).use { outStream ->
       apk.inputStream().use { inStream ->
         val bytes = ByteArray(8 * 1024)
         var n: Int = inStream.read(bytes)
+        var count = n
         while (n >= 0) {
           outStream.write(bytes, 0, n)
           n = inStream.read(bytes)
+          count += n
         }
       }
       session.fsync(outStream)
