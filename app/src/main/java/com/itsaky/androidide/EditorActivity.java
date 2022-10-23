@@ -973,21 +973,18 @@ public class EditorActivity extends IDEActivity
     final var packageName = InstallationResultHandler.onResult(this, intent);
     if (packageName != null) {
       Snackbar.make(
-          mBinding.realContainer,
-          string.msg_action_open_application,
-          Snackbar.LENGTH_LONG)
-        .setAction(
-          string.yes,
-          v -> {
-            final var manager = getPackageManager();
-            final var launchIntent = manager.getLaunchIntentForPackage(packageName);
-            if (launchIntent != null) {
-              startActivity(launchIntent);
-            }
-          })
-        .show();
+              mBinding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
+          .setAction(
+              string.yes,
+              v -> {
+                final var manager = getPackageManager();
+                final var launchIntent = manager.getLaunchIntentForPackage(packageName);
+                if (launchIntent != null) {
+                  startActivity(launchIntent);
+                }
+              })
+          .show();
     }
-    
   }
 
   public PackageInstaller.SessionCallback installationSessionCallback() {
@@ -1017,8 +1014,8 @@ public class EditorActivity extends IDEActivity
           mBinding.bottomSheet.setActionProgress(0);
           if (!success) {
             Snackbar.make(
-                mBinding.realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
-              .show();
+                    mBinding.realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
+                .show();
           }
         }
       }
@@ -1219,6 +1216,16 @@ public class EditorActivity extends IDEActivity
             mBinding.viewContainer.setScaleY(editorScale);
           }
         });
+
+    mBinding
+        .bottomSheet
+        .getHeaderContainer()
+        .setOnClickListener(
+            v -> {
+              if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+              }
+            });
 
     final var observer =
         new ViewTreeObserver.OnGlobalLayoutListener() {
