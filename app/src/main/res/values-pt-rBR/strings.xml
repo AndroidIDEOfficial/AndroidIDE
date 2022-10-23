@@ -407,5 +407,8 @@
   <string name="idepref_emptyElements_title">Comportamento de elementos vazios</string>
   <string name="idepref_emptyElements_summary">Escolha o comportamento de formatação para elementos vazios.</string>
   <string name="xml_formatting_options">Opções de formatação XML</string>
-  <string name="xml_formatting_options_summary">Configurar o formatador XML</string
+  <string name="xml_formatting_options_summary">Configurar o formatador XML</string>
+  <string name="msg_installing_apk">Instalando APK...</string>
+  <string name="msg_installed_successfully">Instalado com sucesso</string>
+  <string name="msg_action_open_application">Deseja abrir o aplicativo?</string>
 </resources>
