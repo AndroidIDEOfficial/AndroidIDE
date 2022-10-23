@@ -36,8 +36,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment
     implements ShareableOutputFragment {
-
-  private static final ILogger LOG = ILogger.newInstance("NonEditableEditorFragment");
+  
   private FragmentNonEditableEditorBinding binding;
 
   @Nullable
