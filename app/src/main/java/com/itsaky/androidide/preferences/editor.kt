@@ -33,6 +33,7 @@ import com.itsaky.androidide.preferences.internal.TAB_SIZE
 import com.itsaky.androidide.preferences.internal.USE_ICU
 import com.itsaky.androidide.preferences.internal.USE_MAGNIFER
 import com.itsaky.androidide.preferences.internal.USE_SOFT_TAB
+import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.WORD_WRAP
 import com.itsaky.androidide.preferences.internal.autoSave
 import com.itsaky.androidide.preferences.internal.completionsMatchLower
@@ -47,6 +48,7 @@ import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useIcu
 import com.itsaky.androidide.preferences.internal.useMagnifier
 import com.itsaky.androidide.preferences.internal.useSoftTab
+import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
 import com.itsaky.androidide.preferences.internal.wordwrap
 import kotlinx.parcelize.Parcelize
@@ -76,6 +78,7 @@ private class CommonConfigurations(
     addPreference(TabSize())
     addPreference(NonPrintablePaintingFlags())
     addPreference(FontLigatures())
+    addPreference(UseCustomFont())
     addPreference(UseSoftTab())
     addPreference(WordWrap())
     addPreference(UseMagnifier())
@@ -252,3 +255,11 @@ private class UseICU(
   override val summary: Int? = string.idepref_useIcu_summary,
   override val icon: Int? = drawable.ic_expand_selection,
 ) : SwitchPreference(setValue = ::useIcu::set, getValue = ::useIcu::get)
+
+@Parcelize
+private class UseCustomFont(
+  override val key: String = USE_CUSTOM_FONT,
+  override val title: Int = string.idepref_customFont_title,
+  override val summary: Int? = string.idepref_customFont_summary,
+  override val icon: Int? = drawable.ic_custom_font,
+) : SwitchPreference(setValue = ::useCustomFont::set, getValue = ::useCustomFont::get)

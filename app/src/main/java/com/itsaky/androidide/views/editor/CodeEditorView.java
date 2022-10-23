@@ -26,6 +26,7 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FON
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_SIZE;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_CUSTOM_FONT;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.WORD_WRAP;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawEmptyLineWs;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawInnerWs;
@@ -36,6 +37,7 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.get
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontSize;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseIcu;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseMagnifier;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseCustomFont;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -105,7 +107,6 @@ public class CodeEditorView extends LinearLayout {
 
     final var inflater = LayoutInflater.from(context);
     this.binding = LayoutCodeEditorBinding.inflate(inflater);
-    this.binding.editor.setTypefaceText(TypefaceUtilsKt.jetbrainsMono());
     this.binding.editor.setHighlightCurrentBlock(true);
     this.binding.editor.getProps().autoCompletionOnComposing = true;
     this.binding.editor.setDividerWidth(SizeUtils.dp2px(1));
@@ -208,6 +209,7 @@ public class CodeEditorView extends LinearLayout {
         case "gradle":
           return new GroovyLanguage();
         case "kt":
+        case "kts":
           return new KotlinLanguage();
         case "c":
         case "h":
@@ -223,6 +225,7 @@ public class CodeEditorView extends LinearLayout {
   }
 
   private void configureEditorIfNeeded() {
+    onCustomFontPrefChanged();
     onFontSizePrefChanged();
     onFontLigaturesPrefChanged();
     onPrintingFlagsPrefChanged();
@@ -288,6 +291,10 @@ public class CodeEditorView extends LinearLayout {
     binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
 
+  private void onCustomFontPrefChanged() {
+    binding.editor.setTypefaceText(TypefaceUtilsKt.customOrJBMono(getUseCustomFont()));
+  }
+
   /**
    * For internal use only!
    *
@@ -339,6 +346,9 @@ public class CodeEditorView extends LinearLayout {
         break;
       case USE_ICU:
         onUseIcuPrefChanged();
+        break;
+      case USE_CUSTOM_FONT:
+        onCustomFontPrefChanged();
         break;
     }
   }
