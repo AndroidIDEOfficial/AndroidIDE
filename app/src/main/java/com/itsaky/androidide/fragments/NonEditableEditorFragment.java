@@ -103,6 +103,7 @@ public abstract class NonEditableEditorFragment extends Fragment
       return;
     }
 
-    editor.setText("");
+    // Editing CodeEditor's content is a synchronized operation
+    editor.getText().delete(0, editor.getText().length());
   }
 }
