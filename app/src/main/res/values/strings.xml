@@ -409,7 +409,7 @@
   <string name="xml_formatting_options">XML formatting options</string>
   <string name="xml_formatting_options_summary">Configure the XML formatter</string>
   <string name="idepref_customFont_title">Use custom font</string>
-  <string name="idepref_customFont_summary">If enabled, the file at "/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf" will be used as Editor font.</string>
+  <string name="idepref_customFont_summary">If enabled, the file at \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" will be used as Editor font.</string>
   <string name="msg_installing_apk">Installing APK...</string>
   <string name="msg_installed_successfully">Installed successfully</string>
   <string name="msg_action_open_application">Do you want to open the application?</string>

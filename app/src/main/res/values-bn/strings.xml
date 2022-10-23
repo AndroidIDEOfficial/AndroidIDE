@@ -407,4 +407,9 @@
     <string name="idepref_emptyElements_summary">খালি উপাদানগুলির জন্য ফর্ম্যাটিং আচরণ চয়ন করুন৷</string>
     <string name="xml_formatting_options">XML ফর্ম্যাটিং অপশনগুলি</string>
     <string name="xml_formatting_options_summary">XML ফর্ম্যাটার কনফিগার করুন</string>
+    <string name="idepref_customFont_title">কাস্টম ফন্ট ব্যবহার করুন</string>
+    <string name="idepref_customFont_summary">সক্রিয় থাকলে, \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" ফাইলটিকে এডিটর-এর ফন্ট হিসেবে ব্যবহার করা হবে।</string>
+    <string name="msg_installing_apk">APK ইনস্টল করা হচ্ছে...</string>
+    <string name="msg_installed_successfully">সফলভাবে ইনস্টল হয়েছে</string>
+    <string name="msg_action_open_application">তুমি কি অ্যাপ্লিকেশনটি খুলতে চাও?</string>
 </resources>

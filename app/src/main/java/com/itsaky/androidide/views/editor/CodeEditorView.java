@@ -37,7 +37,6 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.get
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontSize;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseIcu;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseMagnifier;
-import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseCustomFont;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -292,7 +291,9 @@ public class CodeEditorView extends LinearLayout {
   }
 
   private void onCustomFontPrefChanged() {
-    binding.editor.setTypefaceText(TypefaceUtilsKt.customOrJBMono(getUseCustomFont()));
+    var state = EditorPreferencesKt.getUseCustomFont();
+    binding.editor.setTypefaceText(TypefaceUtilsKt.customOrJBMono(state));
+    binding.editor.setTypefaceLineNumber(TypefaceUtilsKt.customOrJBMono(state));
   }
 
   /**
