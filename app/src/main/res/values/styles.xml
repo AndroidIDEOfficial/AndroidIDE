@@ -70,6 +70,13 @@
     <item name="buttonTint">@color/secondaryColor</item>
   </style>
 
+  <style name="AppTheme.Button" parent="Widget.Material3.Button">
+    <item name="backgroundTint">@color/bg_button</item>
+    <item name="rippleColor">@color/secondaryLightColor_transparent</item>
+    <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Button</item>
+    <item name="android:textColor">@color/primaryTextColor</item>
+  </style>
+
   <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.Material3.Chip.Filter">
     <item name="chipIconTint">@color/primaryIconColor</item>
     <item name="chipBackgroundColor">@color/primaryColor</item>

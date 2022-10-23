@@ -28,12 +28,12 @@ import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.se
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInstaller;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,13 +63,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.transition.Slide;
-import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ImageUtils;
@@ -79,12 +76,11 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.itsaky.androidide.actions.ActionData;
 import com.itsaky.androidide.actions.ActionsRegistry;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
-import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
@@ -92,7 +88,6 @@ import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
-import com.itsaky.androidide.fragments.ShareableOutputFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver;
@@ -117,18 +112,18 @@ import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.InstallationResultHandler;
 import com.itsaky.androidide.utils.IntentUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
-import com.itsaky.androidide.utils.Symbols;
+import com.itsaky.androidide.utils.SingleSessionCallback;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
+import com.itsaky.androidide.views.EditorBottomSheet;
 import com.itsaky.androidide.views.MaterialBanner;
-import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry;
@@ -140,10 +135,6 @@ import com.itsaky.toaster.Toaster;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -179,10 +170,8 @@ public class EditorActivity extends IDEActivity
       new EditorActivityLifecyclerObserver();
   private ActivityEditorBinding mBinding;
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
-  private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
   private final LogReceiver mLogReceiver = new LogReceiver().setLogListener(this::appendApkLog);
   private FileTreeFragment mFileTreeFragment;
-  private SymbolInputView symbolInput;
   private QuickAction mTabCloseAction;
   private TextSheetFragment mDaemonStatusFragment;
   private ProgressSheet mSearchingProgress;
@@ -289,10 +278,7 @@ public class EditorActivity extends IDEActivity
   }
 
   public void appendApkLog(LogLine line) {
-    final var logFragment = bottomSheetTabAdapter.getLogFragment();
-    if (logFragment != null) {
-      logFragment.appendLog(line);
-    }
+    mBinding.bottomSheet.appendApkLog(line);
   }
 
   public void showDaemonStatus() {
@@ -321,9 +307,13 @@ public class EditorActivity extends IDEActivity
       mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    final int index = bottomSheetTabAdapter.findIndexOfFragmentByClass(SearchResultFragment.class);
-    if (index >= 0 && index < mBinding.bottomSheet.tabs.getTabCount()) {
-      final var tab = mBinding.bottomSheet.tabs.getTabAt(index);
+    final int index =
+        mBinding
+            .bottomSheet
+            .getPagerAdapter()
+            .findIndexOfFragmentByClass(SearchResultFragment.class);
+    if (index >= 0 && index < mBinding.bottomSheet.getTabs().getTabCount()) {
+      final var tab = mBinding.bottomSheet.getTabs().getTabAt(index);
       if (tab != null) {
         tab.select();
       }
@@ -331,23 +321,11 @@ public class EditorActivity extends IDEActivity
   }
 
   public void handleDiagnosticsResultVisibility(boolean errorVisible) {
-    runOnUiThread(
-        () -> {
-          final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
-          if (diagnosticsFragment != null) {
-            diagnosticsFragment.handleResultVisibility(errorVisible);
-          }
-        });
+    mBinding.bottomSheet.handleDiagnosticsResultVisibility(errorVisible);
   }
 
   public void handleSearchResultVisibility(boolean errorVisible) {
-    runOnUiThread(
-        () -> {
-          final var searchResultFragment = bottomSheetTabAdapter.getSearchResultFragment();
-          if (searchResultFragment != null) {
-            searchResultFragment.handleResultVisibility(errorVisible);
-          }
-        });
+    mBinding.bottomSheet.handleSearchResultVisibility(errorVisible);
   }
 
   public void showFirstBuildNotice() {
@@ -504,10 +482,6 @@ public class EditorActivity extends IDEActivity
     return mBinding;
   }
 
-  public LayoutDiagnosticInfoBinding getDiagnosticBinding() {
-    return mDiagnosticInfoBinding;
-  }
-
   @Override
   public void onTabSelected(@NonNull TabLayout.Tab tab) {
     final var position = tab.getPosition();
@@ -530,9 +504,8 @@ public class EditorActivity extends IDEActivity
     mTabCloseAction.show(tab.view);
   }
 
-  private void refreshSymbolInput(@NonNull CodeEditorView frag) {
-    symbolInput.bindEditor(frag.getEditor());
-    symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
+  private void refreshSymbolInput(@NonNull CodeEditorView editor) {
+    mBinding.bottomSheet.refreshSymbolInput(editor);
   }
 
   @Override
@@ -576,23 +549,11 @@ public class EditorActivity extends IDEActivity
   }
 
   public void setDiagnosticsAdapter(@NonNull final DiagnosticsAdapter adapter) {
-    runOnUiThread(
-        () -> {
-          final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
-          if (diagnosticsFragment != null) {
-            diagnosticsFragment.setAdapter(adapter);
-          }
-        });
+    mBinding.bottomSheet.setDiagnosticsAdapter(adapter);
   }
 
   public void setSearchResultAdapter(@NonNull final SearchListAdapter adapter) {
-    runOnUiThread(
-        () -> {
-          final var searchResultFragment = bottomSheetTabAdapter.getSearchResultFragment();
-          if (searchResultFragment != null) {
-            searchResultFragment.setAdapter(adapter);
-          }
-        });
+    mBinding.bottomSheet.setSearchResultAdapter(adapter);
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -853,27 +814,11 @@ public class EditorActivity extends IDEActivity
   }
 
   public void setStatus(final CharSequence text, @GravityInt int gravity) {
-    try {
-      runOnUiThread(
-          () -> {
-            if (mBinding == null) {
-              return;
-            }
-
-            mBinding.bottomSheet.statusText.setGravity(gravity);
-            mBinding.bottomSheet.statusText.setText(text);
-          });
-    } catch (Throwable th) {
-      LOG.error("Failed to update status text", th);
-    }
+    mBinding.bottomSheet.setStatus(text, gravity);
   }
 
   public void appendBuildOut(final String str) {
-    final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
-
-    if (frag != null) {
-      frag.appendOutput(str);
-    }
+    mBinding.bottomSheet.appendBuildOut(str);
   }
 
   public AlertDialog getFindInProjectDialog() {
@@ -926,9 +871,6 @@ public class EditorActivity extends IDEActivity
 
     setupDrawerToggle();
     loadFragment(mFileTreeFragment);
-
-    symbolInput = new SymbolInputView(this);
-    mBinding.bottomSheet.textContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
     mBinding.tabs.addOnTabSelectedListener(this);
 
     setupViews();
@@ -969,12 +911,12 @@ public class EditorActivity extends IDEActivity
   @Override
   protected void onResume() {
     super.onResume();
-    
+
     // Actions are cleared when the activity is paused to avoid holding references to the activity
     // So, when resumed, they should be registered and inflated again.
     EditorActivityActions.register(this);
     invalidateOptionsMenu();
-    
+
     try {
       if (mFileTreeFragment != null) {
         mFileTreeFragment.listProjectFiles();
@@ -1023,6 +965,64 @@ public class EditorActivity extends IDEActivity
     WidgetTableRegistry.getInstance().clear();
     mBinding = null;
     mViewModel = null;
+  }
+
+  @Override
+  protected void onNewIntent(final Intent intent) {
+    super.onNewIntent(intent);
+    final var packageName = InstallationResultHandler.onResult(this, intent);
+    if (packageName != null) {
+      Snackbar.make(
+          mBinding.realContainer,
+          string.msg_action_open_application,
+          Snackbar.LENGTH_LONG)
+        .setAction(
+          string.yes,
+          v -> {
+            final var manager = getPackageManager();
+            final var launchIntent = manager.getLaunchIntentForPackage(packageName);
+            if (launchIntent != null) {
+              startActivity(launchIntent);
+            }
+          })
+        .show();
+    }
+    
+  }
+
+  public PackageInstaller.SessionCallback installationSessionCallback() {
+    return new SingleSessionCallback() {
+
+      @Override
+      public void onCreated(final int sessionId) {
+        LOG.debug("on session created:", sessionId);
+        if (mBinding != null) {
+          mBinding.bottomSheet.setActionText(getString(string.msg_installing_apk));
+          mBinding.bottomSheet.setActionProgress(0);
+          mBinding.bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION);
+        }
+      }
+
+      @Override
+      public void onProgressChanged(final int sessionId, final float progress) {
+        if (mBinding != null) {
+          mBinding.bottomSheet.setActionProgress((int) (progress * 100f));
+        }
+      }
+
+      @Override
+      public void onFinished(final int sessionId, final boolean success) {
+        if (mBinding != null) {
+          mBinding.bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER);
+          mBinding.bottomSheet.setActionProgress(0);
+          if (!success) {
+            Snackbar.make(
+                mBinding.realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
+              .show();
+          }
+        }
+      }
+    };
   }
 
   private void preProjectInit() {
@@ -1082,7 +1082,7 @@ public class EditorActivity extends IDEActivity
     mBinding.editorDrawerLayout.addDrawerListener(toggle);
     mBinding.startNav.setNavigationItemSelectedListener(this);
     toggle.syncState();
-    
+
     mBinding.editorDrawerLayout.setChildId(mBinding.realContainer.getId());
   }
 
@@ -1125,11 +1125,7 @@ public class EditorActivity extends IDEActivity
         });
 
     setupNoEditorView();
-    setupBottomSheetPager();
     setupBottomSheet();
-    setupBottomSheetTabs();
-    setupBottomSheetClearFAB();
-    setupBottomSheetShareOutputFAB();
 
     if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
         && mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
@@ -1192,87 +1188,20 @@ public class EditorActivity extends IDEActivity
     sb.append('\n');
   }
 
-  private void setupBottomSheetShareOutputFAB() {
-    mBinding.bottomSheet.shareOutputFab.setOnClickListener(
-        v -> {
-          final var fragment =
-              bottomSheetTabAdapter.getFragmentAtIndex(
-                  mBinding.bottomSheet.tabs.getSelectedTabPosition());
-
-          if (!(fragment instanceof ShareableOutputFragment)) {
-            LOG.error("Unknown fragment:", fragment);
-            return;
-          }
-
-          final var outputFragment = (ShareableOutputFragment) fragment;
-
-          final var filename = outputFragment.getFilename();
-          //noinspection deprecation
-          final var progress =
-              ProgressDialog.show(EditorActivity.this, null, getString(string.please_wait));
-          TaskExecutor.executeAsync(
-              outputFragment::getContent,
-              text -> {
-                progress.dismiss();
-                shareText(text, filename);
-              });
-        });
-  }
-
-  private void setupBottomSheetClearFAB() {
-    TooltipCompat.setTooltipText(
-        mBinding.bottomSheet.clearFab, getString(string.title_clear_output));
-    mBinding.bottomSheet.clearFab.setOnClickListener(
-        v -> {
-          final var fragment =
-              bottomSheetTabAdapter.getFragmentAtIndex(
-                  mBinding.bottomSheet.tabs.getSelectedTabPosition());
-
-          if (!(fragment instanceof ShareableOutputFragment)) {
-            LOG.error("Unknown fragment:", fragment);
-            return;
-          }
-
-          ((ShareableOutputFragment) fragment).clearOutput();
-        });
-  }
-
-  private void setupBottomSheetTabs() {
-    mBinding.bottomSheet.tabs.addOnTabSelectedListener(
-        new TabLayout.OnTabSelectedListener() {
-
-          @Override
-          public void onTabSelected(TabLayout.Tab tab) {
-            final var fragment = bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
-            if (fragment instanceof ShareableOutputFragment) {
-              mBinding.bottomSheet.clearFab.show();
-              mBinding.bottomSheet.shareOutputFab.show();
-            } else {
-              mBinding.bottomSheet.clearFab.hide();
-              mBinding.bottomSheet.shareOutputFab.hide();
-            }
-          }
-
-          @Override
-          public void onTabUnselected(TabLayout.Tab tab) {}
-
-          @Override
-          public void onTabReselected(TabLayout.Tab tab) {}
-        });
-  }
-
   private void setupBottomSheet() {
     mEditorBottomSheet =
         (EditorBottomSheetBehavior<? extends View>)
-            EditorBottomSheetBehavior.from(mBinding.bottomSheet.getRoot());
-    mEditorBottomSheet.setBinding(mBinding.bottomSheet);
+            EditorBottomSheetBehavior.from(mBinding.bottomSheet);
+    mEditorBottomSheet.setBinding(mBinding.bottomSheet.getPager());
     mEditorBottomSheet.addBottomSheetCallback(
         new BottomSheetBehavior.BottomSheetCallback() {
           @Override
           public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            mBinding.bottomSheet.textContainer.setVisibility(
-                newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
-
+            mBinding
+                .bottomSheet
+                .getHeaderContainer()
+                .setVisibility(
+                    newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
             if (newState == BottomSheetBehavior.STATE_EXPANDED) {
               final var editor = getCurrentEditor();
               if (editor != null && editor.getEditor() != null) {
@@ -1283,86 +1212,24 @@ public class EditorActivity extends IDEActivity
 
           @Override
           public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-            mBinding.bottomSheet.textContainer.setAlpha(1f - slideOffset);
-            
+            mBinding.bottomSheet.getHeaderContainer().setAlpha(1f - slideOffset);
+
             final var editorScale = 1 - (slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR));
             mBinding.viewContainer.setScaleX(editorScale);
             mBinding.viewContainer.setScaleY(editorScale);
           }
         });
-    
-    final var observer = new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override
-      public void onGlobalLayout() {
-        mBinding.viewContainer.setPivotY(0f);
-        mBinding.viewContainer.setPivotX(mBinding.viewContainer.getWidth() / 2f);
-        mBinding.viewContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-      }
-    };
-    mBinding.viewContainer.getViewTreeObserver().addOnGlobalLayoutListener(observer);
-  }
 
-  private void setupBottomSheetPager() {
-    bottomSheetTabAdapter = new EditorBottomSheetTabAdapter(this);
-    mBinding.bottomSheet.pager.setAdapter(bottomSheetTabAdapter);
-
-    final var mediator =
-        new TabLayoutMediator(
-            mBinding.bottomSheet.tabs,
-            mBinding.bottomSheet.pager,
-            true,
-            true,
-            (tab, position) -> tab.setText(bottomSheetTabAdapter.getTitle(position)));
-
-    mediator.attach();
-    mBinding.bottomSheet.pager.setUserInputEnabled(false);
-    mBinding.bottomSheet.pager.setOffscreenPageLimit(
-        bottomSheetTabAdapter.getItemCount() - 1); // DO not remove any views
-  }
-
-  @SuppressWarnings("deprecation")
-  private void shareText(String text, String type) {
-    if (TextUtils.isEmpty(text)) {
-      toast(getString(string.msg_output_text_extraction_failed), Toaster.Type.ERROR);
-      return;
-    }
-
-    final var pd = ProgressDialog.show(this, null, getString(string.please_wait), true, false);
-    TaskExecutor.executeAsyncProvideError(
-        () -> writeTempFile(text, type),
-        (result, error) -> {
-          pd.dismiss();
-          if (result == null || error != null) {
-            LOG.warn("Unable to share output", error);
-            return;
+    final var observer =
+        new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override
+          public void onGlobalLayout() {
+            mBinding.viewContainer.setPivotY(0f);
+            mBinding.viewContainer.setPivotX(mBinding.viewContainer.getWidth() / 2f);
+            mBinding.viewContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
           }
-
-          shareFile(result);
-        });
-  }
-
-  private void shareFile(File file) {
-    IntentUtils.shareFile(this, file, "text/plain");
-  }
-
-  @NonNull
-  private File writeTempFile(String text, String type) {
-    // use a common name to avoid multiple files
-    final var file = getFilesDir().toPath().resolve(type + ".txt");
-    try {
-      if (Files.exists(file)) {
-        Files.delete(file);
-      }
-
-      Files.write(
-          file,
-          text.getBytes(StandardCharsets.UTF_8),
-          StandardOpenOption.CREATE_NEW,
-          StandardOpenOption.WRITE);
-    } catch (IOException e) {
-      LOG.error("Unable to write output to file", e);
-    }
-    return file.toFile();
+        };
+    mBinding.viewContainer.getViewTreeObserver().addOnGlobalLayoutListener(observer);
   }
 
   private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
@@ -1491,17 +1358,7 @@ public class EditorActivity extends IDEActivity
 
   private void onSoftInputChanged() {
     invalidateOptionsMenu();
-    if (KeyboardUtils.isSoftInputVisible(this)) {
-      TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.TOP));
-      symbolInput.setVisibility(View.VISIBLE);
-      mBinding.bottomSheet.statusText.setVisibility(View.GONE);
-      mBinding.bottomSheet.swipeHint.setVisibility(View.GONE);
-    } else {
-      TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.BOTTOM));
-      symbolInput.setVisibility(View.GONE);
-      mBinding.bottomSheet.statusText.setVisibility(View.VISIBLE);
-      mBinding.bottomSheet.swipeHint.setVisibility(View.VISIBLE);
-    }
+    mBinding.bottomSheet.onSoftInputChanged();
   }
 
   private void closeProject(boolean manualFinish) {

@@ -32,20 +32,20 @@ import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding;
 public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavior<V> {
 
   private static final ILogger LOG = ILogger.newInstance("EditorBottomSheetBehavior");
-  private LayoutEditorBottomSheetBinding binding;
+  private View pager;
 
   public EditorBottomSheetBehavior(Context context, AttributeSet attributeSet) {
     super(context, attributeSet);
   }
 
-  public void setBinding(LayoutEditorBottomSheetBinding binding) {
-    this.binding = binding;
+  public void setBinding(View pager) {
+    this.pager= pager;
   }
 
   @Override
   public boolean onInterceptTouchEvent(
       @NonNull CoordinatorLayout parent, @NonNull V child, @NonNull MotionEvent event) {
-    if (binding != null) {
+    if (pager != null) {
       final var rect = getPagerRect();
       if (rect.contains(event.getX(), event.getY())) {
         return false;
@@ -57,10 +57,10 @@ public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavi
   @NonNull
   private RectF getPagerRect() {
     final var rect = new RectF();
-    rect.left = binding.pager.getX();
-    rect.top = binding.pager.getY();
-    rect.right = rect.left + binding.pager.getWidth();
-    rect.bottom = rect.top + binding.pager.getHeight();
+    rect.left = pager.getX();
+    rect.top = pager.getY();
+    rect.right = rect.left + pager.getWidth();
+    rect.bottom = rect.top + pager.getHeight();
     return rect;
   }
 }

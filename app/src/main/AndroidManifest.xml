@@ -50,6 +50,7 @@
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".EditorActivity"
+      android:launchMode="singleTop"
       android:configChanges="orientation|screenSize|uiMode"
       android:windowSoftInputMode="adjustResize" />
     <activity
