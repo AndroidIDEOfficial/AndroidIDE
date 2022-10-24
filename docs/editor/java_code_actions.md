@@ -1,5 +1,12 @@
 # Java code actions
 
+<details>
+  <summary>See screenshot</summary>
+  <img src="../images/java_code_actions.png" width="250" />
+</details>
+
+<br><br>
+
 ## Common code actions
 
 Common code actions which can be performed for most of the Java symbols.
