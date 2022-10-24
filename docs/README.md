@@ -17,14 +17,12 @@ AndroidIDE is an **Integrated Development Environment (IDE)** to build Gradle ba
 - [Creating a new project](./getting_started.md#creating-a-new-project)
 - [Working with an existing project](./getting_started.md#working-with-an-existing-project)
 
-#### [User interface](./user_interface.md#readme)
-&emsp; How to use the application.
-- [Main Menu](./user_interface.md#main-menu)
-- [Editor](./editor#readme)
-  - [Key Bindings](./editor/key-bindings.md#readme)
-  - [Sidebar](./editor#sidebar)
-  - [Options Menu](./editor#options-menu)
-  - [BottomSheet](./editor/bottomsheet.md#readme)
+#### [Working with projects](./user_interface.md#readme)
+&emsp; Get familiar with the various elements of the editor screen.
+- [Options menu](./editor/README.md#options-menu).
+- [File tree](./editor/README.md#the-file-tree).
+- [Bottom sheet](./editor/README.md#editor-bottomsheet).
+- [Code editor](./editor/README.md#the-code-editor).
 
 ## Important links
 
