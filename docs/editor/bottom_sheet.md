@@ -35,7 +35,7 @@ import com.itsaky.androidide.logsender.LogSender;
 </details>
 
 ## IDE Logs
-This tab shows the logs from the IDE. With these logs, you can understand what is going on in the IDE. If any errors occurs in the IDE itself, this is where is will be shown. When reporting IDE related issues, you are expected to provide these logs.
+This tab shows the logs from the IDE. With these logs, you can understand what is going on in the IDE. If any errors occur in the IDE itself, this is where it will be shown. When reporting IDE related issues, you are expected to provide these logs.
 
 <details>
   <summary>See screenshot</summary>
@@ -51,7 +51,7 @@ This tab helps you to locate and identify syntax problems with the code. See err
 </details>
 
 ## Search Results
-The results of `Find in project` action are shown in this tab.
+The results of `Find in project` and `Find references` action are shown in this tab.
 
 <details>
   <summary>See screenshot</summary>
