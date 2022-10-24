@@ -30,8 +30,8 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat.cr
 import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.app.BaseApplication.getBaseInstance
-import com.itsaky.androidide.common.R.color
-import com.itsaky.androidide.common.R.drawable
+import com.itsaky.androidide.resources.R.color
+import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.common.databinding.LayoutToastBinding
 import com.itsaky.toaster.Toaster.Gravity.BOTTOM_LEFT
 import com.itsaky.toaster.Toaster.Gravity.BOTTOM_RIGHT

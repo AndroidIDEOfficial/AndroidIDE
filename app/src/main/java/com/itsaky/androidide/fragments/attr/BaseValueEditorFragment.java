@@ -29,7 +29,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.inflater.IAttribute;
 

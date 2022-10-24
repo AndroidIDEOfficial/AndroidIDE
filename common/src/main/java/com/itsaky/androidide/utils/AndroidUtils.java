@@ -1,7 +1,7 @@
 package com.itsaky.androidide.utils;
 
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.common.R;
+import com.itsaky.androidide.resources.R;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;

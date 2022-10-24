@@ -18,7 +18,7 @@
 package com.itsaky.androidide.models
 
 import androidx.annotation.DrawableRes
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import java.io.File
 
 /**

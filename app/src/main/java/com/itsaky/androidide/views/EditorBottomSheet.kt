@@ -39,7 +39,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter

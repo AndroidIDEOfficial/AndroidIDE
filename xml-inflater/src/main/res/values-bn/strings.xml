@@ -1,5 +1,0 @@
-<resources>
-    <string name="msg_cannot_create_view">ট্যাগটির জন্য View তৈরি করা যাচ্ছে না: %s</string>
-    <string name="err_no_attr_adapter">%s এর জন্য কোনো অ্যাট্রিবিউট অ্যাডাপ্টার ইমপ্লিমেন্টেশন পাওয়া যায়নি</string>
-    <string name="msg_view_not_supported">View %s বর্তমানে সমর্থিত নয়৷</string>
-</resources>

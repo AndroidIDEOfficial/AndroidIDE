@@ -30,7 +30,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.adapters.AttrListAdapter;
 import com.itsaky.androidide.databinding.LayoutAddAttrSheetBinding;
 import com.itsaky.attrinfo.models.Attr;

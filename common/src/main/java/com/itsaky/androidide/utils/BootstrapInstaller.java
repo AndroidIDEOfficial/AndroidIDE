@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.common.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.managers.ToolsManager;
 
 import java.io.BufferedReader;

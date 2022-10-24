@@ -19,8 +19,8 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import androidx.preference.Preference
-import com.itsaky.androidide.R.drawable
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.GOOGLE_CODE_STYLE
 import com.itsaky.androidide.preferences.internal.googleCodeStyle
 import kotlinx.parcelize.Parcelize

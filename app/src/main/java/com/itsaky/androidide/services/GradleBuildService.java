@@ -45,7 +45,7 @@ import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.BuildConfig;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.models.LogLine;

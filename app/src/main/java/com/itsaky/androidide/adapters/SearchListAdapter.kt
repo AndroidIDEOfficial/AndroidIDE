@@ -22,8 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.blankj.utilcode.util.ThreadUtils
-import com.itsaky.androidide.R.color
-import com.itsaky.androidide.R.drawable
+import com.itsaky.androidide.resources.R.color
+import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.adapters.SearchListAdapter.VH
 import com.itsaky.androidide.databinding.LayoutSearchResultGroupBinding
 import com.itsaky.androidide.databinding.LayoutSearchResultItemBinding

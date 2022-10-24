@@ -19,8 +19,8 @@
  */
 package com.itsaky.androidide.lsp;
 
-import static com.itsaky.androidide.R.drawable;
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.drawable;
+import static com.itsaky.androidide.resources.R.string;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

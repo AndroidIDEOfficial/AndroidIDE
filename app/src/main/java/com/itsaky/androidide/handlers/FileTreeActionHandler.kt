@@ -26,8 +26,8 @@ import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
 import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.R
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.eventbus.events.Event

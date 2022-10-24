@@ -1,0 +1,49 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+apply plugin: 'com.android.library'
+
+android {
+  namespace "com.itsaky.androidide.resources"
+  compileSdkVersion rootProject.ext.compileSdk
+  buildToolsVersion rootProject.ext.buildTools
+  
+  defaultConfig {
+    minSdkVersion rootProject.ext.minSdk
+    targetSdkVersion rootProject.ext.targetSdk
+  }
+  
+  buildFeatures.viewBinding true
+  
+  compileOptions {
+    sourceCompatibility rootProject.ext.javaSourceVersion
+    targetCompatibility rootProject.ext.javaTargetVersion
+  }
+  
+  buildTypes {
+    release {
+      minifyEnabled true
+    }
+  }
+}
+
+dependencies {
+  implementation androidx.appcompat
+  implementation androidx.preference
+  implementation androidx.splashscreen
+  implementation google.material
+}

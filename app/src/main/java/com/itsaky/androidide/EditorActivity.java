@@ -20,9 +20,9 @@
 package com.itsaky.androidide;
 
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
-import static com.itsaky.androidide.R.color;
-import static com.itsaky.androidide.R.drawable;
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.color;
+import static com.itsaky.androidide.resources.R.drawable;
+import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.setLastOpenedProject;
 import static com.itsaky.toaster.ToastUtilsKt.toast;

@@ -21,7 +21,7 @@ package io.github.rosemoe.sora.widget
 
 import android.app.ProgressDialog
 import android.widget.Toast
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.views.editor.IDEEditor
 import io.github.rosemoe.sora.text.TextUtils

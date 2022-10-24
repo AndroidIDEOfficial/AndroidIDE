@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.preferences
 
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.xml.models.EmptyElements
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
 import com.itsaky.androidide.preferences.internal.EMPTY_ELEMENTS_BEHAVIOR

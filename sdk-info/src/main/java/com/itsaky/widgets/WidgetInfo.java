@@ -44,7 +44,7 @@ public class WidgetInfo {
   }
 
   private void readWidgets(@NonNull final Resources resources) throws IOException {
-    final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.widgets);
+    final InputStream in = resources.openRawResource(com.itsaky.androidide.resources.R.raw.widgets);
     if (in == null) {
       return;
     }

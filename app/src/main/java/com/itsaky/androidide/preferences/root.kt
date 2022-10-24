@@ -19,7 +19,7 @@ package com.itsaky.androidide.preferences
 
 import android.content.Intent
 import com.itsaky.androidide.AboutActivity
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.IDEApplication
 import kotlinx.parcelize.Parcelize

@@ -24,7 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.fragments.AppLogFragment;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
 import com.itsaky.androidide.fragments.IDELogFragment;

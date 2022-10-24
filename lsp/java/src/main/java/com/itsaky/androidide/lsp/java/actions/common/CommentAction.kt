@@ -18,7 +18,7 @@ package com.itsaky.androidide.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireEditor
-import com.itsaky.androidide.lsp.java.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 
 /** @author Akash Yadav */
