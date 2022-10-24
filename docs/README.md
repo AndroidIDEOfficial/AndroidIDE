@@ -17,7 +17,7 @@ AndroidIDE is an **Integrated Development Environment (IDE)** to build Gradle ba
 - [Creating a new project](./getting_started.md#creating-a-new-project)
 - [Working with an existing project](./getting_started.md#working-with-an-existing-project)
 
-#### [Working with projects](./user_interface.md#readme)
+#### [Working with projects](./editor/README.md)
 &emsp; Get familiar with the various elements of the editor screen.
 - [Options menu](./editor/README.md#options-menu).
 - [File tree](./editor/README.md#the-file-tree).
