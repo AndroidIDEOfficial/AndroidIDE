@@ -1,6 +1,6 @@
 # Editor UI
 
-Whenever you create a new project or open an existing project, you're presented with the editor screen. The page guides you through the various options you through the various elements of the Editor UI.
+Whenever you create a new project or open an existing project, you're presented with the editor screen. This page guides you through the various elements of the Editor UI.
 
 ## Options Menu
 
