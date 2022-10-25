@@ -23,7 +23,7 @@ import java.util.WeakHashMap
 /**
  * @author Akash Yadav
  */
-class ProgressManager {
+class ProgressManager private constructor(){
 
   private val threads = WeakHashMap<Thread, ICancelChecker>()
 

@@ -297,7 +297,7 @@
     <string name="msg_compiler_module_installed">Модуль компилятора успешно установлен!</string>
     <string name="action_expand_selection">Расширить выделение</string>
     <string name="idepref_java_matchLower_title">Искать совпадения в строчном регистре</string>
-    <string name="idepref_editor_category_common">Общее</string>
+    <string name="title_common">Общее</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Несохраненные файлы</string>
     <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>

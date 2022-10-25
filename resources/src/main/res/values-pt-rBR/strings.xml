@@ -281,7 +281,7 @@
   <string name="msg_compiler_module_installed">Módulo do compilador instalado com sucesso!</string>
   <string name="action_expand_selection">Expandir seleção</string>
   <string name="idepref_java_matchLower_title">Combinar o autocomplete em letras minúsculas</string>
-  <string name="idepref_editor_category_common">Comum</string>
+  <string name="title_common">Comum</string>
   <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">Arquivos não salvos</string>
   <string name="msg_files_unsaved">Alguns arquivos não são salvos. Gostaria de salvá-los antes de fechar? Os arquivos não salvos são: \n%s</string>

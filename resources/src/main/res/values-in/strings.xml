@@ -265,7 +265,7 @@
     <string name="msg_compiler_module_installed">Modul compiler sukses terpasang!</string>
     <string name="action_expand_selection">Perluas seleksi</string>
     <string name="idepref_java_matchLower_title">Samakan penyelesaian dalam huruf kecil</string>
-    <string name="idepref_editor_category_common">Umum</string>
+    <string name="title_common">Umum</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">File tidak tersimpan</string>
     <string name="msg_files_unsaved">Beberapa file belum disimpan. Apakah anda ingin menyimpan sebelum menutup file tersebut? File yang belum tersimpan: \n%s</string>

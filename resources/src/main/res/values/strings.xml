@@ -281,7 +281,8 @@
   <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
   <string name="action_expand_selection">Expand selection</string>
   <string name="idepref_java_matchLower_title">Match completions in lower case</string>
-  <string name="idepref_editor_category_common">Common</string>
+  <string name="title_common">Common</string>
+  <string name="idepref_editor_category_common" translatable="false">@string/title_common</string>
   <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">Unsaved files</string>
   <string name="msg_files_unsaved">Some files are not saved. Would you like to save them before closing? Unsaved files are: \n%s</string>
@@ -466,4 +467,12 @@
 
   <string name="replace">Replace</string>
   <string name="replaceAll">Replace all</string>
+  <string name="title_run_tasks">Run tasks</string>
+  <string name="hint_search_tasks">Search tasks…</string>
+  <string name="title_selected_tasks">Selected tasks</string>
+  <string name="msg_err_select_tasks">Please select tasks to run</string>
+  <string name="title_confirmation">Confirmation</string>
+  <string name="msg_tasks_to_run">The following tasks will be run, in order. Click the \'Run\' button again to confirm.\n\n%1$s</string>
+  <string name="msg_loading_tasks">Loading tasks...</string>
+  <string name="title_all_tasks">All tasks</string>
 </resources>

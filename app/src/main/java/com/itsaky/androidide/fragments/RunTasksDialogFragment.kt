@@ -1,0 +1,178 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.fragments
+
+import android.os.Bundle
+import android.text.Editable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.TransitionManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.transition.MaterialSharedAxis
+import com.itsaky.androidide.R.string
+import com.itsaky.androidide.adapters.RunTasksCategoryAdapter
+import com.itsaky.androidide.adapters.RunTasksListAdapter
+import com.itsaky.androidide.databinding.LayoutRunTaskBinding
+import com.itsaky.androidide.databinding.LayoutRunTaskDialogBinding
+import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.models.Checkable
+import com.itsaky.androidide.models.RunTasksCategory
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.SingleTextWatcher
+import com.itsaky.androidide.viewmodel.RunTasksViewModel
+import com.itsaky.toaster.toastInfo
+
+/**
+ * A bottom sheet dialog fragment to show UI which allows the users to select and execute Gradle
+ * tasks from the initialized project.
+ *
+ * @author Akash Yadav
+ */
+class RunTasksDialogFragment : BottomSheetDialogFragment() {
+
+  private lateinit var binding: LayoutRunTaskDialogBinding
+  private lateinit var run: LayoutRunTaskBinding
+  private val viewModel: RunTasksViewModel by viewModels()
+
+  private val log = ILogger.newInstance("RunTasksDialogFragment")
+
+  companion object {
+    private const val CHILD_LOADING = 0
+    private const val CHILD_TASKS = 1
+    private const val CHILD_CONFIRMATION = 2
+    private const val CHILD_PROJECT_NOT_INITIALIZED = 3
+
+    // The minimum amount of time (in milliseconds) the adapter should wait after the query is
+    // changed before starting any further filter request.
+    // A too less value here will result in UI lags
+    private const val SEARCH_DELAY = 500
+  }
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
+    this.binding = LayoutRunTaskDialogBinding.inflate(inflater, container, false)
+    this.run = this.binding.run
+    return binding.root
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    viewModel.observeDisplayedChild(viewLifecycleOwner) {
+      val transition =
+        MaterialSharedAxis(MaterialSharedAxis.X, it > this.binding.flipper.displayedChild)
+      TransitionManager.beginDelayedTransition(this.binding.root, transition)
+      this.binding.flipper.displayedChild = it
+    }
+
+    viewModel.observeQuery(viewLifecycleOwner) {
+      val adapter = run.categories.adapter
+      if (adapter !is RunTasksCategoryAdapter) {
+        return@observeQuery
+      }
+
+      for (index in 0 until viewModel.categories.size) {
+        val layout =
+          run.categories.layoutManager
+            ?.findViewByPosition(index)
+            ?.findViewById<RecyclerView>(com.itsaky.androidide.R.id.tasks)
+            ?: continue
+        val childAdapter = layout.adapter
+        if (childAdapter !is RunTasksListAdapter) {
+          continue
+        }
+        childAdapter.filter(it)
+      }
+    }
+
+    run.searchInput.editText?.addTextChangedListener(
+      object : SingleTextWatcher() {
+        override fun afterTextChanged(s: Editable?) {
+          viewModel.query = s?.toString() ?: ""
+        }
+      }
+    )
+
+    binding.exec.setOnClickListener {
+      if (viewModel.selected.isEmpty()) {
+        toastInfo(getString(string.msg_err_select_tasks))
+        return@setOnClickListener
+      }
+
+      if (viewModel.displayedChild == CHILD_TASKS) {
+        binding.confirm.msg.text =
+          getString(R.string.msg_tasks_to_run, viewModel.getSelectedTaskPaths())
+        viewModel.displayedChild = CHILD_CONFIRMATION
+        return@setOnClickListener
+      }
+
+      if (viewModel.displayedChild == CHILD_CONFIRMATION) {
+        val buildService =
+          Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+            ?: run {
+              log.error("Cannot find build service")
+              return@setOnClickListener
+            }
+
+        val toRun = viewModel.selected.toTypedArray()
+        buildService.executeTasks(*toRun)
+        dismiss()
+      }
+    }
+
+    binding.confirm.cancel.setOnClickListener { viewModel.displayedChild = CHILD_TASKS }
+
+    viewModel.displayedChild = CHILD_LOADING
+
+    executeAsync({
+      val rootProject =
+        ProjectManager.rootProject ?: return@executeAsync emptyList<Checkable<GradleTask>>()
+      val tasks = rootProject.tasks.map { Checkable(false, it) }.toMutableList()
+      tasks.addAll(rootProject.subModules.flatMap { it.tasks }.map { Checkable(false, it) })
+      return@executeAsync tasks
+    }) { tasks ->
+      viewModel.tasks = tasks ?: emptyList()
+      viewModel.displayedChild =
+        if (viewModel.tasks.isNotEmpty()) CHILD_TASKS else CHILD_PROJECT_NOT_INITIALIZED
+
+      val onCheckChanged: (Checkable<GradleTask>) -> Unit = { item ->
+        if (item.isChecked) {
+          viewModel.select(item.data.path)
+        } else {
+          viewModel.deselect(item.data.path)
+        }
+      }
+      viewModel.categories =
+        listOf(
+          RunTasksCategory(R.string.title_common, viewModel.commonTasks),
+          RunTasksCategory(R.string.title_all_tasks, viewModel.tasks)
+        )
+      run.categories.adapter = RunTasksCategoryAdapter(viewModel.categories, onCheckChanged)
+    }
+  }
+}

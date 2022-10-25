@@ -31,4 +31,4 @@ open class GradleTask(
   displayName: String?,
   isPublic: Boolean?,
   val projectPath: String?
-) : IdeLaunchable(displayName, isPublic), Serializable {}
+) : IdeLaunchable(displayName, isPublic), Serializable

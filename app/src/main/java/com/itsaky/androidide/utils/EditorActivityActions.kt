@@ -22,7 +22,7 @@ import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.build.CancelBuildAction
 import com.itsaky.androidide.actions.build.ProjectSyncAction
 import com.itsaky.androidide.actions.build.QuickRunAction
-import com.itsaky.androidide.actions.build.RunActionMenu
+import com.itsaky.androidide.actions.build.RunTasksAction
 import com.itsaky.androidide.actions.editor.CopyAction
 import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction
@@ -52,7 +52,7 @@ class EditorActivityActions {
       registry.registerAction(UndoAction(context))
       registry.registerAction(RedoAction(context))
       registry.registerAction(QuickRunAction(context))
-      registry.registerAction(RunActionMenu(context))
+      registry.registerAction(RunTasksAction(context))
       registry.registerAction(SaveFileAction(context))
       registry.registerAction(PreviewLayoutAction(context))
       registry.registerAction(FindActionMenu(context))
