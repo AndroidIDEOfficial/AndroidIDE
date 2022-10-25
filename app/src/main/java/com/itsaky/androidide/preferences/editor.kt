@@ -79,6 +79,7 @@ private class CommonConfigurations(
     addPreference(NonPrintablePaintingFlags())
     addPreference(FontLigatures())
     addPreference(UseCustomFont())
+    addPreference(chooseFont)
     addPreference(UseSoftTab())
     addPreference(WordWrap())
     addPreference(UseMagnifier())
