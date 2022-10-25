@@ -54,7 +54,7 @@ fun toastSuccess(msgResId: Int) {
 }
 
 fun toastError(msgResId: Int) {
-  toast(msg, ERROR)
+  toast(msgResId, ERROR)
 }
 
 fun toastInfo(msgResId: Int) {

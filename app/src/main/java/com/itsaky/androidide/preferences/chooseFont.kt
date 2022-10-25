@@ -20,6 +20,8 @@ package com.itsaky.androidide.preferences
 import android.app.Activity
 import android.content.Intent
 import android.os.Environment
+import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.core.provider.DocumentsContractCompat
 import com.itsaky.androidide.app.BaseApplication.getBaseInstance
@@ -34,7 +36,10 @@ val chooseFont =
     title = string.idepref_chooseFont_title,
     summary = string.idepref_chooseFont_summary
   ) {
-    startForResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT))
+    val context = it.context
+    if (context is ActivityResultCaller) {
+      context.startForResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT))
+    }
     true
   }
 
@@ -45,8 +50,8 @@ private val allowedAuthorities =
     "com.termux.documents",
   )
 
-private val startForResult =
-  registerForActivityResult(StartActivityForResult()) {
+private val ActivityResultCaller.startForResult : ActivityResultLauncher<Intent>
+  get() = registerForActivityResult(StartActivityForResult()) {
     if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
     val uri = it?.data?.data ?: return@registerForActivityResult
     val docId = DocumentsContractCompat.getDocumentId(uri)!!
@@ -63,11 +68,11 @@ private val startForResult =
       } else {
         val split = docId.split(':')
         if ("primary" != split[0]) {
-            toastError(string.msg_select_from_primary_storage)
-            return@registerForActivityResult
+          toastError(string.msg_select_from_primary_storage)
+          return@registerForActivityResult
         }
 
-         File(Environment.getExternalStorageDirectory(), split[1])
+        File(Environment.getExternalStorageDirectory(), split[1])
       }
     val fontFile = File(ANDROIDIDE_UI, "font.ttf")
 
