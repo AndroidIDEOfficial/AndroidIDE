@@ -61,7 +61,7 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
 
   @Override
   protected String getTitle() {
-    return getString(com.itsaky.androidide.R.string.file_options);
+    return getString(com.itsaky.androidide.resources.R.string.file_options);
   }
 
   @Override

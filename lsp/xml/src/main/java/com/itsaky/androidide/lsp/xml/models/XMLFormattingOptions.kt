@@ -27,25 +27,40 @@ import org.eclipse.lemminx.dom.DOMElement
  * @author Akash Yadav
  */
 class XMLFormattingOptions {
-  val trimFinalNewLine: Boolean = true
-  val insertFinalNewLine: Boolean = false
-  val splitAttributes: Boolean = true
-  val joinCDataLines: Boolean = false
-  val joinCommentLines: Boolean = false
-  val joinContentLines: Boolean = false
-  val spaceBeforeEmptyCloseTag: Boolean = true
-  val preserveEmptyContent: Boolean = false
-  val preserveAttributeLineBreaks: Boolean = true
-  val closingBracketNewLine: Boolean = false
-  val trimTrailingWhitespace: Boolean = false
+  val trimFinalNewLine: Boolean
+    get() = com.itsaky.androidide.preferences.internal.trimFinalNewLine
+  val insertFinalNewLine: Boolean
+    get() = com.itsaky.androidide.preferences.internal.insertFinalNewLine
+  val splitAttributes: Boolean
+    get() = com.itsaky.androidide.preferences.internal.splitAttributes
+  val joinCDataLines: Boolean
+    get() = com.itsaky.androidide.preferences.internal.joinCDataLines
+  val joinCommentLines: Boolean
+    get() = com.itsaky.androidide.preferences.internal.joinCommentLines
+  val joinContentLines: Boolean
+    get() = com.itsaky.androidide.preferences.internal.joinContentLines
+  val spaceBeforeEmptyCloseTag: Boolean
+    get() = com.itsaky.androidide.preferences.internal.spaceBeforeEmptyCloseTag
+  val preserveEmptyContent: Boolean
+    get() = com.itsaky.androidide.preferences.internal.preserveEmptyContent
+  val preserveAttributeLineBreaks: Boolean
+    get() = com.itsaky.androidide.preferences.internal.preserveAttributeLineBreaks
+  val closingBracketNewLine: Boolean
+    get() = com.itsaky.androidide.preferences.internal.closingBracketNewLine
+  val trimTrailingWhitespace: Boolean
+    get() = com.itsaky.androidide.preferences.internal.trimTrailingWhitespace
 
-  val maxLineWidth: Int = 100
-  val preservedNewLines = 2
-  val splitAttributesIndentSize = 2
+  val maxLineWidth: Int
+    get() = com.itsaky.androidide.preferences.internal.maxLineWidth
+  val preservedNewLines: Int
+    get() = com.itsaky.androidide.preferences.internal.preservedNewLines
+  val splitAttributesIndentSize: Int
+    get() = com.itsaky.androidide.preferences.internal.splitAttributesIndentSize
 
-  val emptyElementsBehavior = EmptyElements.collapse
+  val emptyElementsBehavior: EmptyElements
+    get() = EmptyElements.valueOf(com.itsaky.androidide.preferences.internal.emptyElementsBehavior)
 
-  val preserveSpace =
+  private val preserveSpace =
     listOf(
       "xsl:text",
       "xsl:comment",
@@ -64,7 +79,7 @@ class XMLFormattingOptions {
 }
 
 enum class EmptyElements {
-  expand,
-  collapse,
-  ignore
+  Expand,
+  Collapse,
+  Ignore
 }

@@ -1,0 +1,11 @@
+AndroidIDE is an IDE for Android to build real Android applications. The main goal is to bring support for building Gradle-based Android projects on Android devices itself.
+
+With AndroidIDE, you can :
+
+* Build real android applications. Android Studio projects are fully supported.
+* Stay UP-TO-DATE and make use of latest Gradle distribution to build your projects.
+* Code faster with advanced Java and XML code completions.
+* Use code actions to perform common tasks easily.
+* Checkout projects with Git and subversion.
+
+A basic installation (Android SDK, JDK, etc) is needed before you can start working with projects. Installation instructions are provided in the GitHub repository's README.

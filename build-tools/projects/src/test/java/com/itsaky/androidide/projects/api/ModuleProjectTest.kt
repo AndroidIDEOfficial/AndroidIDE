@@ -138,8 +138,8 @@ class ModuleProjectTest {
         )
       assertThat(
           filter {
-            it.absolutePath.endsWith("appcompat-1.3.1/jars/classes.jar") ||
-              it.absolutePath.endsWith("material-1.4.0/jars/classes.jar") ||
+            it.absolutePath.endsWith("appcompat-1.5.1/jars/classes.jar") ||
+              it.absolutePath.endsWith("material-1.8.0-alpha01/jars/classes.jar") ||
               it.absolutePath.endsWith("coordinatorlayout-1.2.0/jars/classes.jar")
           }
         )

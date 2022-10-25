@@ -30,7 +30,7 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 

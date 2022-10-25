@@ -27,7 +27,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.PopupMenu
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.databinding.LayoutFindInFileBinding
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.views.editor.ReplaceAction.doReplace

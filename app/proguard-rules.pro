@@ -57,8 +57,18 @@
     android.graphics.drawable.Drawable parse();
     android.graphics.drawable.Drawable parseDrawable();
 }
+-keep class com.itsaky.androidide.utils.DialogUtils {  public <methods>; }
 
 # APK Metadata
 -keep class com.itsaky.androidide.models.ApkMetadata { *; }
 -keep class com.itsaky.androidide.models.ArtifactType { *; }
 -keep class com.itsaky.androidide.models.MetadataElement { *; }
+
+# Parcelable
+-keepclassmembers class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator CREATOR;
+}
+
+# Used in preferences
+-keep enum com.itsaky.androidide.lsp.xml.models.EmptyElements { *; }
+-keep enum com.itsaky.androidide.xml.permissions.Permission { *; }

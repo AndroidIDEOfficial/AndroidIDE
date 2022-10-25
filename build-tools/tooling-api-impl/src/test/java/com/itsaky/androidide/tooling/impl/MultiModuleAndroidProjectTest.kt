@@ -34,6 +34,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import java.io.File
+import kotlin.jvm.Throws
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -141,24 +142,43 @@ class MultiModuleAndroidProjectTest {
    * Android Gradle Plugin. This test runs only in the CI environment.
    */
   @Test
+  @Throws(CIOnlyException::class)
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
-    val isCi = System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
-    if (!isCi) {
-      println("Skipping project initialization test with multiple AGP versions")
-      println("This test is supposed to run only in CI environment")
-      return
-    }
-
-    val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0")
-    val client = MultiVersionTestClient()
-    for (version in versions) {
-      client.version = version
-      val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-      server
-        .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
-        .get()
-      doAssertions(project = project, server = server)
-      MultiVersionTestClient.buildFile.delete()
+    ciOnlyTest {
+      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0")
+      val client = MultiVersionTestClient()
+      for (version in versions) {
+        client.version = version
+        val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
+        server
+          .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
+          .get()
+        doAssertions(project = project, server = server)
+        MultiVersionTestClient.buildFile.delete()
+      }
     }
   }
+  
+  private fun ciOnlyTest(test: () -> Unit) {
+    try {
+      assertIsCI()
+      test()
+    } catch (err: CIOnlyException) {
+      if(shouldTestMultipleVersions()) {
+        throw err
+      }
+    }
+  }
+  
+  private fun assertIsCI() {
+    if (!shouldTestMultipleVersions()) {
+      throw CIOnlyException()
+    }
+  }
+  
+  private fun shouldTestMultipleVersions() : Boolean {
+    return System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
+  }
+  
+  private class CIOnlyException : IllegalStateException()
 }

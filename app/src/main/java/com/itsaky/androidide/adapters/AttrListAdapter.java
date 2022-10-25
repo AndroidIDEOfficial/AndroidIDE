@@ -19,7 +19,7 @@ package com.itsaky.androidide.adapters;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.attrinfo.models.Attr;
 
 import java.util.ArrayList;

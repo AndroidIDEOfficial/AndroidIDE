@@ -53,10 +53,10 @@ public class EmptyView extends RelativeLayout {
     removeAllViews();
 
     TextView text = new TextView(getContext());
-    text.setText(com.itsaky.androidide.R.string.msg_empty_view);
+    text.setText(com.itsaky.androidide.resources.R.string.msg_empty_view);
     text.setTextColor(
         ContextCompat.getColor(
-            getContext(), com.itsaky.androidide.R.color.secondaryTextColor_light));
+            getContext(), com.itsaky.androidide.resources.R.color.secondaryTextColor_light));
     text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
     LayoutParams params = new LayoutParams(-2, -2);

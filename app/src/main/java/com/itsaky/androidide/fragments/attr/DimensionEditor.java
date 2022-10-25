@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TextWatcherAdapter;

@@ -10,7 +10,7 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.itsaky.inflater.R;
+import com.itsaky.androidide.resources.R;
 import com.sdsmdg.harjot.vectormaster.models.ClipPathModel;
 import com.sdsmdg.harjot.vectormaster.models.GroupModel;
 import com.sdsmdg.harjot.vectormaster.models.PathModel;

@@ -16,8 +16,8 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.R.string;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.androidide.resources.R.string;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.app.Dialog;
@@ -30,7 +30,6 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
@@ -638,7 +637,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   @Override
   public void expandSelection() {
     if (languageServer == null || getFile() == null) {
-      LOG.error("Cannot expand selection. Language server or file is null");
+      LOG.error("Cannot Expand selection. Language server or file is null");
       return;
     }
 

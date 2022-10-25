@@ -23,14 +23,15 @@ import com.github.javaparser.StaticJavaParser
 import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.ConstructorDeclaration
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import com.itsaky.toaster.toastLong
@@ -45,7 +46,7 @@ import com.sun.tools.javac.tree.JCTree
 import com.sun.tools.javac.tree.TreeInfo
 import com.sun.tools.javac.util.ListBuffer
 import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
 
 /**
  * Allows the user to select fields and generate a constructor which has parameters same as the
@@ -105,7 +106,7 @@ class GenerateConstructorAction : FieldBasedAction() {
       log.warn(
         "A constructor with same parameter types is already available in class ${type.simpleName}"
       )
-        toastLong(data[Context::class.java]!!.getString(string.msg_constructor_available), ERROR)
+      toastLong(data[Context::class.java]!!.getString(string.msg_constructor_available), ERROR)
       return
     }
 

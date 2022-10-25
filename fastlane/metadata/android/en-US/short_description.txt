@@ -1,0 +1,1 @@
+An IDE to build real Android apps on Android devices

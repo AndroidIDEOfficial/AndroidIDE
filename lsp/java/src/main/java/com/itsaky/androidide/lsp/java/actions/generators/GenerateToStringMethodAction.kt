@@ -23,9 +23,11 @@ import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.stmt.ReturnStmt
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.R.string
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper

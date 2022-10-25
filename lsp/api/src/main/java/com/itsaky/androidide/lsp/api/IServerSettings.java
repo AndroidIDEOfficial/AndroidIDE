@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.lsp.api;
 
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.COMPLETIONS_MATCH_LOWER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.COMPLETIONS_MATCH_LOWER;
 
 import com.itsaky.androidide.lsp.models.CompletionsKt;
 

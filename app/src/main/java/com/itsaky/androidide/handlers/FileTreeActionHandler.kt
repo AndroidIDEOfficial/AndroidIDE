@@ -21,16 +21,15 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
+import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
-import com.blankj.utilcode.util.IntentUtils
 import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.R
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
-import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
@@ -42,10 +41,13 @@ import com.itsaky.androidide.events.FileContextMenuItemClickEvent
 import com.itsaky.androidide.events.ListProjectFilesRequestEvent
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
+import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.IntentUtils.startIntent
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.androidide.utils.SingleTextWatcher
@@ -101,9 +103,14 @@ class FileTreeActionHandler : BaseEventHandler() {
     }
 
     val context = event[Context::class.java]!! as EditorActivity
+    context.binding.root.closeDrawer(GravityCompat.END)
     if (event.file.name.endsWith(".apk")) {
-      val intent: Intent = IntentUtils.getInstallAppIntent(event.file)
-      context.startActivity(intent)
+      ApkInstaller.installApk(
+        context,
+        InstallationResultHandler.createEditorActivitySender(context),
+        event.file,
+        context.installationSessionCallback()
+      )
       return
     }
     context.openFile(event.file)

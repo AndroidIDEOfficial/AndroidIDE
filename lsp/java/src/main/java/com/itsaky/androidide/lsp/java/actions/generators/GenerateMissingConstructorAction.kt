@@ -17,17 +17,21 @@
 package com.itsaky.androidide.lsp.java.actions.generators
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.GenerateRecordConstructor
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
-class GenerateMissingConstructorAction : BaseCodeAction() {
+class GenerateMissingConstructorAction : BaseJavaCodeAction() {
   override val id = "lsp_java_generateMissingConstructor"
   override var label: String = ""
   private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
@@ -37,7 +41,10 @@ class GenerateMissingConstructorAction : BaseCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (
+      !visible ||
+        !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)
+    ) {
       markInvisible()
       return
     }

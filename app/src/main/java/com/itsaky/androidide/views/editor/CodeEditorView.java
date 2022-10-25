@@ -16,35 +16,32 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_LINE_BREAK;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_PASSWORD;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_INNER;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_LEADING;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FLAG_WS_TRAILING;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_LIGATURES;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.FONT_SIZE;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_ICU;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.USE_MAGNIFER;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.WORD_WRAP;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawEmptyLineWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawInnerWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLeadingWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawLineBreak;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getDrawTrailingWs;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontLigatures;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getFontSize;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseIcu;
-import static com.itsaky.androidide.models.prefs.EditorPreferencesKt.getUseMagnifier;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_LINE_BREAK;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_PASSWORD;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_INNER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_LEADING;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_TRAILING;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_LIGATURES;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.WORD_WRAP;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawEmptyLineWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawInnerWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawLeadingWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawLineBreak;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawTrailingWs;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontLigatures;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseIcu;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseMagnifier;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -66,12 +63,11 @@ import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.models.prefs.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.utils.SingleTextWatcher;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 
@@ -87,7 +83,6 @@ import java.util.concurrent.CompletableFuture;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.text.LineSeparator;
-import io.github.rosemoe.sora.widget.EditorSearcher;
 import io.github.rosemoe.sora.widget.component.Magnifier;
 
 /**

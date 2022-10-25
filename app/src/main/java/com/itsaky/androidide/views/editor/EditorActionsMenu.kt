@@ -38,7 +38,7 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.button.MaterialButton
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
@@ -354,7 +354,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   private fun findWidestItem(): Int {
     var widest = 0
     val text =
-      LayoutInflater.from(editor.context).inflate(R.layout.layout_popup_menu_item, null)
+      LayoutInflater.from(editor.context).inflate(com.itsaky.androidide.R.layout.layout_popup_menu_item, null)
         as MaterialButton
     val dp30 = SizeUtils.dp2px(30f)
     val paddingHorizontal = text.paddingStart + text.paddingEnd

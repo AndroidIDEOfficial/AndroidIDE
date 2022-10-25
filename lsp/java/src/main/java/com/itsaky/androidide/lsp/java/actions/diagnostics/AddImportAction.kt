@@ -18,12 +18,17 @@ package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.google.common.collect.Iterables.toArray
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.newDialogBuilder
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddImport
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
@@ -35,7 +40,7 @@ import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
-class AddImportAction : BaseCodeAction() {
+class AddImportAction : BaseJavaCodeAction() {
 
   override val id: String = "lsp_java_addImport"
   override var label: String = ""

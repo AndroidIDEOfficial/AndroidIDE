@@ -68,7 +68,10 @@ class ManifestTagCompletionProvider(provider: ICompletionProvider) :
       Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES)
         ?.findPackage(ResourceTableRegistry.PCK_ANDROID)
         ?.findGroup(STYLEABLE)
-        ?: return EMPTY
+        ?: run {
+          log.warn("Cannot find manifest styleable entries")
+          return EMPTY
+        }
 
     val result = mutableListOf<CompletionItem>()
 

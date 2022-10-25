@@ -19,9 +19,10 @@ package com.itsaky.androidide.actions.etc
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.projects.ProjectManager
 
 /** @author Akash Yadav */

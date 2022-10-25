@@ -18,7 +18,7 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 

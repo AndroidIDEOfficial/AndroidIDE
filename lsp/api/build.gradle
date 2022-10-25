@@ -67,6 +67,7 @@ dependencies {
     api project (':build-tools:projects')
     api project (':lookup')
     api project (':lsp:models')
+    api project (':preferences')
     
     compileOnly project (':xml-inflater')
     compileOnly project (':actions')

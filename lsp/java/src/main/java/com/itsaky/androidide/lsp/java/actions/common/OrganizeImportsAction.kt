@@ -3,14 +3,17 @@ package com.itsaky.androidide.lsp.java.actions.common
 import com.google.googlejavaformat.java.FormatterException
 import com.google.googlejavaformat.java.ImportOrderer
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
-import com.itsaky.androidide.lsp.java.R.string
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 
-class OrganizeImportsAction : BaseCodeAction() {
+class OrganizeImportsAction : BaseJavaCodeAction() {
   private val log = ILogger.newInstance(javaClass.simpleName)
   override val id: String = "lsp_java_organizeImports"
   override var label: String = ""

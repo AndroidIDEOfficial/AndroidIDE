@@ -58,22 +58,24 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     mListView!!.adapter = adapter
   }
 
-  override fun select(pos: Int) {
+  override fun select(pos: Int) : Boolean {
     if (pos > mAdapter!!.count) {
-      return
+      return false
     }
-    try {
+    return try {
       super.select(pos)
     } catch (e: Throwable) {
       log.warn("Unable to select completion item at $pos", e)
+      false
     }
   }
 
-  override fun select() {
-    try {
+  override fun select() : Boolean {
+    return try {
       super.select()
     } catch (e: Throwable) {
       log.warn("Unable to select completion item", e)
+      false
     }
   }
 

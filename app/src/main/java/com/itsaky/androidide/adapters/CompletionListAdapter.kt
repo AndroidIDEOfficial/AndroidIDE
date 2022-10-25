@@ -26,10 +26,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.R.color
-import com.itsaky.androidide.R.string.msg_api_info_deprecated
-import com.itsaky.androidide.R.string.msg_api_info_removed
-import com.itsaky.androidide.R.string.msg_api_info_since
+import com.itsaky.androidide.resources.R.color
+import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
+import com.itsaky.androidide.resources.R.string.msg_api_info_removed
+import com.itsaky.androidide.resources.R.string.msg_api_info_since
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem

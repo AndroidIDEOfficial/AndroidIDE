@@ -212,17 +212,10 @@ public final class Environment {
     ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
     ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
     ENV_VARS.put("TERM", "screen");
-
-    // If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
-    // else set it to $SYSROOT/lib
-    String ld = System.getenv("LD_LIBRARY_PATH");
-    if (ld == null || ld.trim().length() <= 0) {
-      ld = "";
-    } else {
-      ld += File.pathSeparator;
-    }
-    ld += LIB_DIR.getAbsolutePath();
-    ENV_VARS.put("LD_LIBRARY_PATH", ld);
+    
+    // https://github.com/termux/termux-tools/blob/f2736f7f8232cd19cf52bca9b0ac9afb8ad9e562/scripts/termux-setup-package-manager.in#L3
+    ENV_VARS.put("TERMUX_APP_PACKAGE_MANAGER", "apt");
+    ENV_VARS.put("TERMUX_PKG_NO_MIRROR_SELECT", "true");
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         && BaseApplication.isAarch64()

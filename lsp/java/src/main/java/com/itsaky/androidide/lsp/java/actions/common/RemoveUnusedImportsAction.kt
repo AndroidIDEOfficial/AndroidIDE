@@ -3,12 +3,15 @@ package com.itsaky.androidide.lsp.java.actions.common
 import com.google.googlejavaformat.java.FormatterException
 import com.google.googlejavaformat.java.RemoveUnusedImports
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireEditor
+import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.R.string
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
 
-class RemoveUnusedImportsAction : BaseCodeAction() {
+class RemoveUnusedImportsAction : BaseJavaCodeAction() {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   override val id: String = "lsp_java_remove_unused_imports"

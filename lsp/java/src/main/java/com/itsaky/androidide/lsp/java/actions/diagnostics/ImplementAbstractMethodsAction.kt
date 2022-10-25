@@ -17,9 +17,11 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods
 import com.itsaky.androidide.utils.ILogger
@@ -27,7 +29,7 @@ import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
-class ImplementAbstractMethodsAction : BaseCodeAction() {
+class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
   override val id: String = "lsp_java_implementAbstractMethods"
   override var label: String = ""
   private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id

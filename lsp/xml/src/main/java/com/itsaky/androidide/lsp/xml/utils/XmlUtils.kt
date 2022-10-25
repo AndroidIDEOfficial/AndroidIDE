@@ -20,6 +20,7 @@ import com.itsaky.androidide.lexers.xml.XMLLexer
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
+import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.xml.INamespace.Resolver
@@ -35,31 +36,9 @@ import org.xmlpull.v1.XmlPullParserFactory
 
 /** @author Akash Yadav */
 object XmlUtils {
-
-  private val NAMESPACE_RESOLVER_KEY: String = "namespaceResolver"
-  private val caches: WeakHashMap<DOMNode, MutableMap<String, Any>> = WeakHashMap()
-
-  private val LOG = ILogger.newInstance("XmlUtils")
-  private val parserFactory: XmlPullParserFactory =
-    try {
-      XmlPullParserFactory.newInstance()
-    } catch (e: XmlPullParserException) {
-      LOG.error("Unable to create pull parser factory")
-      throw RuntimeException(e)
-    }
-
-  @Throws(XmlPullParserException::class)
-  fun newParser(): XmlPullParser {
-    return parserFactory.newPullParser()
-  }
-
-  @Throws(XmlPullParserException::class)
-  fun newParser(contents: CharSequence?): XmlPullParser {
-    val parser = parserFactory.newPullParser()
-    parser.setInput(CharSequenceReader(contents))
-    return parser
-  }
-
+  
+  private val log = ILogger.newInstance("XmlUtils")
+  
   fun isTag(node: DOMNode, index: Int): Boolean {
     var name = node.nodeName
     if (name.isNullOrBlank()) {
@@ -102,15 +81,26 @@ object XmlUtils {
     val text = parsed.text
     return when (type) {
       TAG -> {
-        val nodeAt = parsed.findNodeAt(index) ?: return null
+        val nodeAt = parsed.findNodeAt(index) ?: run {
+          log.warn("Unable to find node at index $index")
+          return null
+        }
         text.substring(nodeAt.start, index)
       }
       ATTRIBUTE -> {
-        val attr = parsed.findAttrAt(index) ?: return null
+        val attr = parsed.findAttrAt(index) ?: run {
+          log.warn("Unable to find attribute at index $index")
+          return null
+        }
+  
         text.substring(attr.start, index)
       }
       ATTRIBUTE_VALUE -> {
-        val attrAt = parsed.findAttrAt(index) ?: return null
+        val attrAt = parsed.findAttrAt(index) ?: run {
+          log.warn("Unable to find attribute at index $index")
+          return null
+        }
+  
         var prefix = text.substring(attrAt.nodeAttrValue.start + 1, index)
         if (prefix.contains("|")) {
           prefix = prefix.substring(prefix.lastIndexOf('|') + 1)
@@ -122,8 +112,12 @@ object XmlUtils {
   }
 
   fun getNodeType(parsed: DOMDocument, cursor: Int): NodeType {
-    val nodeAt = parsed.findNodeAt(cursor) ?: return NodeType.UNKNOWN
-
+    val nodeAt = parsed.findNodeAt(cursor) ?: run {
+      log.warn("Unable to find node at index $cursor")
+      return UNKNOWN
+    }
+  
+  
     if (isTag(nodeAt, cursor) || isEndTag(nodeAt, cursor)) {
       return TAG
     }
@@ -134,53 +128,7 @@ object XmlUtils {
       ATTRIBUTE
     }
   }
-
-  fun getRootElement(document: DOMDocument): DOMElement? {
-    val roots = document.roots
-    for (root in roots) {
-      if (root is DOMElement) {
-        return root
-      }
-    }
-    return null
-  }
-
-  fun getNamespaceResolver(document: DOMDocument): Resolver {
-    val rootElement = getRootElement(document) ?: return Resolver.EMPTY
-    val userData: Any? = retrieveCache(rootElement, NAMESPACE_RESOLVER_KEY)
-    if (userData is Resolver) {
-      return userData
-    }
-
-    val resolver: Resolver =
-      object : Resolver {
-        override fun findPrefix(namespaceUri: String?): String? {
-          return rootElement.getPrefix(namespaceUri)
-        }
-
-        override fun findUri(prefix: String?): String? {
-          val xmlns = rootElement.getAttributeNode("xmlns", prefix)
-          return xmlns?.value
-        }
-      }
-
-    updateCache(rootElement, NAMESPACE_RESOLVER_KEY, resolver)
-    return resolver
-  }
-
-  private fun retrieveCache(node: DOMNode?, key: String): Any? {
-    val map = caches[node] ?: return null
-    return map[key]
-  }
-
-  private fun updateCache(node: DOMNode?, key: String, value: Any) {
-    caches.computeIfAbsent(node) { HashMap() }
-    val map: MutableMap<String, Any>? = caches[node]
-    if (map != null) {
-      map[key] = value
-    }
-  }
-
+  
   enum class NodeType {
     UNKNOWN,
     TAG,

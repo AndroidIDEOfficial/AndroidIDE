@@ -18,7 +18,7 @@
 package com.itsaky.androidide.views.editor
 
 import android.view.LayoutInflater
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.databinding.LayoutEditorFindReplaceBinding
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.ILogger

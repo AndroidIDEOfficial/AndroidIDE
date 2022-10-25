@@ -6,15 +6,23 @@ Guide, tips and tricks and general information about AndroidIDE.
 
 AndroidIDE is an **Integrated Development Environment (IDE)** to build Gradle based Android projects on Android devices.
 
-#### [Installation](./installation.md)
-&nbsp;&nbsp;&nbsp;&nbsp; Installation guide.
+#### [Installation](./installation.md#readme)
+&emsp; Installation guide.
+- [Minimum requirements](./installation.md#minimum-requirements)
+- [Setup the terminal](./installation.md#setup-the-terminal-1)
+- [Build Tools Installation](./installation.md#build-tools-installation-1)
 
-#### [Getting started](./getting_started.md)
-&nbsp;&nbsp;&nbsp;&nbsp; Getting started guide for newbies.
+#### [Getting started](./getting_started.md#readme)
+&emsp; Getting started guide for newbies.
+- [Creating a new project](./getting_started.md#creating-a-new-project)
+- [Working with an existing project](./getting_started.md#working-with-an-existing-project)
 
-#### [User interface](./user_interface.md)
-&nbsp;&nbsp;&nbsp;&nbsp; How to use the application.
-#### 
+#### [Working with projects](./editor/README.md)
+&emsp; Get familiar with the various elements of the editor screen.
+- [Options menu](./editor/README.md#options-menu).
+- [File tree](./editor/README.md#the-file-tree).
+- [Bottom sheet](./editor/README.md#editor-bottomsheet).
+- [Code editor](./editor/README.md#the-code-editor).
 
 ## Important links
 

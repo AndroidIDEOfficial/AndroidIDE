@@ -17,17 +17,22 @@
 package com.itsaky.androidide.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ConvertFieldToBlock
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
+import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
-class FieldToBlockAction : BaseCodeAction() {
+class FieldToBlockAction : BaseJavaCodeAction() {
 
   override val id: String = "lsp_java_fieldToBlock"
   override var label: String = ""
@@ -43,12 +48,12 @@ class FieldToBlockAction : BaseCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!
+    val diagnostic = data.get(DiagnosticItem::class.java)!!
     if (diagnosticCode != diagnostic.code) {
       markInvisible()
       return
@@ -58,7 +63,7 @@ class FieldToBlockAction : BaseCodeAction() {
   override fun execAction(data: ActionData): Any {
     val compiler =
       JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
-    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
+    val diagnostic = data[DiagnosticItem::class.java]!!
     val file = requirePath(data)
 
     return compiler.compile(file).get {

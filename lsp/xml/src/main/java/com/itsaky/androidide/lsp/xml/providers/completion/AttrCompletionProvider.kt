@@ -94,10 +94,12 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     list: MutableList<CompletionItem>
   ) {
     if (namespace == null) {
+      log.warn("Namespace is null. Cannot compute completions for namespace prefix: $nsPrefix.")
       return
     }
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
+      log.warn("No resource tables found for namespace; $namespace")
       return
     }
 
@@ -190,9 +192,10 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
       // Probably a custom view or a view from libraries
       // If the developer follows the naming convention then only the completions will be provided
       // This must be called if and only if the tag name is qualified
-      return findStyleablesForName(styleables, node)
+      return findStyleablesForName(styleables, node, true)
     }
-
+  
+    log.info("Cannot find styleable entries for tag: $widget")
     return emptySet()
   }
 
@@ -211,7 +214,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
     }
 
     // Common attributes for all views
-    addWidgetStyleable(styleables, "View", result)
+    addWidgetStyleable(styleables = styleables, widget = "View", result = result)
 
     // Find the declared styleable
     val entry = findStyleableEntry(styleables, "$name$suffix")
@@ -335,9 +338,9 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
   protected open fun findStyleableEntry(styleables: ResourceGroup, name: String): Styleable? {
     val value = styleables.findEntry(name)?.findValue(ConfigDescription())?.value
     if (value !is Styleable) {
+      log.warn("Cannot find styleable for $name")
       return null
     }
-
     return value
   }
 }

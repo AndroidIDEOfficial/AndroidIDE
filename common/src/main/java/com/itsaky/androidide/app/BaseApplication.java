@@ -27,15 +27,17 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.multidex.BuildConfig;
 import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.itsaky.androidide.common.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
@@ -59,6 +61,8 @@ public abstract class BaseApplication extends MultiDexApplication {
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
+  
+  private static final ILogger LOG = ILogger.newInstance("BaseApplication");
 
   public static BaseApplication getBaseInstance() {
     return instance;
@@ -140,13 +144,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
         ThrowableUtils.getFullStackTrace(th));
   }
-
-  @NonNull
-  @Contract(" -> new")
-  public final File getLogSenderDir() {
-    return new File(getRootDir(), "logsender");
-  }
-
+  
   public final File getTempProjectDir() {
     return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
   }
@@ -154,11 +152,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public PreferenceManager getPrefManager() {
     return mPrefsManager;
   }
-
-  public File[] listProjects() {
-    return getProjectsDir().listFiles(File::isDirectory);
-  }
-
+  
   public File getProjectsDir() {
     return Environment.PROJECTS_DIR;
   }
@@ -166,7 +160,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void openTelegramGroup() {
     openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
   }
-
+  
   public void openTelegramChannel() {
     openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
   }
@@ -191,28 +185,31 @@ public abstract class BaseApplication extends MultiDexApplication {
     openUrl("mailto:" + EMAIL);
   }
 
+  
   public void openUrl(String url) {
-    try {
-      Intent open = new Intent();
-      open.setAction(Intent.ACTION_VIEW);
-      open.setData(Uri.parse(url));
-      open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(open);
-    } catch (Throwable th) {
-      ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
-    }
+    openUrl(url, null);
   }
   
   public void openTelegram(String url) {
+    openUrl(url, "org.telegram.messenger");
+  }
+  
+  public void openUrl(String url, String pkg) {
     try {
       Intent open = new Intent();
       open.setAction(Intent.ACTION_VIEW);
       open.setData(Uri.parse(url));
-      open.setPackage("org.telegram.messenger");
       open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      if (pkg != null) {
+        open.setPackage(pkg);
+      }
       startActivity(open);
-    } catch (Throwable th1) {
-      openUrl(url);
+    } catch (Throwable th) {
+      if (pkg != null) {
+        openUrl(url);
+      } else {
+        ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
+      }
     }
   }
 }

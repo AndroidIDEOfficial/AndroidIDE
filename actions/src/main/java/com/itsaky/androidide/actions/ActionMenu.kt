@@ -29,6 +29,15 @@ interface ActionMenu : ActionItem {
 
   fun removeAction(action: ActionItem) = children.remove(action)
 
+  /**
+   * Find the action item with the given action ID.
+   *
+   * @return The action item or `null` if not found.
+   */
+  fun findAction(id: String): ActionItem? {
+    return children.find { it.id == id }
+  }
+
   /** Action menus are not supposed to perform any action */
   override fun execAction(data: ActionData): Boolean {
     return false

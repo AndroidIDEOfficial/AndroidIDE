@@ -31,7 +31,7 @@ import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.databinding.LayoutEditorFileTreeBinding;
 import com.itsaky.androidide.eventbus.events.filetree.FileClickEvent;

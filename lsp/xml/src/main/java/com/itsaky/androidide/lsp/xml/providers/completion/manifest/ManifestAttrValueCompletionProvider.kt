@@ -192,6 +192,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   override fun findResourceTables(nsUri: String): Set<ResourceTable> {
     val tables = manifestResourceTable().toMutableSet()
     tables.addAll(super.findResourceTables(nsUri))
+    log.info("Found ${tables.size} resource tables for namespace: $nsUri")
     return tables
   }
 }

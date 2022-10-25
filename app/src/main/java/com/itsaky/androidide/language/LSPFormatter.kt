@@ -34,9 +34,7 @@ import io.github.rosemoe.sora.text.TextRange
  * @author Akash Yadav
  */
 class LSPFormatter(val server: ILanguageServer? = null) : AsyncFormatter() {
-
-  private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   override fun formatAsync(text: Content, cursorRange: TextRange): TextRange {
     return doFormat(text, cursorRange)
   }
@@ -58,9 +56,16 @@ class LSPFormatter(val server: ILanguageServer? = null) : AsyncFormatter() {
       return cursorRange
     }
 
-    val result =
-      server.formatCode(FormatCodeParams(text, rangeToFormat?.asRange() ?: text.wholeRange()))
-    if (result == CodeFormatResult.NONE || ((result.isIndexed && result.indexedTextEdits.isEmpty()) || result.edits.isEmpty())) {
+    val range =
+      (rangeToFormat?.asRange() ?: text.wholeRange()).apply {
+        start.apply {
+          index = (if (line == 0 && column == 0) 0 else text.getCharIndex(line, column))
+        }
+        end.apply { index = (if (line == 0 && column == 0) 0 else text.getCharIndex(line, column)) }
+      }
+    val result = server.formatCode(FormatCodeParams(text, range))
+
+    if (!result.hasEdits() ) {
       // Deselect the selected content
       return TextRange(cursorRange.start, cursorRange.start)
     }
@@ -78,11 +83,13 @@ class LSPFormatter(val server: ILanguageServer? = null) : AsyncFormatter() {
         )
       }
     }
-
     // Deselect the selected content
     return TextRange(cursorRange.start, cursorRange.start)
   }
 }
+
+private fun CodeFormatResult.hasEdits() =
+  this.indexedTextEdits.isNotEmpty() || this.edits.isNotEmpty()
 
 private fun TextRange.asRange(): Range {
   return Range().also {

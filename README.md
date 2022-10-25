@@ -54,7 +54,7 @@ in the terminal i.e. no GUI interface for `git`.
 - Download the AndroidIDE APK from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
   can also download APKs from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions).
 - Follow the
-  instructions [here](https://github.com/AndroidIDEOfficial/androidide-build-tools#installing-in-androidide) to
+  instructions [here](./docs/installation.md) to
   install the build tools.
 
 ## Limitations
@@ -105,5 +105,4 @@ You should have received a copy of the GNU General Public License
 along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
-Any violations to the license can be reported either by opening an issue or writing a mail to us
-directly.
+Any violations to the license can be reported either by opening an issue or writing a mail to us directly.

@@ -17,9 +17,11 @@
 package com.itsaky.androidide.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.lsp.java.R
-import com.itsaky.androidide.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 
@@ -29,7 +31,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class GoToDefinitionAction : BaseCodeAction() {
+class GoToDefinitionAction : BaseJavaCodeAction() {
   override val titleTextRes: Int = R.string.action_goto_definition
   override val id: String = "lsp_java_gotoDefinition"
   override var label: String = ""

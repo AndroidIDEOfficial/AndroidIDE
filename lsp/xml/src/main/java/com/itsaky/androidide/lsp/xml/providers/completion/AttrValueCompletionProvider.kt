@@ -349,6 +349,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     // When completing values, all namespaces must be included
     val tables = HashSet(findAllModuleResourceTables())
     tables.addAll(super.findResourceTables(nsUri))
+    log.info("Found ${tables.size} resource tables for namespace: $nsUri")
     return tables
   }
 
