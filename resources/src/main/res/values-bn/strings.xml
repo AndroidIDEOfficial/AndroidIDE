@@ -409,9 +409,12 @@
     <string name="xml_formatting_options_summary">XML ফর্ম্যাটার কনফিগার করুন</string>
     <string name="idepref_customFont_title">কাস্টম ফন্ট ব্যবহার করুন</string>
     <string name="idepref_customFont_summary">সক্রিয় থাকলে, \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" ফাইলটিকে এডিটর-এর ফন্ট হিসেবে ব্যবহার করা হবে।</string>
+    <string name="idepref_chooseFont_title">কাস্টম ফন্ট নির্বাচন করুন</string>
+    <string name="idepref_chooseFont_summary">টার্মিনালে ব্যবহার করার জন্য ফন্ট চয়ন করুন (এবং ঐচ্ছিকভাবে, সম্পাদকে)।</string>
     <string name="msg_installing_apk">APK ইনস্টল করা হচ্ছে...</string>
     <string name="msg_installed_successfully">সফলভাবে ইনস্টল হয়েছে</string>
     <string name="msg_action_open_application">তুমি কি অ্যাপ্লিকেশনটি খুলতে চাও?</string>
+
     <string name="title_gradle_service_notification_channel">AndroidIDE Gradle build পরিষেবা</string>
     <string name="msg_hex_color_code">হেক্স কালার কোড</string>
     <string name="msg_color_picker_pick">বেছে নিন</string>
@@ -459,7 +462,11 @@
     <string name="action_generate_missing_constructor">অনুপস্থিত কন্সট্রাক্টর তৈরি করুন</string>
     <string name="msg_cannot_generate_constructor">কন্সট্রাক্টর তৈরি করতে অক্ষম</string>
     <string name="msg_constructor_available">একই ধরনের প্যারামিটার সহ একটি কনস্ট্রাক্টর ইতিমধ্যেই উপলব্ধ</string>
+
     <string name="msg_cannot_create_view">ট্যাগটির জন্য View তৈরি করা যাচ্ছে না: %s</string>
     <string name="err_no_attr_adapter">%s এর জন্য কোনো অ্যাট্রিবিউট অ্যাডাপ্টার ইমপ্লিমেন্টেশন পাওয়া যায়নি</string>
     <string name="msg_view_not_supported">View %s বর্তমানে সমর্থিত নয়৷</string>
+
+    <string name="replace">প্রতিস্থাপন করুন</string>
+    <string name="replaceAll">সবকটি প্রতিস্থাপন করুন</string>
 </resources>
