@@ -213,7 +213,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
       LOG.error(
           BaseApplication.getBaseInstance()
               .getString(
-                  com.itsaky.inflater.R.string.err_no_attr_adapter, view.getClass().getName()),
+                  com.itsaky.androidide.resources.R.string.err_no_attr_adapter, view.getClass().getName()),
           th);
     }
 
@@ -314,7 +314,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     if (widget == null) {
       LOG.error("Unable to inflate view. widget == null");
       return onCreateErrorView(
-          name, getString(com.itsaky.inflater.R.string.msg_cannot_create_view, name), parent);
+          name, getString(com.itsaky.androidide.resources.R.string.msg_cannot_create_view, name), parent);
     }
 
     return createFromQualifiedName(widget.name, parent, style);

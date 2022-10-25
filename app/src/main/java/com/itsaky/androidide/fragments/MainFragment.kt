@@ -5,11 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.PreferencesActivity
-import com.itsaky.androidide.R
-import com.itsaky.androidide.R.string
 import com.itsaky.androidide.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
@@ -17,6 +14,8 @@ import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.projects.ProjectManager.projectPath
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
@@ -43,11 +42,19 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
       }
     val preferences =
       MainScreenAction(R.string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
-    val sponsor = MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) { BaseApplication.getBaseInstance().openSponsors() }
-    val docs = MainScreenAction(string.btn_docs, R.drawable.ic_docs) { BaseApplication.getBaseInstance().openDocs() }
-    
+    val sponsor =
+      MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) {
+        BaseApplication.getBaseInstance().openSponsors()
+      }
+    val docs =
+      MainScreenAction(string.btn_docs, R.drawable.ic_docs) {
+        BaseApplication.getBaseInstance().openDocs()
+      }
+
     binding!!.actions.adapter =
-      MainActionsListAdapter(listOf(createProject, openProject, openTerminal, preferences, docs, sponsor))
+      MainActionsListAdapter(
+        listOf(createProject, openProject, openTerminal, preferences, docs, sponsor)
+      )
   }
 
   override fun onDestroyView() {
@@ -64,7 +71,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     wizardFragment.setOnProjectCreatedListener(this)
     parentFragmentManager
       .beginTransaction()
-      .add(R.id.container, wizardFragment, WizardFragment.TAG)
+      .add(com.itsaky.androidide.R.id.container, wizardFragment, WizardFragment.TAG)
       .addToBackStack(null)
       .commit()
   }

@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
+import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
 object CodeActionsMenu : ActionMenu {
@@ -37,22 +38,12 @@ object CodeActionsMenu : ActionMenu {
   override var enabled: Boolean = true
   override var icon: Drawable? = null
 
-  private fun tryGetIcon(context: Context): Drawable? {
-    return try {
-      val klass = Class.forName("com.itsaky.androidide.R\$drawable")
-      val field = klass.getDeclaredField("ic_code")
-      ContextCompat.getDrawable(context, field.get(null) as Int)
-    } catch (error: Throwable) {
-      null
-    }
-  }
-
   override var requiresUIThread: Boolean = false
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
   override fun prepare(data: ActionData) {
     if (icon == null) {
-      icon = tryGetIcon(data[Context::class.java]!!)
+      icon = ContextCompat.getDrawable(data[Context::class.java]!!, R.drawable.ic_code)
     }
     visible = children.size > 0 && atLeastOneChildVisible(data)
     enabled = true

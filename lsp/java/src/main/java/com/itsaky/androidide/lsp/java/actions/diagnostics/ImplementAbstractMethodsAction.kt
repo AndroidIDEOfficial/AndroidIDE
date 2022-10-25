@@ -20,7 +20,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
-import com.itsaky.androidide.lsp.java.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods

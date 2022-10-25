@@ -153,6 +153,7 @@ dependencies {
     implementation project (':lexers')
     implementation project (':lookup')
     implementation project (':preferences')
+    implementation project (':resources')
     implementation project (':treeview')
     implementation project (':xml-inflater')
     

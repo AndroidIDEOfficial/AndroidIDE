@@ -20,8 +20,8 @@ package com.itsaky.androidide.preferences
 import android.view.LayoutInflater
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.itsaky.androidide.R.drawable
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
 import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER

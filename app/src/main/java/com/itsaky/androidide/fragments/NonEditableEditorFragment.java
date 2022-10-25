@@ -36,8 +36,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment
     implements ShareableOutputFragment {
-
-  private static final ILogger LOG = ILogger.newInstance("NonEditableEditorFragment");
+  
   private FragmentNonEditableEditorBinding binding;
 
   @Nullable
@@ -103,6 +102,7 @@ public abstract class NonEditableEditorFragment extends Fragment
       return;
     }
 
-    editor.setText("");
+    // Editing CodeEditor's content is a synchronized operation
+    editor.getText().delete(0, editor.getText().length());
   }
 }

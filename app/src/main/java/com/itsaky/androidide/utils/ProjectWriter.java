@@ -29,7 +29,7 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;

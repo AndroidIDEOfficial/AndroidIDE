@@ -31,6 +31,7 @@ android {
 
 dependencies {
     implementation project (':common')
+    implementation project (':resources')
     implementation common.editor
     implementation common.kotlin
     implementation common.utilcode

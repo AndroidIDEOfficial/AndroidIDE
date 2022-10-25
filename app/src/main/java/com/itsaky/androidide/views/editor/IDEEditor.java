@@ -16,7 +16,7 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 

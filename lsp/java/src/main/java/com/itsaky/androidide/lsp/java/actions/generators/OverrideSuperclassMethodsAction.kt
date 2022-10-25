@@ -25,7 +25,7 @@ import com.itsaky.androidide.actions.newDialogBuilder
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.lsp.java.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider

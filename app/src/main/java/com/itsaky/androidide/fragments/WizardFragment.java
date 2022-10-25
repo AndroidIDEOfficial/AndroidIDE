@@ -1,6 +1,6 @@
 package com.itsaky.androidide.fragments;
 
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.string;
 
 import android.os.Bundle;
 import android.text.Editable;

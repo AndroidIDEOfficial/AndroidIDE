@@ -22,7 +22,7 @@ import androidx.core.provider.DocumentsContractCompat.buildDocumentUriUsingTree
 import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File

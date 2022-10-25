@@ -7,7 +7,7 @@ import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
-import com.itsaky.androidide.lsp.java.R.string
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings
 import com.itsaky.androidide.utils.ILogger

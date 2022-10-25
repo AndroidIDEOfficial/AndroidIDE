@@ -29,7 +29,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 
 import java.util.Objects;
 

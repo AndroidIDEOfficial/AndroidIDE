@@ -31,7 +31,7 @@ import androidx.multidex.BuildConfig;
 import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.itsaky.androidide.common.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.shell.ShellServer;

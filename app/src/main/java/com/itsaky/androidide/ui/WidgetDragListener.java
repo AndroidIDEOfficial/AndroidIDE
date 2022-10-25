@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.DesignerActivity;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IAttribute;

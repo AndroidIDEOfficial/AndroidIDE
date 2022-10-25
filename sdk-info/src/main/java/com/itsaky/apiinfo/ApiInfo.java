@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.MethodInfo;
-import com.itsaky.sdkinfo.R;
+import com.itsaky.androidide.resources.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
