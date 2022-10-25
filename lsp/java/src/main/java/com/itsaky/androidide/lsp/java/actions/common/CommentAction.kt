@@ -20,6 +20,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
+import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class CommentAction : BaseJavaCodeAction() {
@@ -28,18 +29,16 @@ class CommentAction : BaseJavaCodeAction() {
 
   override val titleTextRes: Int = R.string.action_comment_line
 
+  override var requiresUIThread: Boolean = true
+  
   override fun execAction(data: ActionData): Boolean {
     val editor = requireEditor(data)
     val text = editor.text
     val cursor = editor.cursor
-    var line = cursor.leftLine
 
     text.beginBatchEdit()
-    while (line >= cursor.leftLine && line <= cursor.rightLine) {
-      if (!text.getLineString(line).trim { it <= ' ' }.startsWith("//")) {
-        text.insert(line, 0, "//")
-      }
-      line++
+    for (line in cursor.leftLine..cursor.rightLine) {
+      text.insert(line, 0, "//")
     }
     text.endBatchEdit()
 

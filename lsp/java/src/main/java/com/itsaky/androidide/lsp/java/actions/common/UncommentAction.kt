@@ -20,6 +20,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
+import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class UncommentAction : BaseJavaCodeAction() {
@@ -27,21 +28,21 @@ class UncommentAction : BaseJavaCodeAction() {
   override var label: String = ""
 
   override val titleTextRes: Int = R.string.action_uncomment_line
-
+  
+  override var requiresUIThread: Boolean = true
+  
   override fun execAction(data: ActionData): Boolean {
     val editor = requireEditor(data)
     val text = editor.text
     val cursor = editor.cursor
-    var line = cursor.leftLine
-
+    
     text.beginBatchEdit()
-    while (line >= cursor.leftLine && line <= cursor.rightLine) {
+    for (line in cursor.leftLine..cursor.rightLine) {
       val l = text.getLineString(line)
-      if (l.trim { it <= ' ' }.startsWith("//")) {
+      if (l.trim().startsWith("//")) {
         val i = l.indexOf("//")
         text.delete(line, i, line, i + 2)
       }
-      line++
     }
     text.endBatchEdit()
 
