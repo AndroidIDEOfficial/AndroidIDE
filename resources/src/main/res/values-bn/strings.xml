@@ -469,4 +469,12 @@
 
     <string name="replace">প্রতিস্থাপন করুন</string>
     <string name="replaceAll">সবকটি প্রতিস্থাপন করুন</string>
+    <string name="title_run_tasks">প্রক্রিয়া চালান</string>
+    <string name="hint_search_tasks">প্রক্রিয়া খুজুন…</string>
+    <string name="title_selected_tasks">নির্বাচিত প্রক্রিয়াগুলি</string>
+    <string name="msg_err_select_tasks">চালানোর জন্য প্রক্রিয়া নির্বাচন করুন</string>
+    <string name="title_confirmation">নিশ্চিতকরণ</string>
+    <string name="msg_tasks_to_run">নিম্নলিখিত প্রক্রিয়া গুলি চালানো হবে, ক্রমানুসারে। নিশ্চিত করার জন্য \'Run\' বাটনটিতে আবার ক্লিক করুন.\n\n%1$s</string>
+    <string name="msg_loading_tasks">প্রক্রিয়া লোড করা হচ্ছে...</string>
+    <string name="title_all_tasks">সমস্ত প্রক্রিয়াগুলি</string>
 </resources>
