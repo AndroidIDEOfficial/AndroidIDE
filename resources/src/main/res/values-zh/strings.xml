@@ -281,7 +281,7 @@
   <string name="msg_compiler_module_installed">编译器模块已成功安装!</string>
   <string name="action_expand_selection">扩选</string>
   <string name="idepref_java_matchLower_title">代码补全匹配小写字母</string>
-  <string name="idepref_editor_category_common">通用</string>
+  <string name="title_common">通用</string>
   <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">未保存文件</string>
   <string name="msg_files_unsaved">部分文件并未保存，是否在关闭项目之前保存？未保存的文件：\n%s</string>

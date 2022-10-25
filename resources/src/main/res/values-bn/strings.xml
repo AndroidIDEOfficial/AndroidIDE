@@ -281,7 +281,7 @@
     <string name="msg_compiler_module_installed">কম্পাইলার মডিউল সফলভাবে ইনস্টল করা হয়েছে!</string>
     <string name="action_expand_selection">নির্বাচন প্রসারিত করুন</string>
     <string name="idepref_java_matchLower_title">ছোট হাতের অক্ষর এও কমপ্লিশন করুন</string>
-    <string name="idepref_editor_category_common">সাধারণ</string>
+    <string name="title_common">সাধারণ</string>
     <string name="idepref_editor_category_java">জাভা</string>
     <string name="title_files_unsaved">অসংরক্ষিত ফাইল</string>
     <string name="msg_files_unsaved">কিছু ফাইল সংরক্ষিত নেই৷ আপনি বন্ধ করার আগে তাদের সংরক্ষণ করতে চান? অসংরক্ষিত ফাইলগুলি হল: \n%s</string>

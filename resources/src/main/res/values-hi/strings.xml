@@ -277,7 +277,7 @@
     <string name="msg_compiler_module_installed">कंपाइलर मॉड्यूल सफलतापूर्वक स्थापित किया गया!</string>
     <string name="action_expand_selection">चयन का विस्तार करें</string>
     <string name="idepref_java_matchLower_title">कम्पलेशन्स लोअर केस में मिलाये</string>
-    <string name="idepref_editor_category_common">सामान्य</string>
+    <string name="title_common">सामान्य</string>
     <string name="idepref_editor_category_java">जावा</string>
     <string name="title_files_unsaved">फ़ाइल्स सेव नहीं की गयी है</string>
     <string name="msg_files_unsaved">कुछ फ़ाइलें सेव नहीं की गई हैं। क्या आप बंद करने से पहले उन्हें सेव करना चाहेंगे? सेव न की गयी फ़ाइल्स : %s</string>

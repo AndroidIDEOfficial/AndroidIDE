@@ -267,7 +267,7 @@
     <string name="msg_compiler_module_installed">Modules du compileur installés avec succès !</string>
     <string name="action_expand_selection">Sélection expansion</string>
     <string name="idepref_java_matchLower_title">Faire correspondre les complétions en minuscules</string>
-    <string name="idepref_editor_category_common">Common</string>
+    <string name="title_common">Common</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Fichiers non sauvegardés</string>
     <string name="msg_files_unsaved">Certains fichiers n\'ont pas été sauvegardés, voulez vous les sauvegarder avant de les fermer ? Fichiers non sauvegardés: \n%s</string>
