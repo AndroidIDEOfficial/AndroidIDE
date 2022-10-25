@@ -23,7 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.getColor
 import androidx.preference.PreferenceFragmentCompat
-import com.itsaky.androidide.R.color
+import com.itsaky.androidide.resources.R.color
 import com.itsaky.androidide.R.xml
 import com.itsaky.androidide.app.IDEApplication.getInstance
 

@@ -51,6 +51,7 @@ dependencies {
     implementation common.kotlin
     
     implementation project (path: ':eventbus-events')
+    implementation project (path: ':resources')
     
     api androidx.multidex
     

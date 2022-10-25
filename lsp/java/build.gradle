@@ -68,6 +68,7 @@ dependencies {
     compileOnly project (':actions')
     compileOnly project (':common')
     
+    implementation project (path: ':resources')
     implementation project (path: ':lsp:api')
     implementation project (path: ':build-tools:javac')
     implementation project (path: ':build-tools:javac-services')

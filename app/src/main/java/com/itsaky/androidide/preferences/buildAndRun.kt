@@ -22,8 +22,8 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.preference.Preference
 import com.google.android.material.textfield.TextInputLayout
-import com.itsaky.androidide.R.drawable
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
 import com.itsaky.androidide.preferences.internal.GRADLE_COMMANDS

@@ -21,7 +21,7 @@
 package com.itsaky.androidide;
 
 import static com.itsaky.androidide.R.id;
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getAutoOpenProjects;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getConfirmProjectOpen;

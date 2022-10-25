@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.attrinfo.models.Styleable;
-import com.itsaky.sdkinfo.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.xml.INamespace;
 
 import org.jsoup.Jsoup;

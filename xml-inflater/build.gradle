@@ -39,5 +39,6 @@ dependencies {
     implementation common.kotlin
     
     implementation project (":common")
+    implementation project (":resources")
     api project (':sdk-info')
 }

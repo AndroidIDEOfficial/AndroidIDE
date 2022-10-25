@@ -36,7 +36,7 @@ public class TransformUtils {
     transform.setDrawingViewId(drawingView.getId());
     transform.setAllContainerColors(
         ContextCompat.getColor(
-            drawingView.getContext(), com.itsaky.androidide.R.color.primaryDarkColor));
+            drawingView.getContext(), com.itsaky.androidide.resources.R.color.primaryDarkColor));
     transform.setElevationShadowEnabled(true);
     transform.setPathMotion(new MaterialArcMotion());
     transform.setScrimColor(Color.TRANSPARENT);

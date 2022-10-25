@@ -19,8 +19,8 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import androidx.preference.Preference
-import com.itsaky.androidide.R.drawable
-import com.itsaky.androidide.R.string
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.OPEN_PROJECTS
 import com.itsaky.androidide.preferences.internal.TERMINAL_USE_SYSTEM_SHELL

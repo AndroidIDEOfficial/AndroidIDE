@@ -19,7 +19,7 @@ package com.itsaky.androidide.actions.file
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.projects.ProjectManager

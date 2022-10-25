@@ -22,7 +22,7 @@ import android.content.Context
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.blankj.utilcode.util.KeyboardUtils
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 

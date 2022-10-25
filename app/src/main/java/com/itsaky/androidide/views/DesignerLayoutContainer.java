@@ -28,7 +28,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 
 /**
  * A container used in UI Designer. This view holds the views inflated from an XML layout. When

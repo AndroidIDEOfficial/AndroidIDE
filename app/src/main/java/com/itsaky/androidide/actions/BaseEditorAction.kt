@@ -55,7 +55,7 @@ abstract class BaseEditorAction : ActionItem {
 
   fun tintDrawable(context: Context, drawable: Drawable): Drawable {
     drawable.setTint(
-      ContextCompat.getColor(context, com.itsaky.androidide.R.color.primaryIconColor)
+      ContextCompat.getColor(context, com.itsaky.androidide.resources.R.color.primaryIconColor)
     )
     return drawable
   }

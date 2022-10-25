@@ -19,19 +19,20 @@ package com.itsaky.androidide.actions.build
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.blankj.utilcode.util.IntentUtils
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.models.ApkMetadata
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.utils.ApkInstaller
+import com.itsaky.androidide.utils.InstallationResultHandler
 import java.io.File
 
 /** @author Akash Yadav */
 open class AssembleDebugAction() : BaseBuildAction() {
 
   protected open var installApk: Boolean = false
-  
+
   constructor(context: Context) : this() {
     label = context.getString(R.string.build_debug)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_debug)
@@ -47,7 +48,7 @@ open class AssembleDebugAction() : BaseBuildAction() {
           log.debug("Cannot install APK. Task execution result:", result)
           return@execTasks
         }
-        
+
         if (!installApk) {
           return@execTasks
         }
@@ -109,8 +110,13 @@ open class AssembleDebugAction() : BaseBuildAction() {
         log.error("APK file does not exist!")
         return@runOnUiThread
       }
-
-      IntentUtils.getInstallAppIntent(apk).let { activity.startActivity(it) }
+      
+      ApkInstaller.installApk(
+        activity,
+        InstallationResultHandler.createEditorActivitySender(activity),
+        apk,
+        activity.installationSessionCallback()
+      )
     }
   }
 }

@@ -23,7 +23,7 @@ import android.net.Uri;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.CrashHandlerActivity;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;

@@ -23,7 +23,7 @@ import android.content.DialogInterface;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 
 import org.jetbrains.annotations.Contract;
 

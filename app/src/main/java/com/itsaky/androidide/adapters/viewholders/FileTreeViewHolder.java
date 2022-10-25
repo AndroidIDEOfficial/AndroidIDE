@@ -33,7 +33,7 @@ import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.R;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.models.FileExtension;
 import com.unnamed.b.atv.model.TreeNode;

@@ -60,6 +60,7 @@ android {
 dependencies {
   implementation project(path: ':common')
   implementation project(path: ':eventbus-events')
+  implementation project(path: ':resources')
   implementation project(path: ':shared')
   implementation androidx.annotation
   implementation androidx.preference

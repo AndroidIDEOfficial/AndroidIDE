@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
-import static com.itsaky.androidide.R.drawable;
-import static com.itsaky.androidide.R.string;
+import static com.itsaky.androidide.resources.R.drawable;
+import static com.itsaky.androidide.resources.R.string;
 
 import android.content.Context;
 import android.os.Bundle;
