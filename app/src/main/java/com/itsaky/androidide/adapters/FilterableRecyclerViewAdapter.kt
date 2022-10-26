@@ -17,10 +17,14 @@
 
 package com.itsaky.androidide.adapters
 
+import android.annotation.SuppressLint
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DiffUtil.Callback
+import androidx.recyclerview.widget.DiffUtil.DiffResult
 import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ThreadUtils
+import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
-import com.itsaky.androidide.utils.StopWatch
 
 /**
  * Filterable [RecyclerView.Adapter].
@@ -38,20 +42,20 @@ abstract class FilterableRecyclerViewAdapter<V : RecyclerView.ViewHolder, D>(val
    *
    * @param query The query.
    */
+  @SuppressLint("NotifyDataSetChanged")
   fun filter(query: String?) {
     filterThread?.let { ProgressManager.instance.cancel(it) }
     filterThread =
-      FilterThread(this.items, query?.trim(), this::onFilter).apply {
-        start()
-        join()
+      FilterThread(this.items, query?.trim(), this::onFilter) { filtered, result ->
+        if (result == null) {
+          this.filtered = this.items
+          notifyDataSetChanged()
+          return@FilterThread
+        }
+        this.filtered = filtered
+        result.dispatchUpdatesTo(this)
       }
-
-    filterThread!!.let {
-      ThreadUtils.runOnUiThread {
-        this.filtered = it.filtered
-        notifyDataSetChanged()
-      }
-    }
+    filterThread?.start()
   }
 
   /** Get the list item at given index. */
@@ -74,20 +78,61 @@ abstract class FilterableRecyclerViewAdapter<V : RecyclerView.ViewHolder, D>(val
   private class FilterThread<E>(
     val items: List<E>,
     val query: String?,
-    val onFilter: (E, String) -> Boolean
+    val onFilter: (E, String) -> Boolean,
+    val onFiltered: (List<E>, DiffResult?) -> Unit
   ) : Thread("TaskFilterThread") {
 
-    lateinit var filtered: List<E>
-
     override fun run() {
-      this.filtered =
-        if (query.isNullOrBlank()) {
-          items
-        } else
-          items.filter {
-            ProgressManager.abortIfCancelled()
-            onFilter(it, query)
+      try {
+        doFilter()
+      } catch (e: ProcessCancelledException) {
+        // ignored
+      }
+    }
+  
+    private fun doFilter() {
+      if (query.isNullOrBlank()) {
+        postFilter(items, null)
+        return
+      }
+  
+      val filtered = items.filter {
+        ProgressManager.abortIfCancelled()
+        onFilter(it, query)
+      }
+  
+      val result =
+        DiffUtil.calculateDiff(
+          object : Callback() {
+            override fun getOldListSize(): Int {
+              ProgressManager.abortIfCancelled()
+              return items.size
+            }
+        
+            override fun getNewListSize(): Int {
+              ProgressManager.abortIfCancelled()
+              return filtered.size
+            }
+        
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+              ProgressManager.abortIfCancelled()
+              return items[oldItemPosition] == filtered[newItemPosition]
+            }
+        
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+              ProgressManager.abortIfCancelled()
+              return items[oldItemPosition] == filtered[newItemPosition]
+            }
           }
+        )
+  
+      postFilter(filtered, result)
+    }
+  
+    private fun postFilter(filtered: List<E>, result: DiffResult?) {
+      ThreadUtils.runOnUiThread {
+        onFiltered(filtered, result)
+      }
     }
   }
 }

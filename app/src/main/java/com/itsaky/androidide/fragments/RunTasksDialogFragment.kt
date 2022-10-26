@@ -18,6 +18,7 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.R.string
@@ -68,7 +70,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     // The minimum amount of time (in milliseconds) the adapter should wait after the query is
     // changed before starting any further filter request.
     // A too less value here will result in UI lags
-    private const val SEARCH_DELAY = 500
+    private const val SEARCH_DELAY = 500L
   }
 
   override fun onCreateView(
@@ -95,7 +97,6 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
       if (adapter !is RunTasksCategoryAdapter) {
         return@observeQuery
       }
-
       for (index in 0 until viewModel.categories.size) {
         val layout =
           run.categories.layoutManager
@@ -112,8 +113,12 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
 
     run.searchInput.editText?.addTextChangedListener(
       object : SingleTextWatcher() {
+        val searchRunner = Runnable {
+          viewModel.query = run.searchInput.editText?.text?.toString() ?: ""
+        }
         override fun afterTextChanged(s: Editable?) {
-          viewModel.query = s?.toString() ?: ""
+          ThreadUtils.getMainHandler().removeCallbacks(searchRunner)
+          ThreadUtils.runOnUiThreadDelayed(searchRunner, SEARCH_DELAY)
         }
       }
     )
