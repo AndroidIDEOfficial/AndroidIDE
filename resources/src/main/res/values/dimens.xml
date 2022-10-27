@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="file_tab_height">36dp</dimen>
     <dimen name="editor_sheet_peek_height">40dp</dimen>
 </resources>

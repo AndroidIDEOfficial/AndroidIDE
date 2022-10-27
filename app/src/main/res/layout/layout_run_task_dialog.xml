@@ -15,55 +15,51 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:nestedScrollingEnabled="true">
-
-  <TextView
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:gravity="center_vertical"
-    android:text="@string/title_run_tasks"
-    android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title"
-    app:layout_constraintBottom_toBottomOf="@id/exec"
-    app:layout_constraintEnd_toStartOf="@id/exec"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="@id/exec" />
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/exec"
     style="@style/Widget.Material3.Button.IconButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
     android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
     android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
     android:tooltipText="@string/run"
     app:icon="@drawable/ic_run"
-    app:iconTint="@color/green_500"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:iconTint="@color/green_500" />
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignTop="@+id/exec"
+    android:layout_alignBottom="@+id/exec"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="-8dp"
+    android:layout_marginBottom="1dp"
+    android:gravity="center_vertical"
+    android:text="@string/title_run_tasks"
+    android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title" />
+
 
   <View
     android:id="@+id/separator"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="1dp"
-    android:background="@color/primaryLightColor"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/exec" />
+    android:layout_below="@id/exec"
+    android:background="@color/primaryLightColor" />
 
   <ViewFlipper
     android:id="@+id/flipper"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/separator">
+    android:layout_below="@id/separator">
 
     <com.google.android.material.textview.MaterialTextView
       android:id="@+id/loading_tasks"
@@ -87,5 +83,4 @@
 
   </ViewFlipper>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

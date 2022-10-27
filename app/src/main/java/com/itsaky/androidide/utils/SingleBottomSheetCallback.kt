@@ -15,14 +15,17 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.events
+package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.eventbus.events.Event
-import com.itsaky.androidide.models.SheetOption
-import com.unnamed.b.atv.model.TreeNode
+import android.view.View
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 
-internal data class FileContextMenuItemClickEvent(val option: SheetOption) : Event()
-
-data class ExpandTreeNodeRequestEvent(val node: TreeNode) : Event()
-
-class ListProjectFilesRequestEvent : Event()
+/**
+ * A [BottomSheetCallback] which allows you to override any single method.
+ *
+ * @author Akash Yadav
+ */
+open class SingleBottomSheetCallback : BottomSheetCallback() {
+  override fun onStateChanged(bottomSheet: View, newState: Int) {}
+  override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+}

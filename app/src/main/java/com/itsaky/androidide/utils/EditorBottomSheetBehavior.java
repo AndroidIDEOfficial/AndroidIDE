@@ -27,11 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding;
 
 public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavior<V> {
 
-  private static final ILogger LOG = ILogger.newInstance("EditorBottomSheetBehavior");
   private View pager;
 
   public EditorBottomSheetBehavior(Context context, AttributeSet attributeSet) {
@@ -39,7 +37,7 @@ public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavi
   }
 
   public void setBinding(View pager) {
-    this.pager= pager;
+    this.pager = pager;
   }
 
   @Override

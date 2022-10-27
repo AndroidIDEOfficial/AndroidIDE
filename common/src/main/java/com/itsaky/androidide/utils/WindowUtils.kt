@@ -15,14 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.events
+package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.eventbus.events.Event
-import com.itsaky.androidide.models.SheetOption
-import com.unnamed.b.atv.model.TreeNode
+import android.view.Window
+import android.view.WindowManager
 
-internal data class FileContextMenuItemClickEvent(val option: SheetOption) : Event()
-
-data class ExpandTreeNodeRequestEvent(val node: TreeNode) : Event()
-
-class ListProjectFilesRequestEvent : Event()
+@JvmOverloads
+fun Window.updateSystemBarColors(statusBarColor: Int = -1, navigationBarColor: Int = -1) {
+  @Suppress("DEPRECATION") clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+  addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+  if (statusBarColor != -1) {
+    this.statusBarColor = statusBarColor
+  }
+  if (navigationBarColor != -1) {
+    this.navigationBarColor = navigationBarColor
+  }
+}

@@ -16,29 +16,30 @@
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
   <ViewFlipper
     android:id="@+id/header_container"
     android:layout_width="match_parent"
-    android:layout_height="56dp">
+    android:layout_height="@dimen/editor_sheet_collapsed_height"
+    android:background="@color/primaryDarkColor">
 
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="56dp"
-      android:layout_marginBottom="12dp"
-      android:background="@android:color/black"
-      android:orientation="vertical">
+      android:orientation="vertical"
+      tools:ignore="UselessParent">
 
       <TextView
         android:id="@+id/statusText"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:gravity="center"
+        android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:singleLine="true"
         android:textColor="@color/primaryTextColor"
         android:textSize="14sp" />
 
@@ -47,6 +48,7 @@
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:gravity="center"
+        android:maxLines="1"
         android:text="@string/msg_swipe_up"
         android:textColor="@color/secondaryTextColor"
         android:textSize="11sp" />
@@ -58,10 +60,9 @@
   <com.google.android.material.tabs.TabLayout
     android:id="@+id/tabs"
     android:layout_width="match_parent"
-    android:layout_height="36dp"
+    android:layout_height="wrap_content"
     android:layout_below="@id/header_container"
-    android:background="@android:color/black"
-    app:tabGravity="fill"
+    android:backgroundTint="@color/primaryDarkColor"
     app:tabIndicatorAnimationMode="elastic"
     app:tabIndicatorColor="@color/secondaryColor"
     app:tabIndicatorGravity="bottom"
@@ -70,10 +71,18 @@
     app:tabSelectedTextColor="@color/primaryTextColor"
     app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
 
+  <androidx.legacy.widget.Space
+    android:id="@+id/space_bottom"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    tools:layout_height="56dp" />
+
   <androidx.viewpager2.widget.ViewPager2
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_above="@id/space_bottom"
     android:layout_below="@id/tabs"
     android:background="@color/content_background" />
 
@@ -81,8 +90,8 @@
     android:id="@+id/clear_fab"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_above="@id/space_bottom"
     android:layout_alignParentEnd="true"
-    android:layout_alignParentBottom="true"
     android:layout_margin="16dp"
     android:src="@drawable/ic_close"
     app:backgroundTint="@color/secondaryColor" />
@@ -93,8 +102,12 @@
     android:layout_height="wrap_content"
     android:layout_above="@id/clear_fab"
     android:layout_alignParentEnd="true"
-    android:layout_margin="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
     android:src="@drawable/ic_share"
     app:backgroundTint="@color/secondaryColor" />
+
 
 </RelativeLayout>

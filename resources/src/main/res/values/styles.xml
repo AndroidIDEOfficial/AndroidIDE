@@ -48,6 +48,7 @@
     <item name="chipStyle">@style/AppTheme.UIDesigner.WidgetGroupChip</item>
     <item name="switchPreferenceStyle">@style/AppTheme.SwitchPreference</item>
     <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
+    <item name="bottomSheetDialogTheme">@style/AppTheme.BottomSheetDialog</item>
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled" />
@@ -117,6 +118,11 @@
     <item name="cornerSize">25dp</item>
   </style>
 
+  <style name="AppTheme.BottomSheetDialog" parent="Theme.Material3.Dark.BottomSheetDialog">
+    <item name="android:windowIsFloating">false</item>
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+  
   <!-- Alert Dialog -->
   <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
     <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
