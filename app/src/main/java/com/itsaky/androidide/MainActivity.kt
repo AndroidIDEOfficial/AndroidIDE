@@ -25,14 +25,9 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.view.View
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TextView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.R.id
 import com.itsaky.androidide.app.IDEActivity
