@@ -17,8 +17,12 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup
+import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.preferences.IPreference
 import com.itsaky.androidide.preferences.IPreferenceGroup
 import com.itsaky.androidide.preferences.IPreferenceScreen
@@ -26,6 +30,13 @@ import com.itsaky.androidide.preferences.IPreferenceScreen
 class IDEPreferencesFragment : BasePreferenceFragment() {
 
   private var children: List<IPreference> = emptyList()
+  
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+    exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    return super.onCreateView(inflater, container, savedInstanceState)
+  }
 
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
     super.onCreatePreferences(savedInstanceState, rootKey)
