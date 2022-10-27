@@ -23,13 +23,11 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
-import androidx.fragment.app.FragmentContainerView
+import androidx.core.view.updatePadding
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
+import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutEditorFileTreeBinding
@@ -49,11 +47,11 @@ import com.unnamed.b.atv.model.TreeNode
 import com.unnamed.b.atv.model.TreeNode.TreeNodeClickListener
 import com.unnamed.b.atv.model.TreeNode.TreeNodeLongClickListener
 import com.unnamed.b.atv.view.AndroidTreeView
-import java.io.File
-import java.util.Arrays
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
+import java.util.Arrays
 
 class FileTreeFragment :
   BottomSheetDialogFragment(), TreeNodeClickListener, TreeNodeLongClickListener {
@@ -61,13 +59,17 @@ class FileTreeFragment :
   private var mFileTreeView: AndroidTreeView? = null
   private var mRoot: TreeNode? = null
   private var mTreeState: String? = null
-  
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false)
+    binding?.root?.doOnApplyWindowInsets { view, insets, _, _ ->
+      LOG.debug("onApplyWindowInsets")
+      insets.getInsets(statusBars()).apply { view.updatePadding(top = top + SizeUtils.dp2px(8f)) }
+    }
     return binding!!.root
   }
 
@@ -228,23 +230,23 @@ class FileTreeFragment :
     val projectDir = File(projectDirPath)
     mRoot = TreeNode.root(projectDir)
     mRoot?.viewHolder = FileTreeViewHolder(context)
-    binding!!.filetreeHorizontalScrollView.visibility = View.GONE
-    binding!!.fileTreeLoadingProgress.visibility = View.VISIBLE
+    binding!!.horizontalCroll.visibility = View.GONE
+    binding!!.horizontalCroll.visibility = View.VISIBLE
     executeAsync(FileTreeCallable(context, mRoot, projectDir)) {
       if (binding == null) {
         // Fragment has been destroyed
         return@executeAsync
       }
-      binding!!.filetreeHorizontalScrollView.visibility = View.VISIBLE
-      binding!!.fileTreeLoadingProgress.visibility = View.GONE
+      binding!!.horizontalCroll.visibility = View.VISIBLE
+      binding!!.loading.visibility = View.GONE
       val tree = createTreeView(mRoot)
       if (tree != null) {
         tree.setUseAutoToggle(false)
         tree.setDefaultNodeClickListener(this@FileTreeFragment)
         tree.setDefaultNodeLongClickListener(this@FileTreeFragment)
-        binding!!.filetreeHorizontalScrollView.removeAllViews()
+        binding!!.horizontalCroll.removeAllViews()
         val view = tree.view
-        binding!!.filetreeHorizontalScrollView.addView(view)
+        binding!!.horizontalCroll.addView(view)
         view.post { tryRestoreState() }
       }
     }
@@ -282,7 +284,7 @@ class FileTreeFragment :
   }
 
   companion object {
-    
+
     // Should be same as defined in layout/activity_editor.xml
     const val TAG = "editor.fileTree"
     private const val KEY_STORED_TREE_STATE = "fileTree_state"

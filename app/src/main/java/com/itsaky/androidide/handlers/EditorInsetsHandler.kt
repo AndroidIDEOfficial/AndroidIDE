@@ -59,9 +59,7 @@ object EditorInsetsHandler {
           height = bottom + appBarHeight + SizeUtils.dp2px(1f)
         }
       }
-      (view as? ViewGroup)?.forEach {
-        ViewCompat.dispatchApplyWindowInsets(it, insets)
-      }
+      ViewCompat.dispatchApplyWindowInsets(binding.fileTree, insets)
     }
   }
 }
