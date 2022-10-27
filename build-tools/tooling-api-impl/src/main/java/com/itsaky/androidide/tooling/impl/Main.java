@@ -29,10 +29,14 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
 
 import org.gradle.tooling.ConfigurableLauncher;
+import org.gradle.tooling.events.OperationType;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -87,8 +91,7 @@ public class Main {
     launcher.setStandardError(out);
     launcher.setStandardOutput(out);
     launcher.setStandardInput(new ByteArrayInputStream("NoOp".getBytes(StandardCharsets.UTF_8)));
-
-    launcher.addProgressListener(new ForwardingProgressListener());
+    launcher.addProgressListener(new ForwardingProgressListener(), progressUpdateTypes());
 
     if (client != null) {
       try {
@@ -108,5 +111,15 @@ public class Main {
     if (client != null) {
       client.logMessage(line);
     }
+  }
+  
+  public static Set<OperationType> progressUpdateTypes() {
+    final Set<OperationType> types = new HashSet<>();
+    
+    // AndroidIDE currently does not handle any other type of events
+    types.add(OperationType.TASK);
+    types.add(OperationType.PROJECT_CONFIGURATION);
+    
+    return types;
   }
 }

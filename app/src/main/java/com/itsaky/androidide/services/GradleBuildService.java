@@ -45,12 +45,12 @@ import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.BuildConfig;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.builder.BuildService;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tooling.api.IProject;
@@ -65,6 +65,8 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
+import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent;
+import com.itsaky.androidide.tooling.events.task.TaskStartEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
@@ -146,7 +148,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public void onDestroy() {
     LOG.info("Service is being destroyed.", "Dismissing the shown notification...");
     notificationManager.cancel(NOTIFICATION_ID);
-
     if (server != null) {
       server.cancelCurrentBuild();
       server.shutdown();
