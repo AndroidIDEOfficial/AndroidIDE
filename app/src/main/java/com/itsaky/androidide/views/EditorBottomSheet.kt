@@ -34,6 +34,7 @@ import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
@@ -151,6 +152,13 @@ constructor(
         return@setOnClickListener
       }
       (fragment as ShareableOutputFragment).clearOutput()
+    }
+
+    binding.headerContainer.setOnClickListener {
+      val sheet = BottomSheetBehavior.from(this)
+      if (sheet.state != BottomSheetBehavior.STATE_EXPANDED) {
+        sheet.state = BottomSheetBehavior.STATE_EXPANDED
+      }
     }
   }
 

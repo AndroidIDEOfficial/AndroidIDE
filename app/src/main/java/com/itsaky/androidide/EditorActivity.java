@@ -115,7 +115,6 @@ import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
-import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InstallationResultHandler;
 import com.itsaky.androidide.utils.IntentUtils;
@@ -178,7 +177,7 @@ public class EditorActivity extends IDEActivity
   private ProgressSheet mSearchingProgress;
   private AlertDialog mFindInProjectDialog;
   private ActivityResultLauncher<Intent> mUIDesignerLauncher;
-  private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
+  private BottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
   private final ServiceConnection mGradleServiceConnection =
       new ServiceConnection() {
@@ -1195,10 +1194,7 @@ public class EditorActivity extends IDEActivity
   }
 
   private void setupBottomSheet() {
-    mEditorBottomSheet =
-        (EditorBottomSheetBehavior<? extends View>)
-            EditorBottomSheetBehavior.from(mBinding.bottomSheet);
-    mEditorBottomSheet.setBinding(mBinding.bottomSheet.binding.pager);
+    mEditorBottomSheet = BottomSheetBehavior.from(mBinding.bottomSheet);
     mEditorBottomSheet.addBottomSheetCallback(
         new BottomSheetBehavior.BottomSheetCallback() {
           @Override
@@ -1218,13 +1214,6 @@ public class EditorActivity extends IDEActivity
             final var editorScale = 1 - (slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR));
             mBinding.viewContainer.setScaleX(editorScale);
             mBinding.viewContainer.setScaleY(editorScale);
-          }
-        });
-
-    mBinding.bottomSheet.binding.headerContainer.setOnClickListener(
-        v -> {
-          if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
           }
         });
 
