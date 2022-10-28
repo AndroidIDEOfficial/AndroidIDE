@@ -26,19 +26,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.resources.R.color
-import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
-import com.itsaky.androidide.resources.R.string.msg_api_info_removed
-import com.itsaky.androidide.resources.R.string.msg_api_info_since
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
+import com.itsaky.androidide.resources.R.color
+import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
+import com.itsaky.androidide.resources.R.string.msg_api_info_removed
+import com.itsaky.androidide.resources.R.string.msg_api_info_since
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.TypefaceUtils
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -46,6 +45,7 @@ import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
+import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
   override fun attachValues(window: EditorAutoCompletion, items: List<CompletionItem>) {
@@ -67,7 +67,9 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     parent: ViewGroup?,
     isCurrentCursorPosition: Boolean,
   ): View {
-    val binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(context), parent, false)
+    val binding =
+      convertView?.let { LayoutCompletionItemBinding.bind(it) }
+        ?: LayoutCompletionItemBinding.inflate(LayoutInflater.from(context), parent, false)
     val item = getItem(position) as LspCompletionItem
     val label = item.getLabel()
     val desc = item.detail
