@@ -28,12 +28,13 @@ import com.android.aaptcompiler.ResourcePathData
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
-import com.itsaky.androidide.lsp.models.CompletionData
+import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.CompletionResult.Companion.EMPTY
+import com.itsaky.androidide.lsp.models.FieldCompletionData
 import com.itsaky.androidide.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.providers.completion.AttrValueCompletionProvider
@@ -72,7 +73,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
     }
     return super.doComplete(params, pathData, document, type, prefix)
   }
-  
+
   override fun resTableForFindAttr(): ResourceTable? {
     return manifestResourceTable().firstOrNull()
   }
@@ -96,10 +97,10 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       // Show API information
       item.kind = FIELD
       item.data =
-        CompletionData().apply {
-          this.className = SdkConstants.CLASS_MANIFEST_PERMISSION
-          this.memberName = value.name
-        }
+        FieldCompletionData(
+          memberName = value.name,
+          classInfo = ClassCompletionData(className = SdkConstants.CLASS_MANIFEST_PERMISSION)
+        )
       result.add(item)
     }
     return CompletionResult(result)

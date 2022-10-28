@@ -23,8 +23,8 @@ import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionProvider
 import com.itsaky.androidide.lsp.api.describeSnippet
+import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.Command
-import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
@@ -149,7 +149,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.editHandler = TagEditHandler()
       this.matchLevel = matchLevel
       this.kind = CLASS
-      this.data = CompletionData().apply { className = qualifiedName }
+      this.data = ClassCompletionData(className = qualifiedName)
     }
 
   /**

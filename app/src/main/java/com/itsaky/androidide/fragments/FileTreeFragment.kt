@@ -67,7 +67,6 @@ class FileTreeFragment :
   ): View {
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false)
     binding?.root?.doOnApplyWindowInsets { view, insets, _, _ ->
-      LOG.debug("onApplyWindowInsets")
       insets.getInsets(statusBars()).apply { view.updatePadding(top = top + SizeUtils.dp2px(8f)) }
     }
     return binding!!.root

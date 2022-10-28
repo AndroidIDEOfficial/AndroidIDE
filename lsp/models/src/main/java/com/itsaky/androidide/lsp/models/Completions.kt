@@ -79,7 +79,11 @@ open class CompletionResult(items: Collection<CompletionItem>) {
 
     @JvmStatic
     @JvmOverloads
-    fun mapAndFilter(src: CompletionResult, partial: String, map: Consumer<CompletionItem> = Consumer {  }): CompletionResult {
+    fun mapAndFilter(
+      src: CompletionResult,
+      partial: String,
+      map: Consumer<CompletionItem> = Consumer {}
+    ): CompletionResult {
       val newItems = src.items.toMutableList()
       newItems.forEach(map)
       newItems.removeIf { !it.label.startsWith(partial) }
@@ -120,7 +124,7 @@ open class CompletionItem(
   var kind: CompletionItemKind,
   var matchLevel: MatchLevel,
   var additionalTextEdits: List<TextEdit>?,
-  var data: CompletionData?
+  var data: ICompletionData?
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
 
@@ -266,54 +270,6 @@ constructor(
   val deleteSelected: Boolean = true,
   val snippet: CodeSnippet? = null
 )
-
-data class CompletionData(
-  var className: String,
-  var memberName: String,
-  var erasedParameterTypes: Array<String>,
-  var plusOverloads: Int
-) {
-
-  constructor() : this("", "", arrayOf(), -1)
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) {
-      return true
-    }
-
-    if (javaClass != other?.javaClass) {
-      return false
-    }
-
-    other as CompletionData
-
-    if (className != other.className) {
-      return false
-    }
-
-    if (memberName != other.memberName) {
-      return false
-    }
-
-    if (!erasedParameterTypes.contentEquals(other.erasedParameterTypes)) {
-      return false
-    }
-
-    if (plusOverloads != other.plusOverloads) {
-      return false
-    }
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    var result = className.hashCode()
-    result = 31 * result + memberName.hashCode()
-    result = 31 * result + erasedParameterTypes.contentHashCode()
-    result = 31 * result + plusOverloads
-    return result
-  }
-}
 
 data class Command(var title: String, var command: String) {
   companion object {

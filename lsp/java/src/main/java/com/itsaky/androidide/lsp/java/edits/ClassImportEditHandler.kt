@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java.edits
 
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.utils.EditHelper
+import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.util.RewriteHelper
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -38,7 +39,8 @@ class ClassImportEditHandler(val imports: Set<String>, file: Path) : IJavaEditHa
     editor: CodeEditor,
     completionItem: CompletionItem
   ) {
-    val className = completionItem.data!!.className
+    val data = completionItem.data as? ClassCompletionData ?: return
+    val className = data.className
     val edits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
     RewriteHelper.performEdits(edits, editor)
   }

@@ -17,8 +17,11 @@
 
 package com.itsaky.androidide.views.editor
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.ListView
 import com.blankj.utilcode.util.ReflectUtils
+import com.itsaky.androidide.lsp.util.DocumentationReferenceProvider
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionItem
@@ -26,7 +29,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import java.util.concurrent.atomic.*
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.min
 
 /**
@@ -46,8 +49,24 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
 
   override fun setLayout(layout: CompletionLayout) {
     super.setLayout(layout)
-    mListView = layout.completionList as ListView
-    mListView!!.adapter = mAdapter
+    (layout.completionList as? ListView)?.let {
+      mListView = it
+      it.adapter = mAdapter
+      it.setOnItemLongClickListener { _, view, position, _ ->
+        val data =
+          (mItems[position] as? com.itsaky.androidide.lsp.models.CompletionItem)?.data
+            ?: return@setOnItemLongClickListener false
+        val url =
+          DocumentationReferenceProvider.getUrl(data) ?: return@setOnItemLongClickListener false
+        Intent().apply {
+          action = Intent.ACTION_VIEW
+          setData(Uri.parse(url))
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          view.context.startActivity(this)
+        }
+        true
+      }
+    }
   }
 
   override fun setAdapter(adapter: EditorCompletionAdapter) {
@@ -58,7 +77,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     mListView!!.adapter = adapter
   }
 
-  override fun select(pos: Int) : Boolean {
+  override fun select(pos: Int): Boolean {
     if (pos > mAdapter!!.count) {
       return false
     }
@@ -70,7 +89,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     }
   }
 
-  override fun select() : Boolean {
+  override fun select(): Boolean {
     return try {
       super.select()
     } catch (e: Throwable) {
