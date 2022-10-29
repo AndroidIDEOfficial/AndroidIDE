@@ -33,8 +33,8 @@ fun toast(msg: String?, type: Type) {
   toaster.setDuration(Toaster.SHORT).setText(msg).setType(type).show()
 }
 
-fun toast(msg: Int, type: Type) {
-  toaster.setDuration(Toaster.SHORT).setText(msg).setType(type).show()
+fun toast(msgResId: Int, type: Type) {
+  toaster.setDuration(Toaster.SHORT).setText(msgResId).setType(type).show()
 }
 
 fun toastSuccess(msg: String?) {
@@ -49,24 +49,24 @@ fun toastInfo(msg: String?) {
   toast(msg, INFO)
 }
 
-fun toastSuccess(msg: Int) {
-  toast(msg, SUCCESS)
+fun toastSuccess(msgResId: Int) {
+  toast(msgResId, SUCCESS)
 }
 
-fun toastError(msg: Int) {
-  toast(msg, ERROR)
+fun toastError(msgResId: Int) {
+  toast(msgResId, ERROR)
 }
 
-fun toastInfo(msg: Int) {
-  toast(msg, INFO)
+fun toastInfo(msgResId: Int) {
+  toast(msgResId, INFO)
 }
 
 fun toastLong(msg: String?, type: Type) {
   toaster.setDuration(Toaster.LONG).setText(msg).setType(type).show()
 }
 
-fun toastLong(msg: Int, type: Type) {
-  toaster.setDuration(Toaster.LONG).setText(msg).setType(type).show()
+fun toastLong(msgResId: Int, type: Type) {
+  toaster.setDuration(Toaster.LONG).setText(msgResId).setType(type).show()
 }
 
 fun toastLongSuccess(msg: String?) {
@@ -81,14 +81,14 @@ fun toastLongInfo(msg: String?) {
   toastLong(msg, INFO)
 }
 
-fun toastLongSuccess(msg: Int) {
-  toastLong(msg, SUCCESS)
+fun toastLongSuccess(msgResId: Int) {
+  toastLong(msgResId, SUCCESS)
 }
 
-fun toastLongError(msg: Int) {
-  toastLong(msg, ERROR)
+fun toastLongError(msgResId: Int) {
+  toastLong(msgResId, ERROR)
 }
 
-fun toastLongInfo(msg: Int) {
-  toastLong(msg, INFO)
+fun toastLongInfo(msgResId: Int) {
+  toastLong(msgResId, INFO)
 }
