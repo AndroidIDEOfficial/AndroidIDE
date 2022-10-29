@@ -25,21 +25,20 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
-import android.widget.ViewFlipper
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
-import androidx.viewpager2.widget.ViewPager2
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
-import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
@@ -47,6 +46,7 @@ import com.itsaky.androidide.databinding.LayoutBottomActionBinding
 import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding
 import com.itsaky.androidide.fragments.ShareableOutputFragment
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.TaskExecutor.CallbackWithError
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
@@ -78,20 +78,16 @@ constructor(
   defStyleRes: Int = 0,
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-  private var binding: LayoutEditorBottomSheetBinding
   private var action: LayoutBottomActionBinding
   private var symbolInput: SymbolInputView
+  private val collapsedHeight: Float by lazy {
+    val localContext = getContext() ?: return@lazy 0f
+    localContext.resources.getDimension(R.dimen.editor_sheet_collapsed_height)
+  }
+
+  @JvmField var binding: LayoutEditorBottomSheetBinding
 
   val pagerAdapter: EditorBottomSheetTabAdapter
-
-  val tabs: TabLayout
-    get() = binding.tabs
-
-  val pager: ViewPager2
-    get() = binding.pager
-
-  val headerContainer: ViewFlipper
-    get() = binding.headerContainer
 
   private val log = ILogger.newInstance("EditorBottomSheet")
 
@@ -102,6 +98,7 @@ constructor(
   }
 
   private fun initialize(context: FragmentActivity) {
+
     val mediator =
       TabLayoutMediator(binding.tabs, binding.pager, true, true) { tab, position ->
         tab.text = pagerAdapter.getTitle(position)
@@ -138,6 +135,7 @@ constructor(
       }
 
       val filename = fragment.getFilename()
+
       @Suppress("DEPRECATION")
       val progress = ProgressDialog.show(context, null, context.getString(string.please_wait))
       executeAsync(fragment::getContent) {
@@ -154,6 +152,13 @@ constructor(
         return@setOnClickListener
       }
       (fragment as ShareableOutputFragment).clearOutput()
+    }
+
+    binding.headerContainer.setOnClickListener {
+      val sheet = BottomSheetBehavior.from(this)
+      if (sheet.state != BottomSheetBehavior.STATE_EXPANDED) {
+        sheet.state = BottomSheetBehavior.STATE_EXPANDED
+      }
     }
   }
 
@@ -176,6 +181,17 @@ constructor(
     addView(binding.root)
 
     initialize(context)
+  }
+
+  fun onStateChanged(newState: Int) {
+    //    binding.headerContainer.visibility =
+    //      if (newState == BottomSheetBehavior.STATE_EXPANDED) INVISIBLE else VISIBLE
+  }
+
+  fun onSlide(offset: Float) {
+    if (offset >= 0.5f) {
+      updateCollapsedHeight(((0.5f - offset) + 0.5f) * 2f)
+    } else updateCollapsedHeight(1f)
   }
 
   fun showChild(index: Int) {
@@ -240,6 +256,12 @@ constructor(
         it.statusText.gravity = gravity
         it.statusText.text = text
       }
+    }
+  }
+
+  private fun updateCollapsedHeight(offset: Float) {
+    binding.headerContainer.updateLayoutParams<android.view.ViewGroup.LayoutParams> {
+      height = (collapsedHeight * offset).toInt()
     }
   }
 

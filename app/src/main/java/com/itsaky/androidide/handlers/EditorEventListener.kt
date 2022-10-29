@@ -18,12 +18,12 @@
 package com.itsaky.androidide.handlers
 
 import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.isFirstBuild
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
-import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
-import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
+import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
+import com.itsaky.androidide.tooling.events.task.TaskStartEvent
 import com.itsaky.androidide.utils.ILogger
 import java.lang.ref.WeakReference
 
@@ -64,10 +64,8 @@ class EditorEventListener : GradleBuildService.EventListener {
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
-    if (event is FileDownloadFinishEvent) {
-      activity().setStatus("")
-    } else if (event is TaskProgressEvent) {
-      activity().setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
+    if (event is ProjectConfigurationStartEvent || event is TaskStartEvent) {
+      activity().setStatus(event.descriptor.displayName)
     }
   }
 

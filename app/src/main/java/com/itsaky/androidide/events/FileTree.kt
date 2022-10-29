@@ -23,6 +23,6 @@ import com.unnamed.b.atv.model.TreeNode
 
 internal data class FileContextMenuItemClickEvent(val option: SheetOption) : Event()
 
-internal data class ExpandTreeNodeRequestEvent(val node: TreeNode) : Event()
+data class ExpandTreeNodeRequestEvent(val node: TreeNode) : Event()
 
-internal class ListProjectFilesRequestEvent : Event()
+class ListProjectFilesRequestEvent : Event()

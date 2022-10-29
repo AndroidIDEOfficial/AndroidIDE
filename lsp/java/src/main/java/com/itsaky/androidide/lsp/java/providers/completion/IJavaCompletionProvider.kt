@@ -24,8 +24,8 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
 import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
 import com.itsaky.androidide.lsp.java.utils.EditHelper
+import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.Command
-import com.itsaky.androidide.lsp.models.CompletionData
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM_MEMBER
@@ -36,8 +36,11 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.NONE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.PROPERTY
 import com.itsaky.androidide.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.FieldCompletionData
+import com.itsaky.androidide.lsp.models.ICompletionData
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.Tree
@@ -80,6 +83,7 @@ abstract class IJavaCompletionProvider(
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
 
+  @Suppress("Since15")
   open fun complete(
     task: CompileTask,
     path: TreePath,
@@ -250,7 +254,7 @@ abstract class IJavaCompletionProvider(
     item.detail = packageName(className).toString()
     item.sortText = item.label.toString()
     item.matchLevel = matchLevel
-    item.data = CompletionData().apply { this.className = className }
+    item.data = ClassCompletionData(className)
 
     // If file is not provided, we are probably completing an import path
     item.additionalEditHandler = if (file == null) null else ClassImportEditHandler(imports, file)
@@ -312,34 +316,70 @@ abstract class IJavaCompletionProvider(
     }
   }
 
-  protected open fun data(task: CompileTask, element: Element, overloads: Int): CompletionData? {
+  protected open fun data(task: CompileTask, element: Element, overloads: Int): ICompletionData? {
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val data = CompletionData()
-    when {
-      element is TypeElement -> data.className = element.qualifiedName.toString()
-      element.kind == FIELD -> {
-        val field = element as VariableElement
-        val type = field.enclosingElement as TypeElement
-        data.className = type.qualifiedName.toString()
-        data.memberName = field.simpleName.toString()
-      }
-      element is ExecutableElement -> {
-        val types = task.task.types
-        val type = element.enclosingElement as TypeElement
-        data.className = type.qualifiedName.toString()
-        data.memberName = element.simpleName.toString()
-        data.erasedParameterTypes = Array(element.parameters.size) { "" }
-        for (i in 0 until data.erasedParameterTypes.size) {
-          val p = element.parameters[i].asType()
-          data.erasedParameterTypes[i] = types.erasure(p).toString()
-        }
-        data.plusOverloads = overloads - 1
-      }
-      else -> {
-        return null
-      }
+    return when {
+      element is TypeElement -> getClassCompletionData(element)
+      element.kind == FIELD -> getFieldCompletionData(element)
+      element is ExecutableElement -> getMethodCompletionData(task, element, overloads)
+      else -> return null
     }
-    return data
+  }
+
+  protected open fun getMethodCompletionData(
+    task: CompileTask,
+    element: ExecutableElement,
+    overloads: Int
+  ): MethodCompletionData {
+    val types = task.task.types
+    val type = element.enclosingElement as TypeElement
+    val parameterTypes = Array(element.parameters.size) { "" }
+    val erasedParameterTypes = Array(parameterTypes.size) { "" }
+    val plusOverloads = overloads - 1
+    
+    for (i in element.parameters.indices) {
+      val p = element.parameters[i].asType()
+      parameterTypes[i] = p.toString()
+      erasedParameterTypes[i] = types.erasure(p).toString()
+    }
+    
+    return MethodCompletionData(
+      element.simpleName.toString(),
+      getClassCompletionData(type),
+      parameterTypes.toList(),
+      erasedParameterTypes.toList(),
+      plusOverloads
+    )
+  }
+
+  protected open fun getFieldCompletionData(element: Element): FieldCompletionData {
+    val field = element as VariableElement
+    val type = field.enclosingElement as TypeElement
+    return FieldCompletionData(field.simpleName.toString(), getClassCompletionData(type))
+  }
+
+  protected open fun getClassCompletionData(element: TypeElement) =
+    ClassCompletionData(
+      element.qualifiedName.toString(),
+      element.enclosingElement.kind != PACKAGE,
+      element.findTopLevelElement().qualifiedName.toString()
+    )
+
+  protected open fun TypeElement.findTopLevelElement(): TypeElement {
+    if (enclosingElement.kind == PACKAGE) {
+      return this
+    }
+
+    var element: TypeElement? = this
+    while (true) {
+      if (element?.enclosingElement?.kind == PACKAGE) {
+        break
+      }
+
+      element = element?.enclosingElement as? TypeElement
+    }
+
+    return element!!
   }
 }

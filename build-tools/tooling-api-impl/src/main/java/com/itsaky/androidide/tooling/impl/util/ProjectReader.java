@@ -393,7 +393,6 @@ public class ProjectReader {
     for (Object msg : messages) {
       sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
       sb.append(msg instanceof Throwable ? LogUtils.getFullStackTrace(((Throwable) msg)) : msg);
-      sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
     }
 
     return sb.toString();

@@ -17,14 +17,25 @@
 
 package com.itsaky.androidide.fragments
 
+import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat.Type.navigationBars
+import androidx.core.view.WindowInsetsCompat.Type.statusBars
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
+import com.blankj.utilcode.util.ThreadUtils
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.R.string
@@ -42,6 +53,8 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
+import com.itsaky.androidide.utils.doOnApplyWindowInsets
+import com.itsaky.androidide.utils.updateSystemBarColors
 import com.itsaky.androidide.viewmodel.RunTasksViewModel
 import com.itsaky.toaster.toastInfo
 
@@ -68,7 +81,33 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     // The minimum amount of time (in milliseconds) the adapter should wait after the query is
     // changed before starting any further filter request.
     // A too less value here will result in UI lags
-    private const val SEARCH_DELAY = 500
+    private const val SEARCH_DELAY = 500L
+  }
+
+  override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+    return object : BottomSheetDialog(requireContext(), theme) {
+      override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        window?.apply {
+          WindowCompat.setDecorFitsSystemWindows(this, false)
+          updateSystemBarColors(navigationBarColor = Color.TRANSPARENT)
+        }
+        findViewById<View>(com.google.android.material.R.id.container)?.apply {
+          doOnApplyWindowInsets { view, insets, paddings, margins ->
+            insets.getInsets(statusBars() or navigationBars()).apply {
+              view.updateLayoutParams<MarginLayoutParams> {
+                updateMargins(top = margins.top + top)
+              }
+              run.categories.apply {
+                updatePadding(bottom = bottom)
+                clipToPadding = false
+                clipChildren = false
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   override fun onCreateView(
@@ -95,7 +134,6 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
       if (adapter !is RunTasksCategoryAdapter) {
         return@observeQuery
       }
-
       for (index in 0 until viewModel.categories.size) {
         val layout =
           run.categories.layoutManager
@@ -112,8 +150,12 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
 
     run.searchInput.editText?.addTextChangedListener(
       object : SingleTextWatcher() {
+        val searchRunner = Runnable {
+          viewModel.query = run.searchInput.editText?.text?.toString() ?: ""
+        }
         override fun afterTextChanged(s: Editable?) {
-          viewModel.query = s?.toString() ?: ""
+          ThreadUtils.getMainHandler().removeCallbacks(searchRunner)
+          ThreadUtils.runOnUiThreadDelayed(searchRunner, SEARCH_DELAY)
         }
       }
     )

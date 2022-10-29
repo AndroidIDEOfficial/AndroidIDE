@@ -109,11 +109,10 @@ dependencies {
     implementation common.editor
     implementation common.utilcode
     implementation common.glide
+    implementation common.jsoup
     implementation common.quickaction
     implementation google.gson
     implementation google.guava
-    
-    implementation common.jsoup
     
     // AndroidX
     implementation androidx.splashscreen
