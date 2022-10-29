@@ -102,7 +102,19 @@ public interface IEditor {
    * @param range The range to check.
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
-  boolean isValidRange(Range range);
+  default boolean isValidRange(Range range) {
+    return isValidRange(range, false);
+  }
+
+  /**
+   * Checks if the given range is valid for this editor's text.
+   *
+   * @param range The range to check.
+   * @param allowColumnEqual Whether to allow <code>column</code> to be equal to column count of *
+   *     <code>line</code>.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  boolean isValidRange(Range range, boolean allowColumnEqual);
 
   /**
    * Checks if the given position is valid for this editor's text.
@@ -110,7 +122,19 @@ public interface IEditor {
    * @param position The position to check.
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
-  boolean isValidPosition(Position position);
+  default boolean isValidPosition(Position position) {
+    return isValidPosition(position, false);
+  }
+
+  /**
+   * Checks if the given position is valid for this editor's text.
+   *
+   * @param position The position to check.
+   * @param allowColumnEqual Whether to allow <code>column</code> to be equal to column count of *
+   *     <code>line</code>.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  boolean isValidPosition(Position position, boolean allowColumnEqual);
 
   /**
    * Checks if the given line is valid for this editor's text.
@@ -126,8 +150,22 @@ public interface IEditor {
    * @param line The line of the column to check.
    * @param column The column to check.
    * @return <code>true</code> if valid, <code>false</code> otherwise.
+   * @see #isValidColumn(int, int, boolean)
    */
-  boolean isValidColumn(int line, int column);
+  default boolean isValidColumn(int line, int column) {
+    return isValidColumn(line, column, false);
+  }
+
+  /**
+   * Checks if the given column is valid for this editor's text.
+   *
+   * @param line The line of the column to check.
+   * @param column The column to check.
+   * @param allowColumnEqual Whether to allow <code>column</code> to be equal to column count of
+   *     <code>line</code>.
+   * @return <code>true</code> if valid, <code>false</code> otherwise.
+   */
+  boolean isValidColumn(int line, int column, boolean allowColumnEqual);
 
   /**
    * Set the language server that this editor will connect with. If the language client is not set,

@@ -192,11 +192,11 @@ constructor(
          override fun onGlobalLayout() {
            val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
            val offset = view.height + SizeUtils.dp2px(1f)
-           sheet.setFitToContents(false)
-           sheet.setHalfExpandedRatio(0.3f)
-           sheet.setGestureInsetBottomIgnored(false)
-           sheet.setPeekHeight(binding.headerContainer.height)
-           sheet.setExpandedOffset(offset)
+           sheet.isFitToContents = false
+           sheet.halfExpandedRatio = 0.3f
+           sheet.isGestureInsetBottomIgnored = false
+           sheet.peekHeight = binding.headerContainer.height
+           sheet.expandedOffset = offset
            view.viewTreeObserver.removeOnGlobalLayoutListener(this)
          }
       }
