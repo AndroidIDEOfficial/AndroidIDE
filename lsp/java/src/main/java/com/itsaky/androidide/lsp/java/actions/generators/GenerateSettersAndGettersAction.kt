@@ -19,20 +19,23 @@ package com.itsaky.androidide.lsp.java.actions.generators
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.github.javaparser.StaticJavaParser
+import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.expr.SimpleName
+import com.github.javaparser.ast.stmt.BlockStmt
+import com.github.javaparser.ast.type.Type
 import com.github.javaparser.ast.type.VoidType
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
 import com.itsaky.toaster.toast
@@ -41,7 +44,7 @@ import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.CompletableFuture
-import javax.lang.model.element.Modifier
+import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.VariableElement
 
 /**
@@ -118,7 +121,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
       val leaf = path.leaf
       val indent = EditHelper.indent(task.task, task.root(file), leaf) + 4
       sb.append(createGetter(element, indent))
-      if (!element.modifiers.contains(Modifier.FINAL)) {
+      if (!element.modifiers.contains(FINAL)) {
         sb.append(createSetter(element, indent))
       }
     }
@@ -131,13 +134,10 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
 
   private fun createGetter(variable: VariableElement, indent: Int): String {
     val name: String = variable.simpleName.toString()
-    val method = MethodDeclaration()
-    val body = method.createBody()
-    method.name = SimpleName(createName(name, "get"))
-    method.type = toType(variable.asType())
-    body.addStatement(createReturnStmt(name))
-    method.setBody(body)
-
+    val method =
+      createMethod(variable, "get", toType(variable.asType())) { _, body ->
+        body.addStatement(createReturnStmt(name))
+      }
     var text = "\n" + JavaParserUtils.prettyPrint(method) { false }
     text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
 
@@ -148,17 +148,33 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
 
   private fun createSetter(variable: VariableElement, indent: Int): String {
     val name: String = variable.simpleName.toString()
-    val method = MethodDeclaration()
-    val body = method.createBody()
-    method.name = SimpleName(createName(name, "set"))
-    method.type = VoidType()
-    method.addParameter(toType(variable.asType()), name)
-    body.addStatement(createAssignmentStmt(name))
+    val method =
+      createMethod(variable, "set", VoidType()) { method, body ->
+        method.addParameter(toType(variable.asType()), name)
+        body.addStatement(createAssignmentStmt(name))
+      }
 
     var text = "\n" + method.toString()
     text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
 
     return text
+  }
+
+  private fun createMethod(
+    variable: VariableElement,
+    prefix: String,
+    returnType: Type,
+    vararg modifiers: Modifier.Keyword = arrayOf(Modifier.Keyword.PUBLIC),
+    block: (MethodDeclaration, BlockStmt) -> Unit
+  ): MethodDeclaration {
+    val name = variable.simpleName.toString()
+    val method = MethodDeclaration()
+    val body = method.createBody()
+    method.name = SimpleName(createName(name, prefix))
+    method.type = returnType
+    method.addModifier(*modifiers)
+    block(method, body)
+    return method
   }
 
   private fun createAssignmentStmt(name: String) =
