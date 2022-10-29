@@ -172,7 +172,7 @@ public class TerminalActivity extends IDEActivity
 
   @Override
   public void onSingleTapUp(MotionEvent e) {
-    KeyboardUtils.showSoftInput(terminal);
+    showSoftInput();
   }
 
   @Override
@@ -499,6 +499,7 @@ public class TerminalActivity extends IDEActivity
   @Override
   protected void onResume() {
     super.onResume();
+    showSoftInput();
     setTerminalCursorBlinkingState(true);
   }
 
@@ -519,6 +520,13 @@ public class TerminalActivity extends IDEActivity
   protected void onDestroy() {
     super.onDestroy();
     binding = null;
+  }
+
+  private void showSoftInput() {
+    if (terminal != null) {
+      terminal.requestFocus();
+      KeyboardUtils.showSoftInput(terminal);
+    }
   }
 
   private static final class KeyListener implements VirtualKeysView.IVirtualKeysView {
