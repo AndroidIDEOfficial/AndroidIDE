@@ -46,30 +46,9 @@ public class SchemeAndroidIDE extends EditorColorScheme {
   public static final int LOG_PRIORITY_BG_VERBOSE = ++current;
   public static final int LOG_PRIORITY_BG_ERROR = ++current;
   public static final int LOG_PRIORITY_BG_WARNING = ++current;
-  public static final int DIAGNOSTIC_ERROR = ++current;
-  public static final int DIAGNOSTIC_WARNING = ++current;
-  public static final int DIAGNOSTIC_HINT = ++current;
-  public static final int DIAGNOSTIC_INFO = ++current;
-  public static final int STDERR = ++current;
-  public static final int STDOUT = ++current;
   public static final int XML_TAG = ++current;
   public static final int FIELD = ++current;
-  public static final int STATIC_FIELD = ++current;
-  public static final int PACKAGE_NAME = ++current;
-  public static final int ENUM_TYPE = ++current;
-  public static final int INTERFACE = ++current;
-  public static final int ENUM = ++current;
-  public static final int PARAMETER = ++current;
-  public static final int CONSTRUCTOR = ++current;
-  public static final int STATIC_INIT = ++current;
-  public static final int INSTANCE_INIT = ++current;
-  public static final int TYPE_PARAM = ++current;
-  public static final int RESOURCE_VARIABLE = ++current;
-  public static final int EXCEPTION_PARAM = ++current;
-  public static final int METHOD_DECLARATION = ++current;
-  public static final int METHOD_INVOCATION = ++current;
   public static final int TYPE_NAME = ++current;
-  public static final int LOCAL_VARIABLE = ++current;
   public static final int TODO_COMMENT = ++current;
   public static final int FIXME_COMMENT = ++current;
 
@@ -150,33 +129,15 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(COMPLETION_WND_BACKGROUND, 0xff757575);
     setColor(COMPLETION_WND_CORNER, 0xff9e9e9e);
     setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
+    
     setColor(KEYWORD, 0xffff6060);
     setColor(OPERATOR, 0xff4fc3f7);
     setColor(LITERAL, 0xff8bc34a);
     setColor(TYPE_NAME, 0xff4fc3f7);
-    setColor(LOCAL_VARIABLE, 0xfff5f5f5);
-    setColor(RESOURCE_VARIABLE, 0xfff5f5f5);
-    setColor(PARAMETER, 0xfff5f5f5);
-    setColor(EXCEPTION_PARAM, 0xfff5f5f5);
-    setColor(METHOD_DECLARATION, 0xfff5f5f5);
-    setColor(METHOD_INVOCATION, 0xfff5f5f5);
-    setColor(CONSTRUCTOR, 0xfff5f5f5);
     setColor(ANNOTATION, 0xff4fc3f7);
-    setColor(PACKAGE_NAME, 0xfff0be4b);
     setColor(FIELD, 0xfff0be4b);
-    setColor(STATIC_INIT, 0xfff0be4b);
-    setColor(INSTANCE_INIT, 0xfff0be4b);
-    setColor(TYPE_PARAM, 0xfff0be4b);
-    setColor(STATIC_FIELD, 0xffffb300);
-    setColor(ENUM_TYPE, 0xff4fc3f7);
-    setColor(INTERFACE, 0xff4fc3f7);
-    setColor(ENUM, 0xffffb300);
+    
     setColor(XML_TAG, 0xffff6060);
-
-    setColor(DIAGNOSTIC_ERROR, 0xfff44336);
-    setColor(DIAGNOSTIC_WARNING, 0xffFFEB3B);
-    setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
-    setColor(DIAGNOSTIC_HINT, 0xffffffff);
 
     setColor(LOG_TEXT_ERROR, 0xfff44336);
     setColor(LOG_TEXT_WARNING, 0xffFFEB3B);
@@ -193,9 +154,6 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(LOG_PRIORITY_BG_INFO, 0xff1f65c0);
     setColor(LOG_PRIORITY_BG_DEBUG, 0xff9e9d24);
     setColor(LOG_PRIORITY_BG_VERBOSE, 0xffffffff);
-
-    setColor(STDERR, 0xfff44336);
-    setColor(STDOUT, 0xff4CAF50);
 
     setColor(TODO_COMMENT, 0xffffc400);
     setColor(FIXME_COMMENT, 0xffffab00);
