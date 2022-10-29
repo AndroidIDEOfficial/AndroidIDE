@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
+import com.itsaky.androidide.actions.EditorActionItem
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireFile
@@ -37,7 +38,7 @@ import java.io.File
  * Base class for java code actions
  * @author Akash Yadav
  */
-abstract class BaseJavaCodeAction : ActionItem {
+abstract class BaseJavaCodeAction : EditorActionItem {
   override var visible: Boolean = true
   override var enabled: Boolean = true
   override var icon: Drawable? = null

@@ -23,7 +23,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.views.editor.IDEEditor
 
 /** @author Akash Yadav */
-abstract class BaseEditorAction : ActionItem {
+abstract class BaseEditorAction : EditorActionItem {
 
   override var label: String = ""
   override var visible: Boolean = true

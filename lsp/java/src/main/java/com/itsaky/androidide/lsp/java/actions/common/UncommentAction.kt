@@ -48,4 +48,6 @@ class UncommentAction : BaseJavaCodeAction() {
 
     return true
   }
+  
+  override fun dismissOnAction() = false
 }

@@ -21,7 +21,7 @@ import com.itsaky.androidide.views.editor.CodeEditorView
 import com.itsaky.androidide.views.editor.IDEEditor
 
 /** @author Akash Yadav */
-abstract class EditorRelatedAction : EditorActivityAction() {
+abstract class EditorRelatedAction : EditorActivityAction(), EditorActionItem {
 
   override var requiresUIThread: Boolean = true
 
