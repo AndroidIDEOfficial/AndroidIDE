@@ -24,6 +24,8 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
@@ -33,6 +35,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.KeyboardUtils
+import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -181,6 +184,23 @@ constructor(
     addView(binding.root)
 
     initialize(context)
+  }
+
+  fun setOffsetAnchor(view: View) {
+    val listener =
+       object : ViewTreeObserver.OnGlobalLayoutListener {
+         override fun onGlobalLayout() {
+           val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
+           val offset = view.height + SizeUtils.dp2px(1f)
+           sheet.setFitToContents(false)
+           sheet.setHalfExpandedRatio(0.3f)
+           sheet.setGestureInsetBottomIgnored(false)
+           sheet.setPeekHeight(binding.headerContainer.height)
+           sheet.setExpandedOffset(offset)
+           view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+         }
+      }
+    view.viewTreeObserver.addOnGlobalLayoutListener(listener)
   }
 
   fun onStateChanged(newState: Int) {
