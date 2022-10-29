@@ -248,12 +248,14 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    */
   @Override
   public void setSelection(@NonNull Range range) {
-    if (isValidRange(range)) {
+    if (isValidRange(range, true)) {
       setSelectionRegion(
           range.getStart().getLine(),
           range.getStart().getColumn(),
           range.getEnd().getLine(),
           range.getEnd().getColumn());
+    } else {
+      LOG.warn("Selection range is invalid", range);
     }
   }
 
@@ -340,7 +342,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
   @Override
-  public boolean isValidRange(final Range range) {
+  public boolean isValidRange(final Range range, boolean allowColumnEqual) {
     if (range == null) {
       return false;
     }
@@ -348,8 +350,8 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     final var start = range.getStart();
     final var end = range.getEnd();
 
-    return isValidPosition(start)
-        && isValidPosition(end)
+    return isValidPosition(start, allowColumnEqual)
+        && isValidPosition(end, allowColumnEqual)
         && start.compareTo(end) < 0; // make sure start position is before end position
   }
 
@@ -360,13 +362,13 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
   @Override
-  public boolean isValidPosition(final Position position) {
+  public boolean isValidPosition(final Position position, boolean allowColumnEqual) {
     if (position == null) {
       return false;
     }
 
     return isValidLine(position.getLine())
-        && isValidColumn(position.getLine(), position.getColumn());
+        && isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
   }
 
   /**
@@ -379,7 +381,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   public boolean isValidLine(int line) {
     return line >= 0 && line < getText().getLineCount();
   }
-
+  
   /**
    * Checks if the given column is valid for this editor's text.
    *
@@ -388,8 +390,9 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
   @Override
-  public boolean isValidColumn(int line, int column) {
-    return column >= 0 && column < getText().getColumnCount(line);
+  public boolean isValidColumn(int line, int column, boolean allowEqual) {
+    final var columnCount = getText().getColumnCount(line);
+    return column >= 0 && (column < columnCount || (allowEqual && column == columnCount));
   }
 
   @Override

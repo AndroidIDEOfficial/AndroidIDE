@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.androidide.views.editor.IDEEditor;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
@@ -58,8 +58,8 @@ public abstract class NonEditableEditorFragment extends Fragment
     editor.setEditorLanguage(new EmptyLanguage());
     editor.setWordwrap(false);
     editor.setUndoEnabled(false);
-    editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
-    editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+    editor.setTypefaceLineNumber(TypefaceUtilsKt.jetbrainsMono());
+    editor.setTypefaceText(TypefaceUtilsKt.jetbrainsMono());
     editor.setTextSize(12);
     editor.setColorScheme(new SchemeAndroidIDE());
   }

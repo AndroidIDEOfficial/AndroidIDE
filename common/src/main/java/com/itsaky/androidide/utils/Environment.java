@@ -50,6 +50,7 @@ public final class Environment {
   public static File PREFIX;
   public static File HOME;
   public static File ANDROIDIDE_HOME;
+  public static File ANDROIDIDE_UI;
   public static File JAVA_HOME;
   public static File ANDROID_HOME;
   public static File TMP_DIR;
@@ -88,6 +89,7 @@ public final class Environment {
     TOOLING_API_JAR =
         new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")), "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
+    ANDROIDIDE_UI = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "ui"));
 
     IDE_PROPS_FILE = new File(PREFIX, "etc/ide-environment.properties");
     LIB_HOOK = new File(LIB_DIR, "libhook.so");

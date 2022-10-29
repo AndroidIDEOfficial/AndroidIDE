@@ -43,6 +43,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
+import com.itsaky.androidide.actions.EditorActionItem
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.databinding.LayoutPopupMenuItemBinding
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
@@ -313,7 +314,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   }
 
   override fun onExec(action: ActionItem, result: Any) {
-    if (action !is SelectAllAction) {
+    if (action !is EditorActionItem || action.dismissOnAction()) {
       dismiss()
     }
   }

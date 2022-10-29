@@ -92,7 +92,6 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver;
 import com.itsaky.androidide.handlers.EditorEventListener;
-import com.itsaky.androidide.handlers.EditorInsetsHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lookup.Lookup;
@@ -874,9 +873,7 @@ public class EditorActivity extends IDEActivity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    fitsSystemWindows = true;
     super.onCreate(savedInstanceState);
-    EditorInsetsHandler.setupInsets(this);
     ILanguageServerRegistry.getDefault().register(new JavaLanguageServer());
     ILanguageServerRegistry.getDefault().register(new XMLLanguageServer());
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
@@ -1227,6 +1224,7 @@ public class EditorActivity extends IDEActivity
           }
         };
     mBinding.viewContainer.getViewTreeObserver().addOnGlobalLayoutListener(observer);
+    mBinding.bottomSheet.setOffsetAnchor(mBinding.editorToolbar);
   }
 
   private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {

@@ -45,7 +45,7 @@ import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.preferences.internal.GeneralPreferencesKt;
 import com.itsaky.androidide.utils.BootstrapInstaller;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
 import com.itsaky.androidide.views.virtualkeys.VirtualKeyButton;
 import com.itsaky.androidide.views.virtualkeys.VirtualKeysConstants;
@@ -172,7 +172,7 @@ public class TerminalActivity extends IDEActivity
 
   @Override
   public void onSingleTapUp(MotionEvent e) {
-    KeyboardUtils.showSoftInput(terminal);
+    showSoftInput();
   }
 
   @Override
@@ -375,7 +375,7 @@ public class TerminalActivity extends IDEActivity
     terminal.attachSession(createSession(getWorkingDirectory()));
     terminal.setKeepScreenOn(true);
     terminal.setTextSize(getFontSize());
-    terminal.setTypeface(TypefaceUtils.jetbrainsMono());
+    terminal.setTypeface(TypefaceUtilsKt.customOrJBMono(true));
 
     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, 0);
     params.weight = 1f;
@@ -499,6 +499,7 @@ public class TerminalActivity extends IDEActivity
   @Override
   protected void onResume() {
     super.onResume();
+    showSoftInput();
     setTerminalCursorBlinkingState(true);
   }
 
@@ -519,6 +520,13 @@ public class TerminalActivity extends IDEActivity
   protected void onDestroy() {
     super.onDestroy();
     binding = null;
+  }
+
+  private void showSoftInput() {
+    if (terminal != null) {
+      terminal.requestFocus();
+      KeyboardUtils.showSoftInput(terminal);
+    }
   }
 
   private static final class KeyListener implements VirtualKeysView.IVirtualKeysView {

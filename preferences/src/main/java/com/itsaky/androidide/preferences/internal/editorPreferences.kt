@@ -35,6 +35,7 @@ const val WORD_WRAP = "idepref_editor_word_wrap"
 const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
+const val USE_CUSTOM_FONT = "idepref_editor_useCustomFont"
 
 var completionsMatchLower: Boolean
   get() = prefManager.getBoolean(COMPLETIONS_MATCH_LOWER, false)
@@ -124,4 +125,10 @@ var useSoftTab: Boolean
   get() = prefManager.getBoolean(USE_SOFT_TAB, true)
   set(value) {
     prefManager.putBoolean(USE_SOFT_TAB, value)
+  }
+
+var useCustomFont: Boolean
+  get() = prefManager.getBoolean(USE_CUSTOM_FONT, false)
+  set(value) {
+    prefManager.putBoolean(USE_CUSTOM_FONT, value)
   }

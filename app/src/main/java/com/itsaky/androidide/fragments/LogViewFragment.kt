@@ -28,7 +28,7 @@ import com.itsaky.androidide.language.log.LogLanguage
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.ILogger.Priority
-import com.itsaky.androidide.utils.TypefaceUtils
+import com.itsaky.androidide.utils.jetbrainsMono
 
 /**
  * Fragment to show logs.
@@ -82,9 +82,9 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.dividerWidth = 0f
     editor.isWordwrap = false
     editor.isUndoEnabled = false
-    editor.typefaceLineNumber = TypefaceUtils.jetbrainsMono()
+    editor.typefaceLineNumber = jetbrainsMono()
     editor.setTextSize(12f)
-    editor.typefaceText = TypefaceUtils.jetbrainsMono()
+    editor.typefaceText = jetbrainsMono()
     editor.colorScheme = SchemeAndroidIDE()
     editor.setEditorLanguage(LogLanguage())
   }

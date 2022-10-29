@@ -33,7 +33,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority.ERROR
 import com.itsaky.androidide.utils.ILogger.Priority.INFO
 import com.itsaky.androidide.utils.ILogger.Priority.WARNING
-import com.itsaky.androidide.utils.TypefaceUtils
+import com.itsaky.androidide.utils.jetbrainsMono
 
 /**
  * Adapter for the log view.
@@ -87,7 +87,7 @@ class LogLinesAdapter : RecyclerView.Adapter<VH>() {
     text.setPaddingRelative(dp1, dp1 / 2, dp1, dp1 / 2)
     text.setTextIsSelectable(true)
     text.maxLines = 1
-    text.typeface = TypefaceUtils.jetbrainsMono()
+    text.typeface = jetbrainsMono()
     return VH(text)
   }
 

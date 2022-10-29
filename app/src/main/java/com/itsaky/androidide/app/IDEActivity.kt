@@ -35,13 +35,9 @@ abstract class IDEActivity : AppCompatActivity() {
 
   val app: IDEApplication
     get() = application as IDEApplication
-
-  @JvmField
-  var fitsSystemWindows = false
   
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    WindowCompat.setDecorFitsSystemWindows(window, !fitsSystemWindows)
     preSetContentLayout()
     setContentView(bindLayout())
     if (!isStoragePermissionGranted) {

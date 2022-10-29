@@ -60,8 +60,9 @@ public class ToolsManager {
               extractGradlePlugin();
               extractToolingApi();
               extractAndroidJar();
-              extractIdeEnv();
               writeInitScript();
+              
+              deleteIdeenv();
             })
         .whenComplete(
             (__, error) -> {
@@ -95,18 +96,10 @@ public class ToolsManager {
     }
   }
 
-  private static void extractIdeEnv() {
+  private static void deleteIdeenv() {
     final var file = new File(Environment.BIN_DIR, "ideenv");
-    if (file.exists()) {
-      file.delete();
-    }
-
-    var contents = ResourceUtils.readAssets2String(getCommonAsset("ideenv"));
-    contents = contents.replace("@PREFIX@", Environment.PREFIX.getAbsolutePath());
-    FileIOUtils.writeFileFromString(file, contents);
-
-    if (!file.canExecute()) {
-      file.setExecutable(true);
+    if (file.exists() && !file.delete()) {
+      LOG.warn("Unable to delete", file);
     }
   }
 

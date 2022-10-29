@@ -35,6 +35,8 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
+import com.itsaky.androidide.preferences.internal.useCustomFont
+import com.itsaky.androidide.utils.customOrJBMono
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.resources.R.color
@@ -43,7 +45,6 @@ import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.TypefaceUtils
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.lang.completion.CompletionItem
@@ -89,7 +90,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionLabel.text = label
     binding.completionType.text = type
     binding.completionDetail.text = desc
-    binding.completionIconText.setTypeface(TypefaceUtils.jetbrainsMono(), Typeface.BOLD)
+    binding.completionIconText.setTypeface(customOrJBMono(useCustomFont), Typeface.BOLD)
     if (desc.isEmpty()) {
       binding.completionDetail.visibility = View.GONE
     }

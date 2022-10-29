@@ -39,4 +39,6 @@ class SelectAllAction() : BaseEditorAction() {
     editor.selectAll()
     return true
   }
+
+  override fun dismissOnAction() = false
 }
