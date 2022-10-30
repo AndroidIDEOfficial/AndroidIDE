@@ -17,11 +17,14 @@
 
 package com.itsaky.androidide.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.Session
 import android.content.pm.PackageInstaller.SessionCallback
+import android.text.TextUtils
+import com.blankj.utilcode.util.IntentUtils
 import com.itsaky.androidide.tasks.executeAsync
 import java.io.File
 import java.io.IOException
@@ -34,9 +37,7 @@ import java.io.IOException
 object ApkInstaller {
 
   private val log = ILogger.newInstance("ApkInstaller")
-
-  const val PROGRESS_UPDATE_DELAY = 100
-  // ms
+  private const val DEBUG_FALLBACK_INSTALLER = false
 
   /**
    * Starts a session-based package installation workflow.
@@ -50,6 +51,17 @@ object ApkInstaller {
   fun installApk(context: Context, sender: IntentSender, apk: File, callback: SessionCallback) {
     if (!apk.exists() || !apk.isFile || apk.extension != "apk") {
       log.error("File is not an APK:", apk)
+      return
+    }
+    
+    log.info("Installing APK:", apk)
+
+    if (isMiui() || DEBUG_FALLBACK_INSTALLER) {
+      log.warn(
+        "Cannot use session-based installer on this device. Falling back to intent-based installer."
+      )
+      IntentUtils.getInstallAppIntent(apk)?.let { context.startActivity(it) }
+        ?: log.warn("Cannot start package installer intent. Unknown error occurred.")
       return
     }
 
@@ -96,6 +108,22 @@ object ApkInstaller {
         }
       }
       session.fsync(outStream)
+    }
+  }
+
+  fun isMiui(): Boolean {
+    return !TextUtils.isEmpty(getSystemProperty("ro.miui.ui.version.name"))
+  }
+
+  @SuppressLint("PrivateApi")
+  fun getSystemProperty(key: String?): String? {
+    return try {
+      Class.forName("android.os.SystemProperties")
+        .getDeclaredMethod("get", String::class.java)
+        .invoke(null, key) as String
+    } catch (e: Exception) {
+      log.warn("Unable to use SystemProperties.get", e)
+      null
     }
   }
 }
