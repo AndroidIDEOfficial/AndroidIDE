@@ -59,17 +59,11 @@
 
   <com.google.android.material.tabs.TabLayout
     android:id="@+id/tabs"
+    style="@style/AppTheme.TabLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_below="@id/header_container"
-    android:backgroundTint="@color/primaryDarkColor"
-    app:tabIndicatorAnimationMode="elastic"
-    app:tabIndicatorColor="@color/secondaryColor"
-    app:tabIndicatorGravity="bottom"
-    app:tabIndicatorHeight="4dp"
-    app:tabMode="scrollable"
-    app:tabSelectedTextColor="@color/primaryTextColor"
-    app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
+    android:backgroundTint="@color/primaryDarkColor" />
 
   <androidx.legacy.widget.Space
     android:id="@+id/space_bottom"
