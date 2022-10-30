@@ -110,13 +110,13 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(WHOLE_BACKGROUND, 0xff212121);
     setColor(LINE_NUMBER_BACKGROUND, 0xff212121);
     setColor(MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
-    setColor(SELECTED_TEXT_BACKGROUND, 0xff757575);
+    setColor(SELECTED_TEXT_BACKGROUND, 0xffef9a9a);
     setColor(LINE_DIVIDER, Color.TRANSPARENT);
     setColor(LINE_NUMBER, 0xffaaaaaa);
     setColor(LINE_NUMBER_PANEL, 0xff000000);
     setColor(LINE_NUMBER_PANEL_TEXT, 0xffffffff);
     setColor(TEXT_NORMAL, 0xfff5f5f5);
-    setColor(TEXT_SELECTED, 0xff424242);
+    setColor(TEXT_SELECTED, 0xff212121);
     setColor(SELECTION_INSERT, 0xffff5252);
     setColor(SELECTION_HANDLE, 0xffff5252);
     setColor(CURRENT_LINE, 0xff313131);
