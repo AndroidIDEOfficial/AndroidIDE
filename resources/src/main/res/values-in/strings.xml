@@ -11,7 +11,7 @@
     <string name="about_footer">AndroidIDE %1$s untuk %2$s</string>
     <string name="about_subtitle">Simpel, sebuah IDE untuk Android</string>
     <string name="msg_get_package_failed">Gagal mengekstrak nama paket!</string>
-    <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 17.0–22.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
     <string name="msg_need_help">Jika anda mengalami masalah ketika menggunakan AndroidIDE atau dengan pembuatan Aplikasi Android, anda dapat bergabung ke Grup Telegram dan bertanya disana.\n\nAnda juga dapat mengirim saran pada Email kami.</string>
     <string name="discuss_amp_help">Diskusi &amp; bantuan</string>
     <string name="title_github">GitHub</string>
@@ -299,4 +299,19 @@
     <string name="msg_cannot_create_view">Tidak dapat membuat View untuk tag: %s</string>
     <string name="err_no_attr_adapter">Tidak ditemukan implementasi adapter atribut untuk %s</string>
     <string name="msg_view_not_supported">View %s saat ini tidak didukung.</string>
+  <string name="idepref_java_useGoogleStyle_title">Gunakan format kode style Google Java</string>
+  <string name="idepref_java_useGoogleStyle_summary">Gunakan konfigurasi format kode Style Google Java untuk pemformatan Java Source Code</string>
+    <string name="previous">Sebelumnya</string>
+    <string name="msg_replacing">Mengganti…</string>
+    <string name="title_gradle_service_notification_ticker">Gradle build service dimulai</string>
+  <string name="msg_empty_package">Package name kosong</string>
+    <string name="msg_package_is_not_valid">Package name tidak valid</string>
+    <string name="msg_package_is_to_long">Package name terlalu panjang</string>
+    <string name="msg_package_not_valid_char_1">Tidak dapat menggunakan \'_\' sebagai awal package segment</string>
+    <string name="official_tg_channel">Channel Telegram Resmi</string>
+  <string name="idepref_useIcu_title">Gunakan ICU lib</string>
+    <string name="idepref_customFont_summary">Jika diaktifkan, file yang ada di \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" akan digunakan sebagai font Editor.</string>
+    <string name="msg_package_not_valid_char_2">Karakter %1$s tidak diperbolehkan di package name Android</string>
+    <string name="msg_package_mus_have_dot">Package setidaknya harus mempunyai satu \'.\' separator</string>
+    <string name="msg_package_not_use_digit_first">Package segment tidak dapat diawali dengan angka</string>
 </resources>
