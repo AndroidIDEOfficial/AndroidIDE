@@ -30,6 +30,8 @@ import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.transition.Slide
@@ -198,6 +200,8 @@ constructor(
            sheet.peekHeight = binding.headerContainer.height
            sheet.expandedOffset = offset
            view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+           
+           binding.root.updatePadding(bottom = offset + SizeUtils.dp2px(16f))
          }
       }
     view.viewTreeObserver.addOnGlobalLayoutListener(listener)

@@ -35,6 +35,8 @@
       <module name="AndroidIDE.build-tools.project" target="11" />
       <module name="AndroidIDE.build-tools.tooling-api-plugin" target="11" />
       <module name="AndroidIDE.build-tools.tools-common" target="11" />
+      <module name="AndroidIDE.colorschemes" target="11" />
+      <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
