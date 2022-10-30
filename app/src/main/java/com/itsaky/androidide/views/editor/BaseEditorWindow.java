@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.views.editor;
 
+import static android.view.View.MeasureSpec.AT_MOST;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -93,7 +96,12 @@ public abstract class BaseEditorWindow extends EditorPopupWindow {
   }
 
   public void displayWindow() {
-    this.getRootView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+    final var dp16 = SizeUtils.dp2px(16f);
+    final int width = getEditor().getWidth() - dp16;
+    final int height = getEditor().getHeight() - dp16;
+    final var widthMeasureSpec = makeMeasureSpec(width, AT_MOST);
+    final var heightMeasureSpec = makeMeasureSpec(height, AT_MOST);
+    this.getRootView().measure(widthMeasureSpec, heightMeasureSpec);
     this.setSize(this.getRootView().getMeasuredWidth(), this.getRootView().getMeasuredHeight());
 
     final var line = getEditor().getCursor().getLeftLine();

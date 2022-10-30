@@ -14,50 +14,41 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.androidide.views.editor
 
-package com.itsaky.androidide.views.editor;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.lsp.models.DiagnosticItem;
+import com.itsaky.androidide.lsp.models.DiagnosticItem
 
 /**
  * Popup window used to show diagnostic messages.
  *
  * @author Akash Yadav
  */
-public class DiagnosticWindow extends BaseEditorWindow {
-
-  /**
-   * Create a popup window for editor
-   *
-   * @param editor The editor
-   * @see #FEATURE_SCROLL_AS_CONTENT
-   * @see #FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
-   * @see #FEATURE_HIDE_WHEN_FAST_SCROLL
-   */
-  public DiagnosticWindow(@NonNull IDEEditor editor) {
-    super(editor);
-  }
-
+class DiagnosticWindow
+/**
+ * Create a popup window for editor
+ *
+ * @param editor The editor
+ * @see .FEATURE_SCROLL_AS_CONTENT
+ *
+ * @see .FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
+ *
+ * @see .FEATURE_HIDE_WHEN_FAST_SCROLL
+ */
+(editor: IDEEditor) : BaseEditorWindow(editor) {
   /**
    * Show the given diagnostic item.
    *
    * @param diagnostic The diagnostic item to show.
    */
-  public void showDiagnostic(@Nullable DiagnosticItem diagnostic) {
+  fun showDiagnostic(diagnostic: DiagnosticItem?) {
     if (diagnostic == null) {
-      if (isShowing()) {
-        dismiss();
+      if (isShowing) {
+        dismiss()
       }
-
-      return;
+      return
     }
-
-    final var message = diagnostic.getMessage();
-    this.text.setText(message);
-
-    displayWindow();
+    val message = diagnostic.message
+    text.text = message
+    displayWindow()
   }
 }
