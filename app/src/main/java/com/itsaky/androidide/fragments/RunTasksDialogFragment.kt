@@ -93,7 +93,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
           updateSystemBarColors(navigationBarColor = Color.TRANSPARENT)
         }
         findViewById<View>(com.google.android.material.R.id.container)?.apply {
-          doOnApplyWindowInsets { view, insets, paddings, margins ->
+          doOnApplyWindowInsets { view, insets, _, margins ->
             insets.getInsets(statusBars() or navigationBars()).apply {
               view.updateLayoutParams<MarginLayoutParams> {
                 updateMargins(top = margins.top + top)
@@ -202,7 +202,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
       viewModel.displayedChild =
         if (viewModel.tasks.isNotEmpty()) CHILD_TASKS else CHILD_PROJECT_NOT_INITIALIZED
 
-      val onCheckChanged: (Checkable<GradleTask>) -> Unit = { item ->
+      val onCheckChanged = { item: Checkable<GradleTask> ->
         if (item.isChecked) {
           viewModel.select(item.data.path)
         } else {
