@@ -24,5 +24,6 @@ android {
 
 dependencies {
     implementation androidx.annotation
+    implementation androidx.appcompat
     implementation project(path: ':resources')
 }
