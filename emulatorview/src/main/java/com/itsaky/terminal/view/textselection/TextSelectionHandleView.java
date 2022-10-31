@@ -12,6 +12,8 @@ import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
+import androidx.core.content.ContextCompat;
+
 import com.itsaky.androidide.resources.R;
 import com.itsaky.terminal.view.TerminalView;
 
@@ -50,8 +52,8 @@ public class TextSelectionHandleView extends View {
     mCursorController = cursorController;
     mInitialOrientation = initialOrientation;
 
-    mHandleLeftDrawable = getContext().getDrawable(R.drawable.text_select_handle_left_material);
-    mHandleRightDrawable = getContext().getDrawable(R.drawable.text_select_handle_right_material);
+    mHandleLeftDrawable = ContextCompat.getDrawable(getContext(), R.drawable.text_select_handle_left_material);
+    mHandleRightDrawable = ContextCompat.getDrawable(getContext(), R.drawable.text_select_handle_right_material);
 
     setOrientation(mInitialOrientation);
   }

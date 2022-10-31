@@ -315,8 +315,8 @@
   <string name="msg_gradle_installation_input_help">Lass dies leer um den Gradle wrapper zu benutzen.</string>
   <string name="msg_require_install_jdk_and_android_sdk">Sie müssen das JDK und das Android SDK installieren, damit die IDE funktioniert. Um dies zu installieren klick \'Ok\' und folge der Anleitung <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">hier</a>]]></string>
 
-  <string name="build_status_idle" translatable="false">Kein Build wird ausgeführt</string>
-  <string name="build_status_in_progress" translatable="false">Build läuft…</string>
+  <string name="build_status_idle">Kein Build wird ausgeführt</string>
+  <string name="build_status_in_progress">Build läuft…</string>
   <string name="build_status_sucess">Build erfolgreich</string>
   <string name="msg_output_text_extraction_failed">Fehler beim empfangen des Textes vom Editor</string>
   <string name="msg_select_from_primary_storage">Wählen Sie ein Verzeichnis aus dem Primärspeicher aus</string>
