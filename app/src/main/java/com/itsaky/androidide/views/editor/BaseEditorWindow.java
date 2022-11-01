@@ -41,7 +41,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  *
  * @author Akash Yadav
  */
-public abstract class BaseEditorWindow extends EditorPopupWindow {
+public abstract class BaseEditorWindow extends AbstractPopupWindow {
 
   protected final TextView text;
 
