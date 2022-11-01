@@ -21,7 +21,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.language.BraceHandler;
+import com.itsaky.androidide.language.CommonSymbolPairs;
 import com.itsaky.androidide.language.IDELanguage;
+import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.lexers.kotlin.KotlinLexer;
 import com.itsaky.androidide.lexers.kotlin.KotlinParser;
 import com.itsaky.androidide.utils.ILogger;
@@ -34,17 +37,17 @@ import java.io.StringReader;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class KotlinLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("KotlinLanguage");
-  private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private final NewlineHandler[] newlineHandlers =
+      new NewlineHandler[] {new BraceHandler(this::getIndentAdvance, this::useTab)};
+  private final CommonSymbolPairs symbolPairs = new KotlinSymbolPairs();
   private KotlinAnalyzer analyzer;
 
   public KotlinLanguage() {
@@ -114,39 +117,5 @@ public class KotlinLanguage extends IDELanguage {
     return 0;
   }
 
-  private static class KotlinSymbolPairs extends SymbolPairMatch {
-    public KotlinSymbolPairs() {
-      super.putPair('{', new Replacement("{}", 1));
-      super.putPair('(', new Replacement("()", 1));
-      super.putPair('[', new Replacement("[]", 1));
-      super.putPair('"', new Replacement("\"\"", 1));
-      super.putPair('\'', new Replacement("''", 1));
-      super.putPair('<', new Replacement("<>", 1));
-    }
-  }
-
-  class BraceHandler implements NewlineHandler {
-
-    @Override
-    public boolean matchesRequirement(String beforeText, String afterText) {
-      beforeText = beforeText.trim();
-      afterText = afterText.trim();
-      return beforeText.endsWith("{") && afterText.startsWith("}");
-    }
-
-    @Override
-    public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-      int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-      int advanceBefore = getIndentAdvance(beforeText);
-      int advanceAfter = getIndentAdvance(afterText);
-      String text;
-      StringBuilder sb =
-          new StringBuilder("\n")
-              .append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
-              .append('\n')
-              .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
-      int shiftLeft = text.length() + 1;
-      return new NewlineHandleResult(sb, shiftLeft);
-    }
-  }
+  private static class KotlinSymbolPairs extends JavaLanguage.JavaSymbolPairs {}
 }

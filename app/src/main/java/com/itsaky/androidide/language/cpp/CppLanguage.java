@@ -21,6 +21,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.language.BraceHandler;
+import com.itsaky.androidide.language.CommonSymbolPairs;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
 import com.itsaky.androidide.utils.ILogger;
@@ -33,17 +35,17 @@ import java.io.StringReader;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class CppLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("CppLanguage");
-  private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private final NewlineHandler[] newlineHandlers =
+      new NewlineHandler[] {new BraceHandler(this::getIndentAdvance, this::useTab)};
+  private final CommonSymbolPairs symbolPairs = new CommonSymbolPairs();
   private CppAnalyzer analyzer;
 
   public CppLanguage() {
@@ -79,7 +81,7 @@ public class CppLanguage extends IDELanguage {
 
   @Override
   public SymbolPairMatch getSymbolPairs() {
-    return new CppSymbolPairs();
+    return symbolPairs;
   }
 
   @Override
@@ -114,41 +116,5 @@ public class CppLanguage extends IDELanguage {
       LOG.error("Error calculating indent advance", e);
     }
     return 0;
-  }
-
-  private static class CppSymbolPairs extends SymbolPairMatch {
-    public CppSymbolPairs() {
-      super.putPair('{', new Replacement("{}", 1));
-      super.putPair('(', new Replacement("()", 1));
-      super.putPair('[', new Replacement("[]", 1));
-      super.putPair('"', new Replacement("\"\"", 1));
-      super.putPair('\'', new Replacement("''", 1));
-      super.putPair('<', new Replacement("<>", 1));
-    }
-  }
-
-  class BraceHandler implements NewlineHandler {
-
-    @Override
-    public boolean matchesRequirement(String beforeText, String afterText) {
-      beforeText = beforeText.trim();
-      afterText = afterText.trim();
-      return beforeText.endsWith("{") && afterText.startsWith("}");
-    }
-
-    @Override
-    public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-      int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-      int advanceBefore = getIndentAdvance(beforeText);
-      int advanceAfter = getIndentAdvance(afterText);
-      String text;
-      StringBuilder sb =
-          new StringBuilder("\n")
-              .append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
-              .append('\n')
-              .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
-      int shiftLeft = text.length() + 1;
-      return new NewlineHandleResult(sb, shiftLeft);
-    }
   }
 }

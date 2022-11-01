@@ -20,7 +20,6 @@ package com.itsaky.androidide.views.editor
 import android.content.Intent
 import android.net.Uri
 import android.widget.ListView
-import com.blankj.utilcode.util.ReflectUtils
 import com.itsaky.androidide.lsp.util.DocumentationReferenceProvider
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.utils.ILogger
@@ -42,11 +41,11 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
   private var mAdapter: EditorCompletionAdapter? = null
   private val mItems: MutableList<CompletionItem> = mutableListOf()
   private val log = ILogger.newInstance(javaClass.simpleName)
-
+  
   init {
-    mAdapter = ReflectUtils.reflect(this).field("adapter").get()
+    mAdapter = super.adapter
   }
-
+  
   override fun setLayout(layout: CompletionLayout) {
     super.setLayout(layout)
     (layout.completionList as? ListView)?.let {
@@ -68,7 +67,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       }
     }
   }
-
+  
   override fun setAdapter(adapter: EditorCompletionAdapter) {
     super.setAdapter(adapter)
     mAdapter = adapter
@@ -76,7 +75,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     mAdapter!!.notifyDataSetInvalidated()
     mListView!!.adapter = adapter
   }
-
+  
   override fun select(pos: Int): Boolean {
     if (pos > mAdapter!!.count) {
       return false
@@ -88,7 +87,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       false
     }
   }
-
+  
   override fun select(): Boolean {
     return try {
       super.select()
@@ -97,7 +96,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       false
     }
   }
-
+  
   override fun cancelCompletion() {
     if (completionThread != null) {
       ProgressManager.instance.cancel(completionThread)
@@ -105,7 +104,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     super.cancelCompletion()
     popup.dismiss()
   }
-
+  
   override fun requireCompletion() {
     if (cancelShowUp || !isEnabled) {
       return
@@ -122,7 +121,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     }
     cancelCompletion()
     requestTime = System.nanoTime()
-    setCurrent(-1)
+    super.currentSelection = -1
     val reference = AtomicReference<List<CompletionItem>>()
     val publisher =
       CompletionPublisher(
@@ -139,29 +138,20 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
             show()
           }
           if (mAdapter!!.count >= 1) {
-            setCurrent(0)
+            super.currentSelection = 0
           }
         },
         editor.editorLanguage.interruptionLevel
       )
     publisher.setUpdateThreshold(1)
     reference.set(publisher.items)
-
+    
     completionThread = CompletionThread(requestTime, publisher)
     completionThread.name = "CompletionThread-$requestTime"
-
+    
     setLoading(true)
-
+    
     completionThread.start()
   }
-
-  private fun setCurrent(pos: Int) {
-    try {
-      val field = EditorAutoCompletion::class.java.getDeclaredField("currentSelection")
-      field.isAccessible = true
-      field.set(this, pos)
-    } catch (e: Throwable) {
-      throw RuntimeException(e)
-    }
-  }
+  
 }

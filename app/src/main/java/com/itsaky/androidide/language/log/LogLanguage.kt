@@ -19,7 +19,6 @@ package com.itsaky.androidide.language.log
 
 import android.os.Bundle
 import com.itsaky.androidide.language.IDELanguage
-import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
 import io.github.rosemoe.sora.text.CharPosition

@@ -21,6 +21,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.language.BraceHandler;
+import com.itsaky.androidide.language.CommonSymbolPairs;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -34,11 +36,9 @@ import java.io.StringReader;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class GroovyLanguage extends IDELanguage {
@@ -46,7 +46,9 @@ public class GroovyLanguage extends IDELanguage {
   private static final ILogger LOG = ILogger.newInstance("GroovyLanguage");
   private final GroovyAnalyzer analyzer;
   private final GroovyAutoComplete completer;
-  private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private final NewlineHandler[] newlineHandlers =
+      new NewlineHandler[] {new BraceHandler(this::getIndentAdvance, this::useTab)};
+  private final CommonSymbolPairs symbolPairs = new CommonSymbolPairs();
 
   public GroovyLanguage() {
     analyzer = new GroovyAnalyzer();
@@ -101,7 +103,7 @@ public class GroovyLanguage extends IDELanguage {
 
   @Override
   public SymbolPairMatch getSymbolPairs() {
-    return new SymbolPairMatch.DefaultSymbolPairs();
+    return symbolPairs;
   }
 
   @Override
@@ -134,30 +136,5 @@ public class GroovyLanguage extends IDELanguage {
       LOG.error("Failed to calculate indent advance", e);
     }
     return 0;
-  }
-
-  class BraceHandler implements NewlineHandler {
-
-    @Override
-    public boolean matchesRequirement(String beforeText, String afterText) {
-      beforeText = beforeText.trim();
-      afterText = afterText.trim();
-      return beforeText.endsWith("{") && afterText.startsWith("}");
-    }
-
-    @Override
-    public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-      int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-      int advanceBefore = getIndentAdvance(beforeText);
-      int advanceAfter = getIndentAdvance(afterText);
-      String text;
-      StringBuilder sb =
-          new StringBuilder("\n")
-              .append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
-              .append('\n')
-              .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
-      int shiftLeft = text.length() + 1;
-      return new NewlineHandleResult(sb, shiftLeft);
-    }
   }
 }

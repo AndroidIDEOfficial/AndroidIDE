@@ -19,7 +19,7 @@ package com.itsaky.androidide.language.xml;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.language.CommonCompletionProvider;
+import com.itsaky.androidide.language.CommonSymbolPairs;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
@@ -41,12 +41,10 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 public class XMLLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("XMLLanguage");
-  private final CommonCompletionProvider completer;
   private final NewlineHandler[] newlineHandlers;
   private XMLAnalyzer analyzer;
 
   public XMLLanguage() {
-    this.completer = new CommonCompletionProvider(getLanguageServer());
     this.analyzer = new XMLAnalyzer();
     this.newlineHandlers = new NewlineHandler[0];
   }
@@ -107,7 +105,7 @@ public class XMLLanguage extends IDELanguage {
 
   @Override
   public SymbolPairMatch getSymbolPairs() {
-    return new SymbolPairMatch.DefaultSymbolPairs();
+    return new CommonSymbolPairs();
   }
 
   @Override
