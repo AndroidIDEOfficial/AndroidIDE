@@ -29,7 +29,7 @@
   <com.google.android.material.textfield.MaterialAutoCompleteTextView
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
+    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
     android:inputType="textNoSuggestions"
     android:padding="16dp" />
 
