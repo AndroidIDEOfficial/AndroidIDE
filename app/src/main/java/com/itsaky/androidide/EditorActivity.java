@@ -167,6 +167,7 @@ public class EditorActivity extends IDEActivity
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
   private final EditorActivityLifecyclerObserver mLifecycleObserver =
       new EditorActivityLifecyclerObserver();
+  
   private ActivityEditorBinding mBinding;
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
   private final LogReceiver mLogReceiver = new LogReceiver().setLogListener(this::appendApkLog);
@@ -260,7 +261,10 @@ public class EditorActivity extends IDEActivity
 
   @Nullable
   public CodeEditorView getEditorAtIndex(final int index) {
-    return (CodeEditorView) mBinding.editorContainer.getChildAt(index);
+    if (mBinding != null) {
+      return (CodeEditorView) mBinding.editorContainer.getChildAt(index);
+    }
+    return null;
   }
 
   @Override
@@ -295,7 +299,9 @@ public class EditorActivity extends IDEActivity
   }
 
   public void appendApkLog(LogLine line) {
-    mBinding.bottomSheet.appendApkLog(line);
+    if (mBinding != null) {
+      mBinding.bottomSheet.appendApkLog(line);
+    }
   }
 
   public void showDaemonStatus() {
@@ -338,11 +344,15 @@ public class EditorActivity extends IDEActivity
   }
 
   public void handleDiagnosticsResultVisibility(boolean errorVisible) {
-    mBinding.bottomSheet.handleDiagnosticsResultVisibility(errorVisible);
+    if (mBinding != null) {
+      mBinding.bottomSheet.handleDiagnosticsResultVisibility(errorVisible);
+    }
   }
 
   public void handleSearchResultVisibility(boolean errorVisible) {
-    mBinding.bottomSheet.handleSearchResultVisibility(errorVisible);
+    if (mBinding != null) {
+      mBinding.bottomSheet.handleSearchResultVisibility(errorVisible);
+    }
   }
 
   public void showFirstBuildNotice() {
@@ -391,6 +401,10 @@ public class EditorActivity extends IDEActivity
 
   @Nullable
   public CodeEditorView getEditorForFile(@NonNull final File file) {
+    if (mBinding == null) {
+      return null;
+    }
+    
     for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
       final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt(i);
       if (file.equals(editor.getFile())) {
@@ -413,6 +427,10 @@ public class EditorActivity extends IDEActivity
 
     if (ImageUtils.isImage(file)) {
       IntentUtils.openImage(this, file);
+      return null;
+    }
+  
+    if (mBinding == null) {
       return null;
     }
 
@@ -439,8 +457,10 @@ public class EditorActivity extends IDEActivity
 
   @SuppressLint("NotifyDataSetChanged")
   public int openFileAndGetIndex(File file, com.itsaky.androidide.models.Range selection) {
+    if (mBinding == null) {
+      return -1;
+    }
     final var openedFileIndex = findIndexOfEditorByFile(file);
-
     if (openedFileIndex != -1) {
       LOG.error("File is already opened. File: " + file);
       return openedFileIndex;
@@ -570,11 +590,15 @@ public class EditorActivity extends IDEActivity
   }
 
   public void setDiagnosticsAdapter(@NonNull final DiagnosticsAdapter adapter) {
-    mBinding.bottomSheet.setDiagnosticsAdapter(adapter);
+    if (mBinding != null) {
+      mBinding.bottomSheet.setDiagnosticsAdapter(adapter);
+    }
   }
 
   public void setSearchResultAdapter(@NonNull final SearchListAdapter adapter) {
-    mBinding.bottomSheet.setSearchResultAdapter(adapter);
+    if (mBinding != null) {
+      mBinding.bottomSheet.setSearchResultAdapter(adapter);
+    }
   }
 
   @SuppressWarnings("UnusedReturnValue")
@@ -835,11 +859,15 @@ public class EditorActivity extends IDEActivity
   }
 
   public void setStatus(final CharSequence text, @GravityInt int gravity) {
-    mBinding.bottomSheet.setStatus(text, gravity);
+    if (mBinding != null) {
+      mBinding.bottomSheet.setStatus(text, gravity);
+    }
   }
 
   public void appendBuildOut(final String str) {
-    mBinding.bottomSheet.appendBuildOut(str);
+    if (mBinding != null) {
+      mBinding.bottomSheet.appendBuildOut(str);
+    }
   }
 
   public AlertDialog getFindInProjectDialog() {
@@ -911,6 +939,7 @@ public class EditorActivity extends IDEActivity
   }
 
   @Override
+  @NonNull
   protected View bindLayout() {
     mBinding = ActivityEditorBinding.inflate(getLayoutInflater());
     mDiagnosticInfoBinding = mBinding.diagnosticInfo;
@@ -1270,6 +1299,9 @@ public class EditorActivity extends IDEActivity
 
   @Contract(pure = true)
   private void onGetUIDesignerResult(@NonNull ActivityResult result) {
+    if (mBinding == null) {
+      return;
+    }
     final var index = mBinding.editorContainer.getDisplayedChild();
     final var editor = getEditorAtIndex(index);
     if (editor != null && result.getResultCode() == RESULT_OK) {
@@ -1353,7 +1385,9 @@ public class EditorActivity extends IDEActivity
 
   private void onSoftInputChanged() {
     invalidateOptionsMenu();
-    mBinding.bottomSheet.onSoftInputChanged();
+    if (mBinding != null) {
+      mBinding.bottomSheet.onSoftInputChanged();
+    }
   }
 
   private void closeProject(boolean manualFinish) {
