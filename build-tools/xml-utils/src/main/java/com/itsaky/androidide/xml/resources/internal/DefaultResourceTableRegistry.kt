@@ -229,8 +229,14 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
         if (typeName.contains('-')) {
           typeName = typeName.substringBefore('-')
         }
-        
-        val resName = ResourceName(pck, AaptResourceType.valueOf(typeName.uppercase()), file.nameWithoutExtension)
+  
+        val type = try {
+          AaptResourceType.valueOf(typeName.uppercase())
+        } catch (error: Exception) {
+          log.warn("Unknown resource type:", typeName.uppercase(), error.message)
+          AaptResourceType.UNKNOWN
+        }
+        val resName = ResourceName(pck, type, file.nameWithoutExtension)
         table.addFileReference(resName, ConfigDescription(), Source(file.path), file.path)
       }
     }
