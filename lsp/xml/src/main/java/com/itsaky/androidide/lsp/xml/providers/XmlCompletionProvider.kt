@@ -59,7 +59,6 @@ import com.itsaky.androidide.lsp.xml.utils.forTransitionAttr
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
-import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
@@ -94,10 +93,9 @@ class XmlCompletionProvider(settings: IServerSettings) :
   }
 
   private fun doComplete(params: CompletionParams): CompletionResult {
-    val namespace = INamespace.ANDROID
     val contents = toString(contents = params.requireContents())
     val document =
-      DOMParser.getInstance().parse(contents, namespace.uri, URIResolverExtensionManager())
+      DOMParser.getInstance().parse(contents, "http://schemas.android.com/apk/res/android", URIResolverExtensionManager())
     val type = XmlUtils.getNodeType(document, params.position.requireIndex())
 
     if (type == UNKNOWN) {

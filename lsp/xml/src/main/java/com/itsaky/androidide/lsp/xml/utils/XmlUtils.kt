@@ -21,18 +21,12 @@ import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
-import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.xml.INamespace.Resolver
-import java.util.*
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMElement
 import org.eclipse.lemminx.dom.DOMNode
-import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
-import org.xmlpull.v1.XmlPullParserFactory
 
 /** @author Akash Yadav */
 object XmlUtils {

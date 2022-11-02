@@ -72,7 +72,6 @@ dependencies {
     implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
     implementation project (':build-tools:xml-utils')
-    implementation project (':sdk-info')
     
     implementation androidx.ktx
     implementation common.kotlin

@@ -1,0 +1,26 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+java {
+    sourceCompatibility = rootProject.ext.javaSourceVersion
+    targetCompatibility = rootProject.ext.javaTargetVersion
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+dependencies {
+    implementation common.jkotlin
+    compileOnly project (path: ':build-tools:framework-stubs')
+}

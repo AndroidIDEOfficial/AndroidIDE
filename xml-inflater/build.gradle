@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    namespace "com.itsaky.androidide.inflater"
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildFeatures.viewBinding true
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+        }
+    }
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    implementation androidx.appcompat
+    implementation common.kotlin
+    
+    implementation project(path: ':annotations')
+    implementation project(path: ':build-tools:aaptcompiler')
+    implementation project(path: ':build-tools:projects')
+    implementation project(path: ':build-tools:xml-utils')
+    
+    kapt project(path: ':annotation-processors')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+}
