@@ -26,7 +26,6 @@ import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
-import com.squareup.javapoet.WildcardTypeName
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
@@ -55,14 +54,12 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
   private val classBuilder = TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL)
   private val addStatements = CodeBlock.builder()
   init {
-    val wildcard =
-      WildcardTypeName.subtypeOf(ClassName.get(ADAPTER_BASE_CLASS_PCK, ADAPTER_BASE_CLASS_NAME))
-    val klass = ParameterizedTypeName.get(ClassName.get(Class::class.java), wildcard)
+    val adpaterType = ClassName.get(ADAPTER_BASE_CLASS_PCK, ADAPTER_BASE_CLASS_NAME)
     val type =
       ParameterizedTypeName.get(
         ClassName.get(java.util.Map::class.java),
         ClassName.get(String::class.java),
-        klass
+        adpaterType
       )
     classBuilder.addField(
       FieldSpec.builder(type, INDEX_MAP_FIELD, PRIVATE, STATIC, FINAL)
@@ -83,9 +80,10 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
 
     classBuilder.addMethod(
       MethodSpec.methodBuilder("getAdapter")
+        .addAnnotation(ClassName.get("androidx.annotation", "Nullable"))
         .addModifiers(PUBLIC, STATIC)
         .addParameter(String::class.java, "view", FINAL)
-        .returns(klass)
+        .returns(adpaterType)
         .addStatement("return \$L.get(\$L)", INDEX_MAP_FIELD, "view")
         .build()
     )
@@ -179,7 +177,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     val annotation =
       element.getAnnotation(AttributeAdapter::class.java) ?: throw IllegalStateException()
     addStatements.addStatement(
-      "\$L.put(\$S, \$T.class)",
+      "\$L.put(\$S, new \$T())",
       INDEX_MAP_FIELD,
       getViewName(annotation),
       TypeName.get(element.asType())

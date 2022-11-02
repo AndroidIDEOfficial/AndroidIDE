@@ -32,6 +32,6 @@ abstract class AbstractView(
   protected val attributes = mutableListOf<IAttribute>()
   
   override fun addAttribute(attribute: IAttribute) {
-    AttributeAdapterIndex.getAdapter(name)?.apply { }
+    
   }
 }
