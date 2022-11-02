@@ -24,9 +24,9 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLA
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_TRAILING;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_LIGATURES;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_CUSTOM_FONT;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
-import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_CUSTOM_FONT;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.WORD_WRAP;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawEmptyLineWs;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawInnerWs;
@@ -70,7 +70,6 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
-import com.itsaky.inflater.values.ValuesTableFactory;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -78,7 +77,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
@@ -385,9 +383,6 @@ public class CodeEditorView extends LinearLayout {
 
   private void notifySaved() {
     binding.editor.dispatchDocumentSaveEvent();
-    if (Objects.requireNonNull(getFile()).getName().endsWith(".xml")) {
-      ValuesTableFactory.syncWithFile(getFile());
-    }
   }
 
   public LayoutCodeEditorBinding getBinding() {
@@ -422,7 +417,7 @@ public class CodeEditorView extends LinearLayout {
       LOG.warn("Editor layout is null content=" + binding + ", searchLayout=" + searchLayout);
       return;
     }
-    
+
     searchLayout.beginSearchMode();
   }
 

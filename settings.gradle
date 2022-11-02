@@ -12,7 +12,6 @@ include ':lookup'
 include ':sdk-info'
 include ':shared'
 include ':treeview'
-include ':xml-inflater'
 
 include ':gradle-plugin'
 

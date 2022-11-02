@@ -154,7 +154,6 @@ dependencies {
     implementation project (':preferences')
     implementation project (':resources')
     implementation project (':treeview')
-    implementation project (':xml-inflater')
     
     implementation fileTree (dir: 'libs', include: ['*.jar'])
     

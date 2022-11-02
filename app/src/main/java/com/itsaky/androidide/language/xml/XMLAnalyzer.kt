@@ -18,8 +18,8 @@
 package com.itsaky.androidide.language.xml
 
 import android.graphics.Color
+import android.graphics.Color.parseColor
 import com.google.common.collect.EvictingQueue
-import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.language.incremental.BaseIncrementalAnalyzeManager
 import com.itsaky.androidide.language.incremental.IncrementalToken
 import com.itsaky.androidide.language.incremental.LineState
@@ -48,10 +48,10 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_NORMAL
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.XML_TAG
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment
-import com.itsaky.inflater.util.CommonParseUtils
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
+import java.util.regex.Pattern
 
 /**
  * Syntax analyzer for XML.
@@ -85,7 +85,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
 
   override fun popTokensAfterIncomplete(
     incompleteToken: IncrementalToken,
-    tokens: MutableList<IncrementalToken>
+    tokens: MutableList<IncrementalToken>,
   ) {
     // Do nothing
   }
@@ -93,8 +93,6 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
   override fun generateSpans(
     tokens: LineTokenizeResult<LineState, IncrementalToken>,
   ): MutableList<Span> {
-    val app = IDEApplication.getInstance()
-    val parser = CommonParseUtils(app.resourceTable, app.resources.displayMetrics)
     val spans = mutableListOf<Span>()
     var previous = XMLLexer.SEA_WS
 
@@ -109,7 +107,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
         COMMENT_START,
         COMMENT_END,
         CommentModeEnd,
-        CommentText -> spans.add(Span.obtain(offset, forComment()))
+        CommentText, -> spans.add(Span.obtain(offset, forComment()))
         OPEN,
         DASH,
         NOT,
@@ -126,8 +124,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
             val text: String = token.text
             val textVar = text.replace("\"", "")
             if (isColorValue(textVar)) {
-              val color: Int =
-                parser.parseColor(textVar, IDEApplication.getInstance().applicationContext)
+              val color: Int = parseColor(textVar)
               val span = Span.obtain(offset + 1, makeStyle(LITERAL))
               span.setUnderlineColor(color)
               spans.add(span)
@@ -163,8 +160,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
         try {
             val textVar: String = token.text
             if (isColorValue(textVar)) {
-              val color: Int =
-                parser.parseColor(textVar, IDEApplication.getInstance().applicationContext)
+              val color: Int = parseColor(textVar)
               val span = Span.obtain(offset, makeStyle(TEXT_NORMAL))
               span.setUnderlineColor(color)
               spans.add(span)
@@ -187,8 +183,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
   override fun handleIncompleteToken(token: IncrementalToken) {}
 
   private fun isColorValue(value: String): Boolean {
-    return (value.startsWith("#") ||
-      value.startsWith("@android:color") ||
-      value.startsWith("@color/"))
+    return hexColorMatcher.matcher(value).matches()
   }
+  private val hexColorMatcher: Pattern = Pattern.compile("#[a-fA-F\\d]{6,8}")
 }

@@ -23,36 +23,20 @@ import android.net.Uri;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.CrashHandlerActivity;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
-import com.itsaky.androidide.preferences.internal.XmlPreferencesKt;
-import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.attrinfo.AttrInfo;
-import com.itsaky.inflater.ILayoutInflater;
-import com.itsaky.inflater.IResourceTable;
-import com.itsaky.inflater.LayoutInflaterConfiguration;
-import com.itsaky.sdk.SDKInfo;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
-import com.itsaky.widgets.WidgetInfo;
 
 import org.greenrobot.eventbus.EventBus;
-
-import java.io.File;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 public class IDEApplication extends BaseApplication {
 
   private static final ILogger LOG = ILogger.newInstance("IDEApplication");
   private static IDEApplication instance;
-  private static SDKInfo sdkInfo;
-  private IResourceTable mResTable;
   private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
   public static IDEApplication getInstance() {
@@ -72,8 +56,6 @@ public class IDEApplication extends BaseApplication {
         .addIndex(new LspApiEventsIndex())
         .addIndex(new LspJavaEventsIndex())
         .installDefaultEventBus();
-
-    getApiInformation();
   }
 
   private void handleCrash(Thread thread, Throwable th) {
@@ -93,54 +75,6 @@ public class IDEApplication extends BaseApplication {
     } catch (Throwable error) {
       LOG.error("Unable to show crash handler activity", error);
     }
-  }
-
-  /** Reads API version information from api-versions.xml */
-  public CompletableFuture<SDKInfo> getApiInformation() {
-    return CompletableFuture.supplyAsync(
-        () -> {
-          if (sdkInfo == null) {
-            try {
-              sdkInfo = new SDKInfo(IDEApplication.this);
-            } catch (Throwable th) {
-              LOG.error(getString(R.string.err_init_sdkinfo), th);
-            }
-          }
-
-          return sdkInfo;
-        });
-  }
-
-  public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
-      ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
-
-    return CompletableFuture.supplyAsync(
-        () -> {
-          try {
-            final var sdkInfo = getApiInformation().get();
-            return new LayoutInflaterConfiguration.Builder()
-                .setAttrInfo(sdkInfo.getAttrInfo())
-                .setWidgetInfo(sdkInfo.getWidgetInfo())
-                .setResourceFinder(getResourceTable())
-                .setResourceDirectories(resDirs)
-                .setContextProvider(contextProvider)
-                .create();
-          } catch (Throwable e) {
-            throw new CompletionException(e);
-          }
-        });
-  }
-
-  public IResourceTable getResourceTable() {
-    return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
-  }
-
-  public AttrInfo attrInfo() {
-    return sdkInfo.getAttrInfo();
-  }
-
-  public WidgetInfo widgetInfo() {
-    return sdkInfo.getWidgetInfo();
   }
 
   public void showChangelog() {

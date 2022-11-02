@@ -14,33 +14,21 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.inflater.values.models;
 
-import android.graphics.Color;
+package com.itsaky.androidide.utils
 
-import androidx.annotation.NonNull;
+import android.content.Context
+import android.content.res.Resources.Theme
+import android.util.TypedValue
 
-/**
- * Represents a color resource value.
- *
- * @author Akash Yadav
- */
-public class ColorResource extends AbstractResource {
-
-  public ColorResource(@NonNull String name, @NonNull String value) {
-    super(name, value);
-  }
-
-  /**
-   * Parse the value of this color resource and get the int color.
-   *
-   * @return The int color value or -1 if this is not a valid color.
-   */
-  public int parseColor() {
-    try {
-      return Color.parseColor(getValue());
-    } catch (Throwable th) {
-      return -1;
-    }
-  }
+@JvmOverloads
+fun Context.resolveAttr(id: Int, resolveRefs: Boolean = true): Int {
+  return theme.resolveAttr(id)
 }
+
+@JvmOverloads
+fun Theme.resolveAttr(id: Int, resolveRefs: Boolean = true): Int =
+  TypedValue().let {
+    resolveAttribute(id, it, resolveRefs)
+    it.data
+  }

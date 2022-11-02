@@ -69,7 +69,7 @@ dependencies {
     api project (':lsp:models')
     api project (':preferences')
     
-    compileOnly project (':xml-inflater')
+    compileOnly project (':sdk-info')
     compileOnly project (':actions')
     compileOnly project (':common')
 }

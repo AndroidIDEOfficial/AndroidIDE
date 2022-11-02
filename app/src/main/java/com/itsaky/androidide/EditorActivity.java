@@ -54,9 +54,6 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -128,10 +125,7 @@ import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry;
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry;
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry;
-import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.toaster.Toaster;
-
-import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -139,8 +133,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -167,7 +159,7 @@ public class EditorActivity extends IDEActivity
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
   private final EditorActivityLifecyclerObserver mLifecycleObserver =
       new EditorActivityLifecyclerObserver();
-  
+
   private ActivityEditorBinding mBinding;
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
   private final LogReceiver mLogReceiver = new LogReceiver().setLogListener(this::appendApkLog);
@@ -176,7 +168,6 @@ public class EditorActivity extends IDEActivity
   private TextSheetFragment mDaemonStatusFragment;
   private ProgressSheet mSearchingProgress;
   private AlertDialog mFindInProjectDialog;
-  private ActivityResultLauncher<Intent> mUIDesignerLauncher;
   private BottomSheetBehavior<? extends View> mEditorBottomSheet;
   private EditorViewModel mViewModel;
   private final ServiceConnection mGradleServiceConnection =
@@ -404,7 +395,7 @@ public class EditorActivity extends IDEActivity
     if (mBinding == null) {
       return null;
     }
-    
+
     for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
       final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt(i);
       if (file.equals(editor.getFile())) {
@@ -429,7 +420,7 @@ public class EditorActivity extends IDEActivity
       IntentUtils.openImage(this, file);
       return null;
     }
-  
+
     if (mBinding == null) {
       return null;
     }
@@ -713,27 +704,7 @@ public class EditorActivity extends IDEActivity
     }
   }
 
-  public void previewLayout() {
-    try {
-
-      if (getCurrentEditor() == null || getCurrentEditor().getFile() == null) {
-        LOG.error("No file is opened. Cannot preview layout.");
-        return;
-      }
-
-      saveAll(false);
-
-      final Intent intent = new Intent(this, DesignerActivity.class);
-      intent.putExtra(
-          DesignerActivity.KEY_LAYOUT_PATH, getCurrentEditor().getFile().getAbsolutePath());
-      intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirPaths());
-      LOG.info("Launching UI Designer...");
-      mUIDesignerLauncher.launch(intent);
-    } catch (Throwable th) {
-      LOG.error(getString(string.err_cannot_preview_layout), th);
-      toast(string.msg_cannot_preview_layout, Toaster.Type.ERROR);
-    }
-  }
+  public void previewLayout() {}
 
   public boolean saveAll(boolean notify) {
     return saveAll(notify, false);
@@ -931,10 +902,6 @@ public class EditorActivity extends IDEActivity
     setupContainers();
     setupDiagnosticInfo();
 
-    mUIDesignerLauncher =
-        registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), this::onGetUIDesignerResult);
-
     EditorActivityActions.register(this);
   }
 
@@ -1081,25 +1048,6 @@ public class EditorActivity extends IDEActivity
     } catch (Throwable th) {
       // ignored
     }
-
-    CompletableFuture.runAsync(
-        () -> {
-          final var resDirs = getResourceDirs();
-          resDirs.removeIf(Objects::isNull);
-          ValuesTableFactory.setupWithResDirectories(resDirs.toArray(new File[0]));
-        });
-  }
-
-  private Set<File> getResourceDirs() {
-    return ProjectManager.INSTANCE.getApplicationResDirectories();
-  }
-
-  @NonNull
-  private ArrayList<String> getResourceDirPaths() {
-    return getResourceDirs().stream()
-        .filter(Objects::nonNull)
-        .map(File::getAbsolutePath)
-        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   private void setupDrawerToggle() {
@@ -1295,31 +1243,6 @@ public class EditorActivity extends IDEActivity
               invokeAfter.run();
             });
     builder.show();
-  }
-
-  @Contract(pure = true)
-  private void onGetUIDesignerResult(@NonNull ActivityResult result) {
-    if (mBinding == null) {
-      return;
-    }
-    final var index = mBinding.editorContainer.getDisplayedChild();
-    final var editor = getEditorAtIndex(index);
-    if (editor != null && result.getResultCode() == RESULT_OK) {
-      final var data = result.getData();
-      if (data != null && data.hasExtra(DesignerActivity.KEY_GENERATED_CODE)) {
-        final var code = data.getStringExtra(DesignerActivity.KEY_GENERATED_CODE);
-        editor.getEditor().replaceContent(code);
-        editor.markModified();
-        saveAll();
-      } else {
-        final var msg = getString(string.msg_invalid_designer_result);
-        toast(msg, Toaster.Type.ERROR);
-        LOG.error(msg, "Data returned by UI Designer is null or is invalid.");
-      }
-    } else {
-      LOG.error(
-          "UI Designer returned an invalid result code.", "Result code: " + result.getResultCode());
-    }
   }
 
   private void openTerminal() {

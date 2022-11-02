@@ -19,14 +19,17 @@ package com.itsaky.androidide.aaptcompiler
 
 import com.android.aaptcompiler.BlameLogger
 import com.android.aaptcompiler.ResourceCompilerOptions
+import com.android.aaptcompiler.ResourceFile
+import com.android.aaptcompiler.ResourceName
+import com.android.aaptcompiler.XmlProcessor
 import com.android.aaptcompiler.compileResource
+import com.android.aaptcompiler.extractPathData
 import com.android.utils.StdLogger
 import com.android.utils.StdLogger.Level.VERBOSE
 import java.nio.file.Paths
 import kotlin.io.path.absolute
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
@@ -44,5 +47,20 @@ class CompilerTest {
     val start = System.nanoTime()
     compileResource(input, output, ResourceCompilerOptions(), BlameLogger(StdLogger(VERBOSE)))
     println("Compiled in ${System.nanoTime() - start} nano seconds")
+  }
+  
+  @Test
+  fun `test xml processor`() {
+    val input =
+      Paths.get(".", "src/test/resources/layout/activity_editor.xml").absolute().normalize().toFile()
+    val pathData = extractPathData(input, input.absolutePath)
+    val resFile = ResourceFile(
+      ResourceName("", pathData.type!!, pathData.name),
+      pathData.config,
+      pathData.source,
+      ResourceFile.Type.ProtoXml
+    )
+    val processor = XmlProcessor(pathData.source, BlameLogger(StdLogger(VERBOSE)))
+    processor.process(resFile, input.inputStream().buffered())
   }
 }

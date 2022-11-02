@@ -42,7 +42,6 @@ import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.api.Project;
-import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -59,12 +58,11 @@ public class XMLLanguageServer implements ILanguageServer {
   public static final String SERVER_ID = "xml";
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-
   private ILanguageClient client;
+
   private IServerSettings settings;
 
   public XMLLanguageServer() {}
-  
 
   @Override
   public String getServerId() {
