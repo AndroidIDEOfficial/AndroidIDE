@@ -21,11 +21,13 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.preference.Preference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
+import com.itsaky.androidide.preferences.internal.GRADLE_CLEAR_CACHE
 import com.itsaky.androidide.preferences.internal.GRADLE_COMMANDS
 import com.itsaky.androidide.preferences.internal.TP_FIX
 import com.itsaky.androidide.preferences.internal.gradleInstallationDir
@@ -37,6 +39,10 @@ import com.itsaky.androidide.preferences.internal.isScanEnabled
 import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
 import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
 import com.itsaky.androidide.preferences.internal.tpFix
+import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
+import com.itsaky.toaster.toastError
+import com.itsaky.toaster.toastSuccess
+import java.io.File
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -60,6 +66,7 @@ private class GradleOptions(
   init {
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
+    addPreference(GradleClearCache())
     if (BaseApplication.isAarch64() && VERSION.SDK_INT == VERSION_CODES.R) {
       addPreference(TagPointersFix())
     }
@@ -150,5 +157,36 @@ private class TagPointersFix(
   override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
     tpFix = newValue as Boolean? ?: false
     return true
+  }
+}
+
+@Parcelize
+private class GradleClearCache (
+  override val key: String = GRADLE_CLEAR_CACHE,
+  override val title: Int = string.idepref_build_clearCache_title,
+  override val summary: Int? = string.idepref_build_clearCache_summary,
+  override val icon: Int? = drawable.ic_delete,
+  override val dialogMessage: Int? = string.msg_clear_cache
+) : DialogPreference() {
+
+  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
+    super.onConfigureDialog(preference, dialog)
+    dialog.setPositiveButton(string.yes) { dlg, _ ->
+      dlg.dismiss()
+      if (deleteCaches()) {
+        toastSuccess(string.deleted)
+      } else {
+        toastError(string.delete_failed)
+      }
+    }
+    dialog.setNegativeButton(string.no) { dlg, _ -> dlg.dismiss() }
+  }
+
+  private fun deleteCaches(): Boolean {
+    val caches = File(GRADLE_USER_HOME, "caches")
+    if (caches.exists()) {
+      return caches.deleteRecursively()
+    }
+    return false
   }
 }

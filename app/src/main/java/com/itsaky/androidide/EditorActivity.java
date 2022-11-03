@@ -750,7 +750,9 @@ public class EditorActivity extends IDEActivity
 
       frag.save();
 
-      final boolean isGradle = frag.getFile().getName().endsWith(".gradle");
+      final boolean isGradle =
+        frag.getFile().getName().endsWith(".gradle")
+        || frag.getFile().getName().endsWith(".gradle.kts");
       final boolean isXml = frag.getFile().getName().endsWith(".xml");
 
       if (!result.gradleSaved) {
