@@ -31,4 +31,11 @@ abstract class IAttributeAdapter {
    * @param attribute The attribute to apply.
    */
   abstract fun apply(view: IView, attribute: IAttribute)
+
+  /**
+   * Apply the basic attributes to a view so that it could be rendered.
+   *
+   * @param view The view to apply basic attributes to.
+   */
+  abstract fun applyBasic(view: IView)
 }

@@ -39,7 +39,7 @@ interface IView {
   val view: View
 
   /** The parent view. */
-  val parent: IViewGroup
+  var parent: IViewGroup?
 
   /**
    * Add and apply the given attribute to this view.

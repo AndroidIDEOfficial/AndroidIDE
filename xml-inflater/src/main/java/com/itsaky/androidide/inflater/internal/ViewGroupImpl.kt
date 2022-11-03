@@ -21,8 +21,8 @@ import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 
-abstract class AbstractViewGroup(name: String, view: ViewGroup) :
-  AbstractView(name = name, view = view), IViewGroup {
+open class ViewGroupImpl(name: String, view: ViewGroup) :
+  ViewImpl(name = name, view = view), IViewGroup {
 
   protected val children = mutableListOf<IView>()
   override val childCount: Int

@@ -17,21 +17,31 @@
 
 package com.itsaky.androidide.inflater.internal
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.utils.simpleName
-import com.itsaky.androidide.inflater.internal.utils.tagName
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import com.itsaky.androidide.inflater.R
 
-abstract class AbstractView(
-  override val name: String,
-  override val view: View,
-  override val simpleName: String = name.simpleName(),
-  override val tag: String = name.tagName()
-) : IView {
-  protected val attributes = mutableListOf<IAttribute>()
-  
-  override fun addAttribute(attribute: IAttribute) {
-  
+/**
+ * View used to show views that cannot be inflated.
+ *
+ * @author Akash Yadav
+ */
+class ErrorView(context: Context, message: String) :
+  ViewImpl(NAME, createErrView(context, message)) {
+  companion object {
+    private val NAME = View::class.java.name
+  }
+}
+
+private fun createErrView(context: Context, message: String): View {
+  return TextView(context).apply {
+    text = message
+    background = ColorDrawable(Color.WHITE)
+    setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
+    setTextIsSelectable(true)
   }
 }

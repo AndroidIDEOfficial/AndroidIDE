@@ -34,6 +34,14 @@ android {
             includeAndroidResources = true
         }
     }
+    
+    sourceSets {
+        main {
+            java {
+                srcDir "${buildDir.absolutePath}/generated/source/kaptKotlin/"
+            }
+        }
+    }
 }
 
 dependencies {
@@ -44,9 +52,12 @@ dependencies {
     implementation project(path: ':build-tools:aaptcompiler')
     implementation project(path: ':build-tools:projects')
     implementation project(path: ':build-tools:xml-utils')
+    implementation project(path: ':resources')
     
     kapt project(path: ':annotation-processors')
     
+    testImplementation project (path: ':build-tools:projects')
+    testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric

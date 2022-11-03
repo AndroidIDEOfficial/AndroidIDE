@@ -34,4 +34,8 @@ open class ViewAttrAdapter : IAttributeAdapter() {
   override fun apply(view: IView, attribute: IAttribute) {
     TODO("Not yet implemented")
   }
+  
+  override fun applyBasic(view: IView) {
+    TODO("Not yet implemented")
+  }
 }

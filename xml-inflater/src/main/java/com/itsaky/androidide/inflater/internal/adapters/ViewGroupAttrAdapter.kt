@@ -25,7 +25,7 @@ import com.itsaky.androidide.inflater.IView
 
 /** @author Akash Yadav */
 @AttributeAdapter(ViewGroup::class)
-class ViewGroupAttrAdapter : IAttributeAdapter() {
+class ViewGroupAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute) {
     TODO("Not yet implemented")

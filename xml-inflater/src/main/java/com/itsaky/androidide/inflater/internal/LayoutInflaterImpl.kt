@@ -17,11 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal
 
+import android.content.Context
 import android.view.InflateException
+import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import com.android.aapt.Resources.SourcePosition
 import com.android.aapt.Resources.XmlElement
-import com.android.aapt.Resources.XmlNode.NodeCase
 import com.android.aapt.Resources.XmlNode.NodeCase.ELEMENT
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.BlameLogger
@@ -33,29 +35,35 @@ import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.inflater.IInflateEventsListener
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.InflationFinishEvent
 import com.itsaky.androidide.inflater.InflationStartEvent
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.xml.widgets.Widget
+import com.itsaky.androidide.xml.widgets.WidgetTable
 import java.io.File
+import java.lang.reflect.Method
 
 /**
  * Default implementation of [ILayoutInflater].
  *
  * @author Akash Yadav
  */
-internal class LayoutInflaterImpl : ILayoutInflater() {
+open class LayoutInflaterImpl : ILayoutInflater() {
 
   override var inflationEventListener: IInflateEventsListener? = null
+  private val log = ILogger.newInstance("LayoutInflaterImpl")
 
   override fun inflate(file: File, parent: ViewGroup): IView? {
     inflationEventListener?.onEvent(InflationStartEvent())
-    return doInflate(file, parent).apply {
+    return doInflate(file, wrap(parent)).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
     }
   }
 
-  private fun doInflate(file: File, parent: ViewGroup): IView? {
+  protected open fun doInflate(file: File, parent: IViewGroup): IView? {
     val pathData = extractPathData(file)
     if (pathData.type != LAYOUT) {
       throw InflateException("File is not a layout file.")
@@ -77,30 +85,156 @@ internal class LayoutInflaterImpl : ILayoutInflater() {
     val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
     processor.process(resFile, file.inputStream())
 
-    return doInflate(processor, parent)
+    return doInflate(processor, parent, module)
   }
 
-  private fun doInflate(processor: XmlProcessor, parent: ViewGroup): IView? {
+  protected open fun doInflate(
+    processor: XmlProcessor,
+    parent: IViewGroup,
+    module: AndroidModule,
+  ): IView? {
     // TODO(itsaky) : Add test for multiple view as root layout
     //  The inflater should fail in such cases
-    val (file, node) =
+    val (_, node) =
       processor.xmlResources.find { it.file == processor.primaryFile }
         ?: throw InflateException("Unable to find primary XML resource from XmlProcessor")
-    
+
     if (node.nodeCase != ELEMENT) {
-      throw InflateException("Found ${node.nodeCase} but $ELEMENT was expected at ${node.source.lineCol()}")
+      throw InflateException(
+        "Found ${node.nodeCase} but $ELEMENT was expected at ${node.source.lineCol()}"
+      )
     }
-    
+
     val element = node.element
-    val view = onCreateView(element)
+    return onCreateView(element, parent, module)
+  }
+
+  protected open fun onCreateView(
+    element: XmlElement,
+    parent: IViewGroup,
+    module: AndroidModule,
+    widgets: WidgetTable =
+      module.getWidgetTable()
+        ?: throw IllegalStateException("No widget table found for module $module"),
+  ): IView {
+
+    val parentView = parent.view as ViewGroup
+
+    if ("include" == element.name) {
+      return onCreateIncludedView(element, parentView, module, widgets)
+    }
+
+    if ("merge" == element.name) {
+      return onCreateMergedView(element, parentView, module, widgets)
+    }
+
+    val widget =
+      if (element.name.contains('.')) widgets.getWidget(element.name)
+      else widgets.findWidgetWithSimpleName(element.name)
+
+    // TODO(itsaky): Handle views from libraries
+    val view =
+      if (widget == null) {
+        onCreateUnsupportedView("View with name '${element.name}' not found", parentView)
+      } else {
+        onCreatePlatformView(widget, parentView, module, widgets)
+      }
+
+    val adapter =
+      AttributeAdapterIndex.getAdapter(view.name)
+        ?: throw InflateException("No attribute adapter found for view ${view.name}")
+
+    adapter.applyBasic(view)
+
+    view.view.layoutParams = generateLayoutParams(parentView)
+    parent.addChild(view)
+
+    if (element.childCount > 0 && view is IViewGroup) {
+      for (child in element.childList) {
+        if (child.nodeCase != ELEMENT) {
+          throw InflateException("Unexpected node at ${child.source.lineCol()}")
+        }
+        val childView =
+          onCreateView(element = child.element, parent = view, module = module, widgets = widgets)
+        view.addChild(childView)
+      }
+    }
+
+    return view
+  }
+
+  private fun onCreateMergedView(
+    element: XmlElement,
+    parent: ViewGroup,
+    module: AndroidModule,
+    widgets: WidgetTable,
+  ): IView {
     TODO("Not yet implemented")
   }
-  
-  private fun onCreateView(element: XmlElement): IView {
+
+  private fun onCreateIncludedView(
+    element: XmlElement,
+    parent: ViewGroup,
+    module: AndroidModule,
+    widgets: WidgetTable,
+  ): IView {
     TODO("Not yet implemented")
   }
+
+  protected open fun onCreatePlatformView(
+    widget: Widget,
+    parent: ViewGroup,
+    module: AndroidModule,
+    widgets: WidgetTable,
+  ): IView {
+    return try {
+      val v = createViewInstance(widget, parent)
+      return ViewImpl(widget.qualifiedName, v)
+    } catch (err: Throwable) {
+      onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
+    }
+  }
+
+  protected open fun generateLayoutParams(parent: ViewGroup): LayoutParams {
+    return try {
+      var clazz: Class<in ViewGroup> = parent.javaClass
+      var method: Method?
+      while (true) {
+        try {
+          method = clazz.getDeclaredMethod("generateDefaultLayoutParams")
+          break
+        } catch (e: Throwable) {
+          /* ignored */
+        }
+
+        clazz = clazz.superclass
+      }
+      if (method != null) {
+        method.isAccessible = true
+        return method.invoke(parent) as LayoutParams
+      }
+      log.error("Unable to create default params for view parent:", parent)
+      LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+    } catch (th: Throwable) {
+      throw InflateException("Unable to create layout params for parent: $parent", th)
+    }
+  }
+
+  private fun createViewInstance(widget: Widget, parent: ViewGroup): View {
+    val klass = javaClass.classLoader!!.loadClass(widget.qualifiedName)
+    val constructor = klass.getConstructor(Context::class.java)
+    return constructor.newInstance(parent.context) as View
+  }
+
+  private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {
+    return ErrorView(parent.context, message)
+  }
   
-  private fun SourcePosition.lineCol() : String {
+  private fun wrap(parent: ViewGroup) : IViewGroup {
+    return ViewGroupImpl(parent.javaClass.name, parent)
+  }
+
+  private fun SourcePosition.lineCol(): String {
     return "line $lineNumber and column $columnNumber"
   }
 }
