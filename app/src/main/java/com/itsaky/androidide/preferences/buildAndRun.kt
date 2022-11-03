@@ -39,6 +39,7 @@ import com.itsaky.androidide.preferences.internal.isScanEnabled
 import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
 import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
 import com.itsaky.androidide.preferences.internal.tpFix
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
@@ -173,10 +174,12 @@ private class GradleClearCache (
     super.onConfigureDialog(preference, dialog)
     dialog.setPositiveButton(string.yes) { dlg, _ ->
       dlg.dismiss()
-      if (deleteCaches()) {
-        toastSuccess(string.deleted)
-      } else {
-        toastError(string.delete_failed)
+      executeAsync(callable = this::deleteCaches) {
+        if (it == true) {
+          toastSuccess(string.deleted)
+        } else {
+          toastError(string.delete_failed)
+        }
       }
     }
     dialog.setNegativeButton(string.no) { dlg, _ -> dlg.dismiss() }
