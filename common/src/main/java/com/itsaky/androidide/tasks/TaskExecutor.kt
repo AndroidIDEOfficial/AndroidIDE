@@ -32,7 +32,7 @@ object TaskExecutor {
         try {
           return@supplyAsync callable.call()
         } catch (th: Throwable) {
-          log.error("An error occurred while executing Callable in background" + " thread.", th)
+          log.error("An error occurred while executing Callable in background thread.", th)
           return@supplyAsync null
         }
       }
@@ -46,7 +46,7 @@ object TaskExecutor {
         try {
           return@supplyAsync callable.call()
         } catch (th: Throwable) {
-          log.error("An error occurred while executing Callable in background" + " thread.", th)
+          log.error("An error occurred while executing Callable in background thread.", th)
           throw CompletionException(th)
         }
       }
