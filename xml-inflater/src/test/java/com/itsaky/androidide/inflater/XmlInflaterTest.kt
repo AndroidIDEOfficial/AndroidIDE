@@ -17,45 +17,43 @@
 
 package com.itsaky.androidide.inflater
 
-import android.view.View
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import java.io.File
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.Ignore
 import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.android.controller.ActivityController
 
-/** @author Akash Yadav */
-@RunWith(RobolectricTestRunner::class)
-class LayoutInflaterTest {
-  
-  @Test
-  fun `test functionality`() {
-    inflaterTest {
-      requiresActivity { activity ->
-        val file = layoutFile("singleView")
-        val parent = LinearLayout(activity)
-        val inflater = ILayoutInflater.newInflater()
-        val inflated = inflater.inflate(file, parent)
-        inflated.apply {
-          assertThat(this).isNotNull()
-          assertThat(this).isInstanceOf(View::class.java)
-        }
-      }
+@Ignore("Test utility provider")
+object XmlInflaterTest {
+
+  private var init: Boolean = false
+  internal val activity by lazy { Robolectric.buildActivity(AppCompatActivity::class.java).get() }
+
+  fun initIfNeeded() {
+    if (init) {
+      return
     }
-  }
 
-  private fun layoutFile(name: String): File {
-    val app = ProjectManager.app ?: throw IllegalStateException("Project is not initialized")
-    return File(app.projectDir, "src/main/res/layout/$name.xml")
+    val (server, project) =
+      ToolingApiTestLauncher().launchServer(implDir = "../build-tools/tooling-api-impl")
+    server.initialize(InitializeProjectMessage(File("../tests/test-project").absolutePath)).get()
+
+    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    ProjectManager.setupProject()
+    init = true
   }
+}
+
+fun inflaterTest(block: (AndroidModule) -> Unit) {
+  XmlInflaterTest.initIfNeeded()
+  block(ProjectManager.app!!)
+}
+
+fun requiresActivity(block: (AppCompatActivity) -> Unit) {
+  block(XmlInflaterTest.activity)
 }

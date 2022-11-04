@@ -186,7 +186,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
 
   private fun getViewName(annotation: AttributeAdapter): String {
     return try {
-      annotation.forClass.qualifiedName
+      annotation.forView.qualifiedName
         ?: throw IllegalStateException("Cannot find type of $annotation")
     } catch (err: MirroredTypeException) {
       (processingEnv.typeUtils.asElement(err.typeMirror) as TypeElement).qualifiedName.toString()

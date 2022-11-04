@@ -14,17 +14,12 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.annotations.inflater
 
-import android.view.View
-import kotlin.annotation.AnnotationTarget.CLASS
-import kotlin.reflect.KClass
+package com.itsaky.androidide.xml.utils
 
-/**
- * Annotation used to indicate that a class is an attribute adapater for the given view class.
- *
- * @author Akash Yadav
- */
-@Target(CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class AttributeAdapter(val forView: KClass<out View>)
+import java.util.regex.Pattern
+
+val attrValue_unqualifiedRef: Pattern by lazy { Pattern.compile("@(\\w+)/(.*)") }
+val attrValue_qualifiedRef: Pattern by lazy { Pattern.compile("@((\\w|\\.)+):(\\w+)/(.*)") }
+val attrValue_qualifiedRefWithIncompleteType: Pattern by lazy { Pattern.compile("@((\\w|\\.)+):(\\w*)") }
+val attrValue_qualifiedRefWithIncompletePckOrType: Pattern by lazy { Pattern.compile("@((\\w|\\.)*)") }

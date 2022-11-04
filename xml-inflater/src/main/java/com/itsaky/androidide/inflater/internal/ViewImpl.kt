@@ -24,10 +24,12 @@ import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.utils.simpleName
 import com.itsaky.androidide.inflater.internal.utils.tagName
 import com.itsaky.androidide.utils.ILogger
+import java.io.File
 
 open class ViewImpl
 @JvmOverloads
 constructor(
+  internal val file: File,
   override val name: String,
   override val view: View,
   override val simpleName: String = name.simpleName(),

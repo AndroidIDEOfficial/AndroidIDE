@@ -49,7 +49,10 @@ import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
-import java.util.regex.Pattern
+import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
+import com.itsaky.androidide.xml.utils.attrValue_qualifiedRefWithIncompletePckOrType
+import com.itsaky.androidide.xml.utils.attrValue_qualifiedRefWithIncompleteType
+import com.itsaky.androidide.xml.utils.attrValue_unqualifiedRef
 import org.eclipse.lemminx.dom.DOMDocument
 
 /**
@@ -59,11 +62,6 @@ import org.eclipse.lemminx.dom.DOMDocument
  */
 open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   IXmlCompletionProvider(provider) {
-
-  private val unqualifiedRefMatcher by lazy { Pattern.compile("@(\\w+)/(.*)") }
-  private val qualifiedRef by lazy { Pattern.compile("@((\\w|\\.)+):(\\w+)/(.*)") }
-  private val qualifiedRefWithIncompleteType by lazy { Pattern.compile("@((\\w|\\.)+):(\\w*)") }
-  private val qualifiedRefWithIncompletePckOrType by lazy { Pattern.compile("@((\\w|\\.)*)") }
 
   override fun canProvideCompletions(pathData: ResourcePathData, type: NodeType): Boolean {
     return super.canProvideCompletions(pathData, type) && type == ATTRIBUTE_VALUE
@@ -121,7 +119,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
     // If user is typign entry with package name and resource type. For example
     // '@com.itsaky.test.app:string/app_name' or '@android:string/ok'
-    var matcher = qualifiedRef.matcher(value)
+    var matcher = attrValue_qualifiedRef.matcher(value)
     if (matcher.matches()) {
       val valPck = matcher.group(1)
       val typeStr = matcher.group(3)
@@ -133,7 +131,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
     // If user is typing qualified reference but with incomplete type
     // For example: '@android:str' or '@com.itsaky.test.app:str'
-    matcher = qualifiedRefWithIncompleteType.matcher(value)
+    matcher = attrValue_qualifiedRefWithIncompleteType.matcher(value)
     if (matcher.matches()) {
       val valPck = matcher.group(1)!!
       val incompleteType = matcher.group(3) ?: ""
@@ -143,7 +141,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
 
     // If user is typing qualified reference but with incomplete type or package name
     // For example: '@android:str' or '@str'
-    matcher = qualifiedRefWithIncompletePckOrType.matcher(value)
+    matcher = attrValue_qualifiedRefWithIncompletePckOrType.matcher(value)
     if (matcher.matches()) {
       val valPck = matcher.group(1)!!
 
@@ -157,7 +155,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     }
 
     // If user is typing entry name with resource type. For example '@string/app_name'
-    matcher = unqualifiedRefMatcher.matcher(value)
+    matcher = attrValue_unqualifiedRef.matcher(value)
     if (matcher.matches()) {
       val typeStr = matcher.group(1)
       val newPrefix = matcher.group(2) ?: ""

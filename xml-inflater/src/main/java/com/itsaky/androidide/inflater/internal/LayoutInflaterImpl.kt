@@ -55,11 +55,17 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
   override var inflationEventListener: IInflateEventsListener? = null
   private val log = ILogger.newInstance("LayoutInflaterImpl")
+  private var inflatingFile: File? = null
+  
+  protected val file: File
+    get() = this.inflatingFile!!
 
   override fun inflate(file: File, parent: ViewGroup): IView? {
+    this.inflatingFile = file
     inflationEventListener?.onEvent(InflationStartEvent())
     return doInflate(file, wrap(parent)).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
+      inflatingFile = null
     }
   }
 
@@ -189,7 +195,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView {
     return try {
       val v = createViewInstance(widget, parent)
-      return ViewImpl(widget.qualifiedName, v)
+      return ViewImpl(file, widget.qualifiedName, v)
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
     }
@@ -227,11 +233,11 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   }
 
   private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {
-    return ErrorView(parent.context, message)
+    return ErrorView(file, parent.context, message)
   }
-  
-  private fun wrap(parent: ViewGroup) : IViewGroup {
-    return ViewGroupImpl(parent.javaClass.name, parent)
+
+  private fun wrap(parent: ViewGroup): IViewGroup {
+    return ViewGroupImpl(file, parent.javaClass.name, parent)
   }
 
   private fun SourcePosition.lineCol(): String {

@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.projects.api
 
+import com.android.SdkConstants
+import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.ResourceTable
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
@@ -119,7 +121,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   override var moduleData: SimpleModuleData? = null
-  
+
   init {
     type = Android
   }
@@ -304,15 +306,13 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return null
     return ResourceTableRegistry.getInstance().forPackage(this.packageName, *resDirs.toTypedArray())
   }
-  
-  /**
-   * Updates the resource table for this module.
-   */
+
+  /** Updates the resource table for this module. */
   fun updateResourceTable() {
     if (this.packageName == UNKNOWN_PACKAGE) {
       return
     }
-    
+
     CompletableFuture.runAsync {
       val tableRegistry = ResourceTableRegistry.getInstance()
       val resDirs = mainSourceSet?.sourceProvider?.resDirectories ?: return@runAsync
@@ -366,6 +366,52 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
               )
           }
       )
+    }
+  }
+
+  /**
+   * Checks all the resource tables from this module and returns if any of the tables contain
+   * resources for the the given package.
+   *
+   * @param pck The package to look for.
+   */
+  fun findResourceTableForPackage(pck: String, hasGroup: AaptResourceType? = null): ResourceTable? {
+    if (pck == SdkConstants.ANDROID_PKG) {
+      return getFrameworkResourceTable()
+    }
+
+    val tables: List<ResourceTable> =
+      mutableListOf<ResourceTable>().apply {
+        getResourceTable()?.let { add(it) }
+        addAll(getSourceResourceTables())
+        addAll(getDependencyResourceTables())
+      }
+
+    for (table in tables) {
+      val resPck = table.findPackage(pck) ?: continue
+      if (hasGroup == null) {
+        return table
+      }
+      if (resPck.findGroup(hasGroup) != null) {
+        return table
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Returns all the resource tables associated with this module (including the framework resource
+   * table).
+   *
+   * @return The associated resource tables.
+   */
+  fun getAllResourceTables(): Set<ResourceTable> {
+    return mutableSetOf<ResourceTable>().apply {
+      getResourceTable()?.let { add(it) }
+      getFrameworkResourceTable()?.let { add(it) }
+      addAll(getSourceResourceTables())
+      addAll(getDependencyResourceTables())
     }
   }
 

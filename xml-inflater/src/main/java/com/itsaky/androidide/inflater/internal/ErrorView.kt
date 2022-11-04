@@ -24,14 +24,15 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.inflater.R
+import java.io.File
 
 /**
  * View used to show views that cannot be inflated.
  *
  * @author Akash Yadav
  */
-class ErrorView(context: Context, message: String) :
-  ViewImpl(NAME, createErrView(context, message)) {
+class ErrorView(file: File, context: Context, message: String) :
+  ViewImpl(file = file, name = NAME, view = createErrView(context, message)) {
   companion object {
     private val NAME = View::class.java.name
   }
