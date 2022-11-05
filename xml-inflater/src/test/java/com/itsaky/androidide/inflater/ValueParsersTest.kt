@@ -24,6 +24,7 @@ import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import com.itsaky.androidide.inflater.internal.utils.parseDrawable
+import com.itsaky.androidide.inflater.internal.utils.parseInteger
 import com.itsaky.androidide.inflater.internal.utils.startParse
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -94,6 +95,27 @@ class ValueParsersTest {
         assertThat(parseBoolean("@bool/test_bool_false", def = true)).isFalse()
         assertThat(parseBoolean("@bool/test_bool_true_ref")).isTrue()
         assertThat(parseBoolean("@bool/test_bool_false_ref", def = true)).isFalse()
+        endParse()
+      }
+    }
+  }
+  
+  @Test
+  fun `integer parser test`() {
+    inflaterTest { module ->
+      requiresActivity { activity ->
+        startParse(module)
+        assertThat(parseInteger("0", def = 1)).isEqualTo(0)
+        assertThat(parseInteger("10")).isEqualTo(10)
+        assertThat(parseInteger("110")).isEqualTo(110)
+        assertThat(parseInteger("@android:integer/button_pressed_animation_duration")).isEqualTo(100)
+        assertThat(parseInteger("@android:integer/dock_enter_exit_duration")).isEqualTo(250)
+        assertThat(parseInteger("@android:integer/kg_carousel_angle")).isEqualTo(75)
+        assertThat(parseInteger("@android:integer/date_picker_mode")).isEqualTo(1)
+        assertThat(parseInteger("@integer/test_integer_1")).isEqualTo(1)
+        assertThat(parseInteger("@integer/test_integer_1_ref")).isEqualTo(1)
+        assertThat(parseInteger("@integer/test_integer_0", def = 1)).isEqualTo(0)
+        assertThat(parseInteger("@integer/test_integer_0_ref", def = 1)).isEqualTo(0)
         endParse()
       }
     }

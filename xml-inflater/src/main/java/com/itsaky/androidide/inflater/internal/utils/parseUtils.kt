@@ -29,9 +29,11 @@ import android.util.TypedValue.COMPLEX_UNIT_PX
 import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.util.TypedValue.applyDimension
 import android.view.ViewGroup.LayoutParams
+import androidx.core.text.isDigitsOnly
 import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
+import com.android.aaptcompiler.AaptResourceType.INTEGER
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.Reference
@@ -63,6 +65,44 @@ fun endParse() {
 }
 
 @JvmOverloads
+fun parseInteger(value: String, def: Int = 0): Int {
+  if (value.isDigitsOnly()) {
+    return value.toInt()
+  }
+
+  if (value[0] == '@') {
+    val (pck, type, name) = parseResourceReference(value)
+    if (type != "integer") {
+      throwInvalidResType(INTEGER, value)
+    }
+    val integerResolver: (Value?) -> Int? = {
+      if (it is BinaryPrimitive) {
+        it.resValue.data
+      } else def
+    }
+    return if (pck == null) {
+      resolveUnqualifiedResourceReference(
+        type = INTEGER,
+        name = name,
+        value = value,
+        def = def,
+        resolver = integerResolver
+      )
+    } else {
+      resolveQualifiedResourceReference(
+        pck = pck,
+        type = INTEGER,
+        name = name,
+        def = def,
+        resolver = integerResolver
+      )
+    }
+  }
+
+  return def
+}
+
+@JvmOverloads
 fun parseBoolean(value: String, def: Boolean = false): Boolean {
   when (value) {
     "true" -> return true
@@ -72,7 +112,7 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
   if (value[0] == '@') {
     val (pck, type, name) = parseResourceReference(value)
     if (type != "bool") {
-      throw IllegalArgumentException("Value must be a reference to a boolean resource. '$value'")
+      throwInvalidResType(BOOL, value)
     }
     val booleanResolver: (Value?) -> Boolean? =
       fun(resValue): Boolean {
@@ -159,7 +199,7 @@ fun parseDimension(
   } else if (c == '@') {
     val (pck, type, name) = parseResourceReference(value)
     if (type != "dimen") {
-      throw IllegalArgumentException("Value must be a dimension resource reference '$value'")
+      throwInvalidResType(DIMEN, value)
     }
     val resolver: (Value?) -> Int? = {
       if (it is BinaryPrimitive) {
@@ -224,8 +264,7 @@ fun <T> resolveUnqualifiedResourceReference(
   def: T,
   resolver: (Value?) -> T?
 ): T {
-  val (table, _, pack, entry) =
-    lookupUnqualifedResource(type, name, value) ?: return def
+  val (table, _, pack, entry) = lookupUnqualifedResource(type, name, value) ?: return def
   return resolveResourceReference(
     table = table,
     pck = pack,
@@ -323,4 +362,10 @@ private fun parseResourceReference(value: String): Triple<String?, String, Strin
   }
 
   return Triple<String?, String, String>(null, "", "")
+}
+
+private fun throwInvalidResType(type: AaptResourceType, value: String) {
+  throw IllegalArgumentException(
+    "Value must be a reference to a ${type.tagName} resource type. '$value'"
+  )
 }

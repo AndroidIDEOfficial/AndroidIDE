@@ -1,0 +1,6 @@
+<resources>
+    <integer name="test_integer_1">1</integer>
+    <integer name="test_integer_0">0</integer>
+    <integer name="test_integer_1_ref">@integer/test_integer_1</integer>
+    <integer name="test_integer_0_ref">@integer/test_integer_0</integer>
+</resources>
