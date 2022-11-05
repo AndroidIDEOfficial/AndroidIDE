@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.utils.endParse
+import com.itsaky.androidide.inflater.internal.utils.parseBoolean
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import com.itsaky.androidide.inflater.internal.utils.parseDrawable
 import com.itsaky.androidide.inflater.internal.utils.startParse
@@ -75,6 +76,24 @@ class ValueParsersTest {
           assertThat(this).isInstanceOf(ColorDrawable::class.java)
           assertThat((this as ColorDrawable).color).isEqualTo(Color.RED)
         }
+        endParse()
+      }
+    }
+  }
+  
+  @Test
+  fun `boolean parser test`() {
+    inflaterTest { module ->
+      requiresActivity { activity ->
+        startParse(module)
+        assertThat(parseBoolean("true")).isTrue()
+        assertThat(parseBoolean("false", def = true)).isFalse()
+        assertThat(parseBoolean("@android:bool/resolver_landscape_phone")).isTrue()
+        assertThat(parseBoolean("@android:bool/use_lock_pattern_drawable")).isFalse()
+        assertThat(parseBoolean("@bool/test_bool_true")).isTrue()
+        assertThat(parseBoolean("@bool/test_bool_false", def = true)).isFalse()
+        assertThat(parseBoolean("@bool/test_bool_true_ref")).isTrue()
+        assertThat(parseBoolean("@bool/test_bool_false_ref", def = true)).isFalse()
         endParse()
       }
     }

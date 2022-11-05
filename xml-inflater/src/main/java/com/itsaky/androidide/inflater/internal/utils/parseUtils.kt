@@ -29,15 +29,17 @@ import android.util.TypedValue.COMPLEX_UNIT_PX
 import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.util.TypedValue.applyDimension
 import android.view.ViewGroup.LayoutParams
+import com.android.aaptcompiler.AaptResourceType
+import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourceEntry
-import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.ResourceTablePackage
+import com.android.aaptcompiler.Value
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
@@ -60,31 +62,80 @@ fun endParse() {
   currentModule = null
 }
 
-fun parseDrawable(context: Context, value: String): Drawable {
+@JvmOverloads
+fun parseBoolean(value: String, def: Boolean = false): Boolean {
+  when (value) {
+    "true" -> return true
+    "false" -> return false
+  }
+
+  if (value[0] == '@') {
+    val (pck, type, name) = parseResourceReference(value)
+    if (type != "bool") {
+      throw IllegalArgumentException("Value must be a reference to a boolean resource. '$value'")
+    }
+    val booleanResolver: (Value?) -> Boolean? =
+      fun(resValue): Boolean {
+        return if (resValue is BinaryPrimitive) {
+          when (resValue.resValue.data) {
+            -1 -> true
+            0 -> false
+            else -> def
+          }
+        } else def
+      }
+    return if (pck == null) {
+      resolveUnqualifiedResourceReference(
+        type = BOOL,
+        name = name,
+        value = value,
+        def = def,
+        resolver = booleanResolver
+      )
+    } else {
+      resolveQualifiedResourceReference(
+        pck = pck,
+        type = BOOL,
+        name = name,
+        def = def,
+        resolver = booleanResolver
+      )
+    }
+  }
+
+  return def
+}
+
+@JvmOverloads
+fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawable()): Drawable {
   if (HEX_COLOR.matcher(value).matches()) {
     return parseColorDrawable(value)
   }
 
-//  if (value[0] == '@') {
-//    val (pck, type, name) = parseResourceReference(value)
-//    return if(pck == null) {
-//      parseDrawableResRef()
-//    } else {
-//      parseQualifiedDrawableResRef()
-//    }
-//  }
-  return newColorDrawable(Color.TRANSPARENT)
+  //    if (value[0] == '@') {
+  //      val (pck, type, name) = parseResourceReference(value)
+  //      return if(pck == null) {
+  //        parseDrawableResRef(type, name, value)
+  //      } else {
+  //        parseQualifiedDrawableResRef()
+  //      }
+  //    }
+  return def
 }
 
-fun parseColorDrawable(value: String): Drawable {
+fun parseColorDrawable(value: String, def: Int = Color.TRANSPARENT): Drawable {
   val color =
     try {
       Color.parseColor(value)
     } catch (err: Throwable) {
       log.warn("Unable to parse color code", value)
-      Color.TRANSPARENT
+      def
     }
   return newColorDrawable(color)
+}
+
+fun unknownDrawable(): Drawable {
+  return newColorDrawable(Color.TRANSPARENT)
 }
 
 fun newColorDrawable(color: Int): Drawable {
@@ -94,23 +145,44 @@ fun newColorDrawable(color: Int): Drawable {
 fun parseDimension(
   context: Context,
   value: String?,
-  defValue: Int = LayoutParams.WRAP_CONTENT,
+  def: Int = LayoutParams.WRAP_CONTENT,
 ): Int {
   if (value.isNullOrBlank()) {
-    return defValue
+    return def
   }
   val c = value[0]
   if (c.isDigit()) {
     val i = value.length - 2
-    val dimension = parseFloat(value.substring(0, i), defValue.toFloat())
+    val dimension = parseFloat(value.substring(0, i), def.toFloat())
     val unit = parseDimensionUnit(value.substring(i))
     return applyDimension(unit, dimension, context.resources.displayMetrics).toInt()
   } else if (c == '@') {
     val (pck, type, name) = parseResourceReference(value)
+    if (type != "dimen") {
+      throw IllegalArgumentException("Value must be a dimension resource reference '$value'")
+    }
+    val resolver: (Value?) -> Int? = {
+      if (it is BinaryPrimitive) {
+        it.resValue.data
+        // TODO handle other resource types
+      } else null
+    }
     return if (pck == null) {
-      parseDimensionResRef(type, name, value)
+      resolveUnqualifiedResourceReference(
+        type = DIMEN,
+        name = name,
+        value = value,
+        def = def,
+        resolver = resolver
+      )
     } else {
-      parseQualifiedDimensionResRef(type, value, pck, name)
+      resolveQualifiedResourceReference(
+        pck = pck,
+        type = DIMEN,
+        name = name,
+        def = def,
+        resolver = resolver
+      )
     }
   } else {
     return when (value) {
@@ -119,7 +191,7 @@ fun parseDimension(
       "match_parent", -> LayoutParams.MATCH_PARENT
       else -> {
         log.warn("Cannot infer type of dimension resource: '$value'")
-        LayoutParams.WRAP_CONTENT
+        def
       }
     }
   }
@@ -145,85 +217,95 @@ fun parseDimensionUnit(unitStr: String): Int {
   }
 }
 
-private fun parseDimensionResRef(type: String, name: String, value: String?): Int {
-  if (type.isBlank() || name.isBlank()) {
-    throw IllegalArgumentException("Cannot parse resource reference: '$value'")
-  }
-  // Must be a dimension type
-  if (type != "dimen") {
-    throw IllegalArgumentException("A dimension value is expect. Current value is $value")
-  }
-  
-  var resTable: ResourceTable? = null
-  var resGrp: ResourceGroup? = null
-  var resPck: ResourceTablePackage? = null
-  var resEntry: ResourceEntry? = null
-  for (t in module.getAllResourceTables()) {
-    val result = t.findResource(ResourceName("", DIMEN, name)) ?: continue
-    resTable = t
-    resGrp = result.group
-    resPck = result.tablePackage
-    resEntry = result.entry
-    break
-  }
-  
-  return resolveDimensionReference(
-    table = resTable!!,
-    group = resGrp!!,
-    entry = resEntry!!,
-    pck = resPck!!.name,
-    name = name
+fun <T> resolveUnqualifiedResourceReference(
+  type: AaptResourceType,
+  name: String,
+  value: String?,
+  def: T,
+  resolver: (Value?) -> T?
+): T {
+  val (table, _, pack, entry) =
+    lookupUnqualifedResource(type, name, value) ?: return def
+  return resolveResourceReference(
+    table = table,
+    pck = pack,
+    entry = entry,
+    type = type,
+    name = name,
+    def = def,
+    resolver = resolver
   )
 }
 
-private fun parseQualifiedDimensionResRef(
-  type: String,
-  value: String?,
+fun <T> resolveQualifiedResourceReference(
   pck: String,
-  name: String
-): Int {
-  // Must be a dimension type
-  if (type != "dimen") {
-    throw IllegalArgumentException("A dimension value is expect. Current value is $value")
-  }
-  
+  type: AaptResourceType,
+  name: String,
+  def: T,
+  resolver: (Value?) -> T?
+): T {
   val table =
-    module.findResourceTableForPackage(pck, DIMEN)
+    module.findResourceTableForPackage(pck, type)
       ?: throw IllegalArgumentException("Resource table for package '$pck' not found.")
-  
-  return resolveDimensionReference(table = table, group = null, pck = pck, name = name)
+
+  return resolveResourceReference(
+    table = table,
+    type = type,
+    pck = pck,
+    name = name,
+    def = def,
+    resolver = resolver
+  )
 }
 
-private fun resolveDimensionReference(
+fun <T> resolveResourceReference(
   table: ResourceTable,
-  group: ResourceGroup? = null,
-  entry: ResourceEntry? = null,
+  type: AaptResourceType,
   pck: String,
   name: String,
-): Int {
-  val grp = group ?: table.findPackage(pck)!!.findGroup(DIMEN)!!
-  val e =
-    entry
-      ?: grp.findEntry(name)
-        ?: run {
-        log.warn("Dimension resource with name '$name' not found")
-        return LayoutParams.WRAP_CONTENT
-      }
-  val dimenValue = e.findValue(ConfigDescription())!!.value
+  def: T,
+  resolver: (Value?) -> T?
+): T {
+  val result =
+    table.findResource(ResourceName(pck = pck, type = type, entry = name))
+      ?: run { throw IllegalArgumentException("$type resource '$name' not found") }
+  return resolveResourceReference(
+    table,
+    result.tablePackage,
+    result.entry,
+    type,
+    name,
+    def,
+    resolver
+  )
+}
+
+fun <T> resolveResourceReference(
+  table: ResourceTable,
+  pck: ResourceTablePackage,
+  entry: ResourceEntry,
+  type: AaptResourceType,
+  name: String,
+  def: T,
+  resolver: (Value?) -> T?
+): T {
+  val dimenValue = entry.findValue(ConfigDescription())!!.value
   if (dimenValue is Reference) {
-    return resolveDimensionReference(
+    return resolveResourceReference(
       table = table,
-      group = grp,
-      entry = null,
-      pck = pck,
-      name = dimenValue.name.entry!!
+      type = type,
+      pck = pck.name,
+      name = dimenValue.name.entry!!,
+      def = def,
+      resolver = resolver
     )
-  } else if (dimenValue is BinaryPrimitive) {
-    return dimenValue.resValue.data
   }
 
-  log.warn("Unable to resolve dimension reference '$name'")
-  return LayoutParams.WRAP_CONTENT
+  return resolver(dimenValue)
+    ?: run {
+      log.warn("Unable to resolve dimension reference '$name'")
+      def
+    }
 }
 
 private fun parseResourceReference(value: String): Triple<String?, String, String> {
