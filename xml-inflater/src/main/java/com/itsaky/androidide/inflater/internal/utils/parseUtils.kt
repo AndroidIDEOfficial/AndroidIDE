@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue.complexToDimension
+import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
 import com.android.aaptcompiler.AaptResourceType
@@ -29,6 +30,7 @@ import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
+import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.Reference
@@ -41,6 +43,7 @@ import com.android.aaptcompiler.android.ResValue.DataType.DIMENSION
 import com.android.aaptcompiler.android.stringToFloat
 import com.android.aaptcompiler.tryParseBool
 import com.android.aaptcompiler.tryParseColor
+import com.android.aaptcompiler.tryParseFlagSymbol
 import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -105,7 +108,7 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
 @JvmOverloads
 fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawable()): Drawable {
   if (HEX_COLOR.matcher(value).matches()) {
-    return parseColorDrawable(value)
+    return parseColorDrawable(context, value)
   }
 
   //    if (value[0] == '@') {
@@ -119,8 +122,15 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
   return def
 }
 
-fun parseColorDrawable(value: String, def: Int = Color.TRANSPARENT): Drawable {
-  tryParseColor(value)?.resValue
+@JvmOverloads
+fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPARENT): Drawable {
+  val color =
+    parseColor(context, value, def)
+  return newColorDrawable(color)
+}
+
+@JvmOverloads
+fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
   val color =
     try {
       Color.parseColor(value)
@@ -128,7 +138,10 @@ fun parseColorDrawable(value: String, def: Int = Color.TRANSPARENT): Drawable {
       log.warn("Unable to parse color code", value)
       def
     }
-  return newColorDrawable(color)
+  
+  // TODO Parse other types of colors 
+  
+  return color
 }
 
 fun unknownDrawable(): Drawable {
@@ -139,6 +152,7 @@ fun newColorDrawable(color: Int): Drawable {
   return ColorDrawable(color)
 }
 
+@JvmOverloads
 fun parseDimension(
   context: Context,
   value: String?,
@@ -182,6 +196,20 @@ fun parseFloat(value: String, defValue: Float): Float {
   } catch (err: Throwable) {
     defValue
   }
+}
+
+@JvmOverloads
+fun parseGravity(value: String, def: Int = defaultGravity()): Int {
+  val attr = findAttributeResource("android", ATTR, "gravity") ?: return defaultGravity()
+  return parseFlag(attr = attr, value = value, def = defaultGravity())
+}
+
+fun parseFlag(attr: AttributeResource, value: String, def: Int = -1): Int {
+  return tryParseFlagSymbol(attr, value)?.resValue?.data ?: def
+}
+
+fun defaultGravity(): Int {
+  return Gravity.START or Gravity.TOP
 }
 
 fun <T> parseReference(

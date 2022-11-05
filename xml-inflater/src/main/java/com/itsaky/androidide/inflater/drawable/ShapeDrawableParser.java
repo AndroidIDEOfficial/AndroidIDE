@@ -22,13 +22,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.inflater.IResourceTable;
 
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
@@ -43,17 +39,13 @@ import java.util.Arrays;
  */
 public class ShapeDrawableParser extends IDrawableParser {
 
-  protected ShapeDrawableParser(
-      XmlPullParser parser,
-      IResourceTable resourceFinder,
-      DisplayMetrics displayMetrics,
-      int minDepth) {
-    super(parser, resourceFinder, displayMetrics, minDepth);
+  protected ShapeDrawableParser(XmlPullParser parser, int minDepth) {
+    super(parser, minDepth);
   }
 
   @Nullable
   @Override
-  public Drawable parseDrawable() throws Exception {
+  public Drawable parseDrawable(final Context context) throws Exception {
 
     final var drawable = new GradientDrawable();
 
@@ -65,13 +57,13 @@ public class ShapeDrawableParser extends IDrawableParser {
 
     if (isApi29()) {
       index = attrIndex("innerRadius");
-      drawable.setInnerRadius(index == -1 ? 0 : parseDimension(value(index), 0));
+      drawable.setInnerRadius(index == -1 ? 0 : parseDimension(context, value(index)));
 
       index = attrIndex("innerRadiusRatio");
       drawable.setInnerRadiusRatio(index == -1 ? 1f : Float.parseFloat(value(index)));
 
       index = attrIndex("thickness");
-      drawable.setThickness(index == -1 ? 0 : parseDimension(value(index), 0));
+      drawable.setThickness(index == -1 ? 0 : parseDimension(context, value(index)));
 
       index = attrIndex("thicknessRatio");
       drawable.setThicknessRatio(index == -1 ? 1f : Float.parseFloat(value(index)));
@@ -86,22 +78,22 @@ public class ShapeDrawableParser extends IDrawableParser {
       if (event == XmlPullParser.START_TAG) {
         switch (name) {
           case "corners":
-            parseCorners(drawable);
+            parseCorners(context, drawable);
             break;
           case "gradient":
-            parseGradient(drawable);
+            parseGradient(context, drawable);
             break;
           case "padding":
-            parsePadding(drawable);
+            parsePadding(context, drawable);
             break;
           case "size":
-            parseSize(drawable);
+            parseSize(context, drawable);
             break;
           case "solid":
-            parseSolid(drawable);
+            parseSolid(context, drawable);
             break;
           case "stroke":
-            parseStroke(drawable);
+            parseStroke(context, drawable);
             break;
         }
       }
@@ -111,51 +103,53 @@ public class ShapeDrawableParser extends IDrawableParser {
     return drawable;
   }
 
-  private void parseStroke(@NonNull final GradientDrawable drawable) {
+  private void parseStroke(@NonNull Context context, @NonNull final GradientDrawable drawable) {
     var index = attrIndex("width");
     var strokeWidth = 0;
     if (index != -1) {
-      drawable.setStroke(strokeWidth = parseDimension(value(index), 0), Color.TRANSPARENT);
+      drawable.setStroke(strokeWidth = parseDimension(context, value(index)), Color.TRANSPARENT);
     }
 
     index = attrIndex("color");
     var strokeColor = Color.TRANSPARENT;
     if (index != -1) {
-      drawable.setStroke(strokeWidth, strokeColor = parseColor(value(index), appContext()));
+      drawable.setStroke(strokeWidth, strokeColor = parseColor(context, value(index)));
     }
 
     index = attrIndex("dashWidth");
     var dashWidth = 0;
     if (index != -1) {
-      drawable.setStroke(strokeWidth, strokeColor, dashWidth = parseDimension(value(index), 0), 0);
+      drawable.setStroke(
+          strokeWidth, strokeColor, dashWidth = parseDimension(context, value(index)), 0);
     }
 
     index = attrIndex("dashGap");
     if (index != -1) {
-      drawable.setStroke(strokeWidth, strokeColor, dashWidth, parseDimension(value(index), 0));
+      drawable.setStroke(
+          strokeWidth, strokeColor, dashWidth, parseDimension(context, value(index)));
     }
   }
 
-  private void parseSolid(@NonNull final GradientDrawable drawable) {
+  private void parseSolid(@NonNull Context context, @NonNull final GradientDrawable drawable) {
     var index = attrIndex("color");
     if (index != -1) {
-      drawable.setColor(parseColor(value(index), appContext()));
+      drawable.setColor(parseColor(context, value(index)));
     }
   }
 
-  private void parseSize(@NonNull final GradientDrawable drawable) {
+  private void parseSize(@NonNull Context context, @NonNull final GradientDrawable drawable) {
     var index = attrIndex("width");
     if (index != -1) {
-      drawable.setSize(parseDimension(value(index), 0), drawable.getIntrinsicHeight());
+      drawable.setSize(parseDimension(context, value(index)), drawable.getIntrinsicHeight());
     }
 
     index = attrIndex("height");
     if (index != -1) {
-      drawable.setSize(drawable.getIntrinsicWidth(), parseDimension(value(index), 0));
+      drawable.setSize(drawable.getIntrinsicWidth(), parseDimension(context, value(index)));
     }
   }
 
-  private void parsePadding(@NonNull final GradientDrawable drawable) {
+  private void parsePadding(@NonNull Context context, @NonNull final GradientDrawable drawable) {
 
     // Padding is available from API 29 only
     if (!isApi29()) {
@@ -170,25 +164,25 @@ public class ShapeDrawableParser extends IDrawableParser {
     var changed = false;
     var index = attrIndex("left");
     if (index != -1) {
-      rect.left = parseDimension(value(index), 0);
+      rect.left = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("top");
     if (index != -1) {
-      rect.top = parseDimension(value(index), 0);
+      rect.top = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("right");
     if (index != -1) {
-      rect.right = parseDimension(value(index), 0);
+      rect.right = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("bottom");
     if (index != -1) {
-      rect.bottom = parseDimension(value(index), 0);
+      rect.bottom = parseDimension(context, value(index));
       changed = true;
     }
 
@@ -197,7 +191,7 @@ public class ShapeDrawableParser extends IDrawableParser {
     }
   }
 
-  private void parseGradient(@NonNull final GradientDrawable drawable) {
+  private void parseGradient(@NonNull Context context, @NonNull final GradientDrawable drawable) {
     var index = attrIndex("angle");
     drawable.setOrientation(
         index == -1
@@ -218,13 +212,13 @@ public class ShapeDrawableParser extends IDrawableParser {
 
     index = attrIndex("centerColor");
     if (index != -1) {
-      colors[1] = parseColor(value(index), appContext());
+      colors[1] = parseColor(context, value(index));
       changed = true;
     }
 
     index = attrIndex("endColor");
     if (index != -1) {
-      colors[2] = parseColor(value(index), appContext());
+      colors[2] = parseColor(context, value(index));
       changed = true;
     }
 
@@ -234,7 +228,7 @@ public class ShapeDrawableParser extends IDrawableParser {
 
     index = attrIndex("startColor");
     if (index != -1) {
-      colors[0] = parseColor(value(index), appContext());
+      colors[0] = parseColor(context, value(index));
       changed = true;
     }
 
@@ -299,14 +293,10 @@ public class ShapeDrawableParser extends IDrawableParser {
     return GradientDrawable.Orientation.LEFT_RIGHT;
   }
 
-  protected Context appContext() {
-    return BaseApplication.getBaseInstance();
-  }
-
-  private void parseCorners(@NonNull GradientDrawable drawable) {
+  private void parseCorners(@NonNull Context context, @NonNull GradientDrawable drawable) {
     int index;
     index = attrIndex("radius");
-    drawable.setCornerRadius(index == -1 ? 0f : parseDimension(value(index), 0));
+    drawable.setCornerRadius(index == -1 ? 0f : parseDimension(context, value(index)));
 
     var changed = false;
     final var radii = new float[8];
@@ -314,25 +304,25 @@ public class ShapeDrawableParser extends IDrawableParser {
 
     index = attrIndex("topLeftRadius");
     if (index != -1) {
-      radii[0] = radii[1] = parseDimension(value(index), 0);
+      radii[0] = radii[1] = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("topRightRadius");
     if (index != -1) {
-      radii[2] = radii[3] = parseDimension(value(index), 0);
+      radii[2] = radii[3] = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("bottomLeftRadius");
     if (index != -1) {
-      radii[4] = radii[5] = parseDimension(value(index), 0);
+      radii[4] = radii[5] = parseDimension(context, value(index));
       changed = true;
     }
 
     index = attrIndex("bottomRightRadius");
     if (index != -1) {
-      radii[6] = radii[7] = parseDimension(value(index), 0);
+      radii[6] = radii[7] = parseDimension(context, value(index));
       changed = true;
     }
 

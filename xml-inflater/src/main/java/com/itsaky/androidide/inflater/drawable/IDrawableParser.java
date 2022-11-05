@@ -16,10 +16,13 @@
  */
 package com.itsaky.androidide.inflater.drawable;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 
 import androidx.annotation.ChecksSdkIntAtLeast;
+
+import com.itsaky.androidide.inflater.internal.utils.ParseUtilsKt;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -46,7 +49,7 @@ public abstract class IDrawableParser {
    * @return The parsed {@link Drawable} or <code>null</code> if the parse was unsuccessful.
    * @throws Exception If any fatal error occurred while parsing the drawable.
    */
-  public Drawable parse() throws Exception {
+  public Drawable parse(final Context context) throws Exception {
     var index = attrIndex("visible");
     var visible = true;
     if (index != -1) {
@@ -65,7 +68,7 @@ public abstract class IDrawableParser {
       level = parseInteger(value(index), 0);
     }
 
-    final var drawable = parseDrawable();
+    final var drawable = parseDrawable(context);
 
     if (drawable != null) {
       drawable.setVisible(visible, false);
@@ -75,14 +78,38 @@ public abstract class IDrawableParser {
 
     return drawable;
   }
-
+  
+  protected int parseInteger(final String value, final int def) {
+    return ParseUtilsKt.parseInteger(value, def);
+  }
+  
+  protected boolean parseBoolean(final String value) {
+    return ParseUtilsKt.parseBoolean(value);
+  }
+  
+  protected Drawable parseDrawable(final Context context, final String value) {
+    return ParseUtilsKt.parseDrawable(context, value);
+  }
+  
+  protected int parseGravity(String value) {
+    return ParseUtilsKt.parseGravity(value);
+  }
+  
+  protected int parseDimension(Context context, String value) {
+    return (int) ParseUtilsKt.parseDimension(context, value, 0);
+  }
+  
+  protected int parseColor(Context context, String value) {
+    return ParseUtilsKt.parseColor(context, value);
+  }
+  
   /**
    * Actual implementation of the parse logic.
    *
    * @return The parsed drawable. Maybe <code>null</code>.
    * @throws Exception If any fatal error occurs while parsing the drawable.
    */
-  protected abstract Drawable parseDrawable() throws Exception;
+  protected abstract Drawable parseDrawable(final Context context) throws Exception;
 
   /**
    * Find the index of the attribute with the given name.

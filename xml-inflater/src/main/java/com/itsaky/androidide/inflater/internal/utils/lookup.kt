@@ -19,7 +19,8 @@ package com.itsaky.androidide.inflater.internal.utils
 
 import com.android.SdkConstants
 import com.android.aaptcompiler.AaptResourceType
-import com.android.aaptcompiler.AaptResourceType.DIMEN
+import com.android.aaptcompiler.AttributeResource
+import com.android.aaptcompiler.ConfigDescription
 import com.android.aaptcompiler.ResourceEntry
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceName
@@ -36,25 +37,41 @@ internal data class LookupResult(
   val entry: ResourceEntry
 )
 
-internal fun lookupUnqualifedResource(type : AaptResourceType, name: String, value: String?): LookupResult? {
+internal fun lookupUnqualifedResource(
+  type: AaptResourceType,
+  name: String,
+  value: String?
+): LookupResult? {
   if (name.isBlank()) {
     throw IllegalArgumentException("Cannot parse resource reference: '$value'")
   }
+  val (table, group, pack, entry) =
+    findUnqualifiedResourceEntry(type, name)
+      ?: run {
+        log.warn("Unable to find resource entry '$value'")
+        return null
+      }
+
+  return LookupResult(table, group, pack, entry)
+}
+
+internal fun findUnqualifiedResourceEntry(type: AaptResourceType, name: String): LookupResult? {
   var resTable: ResourceTable? = null
   var resGrp: ResourceGroup? = null
   var resPck: ResourceTablePackage? = null
   var resEntry: ResourceEntry? = null
   for (t in module.getAllResourceTables()) {
-    val entries = t.packages.mapNotNull {
-      if (it.name == SdkConstants.ANDROID_PKG) {
-        // Do not look in 'android' package
-        return@mapNotNull null
+    val entries =
+      t.packages.mapNotNull {
+        if (it.name == SdkConstants.ANDROID_PKG) {
+          // Do not look in 'android' package
+          return@mapNotNull null
+        }
+
+        val group = it.findGroup(type) ?: return@mapNotNull null
+        val entry = group.findEntry(name) ?: return@mapNotNull null
+        Triple(it, group, entry)
       }
-      
-      val group = it.findGroup(type) ?: return@mapNotNull null
-      val entry = group.findEntry(name) ?: return@mapNotNull null
-      Triple(it, group, entry)
-    }
     if (entries.isEmpty()) {
       continue
     }
@@ -65,31 +82,32 @@ internal fun lookupUnqualifedResource(type : AaptResourceType, name: String, val
     resEntry = result.third
     break
   }
-
   if (resTable == null) {
-    log.warn("Unable to find resource entry '$value'")
     return null
   }
-
   return LookupResult(resTable, resGrp!!, resPck!!, resEntry!!)
 }
 
-internal fun lookupQualifiedResourceEntry(
-  table: ResourceTable,
-  group: ResourceGroup? = null,
-  entry: ResourceEntry? = null,
-  pck: String,
+internal fun findQualifedResourceEntry(
+  pack: String,
+  type: AaptResourceType,
   name: String
-): Pair<ResourceGroup?, ResourceEntry?> {
-  if (entry != null) {
-    return group to entry
-  }
+): ResourceEntry? {
+  return module
+    .findResourceTableForPackage(pack, type)
+    ?.findResource(ResourceName(pack, type, name))
+    ?.entry
+}
 
-  val grp = group ?: table.findPackage(pck)!!.findGroup(DIMEN)!!
-  return grp to
-    (grp.findEntry(name)
-      ?: run {
-        log.warn("Dimension resource with name '$name' not found")
-        null
-      })
+internal fun findAttributeResource(
+  pck: String?,
+  type: AaptResourceType,
+  name: String
+): AttributeResource? {
+  val entry =
+    if (pck == null) {
+      (findUnqualifiedResourceEntry(type, name) ?: return null).entry
+    } else findQualifedResourceEntry(pck, type, name)
+
+  return entry?.findValue(ConfigDescription())?.value as? AttributeResource
 }

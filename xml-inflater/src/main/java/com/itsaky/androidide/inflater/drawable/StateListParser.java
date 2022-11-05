@@ -17,14 +17,12 @@
 
 package com.itsaky.androidide.inflater.drawable;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.util.DisplayMetrics;
 
-import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.inflater.InflateException;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.inflater.IResourceTable;
-import com.itsaky.inflater.InflateException;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -39,16 +37,12 @@ public class StateListParser extends IDrawableParser {
 
   private static final ILogger LOG = ILogger.newInstance("StateListParser");
 
-  protected StateListParser(
-      XmlPullParser parser,
-      IResourceTable resourceFinder,
-      DisplayMetrics displayMetrics,
-      int minDepth) {
-    super(parser, resourceFinder, displayMetrics, minDepth);
+  protected StateListParser(XmlPullParser parser, int minDepth) {
+    super(parser, minDepth);
   }
 
   @Override
-  public Drawable parseDrawable() throws Exception {
+  public Drawable parseDrawable(final Context context) throws Exception {
     var states = new StateListDrawable();
 
     // --------------------------- NOTE -------------------------
@@ -70,7 +64,7 @@ public class StateListParser extends IDrawableParser {
           if (index == -1) {
             throw new InflateException("<selector> item does not define android:drawable");
           }
-          final var drawable = parseDrawable(value(index), BaseApplication.getBaseInstance());
+          final var drawable = parseDrawable(context, value(index));
           if (drawable == null) {
             throw new InflateException("Unable to parse drawable for android:drawable attribute");
           }

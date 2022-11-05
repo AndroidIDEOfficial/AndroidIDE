@@ -47,8 +47,10 @@ android {
 dependencies {
     implementation androidx.appcompat
     implementation common.kotlin
+    implementation common.utilcode
     
     implementation project(path: ':annotations')
+    implementation project(path: ':common')
     implementation project(path: ':build-tools:aaptcompiler')
     implementation project(path: ':build-tools:projects')
     implementation project(path: ':build-tools:xml-utils')
