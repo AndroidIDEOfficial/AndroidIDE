@@ -29,6 +29,7 @@ import com.itsaky.androidide.inflater.internal.utils.startParse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class ValueParsersTest {
@@ -38,41 +39,41 @@ class ValueParsersTest {
     inflaterTest { module ->
       requiresActivity { activity ->
         startParse(module)
-        
+
         // Hardcoded dimensions
         val units = arrayOf("dp", "sp", "pt", "px", "in", "mm")
         val results = intArrayOf(1, 1, 2, 1, 160, 6)
         for (i in units.indices) {
-          assertThat(parseDimension(activity, "1" + units[i], -1)).isEqualTo(results[i])
+          assertThat(parseDimension(activity, "1" + units[i], -1f).roundToInt()).isEqualTo(results[i])
         }
-        
+
         // Dimensions from platform resources
-        assertThat(parseDimension(activity, "@android:dimen/app_icon_size")).isEqualTo(12289)
+        assertThat(parseDimension(activity, "@android:dimen/app_icon_size")).isEqualTo(48)
         assertThat(parseDimension(activity, "@android:dimen/status_bar_height_portrait"))
-          .isEqualTo(6145)
-        
-        val exists = try {
-          // The app module here targets android 31 and the dimension resource below was added in
-          // android 31. So, the resource should not be resolved and
-          // ViewGroup.LayoutParams.WRAP_CONTENT must be returned instead.
-          assertThat(parseDimension(activity, "@android:dimen/status_bar_height_default"))
-            .isEqualTo(-2)
-          true
-        } catch (err: IllegalArgumentException) {
-          false
-        }
-        
+          .isEqualTo(24)
+
+        val exists =
+          try {
+            // The app module here targets android 31 and the dimension resource below was added in
+            // android 31. So, this should throw an exception
+            assertThat(parseDimension(activity, "@android:dimen/status_bar_height_default"))
+              .isEqualTo(-2)
+            true
+          } catch (err: IllegalArgumentException) {
+            false
+          }
+
         assertThat(exists).isFalse()
-        
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp", def = 1)).isEqualTo(0)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp", def = 0)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp_ref", def = 0)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp_ref", def = 0)).isEqualTo(0)
-  
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt", def = 1)).isEqualTo(0)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt", def = 0)).isEqualTo(2)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt_ref", def = 0)).isEqualTo(2)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt_ref", def = 0)).isEqualTo(0)
+
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp", def = 1f)).isEqualTo(0)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp_ref", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp_ref", def = 0f)).isEqualTo(0)
+
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt", def = 1f)).isEqualTo(0)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt_ref", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt_ref", def = 0f)).isEqualTo(0)
         endParse()
       }
     }
@@ -92,11 +93,11 @@ class ValueParsersTest {
       }
     }
   }
-  
+
   @Test
   fun `boolean parser test`() {
     inflaterTest { module ->
-      requiresActivity { activity ->
+      requiresActivity {
         startParse(module)
         assertThat(parseBoolean("true")).isTrue()
         assertThat(parseBoolean("false", def = true)).isFalse()
@@ -110,16 +111,17 @@ class ValueParsersTest {
       }
     }
   }
-  
+
   @Test
   fun `integer parser test`() {
     inflaterTest { module ->
-      requiresActivity { activity ->
+      requiresActivity {
         startParse(module)
         assertThat(parseInteger("0", def = 1)).isEqualTo(0)
         assertThat(parseInteger("10")).isEqualTo(10)
         assertThat(parseInteger("110")).isEqualTo(110)
-        assertThat(parseInteger("@android:integer/button_pressed_animation_duration")).isEqualTo(100)
+        assertThat(parseInteger("@android:integer/button_pressed_animation_duration"))
+          .isEqualTo(100)
         assertThat(parseInteger("@android:integer/dock_enter_exit_duration")).isEqualTo(250)
         assertThat(parseInteger("@android:integer/kg_carousel_angle")).isEqualTo(75)
         assertThat(parseInteger("@android:integer/date_picker_mode")).isEqualTo(1)

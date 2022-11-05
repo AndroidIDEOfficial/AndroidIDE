@@ -32,6 +32,7 @@ import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import java.io.File
+import kotlin.math.roundToInt
 
 /**
  * Attribute adapter for [View].
@@ -55,7 +56,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
   }
   
   protected fun parseDimension(context: Context, value: String): Int {
-    return com.itsaky.androidide.inflater.internal.utils.parseDimension(context, value)
+    return com.itsaky.androidide.inflater.internal.utils.parseDimension(context, value).roundToInt()
   }
   
   protected fun parseFloat(value: String, def: Float = 1f): Float {

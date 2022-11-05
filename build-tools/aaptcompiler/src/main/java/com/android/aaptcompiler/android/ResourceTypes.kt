@@ -134,6 +134,10 @@ data class ResValue(val dataType: DataType, val data: Int, val size: Short = 0) 
     const val UNIT_SHIFT = 0
     const val UNIT_MASK = 0xf
 
+    // ==================================
+    // The values here are same as specified in TypedValue
+    // ==================================
+    
     // TYPE_DIMENSION: Value is raw pixels.
     const val UNIT_PX = 0
     // TYPE_DIMENSION: Value is Device Independent Pixels.

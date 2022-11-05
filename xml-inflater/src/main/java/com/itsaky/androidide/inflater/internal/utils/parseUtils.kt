@@ -21,13 +21,14 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.util.TypedValue.COMPLEX_UNIT_IN
 import android.util.TypedValue.COMPLEX_UNIT_MM
 import android.util.TypedValue.COMPLEX_UNIT_PT
 import android.util.TypedValue.COMPLEX_UNIT_PX
 import android.util.TypedValue.COMPLEX_UNIT_SP
-import android.util.TypedValue.applyDimension
+import android.util.TypedValue.complexToDimension
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
 import com.android.aaptcompiler.AaptResourceType
@@ -42,6 +43,8 @@ import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.ResourceTablePackage
 import com.android.aaptcompiler.Value
+import com.android.aaptcompiler.android.ResValue.DataType.DIMENSION
+import com.android.aaptcompiler.android.stringToFloat
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
@@ -185,25 +188,28 @@ fun newColorDrawable(color: Int): Drawable {
 fun parseDimension(
   context: Context,
   value: String?,
-  def: Int = LayoutParams.WRAP_CONTENT,
-): Int {
+  def: Float = LayoutParams.WRAP_CONTENT.toFloat(),
+): Float {
   if (value.isNullOrBlank()) {
     return def
   }
+  val displayMetrics = context.resources.displayMetrics
   val c = value[0]
   if (c.isDigit()) {
-    val i = value.length - 2
-    val dimension = parseFloat(value.substring(0, i), def.toFloat())
-    val unit = parseDimensionUnit(value.substring(i))
-    return applyDimension(unit, dimension, context.resources.displayMetrics).toInt()
+    val (dataType, data, _) = stringToFloat(value) ?: return def
+    if (dataType != DIMENSION) {
+      return def
+    }
+
+    return complexToDimension(data, displayMetrics)
   } else if (c == '@') {
     val (pck, type, name) = parseResourceReference(value)
     if (type != "dimen") {
       throwInvalidResType(DIMEN, value)
     }
-    val resolver: (Value?) -> Int? = {
+    val resolver: (Value?) -> Float? = {
       if (it is BinaryPrimitive) {
-        it.resValue.data
+        complexToDimension(it.resValue.data, displayMetrics)
         // TODO handle other resource types
       } else null
     }
@@ -226,9 +232,9 @@ fun parseDimension(
     }
   } else {
     return when (value) {
-      "wrap_content" -> LayoutParams.WRAP_CONTENT
+      "wrap_content" -> LayoutParams.WRAP_CONTENT.toFloat()
       "fill_parent",
-      "match_parent", -> LayoutParams.MATCH_PARENT
+      "match_parent", -> LayoutParams.MATCH_PARENT.toFloat()
       else -> {
         log.warn("Cannot infer type of dimension resource: '$value'")
         def
@@ -242,18 +248,6 @@ fun parseFloat(value: String, defValue: Float): Float {
     value.toFloat()
   } catch (err: Throwable) {
     defValue
-  }
-}
-
-fun parseDimensionUnit(unitStr: String): Int {
-  return when (unitStr) {
-    "dp" -> COMPLEX_UNIT_DIP
-    "sp" -> COMPLEX_UNIT_SP
-    "pt" -> COMPLEX_UNIT_PT
-    "px" -> COMPLEX_UNIT_PX
-    "in" -> COMPLEX_UNIT_IN
-    "mm" -> COMPLEX_UNIT_MM
-    else -> COMPLEX_UNIT_DIP
   }
 }
 
