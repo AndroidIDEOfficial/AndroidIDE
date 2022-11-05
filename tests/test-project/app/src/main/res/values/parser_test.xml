@@ -25,4 +25,16 @@
     <string name="test_string_ref">@string/test_string</string>
     <string name="test_string_styled">I <b>love</b> Android!</string>
     <string name="test_string_styled_ref">@string/test_string_styled</string>
+    
+    <string-array name="test_string_array">
+        <item>I</item>
+        <item>love</item>
+        <item>Android</item>
+    </string-array>
+    
+    <integer-array name="test_integer_array">
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+    </integer-array>
 </resources>

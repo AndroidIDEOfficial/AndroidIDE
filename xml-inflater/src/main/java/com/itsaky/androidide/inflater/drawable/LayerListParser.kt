@@ -19,7 +19,6 @@ package com.itsaky.androidide.inflater.drawable
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
-import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.inflater.internal.utils.TextDrawable
 import org.jetbrains.annotations.Contract
 import org.xmlpull.v1.XmlPullParser
@@ -36,7 +35,7 @@ open class LayerListParser protected constructor(parser: XmlPullParser?, minDept
     val layer = LayerDrawable(arrayOfNulls(0))
     var index: Int
     var value: String?
-    var event = parser.eventType
+    var event = parser!!.eventType
     var left = 0
     var top = 0
     var right = 0
@@ -44,13 +43,12 @@ open class LayerListParser protected constructor(parser: XmlPullParser?, minDept
     var parseInner = true
     while (event != XmlPullParser.END_DOCUMENT && canParse()) {
       if (event == XmlPullParser.START_TAG) {
-        val name = parser.name
+        val name = parser!!.name
         if ("item" == name) {
           index = attrIndex("drawable")
           var drawable: Drawable? = null
           if (index != -1) {
-            value =
-              value(index) ?: throw InflateException("Invalid value for android:drawable attribute")
+            value = value(index)
             drawable = parseDrawable(context, value)
 
             // if the android:drawable is specified, we do not parse the inner elements
@@ -71,15 +69,15 @@ open class LayerListParser protected constructor(parser: XmlPullParser?, minDept
             addToLayer(layer, drawable, left, top, right, bottom)
           }
           if (!parseInner) {
-            skipToEndTag(parser.depth)
+            skipToEndTag(parser!!.depth)
           }
-        } else if (parser.depth > 2 && parseInner) {
+        } else if (parser!!.depth > 2 && parseInner) {
           // depth 1 = <layer-list>
           // depth 2 = <item>
           // depth > 2 = child drawables inside <item> tag
           val parser = DrawableParserFactory.parserForTag(null, parser, name)
           if (parser != null) {
-            parser.setMinDepth(this.parser.depth)
+            parser.minDepth = this.parser!!.depth
             var d = parser.parse(context)
             if (d == null) {
               d = unsupported(context)
@@ -90,7 +88,7 @@ open class LayerListParser protected constructor(parser: XmlPullParser?, minDept
           }
         }
       }
-      event = parser.next()
+      event = parser!!.next()
     }
     return layer
   }
@@ -109,12 +107,12 @@ open class LayerListParser protected constructor(parser: XmlPullParser?, minDept
 
   @Throws(Exception::class)
   private fun skipToEndTag(depth: Int) {
-    var event = parser.eventType
+    var event = parser!!.eventType
     while (event != XmlPullParser.END_DOCUMENT) {
-      if (event == XmlPullParser.END_TAG && depth == parser.depth) {
+      if (event == XmlPullParser.END_TAG && depth == parser!!.depth) {
         break
       }
-      event = parser.next()
+      event = parser!!.next()
     }
   }
 

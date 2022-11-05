@@ -19,15 +19,15 @@ package com.itsaky.androidide.inflater
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import com.android.aaptcompiler.android.stringToInt
-import com.android.aaptcompiler.tryParseReference
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import com.itsaky.androidide.inflater.internal.utils.parseDrawable
 import com.itsaky.androidide.inflater.internal.utils.parseInteger
+import com.itsaky.androidide.inflater.internal.utils.parseIntegerArray
 import com.itsaky.androidide.inflater.internal.utils.parseString
+import com.itsaky.androidide.inflater.internal.utils.parseStringArray
 import com.itsaky.androidide.inflater.internal.utils.startParse
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +47,8 @@ class ValueParsersTest {
         val units = arrayOf("dp", "sp", "pt", "px", "in", "mm")
         val results = intArrayOf(1, 1, 2, 1, 160, 6)
         for (i in units.indices) {
-          assertThat(parseDimension(activity, "1" + units[i], -1f).roundToInt()).isEqualTo(results[i])
+          assertThat(parseDimension(activity, "1" + units[i], -1f).roundToInt())
+            .isEqualTo(results[i])
         }
 
         // Dimensions from platform resources
@@ -136,7 +137,7 @@ class ValueParsersTest {
       }
     }
   }
-  
+
   @Test
   fun `string parser test`() {
     inflaterTest {
@@ -148,6 +149,34 @@ class ValueParsersTest {
       assertThat(parseString("@string/test_string_ref")).isEqualTo("I love Android!")
       assertThat(parseString("@string/test_string_styled")).isEqualTo("I love Android!")
       assertThat(parseString("@string/test_string_styled_ref")).isEqualTo("I love Android!")
+      endParse()
+    }
+  }
+
+  @Test
+  fun `string array parser test`() {
+    inflaterTest {
+      startParse(it)
+      assertThat(parseStringArray("@android:array/phoneTypes"))
+        .isEqualTo(
+          arrayOf("Home", "Mobile", "Work", "Work Fax", "Home Fax", "Pager", "Other", "Custom")
+        )
+      assertThat(parseStringArray("@array/test_string_array"))
+        .isEqualTo(arrayOf("I", "love", "Android"))
+      endParse()
+    }
+  }
+  
+  @Test
+  fun `integer array parser test`() {
+    inflaterTest {
+      startParse(it)
+      assertThat(parseIntegerArray("@android:array/config_defaultImperceptibleKillingExemptionProcStates"))
+        .isEqualTo(
+          intArrayOf(0, 1, 2, 4, 12)
+        )
+      assertThat(parseIntegerArray("@array/test_integer_array"))
+        .isEqualTo(intArrayOf(2, 4, 8))
       endParse()
     }
   }

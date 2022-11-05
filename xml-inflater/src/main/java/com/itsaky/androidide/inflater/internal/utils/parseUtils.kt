@@ -26,11 +26,13 @@ import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
 import com.android.aaptcompiler.AaptResourceType
+import com.android.aaptcompiler.AaptResourceType.ARRAY
 import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
 import com.android.aaptcompiler.AaptResourceType.STRING
+import com.android.aaptcompiler.ArrayResource
 import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.BasicString
 import com.android.aaptcompiler.BinaryPrimitive
@@ -57,6 +59,29 @@ private var currentModule: AndroidModule? = null
 private val log = ILogger.newInstance("ParseUtilsKt")
 private val HEX_COLOR: Pattern = Pattern.compile("#[a-fA-F\\d]{6,8}")
 
+private val stringResolver =
+  fun(it: Value?): String? {
+    return when (it) {
+      is BasicString -> it.ref.value()
+      is RawString -> it.value.value()
+      is StyledString -> it.ref.value()
+      else -> null
+    }
+  }
+
+private val intResolver =
+  fun(it: Value?): Int? {
+    return if (it is BinaryPrimitive) {
+      it.resValue.data
+    } else null
+  }
+
+inline fun <reified T> ((Value?) -> T?).arrayResolver(value: Value?): Array<T>? {
+  return if (value is ArrayResource) {
+    Array(value.elements.size) { invoke(value.elements[it]) ?: return null }
+  } else emptyArray()
+}
+
 val module: AndroidModule
   get() =
     currentModule ?: throw IllegalStateException("You must call startParse(AndroidModule) first")
@@ -69,19 +94,41 @@ fun endParse() {
   currentModule = null
 }
 
-fun parseString(value: String) : String {
+fun parseString(value: String): String {
   if (value[0] == '@') {
-    val resolver: (Value?) -> String? = fun(it): String? {
-      return when (it) {
-        is BasicString -> it.ref.value()
-        is RawString -> it.value.value()
-        is StyledString -> it.ref.value()
-        else -> null
-      }
-    }
-    return parseReference(value = value, expectedType = STRING, def = value, resolver = resolver)
+    return parseReference(
+      value = value,
+      expectedType = STRING,
+      def = value,
+      resolver = stringResolver
+    )
   }
   return value
+}
+
+fun parseStringArray(value: String, def: Array<String>? = emptyArray()): Array<String>? {
+  return parseArray(value = value, def = def, resolver = stringResolver)
+}
+
+fun parseIntegerArray(value: String, def: IntArray? = intArrayOf()): IntArray? {
+  return parseArray(value = value, def = def?.toTypedArray(), resolver = intResolver)?.toIntArray()
+}
+
+@JvmOverloads
+inline fun <reified T> parseArray(
+  value: String,
+  def: Array<T>? = emptyArray(),
+  noinline resolver: (Value?) -> T?
+): Array<T>? {
+  if (value[0] == '@') {
+    return parseReference(
+      value = value,
+      expectedType = ARRAY,
+      def = emptyArray(),
+      resolver = resolver::arrayResolver
+    )
+  }
+  return def
 }
 
 @JvmOverloads
@@ -93,12 +140,7 @@ fun parseInteger(value: String, def: Int = 0): Int {
   }
 
   if (value[0] == '@') {
-    val resolver: (Value?) -> Int? = {
-      if (it is BinaryPrimitive) {
-        it.resValue.data
-      } else def
-    }
-    return parseReference(value, INTEGER, def, resolver)
+    return parseReference(value, INTEGER, def, intResolver)
   }
 
   return def

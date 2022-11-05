@@ -36,16 +36,16 @@ import org.xmlpull.v1.XmlPullParser
  *
  * @author Akash Yadav
  */
-open class BitmapDrawableParser protected constructor(parser: XmlPullParser?, minDepth: Int) : IDrawableParser(parser, minDepth) {
+class BitmapDrawableParser protected constructor(parser: XmlPullParser, minDepth: Int) : IDrawableParser(parser, minDepth) {
   @Throws(Exception::class)
   public override fun parseDrawable(context: Context): Drawable {
     var index = attrIndex("src")
     if (index == -1) {
       throw InflateException("Invalid <bitmap> drawable. No android:src specified!")
     }
-    val value = value(index)
-    val dr = parseDrawable(context, value)
-      ?: throw InflateException("Cannot parse drawable for android:src = $value")
+    val `val` = value(index)
+    val dr = parseDrawable(context, `val`)
+      ?: throw InflateException("Cannot parse drawable for android:src = $`val`")
     val bitmap = BitmapDrawable(BaseApplication.getBaseInstance().resources, toBitmap(dr))
     index = attrIndex("antialias")
     if (index != -1) {
@@ -98,11 +98,13 @@ open class BitmapDrawableParser protected constructor(parser: XmlPullParser?, mi
   
   private fun toBitmap(dr: Drawable): Bitmap {
     if (dr is BitmapDrawable) {
-      if (dr.bitmap != null) {
-        return dr.bitmap
+      val bit = dr
+      if (bit.bitmap != null) {
+        return bit.bitmap
       }
     }
-    val bit = if (dr.intrinsicWidth > 0 && dr.intrinsicHeight > 0) {
+    val bit: Bitmap
+    bit = if (dr.intrinsicWidth > 0 && dr.intrinsicHeight > 0) {
       Bitmap.createBitmap(
         dr.intrinsicWidth, dr.intrinsicHeight, ARGB_8888)
     } else {
