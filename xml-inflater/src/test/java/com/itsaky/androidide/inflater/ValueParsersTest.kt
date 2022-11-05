@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
+import com.itsaky.androidide.inflater.internal.utils.parseColor
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import com.itsaky.androidide.inflater.internal.utils.parseDrawable
 import com.itsaky.androidide.inflater.internal.utils.parseInteger
@@ -166,18 +167,36 @@ class ValueParsersTest {
       endParse()
     }
   }
-  
+
   @Test
   fun `integer array parser test`() {
     inflaterTest {
       startParse(it)
-      assertThat(parseIntegerArray("@android:array/config_defaultImperceptibleKillingExemptionProcStates"))
-        .isEqualTo(
-          intArrayOf(0, 1, 2, 4, 12)
+      assertThat(
+          parseIntegerArray("@android:array/config_defaultImperceptibleKillingExemptionProcStates")
         )
-      assertThat(parseIntegerArray("@array/test_integer_array"))
-        .isEqualTo(intArrayOf(2, 4, 8))
+        .isEqualTo(intArrayOf(0, 1, 2, 4, 12))
+      assertThat(parseIntegerArray("@array/test_integer_array")).isEqualTo(intArrayOf(2, 4, 8))
       endParse()
+    }
+  }
+
+  @Test
+  fun `color parser test`() {
+    inflaterTest {
+      requiresActivity { activity ->
+        startParse(it)
+        assertThat(parseColor(activity, "@android:color/red")).isEqualTo(Color.RED)
+        assertThat(parseColor(activity, "@android:color/black")).isEqualTo(Color.BLACK)
+        assertThat(parseColor(activity, "@android:color/white")).isEqualTo(Color.WHITE)
+        assertThat(parseColor(activity, "@android:color/transparent")).isEqualTo(Color.TRANSPARENT)
+        assertThat(parseColor(activity, "@color/test_color")).isEqualTo(Color.parseColor("#f44336"))
+        assertThat(parseColor(activity, "@color/test_color_ref")).isEqualTo(Color.parseColor("#f44336"))
+        
+        // TODO Implement color state list parser
+        assertThat(parseColor(activity, "@color/test_selector")).isEqualTo(Color.TRANSPARENT)
+        endParse()
+      }
     }
   }
 }

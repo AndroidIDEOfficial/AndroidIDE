@@ -29,6 +29,7 @@ import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ARRAY
 import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
+import com.android.aaptcompiler.AaptResourceType.COLOR
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
 import com.android.aaptcompiler.AaptResourceType.STRING
@@ -190,17 +191,34 @@ fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPA
 
 @JvmOverloads
 fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
-  val color =
-    try {
-      Color.parseColor(value)
-    } catch (err: Throwable) {
-      log.warn("Unable to parse color code", value)
-      def
+  val colorResolver: (Value?) -> Int? =
+    fun(it): Int? {
+      // TODO(itsaky) : Implement color state list parser
+      if (it is BinaryPrimitive) {
+        return it.resValue.data
+      }
+      return null
     }
+  when (value[0]) {
+    '#' -> return parseHexColor(value, def)
+    '@' ->
+      return parseReference(
+        value = value,
+        expectedType = COLOR,
+        def = def,
+        resolver = colorResolver
+      )
+  }
+  return def
+}
 
-  // TODO Parse other types of colors
-
-  return color
+fun parseHexColor(value: String, def: Int = Color.TRANSPARENT): Int {
+  return try {
+    Color.parseColor(value)
+  } catch (err: Throwable) {
+    log.warn("Unable to parse color code", value)
+    def
+  }
 }
 
 fun unknownDrawable(): Drawable {

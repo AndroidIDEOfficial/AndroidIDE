@@ -26,6 +26,9 @@
     <string name="test_string_styled">I <b>love</b> Android!</string>
     <string name="test_string_styled_ref">@string/test_string_styled</string>
     
+    <color name="test_color">#f44336</color>
+    <color name="test_color_ref">@color/test_color</color>
+    
     <string-array name="test_string_array">
         <item>I</item>
         <item>love</item>
