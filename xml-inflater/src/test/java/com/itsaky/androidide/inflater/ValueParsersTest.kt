@@ -135,11 +135,4 @@ class ValueParsersTest {
       }
     }
   }
-  
-  @Test
-  fun test() {
-    
-    val input = listOf("@android:string/ok", "@android:bool/ok", "?attr/colorPrimary", "?android:attr/colorPrimary")
-    val parsed = input.map { tryParseReference(it) }
-  }
 }

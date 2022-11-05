@@ -25,6 +25,7 @@ import android.util.TypedValue.complexToDimension
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
 import com.android.aaptcompiler.AaptResourceType
+import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
@@ -191,11 +192,11 @@ fun <T> parseReference(
 ): T {
   val (pck, type, name) = parseResourceReference(value) ?: return def
   if (type != expectedType) {
-    throwInvalidResType(DIMEN, value)
+    throwInvalidResType(expectedType, value)
   }
-  return if (pck == null) {
+  return if (pck.isNullOrBlank()) {
     resolveUnqualifiedResourceReference(
-      type = DIMEN,
+      type = type,
       name = name,
       value = value,
       def = def,
@@ -204,7 +205,7 @@ fun <T> parseReference(
   } else {
     resolveQualifiedResourceReference(
       pck = pck,
-      type = DIMEN,
+      type = type,
       name = name,
       def = def,
       resolver = resolver
@@ -307,6 +308,13 @@ private fun parseResourceReference(value: String): Triple<String?, AaptResourceT
     val pck = it.reference.name.pck
     val type = it.reference.name.type
     val name = it.reference.name.entry!!
+
+    if (type == ATTR) {
+      // this an attribute reference
+      // TODO(itsaky): When the UI designer allows the user to choose a theme for the UI designer,
+      //   This should resolve the referred attribute and then return its pck, type and name
+      return null
+    }
     return Triple(pck, type, name)
   }
 }
