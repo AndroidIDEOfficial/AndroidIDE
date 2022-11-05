@@ -20,4 +20,9 @@
     <integer name="test_integer_0">0</integer>
     <integer name="test_integer_1_ref">@integer/test_integer_1</integer>
     <integer name="test_integer_0_ref">@integer/test_integer_0</integer>
+    
+    <string name="test_string">I love Android!</string>
+    <string name="test_string_ref">@string/test_string</string>
+    <string name="test_string_styled">I <b>love</b> Android!</string>
+    <string name="test_string_styled_ref">@string/test_string_styled</string>
 </resources>

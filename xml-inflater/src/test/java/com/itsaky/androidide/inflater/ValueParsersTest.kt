@@ -27,6 +27,7 @@ import com.itsaky.androidide.inflater.internal.utils.parseBoolean
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import com.itsaky.androidide.inflater.internal.utils.parseDrawable
 import com.itsaky.androidide.inflater.internal.utils.parseInteger
+import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.startParse
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -133,6 +134,21 @@ class ValueParsersTest {
         assertThat(parseInteger("@integer/test_integer_0_ref", def = 1)).isEqualTo(0)
         endParse()
       }
+    }
+  }
+  
+  @Test
+  fun `string parser test`() {
+    inflaterTest {
+      startParse(it)
+      assertThat(parseString("Hello World!")).isEqualTo("Hello World!")
+      assertThat(parseString("@android:string/ok")).isEqualTo("OK")
+      assertThat(parseString("@android:string/cancel")).isEqualTo("Cancel")
+      assertThat(parseString("@string/test_string")).isEqualTo("I love Android!")
+      assertThat(parseString("@string/test_string_ref")).isEqualTo("I love Android!")
+      assertThat(parseString("@string/test_string_styled")).isEqualTo("I love Android!")
+      assertThat(parseString("@string/test_string_styled_ref")).isEqualTo("I love Android!")
+      endParse()
     }
   }
 }

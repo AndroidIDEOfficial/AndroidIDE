@@ -30,19 +30,22 @@ import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.INTEGER
+import com.android.aaptcompiler.AaptResourceType.STRING
 import com.android.aaptcompiler.AttributeResource
+import com.android.aaptcompiler.BasicString
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.RawString
 import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourceEntry
 import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.ResourceTablePackage
+import com.android.aaptcompiler.StyledString
 import com.android.aaptcompiler.Value
 import com.android.aaptcompiler.android.ResValue.DataType.DIMENSION
 import com.android.aaptcompiler.android.stringToFloat
 import com.android.aaptcompiler.tryParseBool
-import com.android.aaptcompiler.tryParseColor
 import com.android.aaptcompiler.tryParseFlagSymbol
 import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
@@ -64,6 +67,21 @@ fun startParse(m: AndroidModule) {
 
 fun endParse() {
   currentModule = null
+}
+
+fun parseString(value: String) : String {
+  if (value[0] == '@') {
+    val resolver: (Value?) -> String? = fun(it): String? {
+      return when (it) {
+        is BasicString -> it.ref.value()
+        is RawString -> it.value.value()
+        is StyledString -> it.ref.value()
+        else -> null
+      }
+    }
+    return parseReference(value = value, expectedType = STRING, def = value, resolver = resolver)
+  }
+  return value
 }
 
 @JvmOverloads
@@ -124,8 +142,7 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
 
 @JvmOverloads
 fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPARENT): Drawable {
-  val color =
-    parseColor(context, value, def)
+  val color = parseColor(context, value, def)
   return newColorDrawable(color)
 }
 
@@ -138,9 +155,9 @@ fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): I
       log.warn("Unable to parse color code", value)
       def
     }
-  
-  // TODO Parse other types of colors 
-  
+
+  // TODO Parse other types of colors
+
   return color
 }
 
