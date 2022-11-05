@@ -19,6 +19,8 @@ package com.itsaky.androidide.inflater
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import com.android.aaptcompiler.android.stringToInt
+import com.android.aaptcompiler.tryParseReference
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
@@ -132,5 +134,12 @@ class ValueParsersTest {
         endParse()
       }
     }
+  }
+  
+  @Test
+  fun test() {
+    
+    val input = listOf("@android:string/ok", "@android:bool/ok", "?attr/colorPrimary", "?android:attr/colorPrimary")
+    val parsed = input.map { tryParseReference(it) }
   }
 }

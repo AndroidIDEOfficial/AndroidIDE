@@ -21,13 +21,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.util.TypedValue
-import android.util.TypedValue.COMPLEX_UNIT_DIP
-import android.util.TypedValue.COMPLEX_UNIT_IN
-import android.util.TypedValue.COMPLEX_UNIT_MM
-import android.util.TypedValue.COMPLEX_UNIT_PT
-import android.util.TypedValue.COMPLEX_UNIT_PX
-import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.util.TypedValue.complexToDimension
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
@@ -45,10 +38,12 @@ import com.android.aaptcompiler.ResourceTablePackage
 import com.android.aaptcompiler.Value
 import com.android.aaptcompiler.android.ResValue.DataType.DIMENSION
 import com.android.aaptcompiler.android.stringToFloat
+import com.android.aaptcompiler.tryParseBool
+import com.android.aaptcompiler.tryParseColor
+import com.android.aaptcompiler.tryParseInt
+import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
-import com.itsaky.androidide.xml.utils.attrValue_unqualifiedRef
 import java.util.regex.Pattern
 
 private var currentModule: AndroidModule? = null
@@ -70,36 +65,18 @@ fun endParse() {
 @JvmOverloads
 fun parseInteger(value: String, def: Int = 0): Int {
   if (value.isDigitsOnly()) {
-    return value.toInt()
+    tryParseInt(value)?.resValue?.apply {
+      return data
+    }
   }
 
   if (value[0] == '@') {
-    val (pck, type, name) = parseResourceReference(value)
-    if (type != "integer") {
-      throwInvalidResType(INTEGER, value)
-    }
-    val integerResolver: (Value?) -> Int? = {
+    val resolver: (Value?) -> Int? = {
       if (it is BinaryPrimitive) {
         it.resValue.data
       } else def
     }
-    return if (pck == null) {
-      resolveUnqualifiedResourceReference(
-        type = INTEGER,
-        name = name,
-        value = value,
-        def = def,
-        resolver = integerResolver
-      )
-    } else {
-      resolveQualifiedResourceReference(
-        pck = pck,
-        type = INTEGER,
-        name = name,
-        def = def,
-        resolver = integerResolver
-      )
-    }
+    return parseReference(value, INTEGER, def, resolver)
   }
 
   return def
@@ -107,43 +84,18 @@ fun parseInteger(value: String, def: Int = 0): Int {
 
 @JvmOverloads
 fun parseBoolean(value: String, def: Boolean = false): Boolean {
-  when (value) {
-    "true" -> return true
-    "false" -> return false
+  tryParseBool(value)?.resValue?.apply {
+    return data == -1
   }
 
   if (value[0] == '@') {
-    val (pck, type, name) = parseResourceReference(value)
-    if (type != "bool") {
-      throwInvalidResType(BOOL, value)
-    }
-    val booleanResolver: (Value?) -> Boolean? =
+    val resolver: (Value?) -> Boolean? =
       fun(resValue): Boolean {
         return if (resValue is BinaryPrimitive) {
-          when (resValue.resValue.data) {
-            -1 -> true
-            0 -> false
-            else -> def
-          }
+          resValue.resValue.data == -1
         } else def
       }
-    return if (pck == null) {
-      resolveUnqualifiedResourceReference(
-        type = BOOL,
-        name = name,
-        value = value,
-        def = def,
-        resolver = booleanResolver
-      )
-    } else {
-      resolveQualifiedResourceReference(
-        pck = pck,
-        type = BOOL,
-        name = name,
-        def = def,
-        resolver = booleanResolver
-      )
-    }
+    return parseReference(value, BOOL, def, resolver)
   }
 
   return def
@@ -167,6 +119,7 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
 }
 
 fun parseColorDrawable(value: String, def: Int = Color.TRANSPARENT): Drawable {
+  tryParseColor(value)?.resValue
   val color =
     try {
       Color.parseColor(value)
@@ -203,33 +156,12 @@ fun parseDimension(
 
     return complexToDimension(data, displayMetrics)
   } else if (c == '@') {
-    val (pck, type, name) = parseResourceReference(value)
-    if (type != "dimen") {
-      throwInvalidResType(DIMEN, value)
-    }
     val resolver: (Value?) -> Float? = {
       if (it is BinaryPrimitive) {
         complexToDimension(it.resValue.data, displayMetrics)
-        // TODO handle other resource types
       } else null
     }
-    return if (pck == null) {
-      resolveUnqualifiedResourceReference(
-        type = DIMEN,
-        name = name,
-        value = value,
-        def = def,
-        resolver = resolver
-      )
-    } else {
-      resolveQualifiedResourceReference(
-        pck = pck,
-        type = DIMEN,
-        name = name,
-        def = def,
-        resolver = resolver
-      )
-    }
+    return parseReference(value, DIMEN, def, resolver)
   } else {
     return when (value) {
       "wrap_content" -> LayoutParams.WRAP_CONTENT.toFloat()
@@ -248,6 +180,35 @@ fun parseFloat(value: String, defValue: Float): Float {
     value.toFloat()
   } catch (err: Throwable) {
     defValue
+  }
+}
+
+fun <T> parseReference(
+  value: String,
+  expectedType: AaptResourceType,
+  def: T,
+  resolver: (Value?) -> T?
+): T {
+  val (pck, type, name) = parseResourceReference(value) ?: return def
+  if (type != expectedType) {
+    throwInvalidResType(DIMEN, value)
+  }
+  return if (pck == null) {
+    resolveUnqualifiedResourceReference(
+      type = DIMEN,
+      name = name,
+      value = value,
+      def = def,
+      resolver = resolver
+    )
+  } else {
+    resolveQualifiedResourceReference(
+      pck = pck,
+      type = DIMEN,
+      name = name,
+      def = def,
+      resolver = resolver
+    )
   }
 }
 
@@ -341,21 +302,13 @@ fun <T> resolveResourceReference(
     }
 }
 
-private fun parseResourceReference(value: String): Triple<String?, String, String> {
-  // A qualified resource reference
-  // For example: '@com.itsaky.androidide.resources:dimen/my_dimen' or '@android:dimen/my_dimen'
-  //                           ^pck                 ^type   ^name
-  var matcher = attrValue_qualifiedRef.matcher(value)
-  if (matcher.matches()) {
-    return Triple(matcher.group(1)!!, matcher.group(3)!!, matcher.group(4)!!)
+private fun parseResourceReference(value: String): Triple<String?, AaptResourceType, String>? {
+  return tryParseReference(value)?.let {
+    val pck = it.reference.name.pck
+    val type = it.reference.name.type
+    val name = it.reference.name.entry!!
+    return Triple(pck, type, name)
   }
-
-  matcher = attrValue_unqualifiedRef.matcher(value)
-  if (matcher.matches()) {
-    return Triple<String?, String, String>(null, matcher.group(1)!!, matcher.group(2)!!)
-  }
-
-  return Triple<String?, String, String>(null, "", "")
 }
 
 private fun throwInvalidResType(type: AaptResourceType, value: String) {
