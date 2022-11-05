@@ -1,0 +1,23 @@
+<!-- These resources are used to test to layout inflater's value parser/resolver -->
+
+<resources>
+    
+    <dimen name="test_dimen_0dp">0dp</dimen>
+    <dimen name="test_dimen_1dp">1dp</dimen>
+    <dimen name="test_dimen_0dp_ref">@dimen/test_dimen_0dp</dimen>
+    <dimen name="test_dimen_1dp_ref">@dimen/test_dimen_1dp</dimen>
+    <dimen name="test_dimen_0pt">0dp</dimen>
+    <dimen name="test_dimen_1pt">1dp</dimen>
+    <dimen name="test_dimen_0pt_ref">@dimen/test_dimen_0pt</dimen>
+    <dimen name="test_dimen_1pt_ref">@dimen/test_dimen_1pt</dimen>
+        
+    <bool name="test_bool_true">true</bool>
+    <bool name="test_bool_false">false</bool>
+    <bool name="test_bool_true_ref">@bool/test_bool_true</bool>
+    <bool name="test_bool_false_ref">@bool/test_bool_false</bool>
+    
+    <integer name="test_integer_1">1</integer>
+    <integer name="test_integer_0">0</integer>
+    <integer name="test_integer_1_ref">@integer/test_integer_1</integer>
+    <integer name="test_integer_0_ref">@integer/test_integer_0</integer>
+</resources>

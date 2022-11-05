@@ -38,30 +38,41 @@ class ValueParsersTest {
     inflaterTest { module ->
       requiresActivity { activity ->
         startParse(module)
+        
+        // Hardcoded dimensions
         val units = arrayOf("dp", "sp", "pt", "px", "in", "mm")
         val results = intArrayOf(1, 1, 2, 1, 160, 6)
         for (i in units.indices) {
           assertThat(parseDimension(activity, "1" + units[i], -1)).isEqualTo(results[i])
         }
-        endParse()
-      }
-    }
-  }
-
-  @Test
-  fun `reference dimension parser test`() {
-    inflaterTest { module ->
-      requiresActivity { activity ->
-        startParse(module)
+        
+        // Dimensions from platform resources
         assertThat(parseDimension(activity, "@android:dimen/app_icon_size")).isEqualTo(12289)
         assertThat(parseDimension(activity, "@android:dimen/status_bar_height_portrait"))
           .isEqualTo(6145)
-
-        // The app module here targets android 31 and the dimension resource below was added in
-        // android 31. So, the resource should not be resolved and
-        // ViewGroup.LayoutParams.WRAP_CONTENT must be returned instead.
-        assertThat(parseDimension(activity, "@android:dimen/status_bar_height_default"))
-          .isEqualTo(-2)
+        
+        val exists = try {
+          // The app module here targets android 31 and the dimension resource below was added in
+          // android 31. So, the resource should not be resolved and
+          // ViewGroup.LayoutParams.WRAP_CONTENT must be returned instead.
+          assertThat(parseDimension(activity, "@android:dimen/status_bar_height_default"))
+            .isEqualTo(-2)
+          true
+        } catch (err: IllegalArgumentException) {
+          false
+        }
+        
+        assertThat(exists).isFalse()
+        
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp", def = 1)).isEqualTo(0)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp", def = 0)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp_ref", def = 0)).isEqualTo(1)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp_ref", def = 0)).isEqualTo(0)
+  
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt", def = 1)).isEqualTo(0)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt", def = 0)).isEqualTo(2)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt_ref", def = 0)).isEqualTo(2)
+        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt_ref", def = 0)).isEqualTo(0)
         endParse()
       }
     }

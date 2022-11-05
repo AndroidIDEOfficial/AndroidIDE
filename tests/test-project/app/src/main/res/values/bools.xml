@@ -1,6 +1,0 @@
-<resources>
-    <bool name="test_bool_true">true</bool>
-    <bool name="test_bool_false">false</bool>
-    <bool name="test_bool_true_ref">@bool/test_bool_true</bool>
-    <bool name="test_bool_false_ref">@bool/test_bool_false</bool>
-</resources>
