@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @AttributeAdapter(ProgressBar::class)
-class ProgressBarAttrAdapter : ViewAttrAdapter() {
+open class ProgressBarAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<ProgressBar>(view, attribute) {
