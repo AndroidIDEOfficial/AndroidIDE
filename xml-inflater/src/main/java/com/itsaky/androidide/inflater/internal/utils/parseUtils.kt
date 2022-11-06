@@ -82,6 +82,15 @@ private val intResolver =
     } else null
   }
 
+val colorResolver: (Value?) -> Int? =
+  fun(it): Int? {
+    // TODO(itsaky) : Implement color state list parser
+    if (it is BinaryPrimitive) {
+      return it.resValue.data
+    }
+    return null
+  }
+
 inline fun <reified T> ((Value?) -> T?).arrayResolver(value: Value?): Array<T>? {
   return if (value is ArrayResource) {
     Array(value.elements.size) { invoke(value.elements[it]) ?: return null }
@@ -173,9 +182,6 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
 
 @JvmOverloads
 fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawable()): Drawable {
-  if (HEX_COLOR.matcher(value).matches()) {
-    return parseColorDrawable(context, value)
-  }
   val drawableResolver: (Value?) -> Drawable? =
     fun(it): Drawable? {
       if (it is FileReference) {
@@ -187,12 +193,21 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
         return parser.parse(context)
       }
       // TODO(itsaky) : Drawable of any type other than a file?
-      return null
+
+      // If this is a color int, return a color drawable
+      return colorResolver.invoke(it)?.let { newColorDrawable(it) }
     }
-  if (value[0] == '@') {
+  
+  if (value[0] == '#') {
+    return parseColorDrawable(context, value)
+  } else if (value[0] == '@') {
+    val type = parseResourceReference(value)?.second
+    if (type == null || !(type == DRAWABLE || type == COLOR)) {
+      throwInvalidResType(DRAWABLE, value)
+    }
     return parseReference(
       value = value,
-      expectedType = DRAWABLE,
+      expectedType = type!!,
       def = def,
       resolver = drawableResolver
     )
@@ -202,20 +217,11 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
 
 @JvmOverloads
 fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPARENT): Drawable {
-  val color = parseColor(context, value, def)
-  return newColorDrawable(color)
+  return newColorDrawable(parseColor(context, value, def))
 }
 
 @JvmOverloads
 fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
-  val colorResolver: (Value?) -> Int? =
-    fun(it): Int? {
-      // TODO(itsaky) : Implement color state list parser
-      if (it is BinaryPrimitive) {
-        return it.resValue.data
-      }
-      return null
-    }
   when (value[0]) {
     '#' -> return parseHexColor(value, def)
     '@' ->
