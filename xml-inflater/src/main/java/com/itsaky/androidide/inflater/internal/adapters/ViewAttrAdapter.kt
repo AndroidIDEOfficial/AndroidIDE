@@ -21,6 +21,7 @@ import android.content.Context
 import android.graphics.PorterDuff
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -33,6 +34,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IAttributeAdapter
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.endParse
@@ -54,8 +56,6 @@ open class ViewAttrAdapter : IAttributeAdapter() {
       var applied = true
       @Suppress("DEPRECATION")
       when (name) {
-        "layout_height" -> layoutParams.height = parseDimension(context, value)
-        "layout_width" -> layoutParams.width = parseDimension(context, value)
         "alpha" -> alpha = parseFloat(value)
         "background" -> background = parseDrawable(context, value)
         "backgroundTint" -> backgroundTintList = parseColorStateList(context, value)
@@ -121,6 +121,10 @@ open class ViewAttrAdapter : IAttributeAdapter() {
       if (!applied && layoutParams is MarginLayoutParams) {
         applied = applyMarginParams(context, layoutParams, name, value)
       }
+      
+      if (!applied) {
+        applied = applyLayoutParams(context, layoutParams, name, value)
+      }
 
       if (applied) {
         this.layoutParams = layoutParams
@@ -131,9 +135,22 @@ open class ViewAttrAdapter : IAttributeAdapter() {
   }
 
   override fun applyBasic(view: IView) {
-    TODO("Not yet implemented")
+    view.apply {
+      apply(this, AttributeImpl(name = "layout_height", value = "wrap_content"))
+      apply(this, AttributeImpl(name = "layout_width", value = "wrap_content"))
+    }
   }
 
+  protected open fun applyLayoutParams(context: Context, params: LayoutParams, name: String, value: String) : Boolean {
+    var applied = true
+    when(name) {
+      "layout_height" -> params.height = parseDimension(context, value)
+      "layout_width" -> params.width = parseDimension(context, value)
+      else -> applied = false
+    }
+    return applied
+  }
+  
   protected open fun applyMarginParams(
     context: Context,
     params: MarginLayoutParams,
@@ -156,21 +173,21 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
     return handled
   }
-
-  protected open fun applyFrameLayoutParams(
-    params: FrameLayout.LayoutParams,
+  
+  protected open fun applyLinearLayoutParams(
+    params: LinearLayout.LayoutParams,
     name: String,
     value: String,
   ): Boolean {
     var applied = true
-    if ("layout_gravity" == name) {
-      params.gravity = parseGravity(value)
-    } else {
-      applied = false
+    when (name) {
+      "layout_gravity" -> params.gravity = parseGravity(value)
+      "layout_weight" -> params.weight = parseFloat(value, 1f)
+      else -> applied = false
     }
     return applied
   }
-
+  
   protected open fun applyRelativeLayoutParams(
     params: RelativeLayout.LayoutParams,
     resName: String,
@@ -216,21 +233,21 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
     return handled
   }
-
-  protected open fun applyLinearLayoutParams(
-    params: LinearLayout.LayoutParams,
+  
+  protected open fun applyFrameLayoutParams(
+    params: FrameLayout.LayoutParams,
     name: String,
     value: String,
   ): Boolean {
     var applied = true
-    when (name) {
-      "layout_gravity" -> params.gravity = parseGravity(value)
-      "layout_weight" -> params.weight = parseFloat(value, 1f)
-      else -> applied = false
+    if ("layout_gravity" == name) {
+      params.gravity = parseGravity(value)
+    } else {
+      applied = false
     }
     return applied
   }
-
+  
   protected open fun canHandleNamespace(namespace: INamespace): Boolean {
     return this.canHandleNamespace(namespace.uri)
   }
