@@ -20,7 +20,6 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.content.Context
 import android.view.ViewGroup.LayoutParams
 import android.widget.CompoundButton
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -31,7 +30,6 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(CompoundButton::class)
 abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {

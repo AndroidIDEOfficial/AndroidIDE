@@ -46,12 +46,12 @@ open class ImageViewAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<ImageView>(view, attribute) {
-      file: LayoutFile,
-      context: Context,
-      layoutParams: LayoutParams,
-      namespace: INamespace,
-      name: String,
-      value: String ->
+        _: LayoutFile,
+        context: Context,
+        _: LayoutParams,
+        _: INamespace,
+        name: String,
+        value: String ->
       var applied = true
 
       when (name) {
