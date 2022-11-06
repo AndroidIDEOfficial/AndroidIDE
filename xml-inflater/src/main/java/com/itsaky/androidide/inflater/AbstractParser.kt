@@ -32,6 +32,17 @@ import com.itsaky.androidide.inflater.internal.utils.unknownDrawable
 abstract class AbstractParser {
 
   /**
+   * Parses the given string value representing an ID resource.
+   *
+   * @param value The string value. Usually value from attributes.
+   * @param def The default value.
+   */
+  @JvmOverloads
+  protected open fun parseId(resName: String, value: String, def: Int = 0): Int {
+    return com.itsaky.androidide.inflater.internal.utils.parseId(resName, value, def)
+  }
+
+  /**
    * Parses the given string value representing a float to its actual value.
    *
    * @param value The string value. Usually value from attributes.
@@ -53,10 +64,10 @@ abstract class AbstractParser {
   protected open fun parseInteger(value: String, def: Int = 0): Int {
     return com.itsaky.androidide.inflater.internal.utils.parseInteger(value = value, def = def)
   }
-  
+
   /**
-   * Parses the given string value representing a reference to an integer array resource to its actual
-   * value. Returns an empty array if the resource reference cannot be resolved.
+   * Parses the given string value representing a reference to an integer array resource to its
+   * actual value. Returns an empty array if the resource reference cannot be resolved.
    *
    * @param value The string value. Usually value from attributes.
    */
