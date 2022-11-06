@@ -53,6 +53,16 @@ abstract class AbstractParser {
   protected open fun parseInteger(value: String, def: Int = 0): Int {
     return com.itsaky.androidide.inflater.internal.utils.parseInteger(value = value, def = def)
   }
+  
+  /**
+   * Parses the given string value representing a reference to an integer array resource to its actual
+   * value. Returns an empty array if the resource reference cannot be resolved.
+   *
+   * @param value The string value. Usually value from attributes.
+   */
+  protected open fun parseIntegerArray(value: String): IntArray {
+    return com.itsaky.androidide.inflater.internal.utils.parseIntegerArray(value) ?: intArrayOf()
+  }
 
   /**
    * Parses the given string value representing a boolean or reference to an boolean resource to its
@@ -67,13 +77,23 @@ abstract class AbstractParser {
   }
 
   /**
-   * Parses the given string value representing a string or reference to an string resource to its
+   * Parses the given string value representing a string or reference to a string resource to its
    * actual value. Returns [value] itself if it cannot be parsed.
    *
    * @param value The string value. Usually value from attributes.
    */
   protected open fun parseString(value: String): String {
     return com.itsaky.androidide.inflater.internal.utils.parseString(value)
+  }
+
+  /**
+   * Parses the given string value representing a reference to a string array resource to its actual
+   * value. Returns an empty array if the resource reference cannot be resolved.
+   *
+   * @param value The string value. Usually value from attributes.
+   */
+  protected open fun parseStringArray(value: String): Array<String> {
+    return com.itsaky.androidide.inflater.internal.utils.parseStringArray(value) ?: emptyArray()
   }
 
   /**

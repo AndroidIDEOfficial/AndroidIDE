@@ -17,36 +17,37 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import android.R.layout
 import android.content.Context
 import android.view.ViewGroup.LayoutParams
-import android.widget.CompoundButton
+import android.widget.AbsSpinner
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
- * Attribute adapter for [CompoundButton].
+ * Attribute adapter for [AbsSpinner].
  *
  * @author Akash Yadav
  */
-abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
-
+abstract class AbsSpinnerAttrAdapter : AdapterViewAttrAdapter() {
   override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<CompoundButton>(view, attribute) {
-      _: LayoutFile,
-      context: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
+    return doApply<AbsSpinner>(view, attribute) {
+        _: LayoutFile,
+        context: Context,
+        _: LayoutParams,
+        _: INamespace,
+        name: String,
+        value: String ->
       var applied = true
-
       when (name) {
-        "buttonTint" -> buttonTintList = parseColorStateList(context, value)
-        "button" -> buttonDrawable = parseDrawable(context, value)
-        "buttonTintMode" -> buttonTintMode = parsePorterDuffMode(value)
-        "checked" -> isChecked = parseBoolean(value = value, def = true)
+        "entries" -> {
+          val array = parseStringArray(value)
+          val adapter = newSimpleAdapter(context, array)
+          adapter.setDropDownViewResource(layout.simple_spinner_dropdown_item)
+          setAdapter(adapter)
+        }
         else -> applied = false
       }
 
@@ -56,10 +57,5 @@ abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
 
       return@doApply applied
     }
-  }
-
-  override fun applyBasic(view: IView) {
-    super.applyBasic(view)
-    (view.view as CompoundButton).isChecked = true
   }
 }
