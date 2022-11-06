@@ -20,12 +20,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.content.Context
 import android.graphics.PorterDuff
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.RelativeLayout.*
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
 import com.android.SdkConstants
@@ -117,11 +117,11 @@ open class ViewAttrAdapter : IAttributeAdapter() {
       if (!applied && layoutParams is FrameLayout.LayoutParams) {
         applied = applyFrameLayoutParams(layoutParams, name, value)
       }
-  
+
       if (!applied && layoutParams is MarginLayoutParams) {
         applied = applyMarginParams(context, layoutParams, name, value)
       }
-      
+
       if (!applied) {
         applied = applyLayoutParams(context, layoutParams, name, value)
       }
@@ -141,16 +141,21 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
   }
 
-  protected open fun applyLayoutParams(context: Context, params: LayoutParams, name: String, value: String) : Boolean {
+  protected open fun applyLayoutParams(
+    context: Context,
+    params: LayoutParams,
+    name: String,
+    value: String
+  ): Boolean {
     var applied = true
-    when(name) {
+    when (name) {
       "layout_height" -> params.height = parseDimension(context, value)
       "layout_width" -> params.width = parseDimension(context, value)
       else -> applied = false
     }
     return applied
   }
-  
+
   protected open fun applyMarginParams(
     context: Context,
     params: MarginLayoutParams,
@@ -173,7 +178,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
     return handled
   }
-  
+
   protected open fun applyLinearLayoutParams(
     params: LinearLayout.LayoutParams,
     name: String,
@@ -187,7 +192,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
     return applied
   }
-  
+
   protected open fun applyRelativeLayoutParams(
     params: RelativeLayout.LayoutParams,
     resName: String,
@@ -196,44 +201,34 @@ open class ViewAttrAdapter : IAttributeAdapter() {
   ): Boolean {
     var handled = true
     when (name) {
-      "layout_above" -> params.addRule(RelativeLayout.ABOVE, parseId(resName, value))
-      "layout_alignBaseline" ->
-        params.addRule(RelativeLayout.ALIGN_BASELINE, parseId(resName, value))
-      "layout_alignBottom" -> params.addRule(RelativeLayout.ALIGN_BOTTOM, parseId(resName, value))
-      "layout_alignEnd" -> params.addRule(RelativeLayout.ALIGN_END, parseId(resName, value))
-      "layout_alignLeft" -> params.addRule(RelativeLayout.ALIGN_LEFT, parseId(resName, value))
-      "layout_alignParentTop" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_TOP, params)
-      "layout_alignParentBottom" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_BOTTOM, params)
-      "layout_alignParentStart" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_START, params)
-      "layout_alignParentEnd" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_END, params)
-      "layout_alignParentLeft" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_LEFT, params)
-      "layout_alignParentRight" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_RIGHT, params)
-      "layout_alignRight" -> params.addRule(RelativeLayout.ALIGN_RIGHT, parseId(resName, value))
-      "layout_alignStart" -> params.addRule(RelativeLayout.ALIGN_START, parseId(resName, value))
-      "layout_alignTop" -> params.addRule(RelativeLayout.ALIGN_TOP, parseId(resName, value))
+      "layout_above" -> params.addRule(ABOVE, parseId(resName, value))
+      "layout_alignBaseline" -> params.addRule(ALIGN_BASELINE, parseId(resName, value))
+      "layout_alignBottom" -> params.addRule(ALIGN_BOTTOM, parseId(resName, value))
+      "layout_alignEnd" -> params.addRule(ALIGN_END, parseId(resName, value))
+      "layout_alignLeft" -> params.addRule(ALIGN_LEFT, parseId(resName, value))
+      "layout_alignParentTop" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_TOP, params)
+      "layout_alignParentBottom" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_BOTTOM, params)
+      "layout_alignParentStart" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_START, params)
+      "layout_alignParentEnd" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_END, params)
+      "layout_alignParentLeft" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_LEFT, params)
+      "layout_alignParentRight" -> setRuleIf(parseBoolean(value), ALIGN_PARENT_RIGHT, params)
+      "layout_alignRight" -> params.addRule(ALIGN_RIGHT, parseId(resName, value))
+      "layout_alignStart" -> params.addRule(ALIGN_START, parseId(resName, value))
+      "layout_alignTop" -> params.addRule(ALIGN_TOP, parseId(resName, value))
       "layout_alignWithParentIfMissing" -> params.alignWithParent = parseBoolean(value)
-      "layout_below" -> params.addRule(RelativeLayout.BELOW, parseId(resName, value))
-      "layout_centerHorizontal" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_HORIZONTAL, params)
-      "layout_centerInParent" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_IN_PARENT, params)
-      "layout_centerVertical" ->
-        setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_VERTICAL, params)
-      "layout_toEndOf" -> params.addRule(RelativeLayout.END_OF, parseId(resName, value))
-      "layout_toStartOf" -> params.addRule(RelativeLayout.START_OF, parseId(resName, value))
-      "layout_toLeftOf" -> params.addRule(RelativeLayout.LEFT_OF, parseId(resName, value))
-      "layout_toRightOf" -> params.addRule(RelativeLayout.RIGHT_OF, parseId(resName, value))
+      "layout_below" -> params.addRule(BELOW, parseId(resName, value))
+      "layout_centerHorizontal" -> setRuleIf(parseBoolean(value), CENTER_HORIZONTAL, params)
+      "layout_centerInParent" -> setRuleIf(parseBoolean(value), CENTER_IN_PARENT, params)
+      "layout_centerVertical" -> setRuleIf(parseBoolean(value), CENTER_VERTICAL, params)
+      "layout_toEndOf" -> params.addRule(END_OF, parseId(resName, value))
+      "layout_toStartOf" -> params.addRule(START_OF, parseId(resName, value))
+      "layout_toLeftOf" -> params.addRule(LEFT_OF, parseId(resName, value))
+      "layout_toRightOf" -> params.addRule(RIGHT_OF, parseId(resName, value))
       else -> handled = false
     }
     return handled
   }
-  
+
   protected open fun applyFrameLayoutParams(
     params: FrameLayout.LayoutParams,
     name: String,
@@ -247,7 +242,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     }
     return applied
   }
-  
+
   protected open fun canHandleNamespace(namespace: INamespace): Boolean {
     return this.canHandleNamespace(namespace.uri)
   }
@@ -266,7 +261,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
       T.(
         file: LayoutFile,
         context: Context,
-        layoutParams: ViewGroup.LayoutParams,
+        layoutParams: LayoutParams,
         namespace: INamespace,
         name: String,
         value: String,
@@ -316,7 +311,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     return com.itsaky.androidide.inflater.internal.utils.parsePorterDuffMode(mode)
   }
 
-  private fun setRelativeRuleIfTrue(
+  private fun setRuleIf(
     condition: Boolean,
     rule: Int,
     params: RelativeLayout.LayoutParams,
