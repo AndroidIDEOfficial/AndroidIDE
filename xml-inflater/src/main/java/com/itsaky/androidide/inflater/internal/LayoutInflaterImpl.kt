@@ -70,13 +70,13 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     this._primaryInflatingFile = file
     IDTable.newRound()
     inflationEventListener?.onEvent(InflationStartEvent())
-    return doInflate(file, wrap(parent)).apply {
+    return doInflate(file, parent).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
       _primaryInflatingFile = null
     }
   }
 
-  protected open fun doInflate(file: File, parent: IViewGroup): IView? {
+  protected open fun doInflate(file: File, parent: ViewGroup): IView? {
     val pathData = extractPathData(file)
     if (pathData.type != LAYOUT) {
       throw InflateException("File is not a layout file.")
@@ -103,7 +103,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
   protected open fun doInflate(
     processor: XmlProcessor,
-    parent: IViewGroup,
+    parent: ViewGroup,
     module: AndroidModule,
   ): IView? {
     // TODO(itsaky) : Add test for multiple view as root layout
@@ -126,7 +126,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     }
     
     val element = node.element
-    val view = onCreateView(element, parent, module)
+    val view = onCreateView(element, wrap(parent), module)
     
     this._currentLayoutFile = null
     
