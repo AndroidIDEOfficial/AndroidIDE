@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater.internal.utils
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -197,7 +198,7 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
       // If this is a color int, return a color drawable
       return colorResolver.invoke(it)?.let { newColorDrawable(it) }
     }
-  
+
   if (value[0] == '#') {
     return parseColorDrawable(context, value)
   } else if (value[0] == '@') {
@@ -250,6 +251,14 @@ fun unknownDrawable(): Drawable {
 
 fun newColorDrawable(color: Int): Drawable {
   return ColorDrawable(color)
+}
+
+fun parseColorStateList(
+  context: Context,
+  value: String,
+  def: ColorStateList = ColorStateList.valueOf(Color.TRANSPARENT)
+): ColorStateList {
+  return ColorStateList.valueOf(parseColor(context, value, def = def.defaultColor))
 }
 
 @JvmOverloads

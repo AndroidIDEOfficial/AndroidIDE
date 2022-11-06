@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import com.itsaky.androidide.inflater.internal.utils.defaultGravity
@@ -29,10 +30,9 @@ import com.itsaky.androidide.inflater.internal.utils.unknownDrawable
  * @author Akash Yadav
  */
 abstract class AbstractParser {
-  
+
   /**
-   * Parses the given string value representing an integer or reference to an integer resource to
-   * its actual value.
+   * Parses the given string value representing a float to its actual value.
    *
    * @param value The string value. Usually value from attributes.
    * @param def The default value.
@@ -41,7 +41,7 @@ abstract class AbstractParser {
   protected open fun parseFloat(value: String, def: Float = 0f): Float {
     return com.itsaky.androidide.inflater.internal.utils.parseFloat(value = value, def = def)
   }
-  
+
   /**
    * Parses the given string value representing an integer or reference to an integer resource to
    * its actual value.
@@ -107,9 +107,23 @@ abstract class AbstractParser {
    */
   @JvmOverloads
   protected open fun parseDimension(context: Context, value: String, def: Int = 0): Int {
-    return com.itsaky.androidide.inflater.internal.utils
-      .parseDimension(context = context, value = value, def = def.toFloat())
-      .toInt()
+    return parseDimensionF(context = context, value = value, def = def.toFloat()).toInt()
+  }
+
+  /**
+   * Parses the given string value representing a dimension value or reference to a dimension
+   * resource to its actual value as a float point number.
+   *
+   * @param value The string value. Usually value from attributes.
+   * @param def The default value.
+   */
+  @JvmOverloads
+  protected open fun parseDimensionF(context: Context, value: String, def: Float = 0f): Float {
+    return com.itsaky.androidide.inflater.internal.utils.parseDimension(
+      context = context,
+      value = value,
+      def = def
+    )
   }
 
   /**
@@ -126,6 +140,26 @@ abstract class AbstractParser {
     def: Int = Color.TRANSPARENT
   ): Int {
     return com.itsaky.androidide.inflater.internal.utils.parseColor(
+      context = context,
+      value = value,
+      def = def
+    )
+  }
+
+  /**
+   * Parses the given string value representing a color code or reference to a color state list
+   * resource to its actual value.
+   *
+   * @param value The string value. Usually value from attributes.
+   * @param def The default value.
+   */
+  @JvmOverloads
+  protected open fun parseColorStateList(
+    context: Context,
+    value: String,
+    def: ColorStateList = ColorStateList.valueOf(Color.TRANSPARENT)
+  ): ColorStateList {
+    return com.itsaky.androidide.inflater.internal.utils.parseColorStateList(
       context = context,
       value = value,
       def = def
