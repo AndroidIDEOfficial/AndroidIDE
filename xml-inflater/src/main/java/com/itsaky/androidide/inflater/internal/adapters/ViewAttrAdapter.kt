@@ -19,6 +19,7 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.content.Context
 import android.graphics.PorterDuff
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.MarginLayoutParams
@@ -26,6 +27,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.RelativeLayout.*
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
 import com.android.SdkConstants
@@ -145,7 +147,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     context: Context,
     params: LayoutParams,
     name: String,
-    value: String
+    value: String,
   ): Boolean {
     var applied = true
     when (name) {
@@ -160,7 +162,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     context: Context,
     params: MarginLayoutParams,
     name: String,
-    value: String
+    value: String,
   ): Boolean {
     var handled = true
     when (name) {
@@ -309,6 +311,11 @@ open class ViewAttrAdapter : IAttributeAdapter() {
 
   protected open fun parsePorterDuffMode(mode: String): PorterDuff.Mode {
     return com.itsaky.androidide.inflater.internal.utils.parsePorterDuffMode(mode)
+  }
+  
+  @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
+  protected open fun isApi29(): Boolean {
+    return Build.VERSION.SDK_INT >= 29
   }
 
   private fun setRuleIf(
