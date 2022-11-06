@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.annotation.ChecksSdkIntAtLeast
-import com.itsaky.androidide.inflater.internal.utils.parseDimension
 import org.xmlpull.v1.XmlPullParser
 
 /**
@@ -29,7 +28,8 @@ import org.xmlpull.v1.XmlPullParser
  *
  * @author Akash Yadav
  */
-abstract class IDrawableParser protected constructor(protected open val parser: XmlPullParser?, open var minDepth: Int) {
+abstract class IDrawableParser
+protected constructor(protected open val parser: XmlPullParser?, open var minDepth: Int) {
   /**
    * Parse the drawable using the already provided parser and data.
    *
@@ -61,40 +61,41 @@ abstract class IDrawableParser protected constructor(protected open val parser: 
     }
     return drawable
   }
-  
-  protected fun parseInteger(value: String?, def: Int): Int {
-    return parseInteger(value, def)
+
+  protected fun parseInteger(value: String, def: Int): Int {
+    return com.itsaky.androidide.inflater.internal.utils.parseInteger(value, def)
   }
-  
-  protected fun parseBoolean(value: String?): Boolean {
-    return parseBoolean(value)
+
+  protected fun parseBoolean(value: String): Boolean {
+    return com.itsaky.androidide.inflater.internal.utils.parseBoolean(value)
   }
-  
-  protected fun parseDrawable(context: Context?, value: String?): Drawable {
-    return parseDrawable(context, value)
+
+  protected fun parseDrawable(context: Context, value: String): Drawable {
+    return com.itsaky.androidide.inflater.internal.utils.parseDrawable(context, value)
   }
-  
-  protected fun parseGravity(value: String?): Int {
-    return parseGravity(value)
+
+  protected fun parseGravity(value: String): Int {
+    return com.itsaky.androidide.inflater.internal.utils.parseGravity(value)
   }
-  
+
   protected fun parseDimension(context: Context?, value: String?): Int {
-    return parseDimension(context!!, value, 0f).toInt()
+    return com.itsaky.androidide.inflater.internal.utils
+      .parseDimension(context!!, value, 0f)
+      .toInt()
   }
-  
-  protected fun parseColor(context: Context?, value: String?): Int {
-    return parseColor(context, value)
+
+  protected fun parseColor(context: Context, value: String): Int {
+    return com.itsaky.androidide.inflater.internal.utils.parseColor(context, value)
   }
-  
+
   /**
    * Actual implementation of the parse logic.
    *
    * @return The parsed drawable. Maybe `null`.
    * @throws Exception If any fatal error occurs while parsing the drawable.
    */
-  @Throws(Exception::class)
-  protected abstract fun parseDrawable(context: Context): Drawable?
-  
+  @Throws(Exception::class) protected abstract fun parseDrawable(context: Context): Drawable?
+
   /**
    * Find the index of the attribute with the given name.
    *
@@ -109,7 +110,7 @@ abstract class IDrawableParser protected constructor(protected open val parser: 
     }
     return -1
   }
-  
+
   /**
    * Get the value of the attribute at the given index.
    *
@@ -119,27 +120,26 @@ abstract class IDrawableParser protected constructor(protected open val parser: 
   protected fun value(index: Int): String {
     return parser!!.getAttributeValue(index)
   }
-  
+
   /**
    * Checks if the drawable parser is allowed to parse at the current depth. This must be checked if
    * the drawable parser keeps looking for [XmlPullParser.START_TAG] or [ ][XmlPullParser.END_TAG].
    *
-   *
-   * The [LayerListParser] can contain tags which are expected to be parsed by other
-   * parsers. So, if the nesting parser does not check if this method if `true`, it might
-   * consume all the events and the [LayerListParser] will have invalid data to parse. In some
-   * cases, the nested parser might consume all the events until [XmlPullParser.END_DOCUMENT].
+   * The [LayerListParser] can contain tags which are expected to be parsed by other parsers. So, if
+   * the nesting parser does not check if this method if `true`, it might consume all the events and
+   * the [LayerListParser] will have invalid data to parse. In some cases, the nested parser might
+   * consume all the events until [XmlPullParser.END_DOCUMENT].
    *
    * @return `true` if the parser can keep parsing, `false` otherwise.
    */
   protected fun canParse(): Boolean {
     return parser!!.depth >= minDepth
   }
-  
+
   @get:ChecksSdkIntAtLeast(api = VERSION_CODES.Q)
   protected val isApi29: Boolean
     get() = VERSION.SDK_INT >= 29
-  
+
   companion object {
     const val ANY_DEPTH = -1
   }

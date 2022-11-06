@@ -45,8 +45,7 @@ class BitmapDrawableParser protected constructor(parser: XmlPullParser, minDepth
     }
     val `val` = value(index)
     val dr = parseDrawable(context, `val`)
-      ?: throw InflateException("Cannot parse drawable for android:src = $`val`")
-    val bitmap = BitmapDrawable(BaseApplication.getBaseInstance().resources, toBitmap(dr))
+    val bitmap = BitmapDrawable(context.resources, toBitmap(dr))
     index = attrIndex("antialias")
     if (index != -1) {
       bitmap.setAntiAlias(parseBoolean(value(index)))

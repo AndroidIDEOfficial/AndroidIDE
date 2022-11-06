@@ -18,7 +18,12 @@
 package com.itsaky.androidide.inflater
 
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ShapeDrawable
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
@@ -30,10 +35,10 @@ import com.itsaky.androidide.inflater.internal.utils.parseIntegerArray
 import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.parseStringArray
 import com.itsaky.androidide.inflater.internal.utils.startParse
+import kotlin.math.roundToInt
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 class ValueParsersTest {
@@ -85,7 +90,7 @@ class ValueParsersTest {
   }
 
   @Test
-  fun `simple color drawable parse test`() {
+  fun `drawable parse test`() {
     inflaterTest { module ->
       requiresActivity { activity ->
         startParse(module)
@@ -93,6 +98,14 @@ class ValueParsersTest {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(ColorDrawable::class.java)
           assertThat((this as ColorDrawable).color).isEqualTo(Color.RED)
+        }
+        parseDrawable(activity, "@android:drawable/ab_share_pack_material").apply {
+          assertThat(this).isNotNull()
+          assertThat(this).isInstanceOf(BitmapDrawable::class.java)
+        }
+        parseDrawable(activity, "@android:drawable/action_bar_background").apply {
+          assertThat(this).isNotNull()
+          assertThat(this).isInstanceOf(GradientDrawable::class.java)
         }
         endParse()
       }
@@ -191,8 +204,9 @@ class ValueParsersTest {
         assertThat(parseColor(activity, "@android:color/white")).isEqualTo(Color.WHITE)
         assertThat(parseColor(activity, "@android:color/transparent")).isEqualTo(Color.TRANSPARENT)
         assertThat(parseColor(activity, "@color/test_color")).isEqualTo(Color.parseColor("#f44336"))
-        assertThat(parseColor(activity, "@color/test_color_ref")).isEqualTo(Color.parseColor("#f44336"))
-        
+        assertThat(parseColor(activity, "@color/test_color_ref"))
+          .isEqualTo(Color.parseColor("#f44336"))
+
         // TODO Implement color state list parser
         assertThat(parseColor(activity, "@color/test_selector")).isEqualTo(Color.TRANSPARENT)
         endParse()

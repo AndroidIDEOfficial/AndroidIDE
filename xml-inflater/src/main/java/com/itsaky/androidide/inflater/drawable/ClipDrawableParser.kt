@@ -20,7 +20,6 @@ import android.content.Context
 import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.Drawable
 import android.view.Gravity
-import com.itsaky.androidide.inflater.InflateException
 import org.xmlpull.v1.XmlPullParser
 
 /**
@@ -31,17 +30,14 @@ import org.xmlpull.v1.XmlPullParser
 open class ClipDrawableParser protected constructor(parser: XmlPullParser, minDepth: Int) :
   IDrawableParser(parser, minDepth) {
   @Throws(Exception::class)
-  public override fun parseDrawable(context: Context): Drawable {
+  public override fun parseDrawable(context: Context): Drawable? {
     var index = attrIndex("drawable")
     if (index == -1) {
-      throw InflateException("<clip> drawable must specify android:drawable attribute")
+      // TODO Parse inner drawables
+      return ClipDrawable(null, Gravity.LEFT, ClipDrawable.HORIZONTAL)
     }
-    val value =
-      value(index)
-        ?: throw InflateException("Invalid value specified to android:drawable attribute")
-    val drawable =
-      parseDrawable(context, value)
-        ?: throw InflateException("Unable to parse drawable for value: $value")
+    val value = value(index)
+    val drawable = parseDrawable(context, value)
     var orientation = ClipDrawable.HORIZONTAL
     index = attrIndex("clipOrientation")
     if (index != -1) {

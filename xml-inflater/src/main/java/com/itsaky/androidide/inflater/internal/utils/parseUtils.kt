@@ -25,12 +25,14 @@ import android.util.TypedValue.complexToDimension
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
+import com.android.SdkConstants.EXT_XML
 import com.android.aaptcompiler.AaptResourceType
 import com.android.aaptcompiler.AaptResourceType.ARRAY
 import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.COLOR
 import com.android.aaptcompiler.AaptResourceType.DIMEN
+import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.INTEGER
 import com.android.aaptcompiler.AaptResourceType.STRING
 import com.android.aaptcompiler.ArrayResource
@@ -38,6 +40,7 @@ import com.android.aaptcompiler.AttributeResource
 import com.android.aaptcompiler.BasicString
 import com.android.aaptcompiler.BinaryPrimitive
 import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.FileReference
 import com.android.aaptcompiler.RawString
 import com.android.aaptcompiler.Reference
 import com.android.aaptcompiler.ResourceEntry
@@ -52,8 +55,10 @@ import com.android.aaptcompiler.tryParseBool
 import com.android.aaptcompiler.tryParseFlagSymbol
 import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
+import com.itsaky.androidide.inflater.drawable.DrawableParserFactory
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
+import java.io.File
 import java.util.regex.Pattern
 
 private var currentModule: AndroidModule? = null
@@ -171,15 +176,27 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
   if (HEX_COLOR.matcher(value).matches()) {
     return parseColorDrawable(context, value)
   }
-
-  //    if (value[0] == '@') {
-  //      val (pck, type, name) = parseResourceReference(value)
-  //      return if(pck == null) {
-  //        parseDrawableResRef(type, name, value)
-  //      } else {
-  //        parseQualifiedDrawableResRef()
-  //      }
-  //    }
+  val drawableResolver: (Value?) -> Drawable? =
+    fun(it): Drawable? {
+      if (it is FileReference) {
+        val file = File(it.path.value())
+        if (!file.exists() || file.extension != EXT_XML) {
+          return null
+        }
+        val parser = DrawableParserFactory.newParser(context, file) ?: return null
+        return parser.parse(context)
+      }
+      // TODO(itsaky) : Drawable of any type other than a file?
+      return null
+    }
+  if (value[0] == '@') {
+    return parseReference(
+      value = value,
+      expectedType = DRAWABLE,
+      def = def,
+      resolver = drawableResolver
+    )
+  }
   return def
 }
 
@@ -278,7 +295,7 @@ fun parseFloat(value: String, defValue: Float): Float {
 @JvmOverloads
 fun parseGravity(value: String, def: Int = defaultGravity()): Int {
   val attr = findAttributeResource("android", ATTR, "gravity") ?: return defaultGravity()
-  return parseFlag(attr = attr, value = value, def = defaultGravity())
+  return parseFlag(attr = attr, value = value, def = def)
 }
 
 fun parseFlag(attr: AttributeResource, value: String, def: Int = -1): Int {
@@ -389,19 +406,19 @@ fun <T> resolveResourceReference(
   def: T,
   resolver: (Value?) -> T?
 ): T {
-  val dimenValue = entry.findValue(ConfigDescription())!!.value
-  if (dimenValue is Reference) {
+  val value = entry.findValue(ConfigDescription())!!.value
+  if (value is Reference) {
     return resolveResourceReference(
       table = table,
       type = type,
       pck = pck.name,
-      name = dimenValue.name.entry!!,
+      name = value.name.entry!!,
       def = def,
       resolver = resolver
     )
   }
 
-  return resolver(dimenValue)
+  return resolver(value)
     ?: run {
       log.warn("Unable to resolve dimension reference '$name'")
       def
