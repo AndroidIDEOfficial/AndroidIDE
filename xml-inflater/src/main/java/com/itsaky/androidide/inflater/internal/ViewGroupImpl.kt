@@ -18,11 +18,12 @@
 package com.itsaky.androidide.inflater.internal
 
 import android.view.ViewGroup
+import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import java.io.File
 
-open class ViewGroupImpl(file: File, name: String, view: ViewGroup) :
+open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
 
   protected val children = mutableListOf<IView>()

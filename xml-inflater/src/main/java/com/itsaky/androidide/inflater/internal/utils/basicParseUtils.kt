@@ -440,7 +440,7 @@ fun <T> resolveResourceReference(
     }
 }
 
-private fun parseResourceReference(value: String): Triple<String?, AaptResourceType, String>? {
+internal fun parseResourceReference(value: String): Triple<String?, AaptResourceType, String>? {
   return tryParseReference(value)?.let {
     val pck = it.reference.name.pck
     val type = it.reference.name.type

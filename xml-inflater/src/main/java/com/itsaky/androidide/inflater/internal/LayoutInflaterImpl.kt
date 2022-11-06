@@ -19,12 +19,12 @@ package com.itsaky.androidide.inflater.internal
 
 import android.content.Context
 import android.view.View
-import com.itsaky.androidide.inflater.InflateException
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import com.android.aapt.Resources.SourcePosition
 import com.android.aapt.Resources.XmlElement
 import com.android.aapt.Resources.XmlNode.NodeCase.ELEMENT
+import com.android.aaptcompiler.AaptResourceType.ID
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.BlameLogger
 import com.android.aaptcompiler.ResourceFile
@@ -36,8 +36,10 @@ import com.itsaky.androidide.inflater.IInflateEventsListener
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.inflater.InflationFinishEvent
 import com.itsaky.androidide.inflater.InflationStartEvent
+import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
@@ -55,17 +57,22 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
   override var inflationEventListener: IInflateEventsListener? = null
   private val log = ILogger.newInstance("LayoutInflaterImpl")
-  private var inflatingFile: File? = null
+  private var _primaryInflatingFile: File? = null
+  private var _currentLayoutFile: LayoutFile? = null
+
+  protected val primaryInflatingFile: File
+    get() = this._primaryInflatingFile!!
   
-  protected val file: File
-    get() = this.inflatingFile!!
+  protected val currentLayoutFile: LayoutFile
+    get() = _currentLayoutFile!!
 
   override fun inflate(file: File, parent: ViewGroup): IView? {
-    this.inflatingFile = file
+    this._primaryInflatingFile = file
+    IDTable.newRound()
     inflationEventListener?.onEvent(InflationStartEvent())
     return doInflate(file, wrap(parent)).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
-      inflatingFile = null
+      _primaryInflatingFile = null
     }
   }
 
@@ -90,7 +97,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
     val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
     processor.process(resFile, file.inputStream())
-
+    
     return doInflate(processor, parent, module)
   }
 
@@ -101,18 +108,29 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView? {
     // TODO(itsaky) : Add test for multiple view as root layout
     //  The inflater should fail in such cases
-    val (_, node) =
+    val (file, node) =
       processor.xmlResources.find { it.file == processor.primaryFile }
         ?: throw InflateException("Unable to find primary XML resource from XmlProcessor")
-
+    
+    this._currentLayoutFile = LayoutFile(this.primaryInflatingFile, file.name.entry!!)
+    
     if (node.nodeCase != ELEMENT) {
       throw InflateException(
         "Found ${node.nodeCase} but $ELEMENT was expected at ${node.source.lineCol()}"
       )
     }
-
+    
+    // Store all IDs
+    file.exportedSymbols.filter { it.name.type == ID }.forEach {
+      IDTable.set(currentLayoutFile.resName, it.name.entry!!, View.generateViewId())
+    }
+    
     val element = node.element
-    return onCreateView(element, parent, module)
+    val view = onCreateView(element, parent, module)
+    
+    this._currentLayoutFile = null
+    
+    return view
   }
 
   protected open fun onCreateView(
@@ -195,7 +213,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView {
     return try {
       val v = createViewInstance(widget, parent)
-      return ViewImpl(file, widget.qualifiedName, v)
+      return ViewImpl(currentLayoutFile, widget.qualifiedName, v)
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
     }
@@ -233,11 +251,11 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   }
 
   private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {
-    return ErrorView(file, parent.context, message)
+    return ErrorView(currentLayoutFile, parent.context, message)
   }
 
   private fun wrap(parent: ViewGroup): IViewGroup {
-    return ViewGroupImpl(file, parent.javaClass.name, parent)
+    return ViewGroupImpl(currentLayoutFile, parent.javaClass.name, parent)
   }
 
   private fun SourcePosition.lineCol(): String {

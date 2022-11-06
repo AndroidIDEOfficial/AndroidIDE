@@ -19,9 +19,13 @@ package com.itsaky.androidide.inflater.internal.utils
 
 import android.graphics.PorterDuff
 import android.view.View
+import com.android.aaptcompiler.AaptResourceType.ID
+import com.itsaky.androidide.inflater.internal.ViewImpl
 
-fun parseId(value: String) : Int {
-  return 0
+@JvmOverloads
+fun parseId(resName: String, value: String, def: Int = 0): Int {
+  val name = parseResourceReference(value)?.third ?: return 0
+  return IDTable.get(resName, name) ?: def
 }
 
 @Suppress("DEPRECATION")

@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.R
 import java.io.File
 
@@ -31,7 +32,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class ErrorView(file: File, context: Context, message: String) :
+class ErrorView(file: LayoutFile, context: Context, message: String) :
   ViewImpl(file = file, name = NAME, view = createErrView(context, message)) {
   companion object {
     private val NAME = View::class.java.name

@@ -29,13 +29,14 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IAttributeAdapter
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.endParse
+import com.itsaky.androidide.inflater.internal.utils.parseId
 import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
-import java.io.File
 
 /**
  * Attribute adapter for [View].
@@ -69,7 +70,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
         "foregroundGravity" -> foregroundGravity = parseGravity(value)
         "foregroundTint" -> foregroundTintList = parseColorStateList(context, value)
         "foregroundTintMode" -> foregroundTintMode = parsePorterDuffMode(value)
-        "id" -> {}
+        "id" -> parseId(file.resName, value)
         "minHeight" -> minimumWidth = parseDimension(context, value)
         "minWidth" -> minimumHeight = parseDimension(context, value)
         "padding" ->
@@ -127,7 +128,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     attribute: IAttribute,
     block:
       T.(
-        file: File,
+        file: LayoutFile,
         context: Context,
         layoutParams: ViewGroup.LayoutParams,
         namespace: INamespace,
@@ -141,7 +142,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     (view.view as T).apply {
       val file = (view as ViewImpl).file
       val module =
-        ProjectManager.findModuleForFile(file) as? AndroidModule
+        ProjectManager.findModuleForFile(file.file) as? AndroidModule
           ?: throw IllegalStateException("Cannot find module for file: $file")
       startParse(module)
       block(file, context, layoutParams, attribute.namespace, attribute.name, attribute.value)

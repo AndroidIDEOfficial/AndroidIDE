@@ -53,6 +53,22 @@ class LayoutInflaterTest {
       }
     }
   }
+  
+  @Test
+  fun `test inlined layout`() {
+    inflaterTest {
+      requiresActivity { activity ->
+        val file = layoutFile("inlined")
+        val parent = LinearLayout(activity)
+        val inflater = ILayoutInflater.newInflater()
+        val inflated = inflater.inflate(file, parent)
+        inflated.apply {
+          assertThat(this).isNotNull()
+          assertThat(this).isInstanceOf(LinearLayout::class.java)
+        }
+      }
+    }
+  }
 
   private fun layoutFile(name: String): File {
     val app = ProjectManager.app ?: throw IllegalStateException("Project is not initialized")

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater.internal
 
 import android.view.View
+import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
@@ -29,7 +30,7 @@ import java.io.File
 open class ViewImpl
 @JvmOverloads
 constructor(
-  internal val file: File,
+  internal val file: LayoutFile,
   override val name: String,
   override val view: View,
   override val simpleName: String = name.simpleName(),
