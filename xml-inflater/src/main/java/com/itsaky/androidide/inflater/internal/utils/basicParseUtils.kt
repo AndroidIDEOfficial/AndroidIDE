@@ -308,6 +308,15 @@ fun parseFloat(value: String, def: Float): Float {
 }
 
 @JvmOverloads
+fun parseLong(value: String, def: Long = 0L): Long {
+  return try {
+    value.toLong()
+  } catch (err: Throwable) {
+    def
+  }
+}
+
+@JvmOverloads
 fun parseGravity(value: String, def: Int = defaultGravity()): Int {
   val attr = findAttributeResource("android", ATTR, "gravity") ?: return defaultGravity()
   return parseFlag(attr = attr, value = value, def = def)

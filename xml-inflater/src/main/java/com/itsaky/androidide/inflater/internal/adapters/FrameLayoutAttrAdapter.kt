@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @AttributeAdapter(FrameLayout::class)
-class FrameLayoutAttrAdapter : ViewGroupAttrAdapter() {
+open class FrameLayoutAttrAdapter : ViewGroupAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<FrameLayout>(view, attribute) {

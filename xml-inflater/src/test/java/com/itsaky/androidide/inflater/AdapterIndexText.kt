@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.inflater
 
+import android.gesture.GestureOverlayView
 import android.view.*
 import android.widget.*
 import com.google.common.truth.Truth.assertThat
@@ -26,6 +27,7 @@ import com.itsaky.androidide.inflater.internal.adapters.CheckBoxAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.CheckedTextViewAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.EditTextAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.FrameLayoutAttrAdapter
+import com.itsaky.androidide.inflater.internal.adapters.GestureOverlayViewAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.GridLayoutAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.ImageButtonAttrAdapter
 import com.itsaky.androidide.inflater.internal.adapters.ImageViewAttrAdapter
@@ -57,6 +59,7 @@ class AdapterIndexText {
         CheckedTextView::class to CheckedTextViewAttrAdapter::class,
         EditText::class to EditTextAttrAdapter::class,
         FrameLayout::class to FrameLayoutAttrAdapter::class,
+        GestureOverlayView::class to GestureOverlayViewAttrAdapter::class,
         GridLayout::class to GridLayoutAttrAdapter::class,
         ImageButton::class to ImageButtonAttrAdapter::class,
         ImageView::class to ImageViewAttrAdapter::class,

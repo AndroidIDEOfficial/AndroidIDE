@@ -52,6 +52,17 @@ abstract class AbstractParser {
   protected open fun parseFloat(value: String, def: Float = 0f): Float {
     return com.itsaky.androidide.inflater.internal.utils.parseFloat(value = value, def = def)
   }
+  
+  /**
+   * Parses the given string value representing a long to its actual value.
+   *
+   * @param value The string value. Usually value from attributes.
+   * @param def The default value.
+   */
+  @JvmOverloads
+  protected open fun parseLong(value: String, def: Long = 0L): Long {
+    return com.itsaky.androidide.inflater.internal.utils.parseLong(value = value, def = def)
+  }
 
   /**
    * Parses the given string value representing an integer or reference to an integer resource to
