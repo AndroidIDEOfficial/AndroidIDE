@@ -17,6 +17,10 @@
 
 package com.itsaky.androidide.inflater
 
+import com.android.SdkConstants.ANDROID_NS_NAME
+import com.android.SdkConstants.ANDROID_URI
+import com.itsaky.androidide.inflater.internal.NamespaceImpl
+
 /**
  * An XML namespace declaration.
  *
@@ -29,4 +33,9 @@ interface INamespace {
 
   /** The namespace URI. */
   val uri: String
+
+  companion object {
+    /** The Android namespace. */
+    @JvmField val ANDROID: INamespace = NamespaceImpl(ANDROID_NS_NAME, ANDROID_URI)
+  }
 }

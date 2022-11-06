@@ -18,14 +18,12 @@
 package com.itsaky.androidide.inflater.internal
 
 import android.view.View
-import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.utils.simpleName
 import com.itsaky.androidide.inflater.internal.utils.tagName
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
 
 open class ViewImpl
 @JvmOverloads

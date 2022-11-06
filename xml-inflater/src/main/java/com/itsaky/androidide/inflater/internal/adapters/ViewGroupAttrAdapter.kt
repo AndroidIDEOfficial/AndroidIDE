@@ -20,14 +20,13 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.view.ViewGroup
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IAttributeAdapter
 import com.itsaky.androidide.inflater.IView
 
 /** @author Akash Yadav */
 @AttributeAdapter(ViewGroup::class)
 class ViewGroupAttrAdapter : ViewAttrAdapter() {
 
-  override fun apply(view: IView, attribute: IAttribute) {
+  override fun apply(view: IView, attribute: IAttribute): Boolean {
     TODO("Not yet implemented")
   }
 }

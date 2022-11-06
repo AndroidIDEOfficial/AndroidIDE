@@ -67,6 +67,16 @@ abstract class AbstractParser {
   }
 
   /**
+   * Parses the given string value representing a string or reference to an string resource to its
+   * actual value. Returns [value] itself if it cannot be parsed.
+   *
+   * @param value The string value. Usually value from attributes.
+   */
+  protected open fun parseString(value: String): String {
+    return com.itsaky.androidide.inflater.internal.utils.parseString(value)
+  }
+
+  /**
    * Parses the given string value representing a color or reference to a drawable resource to an
    * actual drawable which can be rendered.
    *

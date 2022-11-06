@@ -15,28 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater
+package com.itsaky.androidide.inflater.internal
 
-/**
- * An attribute adapter handles the application and removal of attributes on a view.
- *
- * @author Akash Yadav
- */
-abstract class IAttributeAdapter : AbstractParser() {
+import com.itsaky.androidide.inflater.INamespace
 
-  /**
-   * Apply the given attribute to the given view.
-   *
-   * @param view The view to which the attribute must be applied.
-   * @param attribute The attribute to apply.
-   * @return Whether the attribute was applied or not.
-   */
-  abstract fun apply(view: IView, attribute: IAttribute): Boolean
-
-  /**
-   * Apply the basic attributes to a view so that it could be rendered.
-   *
-   * @param view The view to apply basic attributes to.
-   */
-  abstract fun applyBasic(view: IView)
-}
+data class NamespaceImpl(override val prefix: String, override val uri: String) : INamespace
