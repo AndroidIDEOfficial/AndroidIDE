@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.annotation.ChecksSdkIntAtLeast
+import com.itsaky.androidide.inflater.AbstractParser
 import org.xmlpull.v1.XmlPullParser
 
 /**
@@ -29,7 +30,7 @@ import org.xmlpull.v1.XmlPullParser
  * @author Akash Yadav
  */
 abstract class IDrawableParser
-protected constructor(protected open val parser: XmlPullParser?, open var minDepth: Int) {
+protected constructor(protected open val parser: XmlPullParser?, open var minDepth: Int) : AbstractParser() {
   /**
    * Parse the drawable using the already provided parser and data.
    *
@@ -61,33 +62,7 @@ protected constructor(protected open val parser: XmlPullParser?, open var minDep
     }
     return drawable
   }
-
-  protected fun parseInteger(value: String, def: Int): Int {
-    return com.itsaky.androidide.inflater.internal.utils.parseInteger(value, def)
-  }
-
-  protected fun parseBoolean(value: String): Boolean {
-    return com.itsaky.androidide.inflater.internal.utils.parseBoolean(value)
-  }
-
-  protected fun parseDrawable(context: Context, value: String): Drawable {
-    return com.itsaky.androidide.inflater.internal.utils.parseDrawable(context, value)
-  }
-
-  protected fun parseGravity(value: String): Int {
-    return com.itsaky.androidide.inflater.internal.utils.parseGravity(value)
-  }
-
-  protected fun parseDimension(context: Context?, value: String?): Int {
-    return com.itsaky.androidide.inflater.internal.utils
-      .parseDimension(context!!, value, 0f)
-      .toInt()
-  }
-
-  protected fun parseColor(context: Context, value: String): Int {
-    return com.itsaky.androidide.inflater.internal.utils.parseColor(context, value)
-  }
-
+  
   /**
    * Actual implementation of the parse logic.
    *

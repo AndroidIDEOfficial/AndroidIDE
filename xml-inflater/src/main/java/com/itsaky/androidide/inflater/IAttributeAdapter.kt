@@ -22,7 +22,7 @@ package com.itsaky.androidide.inflater
  *
  * @author Akash Yadav
  */
-abstract class IAttributeAdapter {
+abstract class IAttributeAdapter : AbstractParser() {
 
   /**
    * Apply the given attribute to the given view.

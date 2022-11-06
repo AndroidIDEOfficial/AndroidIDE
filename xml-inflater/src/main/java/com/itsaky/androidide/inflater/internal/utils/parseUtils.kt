@@ -284,11 +284,11 @@ fun parseDimension(
   }
 }
 
-fun parseFloat(value: String, defValue: Float): Float {
+fun parseFloat(value: String, def: Float): Float {
   return try {
     value.toFloat()
   } catch (err: Throwable) {
-    defValue
+    def
   }
 }
 

@@ -51,16 +51,11 @@ open class ViewAttrAdapter : IAttributeAdapter() {
         "alpha" -> alpha = parseFloat(value)
         else -> handled = false
       }
-      this.layoutParams = layoutParams
+      
+      if (handled) {
+        this.layoutParams = layoutParams
+      }
     }
-  }
-  
-  protected fun parseDimension(context: Context, value: String): Int {
-    return com.itsaky.androidide.inflater.internal.utils.parseDimension(context, value).roundToInt()
-  }
-  
-  protected fun parseFloat(value: String, def: Float = 1f): Float {
-    return com.itsaky.androidide.inflater.internal.utils.parseFloat(value, def)
   }
   
   override fun applyBasic(view: IView) {
