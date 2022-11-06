@@ -48,6 +48,7 @@ abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
         "buttonTint" -> buttonTintList = parseColorStateList(context, value)
         "button" -> buttonDrawable = parseDrawable(context, value)
         "buttonTintMode" -> buttonTintMode = parsePorterDuffMode(value)
+        "checked" -> isChecked = parseBoolean(value = value, def = true)
         else -> handled = false
       }
 
@@ -61,5 +62,6 @@ abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
 
   override fun applyBasic(view: IView) {
     super.applyBasic(view)
+    (view.view as CompoundButton).isChecked = true
   }
 }
