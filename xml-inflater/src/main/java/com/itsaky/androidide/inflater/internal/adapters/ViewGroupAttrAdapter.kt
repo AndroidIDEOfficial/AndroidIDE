@@ -17,16 +17,55 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import android.animation.LayoutTransition
+import android.content.Context
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /** @author Akash Yadav */
 @AttributeAdapter(ViewGroup::class)
-class ViewGroupAttrAdapter : ViewAttrAdapter() {
+abstract class ViewGroupAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
-    TODO("Not yet implemented")
+    return doApply<ViewGroup>(view, attribute) {
+      _: LayoutFile,
+      _: Context,
+      _: LayoutParams,
+      _: INamespace,
+      name: String,
+      value: String ->
+      var applied = true
+      when (name) {
+        "animateLayoutChanges" -> layoutTransition = LayoutTransition()
+        "clipChildren" -> clipChildren = parseBoolean(value)
+        "clipToPadding" -> clipToPadding = parseBoolean(value)
+        "descendantFocusability" -> descendantFocusability = parseDescendantsFocusability(value)
+        "layoutMode" -> layoutMode = parseLayoutMode(value)
+        else -> applied = false
+      }
+      return@doApply applied
+    }
+  }
+
+  protected open fun parseLayoutMode(value: String): Int {
+    return when (value) {
+      "opticalBounds" -> ViewGroup.LAYOUT_MODE_OPTICAL_BOUNDS
+      "clipBounds" -> ViewGroup.LAYOUT_MODE_CLIP_BOUNDS
+      else -> ViewGroup.LAYOUT_MODE_CLIP_BOUNDS
+    }
+  }
+
+  protected open fun parseDescendantsFocusability(value: String): Int {
+    return when (value) {
+      "beforeDescendants" -> ViewGroup.FOCUS_BEFORE_DESCENDANTS
+      "blocksDescendants" -> ViewGroup.FOCUS_BLOCK_DESCENDANTS
+      "afterDescendants" -> ViewGroup.FOCUS_AFTER_DESCENDANTS
+      else -> ViewGroup.FOCUS_AFTER_DESCENDANTS
+    }
   }
 }
