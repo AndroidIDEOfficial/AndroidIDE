@@ -27,7 +27,7 @@ import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
- * Base attribute adapter for all view groups.
+ * Base attribute adapter for all [ViewGroup].
  *
  * @author Akash Yadav
  */

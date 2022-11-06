@@ -17,13 +17,12 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.Button
+import android.widget.ImageButton
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for [Button].
+ * Attribute adapter for [ImageButton].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(Button::class)
-class ButtonAttrAdapter : TextViewAttrAdapter()
+@AttributeAdapter(ImageButton::class) class ImageButtonAttrAdapter : ImageViewAttrAdapter()

@@ -21,7 +21,7 @@ import android.widget.EditText
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for edit texts.
+ * Attribute adapter for [EditText].
  *
  * @author Akash Yadav
  */

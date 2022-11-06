@@ -42,7 +42,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @AttributeAdapter(ImageView::class)
-class ImageViewAttrAdapter : ViewAttrAdapter() {
+open class ImageViewAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<ImageView>(view, attribute) {

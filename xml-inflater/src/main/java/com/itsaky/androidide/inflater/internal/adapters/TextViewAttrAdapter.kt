@@ -34,7 +34,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
 import java.util.regex.Pattern
 
 /**
- * Attribute adapter for text views.
+ * Attribute adapter for [TextView].
  *
  * @author Akash Yadav
  */
