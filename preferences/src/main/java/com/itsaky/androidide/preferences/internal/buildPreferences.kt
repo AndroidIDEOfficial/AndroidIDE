@@ -77,7 +77,7 @@ var isStacktraceEnabled: Boolean
 
 /** Switch for Gradle `--info` option. */
 var isInfoEnabled: Boolean
-  get() = prefManager.getBoolean(INFO, true)
+  get() = prefManager.getBoolean(INFO, isFirstBuild)
   set(enabled) {
     prefManager.putBoolean(INFO, enabled)
   }
