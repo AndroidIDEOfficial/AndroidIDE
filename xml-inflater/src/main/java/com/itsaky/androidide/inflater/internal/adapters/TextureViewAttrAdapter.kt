@@ -17,13 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.EditText
+import android.view.TextureView
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for [EditText].
+ * Attribute adapter for [TextureView].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(EditText::class)
-open class EditTextAttrAdapter : TextViewAttrAdapter()
+@AttributeAdapter(TextureView::class)
+class TextureViewAttrAdapter : ViewAttrAdapter()

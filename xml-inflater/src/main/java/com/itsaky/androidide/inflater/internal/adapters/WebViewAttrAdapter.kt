@@ -17,13 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.EditText
+import android.webkit.WebView
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for [EditText].
+ * Attribute adapter for [WebView].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(EditText::class)
-open class EditTextAttrAdapter : TextViewAttrAdapter()
+@AttributeAdapter(WebView::class)
+class WebViewAttrAdapter : AbsoluteLayoutAttrAdapter()

@@ -17,13 +17,14 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.EditText
+import android.widget.AbsoluteLayout
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for [EditText].
+ * Attribute adapter for [AbsoluteLayout].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(EditText::class)
-open class EditTextAttrAdapter : TextViewAttrAdapter()
+@Suppress("DEPRECATION")
+@AttributeAdapter(AbsoluteLayout::class)
+open class AbsoluteLayoutAttrAdapter : ViewGroupAttrAdapter()

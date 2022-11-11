@@ -17,13 +17,11 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.EditText
+import android.view.SurfaceView
 import com.itsaky.androidide.annotations.inflater.AttributeAdapter
 
 /**
- * Attribute adapter for [EditText].
- *
+ * Attribute adapter for [SurfaceView].
  * @author Akash Yadav
  */
-@AttributeAdapter(EditText::class)
-open class EditTextAttrAdapter : TextViewAttrAdapter()
+@AttributeAdapter(SurfaceView::class) class SurfaceViewAttrAdapter : ViewAttrAdapter()
