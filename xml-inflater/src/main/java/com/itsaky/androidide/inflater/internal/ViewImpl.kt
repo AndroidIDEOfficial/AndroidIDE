@@ -19,6 +19,7 @@ package com.itsaky.androidide.inflater.internal
 
 import android.view.View
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.utils.simpleName
@@ -36,8 +37,9 @@ constructor(
 ) : IView {
   private val log = ILogger.newInstance(javaClass.simpleName)
   internal val attributes = mutableListOf<IAttribute>()
-  
+
   override var parent: IViewGroup? = null
+  internal val namespaceDecls = mutableMapOf<String, INamespace>()
 
   override fun addAttribute(attribute: IAttribute) {
     this.attributes.add(attribute)
@@ -52,5 +54,9 @@ constructor(
   override fun removeAttribute(attribute: IAttribute) {
     this.attributes.remove(attribute)
     // TODO(itsaky): Should attribute adapters handle this as well?
+  }
+
+  internal fun findNamespaceByUri(uri: String): INamespace? {
+    return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
 }

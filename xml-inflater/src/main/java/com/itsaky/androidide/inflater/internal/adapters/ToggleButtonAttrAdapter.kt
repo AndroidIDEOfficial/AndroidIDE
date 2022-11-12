@@ -44,19 +44,19 @@ class ToggleButtonAttrAdapter : CompoundButtonAttrAdapter() {
       _: INamespace,
       name: String,
       value: String ->
-      var handled = true
+      var applied = true
       when (name) {
         "disabledAlpha" -> reflect(button).field("mDisabledAlpha", parseFloat(value, 0.5f))
         "textOff" -> textOff = parseString(value)
         "textOn" -> textOn = parseString(value)
-        else -> handled = false
+        else -> applied = false
       }
 
-      if (!handled) {
-        handled = super.apply(view, attribute)
+      if (!applied) {
+        applied = super.apply(view, attribute)
       }
 
-      return@doApply handled
+      return@doApply applied
     }
   }
 }

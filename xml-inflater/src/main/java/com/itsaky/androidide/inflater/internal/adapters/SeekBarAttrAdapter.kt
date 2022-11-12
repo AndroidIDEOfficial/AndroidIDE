@@ -38,6 +38,10 @@ class SeekBarAttrAdapter : AbsSeekBarAttrAdapter() {
         "thumb" -> thumb = parseDrawable(context, value)
         else -> applied = false
       }
+  
+      if (!applied) {
+        applied = super.apply(view, attribute)
+      }
 
       return@doApply applied
     }

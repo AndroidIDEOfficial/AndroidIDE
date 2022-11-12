@@ -74,6 +74,7 @@ class LayoutInflaterTest {
         val parent = LinearLayout(activity)
         val inflater = ILayoutInflater.newInflater() as LayoutInflaterImpl
         viewToAdapter.keys.forEach { view ->
+          println("Testing layout inflater and adapter for ${view.qualifiedName}")
           parent.removeAllViews()
           module.createLayoutFile(view.simpleName!!) { file ->
             file.writeText(viewDeclTemplate(view.simpleName!!))

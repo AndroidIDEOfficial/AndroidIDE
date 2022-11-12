@@ -43,10 +43,8 @@ import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.lang.reflect.Method
 
@@ -64,7 +62,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
   protected val primaryInflatingFile: File
     get() = this._primaryInflatingFile!!
-  
+
   protected val currentLayoutFile: LayoutFile
     get() = this._currentLayoutFile!!
 
@@ -99,7 +97,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
 
     val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
     processor.process(resFile, file.inputStream())
-    
+
     return doInflate(processor, parent, module)
   }
 
@@ -113,25 +111,25 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     val (file, node) =
       processor.xmlResources.find { it.file == processor.primaryFile }
         ?: throw InflateException("Unable to find primary XML resource from XmlProcessor")
-    
+
     this._currentLayoutFile = LayoutFile(this.primaryInflatingFile, file.name.entry!!)
-    
+
     if (node.nodeCase != ELEMENT) {
       throw InflateException(
         "Found ${node.nodeCase} but $ELEMENT was expected at ${node.source.lineCol()}"
       )
     }
-    
+
     // Store all IDs
-    file.exportedSymbols.filter { it.name.type == ID }.forEach {
-      IDTable.set(currentLayoutFile.resName, it.name.entry!!, View.generateViewId())
-    }
-    
+    file.exportedSymbols
+      .filter { it.name.type == ID }
+      .forEach { IDTable.set(currentLayoutFile.resName, it.name.entry!!, View.generateViewId()) }
+
     val element = node.element
     val view = onCreateView(element, wrap(parent), module)
-    
+
     this._currentLayoutFile = null
-    
+
     return view
   }
 
@@ -159,21 +157,39 @@ open class LayoutInflaterImpl : ILayoutInflater() {
       else widgets.findWidgetWithSimpleName(element.name)
 
     // TODO(itsaky): Handle views from libraries
-    val view =
-      if (widget == null) {
+    val view: ViewImpl =
+      (if (widget == null) {
         onCreateUnsupportedView("View with name '${element.name}' not found", parentView)
       } else {
         onCreatePlatformView(widget, parentView, module, widgets)
+      })
+        as ViewImpl
+
+    if (element.namespaceDeclarationCount > 0) {
+      for (xmlNamespace in element.namespaceDeclarationList) {
+        view.namespaceDecls[xmlNamespace.uri] = NamespaceImpl(xmlNamespace.prefix, xmlNamespace.uri)
       }
+    }
 
     val adapter =
       AttributeAdapterIndex.getAdapter(view.name)
         ?: throw InflateException("No attribute adapter found for view ${view.name}")
-  
+
     view.view.layoutParams = generateLayoutParams(parentView)
     parent.addChild(view)
-    
+
     adapter.applyBasic(view)
+
+    if (element.attributeCount > 0) {
+      for (xmlAttribute in element.attributeList) {
+        val namespace =
+          view.findNamespaceByUri(xmlAttribute.namespaceUri)
+            ?: throw InflateException("Unknown namespace : ${xmlAttribute.namespaceUri}")
+        val attr =
+          AttributeImpl(namespace = namespace, name = xmlAttribute.name, value = xmlAttribute.value)
+        view.addAttribute(attr)
+      }
+    }
 
     if (element.childCount > 0 && view is IViewGroup) {
       for (child in element.childList) {

@@ -51,7 +51,7 @@ open class TextViewAttrAdapter : ViewAttrAdapter() {
         value: String ->
       val drawables = compoundDrawables
       val drawablesRelative = compoundDrawablesRelative
-      var handled = true
+      var applied = true
       when (name) {
         "autoLink" -> autoLinkMask = parseAutoLinkMask(value)
         "drawableLeft" ->
@@ -118,13 +118,13 @@ open class TextViewAttrAdapter : ViewAttrAdapter() {
           )
         "textStyle" -> setTypeface(typeface, parseTextStyle(value))
         "typeface" -> typeface = parseTypeface(value)
-        else -> handled = false
+        else -> applied = false
       }
 
-      if (!handled) {
-        handled = super.apply(view, attribute)
+      if (!applied) {
+        applied = super.apply(view, attribute)
       }
-      return@doApply handled
+      return@doApply applied
     }
   }
 

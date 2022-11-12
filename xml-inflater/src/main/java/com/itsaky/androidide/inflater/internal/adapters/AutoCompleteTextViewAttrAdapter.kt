@@ -51,6 +51,10 @@ class AutoCompleteTextViewAttrAdapter : EditTextAttrAdapter() {
         "dropDownHeight" -> dropDownHeight = parseDimension(context, value)
         else -> applied = false
       }
+      if (!applied) {
+        applied = super.apply(view, attribute)
+      }
+      
       return@doApply applied
     }
   }

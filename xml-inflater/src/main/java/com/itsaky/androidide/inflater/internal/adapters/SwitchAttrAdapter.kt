@@ -42,7 +42,7 @@ class SwitchAttrAdapter : CompoundButtonAttrAdapter() {
         _: INamespace,
         name: String,
         value: String ->
-      var handled = true
+      var applied = true
       when (name) {
         "showText" -> showText = parseBoolean(value)
         "splitTrack" -> splitTrack = parseBoolean(value)
@@ -59,14 +59,14 @@ class SwitchAttrAdapter : CompoundButtonAttrAdapter() {
         "trackTint" -> trackTintList = parseColorStateList(context, value)
         "trackTintMode" -> trackTintMode = parsePorterDuffMode(value)
         "typeface" -> setSwitchTypeface(parseTypeface(value))
-        else -> handled = false
+        else -> applied = false
       }
 
-      if (!handled) {
-        handled = super.apply(view, attribute)
+      if (!applied) {
+        applied = super.apply(view, attribute)
       }
 
-      return@doApply handled
+      return@doApply applied
     }
   }
 }
