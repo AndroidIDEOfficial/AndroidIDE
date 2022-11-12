@@ -19,25 +19,22 @@ package com.itsaky.androidide.inflater
 
 import android.view.View
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.inflater.internal.AttributeImpl
+import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
+import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
-import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.projects.api.AndroidModule
 import java.io.File
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.android.controller.ActivityController
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 class LayoutInflaterTest {
-  
+
   @Test
   fun `test functionality`() {
     inflaterTest {
@@ -53,7 +50,7 @@ class LayoutInflaterTest {
       }
     }
   }
-  
+
   @Test
   fun `test inlined layout`() {
     inflaterTest {
@@ -70,8 +67,46 @@ class LayoutInflaterTest {
     }
   }
 
+  @Test
+  fun `test inflated view is of expected type`() {
+    inflaterTest { module ->
+      requiresActivity { activity ->
+        val parent = LinearLayout(activity)
+        val inflater = ILayoutInflater.newInflater() as LayoutInflaterImpl
+        viewToAdapter.keys.forEach { view ->
+          parent.removeAllViews()
+          module.createLayoutFile(view.simpleName!!) { file ->
+            file.writeText(viewDeclTemplate(view.simpleName!!))
+            val inflated = inflater.inflate(file, parent)
+            assertThat(inflated!!.view).isInstanceOf(view.java)
+            assertThat(inflated.view.id)
+              .isEqualTo(IDTable.get(view.simpleName!!, "template_view"))
+
+            (inflated as ViewImpl).attributes.apply {
+              assertThat(this)
+                .contains(AttributeImpl(INamespace.ANDROID, "id", "@+id/template_view"))
+              assertThat(this)
+                .contains(AttributeImpl(INamespace.ANDROID, "layout_height", "match_parent"))
+              assertThat(this)
+                .contains(AttributeImpl(INamespace.ANDROID, "layout_width", "match_parent"))
+            }
+          }
+        }
+      }
+    }
+  }
+
   private fun layoutFile(name: String): File {
     val app = ProjectManager.app ?: throw IllegalStateException("Project is not initialized")
     return File(app.projectDir, "src/main/res/layout/$name.xml")
+  }
+
+  private fun AndroidModule.createLayoutFile(name: String, block: (File) -> Unit = {}): File {
+    return File(projectDir, "src/main/res/layout/$name.xml").apply {
+      if (exists()) {
+        delete()
+      }
+      block(this)
+    }
   }
 }

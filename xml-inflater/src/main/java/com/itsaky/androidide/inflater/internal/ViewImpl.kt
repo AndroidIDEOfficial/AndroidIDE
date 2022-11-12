@@ -35,7 +35,7 @@ constructor(
   override val tag: String = name.tagName()
 ) : IView {
   private val log = ILogger.newInstance(javaClass.simpleName)
-  protected val attributes = mutableListOf<IAttribute>()
+  internal val attributes = mutableListOf<IAttribute>()
   
   override var parent: IViewGroup? = null
 

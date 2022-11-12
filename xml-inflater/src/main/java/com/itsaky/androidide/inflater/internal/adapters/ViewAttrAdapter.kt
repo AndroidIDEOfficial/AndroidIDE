@@ -76,7 +76,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
         "foregroundGravity" -> foregroundGravity = parseGravity(value)
         "foregroundTint" -> foregroundTintList = parseColorStateList(context, value)
         "foregroundTintMode" -> foregroundTintMode = parsePorterDuffMode(value)
-        "id" -> parseId(file.resName, value)
+        "id" -> id = parseId(file.resName, value)
         "minHeight" -> minimumWidth = parseDimension(context, value)
         "minWidth" -> minimumHeight = parseDimension(context, value)
         "padding" ->

@@ -43,8 +43,10 @@ import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
+import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.lang.reflect.Method
 
@@ -64,7 +66,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     get() = this._primaryInflatingFile!!
   
   protected val currentLayoutFile: LayoutFile
-    get() = _currentLayoutFile!!
+    get() = this._currentLayoutFile!!
 
   override fun inflate(file: File, parent: ViewGroup): IView? {
     this._primaryInflatingFile = file
@@ -167,11 +169,11 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     val adapter =
       AttributeAdapterIndex.getAdapter(view.name)
         ?: throw InflateException("No attribute adapter found for view ${view.name}")
-
-    adapter.applyBasic(view)
-
+  
     view.view.layoutParams = generateLayoutParams(parentView)
     parent.addChild(view)
+    
+    adapter.applyBasic(view)
 
     if (element.childCount > 0 && view is IViewGroup) {
       for (child in element.childList) {
