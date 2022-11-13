@@ -71,7 +71,7 @@ jobs:
       - name: Upload report
         uses: actions/upload-artifact@v3
         with:
-          name: apk-debug
+          name: translation-reports
           path: build/translation-reports/**
 
   unit_test_debug:
