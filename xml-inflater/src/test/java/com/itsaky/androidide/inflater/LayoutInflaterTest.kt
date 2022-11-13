@@ -45,23 +45,7 @@ class LayoutInflaterTest {
         val inflated = inflater.inflate(file, parent)
         inflated.apply {
           assertThat(this).isNotNull()
-          assertThat(this).isInstanceOf(View::class.java)
-        }
-      }
-    }
-  }
-
-  @Test
-  fun `test inlined layout`() {
-    inflaterTest {
-      requiresActivity { activity ->
-        val file = layoutFile("inlined")
-        val parent = LinearLayout(activity)
-        val inflater = ILayoutInflater.newInflater()
-        val inflated = inflater.inflate(file, parent)
-        inflated.apply {
-          assertThat(this).isNotNull()
-          assertThat(this).isInstanceOf(LinearLayout::class.java)
+          assertThat(this!!.view).isInstanceOf(View::class.java)
         }
       }
     }
