@@ -203,7 +203,7 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
     return parseColorDrawable(context, value)
   } else if (value[0] == '@') {
     val type = parseResourceReference(value)?.second
-    if (type == null || !(type == DRAWABLE || type == COLOR)) {
+    if (type == null) {
       throwInvalidResType(DRAWABLE, value)
     }
     return parseReference(
