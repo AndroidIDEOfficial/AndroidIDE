@@ -66,9 +66,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Assemble Debug
+      - name: Generate report
         run: ./gradlew :resources:checkTranslations
-      - name: Upload APK
+      - name: Upload report
         uses: actions/upload-artifact@v3
         with:
           name: apk-debug
