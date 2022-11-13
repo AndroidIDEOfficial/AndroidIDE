@@ -57,14 +57,10 @@ import com.android.aaptcompiler.tryParseFlagSymbol
 import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.inflater.drawable.DrawableParserFactory
-import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
-import java.util.regex.Pattern
 
-private var currentModule: AndroidModule? = null
 private val log = ILogger.newInstance("ParseUtilsKt")
-private val HEX_COLOR: Pattern = Pattern.compile("#[a-fA-F\\d]{6,8}")
 
 private val stringResolver =
   fun(it: Value?): String? {
@@ -96,18 +92,6 @@ inline fun <reified T> ((Value?) -> T?).arrayResolver(value: Value?): Array<T>? 
   return if (value is ArrayResource) {
     Array(value.elements.size) { invoke(value.elements[it]) ?: return null }
   } else emptyArray()
-}
-
-val module: AndroidModule
-  get() =
-    currentModule ?: throw IllegalStateException("You must call startParse(AndroidModule) first")
-
-fun startParse(m: AndroidModule) {
-  currentModule = m
-}
-
-fun endParse() {
-  currentModule = null
 }
 
 fun parseString(value: String): String {
