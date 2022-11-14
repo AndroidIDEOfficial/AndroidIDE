@@ -27,12 +27,12 @@ import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File
 
-open class BaseFragment : Fragment() {
+open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
 
   private var callback: OnDirectoryPickedCallback? = null
   private val allowedAuthorities =
     setOf(ANDROID_DOCS_AUTHORITY, ANDROIDIDE_DOCS_AUTHORITY, TERMUX_DOCS_AUTHORITY)
-
+  
   companion object {
     const val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
     const val ANDROIDIDE_DOCS_AUTHORITY = "com.itsaky.androidide.documents"

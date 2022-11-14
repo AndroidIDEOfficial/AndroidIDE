@@ -704,7 +704,9 @@ public class EditorActivity extends IDEActivity
     }
   }
 
-  public void previewLayout() {}
+  public void previewLayout() {
+    startActivity(new Intent(this, UIDesignerActivity.class));
+  }
 
   public boolean saveAll(boolean notify) {
     return saveAll(notify, false);

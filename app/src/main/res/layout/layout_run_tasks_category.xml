@@ -21,17 +21,7 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <View
-    android:id="@+id/separator"
-    android:layout_width="0dp"
-    android:layout_height="1dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
-    android:background="@color/primaryLightColor"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+  <include layout="@layout/layout_divider_horizontal" />
 
   <com.google.android.material.textview.MaterialTextView
     android:id="@+id/header"
