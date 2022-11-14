@@ -479,4 +479,5 @@
   <string name="msg_tasks_to_run">The following tasks will be run, in order. Click the \'Run\' button again to confirm.\n\n%1$s</string>
   <string name="msg_loading_tasks">Loading tasks...</string>
   <string name="title_all_tasks">All tasks</string>
+  <string name="msg_feature_unimplemented">This feature is not implemented yet.</string>
 </resources>

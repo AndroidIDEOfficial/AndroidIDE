@@ -26,6 +26,7 @@ import static com.itsaky.androidide.resources.R.color;
 import static com.itsaky.androidide.resources.R.drawable;
 import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
+import static com.itsaky.toaster.ToastUtilsKt.toastInfo;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -705,7 +706,8 @@ public class EditorActivity extends IDEActivity
   }
 
   public void previewLayout() {
-    startActivity(new Intent(this, UIDesignerActivity.class));
+    toastInfo(R.string.msg_feature_unimplemented);
+//    startActivity(new Intent(this, UIDesignerActivity.class));
   }
 
   public boolean saveAll(boolean notify) {
