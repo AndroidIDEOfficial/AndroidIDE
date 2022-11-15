@@ -1,0 +1,50 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace "com.itsaky.androidide.uidesigner"
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+    
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+    }
+    
+    buildFeatures.viewBinding true
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+    }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+        }
+    }
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    
+    implementation androidx.appcompat
+    implementation google.material
+    
+    implementation project(path: ':common')
+    implementation project(path: ':logger')
+    implementation project(path: ':xml-inflater')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+}
