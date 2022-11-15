@@ -7,7 +7,7 @@ Whenever you create a new project or open an existing project, you're presented 
 Top right options and three-dot(`⋮`) menu.
 
 - `Quick run(▷)`: Runs `assembleDebug` and installs the debug apk (if permission is given).
-- `Run(▶)`: Various Gradle actions. Check [here](./build_actions.md#readme).
+- `Run tasks`: Allows you to select and run various Gradle tasks. Check [here](./build_actions.md#readme).
 - `Find`:
     - `Find in file`: Find and replace in the file which is opened in the editor.
     - `Find in project`: Find in all the files in  the selected project modules. You can also filter the files with their extensions seperated by '|' .

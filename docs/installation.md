@@ -10,30 +10,20 @@ Before getting started, please make sure that your Android device meets the mini
 
 ## Setup the terminal [^cheat]
 - Open AndroidIDE [terminal](./user_interface#terminal). It will install the bootstrap packages.
-- Then run `pkg update` to update packages to latest version.
+- Then run `pkg upgrade` to update packages to latest version.
 
 ## Build Tools Installation [^cheat]
 Install the JDK, SDK and commandline tools for sdk.
-- Run `pkg install wget` to install `wget`.
-- Get the installation script with :
-    ```bash
-    wget https://raw.githubusercontent.com/AndroidIDEOfficial/androidide-build-tools/main/install.sh
-    ```
-- Give executable permissions to the installation script with:
-    ```bash
-    chmod +x ./install.sh
-    ```
-- Start the installation process by executing the script with :
-    ```
-    ./install.sh -c
-    ```
-    Execute the script with `-h` argument to see a list of options you can use to customize the installation.
-- After you execute the script, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process.
+
+- Open terminal and run `idesetup -c`.
+- After you execute the above command, it'll show a summary of the configuration. Type `y` to confirm the configuration and start the installation process.
 - After successful installation, `Downloads completed. You are ready to go!` will be printed.
+
+You can execute `idesetup -h` to see configuration options.
 
 [^cheat]:
     Cheatsheet : 
     - One command to setup the terminal and to install build tools.
         ```bash
-        cd && pkg up && pkg in wget && wget https://raw.githubusercontent.com/AndroidIDEOfficial/androidide-build-tools/main/install.sh && chmod +x ./install.sh && ./install.sh -c
+        cd && pkg upg && idesetup -c
         ```

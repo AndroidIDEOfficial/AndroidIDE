@@ -1,29 +1,29 @@
 # Build Actions
 
 The IDE provides access to various tasks which you can execute to build your project.
-Below is the list of tasks that are accessible from the IDE with their brief description
-and the actual Gradle tasks that the IDE executes.
 
-## Build Tasks
+## The Run tasks dialog
 
-Tasks to build your project.
+The `Run tasks` action shows a list of all Gradle tasks that can be executed. This feature can be used only after the project is initialized.
 
-To set `gradle options`, go to `Preferences > Build & Run > Additional Gradle commands`.
+### How to use
 
-| Task             | Description                                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Build            | Runs `./gradlew build [options..]` The `build` task is to designate assembling all outputs and running all checks. |
-| Assemble Debug   | To initiate a debug build, invoke the `assembleDebug` task. Runs `./gradlew assembleDebug [options..]`             |
-| Assemble Release | To initiate a release build, invoke the `assembleRelease` task. Runs `./gradlew assembleRelease [options..]`       |
-| Create AAB       | Runs `./gradlew bundle [options..]`, Generates an app bundle (.aab file).                                          |
-| Clean            | Runs `./gradlew clean [options..]`. You can delete the contents of the build directory using the `clean` task.     |
-| Clean & Build    | Runs `./gradlew clean build [options..]`. At first runs `clean` task then `build` task.                            |
+After the project is initialized, click the `Run tasks` action in the options menu. The dialog will show up and load the project tasks. After the tasks has been loaded, you can click the tasks to select them.
 
-## Lint Tasks
-The lint tool checks for structural code problems that could affect the quality and performance of your Android application.
+<details>
+  <summary>See screenshot</summary>
+  <img src="../images/run_tasks.png" width="250"/>
+</details>
 
-| Task           | Description                                              |
-| -------------- | -------------------------------------------------------- |
-| `Lint`         | Runs Lint for all build variants. [`./gradlew lint`]     |
-| `Lint release` | Runs Lint for release variant. [`./gradlew lintRelease`] |
-| `Lint Debug`   | Runs Lint for debug variant. [`./gradlew lintDebug`]     |
+<br>
+
+After you have selected the tasks you want to run, click on the `Run` button located at the top-right corner of the dialog. Clicking on this button will show a summary of the tasks you selected and ask you to confirm.
+
+<details>
+  <summary>See screenshot</summary>
+  <img src="../images/run_tasks_confirm.png" width="250"/>
+</details>
+
+<br>
+
+Click the `Run` button again to confirm. The tasks will then start to execute.
