@@ -22,7 +22,7 @@ package com.itsaky.androidide;
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.setLastOpenedProject;
-import static com.itsaky.androidide.resources.R.string;
+import static com.itsaky.androidide.R.*;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 import static com.itsaky.toaster.ToastUtilsKt.toastInfo;
 
