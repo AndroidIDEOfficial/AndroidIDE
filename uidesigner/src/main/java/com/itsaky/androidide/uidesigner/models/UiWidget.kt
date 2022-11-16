@@ -17,7 +17,41 @@
 
 package com.itsaky.androidide.uidesigner.models
 
+import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.itsaky.androidide.inflater.IView
 
-data class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int)
+open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
+  constructor(
+    klass: Class<out View>,
+    @StringRes label: Int,
+    @DrawableRes icon: Int
+  ) : this(klass.name, label, icon)
+
+  fun createView(): IView {
+    TODO()
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is UiWidget) return false
+
+    if (name != other.name) return false
+    if (label != other.label) return false
+    if (icon != other.icon) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = name.hashCode()
+    result = 31 * result + label
+    result = 31 * result + icon
+    return result
+  }
+
+  override fun toString(): String {
+    return "UiWidget(name='$name', label=$label, icon=$icon)"
+  }
+}

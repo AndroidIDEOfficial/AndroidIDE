@@ -1,0 +1,21 @@
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector android:height="24dp" android:viewportHeight="16"
+    android:viewportWidth="16" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/primaryIconColor" android:fillType="evenOdd" android:pathData="M5.251,6.385L2.714,6.385l-0.53,1.525L1,7.91l2.474,-6.55h1.022l2.478,6.55L5.787,7.91L5.25,6.385zM3.033,5.467h1.899l-0.95,-2.717 -0.949,2.717zM11.883,5.526c0,0.755 -0.17,1.357 -0.507,1.804 -0.337,0.447 -0.801,0.67 -1.392,0.67 -0.57,0 -1.014,-0.205 -1.332,-0.616l-0.054,0.526h-0.99L7.608,1h1.094v2.51c0.315,-0.372 0.74,-0.558 1.273,-0.558 0.594,0 1.06,0.22 1.399,0.662 0.339,0.44 0.508,1.057 0.508,1.849v0.063zM10.789,5.431c0,-0.528 -0.093,-0.924 -0.279,-1.187 -0.186,-0.264 -0.456,-0.396 -0.81,-0.396 -0.473,0 -0.806,0.207 -0.998,0.62v2.007c0.195,0.423 0.53,0.634 1.008,0.634 0.341,0 0.605,-0.127 0.791,-0.382 0.186,-0.255 0.282,-0.64 0.288,-1.156v-0.14zM14.323,8L15.5,9.164l-6.295,6.225L6,12.219l1.177,-1.163 2.028,2.005z"/>
+</vector>

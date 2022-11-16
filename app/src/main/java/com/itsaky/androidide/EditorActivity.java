@@ -20,11 +20,12 @@
 package com.itsaky.androidide;
 
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
+import static com.itsaky.androidide.R.color;
+import static com.itsaky.androidide.R.drawable;
+import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.setLastOpenedProject;
-import static com.itsaky.androidide.R.*;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
-import static com.itsaky.toaster.ToastUtilsKt.toastInfo;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -108,6 +109,7 @@ import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.uidesigner.UIDesignerActivity;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.ILogger;
@@ -704,8 +706,8 @@ public class EditorActivity extends IDEActivity
   }
 
   public void previewLayout() {
-    toastInfo(R.string.msg_feature_unimplemented);
-    //    startActivity(new Intent(this, UIDesignerActivity.class));
+    //    toastInfo(R.string.msg_feature_unimplemented);
+    startActivity(new Intent(this, UIDesignerActivity.class));
   }
 
   public boolean saveAll(boolean notify) {

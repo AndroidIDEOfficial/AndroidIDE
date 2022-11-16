@@ -22,7 +22,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.itsaky.androidide.fragments.BaseFragment
+import com.itsaky.androidide.uidesigner.adapters.WidgetsCategoryAdapter
 import com.itsaky.androidide.uidesigner.databinding.FragmentUiWidgetsBinding
+import com.itsaky.androidide.uidesigner.utils.Widgets
 
 /**
  * A fragment that shows the list of widgets available to use in the UI designer.
@@ -37,13 +39,15 @@ class WidgetsListFragment : BaseFragment() {
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     this.binding = FragmentUiWidgetsBinding.inflate(inflater, container, false)
     return this.binding!!.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    this.binding!!.widgets.adapter = WidgetsCategoryAdapter(Widgets.categories)
   }
 
   override fun onDestroyView() {

@@ -1,10 +1,21 @@
-<!-- drawable/form_textbox.xml -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="#fff"
-        android:pathData="M17,7H22V17H17V19A1,1 0 0,0 18,20H20V22H17.5C16.95,22 16,21.55 16,21C16,21.55 15.05,22 14.5,22H12V20H14A1,1 0 0,0 15,19V5A1,1 0 0,0 14,4H12V2H14.5C15.05,2 16,2.45 16,3C16,2.45 16.95,2 17.5,2H20V4H18A1,1 0 0,0 17,5V7M2,7H13V9H4V15H13V17H2V7M20,15V9H17V15H20Z" />
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector android:height="24dp" android:viewportHeight="16"
+    android:viewportWidth="16" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/primaryIconColor" android:fillType="evenOdd" android:pathData="M1,12h14v2L1,14zM5.614,7.845L2.86,7.845L2.284,9.5L1,9.5l2.686,-7.11h1.108l2.69,7.11L6.195,9.5l-0.58,-1.655zM3.207,6.849h2.06l-1.03,-2.95 -1.03,2.95zM12.812,6.912c0,0.82 -0.184,1.473 -0.55,1.958 -0.366,0.485 -0.87,0.728 -1.511,0.728 -0.619,0 -1.1,-0.223 -1.445,-0.67l-0.059,0.572L8.173,9.5L8.173,2h1.186v2.725c0.342,-0.404 0.803,-0.606 1.382,-0.606 0.645,0 1.15,0.24 1.519,0.718 0.368,0.478 0.552,1.147 0.552,2.007v0.068zM11.625,6.81c0,-0.573 -0.1,-1.003 -0.303,-1.29 -0.202,-0.286 -0.495,-0.43 -0.879,-0.43 -0.514,0 -0.875,0.225 -1.084,0.675v2.177c0.212,0.46 0.577,0.689 1.094,0.689 0.371,0 0.658,-0.138 0.86,-0.415 0.201,-0.277 0.305,-0.695 0.312,-1.255L11.625,6.81z"/>
 </vector>

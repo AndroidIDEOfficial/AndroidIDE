@@ -18,10 +18,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:layout_marginTop="16dp"
-  android:layout_marginBottom="4dp"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content">
+  android:layout_height="wrap_content"
+  android:layout_marginTop="16dp"
+  android:layout_marginBottom="4dp">
 
   <TextView
     android:id="@+id/name"
@@ -50,9 +50,10 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/divider"
-    tools:listitem="@layout/fragment_ui_widgets_item" />
+    tools:listitem="@layout/layout_ui_widgets_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

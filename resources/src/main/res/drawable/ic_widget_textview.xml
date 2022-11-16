@@ -1,10 +1,21 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:tint="#FFFFFF"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M2.5,4v3h5v12h3V7h5V4H2.5zM21.5,9h-9v3h3v7h3v-7h3V9z" />
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector android:height="24dp" android:viewportHeight="16"
+    android:viewportWidth="16" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/primaryIconColor" android:fillType="evenOdd" android:pathData="M6.47,9.928L3.204,9.928l-0.683,1.962L1,11.89l3.183,-8.427h1.314l3.189,8.427L7.158,11.89l-0.689,-1.962zM3.615,8.747h2.442l-1.22,-3.496 -1.222,3.496zM15,8.822c0,0.973 -0.217,1.746 -0.651,2.321 -0.434,0.575 -1.031,0.862 -1.791,0.862 -0.733,0 -1.304,-0.264 -1.713,-0.793l-0.07,0.678L9.502,11.89L9.502,3h1.406v3.23c0.405,-0.479 0.951,-0.718 1.638,-0.718 0.764,0 1.364,0.283 1.8,0.85 0.436,0.568 0.654,1.36 0.654,2.38v0.08zM13.594,8.701c0,-0.68 -0.12,-1.189 -0.36,-1.528 -0.238,-0.34 -0.586,-0.51 -1.04,-0.51 -0.61,0 -1.039,0.267 -1.286,0.8v2.58c0.251,0.544 0.683,0.816 1.297,0.816 0.44,0 0.779,-0.164 1.018,-0.491 0.24,-0.328 0.363,-0.824 0.37,-1.488L13.593,8.7z"/>
 </vector>
