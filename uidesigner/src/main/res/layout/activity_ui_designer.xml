@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -45,6 +44,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <androidx.fragment.app.FragmentContainerView
+      android:id="@+id/workspace"
+      android:name="com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+      tools:layout="@layout/fragment_designer_workspace" />
+
   </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
   <com.google.android.material.navigation.NavigationView
@@ -56,7 +63,7 @@
     app:itemTextColor="@color/primaryTextColor">
 
     <androidx.fragment.app.FragmentContainerView
-      android:id="@+id/widgets_fragment_container"
+      android:id="@+id/widgets_fragment"
       android:name="com.itsaky.androidide.uidesigner.fragments.WidgetsListFragment"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
