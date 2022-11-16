@@ -25,5 +25,4 @@ import com.itsaky.androidide.annotations.inflater.AttributeAdapter
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(Button::class)
-open class ButtonAttrAdapter : TextViewAttrAdapter()
+@AttributeAdapter(Button::class) open class ButtonAttrAdapter : TextViewAttrAdapter()

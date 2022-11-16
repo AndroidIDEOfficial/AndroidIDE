@@ -1,5 +1,3 @@
-import com.itsaky.androidide.Versions
-
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
@@ -23,6 +21,7 @@ compileTestKotlin {
 }
 
 dependencies {
+    implementation androidx.annotation
     implementation google.guava
-    implementation project(path: ':logger')
+    implementation project (path: ':logger')
 }

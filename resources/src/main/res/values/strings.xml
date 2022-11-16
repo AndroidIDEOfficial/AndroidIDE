@@ -237,21 +237,6 @@
   <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
   <string name="title_preview_layout">Preview Layout</string>
   <string name="label_ui_designer_content">Main UI designer content</string>
-  <string name="widget_textview">TextView</string>
-  <string name="widget_button">Button</string>
-  <string name="widget_group_android">Android</string>
-  <string name="widget_checkbox">CheckBox</string>
-  <string name="widget_checked_textview">CheckedTextView</string>
-  <string name="widget_edittext">EditText</string>
-  <string name="widget_image_button">ImageButton</string>
-  <string name="widget_image_view">ImageView</string>
-  <string name="widget_progressbar">ProgressBar</string>
-  <string name="widget_radio_button">RadioButton</string>
-  <string name="widget_seekbar">SeekBar</string>
-  <string name="widget_spinner">Spinner</string>
-  <string name="widget_group_layouts">Layouts</string>
-  <string name="layout_linear">LinearLayout</string>
-  <string name="layout_relative">RelativeLayout</string>
   <string name="msg_applicable_attrs">Applicable attributes</string>
   <string name="msg_attr_editor_actions">Actions</string>
   <string name="title_viewaction_delete">Delete</string>
@@ -480,4 +465,22 @@
   <string name="msg_loading_tasks">Loading tasks...</string>
   <string name="title_all_tasks">All tasks</string>
   <string name="msg_feature_unimplemented">This feature is not implemented yet.</string>
+  <string name="ui_category_widgets">Widgets</string>
+  <string name="ui_category_layouts">Layouts</string>
+
+  <string name="widget_textview">TextView</string>
+  <string name="widget_button">Button</string>
+  <string name="widget_group_android">Android</string>
+  <string name="widget_checkbox">CheckBox</string>
+  <string name="widget_checked_textview">CheckedTextView</string>
+  <string name="widget_edittext">EditText</string>
+  <string name="widget_image_button">ImageButton</string>
+  <string name="widget_image_view">ImageView</string>
+  <string name="widget_progressbar">ProgressBar</string>
+  <string name="widget_radio_button">RadioButton</string>
+  <string name="widget_seekbar">SeekBar</string>
+  <string name="widget_spinner">Spinner</string>
+  <string name="widget_group_layouts">Layouts</string>
+  <string name="layout_linear">LinearLayout</string>
+  <string name="layout_relative">RelativeLayout</string>
 </resources>

@@ -27,6 +27,7 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import java.io.File
+import java.util.Map
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -51,53 +52,22 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     processingEnv.elementUtils.getTypeElement(ADAPTER_BASE_CLASS)
   }
 
-  private val classBuilder = TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL)
-  private val addStatements = CodeBlock.builder()
+  private val indexClassBuilder =
+    TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL)
+  private val indexAddStatements = CodeBlock.builder()
+
   init {
-    val adpaterType = ClassName.get(ADAPTER_BASE_CLASS_PCK, ADAPTER_BASE_CLASS_NAME)
-    val type =
-      ParameterizedTypeName.get(
-        ClassName.get(java.util.Map::class.java),
-        ClassName.get(String::class.java),
-        adpaterType
-      )
-    classBuilder.addField(
-      FieldSpec.builder(type, INDEX_MAP_FIELD, PRIVATE, STATIC, FINAL)
-        .initializer("new \$T<>();", java.util.HashMap::class.java)
-        .build()
-    )
-
-    classBuilder.addMethod(
-      MethodSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .addStatement(
-          "throw new \$T(\$S)",
-          UnsupportedOperationException::class.java,
-          "This class cannot be instantiated."
-        )
-        .build()
-    )
-
-    classBuilder.addMethod(
-      MethodSpec.methodBuilder("getAdapter")
-        .addAnnotation(ClassName.get("androidx.annotation", "Nullable"))
-        .addModifiers(PUBLIC, STATIC)
-        .addParameter(String::class.java, "view", FINAL)
-        .returns(adpaterType)
-        .addStatement("return \$L.get(\$L)", INDEX_MAP_FIELD, "view")
-        .build()
-    )
+    addIndexClassMembers()
   }
 
   companion object {
     const val ADAPTER_BASE_CLASS_PCK = "com.itsaky.androidide.inflater"
     const val ADAPTER_BASE_CLASS_NAME = "IAttributeAdapter"
     const val ADAPTER_BASE_CLASS = "$ADAPTER_BASE_CLASS_PCK.$ADAPTER_BASE_CLASS_NAME"
+
     const val INDEX_PACKAGE_NAME = "com.itsaky.androidide.inflater.internal"
     const val INDEX_CLASS_NAME = "AttributeAdapterIndex"
     const val INDEX_MAP_FIELD = "adapterMap"
-
-    const val KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
   }
 
   override fun getSupportedAnnotationTypes(): MutableSet<String> {
@@ -126,17 +96,14 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
       process(it)
     }
 
-    classBuilder.addStaticBlock(addStatements.build())
-    val file = JavaFile.builder(INDEX_PACKAGE_NAME, classBuilder.build())
-    file
-      .build()
-      .writeTo(
-        File(
-          processingEnv.options[KAPT_KOTLIN_GENERATED]
-            ?: throw IllegalStateException("Cannot find kapt output directory path")
-        )
+    indexClassBuilder.addStaticBlock(indexAddStatements.build())
+    val file = JavaFile.builder(INDEX_PACKAGE_NAME, indexClassBuilder.build())
+    val generatedDir =
+      File(
+        processingEnv.options[KAPT_KOTLIN_GENERATED]
+          ?: throw IllegalStateException("Cannot find kapt output directory path")
       )
-
+    file.build().writeTo(generatedDir)
     return false
   }
 
@@ -176,11 +143,52 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
 
     val annotation =
       element.getAnnotation(AttributeAdapter::class.java) ?: throw IllegalStateException()
-    addStatements.addStatement(
+    val viewName = getViewName(annotation)
+    indexAddStatements.addStatement(
       "\$L.put(\$S, new \$T())",
       INDEX_MAP_FIELD,
-      getViewName(annotation),
+      viewName,
       TypeName.get(element.asType())
+    )
+  }
+
+  private fun addIndexClassMembers() {
+    val adpaterType = ClassName.get(ADAPTER_BASE_CLASS_PCK, ADAPTER_BASE_CLASS_NAME)
+    val type =
+      ParameterizedTypeName.get(
+        ClassName.get(Map::class.java),
+        ClassName.get(String::class.java),
+        adpaterType
+      )
+    indexClassBuilder.addField(
+      FieldSpec.builder(type, INDEX_MAP_FIELD, PRIVATE, STATIC, FINAL)
+        .initializer("new \$T<>();", HashMap::class.java)
+        .build()
+    )
+
+    addUninstantiableConstructor(indexClassBuilder)
+
+    indexClassBuilder.addMethod(
+      MethodSpec.methodBuilder("getAdapter")
+        .addAnnotation(ClassName.get("androidx.annotation", "Nullable"))
+        .addModifiers(PUBLIC, STATIC)
+        .addParameter(String::class.java, "view", FINAL)
+        .returns(adpaterType)
+        .addStatement("return \$L.get(\$L)", INDEX_MAP_FIELD, "view")
+        .build()
+    )
+  }
+
+  private fun addUninstantiableConstructor(builder: TypeSpec.Builder) {
+    builder.addMethod(
+      MethodSpec.constructorBuilder()
+        .addModifiers(PRIVATE)
+        .addStatement(
+          "throw new \$T(\$S)",
+          UnsupportedOperationException::class.java,
+          "This class cannot be instantiated."
+        )
+        .build()
     )
   }
 

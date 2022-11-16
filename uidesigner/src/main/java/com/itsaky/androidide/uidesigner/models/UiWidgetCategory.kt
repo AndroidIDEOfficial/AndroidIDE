@@ -14,37 +14,9 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-plugins {
-  id 'java-library'
-  id 'kotlin'
-  id 'kotlin-kapt'
-}
 
-java {
-  sourceCompatibility = rootProject.ext.javaSourceVersion
-  targetCompatibility = rootProject.ext.javaTargetVersion
-}
+package com.itsaky.androidide.uidesigner.models
 
-compileKotlin {
-  kotlinOptions {
-    jvmTarget = "11"
-  }
-}
+import androidx.annotation.StringRes
 
-compileTestKotlin {
-  kotlinOptions {
-    jvmTarget = "11"
-  }
-}
-
-dependencies {
-  implementation common.jkotlin
-  implementation common.javapoet
-  implementation google.auto_service
-  
-  implementation project(path: ':annotations')
-  implementation project(path: ':shared')
-  
-  kapt google.auto_service
-  kapt project (path: ':build-tools:framework-stubs')
-}
+data class UiWidgetCategory(@StringRes val label: Int, val widgets: List<UiWidget> = emptyList())

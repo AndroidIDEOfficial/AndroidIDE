@@ -21,6 +21,8 @@ compileTestKotlin {
 }
 
 dependencies {
+    implementation androidx.annotation
     implementation common.jkotlin
+    compileOnly project (path: ':shared')
     compileOnly project (path: ':build-tools:framework-stubs')
 }
