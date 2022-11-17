@@ -15,20 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.viewmodel
+package com.itsaky.androidide.uidesigner.models
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import java.io.File
+import android.view.ViewGroup
+import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.SingleChildViewGroup
 
-class WorkspaceViewModel : ViewModel() {
-  internal val _file = MutableLiveData<File>()
-  
-  var file: File
-    get() = _file.value!!
-    set(value) {
-      _file.value = value
-    }
-}
+/**
+ * Root view includes the inflated XML layout.
+ *
+ * @author Akash Yadav
+ */
+class RootViewImpl(file: LayoutFile, name: String, view: ViewGroup) :
+  SingleChildViewGroup(file, name, view)

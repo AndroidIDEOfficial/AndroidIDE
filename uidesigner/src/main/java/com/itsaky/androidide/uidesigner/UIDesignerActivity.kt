@@ -19,8 +19,10 @@ package com.itsaky.androidide.uidesigner
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
+import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 
 /**
  * The UI Designer activity allows the user to design XML layouts with a drag-n-drop interface.
@@ -30,6 +32,12 @@ import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 class UIDesignerActivity : BaseIDEActivity() {
 
   private var binding: ActivityUiDesignerBinding? = null
+  private val workspace: DesignerWorkspaceFragment?
+    get() = this.binding?.workspace?.getFragment()
+
+  companion object {
+    const val EXTRA_FILE = "layout_file"
+  }
 
   override fun bindLayout(): View {
     this.binding = ActivityUiDesignerBinding.inflate(layoutInflater)
@@ -39,6 +47,22 @@ class UIDesignerActivity : BaseIDEActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    workspace?.setupFromBundle(intent.extras)
+
+    setSupportActionBar(this.binding!!.toolbar)
+    supportActionBar?.title = workspace?.viewModel?.file?.nameWithoutExtension
+
+    ActionBarDrawerToggle(
+        this,
+        binding!!.root,
+        binding!!.toolbar,
+        R.string.app_name,
+        R.string.app_name
+      )
+      .apply {
+        binding!!.root.addDrawerListener(this)
+        syncState()
+      }
   }
 
   override fun onDestroy() {

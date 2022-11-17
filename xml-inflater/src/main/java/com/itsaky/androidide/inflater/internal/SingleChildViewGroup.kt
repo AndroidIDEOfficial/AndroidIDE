@@ -15,20 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.viewmodel
+package com.itsaky.androidide.inflater.internal
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import java.io.File
+import android.view.ViewGroup
+import com.itsaky.androidide.inflater.IView
 
-class WorkspaceViewModel : ViewModel() {
-  internal val _file = MutableLiveData<File>()
-  
-  var file: File
-    get() = _file.value!!
-    set(value) {
-      _file.value = value
+/**
+ * A view group which can have only one child view.
+ *
+ * @author Akash Yadav
+ */
+open class SingleChildViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
+  ViewGroupImpl(file, name, view) {
+
+  override fun addChild(index: Int, view: IView) {
+    if (childCount == 1) {
+      throw IllegalStateException("There can be only one child")
     }
+    super.addChild(index, view)
+  }
 }

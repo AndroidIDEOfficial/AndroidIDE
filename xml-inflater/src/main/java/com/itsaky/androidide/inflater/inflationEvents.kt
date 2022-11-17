@@ -54,7 +54,7 @@ class InflationFinishEvent(view: IView?) : IInflationEvent<IView?>(view)
  *
  * @property view The inflated view.
  */
-class PostInflateViewEvent(view: IView) : IInflationEvent<IView>(view)
+class OnInflateViewEvent(view: IView) : IInflationEvent<IView>(view)
 
 /**
  * Indicates that the given [attribute] was added and applied to [view].
@@ -62,4 +62,4 @@ class PostInflateViewEvent(view: IView) : IInflationEvent<IView>(view)
  * @property view The view to which the attribute was applied.
  * @property attribute The attribute that was applied.
  */
-class PostApplyAttributeEvent(view: IView, val attribute: IAttribute) : IInflationEvent<IView>(view)
+class OnApplyAttributeEvent(view: IView, val attribute: IAttribute) : IInflationEvent<IView>(view)

@@ -39,9 +39,13 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override fun addChild(index: Int, view: IView) {
+    if (view.parent != null) {
+      throw IllegalStateException("View already has a parent")
+    }
     val idx = if (index < 0) childCount else index
     this.children.add(idx, view)
     this.view.addView(view.view, idx)
+    view.parent = this
   }
 
   override fun removeChild(view: IView) {

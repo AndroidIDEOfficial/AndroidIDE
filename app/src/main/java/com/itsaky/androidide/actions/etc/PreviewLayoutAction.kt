@@ -66,7 +66,8 @@ class PreviewLayoutAction() : EditorRelatedAction() {
 
   override fun execAction(data: ActionData): Any {
     val activity = getActivity(data)!!
-    activity.previewLayout()
+    activity.saveAll()
+    activity.previewLayout(getEditor(data)!!.file!!)
     return true
   }
 }

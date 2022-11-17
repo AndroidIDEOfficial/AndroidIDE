@@ -39,6 +39,8 @@ import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.inflater.InflationFinishEvent
 import com.itsaky.androidide.inflater.InflationStartEvent
+import com.itsaky.androidide.inflater.OnApplyAttributeEvent
+import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -81,11 +83,15 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     if (pathData.type != LAYOUT) {
       throw InflateException("File is not a layout file.")
     }
+  
+    if (ProjectManager.rootProject == null) {
+      throw InflateException("Project is not initialized!")
+    }
 
     val module =
       ProjectManager.findModuleForFile(file) as? AndroidModule
         ?: throw InflateException(
-          "Cannot find module for given file or the module is not an Android module"
+          "Cannot find module for given file. Is the project initialized?"
         )
     val resFile =
       ResourceFile(
@@ -188,6 +194,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
         val attr =
           AttributeImpl(namespace = namespace, name = xmlAttribute.name, value = xmlAttribute.value)
         view.addAttribute(attr)
+        inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
       }
     }
 
@@ -196,11 +203,11 @@ open class LayoutInflaterImpl : ILayoutInflater() {
         if (child.nodeCase != ELEMENT) {
           throw InflateException("Unexpected node at ${child.source.lineCol()}")
         }
-        val childView =
-          onCreateView(element = child.element, parent = view, module = module, widgets = widgets)
-        view.addChild(childView)
+        onCreateView(element = child.element, parent = view, module = module, widgets = widgets)
       }
     }
+    
+    inflationEventListener?.onEvent(OnInflateViewEvent(view))
 
     return view
   }
@@ -231,6 +238,9 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView {
     return try {
       val v = createViewInstance(widget, parent)
+      if (v is ViewGroup) {
+        return ViewGroupImpl(currentLayoutFile, widget.qualifiedName, v)
+      }
       return ViewImpl(currentLayoutFile, widget.qualifiedName, v)
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)

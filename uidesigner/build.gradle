@@ -40,6 +40,7 @@ dependencies {
     implementation androidx.appcompat
     implementation androidx.ktx
     implementation androidx.fragment_ktx
+    implementation common.utilcode
     implementation google.material
     
     implementation project(path: ':common')

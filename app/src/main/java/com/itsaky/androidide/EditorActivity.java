@@ -705,9 +705,10 @@ public class EditorActivity extends IDEActivity
     }
   }
 
-  public void previewLayout() {
-    //    toastInfo(R.string.msg_feature_unimplemented);
-    startActivity(new Intent(this, UIDesignerActivity.class));
+  public void previewLayout(File file) {
+    final var intent = new Intent(this, UIDesignerActivity.class);
+    intent.putExtra(UIDesignerActivity.EXTRA_FILE, file.getAbsolutePath());
+    startActivity(intent);
   }
 
   public boolean saveAll(boolean notify) {
