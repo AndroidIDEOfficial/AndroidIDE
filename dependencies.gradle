@@ -23,7 +23,7 @@ ext {
             quickaction: 'com.github.piruin:quickaction:2.4.3',
             jsoup      : 'org.jsoup:jsoup:1.15.3',
             antlr4     : 'org.antlr:antlr4-runtime:4.9.3',
-            javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.7',
+            javaparser : 'com.github.javaparser:javaparser-symbol-solver-core:3.24.8',
             lang3      : 'org.apache.commons:commons-lang3:3.12.0',
             io         : 'commons-io:commons-io:2.11.0',
             kotlin     : 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20',
