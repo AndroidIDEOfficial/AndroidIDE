@@ -82,8 +82,9 @@ class DesignerWorkspaceFragment : BaseFragment() {
         binding!!
           .workspace
           .addView(createErrorView("${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"))
+        emptyList()
       }
-    if (inflated == null) {
+    if (inflated.isEmpty()) {
       binding!!.workspace.addView(createErrorView("Failed to infflate view"))
     }
   }
