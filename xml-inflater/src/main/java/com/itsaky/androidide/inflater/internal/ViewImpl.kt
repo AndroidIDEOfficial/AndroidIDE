@@ -49,7 +49,7 @@ constructor(
       updateAttribute(attribute)
     } else {
       this.attributes.add(attribute)
-      updateAttribute(attribute)
+      applyAttribute(attribute)
     }
   }
 
@@ -61,16 +61,20 @@ constructor(
   override fun updateAttribute(attribute: IAttribute) {
     val existing = findAttribute(attribute) ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
     existing.value = attribute.value
+    applyAttribute(existing)
+  }
+  
+  override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
+    return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
+  }
+  
+  protected open fun applyAttribute(attribute: IAttribute) {
     val adapter = AttributeAdapterIndex.getAdapter(name)
     if (adapter == null) {
       log.warn("No attribute adapter found for view $name")
       return
     }
     adapter.apply(this, attribute)
-  }
-  
-  override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
-    return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
   }
   
   protected open fun hasAttribute(attribute: IAttribute): Boolean {
