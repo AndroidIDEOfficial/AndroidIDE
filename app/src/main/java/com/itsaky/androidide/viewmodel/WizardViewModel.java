@@ -126,7 +126,7 @@ public class WizardViewModel extends AndroidViewModel {
                 .setName(getApplication().getApplicationContext(), R.string.template_no_activity)
                 .setDescription(
                     getApplication().getApplicationContext(), R.string.template_no_activity_description)
-                .setImageId(R.drawable.template_no_activity);
+                .setImageId(R.drawable.template_no_activity),
          NoAndroidX =
             new ProjectTemplate()
                 .setId(10)
