@@ -127,6 +127,15 @@ public class WizardViewModel extends AndroidViewModel {
                 .setDescription(
                     getApplication().getApplicationContext(), R.string.template_no_activity_description)
                 .setImageId(R.drawable.template_no_activity);
+         NoAndroidX =
+            new ProjectTemplate()
+                .setId(10)
+                .setSupportJava(true)
+                .setSupportKotlin(false)
+                .setName(getApplication().getApplicationContext(), R.string.template_no_AndroidX)
+                .setDescription(
+                    getApplication().getApplicationContext(), R.string.template_description_noAndroidX)
+                .setImageId(R.drawable.template_empty_noandroidx);
 
     mTemplates.add(noActivity);
     mTemplates.add(empty);
@@ -138,6 +147,7 @@ public class WizardViewModel extends AndroidViewModel {
     mTemplates.add(cppWizard);
     mTemplates.add(compose);
     mTemplates.add(libgdx);
+    mTemplates.add(NoAndroidX);
 
     mProjectTemplatesList.postValue(mTemplates);
     mLoadingState.postValue(false);
