@@ -22,6 +22,7 @@ import android.widget.LinearLayout
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
+import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
@@ -90,7 +91,7 @@ class LayoutInflaterTest {
         val inflated = inflater.inflate(layoutFile("include"), parent)
         assertThat(inflated).hasSize(1)
 
-        val view = inflated[0] as ViewImpl
+        val view = inflated[0] as ViewGroupImpl
         assertThat(view.printHierarchy())
           .isEqualTo(
             "android.widget.LinearLayout\n" +
@@ -98,10 +99,21 @@ class LayoutInflaterTest {
               "        android.widget.TextView\n" +
               "        android.widget.TextView\n"
           )
+        val included = view[0]
+        included.findAttribute(INamespace.ANDROID.uri, "layout_height").apply {
+          assertThat(this).isNotNull()
+          assertThat(this!!.value).isEqualTo("48dp")
+        }
+        included.findAttribute(INamespace.ANDROID.uri, "layout_width").apply {
+          assertThat(this).isNotNull()
+          assertThat(this!!.value).isEqualTo("48dp")
+        }
+        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "gravity")).isTrue()
+        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "id")).isTrue()
       }
     }
   }
-  
+
   @Test
   fun `verify merged view hierarchy`() {
     inflaterTest { module ->
@@ -110,12 +122,21 @@ class LayoutInflaterTest {
         val inflater = ILayoutInflater.newInflater()
         val inflated = inflater.inflate(layoutFile("merge"), parent)
         assertThat(inflated).hasSize(1)
-        
-        val view = inflated[0] as ViewImpl
+
+        val view = inflated[0] as ViewGroupImpl
         assertThat(view.printHierarchy())
           .isEqualTo(
-            "android.widget.LinearLayout\n    android.widget.TextView\n    android.widget.TextView\n"
+            "android.widget.LinearLayout\n" +
+              "    android.widget.TextView\n" +
+              "    android.widget.TextView\n"
           )
+
+        assertThat(view.childCount).isEqualTo(2)
+
+        // attributes on <include> tag must be ignored
+        for (i in 0 until view.childCount) {
+          assertThat(view[i].hasAttribute(INamespace.ANDROID.uri, "clickable")).isFalse()
+        }
       }
     }
   }

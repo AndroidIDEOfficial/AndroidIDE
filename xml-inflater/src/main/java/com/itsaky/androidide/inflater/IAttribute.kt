@@ -31,5 +31,5 @@ interface IAttribute {
   val name: String
 
   /** The value of the attribute. */
-  val value: String
+  var value: String
 }

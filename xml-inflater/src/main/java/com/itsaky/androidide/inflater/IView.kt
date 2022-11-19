@@ -46,7 +46,7 @@ interface IView {
    *
    * @param attribute The attribute to apply.
    */
-  fun addAttribute(attribute: IAttribute)
+  fun addAttribute(attribute: IAttribute, update: Boolean = false)
 
   /**
    * Remove the given attribute and update the view accordingly.
@@ -54,4 +54,33 @@ interface IView {
    * @param attribute The attribute to remove.
    */
   fun removeAttribute(attribute: IAttribute)
+
+  /**
+   * Updates the already-added attribute entry with the value of the given [attribute].
+   *
+   * @param attribute The attribute containing information about the attribute to update. This
+   * should contain the new value of the attribute.
+   */
+  fun updateAttribute(attribute: IAttribute)
+
+  /**
+   * Checks whether this view has an attribute entry with the given [namespaceUri] and [name].
+   *
+   * @param namespaceUri The namespace uri of the attribute.
+   * @param name The name of the attribute to look for.
+   * @return `true` if this view has an attribute entry with the given name namespace uri and name,
+   * `false` otherwise.
+   */
+  fun hasAttribute(namespaceUri: String, name: String): Boolean {
+    return findAttribute(namespaceUri, name) != null
+  }
+
+  /**
+   * Finds attribute with the given namespace uri and name.
+   *
+   * @param namespaceUri The namespace uri of the attribute to find.
+   * @param name The name of the attribute.
+   * @return The attribute if found or `null`.
+   */
+  fun findAttribute(namespaceUri: String, name: String): IAttribute?
 }

@@ -41,8 +41,26 @@ constructor(
   override var parent: IViewGroup? = null
   internal val namespaceDecls = mutableMapOf<String, INamespace>()
 
-  override fun addAttribute(attribute: IAttribute) {
-    this.attributes.add(attribute)
+  override fun addAttribute(attribute: IAttribute, update: Boolean) {
+    if(hasAttribute(attribute)) {
+      if (!update) {
+        return
+      }
+      updateAttribute(attribute)
+    } else {
+      this.attributes.add(attribute)
+      updateAttribute(attribute)
+    }
+  }
+
+  override fun removeAttribute(attribute: IAttribute) {
+    this.attributes.remove(attribute)
+    // TODO(itsaky): Should attribute adapters handle this as well?
+  }
+  
+  override fun updateAttribute(attribute: IAttribute) {
+    val existing = findAttribute(attribute) ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
+    existing.value = attribute.value
     val adapter = AttributeAdapterIndex.getAdapter(name)
     if (adapter == null) {
       log.warn("No attribute adapter found for view $name")
@@ -50,10 +68,17 @@ constructor(
     }
     adapter.apply(this, attribute)
   }
-
-  override fun removeAttribute(attribute: IAttribute) {
-    this.attributes.remove(attribute)
-    // TODO(itsaky): Should attribute adapters handle this as well?
+  
+  override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
+    return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
+  }
+  
+  protected open fun hasAttribute(attribute: IAttribute): Boolean {
+    return hasAttribute(attribute.namespace.uri, attribute.name)
+  }
+  
+  protected open fun findAttribute(attribute: IAttribute): IAttribute? {
+    return findAttribute(attribute.namespace.uri, attribute.name)
   }
 
   internal fun findNamespaceByUri(uri: String): INamespace? {
