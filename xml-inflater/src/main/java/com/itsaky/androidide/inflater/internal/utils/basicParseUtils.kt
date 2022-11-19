@@ -24,6 +24,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.util.TypedValue.complexToDimension
 import android.view.Gravity
+import android.view.InflateException
 import android.view.ViewGroup.LayoutParams
 import androidx.core.text.isDigitsOnly
 import com.android.SdkConstants.EXT_XML
@@ -35,6 +36,7 @@ import com.android.aaptcompiler.AaptResourceType.COLOR
 import com.android.aaptcompiler.AaptResourceType.DIMEN
 import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.INTEGER
+import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.AaptResourceType.STRING
 import com.android.aaptcompiler.ArrayResource
 import com.android.aaptcompiler.AttributeResource
@@ -198,6 +200,24 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
     )
   }
   return def
+}
+
+fun parseLayoutReference(value: String): File? {
+  if (value[0] != '@') {
+    throw InflateException("Value must be a reference to a layout file")
+  }
+  
+  val layoutResolver: (Value?) -> File? =
+    fun(it): File? {
+      return if (it is FileReference) {
+        File(it.source.path)
+      } else null
+    }
+  val type = parseResourceReference(value)?.second ?: return null
+  if (type != LAYOUT) {
+    throwInvalidResType(LAYOUT, value)
+  }
+  return parseReference(value, type, null, layoutResolver)
 }
 
 @JvmOverloads

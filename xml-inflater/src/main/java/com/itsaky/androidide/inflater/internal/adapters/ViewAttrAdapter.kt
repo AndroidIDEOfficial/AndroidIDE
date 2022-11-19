@@ -39,11 +39,6 @@ import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.inflater.internal.utils.endParse
-import com.itsaky.androidide.inflater.internal.utils.parseId
-import com.itsaky.androidide.inflater.internal.utils.startParse
-import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
 
 /**
  * Attribute adapter for [View].
@@ -275,10 +270,6 @@ open class ViewAttrAdapter : IAttributeAdapter() {
     @Suppress("UNCHECKED_CAST")
     return (view.view as T).let {
       val file = (view as ViewImpl).file
-      val module =
-        ProjectManager.findModuleForFile(file.file) as? AndroidModule
-          ?: throw IllegalStateException("Cannot find module for file: $file")
-      startParse(module)
       val applied =
         it.block(
           file,
@@ -288,7 +279,6 @@ open class ViewAttrAdapter : IAttributeAdapter() {
           attribute.name,
           attribute.value
         )
-      endParse()
       return@let applied
     }
   }
@@ -312,7 +302,7 @@ open class ViewAttrAdapter : IAttributeAdapter() {
   protected open fun parsePorterDuffMode(mode: String): PorterDuff.Mode {
     return com.itsaky.androidide.inflater.internal.utils.parsePorterDuffMode(mode)
   }
-  
+
   @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
   protected open fun isApi29(): Boolean {
     return Build.VERSION.SDK_INT >= 29

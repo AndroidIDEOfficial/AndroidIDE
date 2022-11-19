@@ -44,8 +44,9 @@ class LayoutInflaterTest {
         val inflater = ILayoutInflater.newInflater()
         val inflated = inflater.inflate(file, parent)
         inflated.apply {
-          assertThat(this).isNotNull()
-          assertThat(this!!.view).isInstanceOf(View::class.java)
+          assertThat(this).isNotEmpty()
+          assertThat(this).hasSize(1)
+          forEach { assertThat(it.view).isInstanceOf(View::class.java) }
         }
       }
     }
@@ -62,10 +63,9 @@ class LayoutInflaterTest {
           parent.removeAllViews()
           module.createLayoutFile(view.simpleName!!) { file ->
             file.writeText(viewDeclTemplate(view.simpleName!!))
-            val inflated = inflater.inflate(file, parent)
-            assertThat(inflated!!.view).isInstanceOf(view.java)
-            assertThat(inflated.view.id)
-              .isEqualTo(IDTable.get(view.simpleName!!, "template_view"))
+            val inflated = inflater.inflate(file, parent)[0]
+            assertThat(inflated.view).isInstanceOf(view.java)
+            assertThat(inflated.view.id).isEqualTo(IDTable.get(view.simpleName!!, "template_view"))
 
             (inflated as ViewImpl).attributes.apply {
               assertThat(this)
@@ -77,6 +77,45 @@ class LayoutInflaterTest {
             }
           }
         }
+      }
+    }
+  }
+
+  @Test
+  fun `verify included view hierarchy`() {
+    inflaterTest { module ->
+      requiresActivity { activity ->
+        val parent = LinearLayout(activity)
+        val inflater = ILayoutInflater.newInflater()
+        val inflated = inflater.inflate(layoutFile("include"), parent)
+        assertThat(inflated).hasSize(1)
+
+        val view = inflated[0] as ViewImpl
+        assertThat(view.printHierarchy())
+          .isEqualTo(
+            "android.widget.LinearLayout\n" +
+              "    android.widget.RelativeLayout\n" +
+              "        android.widget.TextView\n" +
+              "        android.widget.TextView\n"
+          )
+      }
+    }
+  }
+  
+  @Test
+  fun `verify merged view hierarchy`() {
+    inflaterTest { module ->
+      requiresActivity { activity ->
+        val parent = LinearLayout(activity)
+        val inflater = ILayoutInflater.newInflater()
+        val inflated = inflater.inflate(layoutFile("merge"), parent)
+        assertThat(inflated).hasSize(1)
+        
+        val view = inflated[0] as ViewImpl
+        assertThat(view.printHierarchy())
+          .isEqualTo(
+            "android.widget.LinearLayout\n    android.widget.TextView\n    android.widget.TextView\n"
+          )
       }
     }
   }

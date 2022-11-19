@@ -26,11 +26,6 @@ val module: AndroidModule
   get() =
     currentModule ?: throw IllegalStateException("You must call startParse(AndroidModule) first")
 
-fun startParseIfNeeded(file: File) {
-  if (currentModule != null) return
-  (ProjectManager.findModuleForFile(file) as? AndroidModule)?.also { startParse(it) }
-}
-
 fun startParse(m: AndroidModule) {
   currentModule = m
 }

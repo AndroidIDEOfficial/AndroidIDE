@@ -19,13 +19,9 @@ package com.itsaky.androidide.inflater
 
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ClipDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.ShapeDrawable
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.parseBoolean
 import com.itsaky.androidide.inflater.internal.utils.parseColor
 import com.itsaky.androidide.inflater.internal.utils.parseDimension
@@ -34,7 +30,6 @@ import com.itsaky.androidide.inflater.internal.utils.parseInteger
 import com.itsaky.androidide.inflater.internal.utils.parseIntegerArray
 import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.parseStringArray
-import com.itsaky.androidide.inflater.internal.utils.startParse
 import kotlin.math.roundToInt
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +42,6 @@ class ValueParsersTest {
   fun `hardcoded dimension parser test`() {
     inflaterTest { module ->
       requiresActivity { activity ->
-        startParse(module)
 
         // Hardcoded dimensions
         val units = arrayOf("dp", "sp", "pt", "px", "in", "mm")
@@ -84,7 +78,6 @@ class ValueParsersTest {
         assertThat(parseDimension(activity, "@dimen/test_dimen_1pt", def = 0f)).isEqualTo(1)
         assertThat(parseDimension(activity, "@dimen/test_dimen_1pt_ref", def = 0f)).isEqualTo(1)
         assertThat(parseDimension(activity, "@dimen/test_dimen_0pt_ref", def = 0f)).isEqualTo(0)
-        endParse()
       }
     }
   }
@@ -93,7 +86,6 @@ class ValueParsersTest {
   fun `drawable parse test`() {
     inflaterTest { module ->
       requiresActivity { activity ->
-        startParse(module)
         parseDrawable(activity, "#ff0000").apply {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(ColorDrawable::class.java)
@@ -107,7 +99,6 @@ class ValueParsersTest {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(GradientDrawable::class.java)
         }
-        endParse()
       }
     }
   }
@@ -116,7 +107,6 @@ class ValueParsersTest {
   fun `boolean parser test`() {
     inflaterTest { module ->
       requiresActivity {
-        startParse(module)
         assertThat(parseBoolean("true")).isTrue()
         assertThat(parseBoolean("false", def = true)).isFalse()
         assertThat(parseBoolean("@android:bool/resolver_landscape_phone")).isTrue()
@@ -125,7 +115,6 @@ class ValueParsersTest {
         assertThat(parseBoolean("@bool/test_bool_false", def = true)).isFalse()
         assertThat(parseBoolean("@bool/test_bool_true_ref")).isTrue()
         assertThat(parseBoolean("@bool/test_bool_false_ref", def = true)).isFalse()
-        endParse()
       }
     }
   }
@@ -134,7 +123,6 @@ class ValueParsersTest {
   fun `integer parser test`() {
     inflaterTest { module ->
       requiresActivity {
-        startParse(module)
         assertThat(parseInteger("0", def = 1)).isEqualTo(0)
         assertThat(parseInteger("10")).isEqualTo(10)
         assertThat(parseInteger("110")).isEqualTo(110)
@@ -147,7 +135,6 @@ class ValueParsersTest {
         assertThat(parseInteger("@integer/test_integer_1_ref")).isEqualTo(1)
         assertThat(parseInteger("@integer/test_integer_0", def = 1)).isEqualTo(0)
         assertThat(parseInteger("@integer/test_integer_0_ref", def = 1)).isEqualTo(0)
-        endParse()
       }
     }
   }
@@ -155,7 +142,6 @@ class ValueParsersTest {
   @Test
   fun `string parser test`() {
     inflaterTest {
-      startParse(it)
       assertThat(parseString("Hello World!")).isEqualTo("Hello World!")
       assertThat(parseString("@android:string/ok")).isEqualTo("OK")
       assertThat(parseString("@android:string/cancel")).isEqualTo("Cancel")
@@ -163,34 +149,29 @@ class ValueParsersTest {
       assertThat(parseString("@string/test_string_ref")).isEqualTo("I love Android!")
       assertThat(parseString("@string/test_string_styled")).isEqualTo("I love Android!")
       assertThat(parseString("@string/test_string_styled_ref")).isEqualTo("I love Android!")
-      endParse()
     }
   }
 
   @Test
   fun `string array parser test`() {
     inflaterTest {
-      startParse(it)
       assertThat(parseStringArray("@android:array/phoneTypes"))
         .isEqualTo(
           arrayOf("Home", "Mobile", "Work", "Work Fax", "Home Fax", "Pager", "Other", "Custom")
         )
       assertThat(parseStringArray("@array/test_string_array"))
         .isEqualTo(arrayOf("I", "love", "Android"))
-      endParse()
     }
   }
 
   @Test
   fun `integer array parser test`() {
     inflaterTest {
-      startParse(it)
       assertThat(
           parseIntegerArray("@android:array/config_defaultImperceptibleKillingExemptionProcStates")
         )
         .isEqualTo(intArrayOf(0, 1, 2, 4, 12))
       assertThat(parseIntegerArray("@array/test_integer_array")).isEqualTo(intArrayOf(2, 4, 8))
-      endParse()
     }
   }
 
@@ -198,7 +179,6 @@ class ValueParsersTest {
   fun `color parser test`() {
     inflaterTest {
       requiresActivity { activity ->
-        startParse(it)
         assertThat(parseColor(activity, "@android:color/red")).isEqualTo(Color.RED)
         assertThat(parseColor(activity, "@android:color/black")).isEqualTo(Color.BLACK)
         assertThat(parseColor(activity, "@android:color/white")).isEqualTo(Color.WHITE)
@@ -209,7 +189,6 @@ class ValueParsersTest {
 
         // TODO Implement color state list parser
         assertThat(parseColor(activity, "@color/test_selector")).isEqualTo(Color.TRANSPARENT)
-        endParse()
       }
     }
   }

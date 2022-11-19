@@ -59,4 +59,14 @@ constructor(
   internal fun findNamespaceByUri(uri: String): INamespace? {
     return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
+  
+  internal open fun printHierarchy() : String {
+    return StringBuilder().apply { printHierarchy(this, 0) }.toString()
+  }
+  
+  internal open fun printHierarchy(builder: StringBuilder, indent: Int) {
+    builder.append(" ".repeat(indent * 4))
+    builder.append(name)
+    builder.append("\n")
+  }
 }

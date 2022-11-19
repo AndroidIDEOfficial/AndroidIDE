@@ -37,7 +37,7 @@ abstract class ILayoutInflater {
    * @param file The file to inflate.
    * @param parent The parent view.
    */
-  abstract fun inflate(file: File, parent: ViewGroup): IView?
+  abstract fun inflate(file: File, parent: ViewGroup): List<IView>
   
   companion object {
     @JvmStatic

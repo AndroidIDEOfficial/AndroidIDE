@@ -18,10 +18,8 @@
 package com.itsaky.androidide.inflater.internal
 
 import android.view.ViewGroup
-import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import java.io.File
 
 open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
@@ -67,5 +65,12 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     val existing = removeChild(index)
     addChild(index, view)
     return existing
+  }
+
+  override fun printHierarchy(builder: StringBuilder, indent: Int) {
+    super.printHierarchy(builder, indent)
+    for (child in children) {
+      (child as ViewImpl).printHierarchy(builder, indent + 1)
+    }
   }
 }

@@ -47,7 +47,7 @@ class InflationStartEvent : IInflationEvent<Unit>(Unit)
  *
  * @property view The inflated view.
  */
-class InflationFinishEvent(view: IView?) : IInflationEvent<IView?>(view)
+class InflationFinishEvent(views: List<IView>) : IInflationEvent<List<IView>>(views)
 
 /**
  * Indicates that the given view has been inflated. The view can be anywhere in the layout.

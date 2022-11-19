@@ -5,17 +5,6 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <TextView
-        android:id="@+id/included_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="This is an included layout"/>
-
-    <TextView
-        android:id="@+id/included_text_other"
-        android:layout_below="@id/included_text"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="This is an included layout"/>
+    <include layout="@layout/layout_merge"/>
 
 </RelativeLayout>

@@ -18,6 +18,8 @@
 package com.itsaky.androidide.inflater
 
 import androidx.appcompat.app.AppCompatActivity
+import com.itsaky.androidide.inflater.internal.utils.endParse
+import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -51,7 +53,9 @@ object XmlInflaterTest {
 
 fun inflaterTest(block: (AndroidModule) -> Unit) {
   XmlInflaterTest.initIfNeeded()
+  startParse(ProjectManager.app!!)
   block(ProjectManager.app!!)
+  endParse()
 }
 
 fun requiresActivity(block: (AppCompatActivity) -> Unit) {
