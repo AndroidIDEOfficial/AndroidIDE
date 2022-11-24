@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है:</string>
+  <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
   <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस</string>
   <string name="msg_about_licensed_under">लाइसेंस</string>
   <string name="about_option_email">ईमेल</string>
@@ -14,7 +14,7 @@
   <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
   <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
   <string name="discuss_amp_help">चर्चा और मदद</string>
-  <string name="title_github">GitHub</string>
+  <string name="title_github">गीटहब</string>
   <string name="need_help">मदद की ज़रूरत है?</string>
   <string name="other">अन्य</string>
   <string name="share_with_friends">मित्रो के साथ शेयर करे</string>
@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">टेलीग्राम पर चर्चाएं</string>
   <string name="official_tg_channel">Official Telegram Channel</string>
   <string name="msg_empty_view">मेरे पास आपको दिखाने के लिए कुछ नहीं है &#8230;</string>
-  <string name="btn_terminal">Terminal</string>
+  <string name="btn_terminal">टर्मिनल</string>
   <string name="reset">रिसेट</string>
   <string name="app_logs">एप लॉग्स</string>
   <string name="ide_logs">IDE लॉग्स</string>
@@ -330,24 +330,24 @@
   <string name="msg_swipe_for_output">\@@बिल्ड आउटपुट@@ के लिए ऊपर स्वाइप करें।</string>
   <string name="idepref_editor_useSoftTabs_title">सॉफ्ट टैब का उपयोग करें</string>
   <string name="idepref_editor_useSoftTabs_summary">चुनें कि टैब वर्ण (\\t) के बजाय रिक्त स्थान का उपयोग करना है या नहीं।</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_sponsor">प्रायोजक बनें</string>
   <string name="btn_docs">Documentation</string>
-  <string name="btn_close">Close</string>
+  <string name="btn_close">बंद करे</string>
   <string name="msg_ignore_case">Ignore case</string>
-  <string name="msg_use_regex">Use regex</string>
-  <string name="idepref_buildnrun_summary">Configure the Gradle build.</string>
-  <string name="configure">Configure</string>
-  <string name="about">About</string>
-  <string name="idepref_github_summary">AndroidIDE is open source!</string>
-  <string name="idepref_channel_summary">Subscribe for latest updates.</string>
-  <string name="idepref_group_summary">Discuss featues, bugs and improvements here.</string>
-  <string name="idepref_changelog_summary">What\'s new in this version?</string>
-  <string name="idepref_about_summary">More about AndroidIDE.</string>
-  <string name="idepref_general_summary">General IDE configuration.</string>
-  <string name="idepref_editor_summary">Configure the editor.</string>
+  <string name="msg_use_regex">रेगेक्स का प्रयोग करें</string>
+  <string name="idepref_buildnrun_summary">ग्रेडल बिल्ड को कॉन्फ़िगर करें।</string>
+  <string name="configure">कॉन्फ़िगर</string>
+  <string name="about">विवरण</string>
+  <string name="idepref_github_summary">AndroidIDE ओपन सोर्स है!</string>
+  <string name="idepref_channel_summary">नवीनतम अपडेट के लिए सदस्यता लें |</string>
+  <string name="idepref_group_summary">सुविधाओं, बगों और सुधारों पर यहां चर्चा करें।</string>
+  <string name="idepref_changelog_summary">इस वर्शन में क्या नया है?</string>
+  <string name="idepref_about_summary">AndroidIDE के बारे में अधिक |</string>
+  <string name="idepref_general_summary">सामान्य IDE कॉन्फ़िगरेशन |</string>
+  <string name="idepref_editor_summary">एडिटर को कॉन्फ़िगर करें।</string>
   <string name="xml">XML</string>
-  <string name="idepref_xml_trimFinalNewLine_title">Trim final new line</string>
-  <string name="idepref_xml_insertFinalNewLine_title">Insert final new line</string>
+  <string name="idepref_xml_trimFinalNewLine_title">अंतिम नई लाइन ट्रिम करें</string>
+  <string name="idepref_xml_insertFinalNewLine_title">अंतिम नई लाइन सम्मिलित करें।</string>
   <string name="idepref_xml_trimFinalNewLine_summary">Remove extra empty line at the end of file</string>
   <string name="idepref_xml_insertFinalNewLine_summary">Inserts an empty new line at the end of file.</string>
   <string name="idepref_xml_splitAttributes_title">Split attributes</string>
