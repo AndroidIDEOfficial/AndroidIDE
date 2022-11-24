@@ -3,7 +3,7 @@
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
   <string name="license_jdk">AndroidIDE JDK-এর একটি পরিবর্তিত বিল্ড ব্যবহার করে যা GNU জেনারেল পাবলিক লাইসেন্স v2.0-এর অধীনে লাইসেন্সপ্রাপ্ত৷ সোর্স কোড এবং JDK এর লাইসেন্স এখানে পাওয়া যাবে : </string>
-  <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি </string>
+  <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
   <string name="about_option_website">ওয়েবসাইট</string>
@@ -112,7 +112,7 @@
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
   <!-- Files -->
   <string name="save">সেভ</string>
   <string name="menu_find">খুঁজুন</string>
@@ -445,7 +445,7 @@
   <string name="msg_tasks_to_run">নিম্নলিখিত প্রক্রিয়া গুলি চালানো হবে, ক্রমানুসারে। নিশ্চিত করার জন্য \'Run\' বাটনটিতে আবার ক্লিক করুন.\n\n%1$s</string>
   <string name="msg_loading_tasks">প্রক্রিয়া লোড করা হচ্ছে...</string>
   <string name="title_all_tasks">সমস্ত প্রক্রিয়াগুলি</string>
-  <string name="msg_feature_unimplemented">This feature is not implemented yet.</string>
+  <string name="msg_feature_unimplemented">এই বৈশিষ্ট্যটি এখনও বাস্তবায়িত হয়নি।</string>
   <string name="ui_category_widgets">Widgets</string>
   <string name="ui_category_layouts">Layouts</string>
   <string name="widget_textview">TextView</string>
