@@ -443,10 +443,56 @@
   <string name="msg_no_overridable_methods">Não foi possível encontrar nenhum método sobreponível</string>
   <string name="action_goto_definition">Ir para definição</string>
   <string name="action_find_references">Encontrar referências</string>
+  <string name="action_generate_toString">Gerar toString()</string>
+  <string name="action_remove_unused_imports">Remover imports inúteis</string>
+  <string name="action_organize_imports">Organizar imports</string>
+  <string name="msg_cannot_generate_toString">Não é possível gerar a implementação toString()</string>
+  <string name="msg_toString_overridden">toString() já foi substituído</string>
+  <string name="action_generate_missing_constructor">Gerar construtor ausente</string>
+  <string name="msg_cannot_generate_constructor">Não foi possível gerar um construtor</string>
+  <string name="msg_constructor_available">Um construtor com os mesmos tipos de parâmetro já está disponível</string>
 
   <string name="msg_cannot_create_view">Não é possível criar visualização para a tag: %s</string>
   <string name="err_no_attr_adapter">Nenhuma implementação de adaptador de atributo encontrada para %s</string>
   <string name="msg_view_not_supported">A visualização %s não é suportada atualmente.</string>
 
+  <string name="replace">Substituir</string>
+  <string name="replaceAll">Substituir tudo</string>
+  <string name="title_run_tasks">Executar tarefas</string>
+  <string name="hint_search_tasks">Pesquisar tarefas…</string>
+  <string name="title_selected_tasks">Tarefas selecionadas</string>
+  <string name="msg_err_select_tasks">Selecione as tarefas a serem executadas</string>
+  <string name="title_confirmation">Confirmação</string>
+  <string name="msg_tasks_to_run">As seguintes tarefas serão executadas, em ordem. Clique no botão \'Executar\' novamente para confirmar.\n\n%1$s</string>
+  <string name="msg_loading_tasks">Carregando tarefas...</string>
+  <string name="title_all_tasks">Todas as tarefas</string>
+  <string name="msg_feature_unimplemented">Este recurso ainda não foi implementado.</string>
+  <string name="ui_category_widgets">Widgets</string>
+  <string name="ui_category_layouts">Layouts</string>
 
+  <string name="widget_textview">TextView</string>
+  <string name="widget_button">Button</string>
+  <string name="widget_checkbox">CheckBox</string>
+  <string name="widget_checked_textview">CheckedTextView</string>
+  <string name="widget_edittext">EditText</string>
+  <string name="widget_image_button">ImageButton</string>
+  <string name="widget_image_view">ImageView</string>
+  <string name="widget_progressbar">ProgressBar</string>
+  <string name="widget_radio_button">RadioButton</string>
+  <string name="widget_seekbar">SeekBar</string>
+  <string name="widget_spinner">Spinner</string>
+  <string name="layout_linear">LinearLayout</string>
+  <string name="layout_relative">RelativeLayout</string>
+  <string name="widget_auto_complete_textview">AutoCompleteTextView</string>
+  <string name="widget_listview">ListView</string>
+  <string name="widget_surfaceview">SurfaceView</string>
+  <string name="widget_switch">Switch</string>
+  <string name="widget_textureview">TextureView</string>
+  <string name="widget_togglebutton">ToggleButton</string>
+  <string name="widget_webview">WebView</string>
+  <string name="widget_frame_layout">FrameLayout</string>
+  <string name="widget_grid_layout">GridLayout</string>
+  <string name="widget_linear_layout_horz">LinearLayout (H)</string>
+  <string name="widget_linear_layout_vert">LinearLayout (V)</string>
+  <string name="widget_relative_layout">RelativeLayout</string>
 </resources>
