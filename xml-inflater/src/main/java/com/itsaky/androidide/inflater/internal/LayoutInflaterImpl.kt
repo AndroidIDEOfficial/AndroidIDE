@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
@@ -45,6 +44,7 @@ import com.itsaky.androidide.inflater.InflationStartEvent
 import com.itsaky.androidide.inflater.OnApplyAttributeEvent
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
+import com.itsaky.androidide.inflater.internal.utils.ViewFactory.createViewInstance
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.isParsing
 import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
@@ -282,7 +282,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     widgets: WidgetTable,
   ): IView {
     return try {
-      val v = createViewInstance(widget, parent)
+      val v = createViewInstance(widget.qualifiedName, parent.context)
       if (v is ViewGroup) {
         return ViewGroupImpl(currentLayoutFile, widget.qualifiedName, v)
       }
@@ -349,12 +349,6 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
     processor.process(resFile, file.inputStream())
     return processor to module
-  }
-
-  private fun createViewInstance(widget: Widget, parent: ViewGroup): View {
-    val klass = javaClass.classLoader!!.loadClass(widget.qualifiedName)
-    val constructor = klass.getConstructor(Context::class.java)
-    return constructor.newInstance(parent.context) as View
   }
 
   private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {

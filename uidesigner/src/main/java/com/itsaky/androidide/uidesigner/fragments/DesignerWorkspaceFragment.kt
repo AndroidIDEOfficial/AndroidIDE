@@ -27,7 +27,6 @@ import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.OnInflateViewEvent
-import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
@@ -94,11 +93,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     super.onDestroyView()
     this.binding = null
   }
-
-  private fun createErrorView(@StringRes message: Int): View {
-    return createErrorView(getString(message))
-  }
-
+  
   private fun createErrorView(message: String): View {
     return LayoutDesignerErrorBinding.inflate(layoutInflater).let {
       it.root.text = message

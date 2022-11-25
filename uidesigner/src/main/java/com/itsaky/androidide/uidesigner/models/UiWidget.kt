@@ -17,10 +17,16 @@
 
 package com.itsaky.androidide.uidesigner.models
 
+import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.ViewGroupImpl
+import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.internal.utils.ViewFactory
 
 open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
   constructor(
@@ -29,8 +35,18 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
     @DrawableRes icon: Int
   ) : this(klass.name, label, icon)
 
-  fun createView(): IView {
-    TODO()
+  /**
+   * Creates an [IView] for this widget.
+   *
+   * @param context The context that will be used for creating (View)[android.view.View] instance.
+   * @param layoutFile The layout file that is being edited.
+   */
+  fun createView(context: Context, layoutFile: LayoutFile): IView {
+    val v = ViewFactory.createViewInstance(name, context)
+    if (v is ViewGroup) {
+      return ViewGroupImpl(layoutFile, name, v)
+    }
+    return ViewImpl(layoutFile, name, v)
   }
 
   override fun equals(other: Any?): Boolean {
