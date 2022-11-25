@@ -372,7 +372,7 @@
   <string name="idepref_maxLineWidth_title">Max. Linienbreite</string>
   <string name="idepref_maxLineWidth_summary">The maximum number of characters a line should have.</string>
   <string name="idepref_splitAttrIndentSize_title">Split attributes indent size</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
   <string name="idepref_preservedNewLines_title">Preserved new lines</string>
   <string name="idepref_preservedNewLines_summary">The maximum number of continuous line breaks that should be preserved.</string>
   <string name="idepref_emptyElements_title">Empty elements behaviour</string>
