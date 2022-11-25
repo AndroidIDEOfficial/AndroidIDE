@@ -342,8 +342,8 @@
   <string name="idepref_channel_summary">Subscribe for latest updates.</string>
   <string name="idepref_group_summary">Discuss featues, bugs and improvements here.</string>
   <string name="idepref_changelog_summary">What\'s new in this version?</string>
-  <string name="idepref_about_summary">More about AndroidIDE.</string>
-  <string name="idepref_general_summary">General IDE configuration.</string>
+  <string name="idepref_about_summary">Mehr über AndroidIDE.</string>
+  <string name="idepref_general_summary">Allgemeine IDE-Konfiguration.</string>
   <string name="idepref_editor_summary">Configure the editor.</string>
   <string name="xml">XML</string>
   <string name="idepref_xml_trimFinalNewLine_title">Trim final new line</string>
