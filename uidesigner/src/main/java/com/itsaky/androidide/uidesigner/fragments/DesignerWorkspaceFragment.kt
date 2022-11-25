@@ -27,6 +27,7 @@ import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.OnInflateViewEvent
+import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
@@ -85,7 +86,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
         emptyList()
       }
     if (inflated.isEmpty()) {
-      binding!!.workspace.addView(createErrorView("Failed to infflate view"))
+      binding!!.workspace.addView(createErrorView("Failed to inflate view"))
     }
   }
 

@@ -22,14 +22,28 @@ import com.itsaky.androidide.projects.api.AndroidModule
 import java.io.File
 
 private var currentModule: AndroidModule? = null
+var isParsing: Boolean = false
+  private set
+
 val module: AndroidModule
   get() =
     currentModule ?: throw IllegalStateException("You must call startParse(AndroidModule) first")
 
+fun startParse(file: File) {
+  if (isParsing) {
+    return
+  }
+  (ProjectManager.findModuleForFile(file) as? AndroidModule)?.let {
+    startParse(it)
+  }
+}
+
 fun startParse(m: AndroidModule) {
   currentModule = m
+  isParsing = true
 }
 
 fun endParse() {
   currentModule = null
+  isParsing = false
 }

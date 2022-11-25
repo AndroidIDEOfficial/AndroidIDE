@@ -45,7 +45,10 @@ import com.itsaky.androidide.inflater.InflationStartEvent
 import com.itsaky.androidide.inflater.OnApplyAttributeEvent
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
+import com.itsaky.androidide.inflater.internal.utils.endParse
+import com.itsaky.androidide.inflater.internal.utils.isParsing
 import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
+import com.itsaky.androidide.inflater.internal.utils.startParse
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.utils.ILogger
@@ -75,10 +78,14 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   override fun inflate(file: File, parent: ViewGroup): List<IView> {
     this._primaryInflatingFile = file
     IDTable.newRound()
+    if (!isParsing) {
+      startParse(file)
+    }
     inflationEventListener?.onEvent(InflationStartEvent())
     return doInflate(file, parent).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
       _primaryInflatingFile = null
+      endParse()
     }
   }
 

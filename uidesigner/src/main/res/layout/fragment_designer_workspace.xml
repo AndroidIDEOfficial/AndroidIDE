@@ -30,6 +30,6 @@
     android:background="@drawable/bg_designer_view"
     android:backgroundTint="@color/primaryLightColor"
     android:backgroundTintMode="src_atop"
-    android:orientation="horizontal" />
+    android:orientation="vertical" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
