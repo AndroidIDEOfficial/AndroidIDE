@@ -16,7 +16,8 @@
 ![Commit activity](https://img.shields.io/github/commit-activity/m/AndroidIDEOfficial/AndroidIDE)
 ![Builds and tests](https://github.com/AndroidIDEOfficial/AndroidIDE/actions/workflows/build.yml/badge.svg)  
 ![Latest release](https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&label=latest%20release)
-![Total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)  
+![Total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)
+[![Crowdin](https://badges.crowdin.net/androidide/localized.svg)](https://crowdin.com/project/androidide)  
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
 ![Telegram](https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white)
 
@@ -70,6 +71,8 @@ issues using the app, please let us know.
 ## Contributing
 
 See the [contributing guide](./CONTRIBUTING.md).
+
+For translations, visit the [Crowdin project page](https://crowdin.com/project/androidide).
 
 ## Thanks to
 
