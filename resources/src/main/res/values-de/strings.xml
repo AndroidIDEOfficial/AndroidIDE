@@ -5,7 +5,7 @@
   <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v2.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
   <string name="title_open_source_licenses">Open-Source-Lizenzen</string>
   <string name="msg_about_licensed_under">Lizenziert unter:</string>
-  <string name="about_option_email">Email</string>
+  <string name="about_option_email">E-Mail</string>
   <string name="about_option_website">Internetseite</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
   <string name="about_footer">AndroidIDE %1$s f&#xFC;r %2$s</string>
@@ -20,12 +20,12 @@
   <string name="share_with_friends">Mit Freunden teilen</string>
   <string name="ide_preferences">IDE-Einstellungen</string>
   <string name="discussions_on_telegram">Auf Telegram diskutieren</string>
-  <string name="official_tg_channel">Official Telegram Channel</string>
+  <string name="official_tg_channel">Offizieller Telegram-Kanal</string>
   <string name="msg_empty_view">Es gibt nichts zum anzeigen&#x2026;</string>
-  <string name="btn_terminal">Terminal</string>
+  <string name="btn_terminal">Konsole</string>
   <string name="reset">Zur&#xFC;cksetzen</string>
-  <string name="app_logs">App Logs</string>
-  <string name="ide_logs">IDE Logs</string>
+  <string name="app_logs">App-Protokolle</string>
+  <string name="ide_logs">IDE-Protokolle</string>
   <string name="label_splash_image">Splash-Bild</string>
   <string name="get_started">Loslegen</string>
   <!-- LSP, Diagnostics & Completions -->
@@ -53,8 +53,8 @@
   <string name="lint_release">lintRelease</string>
   <string name="build">Bauen</string>
   <string name="build_debug">AssembleDebug</string>
-  <string name="build_output">Build output</string>
-  <string name="build_release">assembleRelease</string>
+  <string name="build_output">Build-Ausgabe</string>
+  <string name="build_release">assembbleRelease</string>
   <string name="lint_tasks">Lint-Aufgaben</string>
   <string name="clean_amp_build">Clean &amp; build</string>
   <string name="clean_project">S&#xE4;ubern</string>
@@ -69,7 +69,7 @@
   <string name="gradle_daemon_status">Gradle-Daemon-Status</string>
   <string name="title_install_apks">APK(s) installieren</string>
   <string name="title_clear_output">Ausgabe s&#xE4;ubern</string>
-  <string name="run">Run</string>
+  <string name="run">Ausführen</string>
   <string name="gradle">Gradle</string>
   <string name="title_first_build">Erster Build</string>
   <string name="msg_first_build">Dies ist der erste Build, nachdem Sie AndroidIDE installiert haben. Der erste Build dauert normalerweise einige Zeit, da Gradle ben&#xF6;tigte Dateien herunterl&#xE4;dt. Dieser Vorgang kann etwa 10 bis 15 Minuten dauern. Dies h&#xE4;ngt jedoch von Ihrer Netzwerkverbindung ab.\n\nBitte haben Sie etwas Geduld &#x2026;</string>
@@ -101,7 +101,7 @@
   <string name="template_libgdx">LibGDX Spiel</string>
   <string name="template_description_libgdx">LibGDX-Spieleprojekt eingerichtet, um ein Bild als Beispiel zu rendern.</string>
   <string name="template_compose">Jetpack Compose</string>
-  <string name="template_description_compose">Basic Jetpack Compose hello world project.</string>
+  <string name="template_description_compose">Basic Jetpack Compose Hello World Projekt.</string>
   <string name="template_navigation_tabs">Bottom Navigation Activity</string>
   <string name="template_navigation_tabs_description">Erstellt eine neue Activity mit eine bottom navigation</string>
   <string name="template_tabs">Tabbed Activity</string>
@@ -109,10 +109,10 @@
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Erstellt ein neues Projekt mit einer leeren Activity konfiguriert um JNI zu benutzen</string>
-  <string name="template_no_activity">No Activity</string>
-  <string name="template_no_activity_description">Creates a new project without activity</string>
+  <string name="template_no_activity">Keine Activity</string>
+  <string name="template_no_activity_description">Erstellt ein neues Projekt ohne Activity</string>
   <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_description_noAndroidX">Erstellt ein neues Projekt ohne AndroidX Bibliothek</string>
   <!-- Files -->
   <string name="save">Speichern</string>
   <string name="menu_find">Finden</string>
@@ -171,7 +171,7 @@
   <string name="msg_newfile_dest">Ziel: %s/</string>
   <string name="restype_drawable">Drawable</string>
   <string name="restype_layout">Layout</string>
-  <string name="restype_menu">Menu</string>
+  <string name="restype_menu">Menü</string>
   <string name="restype_other">Andere</string>
   <string name="classtype_class">Klasse</string>
   <string name="classtype_activity">Aktivity</string>
@@ -274,8 +274,8 @@
   <string name="msg_file_tree">Dateipfad</string>
   <string name="hint_color_resource">Farbwert</string>
   <string name="title_color_picker">Farbauswahl</string>
-  <string name="hint_string_value">String value</string>
-  <string name="hint_string_resource">String resource</string>
+  <string name="hint_string_value">String-Wert</string>
+  <string name="hint_string_resource">String-Ressource</string>
   <string name="hint_resource_reference">Any resource reference</string>
   <string name="msg_code_actions">Aktionen</string>
   <string name="title_format_code">Code formatieren</string>
@@ -292,7 +292,7 @@
   <string name="title_warning">Warnung</string>
   <string name="msg_ndk_currently_unsupported">NDK ist momentan nicht offiziel unterstützt. Die Vorlage funktioniert erste nach der installation des NDK.</string>
   <string name="msg_initializing_project">Projekt initialisiert</string>
-  <string name="msg_project_initialized">Project initialized</string>
+  <string name="msg_project_initialized">Projekt initialisiert</string>
   <string name="msg_project_initialization_failed">Initialiserung des Projekts fehlgeschlagen</string>
   <string name="msg_project_not_initialized">Projekt ist nicht initialisert.</string>
   <string name="msg_running_task">Laufende Aufgaben: \'%1$s\'</string>
@@ -332,7 +332,7 @@
   <string name="idepref_editor_useSoftTabs_summary">Wählen Sie, ob Leerzeichen anstelle von Tab verwendet werden sollen (\\t).</string>
   <string name="btn_sponsor">Sponsor</string>
   <string name="btn_docs">Documentation</string>
-  <string name="btn_close">Close</string>
+  <string name="btn_close">Schließen</string>
   <string name="msg_ignore_case">Ignore case</string>
   <string name="msg_use_regex">Use regex</string>
   <string name="idepref_buildnrun_summary">Configure the Gradle build.</string>
@@ -369,7 +369,7 @@
   <string name="idepref_xml_trimTrailingWs_title">Trim trailing whitespace</string>
   <string name="idepref_xml_trimTrailingWs_summary">Remove extra whitespaces at the end of lines.</string>
   <string name="idepref_editor_formatterOptions">Formatter options</string>
-  <string name="idepref_maxLineWidth_title">Max line width</string>
+  <string name="idepref_maxLineWidth_title">Max. Linienbreite</string>
   <string name="idepref_maxLineWidth_summary">The maximum number of characters a line should have.</string>
   <string name="idepref_splitAttrIndentSize_title">Split attributes indent size</string>
   <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
@@ -429,8 +429,8 @@
   <string name="action_organize_imports">Organize imports</string>
   <string name="msg_cannot_generate_toString">Unable to generate toString() implementation</string>
   <string name="msg_toString_overridden">toString() is already overridden</string>
-  <string name="action_generate_missing_constructor">Generate missing constructor</string>
-  <string name="msg_cannot_generate_constructor">Unable to generate constructor</string>
+  <string name="action_generate_missing_constructor">Fehlender Konstruktor generieren</string>
+  <string name="msg_cannot_generate_constructor">Konstruktor kann nicht erstellt werden</string>
   <string name="msg_constructor_available">A constructor with same parameter types is already available</string>
   <string name="msg_cannot_create_view">View kann nicht erstellt werden für: %s</string>
   <string name="err_no_attr_adapter">Keine Implementierung des Attributadapters gefunden für%s</string>
