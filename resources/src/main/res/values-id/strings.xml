@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
+  <string name="license_jdk">AndroidIDE menggunakan build JDK yang dimodifikasi yang dilisensikan di bawah Lisensi Publik Umum GNU v2.0. Kode sumber dan lisensi JDK tersedia di : </string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
   <string name="about_option_email">Email</string>
@@ -20,10 +20,10 @@
   <string name="share_with_friends">Berbagi dengan Teman</string>
   <string name="ide_preferences">Preferensi IDE</string>
   <string name="discussions_on_telegram">Diskusi di Telegram</string>
-  <string name="official_tg_channel">Official Telegram Channel</string>
+  <string name="official_tg_channel">Channel Telegram Resmi</string>
   <string name="msg_empty_view">Tidak ada yang dapat kami tampilkan untuk anda&#8230;</string>
   <string name="btn_terminal">Terminal</string>
-  <string name="reset">Reset</string>
+  <string name="reset">Setel ulang</string>
   <string name="app_logs">Log App</string>
   <string name="ide_logs">Log IDE</string>
   <string name="label_splash_image">Gambar Splash</string>
@@ -57,7 +57,7 @@
   <string name="build_release">assembleRelease</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Clean &amp; build</string>
-  <string name="clean_project">Clean</string>
+  <string name="clean_project">Bersihkan</string>
   <string name="create_aab">Buat AAB</string>
   <string name="build_tasks">Build tasks</string>
   <string name="quick_run_debug">Quick run</string>
@@ -103,16 +103,16 @@
   <string name="template_compose">Jetpack Compose</string>
   <string name="template_description_compose">Projek sederhana Jetpack Compose.</string>
   <string name="template_navigation_tabs">Bottom Navigation Activity</string>
-  <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
+  <string name="template_navigation_tabs_description">Buat Activity baru dengan Bottom Navigation</string>
   <string name="template_tabs">Tabbed Activity</string>
-  <string name="template_tabs_description">Creates a new blank activity with tabs</string>
+  <string name="template_tabs_description">Buat Blank Activity baru dengan Tabs</string>
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
-  <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
-  <string name="template_no_activity">No Activity</string>
-  <string name="template_no_activity_description">Creates a new project without activity</string>
-  <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_cpp_description">Buat Proyek baru dengan Empty Activity yang dikonfigurasi untuk menggunakan JNI</string>
+  <string name="template_no_activity">Tidak ada Activity</string>
+  <string name="template_no_activity_description">Buat Proyek baru tanpa Activity</string>
+  <string name="template_no_AndroidX">Tidak ada AndroidX</string>
+  <string name="template_description_noAndroidX">Buat Proyek baru tanpa Library AndroidX</string>
   <!-- Files -->
   <string name="save">Simpan</string>
   <string name="menu_find">Pencarian</string>
@@ -148,7 +148,7 @@
   <string name="file_name">Nama File</string>
   <string name="new_name">Nama baru</string>
   <string name="new_file">File baru</string>
-  <string name="create_auto_layout">Create layout file automatically</string>
+  <string name="create_auto_layout">Buat File Layout secara otomatis</string>
   <string name="new_java_class">Class Java baru</string>
   <string name="new_xml_resource">File XML baru</string>
   <string name="new_folder">Folder baru</string>
