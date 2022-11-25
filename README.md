@@ -89,7 +89,7 @@ For translations, visit the [Crowdin project page](https://crowdin.com/project/a
 - [George Fraser](https://github.com/georgewfraser) for
   the [Java Language Server](https://github.com/georgewfraser/java-language-server)
 
-And all the developers who have contributed to this project.
+Thanks to all the developers who have contributed to this project.
 
 ## Contact Us
 
