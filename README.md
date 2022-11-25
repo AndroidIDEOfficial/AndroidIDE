@@ -1,27 +1,35 @@
 <p align="center">
-  <img src="./images/header_dark.png#gh-dark-mode-only" style="width: 70%;"/><br><br>
-  <img src="./images/header_light.png#gh-light-mode-only" style="width: 70%;"/><br><br>
-  <img src="./images/banner.png"/>
-</p><br>
-
-
-<p align="center">
-<img src="https://androidide.com/github/img/androidide.php?for-the-badge" alt="AndroidIDE" width="180"/>
-<br><br>
+  <img src="./images/icon.png" alt="AndroidIDE" width="80" height="80"/>
 </p>
 
-![Minimum required SDK](https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252)
-![Repository size](https://img.shields.io/github/repo-size/itsaky/androidide)
-![CodeFactor](https://www.codefactor.io/repository/github/androidideofficial/androidide/badge/main)
-![Commit activity](https://img.shields.io/github/commit-activity/m/AndroidIDEOfficial/AndroidIDE)
-![Builds and tests](https://github.com/AndroidIDEOfficial/AndroidIDE/actions/workflows/build.yml/badge.svg)  
-![Latest release](https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&label=latest%20release)
-![Total downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php)
-[![Crowdin](https://badges.crowdin.net/androidide/localized.svg)](https://crowdin.com/project/androidide)  
-![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
-![Telegram](https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white)
+<h2 align="center"><b>AndroidIDE</b></h2>
+<p align="center">
+  An IDE to develop real, Gradle-based Android applications on Android devices.
+<p><br>
 
-<br>
+<p align="center">
+<!-- Latest release -->
+<img src="https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&amp;label=latest%20release" alt="Latest release">
+<!-- Downloads -->
+<img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php" alt="Total downloads">
+<!-- Build and test -->
+<img src="https://github.com/AndroidIDEOfficial/AndroidIDE/actions/workflows/build.yml/badge.svg" alt="Builds and tests">
+<!-- CodeFactor -->
+<img src="https://www.codefactor.io/repository/github/androidideofficial/androidide/badge/main" alt="CodeFactor">
+<!-- Crowdin -->
+<a href="https://crowdin.com/project/androidide"><img src="https://badges.crowdin.net/androidide/localized.svg" alt="Crowdin"></a>
+<!-- License -->
+<img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License"></p>
+
+<p align="center">
+  <a href="./docs">Explore the docs »</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/AndroidIDEOfficial/AndroidIDE/issues">Report a bug</a> &nbsp; &#8226; &nbsp;
+  <a href="https://github.com/AndroidIDEOfficial/AndroidIDE/issues">Request a feature</a> &nbsp; &#8226; &nbsp;
+  <a href="https://t.me/androidide_discussions">Join us on Telegram</a>
+</p>
 
 ## Features
 
@@ -33,22 +41,18 @@
 - [x] API information for classes and their members (since, removed, deprecated).
 - [ ] Language servers
     - [x] Java
-    - [x] XML (*)
+    - [x] XML
     - [ ] Kotlin
 - [ ] UI Designer
     - [x] Layout inflater
     - [x] Resolve resource references
     - [x] Auto-complete resource values when user edits attributes using the attribute editor
-    - [x] Drag & Drop (*)
-    - [x] Visual attribute editor (*)
-    - [x] Android Widgets (*)
+    - [x] Drag & Drop
+    - [x] Visual attribute editor
+    - [x] Android Widgets
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
-- [x] Git (*)
-
-Items marked with `(*)` are partially implemented.
-`XML` language server supports only code completion at the moment. Git is currently available only
-in the terminal i.e. no GUI interface for `git`.
+- [x] Git
 
 ## Installation
 
@@ -60,6 +64,7 @@ in the terminal i.e. no GUI interface for `git`.
 
 ## Limitations
 
+- For working with projects in AndroidIDE, your project must use Android Gradle Plugin v7.2.0 or newer. Projects with older AGP must be migrated to newer versions.
 - SDK Manager is already included in Android SDK and is accessible in AndroidIDE via its Terminal.
   But, you cannot use it to install some tools (like NDK) because those tools are not built for
   Android.
