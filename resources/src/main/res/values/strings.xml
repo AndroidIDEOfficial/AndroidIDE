@@ -495,4 +495,17 @@
   <string name="widget_linear_layout_horz">LinearLayout (H)</string>
   <string name="widget_linear_layout_vert">LinearLayout (V)</string>
   <string name="widget_relative_layout">RelativeLayout</string>
+
+  <!-- GIT -->
+  <string name="cancel">Cancel</string>
+  <string name="okay">Okay</string>
+  <string name="hide">Hide</string>
+  <string name="clone">Clone</string>
+  <string name="clone_git_repository">Clone Git Repository</string>
+  <string name="git_clone_failed">Git Clone Failed</string>
+  <string name="git_clone_successful">Git Clone Successful</string>
+  <string name="cloning_repository">Cloning Repository</string>
+  <string name="successfully_cloned">Successfully Cloned</string>
+  <string name="repository_url">Repository URL</string>
+  <string name="not_found">not found</string>
 </resources>
