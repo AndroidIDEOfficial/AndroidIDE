@@ -19,12 +19,72 @@ package com.itsaky.androidide.uidesigner.drag
 
 import android.view.DragEvent
 import android.view.View
+import android.view.ViewGroup
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.internal.AttributeAdapterIndex.getAdapter
+import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
+import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
+import com.itsaky.androidide.uidesigner.models.UiWidget
+import java.io.File
 
 /**
+ * Listens for drag events in the given view group.
+ *
  * @author Akash Yadav
  */
-class WidgetDragListener : View.OnDragListener {
+class WidgetDragListener(val view: IViewGroup, private val placeholderView: View) :
+  View.OnDragListener {
+
+  private val placeholder by lazy { ViewImpl(LayoutFile(File(""), ""), "", placeholderView) }
+
   override fun onDrag(v: View, event: DragEvent): Boolean {
-    TODO("Not yet implemented")
+    return when (event.action) {
+      DragEvent.ACTION_DRAG_STARTED -> {
+        event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME)
+      }
+      DragEvent.ACTION_DRAG_ENTERED,
+      DragEvent.ACTION_DRAG_LOCATION -> {
+        if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
+          view.onHighlightStateUpdated(true)
+        }
+        placeholder.removeFromParent()
+        val index = view.computeViewIndex(event.x, event.y)
+        view.addChild(index, placeholder)
+        true
+      }
+      DragEvent.ACTION_DRAG_EXITED -> {
+        view.onHighlightStateUpdated(false)
+        true
+      }
+      DragEvent.ACTION_DROP -> {
+        val index = view.indexOfChild(this.placeholder)
+        this.placeholder.removeFromParent()
+        
+        val child =
+          when (val data = event.localState) {
+            is IView -> data
+            is UiWidget ->
+              data.createView(view.viewGroup.context, (view as ViewImpl).file).apply {
+                this.view.layoutParams =
+                  generateLayoutParams(this@WidgetDragListener.view.viewGroup)
+                val adapter = getAdapter(this.name)
+                adapter?.applyBasic(this)
+              }
+            else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
+          }
+        child.removeFromParent()
+        this.view.addChild(index, child)
+        child.onHighlightStateUpdated(false)
+        view.onHighlightStateUpdated(false)
+        true
+      }
+      else -> false
+    }
   }
+
+  private val IViewGroup.viewGroup: ViewGroup
+    get() = view as ViewGroup
 }

@@ -62,7 +62,7 @@ interface IViewGroup : IView {
    *
    * @param index The index of the child.
    */
-  fun get(index: Int): IView
+  operator fun get(index: Int): IView
 
   /**
    * Replace the child at the given index.
@@ -71,5 +71,68 @@ interface IViewGroup : IView {
    * @param view The new view to set.
    * @return The existing child or `null`.
    */
-  fun set(index: Int, view: IView): IView
+  operator fun set(index: Int, view: IView): IView
+
+  /**
+   * Finds the index of the given child in this view group.
+   *
+   * @param child The child.
+   * @return The index of the child if found or -1.
+   */
+  fun indexOfChild(child: IView): Int {
+    for (i in 0 until childCount) {
+      if (this[i].view == child.view) {
+        return i
+      }
+    }
+    return -1
+  }
+
+  /**
+   * Finds the index of the view based on the touch location.
+   *
+   * @param x The x coordinate.
+   * @param y The y coordinate.
+   * @return The index where the new child should be added. This index must be valid.
+   */
+  fun computeViewIndex(x: Float, y: Float): Int
+
+  /**
+   * Adds the given hierarchy change listener.
+   *
+   * @param listener The listener to add.
+   */
+  fun addOnHierarchyChangeListener(listener: OnHierarchyChangeListener)
+
+  /**
+   * Removes the given hierarchy change listener.
+   *
+   * @param listener The listener to remove.
+   */
+  fun removeOnHierarchyChangeListener(listener: OnHierarchyChangeListener)
+
+  /** Listener to listen for hierarchy changes in an [IViewGroup]. */
+  interface OnHierarchyChangeListener {
+    /**
+     * Called when a view is added.
+     *
+     * @param group The view group in which the view was added.
+     * @param view The added view.
+     */
+    fun onViewAdded(group: IViewGroup, view: IView)
+
+    /**
+     * Called when a view is removed.
+     *
+     * @param group The view group from which the view was removed.
+     * @param view The removed view.
+     */
+    fun onViewRemoved(group: IViewGroup, view: IView)
+  }
+
+  /** Allows overriding a single method in [OnHierarchyChangeListener]. */
+  open class SingleOnHierarchyChangeListener : OnHierarchyChangeListener {
+    override fun onViewAdded(group: IViewGroup, view: IView) {}
+    override fun onViewRemoved(group: IViewGroup, view: IView) {}
+  }
 }

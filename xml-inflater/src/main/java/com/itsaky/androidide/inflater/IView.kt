@@ -83,4 +83,21 @@ interface IView {
    * @return The attribute if found or `null`.
    */
   fun findAttribute(namespaceUri: String, name: String): IAttribute?
+
+  /**
+   * Called when the highlighted state of the view is changed. The highlighted state is changed in
+   * case of a [ACTION_DOWN][android.view.MotionEvent.ACTION_DOWN] or [ACTION_UP]
+   * [android.view.MotionEvent.ACTION_UP] motion event. In case of an [IViewGroup], the highlighted
+   * state is also changed when the view group receives the drag events.
+   *
+   * @param highlight Whether the view should be highlighted or not.
+   */
+  fun onHighlightStateUpdated(highlight: Boolean)
+  
+  /**
+   * Removes this view from its parent view.
+   */
+  fun removeFromParent() {
+    parent?.removeChild(this)
+  }
 }

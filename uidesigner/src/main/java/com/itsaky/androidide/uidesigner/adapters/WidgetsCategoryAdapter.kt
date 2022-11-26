@@ -22,10 +22,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.itsaky.androidide.uidesigner.adapters.WidgetsCategoryAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutUiWidgetsCategoryBinding
+import com.itsaky.androidide.uidesigner.models.UiWidget
 import com.itsaky.androidide.uidesigner.models.UiWidgetCategory
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /** @author Akash Yadav */
-class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>) : RecyclerView.Adapter<VH>() {
+class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, private val viewModel: WorkspaceViewModel) : RecyclerView.Adapter<VH>() {
 
   private val categories =
     categories.let {
@@ -52,6 +54,6 @@ class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>) : RecyclerView.
     val category = categories[position]
     binding.name.setText(category.label)
     
-    binding.widgets.adapter = WidgetsItemAdapter(category.widgets)
+    binding.widgets.adapter = WidgetsItemAdapter(category.widgets, viewModel)
   }
 }

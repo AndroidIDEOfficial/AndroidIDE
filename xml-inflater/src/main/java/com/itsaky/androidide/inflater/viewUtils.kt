@@ -15,27 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.viewmodel
+package com.itsaky.androidide.inflater
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import java.io.File
+import android.view.ViewGroup
 
-class WorkspaceViewModel : ViewModel() {
-  internal val _drawerOpened = MutableLiveData(false)
-  private val _file = MutableLiveData<File>()
-  
-  var file: File
-    get() = _file.value!!
-    set(value) {
-      _file.value = value
-    }
-  
-  var drawerOpened : Boolean
-    get() = this._drawerOpened.value!!
-    set(value) {
-      this._drawerOpened.value = value
-    }
-}
+/** Helper extension property which casts [IView.view] to [ViewGroup]. */
+val IViewGroup.viewGroup: ViewGroup
+  get() = this.view as ViewGroup

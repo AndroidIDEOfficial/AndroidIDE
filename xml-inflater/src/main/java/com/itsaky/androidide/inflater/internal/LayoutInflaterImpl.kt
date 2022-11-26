@@ -19,7 +19,6 @@ package com.itsaky.androidide.inflater.internal
 
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import com.android.SdkConstants.EXT_XML
 import com.android.aapt.Resources.SourcePosition
 import com.android.aapt.Resources.XmlAttribute
@@ -45,6 +44,7 @@ import com.itsaky.androidide.inflater.OnApplyAttributeEvent
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.createViewInstance
+import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 import com.itsaky.androidide.inflater.internal.utils.endParse
 import com.itsaky.androidide.inflater.internal.utils.isParsing
 import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
@@ -55,7 +55,6 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import java.io.File
-import java.lang.reflect.Method
 
 /**
  * Default implementation of [ILayoutInflater].
@@ -289,31 +288,6 @@ open class LayoutInflaterImpl : ILayoutInflater() {
       return ViewImpl(currentLayoutFile, widget.qualifiedName, v)
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
-    }
-  }
-
-  protected open fun generateLayoutParams(parent: ViewGroup): LayoutParams {
-    return try {
-      var clazz: Class<in ViewGroup> = parent.javaClass
-      var method: Method?
-      while (true) {
-        try {
-          method = clazz.getDeclaredMethod("generateDefaultLayoutParams")
-          break
-        } catch (e: Throwable) {
-          /* ignored */
-        }
-
-        clazz = clazz.superclass
-      }
-      if (method != null) {
-        method.isAccessible = true
-        return method.invoke(parent) as LayoutParams
-      }
-      log.error("Unable to create default params for view parent:", parent)
-      LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-    } catch (th: Throwable) {
-      throw InflateException("Unable to create layout params for parent: $parent", th)
     }
   }
 

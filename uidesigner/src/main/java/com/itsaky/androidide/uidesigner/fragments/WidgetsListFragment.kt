@@ -21,10 +21,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.uidesigner.adapters.WidgetsCategoryAdapter
 import com.itsaky.androidide.uidesigner.databinding.FragmentUiWidgetsBinding
 import com.itsaky.androidide.uidesigner.utils.Widgets
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
  * A fragment that shows the list of widgets available to use in the UI designer.
@@ -34,6 +36,7 @@ import com.itsaky.androidide.uidesigner.utils.Widgets
 class WidgetsListFragment : BaseFragment() {
 
   private var binding: FragmentUiWidgetsBinding? = null
+  private val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -47,7 +50,7 @@ class WidgetsListFragment : BaseFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    this.binding!!.widgets.adapter = WidgetsCategoryAdapter(Widgets.categories)
+    this.binding!!.widgets.adapter = WidgetsCategoryAdapter(Widgets.categories, viewModel)
   }
 
   override fun onDestroyView() {

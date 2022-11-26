@@ -19,10 +19,13 @@ package com.itsaky.androidide.uidesigner
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
  * The UI Designer activity allows the user to design XML layouts with a drag-n-drop interface.
@@ -34,6 +37,8 @@ class UIDesignerActivity : BaseIDEActivity() {
   private var binding: ActivityUiDesignerBinding? = null
   private val workspace: DesignerWorkspaceFragment?
     get() = this.binding?.workspace?.getFragment()
+
+  private val viewModel by viewModels<WorkspaceViewModel>()
 
   companion object {
     const val EXTRA_FILE = "layout_file"
@@ -63,6 +68,18 @@ class UIDesignerActivity : BaseIDEActivity() {
         binding!!.root.addDrawerListener(this)
         syncState()
       }
+
+    viewModel._drawerOpened.observe(this) { opened ->
+      if (binding == null) {
+        return@observe
+      }
+
+      if (opened) {
+        binding!!.root.openDrawer(GravityCompat.START)
+      } else {
+        binding!!.root.closeDrawer(GravityCompat.START)
+      }
+    }
   }
 
   override fun onDestroy() {

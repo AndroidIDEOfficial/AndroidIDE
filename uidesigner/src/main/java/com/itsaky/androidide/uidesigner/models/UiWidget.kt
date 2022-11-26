@@ -29,6 +29,7 @@ import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory
 
 open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
+
   constructor(
     klass: Class<out View>,
     @StringRes label: Int,
@@ -48,7 +49,7 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
     }
     return ViewImpl(layoutFile, name, v)
   }
-
+  
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is UiWidget) return false

@@ -15,27 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.viewmodel
+package com.itsaky.androidide.inflater.internal
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import java.io.File
+import com.itsaky.androidide.inflater.IView
 
-class WorkspaceViewModel : ViewModel() {
-  internal val _drawerOpened = MutableLiveData(false)
-  private val _file = MutableLiveData<File>()
-  
-  var file: File
-    get() = _file.value!!
-    set(value) {
-      _file.value = value
-    }
-  
-  var drawerOpened : Boolean
-    get() = this._drawerOpened.value!!
-    set(value) {
-      this._drawerOpened.value = value
-    }
-}
+/**
+ * An [IView] implementation that forwards all calls to [src].
+ *
+ * @author Akash Yadav
+ */
+class ForwardingView(val src: IView) : IView by src

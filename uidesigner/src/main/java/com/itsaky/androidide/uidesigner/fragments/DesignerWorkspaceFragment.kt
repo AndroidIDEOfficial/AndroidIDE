@@ -17,20 +17,28 @@
 
 package com.itsaky.androidide.uidesigner.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
+import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
 import com.itsaky.androidide.inflater.ILayoutInflater
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
 import com.itsaky.androidide.inflater.OnInflateViewEvent
+import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.ViewGroupImpl
+import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
-import com.itsaky.androidide.uidesigner.utils.InflatedViewTouchListener
+import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
+import com.itsaky.androidide.uidesigner.utils.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
@@ -42,19 +50,38 @@ import java.io.File
  *
  * @author Akash Yadav
  */
+@SuppressLint("ClickableViewAccessibility")
 class DesignerWorkspaceFragment : BaseFragment() {
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
-  internal val viewModel by viewModels<WorkspaceViewModel>()
+  internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
+
+  private val placeholder by lazy {
+    View(requireContext()).apply {
+      setBackgroundResource(R.drawable.bg_widget_drag_placeholder)
+      layoutParams =
+        ViewGroup.LayoutParams(
+          SizeUtils.dp2px(PLACEHOLDER_WIDTH_DP),
+          SizeUtils.dp2px(PLACEHOLDER_HEIGHT_DP)
+        )
+    }
+  }
+
+  private val workspaceView by lazy {
+    object : ViewGroupImpl(LayoutFile(File(""), ""), "", binding!!.workspace) {}
+  }
+
+  companion object {
+    const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
+    const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
+    private const val PLACEHOLDER_WIDTH_DP = 40f
+    private const val PLACEHOLDER_HEIGHT_DP = 20f
+  }
 
   private val inflateListener by lazy {
     IInflateEventsListener { event ->
       if (event is OnInflateViewEvent) {
-        event.data.view.setOnTouchListener(InflatedViewTouchListener())
-        val fg = event.data.view.foreground
-        event.data.view.foreground =
-          if (fg != null) layeredForeground(requireContext(), fg)
-          else bgDesignerView(event.data.view.context)
+        setupView(event.data)
       }
     }
   }
@@ -87,17 +114,36 @@ class DesignerWorkspaceFragment : BaseFragment() {
     if (inflated.isEmpty()) {
       binding!!.workspace.addView(createErrorView("Failed to inflate view"))
     }
+    binding!!.workspace.setOnDragListener(WidgetDragListener(workspaceView, this.placeholder))
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
   }
-  
+
   private fun createErrorView(message: String): View {
     return LayoutDesignerErrorBinding.inflate(layoutInflater).let {
       it.root.text = message
       it.root
+    }
+  }
+
+  private fun setupView(view: IView) {
+    view.view.setOnTouchListener(WidgetTouchListener(view, requireContext()))
+    val fg = view.view.foreground
+    view.view.foreground =
+      if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(view.view.context)
+
+    if (view is IViewGroup) {
+      view.view.setOnDragListener(WidgetDragListener(view, placeholder))
+      view.addOnHierarchyChangeListener(
+        object : SingleOnHierarchyChangeListener() {
+          override fun onViewAdded(group: IViewGroup, view: IView) {
+            setupView(view)
+          }
+        }
+      )
     }
   }
 

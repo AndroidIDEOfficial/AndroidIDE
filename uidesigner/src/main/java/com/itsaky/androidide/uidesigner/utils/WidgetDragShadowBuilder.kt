@@ -15,27 +15,29 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.viewmodel
+package com.itsaky.androidide.uidesigner.utils
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import java.io.File
+import android.graphics.Point
+import android.view.View
 
-class WorkspaceViewModel : ViewModel() {
-  internal val _drawerOpened = MutableLiveData(false)
-  private val _file = MutableLiveData<File>()
-  
-  var file: File
-    get() = _file.value!!
-    set(value) {
-      _file.value = value
+/**
+ * Builds drag shadow for draggable widgets.
+ *
+ * @author Akash Yadav
+ */
+class WidgetDragShadowBuilder(view: View) : View.DragShadowBuilder(view) {
+  companion object {
+    const val TOUCH_Y_OFFSET = 0.3
+  }
+
+  override fun onProvideShadowMetrics(outShadowSize: Point, outShadowTouchPoint: Point) {
+    if (view != null) {
+      val width = view.width
+      val height = view.height
+      outShadowSize.set(width, height)
+      outShadowTouchPoint.set(width / 2, height + (height * TOUCH_Y_OFFSET).toInt())
+    } else {
+      super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint)
     }
-  
-  var drawerOpened : Boolean
-    get() = this._drawerOpened.value!!
-    set(value) {
-      this._drawerOpened.value = value
-    }
+  }
 }

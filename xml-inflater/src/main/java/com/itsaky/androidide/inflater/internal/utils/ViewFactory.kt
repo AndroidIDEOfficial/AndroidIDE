@@ -19,7 +19,11 @@ package com.itsaky.androidide.inflater.internal.utils
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
+import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.utils.ILogger
+import java.lang.reflect.Method
 
 /** @author Akash Yadav */
 object ViewFactory {
@@ -33,6 +37,31 @@ object ViewFactory {
     } catch (err: Throwable) {
       log.error(err)
       throw RuntimeException(err)
+    }
+  }
+  
+  fun generateLayoutParams(parent: ViewGroup) : LayoutParams {
+    return try {
+      var clazz: Class<in ViewGroup> = parent.javaClass
+      var method: Method?
+      while (true) {
+        try {
+          method = clazz.getDeclaredMethod("generateDefaultLayoutParams")
+          break
+        } catch (e: Throwable) {
+          /* ignored */
+        }
+      
+        clazz = clazz.superclass
+      }
+      if (method != null) {
+        method.isAccessible = true
+        return method.invoke(parent) as LayoutParams
+      }
+      log.error("Unable to create default params for view parent:", parent)
+      LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+    } catch (th: Throwable) {
+      throw InflateException("Unable to create layout params for parent: $parent", th)
     }
   }
 }

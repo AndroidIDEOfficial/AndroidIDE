@@ -17,14 +17,17 @@
 
 package com.itsaky.androidide.inflater.internal
 
+import android.graphics.RectF
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.IViewGroup.OnHierarchyChangeListener
 
 open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
 
   protected val children = mutableListOf<IView>()
+  protected val hierarchyChangeListeners = mutableListOf<OnHierarchyChangeListener>()
   override val childCount: Int
     get() = children.size
 
@@ -44,16 +47,16 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     this.children.add(idx, view)
     this.view.addView(view.view, idx)
     view.parent = this
+    notifyOnViewAdded(view)
   }
 
   override fun removeChild(view: IView) {
-    this.children.remove(view)
-    this.view.removeView(view.view)
+    removeInternal(view)
   }
 
   override fun removeChild(index: Int): IView {
     val existing = this.children.removeAt(index)
-    this.view.removeViewAt(index)
+    removeInternal(existing, false)
     return existing
   }
 
@@ -72,5 +75,75 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     for (child in children) {
       (child as ViewImpl).printHierarchy(builder, indent + 1)
     }
+  }
+
+  override fun computeViewIndex(x: Float, y: Float): Int {
+    val count = childCount
+    for (i in 0 until childCount) {
+      val child = this[i]
+      val rect = getViewRect(child)
+      if (rect.contains(x, y)) {
+        val top = topHalf(rect)
+        val bottom = bottomHalf(rect)
+        if (top.contains(x, y)) {
+          return 0.coerceAtLeast(i - 1)
+        } else if (bottom.contains(x, y)) {
+          return count.coerceAtMost(i + 1)
+        }
+      }
+    }
+    // If we don't find a suitable index, return the last index
+    return count
+  }
+  
+  override fun addOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
+    this.hierarchyChangeListeners.add(listener)
+  }
+  
+  override fun removeOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
+    this.hierarchyChangeListeners.remove(listener)
+  }
+  
+  protected open fun notifyOnViewAdded(child: IView) {
+    this.hierarchyChangeListeners.forEach {
+      it.onViewAdded(this, child)
+    }
+  }
+  
+  protected open fun notifyOnViewRemoved(child: IView) {
+    this.hierarchyChangeListeners.forEach {
+      it.onViewRemoved(this, child)
+    }
+  }
+  
+  private fun removeInternal(view: IView, removeFromList: Boolean = true) {
+    if (removeFromList) {
+      this.children.remove(view)
+    }
+    this.view.removeView(view.view)
+    view.parent = null
+    notifyOnViewRemoved(view)
+  }
+
+  private fun getViewRect(view: IView): RectF {
+    val v = view.view
+    val rect = RectF()
+    rect.left = v.left.toFloat()
+    rect.top = v.top.toFloat()
+    rect.right = rect.left + v.width
+    rect.bottom = rect.top + v.height
+    return rect
+  }
+
+  private fun topHalf(src: RectF): RectF {
+    val result = RectF(src)
+    result.bottom -= result.height() / 2
+    return src
+  }
+
+  private fun bottomHalf(src: RectF): RectF {
+    val result = RectF(src)
+    result.top += result.height() / 2
+    return src
   }
 }
