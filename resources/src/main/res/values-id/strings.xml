@@ -317,18 +317,18 @@
   <string name="build_status_in_progress">Build sedang berlangsung…</string>
   <string name="build_status_failed">Build gagal. Lihat output build untuk detail selengkapnya.</string>
   <string name="build_status_sucess">Build sukses</string>
-  <string name="msg_output_text_extraction_failed">Failed to get text from editor</string>
-  <string name="template_def_app_name">My Application</string>
-  <string name="err_invalid_data_by_intent">Intent returned invalid data</string>
-  <string name="msg_select_from_primary_storage">Select a directory from primary storage</string>
-  <string name="err_authority_not_allowed">Authority \'%s\' not allowed</string>
-  <string name="idepref_useIcu_title">Use ICU lib</string>
-  <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
+  <string name="msg_output_text_extraction_failed">Gagal mendapatkan teks dari editor</string>
+  <string name="template_def_app_name">Aplikasi saya</string>
+  <string name="err_invalid_data_by_intent">Intent mengembalikan data yang tidak valid</string>
+  <string name="msg_select_from_primary_storage">Pilih direktori dari penyimpanan utama</string>
+  <string name="err_authority_not_allowed">Otoritas \'%s\' tidak diizinkan</string>
+  <string name="idepref_useIcu_title">Gunakan ICU lib</string>
+  <string name="idepref_useIcu_summary">Gunakan perpustakaan ICU untuk menggunakan ambil tepi kata untuk pemilihan kata ketuk dua kali dan tekan lama.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
-  <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
-  <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
+  <string name="msg_swipe_for_files">Geser ke kiri untuk @@file@@.</string>
+  <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
+  <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
   <string name="btn_sponsor">Sponsor</string>
   <string name="btn_docs">Documentation</string>
