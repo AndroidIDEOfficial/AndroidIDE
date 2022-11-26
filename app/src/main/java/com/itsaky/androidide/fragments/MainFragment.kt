@@ -17,6 +17,7 @@ import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import java.io.File
+import com.itsaky.androidide.tasks.git.CloneGitTask
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
@@ -36,6 +37,8 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
       MainScreenAction(string.create_project, R.drawable.ic_add) { showCreateProject() }
     val openProject =
       MainScreenAction(string.msg_open_existing_project, R.drawable.ic_folder) { pickDirectory() }
+    val cloneGitRepository =
+      MainScreenAction(string.clone_git_repository, R.drawable.ic_git) { cloneGitRepo() }
     val openTerminal =
       MainScreenAction(string.btn_terminal, R.drawable.ic_terminal) {
         startActivity(Intent(requireActivity(), TerminalActivity::class.java))
@@ -53,7 +56,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
     binding!!.actions.adapter =
       MainActionsListAdapter(
-        listOf(createProject, openProject, openTerminal, preferences, docs, sponsor)
+        listOf(createProject, openProject, cloneGitRepository, openTerminal, preferences, docs, sponsor)
       )
   }
 
@@ -79,6 +82,11 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
   override fun openProject(root: File) {
     projectPath = root.absolutePath
     startActivity(Intent(requireActivity(), EditorActivity::class.java))
+  }
+
+  private fun cloneGitRepo() {
+    val cloneGitTask = CloneGitTask(requireActivity())
+    cloneGitTask.cloneRepo()
   }
 
   private fun gotoPreferences() {
