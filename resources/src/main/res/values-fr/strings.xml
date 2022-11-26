@@ -20,12 +20,12 @@
   <string name="share_with_friends">Partager avec des amis</string>
   <string name="ide_preferences">Préférences de l\'IDE</string>
   <string name="discussions_on_telegram">Discuter sur Telegram (anglais)</string>
-  <string name="official_tg_channel">Official Telegram Channel</string>
+  <string name="official_tg_channel">Channel Telegram Officiel</string>
   <string name="msg_empty_view">je n\'ai rien à vous montrez &#8230;</string>
   <string name="btn_terminal">Terminal</string>
   <string name="reset">Réinitialiser</string>
-  <string name="app_logs">App Logs</string>
-  <string name="ide_logs">IDE Logs</string>
+  <string name="app_logs">Logs App</string>
+  <string name="ide_logs">Logs IDE</string>
   <string name="label_splash_image">Splash image</string>
   <string name="get_started">Commencer</string>
   <!-- LSP, Diagnostics & Completions -->
@@ -102,15 +102,15 @@
   <string name="template_description_libgdx">Projet Jeu LibGDX, affiche une image comme example.</string>
   <string name="template_compose">Jetpack Compose</string>
   <string name="template_description_compose">Simple projet Jetpack Compose.</string>
-  <string name="template_navigation_tabs">Bottom Navigation Activity</string>
-  <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
+  <string name="template_navigation_tabs">Activité Bottom Navigation </string>
+  <string name="template_navigation_tabs_description">Créer une nouvelle activité avec le Bottom Navigation </string>
   <string name="template_tabs">Projet avec les Tabs</string>
-  <string name="template_tabs_description">Creates a new blank activity with tabs</string>
+  <string name="template_tabs_description">Créer un projet vide avec Tabs</string>
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Créez un nouveau projet avec une activité vide configuré pour utiliser JNI</string>
   <string name="template_no_activity">Pas d\'activité</string>
-  <string name="template_no_activity_description">Creates a new project without activity</string>
+  <string name="template_no_activity_description">Créer un nouveau projet sans activité </string>
   <string name="template_no_AndroidX">Sans AndroidX</string>
   <string name="template_description_noAndroidX">Créer un projet sans la librairie AndroidX</string>
   <!-- Files -->
@@ -148,7 +148,7 @@
   <string name="file_name">Nom du fichier</string>
   <string name="new_name">Nouveau nom</string>
   <string name="new_file">Nouveau fichier</string>
-  <string name="create_auto_layout">Create layout file automatically</string>
+  <string name="create_auto_layout">Créer un fichier layout automatiquement </string>
   <string name="new_java_class">Nouvelle class java</string>
   <string name="new_xml_resource">Nouvelle ressource XML</string>
   <string name="new_folder">Nouveau dossier</string>
@@ -181,7 +181,7 @@
   <string name="msg_failed_list_files">Échec lors de la liste des projets</string>
   <string name="msg_storage_denied">impossible de continuer sans les permissions du stockage</string>
   <string name="msg_storage_granted">Permissions du stockage données</string>
-  <string name="open_with">Open with...</string>
+  <string name="open_with">Ouvrir avec...</string>
   <!-- Code Editor -->
   <string name="undo">défaire</string>
   <string name="redo">refaire</string>
@@ -199,9 +199,9 @@
   <string name="idepref_editor_drawhexcolors_title">Afficher les couleurs hex</string>
   <string name="idepref_editor_drawhexcolors_summary">L\'éditeur doit-il afficher les couleurs hex ?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
-  <string name="idepref_editor_word_wrap_summary">Use wordwrap of the editor</string>
-  <string name="idepref_editor_use_magnifier_title">Enable Magnifier</string>
-  <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
+  <string name="idepref_editor_word_wrap_summary">Utiliser le Word Wrap de l\'éditeur </string>
+  <string name="idepref_editor_use_magnifier_title">Activer Magnifier</string>
+  <string name="idepref_editor_use_magnifier_summary">Agrandir le texte à la position du curseur lors de la sélection du texte dans l\'éditeur</string>
   <string name="idepref_editor_title">Éditeur</string>
   <string name="idepref_build_title">Compileur et lancements</string>
   <string name="title_open_projects">Ouvrir le dernier projet</string>
@@ -245,7 +245,7 @@
   <string name="msg_report_crash">Merci d\'ouvrir une nouvelle Issue sur Gitub avec l\'erreur ci-dessous (anglais): </string>
   <string name="msg_crash_report_hint">Cliquez sur le bouton ci dessous pour copier les logs et une ouvrir la page des issues.</string>
   <string name="msg_copy_report_action">Copier et signaler</string>
-  <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
+  <string name="msg_reading_bootstrap">Lecture de l\'archive bootstrap</string>
   <string name="msg_bootstrap_installation_error">Échec de l\'installation de Bootstrap avec l\'erreur suivante.</string>
   <string name="title_translations">Traductions</string>
   <string name="title_compiler_module_install">Installation des modules du compileur</string>
@@ -287,16 +287,16 @@
   <string name="msg_replacing">Replacement...</string>
   <string name="title_gradle_service_notification_ticker">Gradle Build Service démarré.</string>
   <string name="title_gradle_service_notification">Gradle build service</string>
-  <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
-  <string name="title_cancel_build">Cancel build</string>
+  <string name="msg_gradle_service_notification">Gradle Build Service d\'AndroidIDE fonctionne en arrière plan.</string>
+  <string name="title_cancel_build">Annuler compilation </string>
   <string name="title_warning">Warning</string>
-  <string name="msg_ndk_currently_unsupported">NDK is currently not officially supported. This template works only after you setup NDK</string>
-  <string name="msg_initializing_project">Initializing project</string>
-  <string name="msg_project_initialized">Project initialized</string>
-  <string name="msg_project_initialization_failed">Project initialization failed</string>
-  <string name="msg_project_not_initialized">Project is not initialized</string>
-  <string name="msg_running_task">Running task: \'%1$s\'</string>
-  <string name="msg_replacement">Replacement</string>
+  <string name="msg_ndk_currently_unsupported">Le NDK n\'est pas supporté officiellement actuellement. Cette template fonctionnera uniquement après avoir configuré le NDK</string>
+  <string name="msg_initializing_project">Initialisation du projet</string>
+  <string name="msg_project_initialized">Projet initialisé</string>
+  <string name="msg_project_initialization_failed">Échec de l\'Initialisation du Projet</string>
+  <string name="msg_project_not_initialized">Le projet n\'est pas initialisé</string>
+  <string name="msg_running_task">Tâche en cours: \'%1$s\'</string>
+  <string name="msg_replacement">Remplacement </string>
   <string name="title_sync_project">Sync project</string>
   <string name="wizard_error_name_empty">Name cannot be empty.</string>
   <string name="wizard_error_name_illegal">Name cannot contain illegal characters</string>
