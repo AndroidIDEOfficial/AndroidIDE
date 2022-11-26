@@ -11,10 +11,10 @@
   <string name="about_footer">AndroidIDE %1$s for %2$s</string>
   <string name="about_subtitle">बस, एक आईडीई एंड्रॉयड के लिए</string>
   <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
-  <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
-  <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
+  <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n AndroidIDE यहा से डाउनलोड करे https://androidide.com</string>
+  <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
   <string name="discuss_amp_help">चर्चा और मदद</string>
-  <string name="title_github">गीटहब</string>
+  <string name="title_github">GitHub</string>
   <string name="need_help">मदद की ज़रूरत है?</string>
   <string name="other">अन्य</string>
   <string name="share_with_friends">मित्रो के साथ शेयर करे</string>
@@ -27,25 +27,25 @@
   <string name="app_logs">एप लॉग्स</string>
   <string name="ide_logs">IDE लॉग्स</string>
   <string name="label_splash_image">स्प्लेश इमेज</string>
-  <string name="get_started">शुरु करे</string>
+  <string name="get_started">प्रारंभ करें</string>
   <!-- LSP, Diagnostics & Completions -->
-  <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ </string>
-  <string name="msg_performing_actions">सुधार कर रहे है &#8230;</string>
-  <string name="msg_api_info_since">एपीआई %d से उपलब्ध है</string>
-  <string name="msg_api_info_removed">एपीआई %d  में हटाया गया</string>
-  <string name="msg_api_info_deprecated">एपीआई %d में बहिष्कृत हो गया हे</string>
-  <string name="msg_finding_references">सन्दर्भ ढूंढे जा रहे है&#8230;</string>
-  <string name="msg_finding_definition">परिभासा ढूंढी जा रही है&#8230;</string>
-  <string name="msg_no_definition">परिभाषा नहीं मिलीा</string>
+  <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ</string>
+  <string name="msg_performing_actions">सुधार कर रहे है…</string>
+  <string name="msg_api_info_since">API %d से उपलब्ध है</string>
+  <string name="msg_api_info_removed">API %d में हटाया गया</string>
+  <string name="msg_api_info_deprecated">API %d में बहिष्कृत हो गया हे</string>
+  <string name="msg_finding_references">सन्दर्भ ढूंढे जा रहे है…</string>
+  <string name="msg_finding_definition">परिभासा ढूंढी जा रही है…</string>
+  <string name="msg_no_definition">परिभाषा नहीं मिली</string>
   <string name="msg_no_references">कोई सन्दर्भ नहीं मिला</string>
-  <string name="view_diags">डायग्नोस्टिक्स</string>
+  <string name="view_diags">विश्लेषण</string>
   <!-- Build Tools Installation -->
   <string name="title_installation_failed">इंस्टॉल करने में विफल रहा</string>
   <string name="get_ready_for_something_awesome">कुछ कमाल के लिए तैयार हो जाओ!</string>
   <string name="msg_picked_isnt_dir">चुनी गई फ़ाइल एक डायरेक्टरी नहीं है!</string>
   <string name="msg_pick_single_file">कृपया केवल एक डायरेक्टरी चुनें</string>
-  <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें &#8230;</string>
-  <string name="title_device_not_supported">डिवाइस सपोर्ट नहीं करता</string>
+  <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें…</string>
+  <string name="title_device_not_supported">डिवाइस समर्थित नहीं है</string>
   <string name="msg_device_not_supported">दुर्भाग्य से, आपका डिवाइस इस समय समर्थित नहीं है। असुविधा के लिए हमें खेद है.\n\nसमर्थित CPU ABIs: aarch64 और armeabi-v7a</string>
   <!-- Project Builder -->
   <string name="lint">लिंट</string>
