@@ -11,7 +11,7 @@ import android.app.Activity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import java.net.URL;
-import android.util.Log;
+import com.itsaky.androidide.utils.ILogger;
 import io.reactivex.Observer;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -96,20 +96,20 @@ public class CloneGitTask {
 						.subscribe(new Observer<String>() {
 							@Override
 							public void onSubscribe(Disposable disposable) {
-								Log.d(TAG, "onSubscribe: " + disposable);
+								ILogger.debug(TAG, "onSubscribe: " + disposable);
                                                                 mDisposable = disposable;
 
 							}
 
 							@Override
 							public void onNext(String value) {
-								Log.d(TAG, "onNext: " + value);
+								ILogger.debug(TAG, "onNext: " + value);
 
 							}
 
 							@Override
 							public void onError(Throwable e) {
-								Log.e(TAG, "onError: ", e);
+								ILogger.error(TAG, "onError: ", e);
 
 								progressDialog.dismiss();
 								alertDialog.dismiss();
@@ -139,7 +139,7 @@ public class CloneGitTask {
 
 							@Override
 							public void onComplete() {
-								Log.d(TAG, "onComplete: ");
+								ILogger.debug(TAG, "onComplete: ");
 								progressDialog.dismiss();
 
 								MaterialAlertDialogBuilder materialAlertDialogBuilder = DialogUtils.newMaterialDialogBuilder(
@@ -175,8 +175,8 @@ public class CloneGitTask {
 					.call();
 
 		} catch (GitAPIException e) {
-			System.out.println("Exception occurred while cloning repo");
-			e.printStackTrace();
+			System.out.println("Exception occurred while cloning repo");			
+                        e.printStackTrace();
 		}
 		return url;
 	}
