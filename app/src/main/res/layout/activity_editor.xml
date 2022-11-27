@@ -28,10 +28,10 @@
 
       <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/build_progress_indicator"
+        style="@style/AppTheme.ProgressIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:indicatorColor="@color/secondaryColor" />
+        android:indeterminate="true" />
 
       <com.itsaky.androidide.views.MaterialBanner
         android:id="@+id/syncBanner"
@@ -41,11 +41,11 @@
 
       <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
+        style="@style/AppTheme.TabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primaryDarkColor"
-        app:tabGravity="start"
-        style="@style/AppTheme.TabLayout"/>
+        app:tabGravity="start" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -27,8 +27,11 @@ object TaskExecutor {
 
   @JvmOverloads
   @JvmStatic
-  fun <R> executeAsync(callable: Callable<R>, callback: Callback<R>? = null) {
-    CompletableFuture.supplyAsync {
+  fun <R> executeAsync(
+    callable: Callable<R>,
+    callback: Callback<R>? = null
+  ): CompletableFuture<R?> {
+    return CompletableFuture.supplyAsync {
         try {
           return@supplyAsync callable.call()
         } catch (th: Throwable) {
@@ -41,8 +44,11 @@ object TaskExecutor {
 
   @JvmOverloads
   @JvmStatic
-  fun <R> executeAsyncProvideError(callable: Callable<R>, callback: CallbackWithError<R>? = null) {
-    CompletableFuture.supplyAsync {
+  fun <R> executeAsyncProvideError(
+    callable: Callable<R>,
+    callback: CallbackWithError<R>? = null
+  ): CompletableFuture<R?> {
+    return CompletableFuture.supplyAsync {
         try {
           return@supplyAsync callable.call()
         } catch (th: Throwable) {
@@ -64,5 +70,11 @@ object TaskExecutor {
   }
 }
 
-fun <R : Any?> executeAsync(callable: () -> R?, callback: (R?) -> Unit) =
+fun <R : Any?> executeAsync(callable: () -> R?, callback: (R?) -> Unit): CompletableFuture<R?> =
   TaskExecutor.executeAsync({ callable() }) { callback(it) }
+
+fun <R : Any?> executeAsyncProvideError(
+  callable: () -> R?,
+  callback: (R?, Throwable?) -> Unit
+): CompletableFuture<R?> =
+  TaskExecutor.executeAsyncProvideError({ callable() }) { result, error -> callback(result, error) }

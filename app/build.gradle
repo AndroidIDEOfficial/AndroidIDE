@@ -115,8 +115,6 @@ dependencies {
     implementation google.guava
     
     //Git
-    implementation git.rxjava
-    implementation git.rxandroid
     implementation git.jgit
 
     // AndroidX

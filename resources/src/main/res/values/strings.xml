@@ -497,13 +497,10 @@
   <string name="widget_relative_layout">RelativeLayout</string>
 
   <!-- GIT -->
-  <string name="hide">Hide</string>
-  <string name="clone">Clone</string>
-  <string name="clone_git_repository">Clone git repository</string>
-  <string name="git_clone_failed">Git clone failed</string>
-  <string name="git_clone_successful">Git clone successful</string>
-  <string name="cloning_repository">Cloning repository</string>
-  <string name="successfully_cloned">Successfully cloned</string>
-  <string name="repository_url">Repository URL</string>
-  <string name="not_found">not found</string>
+  <string name="git_clone">Clone</string>
+  <string name="git_clone_repo">Clone GIT repository</string>
+  <string name="git_clone_repo_url">Repository URL</string>
+  <string name="git_clone_in_progress">Cloning repository</string>
+  <string name="git_clone_success">GIT clone successful</string>
+  <string name="git_clone_failed">Failed to clone GIT repository</string>
 </resources>

@@ -78,6 +78,10 @@
     <item name="android:textColor">@color/primaryTextColor</item>
   </style>
 
+  <style name="AppTheme.ProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+    <item name="indicatorColor">@color/secondaryColor</item>
+  </style>
+
   <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.Material3.Chip.Filter">
     <item name="chipIconTint">@color/primaryIconColor</item>
     <item name="chipBackgroundColor">@color/primaryColor</item>
