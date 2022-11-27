@@ -49,7 +49,7 @@ public class CloneGitTask {
 		view = inflater.inflate(R.layout.layout_dialog_text_input, null);
 
 		textInputLayout = view.findViewById(R.id.name);
-		
+		textInputLayout.setHint(R.string.repository_url);
 		//materialdialog
 		MaterialAlertDialogBuilder materialAlertDialogBuilder = DialogUtils.newMaterialDialogBuilder(activity);
 		materialAlertDialogBuilder.setView(view);
