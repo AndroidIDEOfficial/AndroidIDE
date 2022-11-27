@@ -27,7 +27,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.util.concurrent.Callable;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.androidide.preferences.R;
 
 public class CloneGitTask {
 	Activity activity;
