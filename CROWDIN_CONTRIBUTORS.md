@@ -17,7 +17,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
       <br />
       <sub><b>Hussein Smith (smith8h)</b></sub>
       <br />
-      <sub><b>1564 words</b></sub>
+      <sub><b>2034 words</b></sub>
     </td>
     <td style="text-align:center; vertical-align: top;">
       <a href="https://crowdin.com/profile/andihasan97"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/dd13b7a47f084fab31e4a75c939eaf82.jpeg" /></a>
