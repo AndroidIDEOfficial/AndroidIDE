@@ -474,10 +474,10 @@
   <string name="widget_relative_layout">RelativeLayout</string>
   <!-- GIT -->
   <string name="git_clone">Clone</string>
-  <string name="git_clone_repo">Clone git repository</string>
-  <string name="git_clone_repo_url">Repository URL</string>
-  <string name="git_clone_in_progress">Cloning repository</string>
-  <string name="git_clone_success">Git clone successful</string>
-  <string name="git_clone_failed">Failed to clone git repository</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
+  <string name="git_clone_repo">Clone repositori git</string>
+  <string name="git_clone_repo_url">URL repositori</string>
+  <string name="git_clone_in_progress">Cloning repositori</string>
+  <string name="git_clone_success">Git clone berhasil</string>
+  <string name="git_clone_failed">Gagal mengkloning repositori git</string>
+  <string name="idepref_splitAttrIndentSize_summary">Jumlah spasi untuk indentasi untuk atribut terpisah.</string>
 </resources>
