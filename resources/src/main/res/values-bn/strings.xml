@@ -372,7 +372,6 @@
   <string name="idepref_maxLineWidth_title">সর্বোচ্চ লাইন প্রস্থ</string>
   <string name="idepref_maxLineWidth_summary">একটি লাইনে সর্বাধিক যতগুলি অক্ষর থাকা উচিত৷</string>
   <string name="idepref_splitAttrIndentSize_title">বিভক্ত অ্যাট্রিবিউট ইন্ডেন্ট সাইজ</string>
-  <string name="idepref_splitAttrIndentSize_summary">বিভক্ত অ্যাট্রিবিউট গুলির প্রথমে স্পেস-এর সংখ্যা৷</string>
   <string name="idepref_preservedNewLines_title">লাইন সংরক্ষণ</string>
   <string name="idepref_preservedNewLines_summary">সর্বোচ্চ সংখ্যক ক্রমাগত লাইন বিরতি যা সংরক্ষণ করা হবে৷</string>
   <string name="idepref_emptyElements_title">খালি উপাদানের আচরণ</string>
@@ -473,4 +472,11 @@
   <string name="widget_linear_layout_horz">LinearLayout (H)</string>
   <string name="widget_linear_layout_vert">LinearLayout (V)</string>
   <string name="widget_relative_layout">RelativeLayout</string>
+  <!-- GIT -->
+  <string name="git_clone">Clone</string>
+  <string name="git_clone_repo">Clone git repository</string>
+  <string name="git_clone_repo_url">Repository URL</string>
+  <string name="git_clone_in_progress">Cloning repository</string>
+  <string name="git_clone_success">Git clone successful</string>
+  <string name="git_clone_failed">Failed to clone git repository</string>
 </resources>
