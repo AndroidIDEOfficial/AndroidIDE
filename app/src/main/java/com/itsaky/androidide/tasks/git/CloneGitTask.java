@@ -81,7 +81,7 @@ public class CloneGitTask {
 						progressDialog.dismiss();
 					}
 				});
-				materialAlertDialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				materialAlertDialogBuilder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface dia, int which) {
@@ -133,7 +133,7 @@ public class CloneGitTask {
 									materialAlertDialogBuilder.setMessage(e.toString());
 								}
 								materialAlertDialogBuilder.setCancelable(true);
-								materialAlertDialogBuilder.setPositiveButton(R.string.okay, null);
+								materialAlertDialogBuilder.setPositiveButton(android.R.string.ok, null);
 								materialAlertDialogBuilder.show();
 							}
 
@@ -148,7 +148,7 @@ public class CloneGitTask {
 								materialAlertDialogBuilder
 										.setMessage(urlRepo + " " + activity.getString(R.string.successfully_cloned));
 								materialAlertDialogBuilder.setCancelable(true);
-								materialAlertDialogBuilder.setPositiveButton(R.string.okay, null);
+								materialAlertDialogBuilder.setPositiveButton(android.R.string.ok, null);
 								materialAlertDialogBuilder.show();
 
 							}
@@ -156,7 +156,7 @@ public class CloneGitTask {
 			}
 
 		});
-		materialAlertDialogBuilder.setNegativeButton(R.string.cancel, null);
+		materialAlertDialogBuilder.setNegativeButton(android.R.string.cancel, null);
 		alertDialog = materialAlertDialogBuilder.show();
 	}
 
