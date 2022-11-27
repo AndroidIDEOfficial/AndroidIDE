@@ -24,6 +24,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import androidx.core.view.ViewCompat
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 
@@ -55,7 +56,7 @@ class WidgetTouchListener(private val view: IView, context: Context) : OnTouchLi
               arrayOf(DesignerWorkspaceFragment.DRAGGING_WIDGET_MIME),
               dataItem
             )
-          touchedView!!.startDragAndDrop(data, shadow, view, 0)
+          ViewCompat.startDragAndDrop(touchedView!!, data, shadow, view, 0)
         }
       }
     )
