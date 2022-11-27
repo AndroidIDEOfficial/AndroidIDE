@@ -12,7 +12,7 @@
   <string name="about_subtitle">Basitçe, Android için bir IDE</string>
   <string name="msg_get_package_failed">Apk dosyası ayıklanamadı!</string>
   <string name="msg_share_app">AndroidIDE akıllı telefonunuzda Android uygulamaları oluşturmak içindir. Şunları destekler:\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Gelişmiş Java otomatik tamamlama\n4. XML otomatik tamamlama \n5. Kotlin desteği ve daha fazlası.\n \nAndroidIDE\'yi indir: https://androidide.com</string>
-  <string name="msg_need_help">Eğer AndroidIDE\'yi kullanırken sorunlar yaşıyorsan Telegram grubuna katıl ve sor.\n\nAynı zamanda e-postamıza öneri gönderebilirsin.</string>
+  <string name="msg_need_help">If you\'re facing issues while using AndroidIDE or with building Android Apps, you can join the Telegram Group ask for help there.\n\nYou can also send suggesstions on our email.</string>
   <string name="discuss_amp_help">Tartış &amp; yardım edin</string>
   <string name="title_github">GitHub</string>
   <string name="need_help">Yardım mı lazım?</string>
@@ -372,7 +372,6 @@
   <string name="idepref_maxLineWidth_title">Max line width</string>
   <string name="idepref_maxLineWidth_summary">The maximum number of characters a line should have.</string>
   <string name="idepref_splitAttrIndentSize_title">Split attributes indent size</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
   <string name="idepref_preservedNewLines_title">Preserved new lines</string>
   <string name="idepref_preservedNewLines_summary">The maximum number of continuous line breaks that should be preserved.</string>
   <string name="idepref_emptyElements_title">Empty elements behaviour</string>
@@ -473,4 +472,11 @@
   <string name="widget_linear_layout_horz">LinearLayout (H)</string>
   <string name="widget_linear_layout_vert">LinearLayout (V)</string>
   <string name="widget_relative_layout">RelativeLayout</string>
+  <!-- GIT -->
+  <string name="git_clone">Clone</string>
+  <string name="git_clone_repo">Clone git repository</string>
+  <string name="git_clone_repo_url">Repository URL</string>
+  <string name="git_clone_in_progress">Cloning repository</string>
+  <string name="git_clone_success">Git clone successful</string>
+  <string name="git_clone_failed">Failed to clone git repository</string>
 </resources>
