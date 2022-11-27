@@ -22,8 +22,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
-import com.itsaky.androidide.EditorActivity
-import java.util.function.Consumer
+import com.itsaky.androidide.services.InstallationResultReceiver
 
 /**
  * Handles result of APK installation.
@@ -33,14 +32,15 @@ import java.util.function.Consumer
 object InstallationResultHandler {
 
   private val log = ILogger.newInstance("InstallationResultHandler")
+
   private const val INSTALL_PACKAGE_REQ_CODE = 2304
   private const val INSTALL_PACKAGE_ACTION = "com.itsaky.androidide.installer.INSTALL_PACKAGE"
 
   @JvmStatic
   fun createEditorActivitySender(context: Context): IntentSender {
-    val intent = Intent(context, EditorActivity::class.java)
+    val intent = Intent(context, InstallationResultReceiver::class.java)
     intent.action = INSTALL_PACKAGE_ACTION
-    return PendingIntent.getActivity(
+    return PendingIntent.getBroadcast(
         context,
         INSTALL_PACKAGE_REQ_CODE,
         intent,
@@ -48,9 +48,9 @@ object InstallationResultHandler {
       )
       .intentSender
   }
-  
+
   @JvmStatic
-  fun onResult(context: Context?, intent: Intent?) : String? {
+  fun onResult(context: Context?, intent: Intent?): String? {
     if (context == null || intent == null || intent.action != INSTALL_PACKAGE_ACTION) {
       log.warn("Invalid broadcast received", "action=${intent?.action}")
       return null
@@ -62,7 +62,7 @@ object InstallationResultHandler {
           log.warn("Invalid intent received in broadcast")
           return null
         }
-  
+
     val packageName = extras.getString(PackageInstaller.EXTRA_PACKAGE_NAME)
     val status = extras.getInt(PackageInstaller.EXTRA_STATUS)
     val message = extras.getString(PackageInstaller.EXTRA_STATUS_MESSAGE)
