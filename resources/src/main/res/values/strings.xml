@@ -498,9 +498,9 @@
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>
-  <string name="git_clone_repo">Clone GIT repository</string>
+  <string name="git_clone_repo">Clone git repository</string>
   <string name="git_clone_repo_url">Repository URL</string>
   <string name="git_clone_in_progress">Cloning repository</string>
-  <string name="git_clone_success">GIT clone successful</string>
-  <string name="git_clone_failed">Failed to clone GIT repository</string>
+  <string name="git_clone_success">Git clone successful</string>
+  <string name="git_clone_failed">Failed to clone git repository</string>
 </resources>
