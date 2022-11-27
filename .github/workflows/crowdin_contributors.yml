@@ -1,0 +1,35 @@
+name: Crowdin Contributors Action
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  crowdin-contributors:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Generate Crowdin Contributors table
+      uses: andrii-bodnar/action-crowdin-contributors@0.0.1
+      with:
+        contributors_per_line: 8
+        max_contributors: 32
+        image_size: 64
+        min_words_contributed: 100
+      env:
+        CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+        CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        title: Update Crowdin Contributors table
+        body: By [action-crowdin-contributors](https://github.com/andrii-bodnar/action-crowdin-contributors) GitHub action
+        commit-message: Update Crowdin Contributors table
+        committer: Crowdin Bot <support+bot@crowdin.com>
+        branch: crowdin-contributors/patch
