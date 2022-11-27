@@ -26,7 +26,7 @@
   <string name="reset">রিসেট করুন</string>
   <string name="app_logs">App লগ</string>
   <string name="ide_logs">IDE লগ</string>
-  <string name="label_splash_image">Splash image</string>
+  <string name="label_splash_image">স্প্ল্যাশ ইমেজ</string>
   <string name="get_started">শুরু করুন</string>
   <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">দ্রুত সমাধান করতে অক্ষম</string>
@@ -49,13 +49,13 @@
   <string name="msg_device_not_supported">দুর্ভাগ্যবশত, আপনার ডিভাইসটি এই মুহূর্তে সমর্থিত নয়৷ অসুবিধার জন্য আমরা দুঃখিত৷\n\nসমর্থিত CPU ABIs: aarch64 এবং armeabi-v7a</string>
   <!-- Project Builder -->
   <string name="lint">লিন্ট</string>
-  <string name="lint_debug">lintDebug</string>
-  <string name="lint_release">lintRelease</string>
+  <string name="lint_debug">লিন্ট ডিবাগ</string>
+  <string name="lint_release">লিন্ট রিলিজ</string>
   <string name="build">বিল্ড</string>
-  <string name="build_debug">assembleDebug</string>
-  <string name="build_output">Build output</string>
-  <string name="build_release">assembleRelease</string>
-  <string name="lint_tasks">Lint tasks</string>
+  <string name="build_debug">অ্যাসেম্বেল বিভাগ</string>
+  <string name="build_output">বিল্ড আউটপুট</string>
+  <string name="build_release">অ্যাসেম্বেল রিলিজ</string>
+  <string name="lint_tasks">লিন্ট প্রক্রিয়াগুলি</string>
   <string name="clean_amp_build">পরিষ্কার করে বিল্ড করুন</string>
   <string name="clean_project">পরিষ্কার করুন</string>
   <string name="create_aab">AAB তৈরি করুন</string>
@@ -70,7 +70,7 @@
   <string name="title_install_apks">APK(গুলি) ইনস্টল করুন</string>
   <string name="title_clear_output">আউটপুট পরিস্কার করুন</string>
   <string name="run">চালান</string>
-  <string name="gradle">Gradle</string>
+  <string name="gradle">গ্রাডল</string>
   <string name="title_first_build">প্রথম বিল্ড</string>
   <string name="msg_first_build">আপনি AndroidIDE ইনস্টল করার পর এটিই প্রথমবার বিল্ড। প্রথম বিল্ডে সাধারণত সময় লাগে কারণ Gradle সমস্ত ডিপেনডেন্সি এবং প্লাগইন ডাউনলোড করে। এই প্রক্রিয়াটি প্রায় 10-15 মিনিট সময় নিতে পারে। কিন্তু এটি সম্পূর্ণরূপে আপনার নেটওয়ার্ক সংযোগের উপর নির্ভর করে।\n\nদয়া করে ধৈর্য ধরুন।…</string>
   <!-- Project -->
@@ -98,20 +98,20 @@
   <string name="template_description_navigation_drawer">AppCompat Toolbar, DrawerLayout and NavigationView সহ একটি প্রকল্প৷</string>
   <string name="template_empty">খালি প্রকল্প</string>
   <string name="template_navigation_drawer">নেভিগেশন ড্রয়ার প্রকল্প</string>
-  <string name="template_libgdx">LibGDX Game</string>
+  <string name="template_libgdx">LibGDX গেম</string>
   <string name="template_description_libgdx">LibGDX গেম প্রজেক্ট এর একটি উদাহরণ হিসেবে একটি ছবি রেন্ডার করার জন্য সেট আপ করা হয়েছে।</string>
-  <string name="template_compose">Jetpack Compose</string>
+  <string name="template_compose">জেটপ্যাক কম্পোজ</string>
   <string name="template_description_compose">বেসিক জেটপ্যাক কম্পোজ হ্যালো ওয়ার্ল্ড প্রজেক্ট।</string>
-  <string name="template_navigation_tabs">Bottom Navigation Activity</string>
+  <string name="template_navigation_tabs">বটম নেভিগেশন অ্যাক্টিভিটি</string>
   <string name="template_navigation_tabs_description">নীচে নেভিগেশন সহ একটি নতুন কার্যকলাপ তৈরি করে</string>
-  <string name="template_tabs">Tabbed Activity</string>
+  <string name="template_tabs">ট্যাবড এক্টিভিটি</string>
   <string name="template_tabs_description">ট্যাব সহ একটি নতুন ফাঁকা কার্যকলাপ তৈরি করে</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
+  <string name="template_fragment_and_viewmodel">ফ্রাগমেন্ট + ভিউ মডেল</string>
   <string name="template_cpp">নেটিভ C++</string>
   <string name="template_cpp_description">JNI ব্যবহার করার জন্য কনফিগার করা একটি খালি কার্যকলাপ সহ একটি নতুন প্রকল্প তৈরি করে</string>
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">AndroidX হীন</string>
   <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
   <!-- Files -->
   <string name="save">সেভ</string>
@@ -163,20 +163,20 @@
   <string name="copy_path">পাথ কপি করুন</string>
   <string name="rename_file">নাম পরিবর্তন</string>
   <string name="delete_file">ডিলিট</string>
-  <string name="file_options">File options</string>
+  <string name="file_options">ফাইল অপশনস্</string>
   <string name="action_closeAll">সব বন্ধ করুন</string>
   <string name="action_closeOthers">অন্যদের বন্ধ করুন</string>
   <string name="action_closeThis">এটি বন্ধ করুন</string>
   <string name="all_saved">সমস্ত ফাইল সংরক্ষিত!</string>
   <string name="msg_newfile_dest">গন্তব্য: %s/</string>
-  <string name="restype_drawable">Drawable</string>
-  <string name="restype_layout">Layout</string>
+  <string name="restype_drawable">ড্রয়েবল</string>
+  <string name="restype_layout">লেআউট</string>
   <string name="restype_menu">মেনু</string>
   <string name="restype_other">অন্যান্য</string>
   <string name="classtype_class">শ্রেণী</string>
   <string name="classtype_activity">ক্রিয়াকলাপ</string>
   <string name="classtype_interface">ইন্টারফেস</string>
-  <string name="classtype_enum">Enum</string>
+  <string name="classtype_enum">ইনাম</string>
   <string name="msg_checking_storage_permissions">সঞ্চয়স্থানের অনুমতি পরীক্ষা করা হচ্ছে</string>
   <string name="msg_failed_list_files">প্রকল্প ফাইল তালিকাভুক্ত করতে ব্যর্থ!</string>
   <string name="msg_storage_denied">সঞ্চয়স্থানের অনুমতি ছাড়া এগোনো যাবে না</string>
@@ -196,9 +196,9 @@
   <string name="idepref_editor_fontsize_summary">সম্পাদকের ফন্টের আকার</string>
   <string name="idepref_editor_paintingflags_title">অমুদ্রণযোগ্য অক্ষরগুলি</string>
   <string name="idepref_editor_paintingflags_summary">এডিটর দ্বারা কোন অমুদ্রণযোগ্য অক্ষরগুলি আঁকা উচিত তা চয়ন করুন</string>
-  <string name="idepref_editor_drawhexcolors_title">Draw hex color strings</string>
-  <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
-  <string name="idepref_editor_word_wrap_title">Word Wrap</string>
+  <string name="idepref_editor_drawhexcolors_title">হেক্স স্ট্রিং-এ রঙ আঁকুন</string>
+  <string name="idepref_editor_drawhexcolors_summary">এডিটর কী হেক্স স্ট্রিং-এ রঙ আঁকবে?</string>
+  <string name="idepref_editor_word_wrap_title">শব্দ মোড়ানো</string>
   <string name="idepref_editor_word_wrap_summary">সম্পাদকের wordwrap ব্যবহার করুন</string>
   <string name="idepref_editor_use_magnifier_title">ম্যাগনিফায়ার সক্ষম করুন</string>
   <string name="idepref_editor_use_magnifier_summary">এডিটরে পাঠ্য নির্বাচন করার সময় কার্সার অবস্থানে পাঠ্যকে বড় করুন</string>
@@ -306,7 +306,7 @@
   <string name="wizard_toolchain">C++ স্ট্যান্ডার্ড</string>
   <string name="next">পরবর্তী</string>
   <string name="exit">প্রস্থান করুন</string>
-  <string name="idepref_title_tpFix">JDK 11 tag pointers fix</string>
+  <string name="idepref_title_tpFix">JDK 11 ট্যাগ পয়েন্টার ফিক্স</string>
   <string name="idepref_msg_tpFix">Android 11-এ JDK 11-এর ট্যাগ পয়েন্টার সমস্যা সমাধান করতে libhook.so-তে LD_PRELOAD সেট করুন [বর্জন করা হয়েছে - JDK 17 ব্যবহার করুন]।</string>
   <string name="idepref_title_customGradleInstallation">কাস্টম গ্রেডল ইনস্টলেশন</string>
   <string name="idepref_msg_customGradleInstallation">বিল্ডের জন্য ব্যবহার করার জন্য একটি কাস্টম গ্রেডল ইনস্টলেশন নির্দিষ্ট করুন৷ এটি gradle-wrapper.properties-এ উল্লিখিত সংস্করণটিকে ওভাররাইড করে।</string>
