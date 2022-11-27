@@ -114,6 +114,9 @@ dependencies {
     implementation google.gson
     implementation google.guava
     
+    //Git
+    implementation git.jgit
+
     // AndroidX
     implementation androidx.splashscreen
     implementation androidx.annotation

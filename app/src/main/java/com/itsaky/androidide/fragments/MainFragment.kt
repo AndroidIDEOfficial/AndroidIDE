@@ -5,21 +5,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import com.blankj.utilcode.util.ThreadUtils
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.PreferencesActivity
 import com.itsaky.androidide.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.databinding.FragmentMainBinding
+import com.itsaky.androidide.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
+import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.utils.DialogUtils
+import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.toaster.toastError
+import com.itsaky.toaster.toastSuccess
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
+
+  private val log = ILogger.newInstance("MainFragment")
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -36,12 +51,14 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
       MainScreenAction(string.create_project, R.drawable.ic_add) { showCreateProject() }
     val openProject =
       MainScreenAction(string.msg_open_existing_project, R.drawable.ic_folder) { pickDirectory() }
+    val cloneGitRepository =
+      MainScreenAction(string.git_clone_repo, R.drawable.ic_git) { cloneGitRepo() }
     val openTerminal =
       MainScreenAction(string.btn_terminal, R.drawable.ic_terminal) {
         startActivity(Intent(requireActivity(), TerminalActivity::class.java))
       }
     val preferences =
-      MainScreenAction(R.string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
+      MainScreenAction(string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
     val sponsor =
       MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) {
         BaseApplication.getBaseInstance().openSponsors()
@@ -53,7 +70,15 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
     binding!!.actions.adapter =
       MainActionsListAdapter(
-        listOf(createProject, openProject, openTerminal, preferences, docs, sponsor)
+        listOf(
+          createProject,
+          openProject,
+          cloneGitRepository,
+          openTerminal,
+          preferences,
+          docs,
+          sponsor
+        )
       )
   }
 
@@ -81,11 +106,123 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     startActivity(Intent(requireActivity(), EditorActivity::class.java))
   }
 
+  private fun cloneGitRepo() {
+    val builder = DialogUtils.newMaterialDialogBuilder(requireContext())
+    val binding = LayoutDialogTextInputBinding.inflate(layoutInflater)
+    binding.name.setHint(string.git_clone_repo_url)
+
+    builder.setView(binding.root)
+    builder.setTitle(string.git_clone_repo)
+    builder.setCancelable(true)
+    builder.setPositiveButton(string.git_clone) { dialog, _ ->
+      dialog.dismiss()
+      val url = binding.name.editText?.text?.toString()
+      doClone(url)
+    }
+    builder.setNegativeButton(android.R.string.cancel, null)
+    builder.show()
+  }
+
+  private fun doClone(repo: String?) {
+    if (repo.isNullOrBlank()) {
+      log.warn("Unable to clone repo. Invalid repo URL : '$repo'")
+      return
+    }
+
+    var url = repo.trim()
+    if (!url.endsWith(".git")) {
+      url += ".git"
+    }
+
+    val builder = DialogUtils.newMaterialDialogBuilder(requireContext())
+    val binding = LayoutDialogProgressBinding.inflate(layoutInflater)
+
+    binding.message.visibility = View.VISIBLE
+
+    builder.setTitle(string.git_clone_in_progress)
+    builder.setMessage(url)
+    builder.setView(binding.root)
+    builder.setCancelable(false)
+
+    val repoName = url.substringAfterLast('/').substringBeforeLast(".git")
+    val targetDir = File(Environment.PROJECTS_DIR, repoName)
+
+    var git: Git? = null
+    val future =
+      executeAsync(
+        {
+          return@executeAsync Git.cloneRepository()
+            .setURI(url)
+            .setDirectory(targetDir)
+            .setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
+            .call()
+            .also { git = it }
+        },
+        {}
+      )
+
+    builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
+      iface.dismiss()
+      git?.close()
+      future.cancel(true)
+    }
+
+    val dialog = builder.show()
+
+    future.whenComplete { result, error ->
+      ThreadUtils.runOnUiThread {
+        dialog?.dismiss()
+        result?.close()
+        if (result == null || error != null) {
+          if (!future.isCancelled) {
+            showCloneError(error)
+          }
+        } else toastSuccess(string.git_clone_success)
+      }
+    }
+  }
+
+  private fun showCloneError(error: Throwable?) {
+    if (error == null) {
+      toastError(string.git_clone_failed)
+      return
+    }
+
+    val builder = DialogUtils.newMaterialDialogBuilder(requireContext())
+    builder.setTitle(string.git_clone_failed)
+    builder.setMessage(error.localizedMessage)
+    builder.setPositiveButton(android.R.string.ok, null)
+    builder.show()
+  }
+
   private fun gotoPreferences() {
     startActivity(Intent(requireActivity(), PreferencesActivity::class.java))
   }
 
   companion object {
     const val TAG = "MainFragmentTag"
+  }
+
+  // TODO(itsaky) : Improve this implementation
+  class GitCloneProgressMonitor(val progress: LinearProgressIndicator, val message: TextView) :
+    ProgressMonitor {
+
+    override fun start(totalTasks: Int) {
+      ThreadUtils.runOnUiThread { progress.max = totalTasks }
+    }
+
+    override fun beginTask(title: String?, totalWork: Int) {
+      ThreadUtils.runOnUiThread { message.text = title }
+    }
+
+    override fun update(completed: Int) {
+      ThreadUtils.runOnUiThread { progress.progress = completed }
+    }
+
+    override fun endTask() {}
+
+    override fun isCancelled(): Boolean {
+      return Thread.currentThread().isInterrupted
+    }
   }
 }
