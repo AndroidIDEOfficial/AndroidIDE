@@ -479,4 +479,5 @@
   <string name="git_clone_in_progress">Cloning repository</string>
   <string name="git_clone_success">Git clone successful</string>
   <string name="git_clone_failed">Failed to clone git repository</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
 </resources>
