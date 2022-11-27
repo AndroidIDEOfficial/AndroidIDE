@@ -12,7 +12,7 @@
   <string name="about_subtitle">बस, एक आईडीई एंड्रॉयड के लिए</string>
   <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
   <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n AndroidIDE यहा से डाउनलोड करे https://androidide.com</string>
-  <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
+  <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
   <string name="discuss_amp_help">चर्चा और मदद</string>
   <string name="title_github">GitHub</string>
   <string name="need_help">मदद की ज़रूरत है?</string>
@@ -372,7 +372,6 @@
   <string name="idepref_maxLineWidth_title">मैक्स लाइन विड्थ</string>
   <string name="idepref_maxLineWidth_summary">एक पंक्ति में वर्णों की अधिकतम संख्या चुनें।</string>
   <string name="idepref_splitAttrIndentSize_title">विभाजित ऐट्रिब्यूट्स का इंडेंट साइज</string>
-  <string name="idepref_splitAttrIndentSize_summary">विभाजित ऐट्रिब्यूट्स के लिए इंडेंट करने के लिए रिक्त स्थान की संख्या।</string>
   <string name="idepref_preservedNewLines_title">संरक्षित नई लाइनें</string>
   <string name="idepref_preservedNewLines_summary">निरंतर लाइन ब्रेक की अधिकतम संख्या जिसे संरक्षित किया जाना चाहिए।</string>
   <string name="idepref_emptyElements_title">खाली एलिमेंट्स का व्यवहार</string>
@@ -473,4 +472,11 @@
   <string name="widget_linear_layout_horz">LinearLayout (H)</string>
   <string name="widget_linear_layout_vert">LinearLayout (V)</string>
   <string name="widget_relative_layout">RelativeLayout</string>
+  <!-- GIT -->
+  <string name="git_clone">क्लोन</string>
+  <string name="git_clone_repo">Clone git repository</string>
+  <string name="git_clone_repo_url">Repository URL</string>
+  <string name="git_clone_in_progress">Cloning repository</string>
+  <string name="git_clone_success">Git clone successful</string>
+  <string name="git_clone_failed">Failed to clone git repository</string>
 </resources>
