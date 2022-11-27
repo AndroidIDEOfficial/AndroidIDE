@@ -83,6 +83,7 @@ import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
+import com.itsaky.androidide.events.InstallationResultEvent;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -127,6 +128,10 @@ import com.itsaky.androidide.xml.resources.ResourceTableRegistry;
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry;
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry;
 import com.itsaky.toaster.Toaster;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -189,6 +194,30 @@ public class EditorActivity extends IDEActivity
         }
       };
 
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  @SuppressWarnings("unused")
+  public void onInstallationResult(InstallationResultEvent event) {
+    final var intent = event.getIntent();
+    if (mBinding == null || isFinishing) {
+      return;
+    }
+    final var packageName = InstallationResultHandler.onResult(this, intent);
+    if (packageName != null) {
+      Snackbar.make(
+              mBinding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
+          .setAction(
+              string.yes,
+              v -> {
+                final var manager = getPackageManager();
+                final var launchIntent = manager.getLaunchIntentForPackage(packageName);
+                if (launchIntent != null) {
+                  startActivity(launchIntent);
+                }
+              })
+          .show();
+    }
+  }
+
   private final OnBackPressedCallback onBackPressedCallback =
       new OnBackPressedCallback(true) {
         @Override
@@ -206,6 +235,7 @@ public class EditorActivity extends IDEActivity
           }
         }
       };
+
   private boolean isFinishing = false;
 
   @SuppressLint("RestrictedApi")
@@ -921,9 +951,20 @@ public class EditorActivity extends IDEActivity
   }
 
   @Override
+  protected void onStart() {
+    super.onStart();
+    EventBus.getDefault().register(this);
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    EventBus.getDefault().unregister(this);
+  }
+
+  @Override
   protected void onPause() {
     super.onPause();
-
     final var frag = getFileTreeFragment();
     if (frag != null) {
       frag.saveTreeState();
@@ -933,7 +974,6 @@ public class EditorActivity extends IDEActivity
   @Override
   protected void onResume() {
     super.onResume();
-
     // Actions are cleared when the activity is paused to avoid holding references to the activity
     // So, when resumed, they should be registered and inflated again.
     EditorActivityActions.register(this);
@@ -973,26 +1013,6 @@ public class EditorActivity extends IDEActivity
     WidgetTableRegistry.getInstance().clear();
     mBinding = null;
     mViewModel = null;
-  }
-
-  @Override
-  protected void onNewIntent(final Intent intent) {
-    super.onNewIntent(intent);
-    final var packageName = InstallationResultHandler.onResult(this, intent);
-    if (packageName != null) {
-      Snackbar.make(
-              mBinding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-          .setAction(
-              string.yes,
-              v -> {
-                final var manager = getPackageManager();
-                final var launchIntent = manager.getLaunchIntentForPackage(packageName);
-                if (launchIntent != null) {
-                  startActivity(launchIntent);
-                }
-              })
-          .show();
-    }
   }
 
   public PackageInstaller.SessionCallback installationSessionCallback() {

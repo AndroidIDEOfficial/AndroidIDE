@@ -139,6 +139,7 @@ dependencies {
     implementation project (':common')
     implementation project (':editor')
     implementation project (':emulatorview')
+    implementation project (':eventbus')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
     implementation project (':build-tools:aaptcompiler')

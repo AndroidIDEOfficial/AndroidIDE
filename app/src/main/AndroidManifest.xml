@@ -96,6 +96,15 @@
         <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
       </intent-filter>
     </receiver>
+    <receiver
+      android:name=".services.InstallationResultReceiver"
+      android:enabled="true"
+      android:exported="true"
+      tools:ignore="ExportedReceiver">
+      <intent-filter>
+        <action android:name="com.itsaky.androidide.installer.INSTALL_PACKAGE" />
+      </intent-filter>
+    </receiver>
 
     <activity
       android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
