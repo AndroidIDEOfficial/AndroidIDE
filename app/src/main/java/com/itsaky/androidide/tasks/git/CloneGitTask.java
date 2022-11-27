@@ -27,13 +27,13 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.util.concurrent.Callable;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.DialogUtils;
+import com.itsaky.androidide.preferences.R;
 
 public class CloneGitTask {
 	Activity activity;
 	AlertDialog alertDialog;
 	private static final String TAG = "CloneGitTask";
 	TextInputLayout textInputLayout;
-	TextInputEditText textInputEditText;
 	URL uRL;
 	View view;
 	AlertDialog progressDialog;
@@ -46,11 +46,10 @@ public class CloneGitTask {
 	public void cloneRepo() {
 		//custom layout
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		view = inflater.inflate(R.layout.git_dialog_layout, null);
+		view = inflater.inflate(R.layout.layout_dialog_text_input, null);
 
-		textInputLayout = view.findViewById(R.id.textInputRepo);
-		textInputEditText = view.findViewById(R.id.textRepo);
-
+		textInputLayout = view.findViewById(R.id.name);
+		
 		//materialdialog
 		MaterialAlertDialogBuilder materialAlertDialogBuilder = DialogUtils.newMaterialDialogBuilder(activity);
 		materialAlertDialogBuilder.setView(view);
@@ -62,7 +61,7 @@ public class CloneGitTask {
 			public void onClick(DialogInterface dia, int which) {
 
 				//url
-				String urlRepo = textInputEditText.getText().toString();
+				String urlRepo = String.valueOf(textInputLayout.getEditText().getText());
 
 				//materialprogress dialog
 				LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -95,22 +94,17 @@ public class CloneGitTask {
 				createObservable().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 						.subscribe(new Observer<String>() {
 							@Override
-							public void onSubscribe(Disposable disposable) {
-								ILogger.debug(TAG, "onSubscribe: " + disposable);
+							public void onSubscribe(Disposable disposable) {			
                                                                 mDisposable = disposable;
-
 							}
 
 							@Override
 							public void onNext(String value) {
-								ILogger.debug(TAG, "onNext: " + value);
 
 							}
 
 							@Override
 							public void onError(Throwable e) {
-								ILogger.error(TAG, "onError: ", e);
-
 								progressDialog.dismiss();
 								alertDialog.dismiss();
 
@@ -138,8 +132,7 @@ public class CloneGitTask {
 							}
 
 							@Override
-							public void onComplete() {
-								ILogger.debug(TAG, "onComplete: ");
+							public void onComplete() {	
 								progressDialog.dismiss();
 
 								MaterialAlertDialogBuilder materialAlertDialogBuilder = DialogUtils.newMaterialDialogBuilder(
@@ -150,11 +143,9 @@ public class CloneGitTask {
 								materialAlertDialogBuilder.setCancelable(true);
 								materialAlertDialogBuilder.setPositiveButton(android.R.string.ok, null);
 								materialAlertDialogBuilder.show();
-
 							}
 						});
 			}
-
 		});
 		materialAlertDialogBuilder.setNegativeButton(android.R.string.cancel, null);
 		alertDialog = materialAlertDialogBuilder.show();
@@ -163,7 +154,7 @@ public class CloneGitTask {
 	public String run(String url) throws IOException {
 
 		try {
-			String urlRepo = textInputEditText.getText().toString();
+			String urlRepo = String.valueOf(textInputLayout.getEditText().getText());
 			uRL = new URL(urlRepo.toString());
 			String fileName = uRL.getFile();
 
