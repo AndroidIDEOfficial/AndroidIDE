@@ -473,11 +473,11 @@
   <string name="widget_linear_layout_vert">LinearLayout (V)</string>
   <string name="widget_relative_layout">RelativeLayout</string>
   <!-- GIT -->
-  <string name="git_clone">Clone</string>
-  <string name="git_clone_repo">Clone git repository</string>
-  <string name="git_clone_repo_url">Repository URL</string>
-  <string name="git_clone_in_progress">Cloning repository</string>
-  <string name="git_clone_success">Git clone successful</string>
-  <string name="git_clone_failed">Failed to clone git repository</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
+  <string name="git_clone">ক্লোন</string>
+  <string name="git_clone_repo">গিট রেপোসিটরি ক্লোন করুন</string>
+  <string name="git_clone_repo_url">রেপোসিটরি URL</string>
+  <string name="git_clone_in_progress">রেপোসিটরি ক্লোন করা হচ্ছে</string>
+  <string name="git_clone_success">গিট ক্লোন সফল হয়েছে</string>
+  <string name="git_clone_failed">গিট রেপোসিটরি ক্লোন করতে ব্যর্থ</string>
+  <string name="idepref_splitAttrIndentSize_summary">বিভক্ত অ্যাট্রিবিউট গুলির ইন্ডেন্ট করার জন্য স্পেস-এর সংখ্যা৷</string>
 </resources>
