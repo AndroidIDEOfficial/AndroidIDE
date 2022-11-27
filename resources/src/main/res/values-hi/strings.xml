@@ -474,9 +474,10 @@
   <string name="widget_relative_layout">RelativeLayout</string>
   <!-- GIT -->
   <string name="git_clone">क्लोन</string>
-  <string name="git_clone_repo">Clone git repository</string>
-  <string name="git_clone_repo_url">Repository URL</string>
-  <string name="git_clone_in_progress">Cloning repository</string>
-  <string name="git_clone_success">Git clone successful</string>
-  <string name="git_clone_failed">Failed to clone git repository</string>
+  <string name="git_clone_repo">Git रिपॉजिटरी क्लोन करें</string>
+  <string name="git_clone_repo_url">रिपॉजिटरी URL</string>
+  <string name="git_clone_in_progress">रिपॉजिटरी क्लोन हो रही है</string>
+  <string name="git_clone_success">Git क्लोन सफल हुआ</string>
+  <string name="git_clone_failed">Git रिपॉजिटरी क्लोन करने में विफल</string>
+  <string name="idepref_splitAttrIndentSize_summary">विभाजित ऐट्रिब्यूट्स के लिए इंडेंट करने के लिए रिक्त स्थान की संख्या।</string>
 </resources>
