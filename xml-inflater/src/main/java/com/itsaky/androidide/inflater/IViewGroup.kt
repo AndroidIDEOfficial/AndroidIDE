@@ -53,9 +53,8 @@ interface IViewGroup : IView {
    * Remove the child at the given index.
    *
    * @param index The index of the child to remove.
-   * @return The removed child.
    */
-  fun removeChild(index: Int): IView
+  fun removeChild(index: Int)
 
   /**
    * Get the child at the given index.

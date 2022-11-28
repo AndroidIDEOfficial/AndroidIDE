@@ -60,12 +60,12 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
         true
       }
       DragEvent.ACTION_DROP -> {
-        val index = view.indexOfChild(this.placeholder)
-        this.placeholder.removeFromParent()
-        
         val child =
           when (val data = event.localState) {
-            is IView -> data
+            is IView -> {
+              data.removeFromParent()
+              data
+            }
             is UiWidget ->
               data.createView(view.viewGroup.context, (view as ViewImpl).file).apply {
                 this.view.layoutParams =
@@ -75,10 +75,15 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
               }
             else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
           }
-        child.removeFromParent()
+
+        val index = view.indexOfChild(this.placeholder)
+        this.placeholder.removeFromParent()
+
         this.view.addChild(index, child)
+        this.view.onHighlightStateUpdated(false)
+
         child.onHighlightStateUpdated(false)
-        view.onHighlightStateUpdated(false)
+
         true
       }
       else -> false

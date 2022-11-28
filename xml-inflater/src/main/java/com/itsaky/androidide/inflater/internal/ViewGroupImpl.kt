@@ -51,13 +51,14 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override fun removeChild(view: IView) {
-    removeInternal(view)
+    this.view.removeView(view.view)
+    this.children.remove(view)
+    view.parent = null
+    notifyOnViewRemoved(view)
   }
 
-  override fun removeChild(index: Int): IView {
-    val existing = this.children.removeAt(index)
-    removeInternal(existing, false)
-    return existing
+  override fun removeChild(index: Int) {
+    removeChild(this.children[index])
   }
 
   override operator fun get(index: Int): IView {
@@ -65,7 +66,8 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override operator fun set(index: Int, view: IView): IView {
-    val existing = removeChild(index)
+    val existing = this.children[index]
+    removeChild(existing)
     addChild(index, view)
     return existing
   }
@@ -114,15 +116,6 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     this.hierarchyChangeListeners.forEach {
       it.onViewRemoved(this, child)
     }
-  }
-  
-  private fun removeInternal(view: IView, removeFromList: Boolean = true) {
-    if (removeFromList) {
-      this.children.remove(view)
-    }
-    this.view.removeView(view.view)
-    view.parent = null
-    notifyOnViewRemoved(view)
   }
 
   private fun getViewRect(view: IView): RectF {
