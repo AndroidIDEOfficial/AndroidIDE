@@ -12,7 +12,7 @@
   <string name="about_subtitle">Basitçe, Android için bir IDE</string>
   <string name="msg_get_package_failed">Apk dosyası ayıklanamadı!</string>
   <string name="msg_share_app">AndroidIDE akıllı telefonunuzda Android uygulamaları oluşturmak içindir. Şunları destekler:\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Gelişmiş Java otomatik tamamlama\n4. XML otomatik tamamlama \n5. Kotlin desteği ve daha fazlası.\n \nAndroidIDE\'yi indir: https://androidide.com</string>
-  <string name="msg_need_help">If you\'re facing issues while using AndroidIDE or with building Android Apps, you can join the Telegram Group ask for help there.\n\nYou can also send suggesstions on our email.</string>
+  <string name="msg_need_help">Eğer AndroidIDE\'yi kullanırken sorunlar yaşıyorsan veya uygulama inşa ederken, soeu sormak için Telegram Grubumuza katılabilirsin.\n\nVe yine öneriler için email gönderebilirsin.</string>
   <string name="discuss_amp_help">Tartış &amp; yardım edin</string>
   <string name="title_github">GitHub</string>
   <string name="need_help">Yardım mı lazım?</string>
@@ -103,13 +103,13 @@
   <string name="template_compose">Jetpack Compose</string>
   <string name="template_description_compose">Temel Jetpack Compose merhaba dünya projesi.</string>
   <string name="template_navigation_tabs">Alt Gezinme Etkinliği</string>
-  <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
-  <string name="template_tabs">Tabbed Activity</string>
-  <string name="template_tabs_description">Creates a new blank activity with tabs</string>
+  <string name="template_navigation_tabs_description">Al gezinti ile yeni bir etkinlik oluşturur</string>
+  <string name="template_tabs">Sekmeli etkinlik</string>
+  <string name="template_tabs_description">Sekmeler ile boş bir aktivite oluşturur</string>
   <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
-  <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
-  <string name="template_no_activity">No Activity</string>
+  <string name="template_cpp_description">JNI kullanacak şekilde yapılandırılmış bir Boş Etkinlik ile yeni bir proje oluşturur</string>
+  <string name="template_no_activity">Aktivite yok</string>
   <string name="template_no_activity_description">Creates a new project without activity</string>
   <string name="template_no_AndroidX">NoAndroidX</string>
   <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
