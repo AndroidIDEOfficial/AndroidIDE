@@ -69,7 +69,7 @@ dependencies {
     implementation common.jkotlin
     implementation xml.xercesImpl
     implementation xml.apis
-    implementation 'org.gradle:gradle-tooling-api:7.5.1'
+    implementation 'org.gradle:gradle-tooling-api:7.6'
     
     testImplementation project (path: ':build-tools:tooling-api-testing')
     testImplementation tests.junit
