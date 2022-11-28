@@ -75,7 +75,7 @@ dependencies {
     testImplementation tests.junit
     testImplementation tests.google_truth
     
-    runtimeOnly 'org.slf4j:slf4j-api:2.0.3'
+    runtimeOnly 'org.slf4j:slf4j-api:2.0.5'
 }
 
 compileKotlin {
