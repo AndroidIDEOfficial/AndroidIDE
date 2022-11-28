@@ -20,7 +20,7 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.content.Context
 import android.view.ViewGroup.LayoutParams
 import android.widget.Spinner
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -31,7 +31,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(Spinner::class)
+@ViewAdapter(Spinner::class)
 class SpinnerAttrAdapter : AbsSpinnerAttrAdapter() {
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<Spinner>(view, attribute) {

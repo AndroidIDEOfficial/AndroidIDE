@@ -18,7 +18,7 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.SeekBar
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 
@@ -27,7 +27,7 @@ import com.itsaky.androidide.inflater.IView
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(SeekBar::class)
+@ViewAdapter(SeekBar::class)
 class SeekBarAttrAdapter : AbsSeekBarAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {

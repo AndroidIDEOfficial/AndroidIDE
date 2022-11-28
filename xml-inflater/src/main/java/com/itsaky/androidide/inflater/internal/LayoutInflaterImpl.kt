@@ -192,7 +192,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ) {
     val parentView = parent.view as ViewGroup
     val adapter =
-      AttributeAdapterIndex.getAdapter(view.name)
+      ViewAdapterIndex.getAdapter(view.name)
         ?: throw InflateException("No attribute adapter found for view ${view.name}")
 
     view.view.layoutParams = generateLayoutParams(parentView)

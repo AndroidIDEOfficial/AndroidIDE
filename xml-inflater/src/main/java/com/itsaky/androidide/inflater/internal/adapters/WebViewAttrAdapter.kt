@@ -18,12 +18,12 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.webkit.WebView
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [WebView].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(WebView::class)
+@ViewAdapter(WebView::class)
 class WebViewAttrAdapter : AbsoluteLayoutAttrAdapter()

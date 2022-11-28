@@ -18,7 +18,7 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AbsoluteLayout
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [AbsoluteLayout].
@@ -26,5 +26,5 @@ import com.itsaky.androidide.annotations.inflater.AttributeAdapter
  * @author Akash Yadav
  */
 @Suppress("DEPRECATION")
-@AttributeAdapter(AbsoluteLayout::class)
+@ViewAdapter(AbsoluteLayout::class)
 open class AbsoluteLayoutAttrAdapter : ViewGroupAttrAdapter()

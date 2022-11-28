@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.internal.AttributeAdapterIndex.getAdapter
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams

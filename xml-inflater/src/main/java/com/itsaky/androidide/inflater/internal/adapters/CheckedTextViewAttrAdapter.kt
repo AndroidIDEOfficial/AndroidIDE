@@ -18,7 +18,7 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.CheckedTextView
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 
@@ -27,7 +27,7 @@ import com.itsaky.androidide.inflater.IView
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(CheckedTextView::class)
+@ViewAdapter(CheckedTextView::class)
 class CheckedTextViewAttrAdapter : TextViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {

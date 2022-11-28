@@ -88,7 +88,7 @@ constructor(
   }
 
   protected open fun applyAttribute(attribute: IAttribute) {
-    val adapter = AttributeAdapterIndex.getAdapter(name)
+    val adapter = ViewAdapterIndex.getAdapter(name)
     if (adapter == null) {
       log.warn("No attribute adapter found for view $name")
       return

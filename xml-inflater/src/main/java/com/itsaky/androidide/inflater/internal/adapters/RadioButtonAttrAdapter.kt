@@ -18,11 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.RadioButton
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [RadioButton].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(RadioButton::class) class RadioButtonAttrAdapter : CompoundButtonAttrAdapter()
+@ViewAdapter(RadioButton::class) class RadioButtonAttrAdapter : CompoundButtonAttrAdapter()

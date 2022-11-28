@@ -18,11 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.Button
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [Button].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(Button::class) open class ButtonAttrAdapter : TextViewAttrAdapter()
+@ViewAdapter(Button::class) open class ButtonAttrAdapter : TextViewAttrAdapter()

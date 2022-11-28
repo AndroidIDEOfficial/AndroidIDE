@@ -118,7 +118,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     }
   }
 
-  private fun getViewRect(view: IView): RectF {
+  protected open fun getViewRect(view: IView): RectF {
     val v = view.view
     val rect = RectF()
     rect.left = v.left.toFloat()

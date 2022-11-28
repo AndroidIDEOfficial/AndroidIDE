@@ -21,7 +21,7 @@ import android.content.Context
 import android.gesture.GestureOverlayView
 import android.view.ViewGroup.LayoutParams
 import com.blankj.utilcode.util.ReflectUtils
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(GestureOverlayView::class)
+@ViewAdapter(GestureOverlayView::class)
 open class GestureOverlayViewAttrAdapter : FrameLayoutAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {

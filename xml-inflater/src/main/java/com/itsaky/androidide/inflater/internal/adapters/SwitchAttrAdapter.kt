@@ -21,7 +21,7 @@ import android.content.Context
 import android.graphics.Typeface.DEFAULT
 import android.view.ViewGroup.LayoutParams
 import android.widget.Switch
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(Switch::class)
+@ViewAdapter(Switch::class)
 class SwitchAttrAdapter : CompoundButtonAttrAdapter() {
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<Switch>(view, attribute) {

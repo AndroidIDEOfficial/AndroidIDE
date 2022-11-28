@@ -27,4 +27,4 @@ import kotlin.reflect.KClass
  */
 @Target(CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class AttributeAdapter(val forView: KClass<out View>)
+annotation class ViewAdapter(val forView: KClass<out View>)

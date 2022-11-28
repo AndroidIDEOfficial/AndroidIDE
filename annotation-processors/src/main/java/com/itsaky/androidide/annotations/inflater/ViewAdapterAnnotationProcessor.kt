@@ -46,7 +46,7 @@ import javax.tools.Diagnostic.Kind.ERROR
 
 @Suppress("unused")
 @AutoService(Processor::class)
-class AttrAdapterAnnotationProcessor : AbstractProcessor() {
+class ViewAdapterAnnotationProcessor : AbstractProcessor() {
 
   private val adapterElement by lazy {
     processingEnv.elementUtils.getTypeElement(ADAPTER_BASE_CLASS)
@@ -62,16 +62,16 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
 
   companion object {
     const val ADAPTER_BASE_CLASS_PCK = "com.itsaky.androidide.inflater"
-    const val ADAPTER_BASE_CLASS_NAME = "IAttributeAdapter"
+    const val ADAPTER_BASE_CLASS_NAME = "IViewAdapter"
     const val ADAPTER_BASE_CLASS = "$ADAPTER_BASE_CLASS_PCK.$ADAPTER_BASE_CLASS_NAME"
 
     const val INDEX_PACKAGE_NAME = "com.itsaky.androidide.inflater.internal"
-    const val INDEX_CLASS_NAME = "AttributeAdapterIndex"
+    const val INDEX_CLASS_NAME = "ViewAdapterIndex"
     const val INDEX_MAP_FIELD = "adapterMap"
   }
 
   override fun getSupportedAnnotationTypes(): MutableSet<String> {
-    return mutableSetOf(AttributeAdapter::class.java.name)
+    return mutableSetOf(ViewAdapter::class.java.name)
   }
 
   override fun getSupportedSourceVersion(): SourceVersion {
@@ -85,11 +85,11 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     if (roundEnv.processingOver()) {
       return true
     }
-    roundEnv.getElementsAnnotatedWith(AttributeAdapter::class.java).forEach {
+    roundEnv.getElementsAnnotatedWith(ViewAdapter::class.java).forEach {
       if (it.kind != CLASS) {
         processingEnv.messager.printMessage(
           ERROR,
-          "@AttributeAdapter can only be used with classes. Used on $it"
+          "@ViewAdapter can only be used with classes. Used on $it"
         )
         return true
       }
@@ -111,7 +111,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     if (element.enclosingElement?.kind != PACKAGE || element !is TypeElement) {
       processingEnv.messager.printMessage(
         ERROR,
-        "@AttributeAdapter can only be used on top-level classes. Used on $element"
+        "@ViewAdapter can only be used on top-level classes. Used on $element"
       )
       return
     }
@@ -123,7 +123,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     if (constructors.size != 1) {
       processingEnv.messager.printMessage(
         ERROR,
-        "An attribute adapter must have only default constructor"
+        "A view adapter must have only default constructor"
       )
       return
     }
@@ -131,7 +131,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     if ((constructors.first() as ExecutableElement).parameters.isNotEmpty()) {
       processingEnv.messager.printMessage(
         ERROR,
-        "Attribute adapter constructor should not have any parameters"
+        "View adapter constructor should not have any parameters"
       )
       return
     }
@@ -142,7 +142,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     }
 
     val annotation =
-      element.getAnnotation(AttributeAdapter::class.java) ?: throw IllegalStateException()
+      element.getAnnotation(ViewAdapter::class.java) ?: throw IllegalStateException()
     val viewName = getViewName(annotation)
     indexAddStatements.addStatement(
       "\$L.put(\$S, new \$T())",
@@ -192,7 +192,7 @@ class AttrAdapterAnnotationProcessor : AbstractProcessor() {
     )
   }
 
-  private fun getViewName(annotation: AttributeAdapter): String {
+  private fun getViewName(annotation: ViewAdapter): String {
     return try {
       annotation.forView.qualifiedName
         ?: throw IllegalStateException("Cannot find type of $annotation")

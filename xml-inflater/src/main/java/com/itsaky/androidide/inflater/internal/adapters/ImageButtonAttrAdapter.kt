@@ -18,11 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.ImageButton
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [ImageButton].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(ImageButton::class) class ImageButtonAttrAdapter : ImageViewAttrAdapter()
+@ViewAdapter(ImageButton::class) class ImageButtonAttrAdapter : ImageViewAttrAdapter()

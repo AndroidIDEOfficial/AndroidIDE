@@ -18,11 +18,11 @@
 package com.itsaky.androidide.inflater
 
 /**
- * An attribute adapter handles the application and removal of attributes on a view.
+ * A view adapter handles the application and removal of attributes on a view.
  *
  * @author Akash Yadav
  */
-abstract class IAttributeAdapter : AbstractParser() {
+abstract class IViewAdapter : AbstractParser() {
 
   /**
    * Apply the given attribute to the given view.

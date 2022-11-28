@@ -31,9 +31,9 @@ import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
 import com.android.SdkConstants
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IAttributeAdapter
+import com.itsaky.androidide.inflater.IViewAdapter
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
@@ -45,8 +45,8 @@ import com.itsaky.androidide.inflater.internal.ViewImpl
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(forView = View::class)
-open class ViewAttrAdapter : IAttributeAdapter() {
+@ViewAdapter(forView = View::class)
+open class ViewAttrAdapter : IViewAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<View>(view, attribute) { file, context, layoutParams, _, name, value ->

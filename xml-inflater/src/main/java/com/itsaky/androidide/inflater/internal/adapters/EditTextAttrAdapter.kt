@@ -18,12 +18,12 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.EditText
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [EditText].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(EditText::class)
+@ViewAdapter(EditText::class)
 open class EditTextAttrAdapter : TextViewAttrAdapter()

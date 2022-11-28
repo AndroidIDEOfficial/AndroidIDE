@@ -18,11 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.CheckBox
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [CheckBox].
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(CheckBox::class) class CheckBoxAttrAdapter : CompoundButtonAttrAdapter()
+@ViewAdapter(CheckBox::class) class CheckBoxAttrAdapter : CompoundButtonAttrAdapter()

@@ -23,7 +23,7 @@ import android.view.ViewGroup.LayoutParams
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.blankj.utilcode.util.SizeUtils
-import com.itsaky.androidide.annotations.inflater.AttributeAdapter
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -34,7 +34,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-@AttributeAdapter(ListView::class)
+@ViewAdapter(ListView::class)
 class ListViewAttrAdapter : AbsListViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
