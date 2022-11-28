@@ -31,6 +31,6 @@ jobs:
       with:
         title: Update Crowdin Contributors table
         body: By [action-crowdin-contributors](https://github.com/andrii-bodnar/action-crowdin-contributors) GitHub action
-        commit-message: Update Crowdin Contributors table
+        commit-message: "chore: update crowdin contributors table"
         committer: Crowdin Bot <support+bot@crowdin.com>
         branch: crowdin-contributors/patch
