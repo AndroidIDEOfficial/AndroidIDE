@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.utils
+package com.itsaky.androidide.uidesigner.drag
 
 import android.annotation.SuppressLint
 import android.content.ClipData
