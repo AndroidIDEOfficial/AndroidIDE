@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.ILogger
 open class ViewImpl
 @JvmOverloads
 constructor(
-  val file: LayoutFile,
+  var file: LayoutFile,
   override val name: String,
   override val view: View,
   override val simpleName: String = name.simpleName(),

@@ -282,9 +282,10 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView {
     return try {
       val v = createViewInstance(widget.qualifiedName, parent.context)
-      val view = if (v is ViewGroup) {
-        ViewGroupImpl(currentLayoutFile, widget.qualifiedName, v)
-      } else ViewImpl(currentLayoutFile, widget.qualifiedName, v)
+      val view =
+        if (v is ViewGroup) {
+          ViewGroupImpl(currentLayoutFile, widget.qualifiedName, v)
+        } else ViewImpl(currentLayoutFile, widget.qualifiedName, v)
       return inflationEventListener?.onInterceptCreateView(view) ?: view
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)

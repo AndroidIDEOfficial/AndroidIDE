@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
@@ -31,6 +32,7 @@ import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
+import com.itsaky.androidide.inflater.InflationFinishEvent
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
@@ -40,6 +42,7 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
+import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.WidgetTouchListener
@@ -61,7 +64,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
   private val placeholder by lazy {
-    View(requireContext()).apply {
+    val view = View(requireContext()).apply {
       setBackgroundResource(R.drawable.bg_widget_drag_placeholder)
       layoutParams =
         ViewGroup.LayoutParams(
@@ -69,10 +72,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
           SizeUtils.dp2px(PLACEHOLDER_HEIGHT_DP)
         )
     }
+    PlaceholderView(view)
   }
 
   private val workspaceView by lazy {
-    UiViewGroup(LayoutFile(File(""), ""), "", binding!!.workspace)
+    UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
 
   companion object {
@@ -87,6 +91,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
       override fun onEvent(event: IInflationEvent<*>) {
         if (event is OnInflateViewEvent) {
           setupView(event.data)
+        }
+        if (event is InflationFinishEvent && event.data.isNotEmpty()) {
+          val file = (event.data[0] as ViewImpl).file
+          workspaceView.file = file
+          placeholder.file = file
         }
       }
 
@@ -148,7 +157,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     val fg = view.view.foreground
     view.view.foreground =
       if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(view.view.context)
-    
+
     if (view is IViewGroup) {
       setupViewGroup(view as UiViewGroup)
     }

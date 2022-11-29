@@ -22,33 +22,25 @@ import android.view.View
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.models.UiWidget
-import java.io.File
 
 /**
  * Listens for drag events in the given view group.
  *
  * @author Akash Yadav
  */
-internal class WidgetDragListener(val view: UiViewGroup, private val placeholderView: View) :
+internal class WidgetDragListener(val view: UiViewGroup, private val placeholder: IView) :
   View.OnDragListener {
-
-  private val placeholder by lazy {
-    UiView(LayoutFile(File(""), ""), "", placeholderView).also {
-      it.includeInIndexComputation = false
-    }
-  }
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
     return when (event.action) {
       DragEvent.ACTION_DRAG_STARTED -> {
-        event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME)
+        event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) && event.localState != this.view
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
@@ -58,9 +50,6 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
         placeholder.removeFromParent()
         val state = event.localState
         if (state is UiView) {
-          if (state == this.view) {
-            return false
-          }
           state.includeInIndexComputation = false
         }
         val index = view.computeViewIndex(event.x, event.y)
@@ -99,6 +88,10 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
           child.includeInIndexComputation = true
         }
 
+        true
+      }
+      DragEvent.ACTION_DRAG_ENDED -> {
+        this.placeholder.removeFromParent()
         true
       }
       else -> false

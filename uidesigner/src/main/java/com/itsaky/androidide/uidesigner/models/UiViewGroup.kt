@@ -27,6 +27,7 @@ import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * Extension of [IView] for the UI Designer.
@@ -113,8 +114,8 @@ internal class UiViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
 
   private fun findNearestChild(x: Float, y: Float, vertical: Boolean = true): Pair<IView, Int>? {
     for (i in 0 until childCount) {
-      val child = get(i) as UiView
-      if (!child.includeInIndexComputation) {
+      val child = get(i)
+      if (child is CommonUiView && !child.includeInIndexComputation) {
         continue
       }
       val rect = getViewRect(child)
