@@ -20,13 +20,13 @@
   <string name="share_with_friends">Поделиться с друзьями</string>
   <string name="ide_preferences">Настройки IDE</string>
   <string name="discussions_on_telegram">Обсуждение в Telegram</string>
-  <string name="official_tg_channel">Official Telegram Channel</string>
+  <string name="official_tg_channel">Официальный канал в Telegram</string>
   <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
   <string name="btn_terminal">Терминал</string>
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
   <string name="ide_logs">Логи IDE</string>
-  <string name="label_splash_image">Splash image</string>
+  <string name="label_splash_image">Всплывающее изображение</string>
   <string name="get_started">Давайте начнём!</string>
   <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">Невозможно применить быстрое решение</string>
@@ -111,8 +111,8 @@
   <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
   <string name="template_no_activity">Проект без активности</string>
   <string name="template_no_activity_description">Создаёт новый проект без активности</string>
-  <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_no_AndroidX">Без AndroidX</string>
+  <string name="template_description_noAndroidX">Создаёт новый проект без библиотеки AndroidX</string>
   <!-- Files -->
   <string name="save">Сохранить</string>
   <string name="menu_find">Найти</string>
@@ -304,10 +304,10 @@
   <string name="wizard_language">Язык проекта</string>
   <string name="wizard_loading">Загрузка шаблонов&#8230;</string>
   <string name="wizard_toolchain">Стандартный C++</string>
-  <string name="next">Next</string>
+  <string name="next">Далее</string>
   <string name="exit">Выход</string>
   <string name="idepref_title_tpFix">Исправление указателей тегов JDK 11</string>
-  <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочитаемо использовать JDK 17].</string>
+  <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочтительнее использовать JDK 17].</string>
   <string name="idepref_title_customGradleInstallation">Пользовательская установка Gradle</string>
   <string name="idepref_msg_customGradleInstallation">Укажите пользовательскую установку Gradle для использования при сборке. Это ПЕРЕОПРЕДЕЛЯЕТ версию, указанную в gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">Путь установки Gradle</string>
