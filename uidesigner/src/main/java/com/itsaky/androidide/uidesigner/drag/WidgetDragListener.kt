@@ -58,6 +58,9 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
         placeholder.removeFromParent()
         val state = event.localState
         if (state is UiView) {
+          if (state == this.view) {
+            return false
+          }
           state.includeInIndexComputation = false
         }
         val index = view.computeViewIndex(event.x, event.y)
