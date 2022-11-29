@@ -42,8 +42,6 @@ constructor(
 
   private var fg: Drawable? = null
   private var touched: Drawable? = null
-  
-  var includeInIndexComputation = true
 
   internal val attributes = mutableListOf<IAttribute>()
 

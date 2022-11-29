@@ -17,14 +17,15 @@
 
 package com.itsaky.androidide.uidesigner.models
 
-import android.view.ViewGroup
+import android.view.View
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.SingleChildViewGroup
+import com.itsaky.androidide.inflater.internal.ViewImpl
 
 /**
- * Root view includes the inflated XML layout.
+ * Extension of [IView] for the UI Designer.
  *
  * @author Akash Yadav
  */
-class RootViewImpl(file: LayoutFile, name: String, view: ViewGroup) :
-  SingleChildViewGroup(file, name, view)
+internal open class UiView(file: LayoutFile, name: String, view: View) :
+  ViewImpl(file, name, view), CommonUiView by CommonUiViewImpl()

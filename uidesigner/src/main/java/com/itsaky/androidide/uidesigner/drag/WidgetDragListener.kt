@@ -22,11 +22,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
+import com.itsaky.androidide.uidesigner.models.UiView
+import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.models.UiWidget
 import java.io.File
 
@@ -35,10 +36,14 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class WidgetDragListener(val view: IViewGroup, private val placeholderView: View) :
+internal class WidgetDragListener(val view: UiViewGroup, private val placeholderView: View) :
   View.OnDragListener {
 
-  private val placeholder by lazy { ViewImpl(LayoutFile(File(""), ""), "", placeholderView).also { it.includeInIndexComputation = false } }
+  private val placeholder by lazy {
+    UiView(LayoutFile(File(""), ""), "", placeholderView).also {
+      it.includeInIndexComputation = false
+    }
+  }
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
     return when (event.action) {
@@ -52,7 +57,7 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
         }
         placeholder.removeFromParent()
         val state = event.localState
-        if (state is ViewImpl) {
+        if (state is UiView) {
           state.includeInIndexComputation = false
         }
         val index = view.computeViewIndex(event.x, event.y)
@@ -71,7 +76,7 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
               data
             }
             is UiWidget ->
-              data.createView(view.viewGroup.context, (view as ViewImpl).file).apply {
+              data.createView(view.viewGroup.context, view.file).apply {
                 this.view.layoutParams =
                   generateLayoutParams(this@WidgetDragListener.view.viewGroup)
                 val adapter = getAdapter(this.name)
@@ -87,7 +92,7 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
         this.view.onHighlightStateUpdated(false)
 
         child.onHighlightStateUpdated(false)
-        if (child is ViewImpl) {
+        if (child is UiView) {
           child.includeInIndexComputation = true
         }
 

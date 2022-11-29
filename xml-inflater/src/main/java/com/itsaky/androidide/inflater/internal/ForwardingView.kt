@@ -24,4 +24,4 @@ import com.itsaky.androidide.inflater.IView
  *
  * @author Akash Yadav
  */
-class ForwardingView(val src: IView) : IView by src
+open class ForwardingView(protected open val src: IView) : IView by src

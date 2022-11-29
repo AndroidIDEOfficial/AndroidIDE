@@ -33,7 +33,7 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
  *
  * @author Akash Yadav
  */
-class WidgetTouchListener(private val view: IView, context: Context) : OnTouchListener {
+internal class WidgetTouchListener(private val view: IView, context: Context) : OnTouchListener {
 
   private var touchedView: View? = null
 

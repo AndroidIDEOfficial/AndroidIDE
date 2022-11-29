@@ -83,93 +83,6 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     }
   }
 
-  override fun computeViewIndex(x: Float, y: Float): Int {
-    if (childCount == 0) {
-      return 0
-    }
-    val adapter =
-      ViewAdapterIndex.getAdapter(name) as? IViewGroupAdapter
-        ?: throw IllegalStateException("No view adapter for '$name'")
-    return when (adapter.getLayoutBehavior(this)) {
-      TOP_LEFT -> childCount
-      VERTICAL -> computeViewIndexVertically(x, y)
-      HORIZONTAL -> computeViewIndexHorizontally(x, y)
-    }
-  }
-
-  private fun computeViewIndexHorizontally(x: Float, y: Float): Int {
-    get(0).apply {
-      val rect = getViewRect(this)
-      if (x < rect.left) {
-        return 0
-      }
-    }
-    get(childCount - 1).apply {
-      val rect = getViewRect(this)
-      if (x > rect.right) {
-        return childCount
-      }
-    }
-    val (child, index) = findNearestChild(x, y, false) ?: return childCount
-    val rect = getViewRect(child)
-    val mid = rect.left + (rect.width() / 2)
-    val left = RectF(rect).apply { this.right = mid - 10 }
-    val right = RectF(rect).apply { this.left = mid + 10 }
-    if (x > left.left && x < left.right) {
-      return index - 1
-    }
-    if (x > right.left && x < right.right) {
-      return index + 1
-    }
-    return index
-  }
-
-  private fun computeViewIndexVertically(x: Float, y: Float): Int {
-    get(0).apply {
-      val rect = getViewRect(this)
-      if (y < rect.top) {
-        return 0
-      }
-    }
-    get(childCount - 1).apply {
-      val rect = getViewRect(this)
-      if (y > rect.bottom) {
-        return childCount
-      }
-    }
-    val (child, index) = findNearestChild(x, y, true) ?: return childCount
-    val rect = getViewRect(child)
-    val mid = rect.top + (rect.height() / 2)
-    val top = RectF(rect).apply { this.bottom = mid - 10 }
-    val bottom = RectF(rect).apply { this.top = mid + 10 }
-    if (y > top.top && y < top.bottom) {
-      return index - 1
-    }
-    if (y > bottom.top && y < bottom.bottom) {
-      return index + 1
-    }
-    return index
-  }
-
-  private fun findNearestChild(x: Float, y: Float, vertical: Boolean = true): Pair<IView, Int>? {
-    for (i in 0 until childCount) {
-      val child = get(i) as ViewImpl
-      if (!child.includeInIndexComputation) {
-        continue
-      }
-      val rect = getViewRect(child)
-      if (vertical && (y > rect.top && y < rect.bottom)) {
-        return child to i
-      }
-
-      if (!vertical && (x > rect.left && x < rect.right)) {
-        return child to i
-      }
-    }
-
-    return null
-  }
-
   override fun addOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
     this.hierarchyChangeListeners.add(listener)
   }
@@ -184,27 +97,5 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
 
   protected open fun notifyOnViewRemoved(child: IView) {
     this.hierarchyChangeListeners.forEach { it.onViewRemoved(this, child) }
-  }
-
-  protected open fun getViewRect(view: IView): RectF {
-    val v = view.view
-    val rect = RectF()
-    rect.left = v.left.toFloat()
-    rect.top = v.top.toFloat()
-    rect.right = rect.left + v.width
-    rect.bottom = rect.top + v.height
-    return rect
-  }
-
-  private fun topHalf(src: RectF): RectF {
-    val result = RectF(src)
-    result.bottom -= result.height() / 2
-    return src
-  }
-
-  private fun bottomHalf(src: RectF): RectF {
-    val result = RectF(src)
-    result.top += result.height() / 2
-    return src
   }
 }

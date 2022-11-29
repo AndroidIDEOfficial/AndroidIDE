@@ -26,18 +26,22 @@ import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
+import com.itsaky.androidide.inflater.IInflationEvent
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewGroupImpl
+import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
+import com.itsaky.androidide.uidesigner.models.UiView
+import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
@@ -68,7 +72,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   }
 
   private val workspaceView by lazy {
-    object : ViewGroupImpl(LayoutFile(File(""), ""), "", binding!!.workspace) {}
+    UiViewGroup(LayoutFile(File(""), ""), "", binding!!.workspace)
   }
 
   companion object {
@@ -79,9 +83,19 @@ class DesignerWorkspaceFragment : BaseFragment() {
   }
 
   private val inflateListener by lazy {
-    IInflateEventsListener { event ->
-      if (event is OnInflateViewEvent) {
-        setupView(event.data)
+    object : IInflateEventsListener {
+      override fun onEvent(event: IInflationEvent<*>) {
+        if (event is OnInflateViewEvent) {
+          setupView(event.data)
+        }
+      }
+
+      override fun onInterceptCreateView(view: IView): IView {
+        view as ViewImpl
+        if (view is IViewGroup) {
+          return UiViewGroup(view.file, view.name, view.viewGroup)
+        }
+        return UiView(view.file, view.name, view.view)
       }
     }
   }
@@ -134,17 +148,21 @@ class DesignerWorkspaceFragment : BaseFragment() {
     val fg = view.view.foreground
     view.view.foreground =
       if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(view.view.context)
-
+    
     if (view is IViewGroup) {
-      view.view.setOnDragListener(WidgetDragListener(view, placeholder))
-      view.addOnHierarchyChangeListener(
-        object : SingleOnHierarchyChangeListener() {
-          override fun onViewAdded(group: IViewGroup, view: IView) {
-            setupView(view)
-          }
-        }
-      )
+      setupViewGroup(view as UiViewGroup)
     }
+  }
+
+  private fun setupViewGroup(viewGroup: UiViewGroup) {
+    viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder))
+    viewGroup.addOnHierarchyChangeListener(
+      object : SingleOnHierarchyChangeListener() {
+        override fun onViewAdded(group: IViewGroup, view: IView) {
+          setupView(view as UiView)
+        }
+      }
+    )
   }
 
   fun setupFromBundle(bundle: Bundle?) {

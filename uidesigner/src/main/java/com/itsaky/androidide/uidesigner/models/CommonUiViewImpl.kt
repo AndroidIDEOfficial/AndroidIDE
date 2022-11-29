@@ -15,13 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater
-
-import com.itsaky.androidide.inflater.IViewGroup
+package com.itsaky.androidide.uidesigner.models
 
 /**
- * An [IViewGroup] implementation that forwards all calls to [src].
+ * Implementation of [CommonUiView].
  *
  * @author Akash Yadav
  */
-open class ForwardingViewGroup(val src: IViewGroup) : IViewGroup by src
+class CommonUiViewImpl : CommonUiView {
+  override var includeInIndexComputation: Boolean = true
+}

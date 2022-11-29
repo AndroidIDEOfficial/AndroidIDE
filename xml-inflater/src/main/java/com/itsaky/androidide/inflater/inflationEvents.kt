@@ -22,7 +22,7 @@ package com.itsaky.androidide.inflater
  *
  * @author Akash Yadav
  */
-fun interface IInflateEventsListener {
+interface IInflateEventsListener {
 
   /**
    * Called when an event occurs. The [event] parameter contains more information about the event.
@@ -30,6 +30,15 @@ fun interface IInflateEventsListener {
    * @param event The event.
    */
   fun onEvent(event: IInflationEvent<*>)
+
+  /**
+   * Allows the listener to intercept the view creation event and return view instance of their own.
+   *
+   * @param view The view that was created. The properties of this view is not expected to be
+   * modified (see [OnInflateViewEvent] instead).
+   * @return The view that should replace the [view] instance.
+   */
+  fun onInterceptCreateView(view: IView): IView = view
 }
 
 /**

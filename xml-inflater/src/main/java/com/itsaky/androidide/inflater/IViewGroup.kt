@@ -88,15 +88,6 @@ interface IViewGroup : IView {
   }
 
   /**
-   * Finds the index of the view based on the touch location.
-   *
-   * @param x The x coordinate.
-   * @param y The y coordinate.
-   * @return The index where the new child should be added. This index must be valid.
-   */
-  fun computeViewIndex(x: Float, y: Float): Int
-
-  /**
    * Adds the given hierarchy change listener.
    *
    * @param listener The listener to add.
