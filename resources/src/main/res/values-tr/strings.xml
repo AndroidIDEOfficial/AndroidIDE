@@ -35,7 +35,7 @@
   <string name="msg_api_info_removed">API %d \'den kaldırıldı</string>
   <string name="msg_api_info_deprecated">API %d\'de kullanımdan kaldırıldı</string>
   <string name="msg_finding_references">Referanslar aranıyor…</string>
-  <string name="msg_finding_definition">Tanım bulunuyor…</string>
+  <string name="msg_finding_definition">Tanım aranıyor…</string>
   <string name="msg_no_definition">Tanım bulunamadı</string>
   <string name="msg_no_references">Referanslar bulunamadı</string>
   <string name="view_diags">Teşhisler</string>
