@@ -479,5 +479,5 @@
   <string name="git_clone_in_progress">نسخ مشروع Git...</string>
   <string name="git_clone_success">تم نسخ مشروع Git بنجاح</string>
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
+  <string name="idepref_splitAttrIndentSize_summary">عدد المسافات المراد إضافتها لسمات التقسيم.</string>
 </resources>
