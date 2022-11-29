@@ -18,25 +18,18 @@
 package com.itsaky.androidide.inflater
 
 /**
- * Handles logic for applying attributes to a view.
+ * Handles logic for things related to [IViewGroup].
  *
  * @author Akash Yadav
  */
-abstract class IViewAdapter : AbstractParser() {
+interface IViewGroupAdapter {
 
   /**
-   * Apply the given attribute to the given view.
+   * Get the layout behavior for the given view group and the view. Implementations must take the
+   * attributes of the view group into account.
    *
-   * @param view The view to which the attribute must be applied.
-   * @param attribute The attribute to apply.
-   * @return Whether the attribute was applied or not.
+   * @param group The view group whose layout behavior should be returned.
+   * @return The layout behavior.
    */
-  abstract fun apply(view: IView, attribute: IAttribute): Boolean
-
-  /**
-   * Apply the basic attributes to a view so that it could be rendered.
-   *
-   * @param view The view to apply basic attributes to.
-   */
-  abstract fun applyBasic(view: IView)
+  fun getLayoutBehavior(group: IViewGroup): LayoutBehavior
 }

@@ -18,25 +18,21 @@
 package com.itsaky.androidide.inflater
 
 /**
- * Handles logic for applying attributes to a view.
+ * Represents how an [IViewGroup] lays its children. This is used to determine the position of the
+ * view that the user drags in the UI Designer's workspace.
  *
  * @author Akash Yadav
  */
-abstract class IViewAdapter : AbstractParser() {
+enum class LayoutBehavior {
+
+  /** The child views are laid out vertically. */
+  VERTICAL,
+
+  /** The child views are laid out horizontally. */
+  HORIZONTAL,
 
   /**
-   * Apply the given attribute to the given view.
-   *
-   * @param view The view to which the attribute must be applied.
-   * @param attribute The attribute to apply.
-   * @return Whether the attribute was applied or not.
+   * The child views are placed on the top left corner of the view group. This is the default value.
    */
-  abstract fun apply(view: IView, attribute: IAttribute): Boolean
-
-  /**
-   * Apply the basic attributes to a view so that it could be rendered.
-   *
-   * @param view The view to apply basic attributes to.
-   */
-  abstract fun applyBasic(view: IView)
+  TOP_LEFT
 }

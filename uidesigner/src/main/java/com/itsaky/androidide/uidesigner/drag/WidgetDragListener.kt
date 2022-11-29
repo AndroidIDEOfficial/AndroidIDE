@@ -38,7 +38,7 @@ import java.io.File
 class WidgetDragListener(val view: IViewGroup, private val placeholderView: View) :
   View.OnDragListener {
 
-  private val placeholder by lazy { ViewImpl(LayoutFile(File(""), ""), "", placeholderView) }
+  private val placeholder by lazy { ViewImpl(LayoutFile(File(""), ""), "", placeholderView).also { it.includeInIndexComputation = false } }
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
     return when (event.action) {
@@ -51,6 +51,10 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
           view.onHighlightStateUpdated(true)
         }
         placeholder.removeFromParent()
+        val state = event.localState
+        if (state is ViewImpl) {
+          state.includeInIndexComputation = false
+        }
         val index = view.computeViewIndex(event.x, event.y)
         view.addChild(index, placeholder)
         true
@@ -83,6 +87,9 @@ class WidgetDragListener(val view: IViewGroup, private val placeholderView: View
         this.view.onHighlightStateUpdated(false)
 
         child.onHighlightStateUpdated(false)
+        if (child is ViewImpl) {
+          child.includeInIndexComputation = true
+        }
 
         true
       }

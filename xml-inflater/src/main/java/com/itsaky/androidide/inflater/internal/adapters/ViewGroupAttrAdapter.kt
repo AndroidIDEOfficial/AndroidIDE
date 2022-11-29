@@ -24,6 +24,10 @@ import android.view.ViewGroup.LayoutParams
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.IViewGroupAdapter
+import com.itsaky.androidide.inflater.LayoutBehavior
+import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
 import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
@@ -31,7 +35,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-abstract class ViewGroupAttrAdapter : ViewAttrAdapter() {
+abstract class ViewGroupAttrAdapter : ViewAttrAdapter(), IViewGroupAdapter {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<ViewGroup>(view, attribute) {
@@ -50,13 +54,17 @@ abstract class ViewGroupAttrAdapter : ViewAttrAdapter() {
         "layoutMode" -> layoutMode = parseLayoutMode(value)
         else -> applied = false
       }
-      
+
       if (!applied) {
         applied = super.apply(view, attribute)
       }
-      
+
       return@doApply applied
     }
+  }
+
+  override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
+    return TOP_LEFT
   }
 
   protected open fun parseLayoutMode(value: String): Int {

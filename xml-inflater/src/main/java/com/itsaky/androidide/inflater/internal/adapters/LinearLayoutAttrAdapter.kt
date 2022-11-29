@@ -24,6 +24,10 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.LayoutBehavior
+import com.itsaky.androidide.inflater.LayoutBehavior.HORIZONTAL
+import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
@@ -60,6 +64,11 @@ open class LinearLayoutAttrAdapter : ViewGroupAttrAdapter() {
 
       return@doApply applied
     }
+  }
+
+  override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
+    val orientation = group.findAttribute(INamespace.ANDROID.uri, "orientation")
+    return if (orientation?.value == "vertical") VERTICAL else HORIZONTAL
   }
 
   protected open fun parseOrientation(value: String): Int {
