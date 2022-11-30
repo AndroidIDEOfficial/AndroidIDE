@@ -41,6 +41,9 @@ interface IView {
   /** The parent view. */
   var parent: IViewGroup?
 
+  /** The attributes of this view. */
+  val attributes: List<IAttribute>
+
   /**
    * Add and apply the given attribute to this view.
    *
@@ -93,10 +96,8 @@ interface IView {
    * @param highlight Whether the view should be highlighted or not.
    */
   fun onHighlightStateUpdated(highlight: Boolean)
-  
-  /**
-   * Removes this view from its parent view.
-   */
+
+  /** Removes this view from its parent view. */
   fun removeFromParent() {
     parent?.removeChild(this)
   }

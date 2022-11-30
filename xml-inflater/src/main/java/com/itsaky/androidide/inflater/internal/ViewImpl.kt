@@ -43,10 +43,12 @@ constructor(
   private var fg: Drawable? = null
   private var touched: Drawable? = null
 
-  internal val attributes = mutableListOf<IAttribute>()
-
-  override var parent: IViewGroup? = null
+  private val _attributes = mutableListOf<IAttribute>()
   internal val namespaceDecls = mutableMapOf<String, INamespace>()
+  
+  override var parent: IViewGroup? = null
+  override val attributes: List<IAttribute>
+    get() = this._attributes
 
   override fun addAttribute(attribute: IAttribute, update: Boolean) {
     if (hasAttribute(attribute)) {
@@ -55,13 +57,13 @@ constructor(
       }
       updateAttribute(attribute)
     } else {
-      this.attributes.add(attribute)
+      this._attributes.add(attribute)
       applyAttribute(attribute)
     }
   }
 
   override fun removeAttribute(attribute: IAttribute) {
-    this.attributes.remove(attribute)
+    this._attributes.remove(attribute)
     // TODO(itsaky): Should attribute adapters handle this as well?
   }
 

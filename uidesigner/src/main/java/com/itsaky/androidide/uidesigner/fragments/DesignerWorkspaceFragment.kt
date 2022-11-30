@@ -42,10 +42,11 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
+import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
+import com.itsaky.androidide.uidesigner.fragments.ViewInfoDialogFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
-import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
@@ -64,20 +65,23 @@ class DesignerWorkspaceFragment : BaseFragment() {
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
   private val placeholder by lazy {
-    val view = View(requireContext()).apply {
-      setBackgroundResource(R.drawable.bg_widget_drag_placeholder)
-      layoutParams =
-        ViewGroup.LayoutParams(
-          SizeUtils.dp2px(PLACEHOLDER_WIDTH_DP),
-          SizeUtils.dp2px(PLACEHOLDER_HEIGHT_DP)
-        )
-    }
+    val view =
+      View(requireContext()).apply {
+        setBackgroundResource(R.drawable.bg_widget_drag_placeholder)
+        layoutParams =
+          ViewGroup.LayoutParams(
+            SizeUtils.dp2px(PLACEHOLDER_WIDTH_DP),
+            SizeUtils.dp2px(PLACEHOLDER_HEIGHT_DP)
+          )
+      }
     PlaceholderView(view)
   }
 
   private val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
+
+  private val viewInfo by lazy { ViewInfoDialogFragment() }
 
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
@@ -153,7 +157,13 @@ class DesignerWorkspaceFragment : BaseFragment() {
   }
 
   private fun setupView(view: IView) {
-    view.view.setOnTouchListener(WidgetTouchListener(view, requireContext()))
+    view.view.setOnTouchListener(
+      WidgetTouchListener(view, requireContext()) {
+        viewInfo.view = it
+        viewInfo.show(childFragmentManager, TAG)
+        true
+      }
+    )
     val fg = view.view.foreground
     view.view.foreground =
       if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(view.view.context)

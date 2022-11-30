@@ -48,7 +48,6 @@
     <item name="chipStyle">@style/AppTheme.UIDesigner.WidgetGroupChip</item>
     <item name="switchPreferenceStyle">@style/AppTheme.SwitchPreference</item>
     <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
-    <item name="bottomSheetDialogTheme">@style/AppTheme.BottomSheetDialog</item>
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled" />

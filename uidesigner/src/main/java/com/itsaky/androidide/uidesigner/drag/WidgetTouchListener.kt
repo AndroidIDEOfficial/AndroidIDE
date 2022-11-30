@@ -33,7 +33,11 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
  *
  * @author Akash Yadav
  */
-internal class WidgetTouchListener(private val view: IView, context: Context) : OnTouchListener {
+internal class WidgetTouchListener(
+  private val view: IView,
+  context: Context,
+  private val onClick: (IView) -> Boolean = { false }
+) : OnTouchListener {
 
   private var touchedView: View? = null
 
@@ -43,6 +47,10 @@ internal class WidgetTouchListener(private val view: IView, context: Context) : 
       object : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent): Boolean {
           return true
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+          return onClick(this@WidgetTouchListener.view)
         }
 
         override fun onLongPress(e: MotionEvent) {

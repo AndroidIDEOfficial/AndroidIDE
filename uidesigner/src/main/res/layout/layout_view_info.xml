@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:paddingTop="16dp"
+  android:paddingBottom="16dp">
+
+  <com.google.android.material.textview.MaterialTextView
+    android:id="@+id/view_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="TextView" />
+
+  <com.google.android.material.textview.MaterialTextView
+    android:id="@+id/view_info"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    app:layout_constraintStart_toStartOf="@id/view_name"
+    app:layout_constraintTop_toBottomOf="@id/view_name"
+    tools:text="android.widget.TextView" />
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/btn_delete"
+    style="@style/Widget.Material3.Button.IconButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:tooltipText="@string/title_viewaction_delete"
+    app:icon="@drawable/ic_delete"
+    app:iconTint="@color/primaryIconColor"
+    app:layout_constraintBottom_toBottomOf="@id/view_info"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="@id/view_name" />
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/btn_add"
+    style="@style/Widget.Material3.Button.IconButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:tooltipText="@string/msg_viewaction_add_attr"
+    app:icon="@drawable/ic_add"
+    app:iconTint="@color/primaryIconColor"
+    app:layout_constraintBottom_toBottomOf="@id/btn_delete"
+    app:layout_constraintEnd_toStartOf="@id/btn_delete"
+    app:layout_constraintTop_toTopOf="@id/btn_delete" />
+
+  <include
+    android:id="@+id/_title_attr_divider"
+    layout="@layout/layout_divider_horizontal"
+    android:layout_width="0dp"
+    android:layout_height="1dp"
+    android:layout_marginTop="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/view_info" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/attr_list"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/_title_attr_divider"
+    tools:listitem="@layout/layout_viewattr_item" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
