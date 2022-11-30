@@ -7,6 +7,7 @@
     <color name="secondaryColor">#ff5252</color>
     <color name="secondaryLightColor">#ff867f</color>
     <color name="secondaryLightColor_transparent">#1FFF867F</color>
+    <color name="secondaryIconColor">@color/secondaryColor</color>
     <color name="secondaryDarkColor">#c50e29</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="primaryTextColorLight">#bdbdbd</color>

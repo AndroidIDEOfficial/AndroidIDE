@@ -54,7 +54,7 @@ class ViewInfoDialogFragment : BottomSheetDialogFragment() {
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     this.binding = LayoutViewInfoBinding.inflate(inflater, container, false)
     return this.binding!!.root
   }

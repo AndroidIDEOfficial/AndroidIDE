@@ -53,7 +53,7 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:tooltipText="@string/title_viewaction_delete"
     app:icon="@drawable/ic_delete"
-    app:iconTint="@color/primaryIconColor"
+    app:iconTint="@color/secondaryIconColor"
     app:layout_constraintBottom_toBottomOf="@id/view_info"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="@id/view_name" />
@@ -66,7 +66,7 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:tooltipText="@string/msg_viewaction_add_attr"
     app:icon="@drawable/ic_add"
-    app:iconTint="@color/primaryIconColor"
+    app:iconTint="@color/secondaryIconColor"
     app:layout_constraintBottom_toBottomOf="@id/btn_delete"
     app:layout_constraintEnd_toStartOf="@id/btn_delete"
     app:layout_constraintTop_toTopOf="@id/btn_delete" />
