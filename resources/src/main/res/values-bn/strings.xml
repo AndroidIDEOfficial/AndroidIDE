@@ -3,7 +3,7 @@
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
   <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
-  <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
+  <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি </string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
   <string name="about_option_website">ওয়েবসাইট</string>
