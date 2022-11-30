@@ -40,7 +40,6 @@ import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
-import com.itsaky.androidide.uidesigner.databinding.LayoutDesignerErrorBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
 import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.fragments.ViewInfoDialogFragment.Companion.TAG
@@ -50,6 +49,7 @@ import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.FLIPPER_SCREEN_WORKSPACE
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
@@ -64,6 +64,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
+  private val workspaceView by lazy {
+    UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
+  }
+
+  private val viewInfo by lazy { ViewInfoDialogFragment() }
+
   private val placeholder by lazy {
     val view =
       View(requireContext()).apply {
@@ -77,11 +83,22 @@ class DesignerWorkspaceFragment : BaseFragment() {
     PlaceholderView(view)
   }
 
-  private val workspaceView by lazy {
-    UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
-  }
+  private val hierarchyChangeListener =
+    object : SingleOnHierarchyChangeListener() {
+      override fun onViewAdded(group: IViewGroup, view: IView) {
+        setupView(view as UiView)
 
-  private val viewInfo by lazy { ViewInfoDialogFragment() }
+        if (workspaceView.childCount == 0) {
+          viewModel.flipperScreen = FLIPPER_SCREEN_WORKSPACE
+        }
+      }
+
+      override fun onViewRemoved(group: IViewGroup, view: IView) {
+        if (workspaceView.childCount == 0) {
+          viewModel.errText = getString(R.string.msg_empty_ui_layout)
+        }
+      }
+    }
 
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
@@ -125,21 +142,24 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    viewModel._flipperScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
+
+    viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
+
     val inflater = ILayoutInflater.newInflater()
     inflater.inflationEventListener = this.inflateListener
+    var hasError = false
     val inflated =
       try {
         inflater.inflate(viewModel.file, binding!!.workspace)
       } catch (e: Throwable) {
         log.error(e)
-        binding!!.workspace.removeAllViews()
-        binding!!
-          .workspace
-          .addView(createErrorView("${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"))
+        viewModel.errText = "${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"
+        hasError = true
         emptyList()
       }
-    if (inflated.isEmpty()) {
-      binding!!.workspace.addView(createErrorView("Failed to inflate view"))
+    if (inflated.isEmpty() && !hasError) {
+      viewModel.errText = getString(R.string.msg_empty_ui_layout)
     }
     binding!!.workspace.setOnDragListener(WidgetDragListener(workspaceView, this.placeholder))
   }
@@ -147,13 +167,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
-  }
-
-  private fun createErrorView(message: String): View {
-    return LayoutDesignerErrorBinding.inflate(layoutInflater).let {
-      it.root.text = message
-      it.root
-    }
   }
 
   private fun setupView(view: IView) {
@@ -175,13 +188,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private fun setupViewGroup(viewGroup: UiViewGroup) {
     viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder))
-    viewGroup.addOnHierarchyChangeListener(
-      object : SingleOnHierarchyChangeListener() {
-        override fun onViewAdded(group: IViewGroup, view: IView) {
-          setupView(view as UiView)
-        }
-      }
-    )
+    viewGroup.addOnHierarchyChangeListener(hierarchyChangeListener)
   }
 
   fun setupFromBundle(bundle: Bundle?) {

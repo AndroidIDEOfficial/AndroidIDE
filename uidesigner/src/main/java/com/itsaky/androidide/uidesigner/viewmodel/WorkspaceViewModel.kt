@@ -25,7 +25,14 @@ import java.io.File
 
 class WorkspaceViewModel : ViewModel() {
   internal val _drawerOpened = MutableLiveData(false)
+  internal val _errText = MutableLiveData("")
+  internal val _flipperScreen = MutableLiveData(0)
   private val _file = MutableLiveData<File>()
+  
+  companion object {
+    const val FLIPPER_SCREEN_WORKSPACE = 0
+    const val FLIPPER_SCREEN_ERROR = 1
+  }
   
   var file: File
     get() = _file.value!!
@@ -37,5 +44,18 @@ class WorkspaceViewModel : ViewModel() {
     get() = this._drawerOpened.value!!
     set(value) {
       this._drawerOpened.value = value
+    }
+  
+  var errText: String
+    get() = _errText.value ?: ""
+    set(value) {
+      _errText.value = value
+      flipperScreen = FLIPPER_SCREEN_ERROR
+    }
+  
+  var flipperScreen: Int
+    get() = _flipperScreen.value ?: FLIPPER_SCREEN_WORKSPACE
+    set(value) {
+      _flipperScreen.value = value
     }
 }

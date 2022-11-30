@@ -16,6 +16,8 @@
   -->
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:paddingStart="16dp"
@@ -23,13 +25,33 @@
   android:paddingEnd="16dp"
   android:paddingBottom="32dp">
 
-  <LinearLayout
-    android:id="@+id/workspace"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_designer_view"
-    android:backgroundTint="@color/primaryLightColor"
-    android:backgroundTintMode="src_atop"
-    android:orientation="vertical" />
+  <ViewFlipper
+    android:id="@+id/flipper"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.material.textview.MaterialTextView
+      android:id="@+id/err_text"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+      tools:text="This is an error." />
+
+    <LinearLayout
+      android:id="@+id/workspace"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@drawable/bg_designer_view"
+      android:backgroundTint="@color/primaryLightColor"
+      android:backgroundTintMode="src_atop"
+      android:orientation="vertical" />
+
+  </ViewFlipper>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
