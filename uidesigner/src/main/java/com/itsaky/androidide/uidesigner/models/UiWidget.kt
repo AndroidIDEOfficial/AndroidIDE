@@ -22,6 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.updatePaddingRelative
+import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
@@ -42,14 +44,18 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
    * @param context The context that will be used for creating (View)[android.view.View] instance.
    * @param layoutFile The layout file that is being edited.
    */
-  fun createView(context: Context, layoutFile: LayoutFile): IView {
+  open fun createView(context: Context, layoutFile: LayoutFile): IView {
     val v = ViewFactory.createViewInstance(name, context)
-    if (v is ViewGroup) {
-      return ViewGroupImpl(layoutFile, name, v)
-    }
-    return ViewImpl(layoutFile, name, v)
+    val view: IView =
+      if (v is ViewGroup) {
+        ViewGroupImpl(layoutFile, name, v).apply {
+          val dp8 = SizeUtils.dp2px(8f)
+          view.updatePaddingRelative(start = dp8, top = dp8, end = dp8, bottom = dp8)
+        }
+      } else ViewImpl(layoutFile, name, v)
+    return view
   }
-  
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is UiWidget) return false

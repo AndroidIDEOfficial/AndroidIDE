@@ -21,7 +21,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.INamespace.Companion.ANDROID
 
-data class AttributeImpl(
+data class AttributeImpl @JvmOverloads constructor(
   override val namespace: INamespace = ANDROID,
   override val name: String,
   override var value: String
