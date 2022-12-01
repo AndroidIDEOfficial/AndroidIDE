@@ -274,7 +274,7 @@
   <string name="msg_file_tree">फ़ाइल ट्री</string>
   <string name="hint_color_resource">रंग रिसोर्स</string>
   <string name="title_color_picker">रंग पीकर</string>
-  <string name="hint_string_value">स्ट्रिंग वैल्यू</string>
+  <string name="hint_attr_value">Attribute value</string>
   <string name="hint_string_resource">स्ट्रिंग रिसोर्स</string>
   <string name="hint_resource_reference">कोई रिसोर्स संदर्भ</string>
   <string name="msg_code_actions">कोड क्रियाएं</string>
@@ -372,6 +372,7 @@
   <string name="idepref_maxLineWidth_title">मैक्स लाइन विड्थ</string>
   <string name="idepref_maxLineWidth_summary">एक पंक्ति में वर्णों की अधिकतम संख्या चुनें।</string>
   <string name="idepref_splitAttrIndentSize_title">विभाजित ऐट्रिब्यूट्स का इंडेंट साइज</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
   <string name="idepref_preservedNewLines_title">संरक्षित नई लाइनें</string>
   <string name="idepref_preservedNewLines_summary">निरंतर लाइन ब्रेक की अधिकतम संख्या जिसे संरक्षित किया जाना चाहिए।</string>
   <string name="idepref_emptyElements_title">खाली एलिमेंट्स का व्यवहार</string>
@@ -479,5 +480,4 @@
   <string name="git_clone_in_progress">रिपॉजिटरी क्लोन हो रही है</string>
   <string name="git_clone_success">Git क्लोन सफल हुआ</string>
   <string name="git_clone_failed">Git रिपॉजिटरी क्लोन करने में विफल</string>
-  <string name="idepref_splitAttrIndentSize_summary">विभाजित ऐट्रिब्यूट्स के लिए इंडेंट करने के लिए रिक्त स्थान की संख्या।</string>
 </resources>
