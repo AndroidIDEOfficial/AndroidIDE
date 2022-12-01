@@ -137,7 +137,7 @@
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowLightStatusBar">false</item>
   </style>
-  
+
   <!-- Alert Dialog -->
   <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
     <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
