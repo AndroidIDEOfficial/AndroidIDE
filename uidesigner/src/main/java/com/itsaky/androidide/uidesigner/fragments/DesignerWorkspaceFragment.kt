@@ -51,6 +51,7 @@ import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_ERROR
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_WORKSPACE
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
@@ -103,13 +104,13 @@ class DesignerWorkspaceFragment : BaseFragment() {
       override fun onViewAdded(group: IViewGroup, view: IView) {
         setupView(view as UiView)
 
-        if (workspaceView.childCount == 0) {
-          viewModel.workspaceFlipperScreen = SCREEN_WORKSPACE
+        if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
+          viewModel.workspaceScreen = SCREEN_WORKSPACE
         }
       }
 
       override fun onViewRemoved(group: IViewGroup, view: IView) {
-        if (workspaceView.childCount == 0) {
+        if (workspaceView.viewGroup.childCount == 0) {
           viewModel.errText = getString(R.string.msg_empty_ui_layout)
         }
       }
