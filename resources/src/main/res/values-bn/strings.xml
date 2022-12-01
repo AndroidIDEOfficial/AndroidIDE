@@ -274,7 +274,7 @@
   <string name="msg_file_tree">ফাইল ট্রি</string>
   <string name="hint_color_resource">কালার রিসোর্স</string>
   <string name="title_color_picker">কালার পিকার</string>
-  <string name="hint_string_value">স্ট্রিং এর মান</string>
+  <string name="hint_attr_value">Attribute value</string>
   <string name="hint_string_resource">স্ট্রিং রিসোর্স</string>
   <string name="hint_resource_reference">যেকোনো রিসোর্স এর উল্লেখ</string>
   <string name="msg_code_actions">ক্রিয়া</string>
@@ -372,6 +372,7 @@
   <string name="idepref_maxLineWidth_title">সর্বোচ্চ লাইন প্রস্থ</string>
   <string name="idepref_maxLineWidth_summary">একটি লাইনে সর্বাধিক যতগুলি অক্ষর থাকা উচিত৷</string>
   <string name="idepref_splitAttrIndentSize_title">বিভক্ত অ্যাট্রিবিউট ইন্ডেন্ট সাইজ</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
   <string name="idepref_preservedNewLines_title">লাইন সংরক্ষণ</string>
   <string name="idepref_preservedNewLines_summary">সর্বোচ্চ সংখ্যক ক্রমাগত লাইন বিরতি যা সংরক্ষণ করা হবে৷</string>
   <string name="idepref_emptyElements_title">খালি উপাদানের আচরণ</string>
@@ -479,5 +480,4 @@
   <string name="git_clone_in_progress">রেপোসিটরি ক্লোন করা হচ্ছে</string>
   <string name="git_clone_success">গিট ক্লোন সফল হয়েছে</string>
   <string name="git_clone_failed">গিট রেপোসিটরি ক্লোন করতে ব্যর্থ</string>
-  <string name="idepref_splitAttrIndentSize_summary">বিভক্ত অ্যাট্রিবিউট গুলির ইন্ডেন্ট করার জন্য স্পেস-এর সংখ্যা৷</string>
 </resources>
