@@ -274,7 +274,7 @@
   <string name="msg_file_tree">Cabang file</string>
   <string name="hint_color_resource">Sumber warna</string>
   <string name="title_color_picker">Pemilih warna</string>
-  <string name="hint_string_value">Isi string</string>
+  <string name="hint_attr_value">Attribute value</string>
   <string name="hint_string_resource">Sumber string</string>
   <string name="hint_resource_reference">Referensi sumber lain</string>
   <string name="msg_code_actions">Quickfixes</string>
@@ -372,6 +372,7 @@
   <string name="idepref_maxLineWidth_title">Lebar baris maksimal</string>
   <string name="idepref_maxLineWidth_summary">Jumlah maksimum karakter yang harus dimiliki sebuah baris.</string>
   <string name="idepref_splitAttrIndentSize_title">Pisahkan ukuran indentasi atribut</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
   <string name="idepref_preservedNewLines_title">Baris baru dipertahankan</string>
   <string name="idepref_preservedNewLines_summary">Jumlah maksimum jeda baris kontinu yang harus dipertahankan.</string>
   <string name="idepref_emptyElements_title">Perilaku elemen kosong</string>
@@ -479,5 +480,4 @@
   <string name="git_clone_in_progress">Cloning repositori</string>
   <string name="git_clone_success">Git clone berhasil</string>
   <string name="git_clone_failed">Gagal mengkloning repositori git</string>
-  <string name="idepref_splitAttrIndentSize_summary">Jumlah spasi untuk indentasi untuk atribut terpisah.</string>
 </resources>
