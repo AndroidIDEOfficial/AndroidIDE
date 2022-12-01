@@ -31,7 +31,7 @@ import com.itsaky.androidide.uidesigner.databinding.LayoutViewattrItemBinding
  *
  * @author Akash Yadav
  */
-class ViewAttrListAdapter(attributes: List<IAttribute>) : RecyclerView.Adapter<VH>() {
+class ViewAttrListAdapter(attributes: List<IAttribute>, private val onClick: (IAttribute) -> Unit) : RecyclerView.Adapter<VH>() {
   
   private val attributes = attributes.sortedBy { it.name }
   
@@ -52,5 +52,9 @@ class ViewAttrListAdapter(attributes: List<IAttribute>) : RecyclerView.Adapter<V
     
     binding.attrName.text = "${attr.namespace.prefix}:${attr.name}"
     binding.attrValue.text = attr.value
+    
+    binding.root.setOnClickListener {
+      onClick(attr)
+    }
   }
 }

@@ -42,14 +42,14 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
 import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
-import com.itsaky.androidide.uidesigner.fragments.ViewInfoDialogFragment.Companion.TAG
+import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.FLIPPER_SCREEN_WORKSPACE
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_WORKSPACE
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
@@ -68,7 +68,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
 
-  private val viewInfo by lazy { ViewInfoDialogFragment() }
+  private val viewInfo by lazy { ViewInfoSheet() }
 
   private val placeholder by lazy {
     val view =
@@ -89,7 +89,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
         setupView(view as UiView)
 
         if (workspaceView.childCount == 0) {
-          viewModel.flipperScreen = FLIPPER_SCREEN_WORKSPACE
+          viewModel.workspaceFlipperScreen = SCREEN_WORKSPACE
         }
       }
 
@@ -142,7 +142,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    viewModel._flipperScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
+    viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
 
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
@@ -172,7 +172,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private fun setupView(view: IView) {
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
-        viewInfo.view = it
+        viewModel.view = it
         viewInfo.show(childFragmentManager, TAG)
         true
       }

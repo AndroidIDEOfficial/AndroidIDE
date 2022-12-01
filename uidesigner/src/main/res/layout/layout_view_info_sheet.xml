@@ -19,39 +19,31 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:paddingStart="16dp"
-  android:paddingTop="32dp"
-  android:paddingEnd="16dp"
-  android:paddingBottom="32dp">
+  android:layout_height="wrap_content">
 
   <ViewFlipper
     android:id="@+id/flipper"
     android:layout_width="0dp"
-    android:layout_height="0dp"
+    android:layout_height="wrap_content"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
-      android:id="@+id/workspace"
+    <androidx.fragment.app.FragmentContainerView
+      android:id="@+id/view_info"
+      android:name="com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/bg_designer_view"
-      android:backgroundTint="@color/primaryLightColor"
-      android:backgroundTintMode="src_atop"
-      android:orientation="vertical" />
+      tools:layout="@layout/layout_view_info" />
 
-    <com.google.android.material.textview.MaterialTextView
-      android:id="@+id/err_text"
+    <androidx.fragment.app.FragmentContainerView
+      android:id="@+id/attr_editor"
+      android:name="com.itsaky.androidide.uidesigner.fragments.AttrValueEditorFragment"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:gravity="center"
-      android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-      tools:text="This is an error." />
+      tools:layout="@layout/layout_attr_value_editor" />
 
   </ViewFlipper>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

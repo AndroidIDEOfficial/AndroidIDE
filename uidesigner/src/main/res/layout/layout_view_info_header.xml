@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+  <com.google.android.material.textview.MaterialTextView
+    android:id="@+id/name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="TextView" />
+
+  <com.google.android.material.textview.MaterialTextView
+    android:id="@+id/desc"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    app:layout_constraintStart_toStartOf="@id/name"
+    app:layout_constraintTop_toBottomOf="@id/name"
+    tools:text="android.widget.TextView" />
+
+</merge>

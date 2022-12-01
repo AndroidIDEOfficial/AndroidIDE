@@ -26,33 +26,6 @@
 
   <include layout="@layout/layout_view_info_header" />
 
-  <com.google.android.material.button.MaterialButton
-    android:id="@+id/btn_delete"
-    style="@style/Widget.Material3.Button.IconButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="16dp"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:tooltipText="@string/title_viewaction_delete"
-    app:icon="@drawable/ic_delete"
-    app:iconTint="@color/secondaryIconColor"
-    app:layout_constraintBottom_toBottomOf="@id/desc"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="@id/name" />
-
-  <com.google.android.material.button.MaterialButton
-    android:id="@+id/btn_add"
-    style="@style/Widget.Material3.Button.IconButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackgroundBorderless"
-    android:tooltipText="@string/msg_viewaction_add_attr"
-    app:icon="@drawable/ic_add"
-    app:iconTint="@color/secondaryIconColor"
-    app:layout_constraintBottom_toBottomOf="@id/btn_delete"
-    app:layout_constraintEnd_toStartOf="@id/btn_delete"
-    app:layout_constraintTop_toTopOf="@id/btn_delete" />
-
   <include
     android:id="@+id/_title_attr_divider"
     layout="@layout/layout_divider_horizontal"
@@ -63,15 +36,37 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/desc" />
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/attr_list"
+  <com.google.android.material.textview.MaterialTextView
+    android:id="@+id/comment"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    android:layout_marginEnd="16dp"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@id/name"
+    app:layout_constraintTop_toBottomOf="@id/_title_attr_divider"
+    tools:text="Specifies the basic height of the view.  This is a required attribute for any view inside of a containing layout manager.  Its value may be a dimension (such as &quot;12dip&quot;) for a constant height or one of the special constants." />
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/attr_value"
+    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:hint="@string/hint_attr_value"
+    android:theme="@style/AppTheme.TextInputLayout"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/_title_attr_divider"
-    tools:listitem="@layout/layout_viewattr_item" />
+    app:layout_constraintTop_toBottomOf="@id/comment">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:maxLines="1" />
+
+  </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

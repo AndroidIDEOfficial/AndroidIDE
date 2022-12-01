@@ -17,45 +17,68 @@
 
 package com.itsaky.androidide.uidesigner.viewmodel
 
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
 import java.io.File
 
 class WorkspaceViewModel : ViewModel() {
   internal val _drawerOpened = MutableLiveData(false)
   internal val _errText = MutableLiveData("")
-  internal val _flipperScreen = MutableLiveData(0)
+  internal val _workspaceScreen = MutableLiveData(SCREEN_WORKSPACE)
+  internal val _viewInfoScreen = MutableLiveData(SCREEN_VIEW_INFO)
+  internal val _view = MutableLiveData<IView>(null)
+  internal val _selectedAttr = MutableLiveData<IAttribute>(null)
   private val _file = MutableLiveData<File>()
-  
+
   companion object {
-    const val FLIPPER_SCREEN_WORKSPACE = 0
-    const val FLIPPER_SCREEN_ERROR = 1
+    const val SCREEN_WORKSPACE = 0
+    const val SCREEN_ERROR = 1
+    const val SCREEN_VIEW_INFO = 0
+    const val SCREEN_VALUE_EDITOR = 1
   }
-  
+
   var file: File
     get() = _file.value!!
     set(value) {
       _file.value = value
     }
-  
-  var drawerOpened : Boolean
+
+  var drawerOpened: Boolean
     get() = this._drawerOpened.value!!
     set(value) {
       this._drawerOpened.value = value
     }
-  
+
   var errText: String
     get() = _errText.value ?: ""
     set(value) {
       _errText.value = value
-      flipperScreen = FLIPPER_SCREEN_ERROR
+      workspaceFlipperScreen = SCREEN_ERROR
+    }
+
+  var workspaceFlipperScreen: Int
+    get() = _workspaceScreen.value ?: SCREEN_WORKSPACE
+    set(value) {
+      _workspaceScreen.value = value
+    }
+
+  var view: IView?
+    get() = this._view.value
+    set(value) {
+      this._view.value = value
+    }
+
+  var viewInfoScreen: Int
+    get() = _viewInfoScreen.value ?: SCREEN_VIEW_INFO
+    set(value) {
+      _viewInfoScreen.value = value
     }
   
-  var flipperScreen: Int
-    get() = _flipperScreen.value ?: FLIPPER_SCREEN_WORKSPACE
+  var selectedAttr: IAttribute?
+    get() = this._selectedAttr.value
     set(value) {
-      _flipperScreen.value = value
+      this._selectedAttr.value = value
     }
 }

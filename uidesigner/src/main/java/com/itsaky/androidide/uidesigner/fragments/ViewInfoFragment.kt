@@ -21,31 +21,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.itsaky.androidide.inflater.IView
+import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
+import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
 
 /**
  * A [BottomSheetDialogFragment] which shows information about a clicked view.
  *
  * @author Akash Yadav
  */
-class ViewInfoDialogFragment : BottomSheetDialogFragment() {
+class ViewInfoFragment : Fragment() {
 
+  private val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
   private var binding: LayoutViewInfoBinding? = null
-
-  var view: IView? = null
     set(value) {
-      field = value
-      if (isShowing) {
-        showViewInfo()
+      if (value == null) {
+        field = null
+        header = null
+        return
       }
+
+      field = value
+      header = LayoutViewInfoHeaderBinding.bind(value.root)
     }
 
-  val isShowing: Boolean
-    get() = dialog?.isShowing ?: false
-  
+  private var header: LayoutViewInfoHeaderBinding? = null
+
   companion object {
     const val TAG = "ide.uidesigner.viewinfo"
   }
@@ -61,7 +68,7 @@ class ViewInfoDialogFragment : BottomSheetDialogFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    if (this.view != null) {
+    viewModel._view.observe(viewLifecycleOwner) {
       showViewInfo()
     }
   }
@@ -73,15 +80,18 @@ class ViewInfoDialogFragment : BottomSheetDialogFragment() {
 
   private fun showViewInfo() {
     val binding = this.binding ?: return
-    val view = this.view ?: return
+    val header = this.header ?: return
+    val view = this.viewModel.view ?: return
 
-    binding.viewName.text = view.simpleName
-    binding.viewInfo.text = view.name
-    binding.attrList.adapter = ViewAttrListAdapter(view.attributes)
-    
+    header.name.text = view.simpleName
+    header.desc.text = view.name
+    binding.attrList.adapter = ViewAttrListAdapter(view.attributes) {
+      viewModel.selectedAttr = it
+      viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
+    }
+
     binding.btnDelete.setOnClickListener {
       view.removeFromParent()
-      dismiss()
     }
   }
 }
