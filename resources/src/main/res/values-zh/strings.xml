@@ -274,7 +274,7 @@
   <string name="msg_file_tree">文件列表</string>
   <string name="hint_color_resource">Color 资源</string>
   <string name="title_color_picker">取色器</string>
-  <string name="hint_string_value">String 值</string>
+  <string name="hint_attr_value">Attribute value</string>
   <string name="hint_string_resource">String 资源</string>
   <string name="hint_resource_reference">任一资源引用</string>
   <string name="msg_code_actions">操作</string>
@@ -372,6 +372,7 @@
   <string name="idepref_maxLineWidth_title">最大行宽</string>
   <string name="idepref_maxLineWidth_summary">每行字符数最高上限</string>
   <string name="idepref_splitAttrIndentSize_title">拆分属性缩进大小</string>
+  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
   <string name="idepref_preservedNewLines_title">新线保留</string>
   <string name="idepref_preservedNewLines_summary">应保留连续换行符的最大数目</string>
   <string name="idepref_emptyElements_title">空元素行为</string>
@@ -479,5 +480,4 @@
   <string name="git_clone_in_progress">Cloning repository</string>
   <string name="git_clone_success">Git clone successful</string>
   <string name="git_clone_failed">Failed to clone git repository</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
 </resources>
