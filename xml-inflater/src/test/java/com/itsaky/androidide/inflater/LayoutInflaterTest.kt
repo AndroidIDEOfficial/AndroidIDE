@@ -68,7 +68,7 @@ class LayoutInflaterTest {
             assertThat(inflated.view).isInstanceOf(view.java)
             assertThat(inflated.view.id).isEqualTo(IDTable.get(view.simpleName!!, "template_view"))
 
-            (inflated as ViewImpl)._attributes.apply {
+            (inflated as ViewImpl).attributes.apply {
               assertThat(this)
                 .contains(AttributeImpl(INamespace.ANDROID, "id", "@+id/template_view"))
               assertThat(this)
