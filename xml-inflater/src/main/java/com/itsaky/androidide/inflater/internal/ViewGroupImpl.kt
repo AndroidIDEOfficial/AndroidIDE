@@ -17,15 +17,10 @@
 
 package com.itsaky.androidide.inflater.internal
 
-import android.graphics.RectF
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.OnHierarchyChangeListener
-import com.itsaky.androidide.inflater.IViewGroupAdapter
-import com.itsaky.androidide.inflater.LayoutBehavior.HORIZONTAL
-import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
-import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 
 open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
@@ -47,6 +42,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     if (view.parent != null) {
       throw IllegalStateException("View already has a parent")
     }
+    notifyBeforeViewAdded(view)
     val idx = if (index < 0) childCount else index
     this.children.add(idx, view)
     this.view.addView(view.view, idx)
@@ -55,6 +51,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override fun removeChild(view: IView) {
+    notifyBeforeViewRemoved(view)
     this.view.removeView(view.view)
     this.children.remove(view)
     view.parent = null
@@ -89,6 +86,14 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
 
   override fun removeOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
     this.hierarchyChangeListeners.remove(listener)
+  }
+
+  protected open fun notifyBeforeViewAdded(child: IView) {
+    this.hierarchyChangeListeners.forEach { it.beforeViewAdded(this, child) }
+  }
+
+  protected open fun notifyBeforeViewRemoved(child: IView) {
+    this.hierarchyChangeListeners.forEach { it.beforeViewRemoved(this, child) }
   }
 
   protected open fun notifyOnViewAdded(child: IView) {

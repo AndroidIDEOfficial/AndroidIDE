@@ -24,6 +24,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
@@ -85,6 +87,19 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private val hierarchyChangeListener =
     object : SingleOnHierarchyChangeListener() {
+
+      private fun animateLayoutChange() {
+        TransitionManager.beginDelayedTransition(workspaceView.view, ChangeBounds().setDuration(HIERARCHY_CHANGE_TRANSITION_DURATION))
+      }
+
+      override fun beforeViewAdded(group: IViewGroup, view: IView) {
+        animateLayoutChange()
+      }
+
+      override fun beforeViewRemoved(group: IViewGroup, view: IView) {
+        animateLayoutChange()
+      }
+
       override fun onViewAdded(group: IViewGroup, view: IView) {
         setupView(view as UiView)
 
@@ -103,6 +118,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
     const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
+    const val HIERARCHY_CHANGE_TRANSITION_DURATION = 100L
+    
     private const val PLACEHOLDER_WIDTH_DP = 40f
     private const val PLACEHOLDER_HEIGHT_DP = 20f
   }

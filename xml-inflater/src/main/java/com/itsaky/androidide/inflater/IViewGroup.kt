@@ -103,6 +103,23 @@ interface IViewGroup : IView {
 
   /** Listener to listen for hierarchy changes in an [IViewGroup]. */
   interface OnHierarchyChangeListener {
+  
+    /**
+     * Called just before the [view] is added to the [group].
+     *
+     * @param group The group in which the view will be added.
+     * @param view The view that will be added to the given view group.
+     */
+    fun beforeViewAdded(group: IViewGroup, view: IView) {}
+  
+    /**
+     * Called just before the [view] is removed from the [group].
+     *
+     * @param group The group from which the view will be removed.
+     * @param view The view that will be removed from the given view group.
+     */
+    fun beforeViewRemoved(group: IViewGroup, view: IView) {}
+    
     /**
      * Called when a view is added.
      *
