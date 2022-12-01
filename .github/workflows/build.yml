@@ -6,11 +6,13 @@ on:
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
+      - '.github/workflows/crowdin_contributors.yml'
   pull_request:
     branches: [ "main" ]
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
+      - '.github/workflows/crowdin_contributors.yml'
   workflow_dispatch: {}
 
 jobs:
