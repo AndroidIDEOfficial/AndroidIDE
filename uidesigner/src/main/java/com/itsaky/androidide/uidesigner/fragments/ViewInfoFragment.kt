@@ -24,7 +24,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -68,9 +67,7 @@ class ViewInfoFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    viewModel._view.observe(viewLifecycleOwner) {
-      showViewInfo()
-    }
+    viewModel._view.observe(viewLifecycleOwner) { showViewInfo() }
   }
 
   override fun onDestroyView() {
@@ -85,13 +82,15 @@ class ViewInfoFragment : Fragment() {
 
     header.name.text = view.simpleName
     header.desc.text = view.name
-    binding.attrList.adapter = ViewAttrListAdapter(view.attributes) {
-      viewModel.selectedAttr = it
-      viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
-    }
+    binding.attrList.adapter =
+      ViewAttrListAdapter(view.attributes) {
+        viewModel.selectedAttr = it
+        viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
+      }
 
     binding.btnDelete.setOnClickListener {
       view.removeFromParent()
+      (parentFragment as? ViewInfoSheet)?.dismiss()
     }
   }
 }

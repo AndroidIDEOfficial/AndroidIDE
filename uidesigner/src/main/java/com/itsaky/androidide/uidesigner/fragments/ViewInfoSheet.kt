@@ -40,7 +40,7 @@ class ViewInfoSheet : BottomSheetDialogFragment() {
   val isShowing: Boolean
     get() = dialog?.isShowing ?: false
 
-  private val viewInfoBackPressedCallback =
+  private val backPressedCallback =
     object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {
         if (viewModel.viewInfoScreen == SCREEN_VALUE_EDITOR) {
@@ -68,14 +68,14 @@ class ViewInfoSheet : BottomSheetDialogFragment() {
         beginDelayedTransition(root, MaterialSharedAxis(MaterialSharedAxis.X, prev < it))
         flipper.displayedChild = it
       }
-      this.viewInfoBackPressedCallback.isEnabled = it == SCREEN_VALUE_EDITOR
+      this.backPressedCallback.isEnabled = it == SCREEN_VALUE_EDITOR
     }
 
     viewModel._view.observe(viewLifecycleOwner) { viewModel.viewInfoScreen = SCREEN_VIEW_INFO }
 
     (requireDialog() as ComponentDialog)
       .onBackPressedDispatcher
-      .addCallback(viewLifecycleOwner, viewInfoBackPressedCallback)
+      .addCallback(viewLifecycleOwner, backPressedCallback)
   }
 
   override fun onDestroyView() {
