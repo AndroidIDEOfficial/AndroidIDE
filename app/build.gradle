@@ -74,6 +74,7 @@ android {
                          'META-INF/README.md',
                          'about_files/LICENSE-2.0.txt',
                          'META-INF/AL2.0',
+                         'META-INF/DEPENDENCIES',
                          'META-INF/LGPL2.1',
                          'plugin.xml',
                          'plugin.properties',
