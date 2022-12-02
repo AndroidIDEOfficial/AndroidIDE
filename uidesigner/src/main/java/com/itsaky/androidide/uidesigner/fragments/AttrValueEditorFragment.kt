@@ -20,12 +20,16 @@ package com.itsaky.androidide.uidesigner.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.blankj.utilcode.util.ReflectUtils
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.uidesigner.databinding.LayoutAttrValueEditorBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -85,13 +89,13 @@ class AttrValueEditorFragment : Fragment() {
           textView.setAdapter(
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, result)
           )
+          textView.dropDownVerticalOffset = -binding.root.height
           textView.showDropDown()
         }
 
       textView.setText(attr.value)
       textView.addTextChangedListener(textWatcher)
       textView.dropDownAnchor = binding.root.id
-      textView.dropDownVerticalOffset = -binding.root.height
     }
   }
 
