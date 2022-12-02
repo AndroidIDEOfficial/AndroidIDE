@@ -200,7 +200,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     )
     val fg = view.view.foreground
     view.view.foreground =
-      if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(view.view.context)
+      if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(requireContext())
 
     if (view is IViewGroup) {
       setupViewGroup(view as UiViewGroup)

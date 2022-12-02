@@ -187,7 +187,6 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     view: ViewImpl,
     parent: IViewGroup,
     attachToParent: Boolean = true,
-    updateAttributes: Boolean = false,
     checkAttr: (XmlAttribute) -> Boolean = { true }
   ) {
     val parentView = parent.view as ViewGroup
@@ -213,7 +212,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
             ?: throw InflateException("Unknown namespace : ${xmlAttribute.namespaceUri}")
         val attr =
           AttributeImpl(namespace = namespace, name = xmlAttribute.name, value = xmlAttribute.value)
-        view.addAttribute(attr, updateAttributes)
+        view.addAttribute(attribute = attr, update = true)
         inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
       }
     }
@@ -261,13 +260,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     // so we don't need to do it here
     // also, the attribute on an <include> tag must override the attributes specified on the root
     // view of the included layout file
-    applyAttributes(
-      element = element,
-      view = view,
-      parent = parent,
-      attachToParent = false,
-      updateAttributes = true
-    ) {
+    applyAttributes(element = element, view = view, parent = parent, attachToParent = false) {
       !(it.namespaceUri.isNullOrBlank() && it.name == "layout")
     }
 
