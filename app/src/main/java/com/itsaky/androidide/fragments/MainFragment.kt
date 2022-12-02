@@ -28,6 +28,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.CloneCommand
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
 
@@ -151,11 +152,16 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val future =
       executeAsync(
         {
-          return@executeAsync Git.cloneRepository()
-            .setURI(url)
-            .setDirectory(targetDir)
-            .setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
-            .call()
+          return@executeAsync var cloneCommand: CloneCommand = Git.cloneRepository()
+            cloneCommand.setURI(url)
+            cloneCommand.setDirectory(targetDir)
+            //Todo Ssh Option
+            if(url.startsWith("git@github.com")) {
+          //  cloneCommand.setTransportConfigCallback(sshTransportConfigCallback)
+            }
+
+            cloneCommand.setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
+            cloneCommand.call()
             .also { git = it }
         },
         {}
@@ -172,7 +178,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     future.whenComplete { result, error ->
       ThreadUtils.runOnUiThread {
         dialog?.dismiss()
-        result?.close()
+       // result?.close() not working with clone command 
         if (result == null || error != null) {
           if (!future.isCancelled) {
             showCloneError(error)
