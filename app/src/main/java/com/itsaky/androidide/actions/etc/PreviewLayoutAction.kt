@@ -20,11 +20,12 @@ package com.itsaky.androidide.actions.etc
 import android.content.Context
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
+import com.android.aaptcompiler.AaptResourceType.LAYOUT
+import com.android.aaptcompiler.extractPathData
 import com.blankj.utilcode.util.KeyboardUtils
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.handlers.FileTreeActionHandler
+import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
 class PreviewLayoutAction() : EditorRelatedAction() {
@@ -48,10 +49,9 @@ class PreviewLayoutAction() : EditorRelatedAction() {
 
     val isXml = file.name.endsWith(".xml")
 
-    visible =
-      isXml &&
-        file.parentFile != null &&
-        Regex(FileTreeActionHandler.LAYOUT_RES_PATH_REGEX).matches(file.parentFile!!.absolutePath)
+    val type = extractPathData(file).type
+
+    visible = isXml && type == LAYOUT
     enabled = visible
   }
 
