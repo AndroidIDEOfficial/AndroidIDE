@@ -21,15 +21,15 @@ import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBindin
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
+import java.io.File
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
-import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
@@ -149,16 +149,16 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
     var git: Git? = null
     val future =
-      executeAsync(
+      executeAsyncProvideError(
         {
-          return@executeAsync Git.cloneRepository()
+          return@executeAsyncProvideError Git.cloneRepository()
             .setURI(url)
             .setDirectory(targetDir)
             .setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
             .call()
             .also { git = it }
         },
-        {}
+        { _, _ -> }
       )
 
     builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
