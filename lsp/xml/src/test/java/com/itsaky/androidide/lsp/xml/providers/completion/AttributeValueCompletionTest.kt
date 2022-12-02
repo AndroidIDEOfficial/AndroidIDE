@@ -26,6 +26,7 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.xml.CompletionHelper
 import com.itsaky.androidide.lsp.xml.CompletionHelperImpl
 import com.itsaky.androidide.lsp.xml.XMLLSPTest
+import com.itsaky.androidide.lsp.xml.utils.dimensionUnits
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -198,6 +199,18 @@ class AttributeValueCompletionTest : CompletionHelper by CompletionHelperImpl() 
       assertThat(items).doesNotContain("color")
       assertThat(items)
         .containsAtLeast(/*pck*/ "com.google.android.material", /*pck*/ "com.itsaky.test.app")
+    }
+  }
+  
+  @Test
+  fun `test constant dimension values completion`() {
+    XMLLSPTest.apply {
+      openFile("../res/layout/ConstantDimensionTest")
+      val (incomplete, items) = complete()
+      assertThat(incomplete).isFalse()
+      
+      val expected = dimensionUnits.map { "4${it}" }
+      assertThat(items).containsAtLeastElementsIn(expected)
     }
   }
 }
