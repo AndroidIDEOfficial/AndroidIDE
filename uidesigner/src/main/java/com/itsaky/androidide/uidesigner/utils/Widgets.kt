@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.uidesigner.utils
 
+import android.content.Context
 import android.view.SurfaceView
 import android.view.TextureView
 import android.webkit.WebView
@@ -37,6 +38,10 @@ import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.ToggleButton
+import com.itsaky.androidide.inflater.INamespace
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.internal.AttributeImpl
+import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.uidesigner.R.drawable
 import com.itsaky.androidide.uidesigner.R.string
 import com.itsaky.androidide.uidesigner.models.UiWidget
@@ -153,18 +158,32 @@ internal object Widgets {
           )
         )
         add(
-          UiWidget(
-            LinearLayout::class.java,
-            string.widget_linear_layout_horz,
-            drawable.ic_widget_linear_layout_horz
-          )
+          object :
+            UiWidget(
+              LinearLayout::class.java,
+              string.widget_linear_layout_horz,
+              drawable.ic_widget_linear_layout_horz
+            ) {
+            override fun createView(context: Context, layoutFile: LayoutFile): IView {
+              return super.createView(context, layoutFile).apply {
+                addAttribute(AttributeImpl(name = "orientation", value = "horizontal"))
+              }
+            }
+          }
         )
         add(
-          UiWidget(
-            LinearLayout::class.java,
-            string.widget_linear_layout_vert,
-            drawable.ic_widget_linear_layout_vert
-          )
+          object :
+            UiWidget(
+              LinearLayout::class.java,
+              string.widget_linear_layout_vert,
+              drawable.ic_widget_linear_layout_vert
+            ) {
+            override fun createView(context: Context, layoutFile: LayoutFile): IView {
+              return super.createView(context, layoutFile).apply {
+                addAttribute(AttributeImpl(name ="orientation", value = "vertical"))
+              }
+            }
+          }
         )
         add(
           UiWidget(

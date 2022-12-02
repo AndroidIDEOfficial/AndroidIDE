@@ -55,10 +55,10 @@ class WorkspaceViewModel : ViewModel() {
     get() = _errText.value ?: ""
     set(value) {
       _errText.value = value
-      workspaceFlipperScreen = SCREEN_ERROR
+      workspaceScreen = SCREEN_ERROR
     }
 
-  var workspaceFlipperScreen: Int
+  var workspaceScreen: Int
     get() = _workspaceScreen.value ?: SCREEN_WORKSPACE
     set(value) {
       _workspaceScreen.value = value

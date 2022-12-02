@@ -15,14 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater.internal
+package com.itsaky.androidide.lsp.xml.utils
 
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.INamespace.Companion.ANDROID
+import com.android.SdkConstants
 
-data class AttributeImpl @JvmOverloads constructor(
-  override val namespace: INamespace = ANDROID,
-  override val name: String,
-  override var value: String
-) : IAttribute
+val dimensionUnits =
+  arrayOf(
+    SdkConstants.UNIT_DP,
+    SdkConstants.UNIT_SP,
+    SdkConstants.UNIT_PX,
+    SdkConstants.UNIT_IN,
+    SdkConstants.UNIT_MM,
+    SdkConstants.UNIT_PT
+  )

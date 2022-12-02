@@ -24,6 +24,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IInflateEventsListener
@@ -49,6 +51,7 @@ import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_ERROR
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_WORKSPACE
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
@@ -60,6 +63,7 @@ import java.io.File
  */
 @SuppressLint("ClickableViewAccessibility")
 class DesignerWorkspaceFragment : BaseFragment() {
+
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
@@ -85,16 +89,32 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private val hierarchyChangeListener =
     object : SingleOnHierarchyChangeListener() {
+
+      private fun animateLayoutChange() {
+        TransitionManager.beginDelayedTransition(
+          workspaceView.view,
+          ChangeBounds().setDuration(HIERARCHY_CHANGE_TRANSITION_DURATION)
+        )
+      }
+
+      override fun beforeViewAdded(group: IViewGroup, view: IView) {
+        animateLayoutChange()
+      }
+
+      override fun beforeViewRemoved(group: IViewGroup, view: IView) {
+        animateLayoutChange()
+      }
+
       override fun onViewAdded(group: IViewGroup, view: IView) {
         setupView(view as UiView)
 
-        if (workspaceView.childCount == 0) {
-          viewModel.workspaceFlipperScreen = SCREEN_WORKSPACE
+        if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
+          viewModel.workspaceScreen = SCREEN_WORKSPACE
         }
       }
 
       override fun onViewRemoved(group: IViewGroup, view: IView) {
-        if (workspaceView.childCount == 0) {
+        if (workspaceView.viewGroup.childCount == 0) {
           viewModel.errText = getString(R.string.msg_empty_ui_layout)
         }
       }
@@ -103,6 +123,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
     const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
+    const val HIERARCHY_CHANGE_TRANSITION_DURATION = 100L
+
     private const val PLACEHOLDER_WIDTH_DP = 40f
     private const val PLACEHOLDER_HEIGHT_DP = 20f
   }
@@ -143,7 +165,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
 
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
-
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
     val inflater = ILayoutInflater.newInflater()

@@ -48,6 +48,7 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.lsp.xml.edits.QualifiedValueEditHandler
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.androidide.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
+import com.itsaky.androidide.lsp.xml.utils.dimensionUnits
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRef
 import com.itsaky.androidide.xml.utils.attrValue_qualifiedRefWithIncompletePckOrType
@@ -92,6 +93,20 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           return EMPTY
         }
 
+    return completeValue(namespace = namespace, prefix = prefix, attrName = attrName)
+  }
+
+  fun setNamespaces(namespaces: Set<Pair<String, String>>) {
+    this.allNamespaces = namespaces
+  }
+
+  fun completeValue(
+    namespace: String,
+    prefix: String,
+    attrName: String,
+    attrValue: String? = null
+  ): CompletionResult {
+
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
       return EMPTY
@@ -109,7 +124,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           return EMPTY
         }
 
-    val value = this.attrAtCursor.value
+    val value = attrValue ?: this.attrAtCursor.value
 
     // If user is directly typing the entry name. For example 'app_name'
     if (!value.startsWith('@')) {
@@ -268,7 +283,9 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       }
 
       if (attr.hasType(DIMENSION)) {
-        addValues(type = DIMEN, prefix = prefix, result = list)
+        if (prefix.isNotBlank() && prefix[0].isDigit()) {
+          addConstantDimensionValues(prefix, list)
+        } else addValues(type = DIMEN, prefix = prefix, result = list)
       }
 
       if (attr.hasType(INTEGER)) {
@@ -291,6 +308,22 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       if (attr.hasType(REFERENCE)) {
         completeReferences(prefix, list)
       }
+    }
+  }
+
+  private fun addConstantDimensionValues(prefix: String, list: MutableList<CompletionItem>) {
+    var i = 0
+    while (i < prefix.length && prefix[i].isDigit()) {
+      ++i
+    }
+    val dimen = prefix.substring(0, i)
+    for (unit in dimensionUnits) {
+      val value = "${dimen}${unit}"
+      val matchLevel = matchLevel(value, prefix)
+      if (matchLevel == NO_MATCH) {
+        continue
+      }
+      list.add(createEnumOrFlagCompletionItem(name = value, matchLevel = matchLevel))
     }
   }
 
@@ -318,14 +351,15 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       allNamespaces
         .flatMap { findResourceTables(it.second) }
         .flatMap { table ->
-          table.packages
-            .filter { checkPck(it.name) }
-            .map { pck ->
-              pck.name to
-                pck.findGroup(type)?.findEntries { entryName ->
-                  matchLevel(entryName, prefix) != NO_MATCH
-                }
+          table.packages.mapNotNull { pck ->
+            if (!checkPck(pck.name)) {
+              return@mapNotNull null
             }
+            pck.name to
+              pck.findGroup(type)?.findEntries { entryName ->
+                matchLevel(entryName, prefix) != NO_MATCH
+              }
+          }
         }
         .toHashSet()
 
