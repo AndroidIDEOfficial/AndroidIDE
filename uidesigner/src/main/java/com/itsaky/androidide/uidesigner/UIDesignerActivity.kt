@@ -19,17 +19,16 @@ package com.itsaky.androidide.uidesigner
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VIEW_INFO
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * The UI Designer activity allows the user to design XML layouts with a drag-n-drop interface.
@@ -38,7 +37,6 @@ import com.itsaky.androidide.utils.ILogger
  */
 class UIDesignerActivity : BaseIDEActivity() {
 
-  private val log = ILogger.newInstance("UIDesignerActivity")
   private var binding: ActivityUiDesignerBinding? = null
   private val workspace: DesignerWorkspaceFragment?
     get() = this.binding?.workspace?.getFragment()
@@ -60,7 +58,7 @@ class UIDesignerActivity : BaseIDEActivity() {
     workspace?.setupFromBundle(intent.extras)
 
     setSupportActionBar(this.binding!!.toolbar)
-    supportActionBar?.title = workspace?.viewModel?.file?.nameWithoutExtension
+    supportActionBar?.title = viewModel.file.nameWithoutExtension
 
     ActionBarDrawerToggle(
         this,

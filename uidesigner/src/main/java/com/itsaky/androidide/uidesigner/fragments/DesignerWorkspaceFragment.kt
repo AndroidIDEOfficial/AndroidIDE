@@ -63,6 +63,7 @@ import java.io.File
  */
 @SuppressLint("ClickableViewAccessibility")
 class DesignerWorkspaceFragment : BaseFragment() {
+
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
@@ -90,7 +91,10 @@ class DesignerWorkspaceFragment : BaseFragment() {
     object : SingleOnHierarchyChangeListener() {
 
       private fun animateLayoutChange() {
-        TransitionManager.beginDelayedTransition(workspaceView.view, ChangeBounds().setDuration(HIERARCHY_CHANGE_TRANSITION_DURATION))
+        TransitionManager.beginDelayedTransition(
+          workspaceView.view,
+          ChangeBounds().setDuration(HIERARCHY_CHANGE_TRANSITION_DURATION)
+        )
       }
 
       override fun beforeViewAdded(group: IViewGroup, view: IView) {
@@ -120,7 +124,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
     const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
     const val HIERARCHY_CHANGE_TRANSITION_DURATION = 100L
-    
+
     private const val PLACEHOLDER_WIDTH_DP = 40f
     private const val PLACEHOLDER_HEIGHT_DP = 20f
   }
@@ -161,7 +165,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
 
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
-
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
     val inflater = ILayoutInflater.newInflater()

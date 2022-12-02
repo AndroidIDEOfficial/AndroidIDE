@@ -19,14 +19,17 @@ package com.itsaky.androidide.uidesigner.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.transition.MaterialSharedAxis
+import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.uidesigner.databinding.LayoutAttrValueEditorBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
+import com.itsaky.androidide.uidesigner.utils.ValueCompletionProvider
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
@@ -50,6 +53,8 @@ class AttrValueEditorFragment : Fragment() {
       header = LayoutViewInfoHeaderBinding.bind(value.root)
     }
 
+  private var textWatcher: TextWatcher? = null
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -72,7 +77,22 @@ class AttrValueEditorFragment : Fragment() {
 
     header.name.text = "${attr.namespace.prefix}:${attr.name}"
     header.desc.text = attr.namespace.uri
-    binding.attrValue.editText?.setText(attr.value)
+    binding.attrValue.let { textView ->
+      textWatcher?.let { watcher -> textView.removeTextChangedListener(watcher) }
+
+      this.textWatcher =
+        ValueCompletionProvider(viewModel.file, viewModel.view!! as ViewImpl, attr) { result ->
+          textView.setAdapter(
+            ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, result)
+          )
+          textView.showDropDown()
+        }
+
+      textView.setText(attr.value)
+      textView.addTextChangedListener(textWatcher)
+      textView.dropDownAnchor = binding.root.id
+      textView.dropDownVerticalOffset = -binding.root.height
+    }
   }
 
   override fun onDestroyView() {
