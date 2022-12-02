@@ -152,7 +152,8 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val future =
       executeAsync(
         {
-          return@executeAsync var cloneCommand: CloneCommand = Git.cloneRepository()
+          return@executeAsync 
+            var cloneCommand: CloneCommand = Git.cloneRepository()
             cloneCommand.setURI(url)
             cloneCommand.setDirectory(targetDir)
             //Todo Ssh Option
