@@ -153,17 +153,17 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
       executeAsync(
         {
           return@executeAsync 
-            var cloneCommand: CloneCommand = Git.cloneRepository()
-            cloneCommand.setURI(url)
-            cloneCommand.setDirectory(targetDir)
-            //Todo Ssh Option
-            if(url.startsWith("git@github.com")) {
-          //  cloneCommand.setTransportConfigCallback(sshTransportConfigCallback)
-            }
-
-            cloneCommand.setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
-            cloneCommand.call()
-            .also { git = it }
+        //val sshTransportConfigCallback = SshTransportConfigCallback()
+        val cloneCommand: CloneCommand = Git.cloneRepository() 
+        cloneCommand.setURI(url)
+	//Todo	
+     //   if(url.startsWith("git@github.com")) {
+       //     cloneCommand.setTransportConfigCallback(sshTransportConfigCallback)
+    //    }
+	cloneCommand.setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))	
+        cloneCommand.setDirectory(targetDir)
+        cloneCommand.call()
+   	.also { git = it }
         },
         {}
       )
