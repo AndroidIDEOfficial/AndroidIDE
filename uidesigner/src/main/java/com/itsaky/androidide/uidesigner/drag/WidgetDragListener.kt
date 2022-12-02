@@ -22,8 +22,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
-import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
@@ -67,13 +65,7 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
               data.removeFromParent()
               data
             }
-            is UiWidget ->
-              data.createView(view.viewGroup.context, view.file).apply {
-                this.view.layoutParams =
-                  generateLayoutParams(this@WidgetDragListener.view.viewGroup)
-                val adapter = getAdapter(this.name)
-                adapter?.applyBasic(this)
-              }
+            is UiWidget -> data.createView(view.viewGroup.context, view.viewGroup, view.file)
             else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
           }
 

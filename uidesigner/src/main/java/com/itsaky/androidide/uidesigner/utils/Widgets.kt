@@ -20,6 +20,7 @@ package com.itsaky.androidide.uidesigner.utils
 import android.content.Context
 import android.view.SurfaceView
 import android.view.TextureView
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.AutoCompleteTextView
 import android.widget.Button
@@ -164,8 +165,8 @@ internal object Widgets {
               string.widget_linear_layout_horz,
               drawable.ic_widget_linear_layout_horz
             ) {
-            override fun createView(context: Context, layoutFile: LayoutFile): IView {
-              return super.createView(context, layoutFile).apply {
+            override fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
+              return super.createView(context, parent, layoutFile).apply {
                 addAttribute(AttributeImpl(name = "orientation", value = "horizontal"))
               }
             }
@@ -178,9 +179,9 @@ internal object Widgets {
               string.widget_linear_layout_vert,
               drawable.ic_widget_linear_layout_vert
             ) {
-            override fun createView(context: Context, layoutFile: LayoutFile): IView {
-              return super.createView(context, layoutFile).apply {
-                addAttribute(AttributeImpl(name ="orientation", value = "vertical"))
+            override fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
+              return super.createView(context, parent, layoutFile).apply {
+                addAttribute(AttributeImpl(name = "orientation", value = "vertical"))
               }
             }
           }

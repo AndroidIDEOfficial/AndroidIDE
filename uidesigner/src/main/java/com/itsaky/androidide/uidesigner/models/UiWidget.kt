@@ -26,9 +26,9 @@ import androidx.core.view.updatePaddingRelative
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewGroupImpl
-import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory
+import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 
 open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
 
@@ -44,7 +44,7 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
    * @param context The context that will be used for creating (View)[android.view.View] instance.
    * @param layoutFile The layout file that is being edited.
    */
-  open fun createView(context: Context, layoutFile: LayoutFile): IView {
+  open fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
     val v = ViewFactory.createViewInstance(name, context)
     val view: IView =
       if (v is ViewGroup) {
@@ -53,6 +53,9 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
           view.updatePaddingRelative(start = dp8, top = dp8, end = dp8, bottom = dp8)
         }
       } else UiView(layoutFile, name, v)
+    view.view.layoutParams = generateLayoutParams(parent)
+    val adapter = ViewAdapterIndex.getAdapter(this.name)
+    adapter?.applyBasic(view)
     return view
   }
 

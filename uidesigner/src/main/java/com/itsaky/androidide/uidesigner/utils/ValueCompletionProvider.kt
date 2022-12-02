@@ -84,9 +84,9 @@ internal class ValueCompletionProvider(
             onComplete(emptyList())
             return
           }
-      
+
       log.info("Complete attribute value: '${attribute.namespace.prefix}:${attribute.name}'")
-      
+
       val result =
         completionProvider.completeValue(
           namespace = attribute.namespace.uri,
@@ -94,12 +94,12 @@ internal class ValueCompletionProvider(
           attrName = attribute.name,
           attrValue = prefix
         )
-      
+
       log.debug(
         "Found ${result.items.size} items",
         if (result.isIncomplete) "(incomplete)" else "",
       )
-      
+
       onComplete(result.items.mapNotNull { it.label?.toString() })
     }
   }
