@@ -92,6 +92,20 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           return EMPTY
         }
 
+    return completeValue(namespace = namespace, prefix = prefix, attrName = attrName)
+  }
+
+  fun setNamespaces(namespaces: Set<Pair<String, String>>) {
+    this.allNamespaces = namespaces
+  }
+
+  fun completeValue(
+    namespace: String,
+    prefix: String,
+    attrName: String,
+    attrValue: String? = null
+  ): CompletionResult {
+
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
       return EMPTY
@@ -109,7 +123,7 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
           return EMPTY
         }
 
-    val value = this.attrAtCursor.value
+    val value = attrValue ?: this.attrAtCursor.value
 
     // If user is directly typing the entry name. For example 'app_name'
     if (!value.startsWith('@')) {
@@ -318,14 +332,15 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
       allNamespaces
         .flatMap { findResourceTables(it.second) }
         .flatMap { table ->
-          table.packages
-            .filter { checkPck(it.name) }
-            .map { pck ->
-              pck.name to
-                pck.findGroup(type)?.findEntries { entryName ->
-                  matchLevel(entryName, prefix) != NO_MATCH
-                }
+          table.packages.mapNotNull { pck ->
+            if (!checkPck(pck.name)) {
+              return@mapNotNull null
             }
+            pck.name to
+              pck.findGroup(type)?.findEntries { entryName ->
+                matchLevel(entryName, prefix) != NO_MATCH
+              }
+          }
         }
         .toHashSet()
 

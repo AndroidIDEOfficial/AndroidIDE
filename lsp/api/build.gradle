@@ -65,6 +65,7 @@ dependencies {
     implementation google.material
     
     api project (':build-tools:projects')
+    api project (':build-tools:xml-utils')
     api project (':lookup')
     api project (':lsp:models')
     api project (':preferences')

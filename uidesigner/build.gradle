@@ -40,11 +40,14 @@ dependencies {
     implementation androidx.appcompat
     implementation androidx.ktx
     implementation androidx.fragment_ktx
+    implementation common.editor
     implementation common.utilcode
     implementation google.material
     
     implementation project(path: ':common')
     implementation project(path: ':logger')
+    implementation project(path: ':lsp:api')
+    implementation project(path: ':lsp:xml')
     implementation project(path: ':resources')
     implementation project(path: ':xml-inflater')
     

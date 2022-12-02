@@ -48,11 +48,11 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
     val v = ViewFactory.createViewInstance(name, context)
     val view: IView =
       if (v is ViewGroup) {
-        ViewGroupImpl(layoutFile, name, v).apply {
+        UiViewGroup(layoutFile, name, v).apply {
           val dp8 = SizeUtils.dp2px(8f)
           view.updatePaddingRelative(start = dp8, top = dp8, end = dp8, bottom = dp8)
         }
-      } else ViewImpl(layoutFile, name, v)
+      } else UiView(layoutFile, name, v)
     return view
   }
 

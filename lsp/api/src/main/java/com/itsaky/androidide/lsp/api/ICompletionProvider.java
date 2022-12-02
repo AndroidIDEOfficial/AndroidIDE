@@ -52,9 +52,7 @@ import java.nio.file.Path;
  * @author Akash Yadav
  */
 public interface ICompletionProvider {
-
-  int MIN_MATCH_RATIO = CompletionsKt.DEFAULT_MIN_MATCH_RATIO;
-
+  
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);
   }
