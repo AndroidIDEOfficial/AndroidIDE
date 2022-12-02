@@ -106,7 +106,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
       }
 
       override fun onViewAdded(group: IViewGroup, view: IView) {
-        setupView(view as UiView)
+        setupView(view)
 
         if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
           viewModel.workspaceScreen = SCREEN_WORKSPACE

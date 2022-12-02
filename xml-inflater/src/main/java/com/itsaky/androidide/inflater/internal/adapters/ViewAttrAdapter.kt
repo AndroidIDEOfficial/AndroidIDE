@@ -33,9 +33,9 @@ import androidx.core.view.updatePaddingRelative
 import com.android.SdkConstants
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IViewAdapter
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewAdapter
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
@@ -132,10 +132,8 @@ open class ViewAttrAdapter : IViewAdapter() {
   }
 
   override fun applyBasic(view: IView) {
-    view.apply {
-      apply(this, AttributeImpl(name = "layout_height", value = "wrap_content"))
-      apply(this, AttributeImpl(name = "layout_width", value = "wrap_content"))
-    }
+    view.addAttribute(AttributeImpl(name = "layout_height", value = "wrap_content"))
+    view.addAttribute(AttributeImpl(name = "layout_width", value = "wrap_content"))
   }
 
   protected open fun applyLayoutParams(

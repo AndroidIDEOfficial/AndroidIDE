@@ -130,7 +130,7 @@ open class TextViewAttrAdapter : ViewAttrAdapter() {
 
   override fun applyBasic(view: IView) {
     super.applyBasic(view)
-    apply(view, AttributeImpl(name = "text", value = "AndroidIDE"))
+    view.addAttribute(AttributeImpl(name = "text", value = "AndroidIDE"))
   }
 
   protected open fun parseTextStyle(value: String): Int {
