@@ -33,7 +33,7 @@ var sshKeyPath: String
     prefManager.putString(SSH_KEY_PATH, value)
   }
 
-var create NewRepo: Boolean
+var createNewRepo: Boolean
   get() = prefManager.getBoolean(CREATE_NEW_REPO, false)
   set(value) {
     prefManager.putBoolean(CREATE_NEW_REPO, value)
