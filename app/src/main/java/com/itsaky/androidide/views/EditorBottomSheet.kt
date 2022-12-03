@@ -206,12 +206,7 @@ constructor(
       }
     view.viewTreeObserver.addOnGlobalLayoutListener(listener)
   }
-
-  fun onStateChanged(newState: Int) {
-    //    binding.headerContainer.visibility =
-    //      if (newState == BottomSheetBehavior.STATE_EXPANDED) INVISIBLE else VISIBLE
-  }
-
+  
   fun onSlide(offset: Float) {
     if (offset >= 0.5f) {
       updateCollapsedHeight(((0.5f - offset) + 0.5f) * 2f)
