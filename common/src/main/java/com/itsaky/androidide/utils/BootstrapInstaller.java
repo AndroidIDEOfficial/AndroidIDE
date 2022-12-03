@@ -104,11 +104,11 @@ public class BootstrapInstaller {
                 File targetFile = new File(PREFIX, zipEntryName);
                 boolean isDirectory = entry.isDirectory();
 
-                final var ___ = isDirectory ? targetFile : targetFile.getParentFile();
-                if (!FileUtils.createOrExistsDir(___)) {
+                final var dir = isDirectory ? targetFile : targetFile.getParentFile();
+                if (!FileUtils.createOrExistsDir(dir)) {
                   LOG.error("Cannot create target file parent directory");
                   throw new CompletionException(
-                      new InstallationException("Unable to create directory: " + ___));
+                      new InstallationException("Unable to create directory: " + dir));
                 }
 
                 // If the file exists and it is not a directory
