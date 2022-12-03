@@ -229,6 +229,16 @@
   <string name="pref_changelog">Changelog</string>
   <string name="msg_editor_font_size">Please choose default font size of editor :</string>
   <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
+  <string name="title_git">Git Source Control</string>
+  <string name="idepref_git_summary">Configure the Git Source Control</string>  
+  <string name="title_default_use_ssh">Authenticate GitHub using SSH</string>
+  <string name="msg_default_use_ssh">if checked, can access and write data in repositories using SSH</string>  
+  <string name="idepref_title_ssh_key_path">SSH Key path</string>
+  <string name="idepref_msg_ssh_key_path">Specify a SSH private key path to use for authentication with GitHub</string>
+  <string name="msg_ssh_key_path">Specify a SSH key path</string>
+  <string name="msg_ssh_key_path_input_help">Specify or paste SSH key path</string>
+  <string name="title_default_create_new_repo">Create Repository</string>
+  <string name="msg_default_create_new_repo">Create Git Repository for new projects</string>
 
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
