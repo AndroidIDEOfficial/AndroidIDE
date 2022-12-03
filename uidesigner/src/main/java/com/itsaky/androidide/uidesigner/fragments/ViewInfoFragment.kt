@@ -24,6 +24,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IView.SingleAttributeChangeListener
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -49,7 +52,7 @@ class ViewInfoFragment : Fragment() {
       field = value
       header = LayoutViewInfoHeaderBinding.bind(value.root)
     }
-
+  
   private var header: LayoutViewInfoHeaderBinding? = null
 
   companion object {
@@ -83,7 +86,7 @@ class ViewInfoFragment : Fragment() {
     header.name.text = view.simpleName
     header.desc.text = view.name
     binding.attrList.adapter =
-      ViewAttrListAdapter(view.attributes) {
+      ViewAttrListAdapter(view.attributes, viewModel) {
         viewModel.selectedAttr = it
         viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
       }

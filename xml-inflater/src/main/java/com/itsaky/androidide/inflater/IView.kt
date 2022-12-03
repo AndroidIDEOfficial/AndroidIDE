@@ -146,4 +146,10 @@ interface IView {
      */
     fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String)
   }
+
+  open class SingleAttributeChangeListener : AttributeChangeListener {
+    override fun onAttributeAdded(view: IView, attribute: IAttribute) {}
+    override fun onAttributeRemoved(view: IView, attribute: IAttribute) {}
+    override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {}
+  }
 }
