@@ -274,7 +274,7 @@
   <string name="msg_file_tree">درج الملفات</string>
   <string name="hint_color_resource">مورد اللون</string>
   <string name="title_color_picker">منتقي ألوان</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">قيمة السمة</string>
   <string name="hint_string_resource">مورد نصي</string>
   <string name="hint_resource_reference">أي مرجع للمورد</string>
   <string name="msg_code_actions">الإجراءات</string>
@@ -372,7 +372,7 @@
   <string name="idepref_maxLineWidth_title">أقصى عرض للسطر</string>
   <string name="idepref_maxLineWidth_summary">الحد الأقصى لعدد الأحرف التي يجب أن تكون في السطر.</string>
   <string name="idepref_splitAttrIndentSize_title">فصل حجم العوز للسمات </string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
+  <string name="idepref_splitAttrIndentSize_summary">عدد المسافات المراد إضافتها للسمات المقسمة.</string>
   <string name="idepref_preservedNewLines_title">احتفظ بخطوط جديدة</string>
   <string name="idepref_preservedNewLines_summary">• الحد الأقصى لعدد فترات التوقف المستمرة التي ينبغي الحفاظ عليها.</string>
   <string name="idepref_emptyElements_title">سلوك العناصر الفارغة</string>
