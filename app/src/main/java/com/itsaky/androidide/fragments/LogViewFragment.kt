@@ -39,7 +39,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   var binding: FragmentLogBinding? = null
 
   fun appendLog(line: LogLine) {
-    if (this.binding == null) {
+    val binding = this.binding ?: run {
       System.err.println("Cannot append log line. Binding is null.")
       return
     }
@@ -55,7 +55,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
       lineString += "\n"
     }
 
-    ThreadUtils.runOnUiThread { this.binding!!.editor.append(lineString) }
+    ThreadUtils.runOnUiThread { binding.editor.append(lineString) }
   }
 
   abstract fun isSimpleFormattingEnabled(): Boolean
