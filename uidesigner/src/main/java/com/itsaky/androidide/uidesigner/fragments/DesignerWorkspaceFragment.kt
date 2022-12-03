@@ -35,6 +35,7 @@ import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
 import com.itsaky.androidide.inflater.InflationFinishEvent
+import com.itsaky.androidide.inflater.InflationStartEvent
 import com.itsaky.androidide.inflater.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
@@ -44,6 +45,7 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
 import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
+import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
 import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiView
@@ -68,11 +70,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
+  private var isInflating = false
+  private val viewInfo by lazy { ViewInfoSheet() }
   private val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
-
-  private val viewInfo by lazy { ViewInfoSheet() }
 
   private val placeholder by lazy {
     val view =
@@ -106,7 +108,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
       }
 
       override fun onViewAdded(group: IViewGroup, view: IView) {
-        setupView(view)
+
+        if (!isInflating && view !is PlaceholderView) {
+          // when the inflation process is in progress, this method will be called
+          // after OnInflateViewEvent
+          setupView(view)
+        }
 
         if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
           viewModel.workspaceScreen = SCREEN_WORKSPACE
@@ -132,6 +139,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private val inflateListener by lazy {
     object : IInflateEventsListener {
       override fun onEvent(event: IInflationEvent<*>) {
+        if (event is InflationStartEvent) {
+          isInflating = true
+        }
+        if (event is InflationFinishEvent) {
+          isInflating = false
+        }
         if (event is OnInflateViewEvent) {
           setupView(event.data)
         }
@@ -198,9 +211,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
         true
       }
     )
-    val fg = view.view.foreground
-    view.view.foreground =
-      if (fg != null) layeredForeground(requireContext(), fg) else bgDesignerView(requireContext())
+    when (val fg = view.view.foreground) {
+      null -> view.view.foreground = bgDesignerView(requireContext())
+      is UiViewLayeredForeground -> log.warn("Attempt to reset UiViewLayeredForeground on view", view.name, fg::class.java)
+      else -> view.view.foreground = layeredForeground(requireContext(), fg)
+    }
 
     if (view is IViewGroup) {
       setupViewGroup(view as UiViewGroup)

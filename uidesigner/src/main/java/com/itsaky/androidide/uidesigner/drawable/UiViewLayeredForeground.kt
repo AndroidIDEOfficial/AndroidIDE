@@ -15,27 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.utils
+package com.itsaky.androidide.uidesigner.drawable
 
 import android.content.Context
-import android.graphics.PorterDuff.Mode.SRC_ATOP
-import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat.getColor
-import androidx.core.content.ContextCompat.getDrawable
-import com.itsaky.androidide.uidesigner.R
-import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
+import android.graphics.drawable.LayerDrawable
+import com.blankj.utilcode.util.SizeUtils
+import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 
-fun layeredForeground(context: Context, drawable: Drawable): Drawable {
-  return UiViewLayeredForeground(context, drawable)
-}
-
-@JvmOverloads
-fun bgDesignerView(
-  context: Context,
-  color: Int = getColor(context, R.color.primaryLightColor)
-): Drawable? {
-  return getDrawable(context, R.drawable.bg_designer_view)?.apply {
-    colorFilter = PorterDuffColorFilter(color, SRC_ATOP)
+/**
+ * Marker class to be able to differentiate between normal foregrounds and already layered
+ * foregrounds.
+ *
+ * @author Akash Yadav
+ */
+class UiViewLayeredForeground(context: Context, val src: Drawable) : LayerDrawable(emptyArray())
+{
+  init {
+    val dp1 = SizeUtils.dp2px(1f)
+    val index = addLayer(src)
+    setLayerInsetRelative(index, dp1, dp1, dp1, dp1)
+    bgDesignerView(context)?.let { addLayer(it) }
   }
 }
