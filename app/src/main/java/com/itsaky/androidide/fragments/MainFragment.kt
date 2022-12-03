@@ -27,9 +27,9 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
-import java.io.File
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
+import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
@@ -147,6 +147,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val repoName = url.substringAfterLast('/').substringBeforeLast(".git")
     val targetDir = File(Environment.PROJECTS_DIR, repoName)
 
+    val progress = GitCloneProgressMonitor(binding.progress, binding.message)
     var git: Git? = null
     val future =
       executeAsyncProvideError(
@@ -154,7 +155,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
           return@executeAsyncProvideError Git.cloneRepository()
             .setURI(url)
             .setDirectory(targetDir)
-            .setProgressMonitor(GitCloneProgressMonitor(binding.progress, binding.message))
+            .setProgressMonitor(progress)
             .call()
             .also { git = it }
         },
@@ -163,6 +164,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
     builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
       iface.dismiss()
+      progress.cancel()
       git?.close()
       future.cancel(true)
     }
@@ -207,6 +209,12 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
   class GitCloneProgressMonitor(val progress: LinearProgressIndicator, val message: TextView) :
     ProgressMonitor {
 
+    private var cancelled = false
+
+    fun cancel() {
+      cancelled = true
+    }
+
     override fun start(totalTasks: Int) {
       ThreadUtils.runOnUiThread { progress.max = totalTasks }
     }
@@ -222,7 +230,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     override fun endTask() {}
 
     override fun isCancelled(): Boolean {
-      return Thread.currentThread().isInterrupted
+      return cancelled || Thread.currentThread().isInterrupted
     }
   }
 }

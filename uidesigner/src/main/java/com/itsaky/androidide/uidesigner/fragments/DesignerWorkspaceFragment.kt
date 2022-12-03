@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.uidesigner.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -63,7 +62,6 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-@SuppressLint("ClickableViewAccessibility")
 class DesignerWorkspaceFragment : BaseFragment() {
 
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
@@ -213,7 +211,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
     )
     when (val fg = view.view.foreground) {
       null -> view.view.foreground = bgDesignerView(requireContext())
-      is UiViewLayeredForeground -> log.warn("Attempt to reset UiViewLayeredForeground on view", view.name, fg::class.java)
+      is UiViewLayeredForeground ->
+        log.warn("Attempt to reset UiViewLayeredForeground on view", view.name, fg::class.java)
       else -> view.view.foreground = layeredForeground(requireContext(), fg)
     }
 
