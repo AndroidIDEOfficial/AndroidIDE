@@ -1200,7 +1200,6 @@ public class EditorActivity extends IDEActivity
         new BottomSheetBehavior.BottomSheetCallback() {
           @Override
           public void onStateChanged(@NonNull View bottomSheet, int newState) {
-            mBinding.bottomSheet.onStateChanged(newState);
             if (newState == BottomSheetBehavior.STATE_EXPANDED) {
               final var editor = getCurrentEditor();
               if (editor != null && editor.getEditor() != null) {
