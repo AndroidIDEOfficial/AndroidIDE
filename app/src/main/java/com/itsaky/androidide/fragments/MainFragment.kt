@@ -153,8 +153,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     var git: Git? = null
     val sshTransportConfigCallback = SshTransportConfigCallback()
     val future =
-      if(url.startsWith("git@github.com")) {
-      if (!useSshKey) {
+        if (!useSshKey) {
         executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
@@ -168,10 +167,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
         { _, _ -> }
       )
       return
-     } else {
-      toastError(string.enable_ssh_access)
-        } 
-     } else { 
+     }  else 
       executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
@@ -183,7 +179,6 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
         },
         { _, _ -> }
       )
-      }
 
     builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
       iface.dismiss()
