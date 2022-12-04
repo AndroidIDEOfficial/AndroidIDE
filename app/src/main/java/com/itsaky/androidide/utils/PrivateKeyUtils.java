@@ -20,7 +20,7 @@ public class PrivateKeyUtils {
 
 	public static void copySshKey() {
 
-		String oldPath = SSH_KEY_PATH;
+		String oldPath = sshKeyPath;
 		File old_path = new File(oldPath);
 		if (old_path.exists()) {
 			FileUtils.copy(old_path, getSshKeyFolder());
