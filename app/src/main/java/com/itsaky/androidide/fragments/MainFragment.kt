@@ -170,7 +170,8 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
       return
      } else {
       toastError(string.enable_ssh_access)
-        } else { 
+        } 
+     } else { 
       executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
