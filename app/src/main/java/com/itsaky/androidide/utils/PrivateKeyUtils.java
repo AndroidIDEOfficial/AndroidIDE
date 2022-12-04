@@ -4,7 +4,7 @@ import com.blankj.utilcode.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.preferences.internal.GitPreferencesKt.SSH_KEY_PATH;
+import com.itsaky.androidide.preferences.internal.sshKeyPath;
 
 public class PrivateKeyUtils {
 
