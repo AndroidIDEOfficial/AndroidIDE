@@ -28,6 +28,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
 import org.eclipse.jgit.api.Git
+import com.itsaky.androidide.preferences.internal.useSshKey
 import com.itsaky.androidide.tasks.callables.SshTransportConfigCallback
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
@@ -153,6 +154,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val sshTransportConfigCallback = SshTransportConfigCallback()
     val future =
       if(url.startsWith("git@github.com")) {
+      if (!useSshKey) {
         executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
@@ -165,6 +167,8 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
         },
         { _, _ -> }
       )
+      return
+     } else toastError(string.enable_ssh_access)
         } else 
       executeAsyncProvideError(
         {
