@@ -16,8 +16,8 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
+import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.app.Dialog;
@@ -107,7 +107,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     window.setAdapter(new CompletionListAdapter());
     replaceComponent(EditorAutoCompletion.class, window);
 
-    setColorScheme(new SchemeAndroidIDE());
+    setColorScheme(SchemeAndroidIDE.newInstance(context));
     setSearcher(new IDEEditorSearcher(this));
     getComponent(EditorTextActionWindow.class).setEnabled(false);
     subscribeEvent(SelectionChangeEvent.class, this::handleSelectionChange);
@@ -381,7 +381,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   public boolean isValidLine(int line) {
     return line >= 0 && line < getText().getLineCount();
   }
-  
+
   /**
    * Checks if the given column is valid for this editor's text.
    *
@@ -872,7 +872,8 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
 
   @Override
   public void beginSearchMode() {
-    throw new UnsupportedOperationException("Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
+    throw new UnsupportedOperationException(
+        "Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
   }
 
   protected void dispatchDocumentSaveEvent() {

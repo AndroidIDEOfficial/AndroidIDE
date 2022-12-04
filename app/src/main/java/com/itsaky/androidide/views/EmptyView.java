@@ -26,7 +26,8 @@ import android.util.TypedValue;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
+import com.itsaky.androidide.R;
+import com.itsaky.androidide.utils.ResourceUtilsKt;
 
 public class EmptyView extends RelativeLayout {
 
@@ -54,9 +55,7 @@ public class EmptyView extends RelativeLayout {
 
     TextView text = new TextView(getContext());
     text.setText(com.itsaky.androidide.resources.R.string.msg_empty_view);
-    text.setTextColor(
-        ContextCompat.getColor(
-            getContext(), com.itsaky.androidide.resources.R.color.secondaryTextColor_light));
+    text.setTextColor(ResourceUtilsKt.resolveAttr(getContext(), R.attr.colorSecondaryVariant));
     text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
     LayoutParams params = new LayoutParams(-2, -2);

@@ -190,7 +190,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     final ProgressSheet progress = new ProgressSheet();
     progress.setSubMessageEnabled(false);
-    progress.setWelcomeTextEnabled(false);
     progress.setCancelable(false);
     progress.setMessage(activity().getString(string.msg_performing_actions));
     progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");

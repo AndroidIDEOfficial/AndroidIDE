@@ -17,6 +17,7 @@
  */
 package com.itsaky.androidide.syntax.colorschemes;
 
+import android.content.Context;
 import android.graphics.Color;
 
 import io.github.rosemoe.sora.lang.styling.TextStyle;
@@ -29,6 +30,8 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
  * @author Akash Yadav
  */
 public class SchemeAndroidIDE extends EditorColorScheme {
+
+  protected SchemeAndroidIDE() {}
 
   private static int current = EditorColorScheme.END_COLOR_ID;
   public static final int LOG_TEXT_INFO = ++current;
@@ -101,6 +104,12 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     return TextStyle.makeStyle(id, true);
   }
 
+  public static SchemeAndroidIDE newInstance(Context context) {
+    final var scheme = new DynamicColorScheme();
+    scheme.apply(context);
+    return scheme;
+  }
+
   @Override
   public void applyDefault() {
     // Apply default colors
@@ -129,14 +138,14 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(COMPLETION_WND_BACKGROUND, 0xff757575);
     setColor(COMPLETION_WND_CORNER, 0xff9e9e9e);
     setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
-    
+
     setColor(KEYWORD, 0xffff6060);
     setColor(OPERATOR, 0xff4fc3f7);
     setColor(LITERAL, 0xff8bc34a);
     setColor(TYPE_NAME, 0xff4fc3f7);
     setColor(ANNOTATION, 0xff4fc3f7);
     setColor(FIELD, 0xfff0be4b);
-    
+
     setColor(XML_TAG, 0xffff6060);
 
     setColor(LOG_TEXT_ERROR, 0xfff44336);

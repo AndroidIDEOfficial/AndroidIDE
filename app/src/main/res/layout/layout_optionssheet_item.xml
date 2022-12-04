@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?attr/selectableItemBackground"
+  android:clickable="true"
+  android:focusable="true"
+  android:orientation="vertical"
+  android:paddingTop="16dp"
+  android:paddingBottom="16dp">
+
+  <ImageView
+    android:id="@+id/icon"
+    android:layout_width="22dp"
+    android:layout_height="22dp"
+    android:layout_centerVertical="true"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:scaleType="fitCenter"
+    app:tint="?attr/colorOnSurface"
+    tools:src="@drawable/ic_new_file" />
+
+  <TextView
+    android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_ripple"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
-
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:scaleType="fitCenter" />
-
-    <TextView
-        android:id="@+id/text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_toEndOf="@id/icon"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="16sp" />
+    android:layout_centerVertical="true"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_toEndOf="@id/icon"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    tools:text="New file" />
 
 </RelativeLayout>
 

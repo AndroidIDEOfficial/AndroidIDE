@@ -32,6 +32,7 @@
         android:clickable="true"
         android:focusable="true"
         android:scaleType="fitCenter"
+        app:tint="?attr/colorOnBackground"
         app:srcCompat="@drawable/ic_github" />
 
       <ImageView
@@ -46,6 +47,7 @@
         android:clickable="true"
         android:focusable="true"
         android:scaleType="fitCenter"
+        app:tint="?attr/colorOnBackground"
         app:srcCompat="@drawable/ic_telegram" />
 
       <ImageView
@@ -60,12 +62,14 @@
         android:clickable="true"
         android:focusable="true"
         android:scaleType="fitCenter"
+        app:tint="?attr/colorOnBackground"
         app:srcCompat="@drawable/ic_email" />
 
       <ImageView
         android:id="@+id/website"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        app:tint="?attr/colorOnBackground"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
@@ -78,6 +82,7 @@
 
       <ImageView
         android:id="@+id/licenses"
+        app:tint="?attr/colorOnBackground"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
@@ -101,8 +106,7 @@
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="4dp"
     android:text="@string/title_translations"
-    android:textSize="18sp"
-    android:textStyle="bold" />
+    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
 
   <View
     android:layout_width="match_parent"
@@ -117,9 +121,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="24dp"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
     android:layout_marginEnd="16dp"
-    android:layout_marginBottom="16dp"
-    android:textSize="15sp" />
+    tools:text="Hindi - Akash Yadav"
+    android:layout_marginBottom="16dp"/>
 
   <TextView
     android:id="@+id/footer_text"
@@ -127,7 +132,9 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
     android:gravity="center"
-    android:textColor="@color/secondaryTextColor" />
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorOnBackground"
+    tools:text="AndroidIDE v2.1.3-beta for arm64-v8a" />
 
 </LinearLayout>
 

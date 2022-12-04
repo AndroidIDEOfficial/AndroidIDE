@@ -17,12 +17,15 @@
  */
 package com.itsaky.androidide.views;
 
+import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
+
 import android.content.Context;
 import android.util.AttributeSet;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SymbolInputAdapter;
 import com.itsaky.androidide.views.editor.IDEEditor;
 
@@ -47,6 +50,7 @@ public class SymbolInputView extends RecyclerView {
     adapter = new SymbolInputAdapter(editor);
     setAdapter(adapter);
     setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+    setBackgroundColor(resolveAttr(editor.getContext(), R.attr.colorPrimaryContainer));
   }
 
   public void setSymbols(Symbol... symbols) {
@@ -77,15 +81,15 @@ public class SymbolInputView extends RecyclerView {
     public Symbol(String label, String commit) {
       this(label, commit, 1);
     }
-  
+
     public String getLabel() {
       return label;
     }
-  
+
     public String getCommit() {
       return commit;
     }
-  
+
     public int getOffset() {
       return offset;
     }

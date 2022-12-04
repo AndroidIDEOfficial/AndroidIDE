@@ -7,5 +7,4 @@
   android:layout_height="40dp"
   android:gravity="center"
   android:singleLine="true"
-  android:textColor="@color/symbolInput_text"
   tools:text="↹" />

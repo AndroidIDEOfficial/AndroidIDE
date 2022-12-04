@@ -30,7 +30,6 @@ import android.view.ViewGroup
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.appcompat.view.menu.MenuItemImpl
 import androidx.appcompat.view.menu.SubMenuBuilder
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -38,18 +37,18 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.button.MaterialButton
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.EditorActionItem
-import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.databinding.LayoutPopupMenuItemBinding
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.utils.resolveAttr
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
@@ -57,7 +56,6 @@ import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.text.Cursor
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorTouchEventHandler
-import io.github.rosemoe.sora.widget.base.EditorPopupWindow
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
@@ -185,12 +183,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     val drawable = GradientDrawable()
     drawable.shape = GradientDrawable.RECTANGLE
     drawable.cornerRadius = SizeUtils.dp2px(28f).toFloat() // Recommeneded size is 28dp
-    drawable.color =
-      ColorStateList.valueOf(ContextCompat.getColor(editor.context, R.color.content_background))
-    drawable.setStroke(
-      SizeUtils.dp2px(1f),
-      ContextCompat.getColor(editor.context, R.color.primaryLightColor)
-    )
+    drawable.color = ColorStateList.valueOf(editor.context.resolveAttr(R.attr.colorSurface))
+    drawable.setStroke(SizeUtils.dp2px(1f), editor.context.resolveAttr(R.attr.colorOutline))
     list.background = drawable
   }
 
@@ -355,8 +349,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   private fun findWidestItem(): Int {
     var widest = 0
     val text =
-      LayoutInflater.from(editor.context).inflate(com.itsaky.androidide.R.layout.layout_popup_menu_item, null)
-        as MaterialButton
+      LayoutInflater.from(editor.context)
+        .inflate(com.itsaky.androidide.R.layout.layout_popup_menu_item, null) as MaterialButton
     val dp30 = SizeUtils.dp2px(30f)
     val paddingHorizontal = text.paddingStart + text.paddingEnd
     val drawablePadding = text.iconPadding

@@ -1,63 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  tools:ignore="Overdraw">
+
+  <LinearLayout
+    android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/content_background"
-    tools:ignore="Overdraw">
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    tools:ignore="UnusedAttribute">
 
-    <LinearLayout
-        android:id="@+id/item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/content_background"
-        android:clickable="true"
-        android:descendantFocusability="blocksDescendants"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        tools:ignore="UnusedAttribute">
+    <ImageView
+      android:id="@+id/icon"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginEnd="16dp"
+      android:scaleType="center" />
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="center" />
+    <TextView
+      android:id="@+id/title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+      tools:text="Filename" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/primaryTextColor"
-            android:textSize="15sp" />
+  </LinearLayout>
 
-    </LinearLayout>
+  <HorizontalScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/item"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:paddingStart="16dp"
+    tools:ignore="RtlSymmetry">
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/item"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:fillViewport="true"
-        android:paddingStart="16dp"
-        tools:ignore="RtlSymmetry">
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/items"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingStart="8dp"
+      android:paddingEnd="8dp"
+      tools:ignore="ScrollViewSize" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/items"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            tools:ignore="ScrollViewSize" />
-
-    </HorizontalScrollView>
+  </HorizontalScrollView>
 
 </RelativeLayout>
 

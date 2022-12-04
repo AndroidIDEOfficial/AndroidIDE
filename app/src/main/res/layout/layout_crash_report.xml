@@ -15,98 +15,95 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".CrashHandlerActivity">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".CrashHandlerActivity">
 
-    <ImageButton
-        android:id="@+id/close_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="16dp"
-        android:background="@drawable/bg_ripple"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_close" />
+  <ImageButton
+    android:id="@+id/close_button"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_margin="16dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:srcCompat="@drawable/ic_close"
+    app:tint="?attr/colorOnPrimaryContainer" />
 
-    <TextView
-        android:id="@+id/crash_title"
+  <TextView
+    android:id="@+id/crash_title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:text="@string/msg_ide_crashed"
+    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+    android:id="@+id/crash_subtitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="16dp"
+    android:text="@string/msg_report_crash"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    app:layout_constraintEnd_toStartOf="@+id/close_button"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/crash_title" />
+
+  <androidx.core.widget.NestedScrollView
+    android:id="@+id/log_text_container"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_margin="16dp"
+    android:fillViewport="true"
+    app:layout_constraintBottom_toTopOf="@+id/textView4"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/crash_subtitle">
+
+    <HorizontalScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true">
+
+      <TextView
+        android:id="@+id/log_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/msg_ide_crashed"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        tools:text="This is an error message." />
 
-    <TextView
-        android:id="@+id/crash_subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/msg_report_crash"
-        android:textColor="@color/secondaryTextColor_light"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/close_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/crash_title" />
+    </HorizontalScrollView>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/log_text_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/crash_subtitle">
+  </androidx.core.widget.NestedScrollView>
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+  <TextView
+    android:id="@+id/textView4"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:text="@string/msg_crash_report_hint"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorOnBackground"
+    app:layout_constraintBottom_toTopOf="@+id/report_button"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/log_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textColor="@color/secondaryColor"
-                tools:text="This is an error message." />
-
-        </HorizontalScrollView>
-
-    </androidx.core.widget.NestedScrollView>
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/msg_crash_report_hint"
-        android:textColor="@color/secondaryTextColor"
-        app:layout_constraintBottom_toTopOf="@+id/report_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/report_button"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/secondaryColor"
-        android:text="@string/msg_copy_report_action"
-        android:textColor="@color/primaryTextColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+  <Button
+    android:id="@+id/report_button"
+    style="@style/Widget.Material3.Button.ElevatedButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:text="@string/msg_copy_report_action"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

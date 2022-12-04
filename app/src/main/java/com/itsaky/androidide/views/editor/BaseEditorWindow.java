@@ -19,6 +19,7 @@ package com.itsaky.androidide.views.editor;
 
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -29,10 +30,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.resources.R;
+import com.itsaky.androidide.utils.ResourceUtilsKt;
 
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
@@ -74,8 +75,8 @@ public abstract class BaseEditorWindow extends AbstractPopupWindow {
     final var dp8 = dp4 * 2;
 
     final var text = new TextView(context);
-    text.setBackground(createBackground());
-    text.setTextColor(ContextCompat.getColor(context, R.color.primaryTextColor));
+    text.setBackground(createBackground(context));
+    text.setTextColor(ResourceUtilsKt.resolveAttr(context, R.attr.colorOnPrimaryContainer));
     text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
     text.setClickable(false);
     text.setFocusable(false);
@@ -86,11 +87,11 @@ public abstract class BaseEditorWindow extends AbstractPopupWindow {
     return text;
   }
 
-  protected Drawable createBackground() {
+  protected Drawable createBackground(final Context context) {
     GradientDrawable background = new GradientDrawable();
     background.setShape(GradientDrawable.RECTANGLE);
-    background.setColor(0xff212121);
-    background.setStroke(1, 0xffffffff);
+    background.setColor(ResourceUtilsKt.resolveAttr(context, R.attr.colorPrimaryContainer));
+    background.setStroke(1, ResourceUtilsKt.resolveAttr(context, R.attr.colorOutline));
     background.setCornerRadius(8);
     return background;
   }

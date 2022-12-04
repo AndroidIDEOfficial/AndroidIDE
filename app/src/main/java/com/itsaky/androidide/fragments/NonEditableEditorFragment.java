@@ -61,7 +61,7 @@ public abstract class NonEditableEditorFragment extends Fragment
     editor.setTypefaceLineNumber(TypefaceUtilsKt.jetbrainsMono());
     editor.setTypefaceText(TypefaceUtilsKt.jetbrainsMono());
     editor.setTextSize(12);
-    editor.setColorScheme(new SchemeAndroidIDE());
+    editor.setColorScheme(SchemeAndroidIDE.newInstance(requireContext()));
   }
 
   @Override

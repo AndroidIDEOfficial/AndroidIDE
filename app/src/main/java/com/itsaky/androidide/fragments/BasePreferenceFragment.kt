@@ -18,28 +18,12 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getColor
 import androidx.preference.PreferenceFragmentCompat
-import com.itsaky.androidide.resources.R.color
 import com.itsaky.androidide.R.xml
-import com.itsaky.androidide.app.IDEApplication.getInstance
 
 abstract class BasePreferenceFragment : PreferenceFragmentCompat() {
-  
+
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
     setPreferencesFromResource(xml.ide_prefs, rootKey)
-  }
-
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View {
-    return super.onCreateView(inflater, container, savedInstanceState).apply {
-      setBackgroundColor(getColor(getInstance(), color.content_background))
-    }
   }
 }

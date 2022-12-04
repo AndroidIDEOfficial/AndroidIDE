@@ -1,38 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/footer"
-    android:layout_width="match_parent"
+  android:id="@+id/footer"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:clipChildren="false"
+  android:minHeight="72dp"
+  android:orientation="horizontal"
+  android:paddingStart="8dp"
+  android:paddingTop="8dp"
+  android:paddingEnd="8dp"
+  android:paddingBottom="8dp">
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/exit_button"
+    style="@style/Widget.Material3.Button.TextButton"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:clipChildren="false"
-    android:minHeight="72dp"
-    android:orientation="horizontal"
-    android:paddingStart="8dp"
-    android:paddingTop="8dp"
-    android:paddingEnd="8dp"
-    android:paddingBottom="8dp">
+    android:elevation="0dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:text="@string/exit" />
 
-    <Button
-        android:id="@+id/exit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/exit"
-        android:textColor="?attr/colorOnSurface" />
+  <Space
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_weight="1" />
 
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/next"
-        android:textColor="@color/primaryTextColor" />
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/next_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:text="@string/next" />
 </LinearLayout>

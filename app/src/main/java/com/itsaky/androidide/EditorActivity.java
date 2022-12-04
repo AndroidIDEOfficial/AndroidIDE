@@ -61,7 +61,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -118,6 +117,7 @@ import com.itsaky.androidide.utils.InstallationResultHandler;
 import com.itsaky.androidide.utils.IntentUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
+import com.itsaky.androidide.utils.ResourceUtilsKt;
 import com.itsaky.androidide.utils.SingleSessionCallback;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
 import com.itsaky.androidide.views.EditorBottomSheet;
@@ -605,7 +605,6 @@ public class EditorActivity extends IDEActivity
     }
     mSearchingProgress = new ProgressSheet();
     mSearchingProgress.setCancelable(false);
-    mSearchingProgress.setWelcomeTextEnabled(false);
     mSearchingProgress.setMessage(getString(msg));
     mSearchingProgress.setSubMessageEnabled(false);
     return mSearchingProgress;
@@ -825,9 +824,10 @@ public class EditorActivity extends IDEActivity
   public MaterialBanner getSyncBanner() {
     return mBinding
         .syncBanner
-        .setContentTextColor(ContextCompat.getColor(this, color.primaryTextColor))
-        .setBannerBackgroundColor(ContextCompat.getColor(this, color.primaryLightColor))
-        .setButtonTextColor(ContextCompat.getColor(this, color.secondaryColor))
+        .setContentTextColor(ResourceUtilsKt.resolveAttr(this, R.attr.colorOnPrimaryContainer))
+        .setBannerBackgroundColor(
+            ResourceUtilsKt.resolveAttr(this, R.attr.colorPrimaryContainer))
+        .setButtonTextColor(ResourceUtilsKt.resolveAttr(this, R.attr.colorOnPrimaryContainer))
         .setIcon(drawable.ic_sync)
         .setContentText(string.msg_sync_needed);
   }
@@ -1491,8 +1491,8 @@ public class EditorActivity extends IDEActivity
         new ActionItem(ACTION_ID_ALL, getString(string.action_closeAll), drawable.ic_close_all);
     mTabCloseAction = new QuickAction(this, QuickAction.HORIZONTAL);
     mTabCloseAction.addActionItem(closeThis, closeOthers, closeAll);
-    mTabCloseAction.setColorRes(color.tabAction_background);
-    mTabCloseAction.setTextColorRes(color.tabAction_text);
+    mTabCloseAction.setColor(ResourceUtilsKt.resolveAttr(this, color.tabAction_background));
+    mTabCloseAction.setTextColor(ResourceUtilsKt.resolveAttr(this, color.tabAction_text));
 
     mTabCloseAction.setOnActionItemClickListener(
         (item) -> {

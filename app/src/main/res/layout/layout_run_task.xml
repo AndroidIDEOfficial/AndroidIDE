@@ -28,9 +28,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:hint="@string/hint_search_tasks"
-    android:theme="@style/AppTheme.TextInputLayout"
-    app:boxBackgroundColor="@color/content_background">
+    android:hint="@string/hint_search_tasks">
 
     <com.google.android.material.textfield.TextInputEditText
       android:layout_width="match_parent"

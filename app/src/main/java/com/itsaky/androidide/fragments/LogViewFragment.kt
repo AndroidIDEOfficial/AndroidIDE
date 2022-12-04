@@ -39,10 +39,12 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   var binding: FragmentLogBinding? = null
 
   fun appendLog(line: LogLine) {
-    val binding = this.binding ?: run {
-      System.err.println("Cannot append log line. Binding is null.")
-      return
-    }
+    val binding =
+      this.binding
+        ?: run {
+          System.err.println("Cannot append log line. Binding is null.")
+          return
+        }
 
     var lineString =
       if (isSimpleFormattingEnabled()) {
@@ -85,7 +87,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.typefaceLineNumber = jetbrainsMono()
     editor.setTextSize(12f)
     editor.typefaceText = jetbrainsMono()
-    editor.colorScheme = SchemeAndroidIDE()
+    editor.colorScheme = SchemeAndroidIDE.newInstance(requireContext())
     editor.setEditorLanguage(LogLanguage())
   }
 

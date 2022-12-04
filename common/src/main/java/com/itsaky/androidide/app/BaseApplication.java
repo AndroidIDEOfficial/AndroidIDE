@@ -31,6 +31,7 @@ import androidx.multidex.BuildConfig;
 import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.google.android.material.color.DynamicColors;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
@@ -101,7 +102,9 @@ public abstract class BaseApplication extends MultiDexApplication {
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
     ToolsManager.init(this, null);
-
+  
+    DynamicColors.applyToActivitiesIfAvailable(this);
+    
     createNotificationChannels();
   }
 

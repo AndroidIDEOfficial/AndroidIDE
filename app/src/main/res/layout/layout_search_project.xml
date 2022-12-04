@@ -36,9 +36,7 @@
       android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
       android:hint="@string/text_to_search"
-      android:theme="@style/AppTheme.TextInputLayout"
-      app:startIconDrawable="@drawable/ic_search"
-      app:startIconTint="@color/primaryIconColor">
+      app:startIconDrawable="@drawable/ic_search">
 
       <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
@@ -54,11 +52,9 @@
       android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
       android:hint="@string/hint_find_project_filter"
-      android:theme="@style/AppTheme.TextInputLayout"
       app:helperText="@string/msg_find_project_filter"
       app:helperTextEnabled="true"
-      app:startIconDrawable="@drawable/ic_filter"
-      app:startIconTint="@color/primaryIconColor">
+      app:startIconDrawable="@drawable/ic_filter">
 
       <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"

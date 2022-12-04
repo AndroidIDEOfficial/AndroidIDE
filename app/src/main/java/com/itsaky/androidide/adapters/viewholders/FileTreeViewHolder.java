@@ -20,9 +20,6 @@
 
 package com.itsaky.androidide.adapters.viewholders;
 
-import static android.graphics.PorterDuff.Mode.SRC_ATOP;
-import static androidx.core.content.ContextCompat.getColor;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +30,9 @@ import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.models.FileExtension;
+import com.itsaky.androidide.resources.R;
 import com.unnamed.b.atv.model.TreeNode;
 
 import java.io.File;
@@ -63,11 +60,6 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 
     updateChevronIcon(node.isExpanded());
 
-    binding
-        .filetreeIcon
-        .getDrawable()
-        .setColorFilter(getColor(context, R.color.secondaryLightColor), SRC_ATOP);
-
     return root;
   }
 
@@ -81,10 +73,6 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 
     TransitionManager.beginDelayedTransition(binding.getRoot(), new ChangeImageTransform());
     binding.filetreeChevron.setImageResource(chevronIcon);
-    binding
-        .filetreeChevron
-        .getDrawable()
-        .setColorFilter(getColor(context, R.color.secondaryLightColor), SRC_ATOP);
   }
 
   protected LinearLayout applyPadding(

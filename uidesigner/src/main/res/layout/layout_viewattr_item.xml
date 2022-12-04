@@ -45,6 +45,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="2dp"
     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorOnSurface"
     app:layout_constraintEnd_toEndOf="@id/attr_name"
     app:layout_constraintStart_toStartOf="@id/attr_name"
     app:layout_constraintTop_toBottomOf="@id/attr_name"

@@ -32,7 +32,6 @@
       android:id="@+id/appbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:backgroundTint="@color/primaryDarkColor"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
       <com.google.android.material.appbar.MaterialToolbar
@@ -58,9 +57,7 @@
     android:id="@+id/nav"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_gravity="start"
-    app:itemIconTint="@color/primaryIconColor"
-    app:itemTextColor="@color/primaryTextColor">
+    android:layout_gravity="start">
 
     <androidx.fragment.app.FragmentContainerView
       android:id="@+id/widgets_fragment"

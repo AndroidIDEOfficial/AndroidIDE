@@ -18,8 +18,11 @@
 package com.itsaky.androidide.preferences
 
 import android.content.Context
+import android.graphics.PorterDuff.Mode.SRC_ATOP
+import android.graphics.PorterDuffColorFilter
 import androidx.core.content.ContextCompat
 import androidx.preference.Preference
+import com.itsaky.androidide.utils.resolveAttr
 
 /**
  * Base class for preferences.
@@ -35,10 +38,16 @@ abstract class BasePreference : IPreference() {
     pref.key = this.key
     pref.title = context.getString(this.title)
     this.summary?.let { pref.summary = context.getString(it) }
-    
+
     pref.isIconSpaceReserved = this.icon != null
-    this.icon?.let { pref.icon = ContextCompat.getDrawable(context, it) }
-  
+    this.icon?.let {
+      pref.icon =
+        ContextCompat.getDrawable(context, it)?.apply {
+          colorFilter =
+            PorterDuffColorFilter(context.resolveAttr(R.attr.colorOnPrimaryContainer), SRC_ATOP)
+        }
+    }
+
     pref.setOnPreferenceClickListener { onPreferenceClick(pref) }
     pref.setOnPreferenceChangeListener(this::onPreferenceChanged)
     return pref

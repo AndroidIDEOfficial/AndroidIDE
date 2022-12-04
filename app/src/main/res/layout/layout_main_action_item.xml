@@ -27,10 +27,9 @@
   android:ellipsize="end"
   android:singleLine="true"
   android:textAlignment="textStart"
-  android:textColor="@color/primaryTextColor"
-  android:textSize="14sp"
+  android:textColor="?attr/colorOnBackground"
   android:textStyle="bold"
   app:iconPadding="8dp"
-  app:iconTint="@color/primaryTextColor"
+  app:iconTint="?attr/colorOnBackground"
   tools:icon="@drawable/ic_add"
   tools:text="@string/msg_create_new_project" />

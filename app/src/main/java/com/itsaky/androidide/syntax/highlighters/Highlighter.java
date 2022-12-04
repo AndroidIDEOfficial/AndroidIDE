@@ -21,6 +21,8 @@ package com.itsaky.androidide.syntax.highlighters;
 
 import android.text.SpannableStringBuilder;
 
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+
 /**
  * A highlighter is used to highlight a small piece of code
  *
@@ -28,5 +30,5 @@ import android.text.SpannableStringBuilder;
  * an EditorLanguage instead
  */
 public interface Highlighter {
-  SpannableStringBuilder highlight(String code, String match) throws Exception;
+  SpannableStringBuilder highlight(SchemeAndroidIDE scheme, String code, String match) throws Exception;
 }

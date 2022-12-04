@@ -27,7 +27,6 @@
 
   <com.google.android.material.progressindicator.LinearProgressIndicator
     android:id="@+id/progress"
-    style="@style/AppTheme.ProgressIndicator"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     app:layout_constraintBottom_toBottomOf="parent"

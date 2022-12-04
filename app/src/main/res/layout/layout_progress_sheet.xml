@@ -1,50 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:gravity="start|center_vertical"
+  android:paddingTop="16dp">
+
+  <com.google.android.material.progressindicator.CircularProgressIndicator
+    android:id="@+id/progress"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_marginEnd="16dp"
+    android:padding="10dp"
+    tools:progress="60" />
+
+  <TextView
+    android:id="@+id/message"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="start|center_vertical"
-    android:paddingTop="16dp">
+    android:layout_marginEnd="8dp"
+    android:layout_toEndOf="@id/progress"
+    android:ellipsize="end"
+    android:singleLine="true"
+    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    tools:text="A long running task" />
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:padding="10dp" />
-
-    <TextView
-        android:id="@+id/message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_toEndOf="@id/progress"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textSize="15sp" />
-
-    <TextView
-        android:id="@+id/subMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/message"
-        android:layout_marginEnd="8dp"
-        android:layout_toEndOf="@id/progress"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:maxLines="2"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/welcomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/progress"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:text="@string/get_ready_for_something_awesome"
-        android:textColor="@color/secondaryTextColor_light"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+  <TextView
+    android:id="@+id/subMessage"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/message"
+    android:layout_marginEnd="8dp"
+    android:layout_toEndOf="@id/progress"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:maxLines="2"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorOnBackground"
+    tools:text="@string/please_wait" />
 
 </RelativeLayout>
 

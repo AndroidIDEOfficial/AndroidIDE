@@ -107,7 +107,7 @@ public class CodeEditorView extends LinearLayout {
     this.binding.editor.setHighlightCurrentBlock(true);
     this.binding.editor.getProps().autoCompletionOnComposing = true;
     this.binding.editor.setDividerWidth(SizeUtils.dp2px(1));
-    this.binding.editor.setColorScheme(new SchemeAndroidIDE());
+    this.binding.editor.setColorScheme(SchemeAndroidIDE.newInstance(context));
     this.binding.editor.setLineSeparator(LineSeparator.LF);
 
     this.searchLayout = new EditorSearchLayout(context, this.binding.editor);
