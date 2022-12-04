@@ -13,7 +13,7 @@ public class PrivateKeyUtils {
 
 	public static File getSshKeyFolder() {
 		
-                String sshKey = Environment.DEFAULT_HOME.getAbsolutePath() + "/.ssh";
+                String sshKey = Environment.DEFAULT_HOME + "/.ssh";
 		File getKey = new File(sshKey);
 		return getKey;
 	}
