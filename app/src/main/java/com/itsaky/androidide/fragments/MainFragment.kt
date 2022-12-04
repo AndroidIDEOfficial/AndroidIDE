@@ -153,6 +153,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     var git: Git? = null
     val sshTransportConfigCallback = SshTransportConfigCallback()
     val future =
+        if(url.startsWith("git@github.com")) {
         if (!useSshKey) {
         executeAsyncProvideError(
         {
@@ -167,6 +168,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
         { _, _ -> }
       )
       return
+     } 
      }  else 
       executeAsyncProvideError(
         {
