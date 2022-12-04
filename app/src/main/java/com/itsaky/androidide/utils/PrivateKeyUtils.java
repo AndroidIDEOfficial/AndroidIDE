@@ -4,6 +4,7 @@ import com.blankj.utilcode.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.preferences.internal.SSH_KEY_PATH;
 
 public class PrivateKeyUtils {
 
@@ -19,7 +20,7 @@ public class PrivateKeyUtils {
 
 	public static void copySshKey() {
 
-		String oldPath = "/storage/emulated/0/.ssh";
+		String oldPath = SSH_KEY_PATH;
 		File old_path = new File(oldPath);
 		if (old_path.exists()) {
 			FileUtils.copy(old_path, getSshKeyFolder());
