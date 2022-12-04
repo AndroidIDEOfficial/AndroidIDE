@@ -27,7 +27,7 @@ public class SshTransportConfigCallback implements TransportConfigCallback {
 			PrivateKeyUtils.copySshKey();
 			JSch.setLogger(new MyLogger());
 			JSch jsch = new JSch();
-			jsch.setKnownHosts(PrivateKeyUtils.getSshKeyFolder().getAbsolutePath() + "/known_hosts");
+			//jsch.setKnownHosts(PrivateKeyUtils.getSshKeyFolder().getAbsolutePath() + "/known_hosts");
 			JSch jSch = super.createDefaultJSch(fs);
 			jSch.removeAllIdentity();
 			//curently jsch works with only is_rsa 4096-bit key
