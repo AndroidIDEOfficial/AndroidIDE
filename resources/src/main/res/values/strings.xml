@@ -239,6 +239,7 @@
   <string name="msg_ssh_key_path_input_help">Specify or paste SSH key path</string>
   <string name="title_default_create_new_repo">Create Repository</string>
   <string name="msg_default_create_new_repo">Create Git Repository for new projects</string>
+  <string name="enable_ssh_access">Enable ssh access for authentication</string>
 
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
