@@ -15,7 +15,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.itsaky.androidide.views.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
@@ -68,4 +68,4 @@
 
   </com.google.android.material.navigation.NavigationView>
 
-</com.itsaky.androidide.views.ContentTranslatingDrawerLayout>
+</com.itsaky.androidide.ui.ContentTranslatingDrawerLayout>

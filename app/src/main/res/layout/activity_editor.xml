@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsaky.androidide.views.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/editor_drawerLayout"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
-      <com.itsaky.androidide.views.MaterialBanner
+      <com.itsaky.androidide.ui.MaterialBanner
         android:id="@+id/syncBanner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
 
     </ViewFlipper>
 
-    <com.itsaky.androidide.views.EditorBottomSheet
+    <com.itsaky.androidide.ui.EditorBottomSheet
       android:id="@+id/bottom_sheet"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -137,4 +137,4 @@
 
   </com.google.android.material.navigation.NavigationView>
 
-</com.itsaky.androidide.views.ContentTranslatingDrawerLayout>
+</com.itsaky.androidide.ui.ContentTranslatingDrawerLayout>

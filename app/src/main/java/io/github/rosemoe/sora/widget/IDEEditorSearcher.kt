@@ -23,7 +23,7 @@ import android.app.ProgressDialog
 import android.widget.Toast
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.views.editor.IDEEditor
+import com.itsaky.androidide.ui.editor.IDEEditor
 import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.util.IntPair
 import java.util.concurrent.CompletableFuture

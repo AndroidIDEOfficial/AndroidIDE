@@ -28,9 +28,8 @@ import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
-import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.androidide.ui.editor.IDEEditor;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 

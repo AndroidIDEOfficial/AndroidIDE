@@ -34,7 +34,6 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
-import com.itsaky.androidide.lsp.models.Command;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ShowDocumentParams;
@@ -48,8 +47,8 @@ import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.views.editor.CodeEditorView;
-import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.androidide.ui.editor.CodeEditorView;
+import com.itsaky.androidide.ui.editor.IDEEditor;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
 

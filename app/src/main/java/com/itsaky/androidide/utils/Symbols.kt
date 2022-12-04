@@ -19,7 +19,7 @@ package com.itsaky.androidide.utils
 
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useSoftTab
-import com.itsaky.androidide.views.SymbolInputView.Symbol
+import com.itsaky.androidide.ui.SymbolInputView.Symbol
 import java.io.File
 
 object Symbols {

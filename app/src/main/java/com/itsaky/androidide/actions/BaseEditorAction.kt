@@ -20,7 +20,7 @@ package com.itsaky.androidide.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.views.editor.IDEEditor
+import com.itsaky.androidide.ui.editor.IDEEditor
 
 /** @author Akash Yadav */
 abstract class BaseEditorAction : EditorActionItem {

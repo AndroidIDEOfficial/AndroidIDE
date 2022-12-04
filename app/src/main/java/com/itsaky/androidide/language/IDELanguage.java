@@ -25,7 +25,7 @@ import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.androidide.ui.editor.IDEEditor;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
