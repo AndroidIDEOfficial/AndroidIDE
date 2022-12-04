@@ -164,6 +164,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
             .also { git = it }
         },
         { _, _ -> }
+      )
         } else 
       executeAsyncProvideError(
         {
