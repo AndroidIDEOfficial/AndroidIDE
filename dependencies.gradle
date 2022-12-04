@@ -80,7 +80,8 @@ ext {
     ]
 
     git = [
-            jgit          : 'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r'
+            slf4j         : 'org.slf4j:slf4j-api:2.0.5',
+            jsch          : 'com.github.mwiede:jsch:0.2.4'
     ]
 
     tests = [
