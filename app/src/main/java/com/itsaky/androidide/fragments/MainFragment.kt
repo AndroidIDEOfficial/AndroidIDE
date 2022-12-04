@@ -152,9 +152,8 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val progress = GitCloneProgressMonitor(binding.progress, binding.message)
     var git: Git? = null
     val sshTransportConfigCallback = SshTransportConfigCallback()
-    val future =
-        if(url.startsWith("git@github.com")) {
-        if (!useSshKey) {
+    val future = //TODO use ssh access only for git@github.com
+      if(url.startsWith("git@github.com")) {
         executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
@@ -166,10 +165,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
             .also { git = it }
         },
         { _, _ -> }
-      )
-      return
-     } 
-     }  else 
+        } else 
       executeAsyncProvideError(
         {
           return@executeAsyncProvideError Git.cloneRepository()
