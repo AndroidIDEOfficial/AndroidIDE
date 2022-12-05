@@ -25,32 +25,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.ClassCompletionData
+import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
 import com.itsaky.androidide.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.androidide.lsp.models.CompletionItemKind.INTERFACE
 import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
-import com.itsaky.androidide.preferences.internal.useCustomFont
-import com.itsaky.androidide.utils.customOrJBMono
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
+import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.resources.R.color
 import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
 import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.customOrJBMono
+import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
 
@@ -95,8 +95,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
       binding.completionDetail.visibility = View.GONE
     }
     binding.root.setBackgroundColor(
-      ContextCompat.getColor(
-        context,
+      context.resolveAttr(
         if (isCurrentCursorPosition) color.completionList_backgroundSelected
         else color.completionList_background
       )

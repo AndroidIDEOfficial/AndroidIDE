@@ -27,12 +27,10 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:hint="@string/msg_replacement"
-    android:theme="@style/AppTheme.TextInputLayout"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:startIconDrawable="@drawable/ic_search_replace"
-    app:startIconTint="@color/primaryIconColor">
+    app:startIconDrawable="@drawable/ic_search_replace">
 
     <com.google.android.material.textfield.TextInputEditText
       android:layout_width="match_parent"

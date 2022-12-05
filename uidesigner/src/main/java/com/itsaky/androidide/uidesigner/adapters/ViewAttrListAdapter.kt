@@ -20,10 +20,15 @@ package com.itsaky.androidide.uidesigner.adapters
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IView.SingleAttributeChangeListener
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewattrItemBinding
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
  * A [RecyclerView.Adapter] which shows the list of attributes of the selected view in the UI
@@ -31,7 +36,8 @@ import com.itsaky.androidide.uidesigner.databinding.LayoutViewattrItemBinding
  *
  * @author Akash Yadav
  */
-class ViewAttrListAdapter(attributes: List<IAttribute>, private val onClick: (IAttribute) -> Unit) : RecyclerView.Adapter<VH>() {
+class ViewAttrListAdapter(attributes: List<IAttribute>, private val viewModel: WorkspaceViewModel?, private val onClick: (IAttribute) -> Unit) :
+  RecyclerView.Adapter<VH>() {
   
   private val attributes = attributes.sortedBy { it.name }
   
@@ -55,6 +61,21 @@ class ViewAttrListAdapter(attributes: List<IAttribute>, private val onClick: (IA
     
     binding.root.setOnClickListener {
       onClick(attr)
+      val viewModel = this.viewModel ?: return@setOnClickListener
+      val attrUpdateListener = object : SingleAttributeChangeListener() {
+        override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
+          binding.attrValue.text = attribute.value
+        }
+      }
+      val viewInfoScreenObserver = object : Observer<Int> {
+        override fun onChanged(t: Int?) {
+          if (t == WorkspaceViewModel.SCREEN_VIEW_INFO) {
+            viewModel._viewInfoScreen.removeObserver(this)
+          }
+        }
+      }
+      viewModel._viewInfoScreen.observe(binding.root.context as LifecycleOwner, viewInfoScreenObserver)
+      viewModel.view?.registerAttributeChangeListener(attrUpdateListener)
     }
   }
 }

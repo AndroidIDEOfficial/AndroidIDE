@@ -1,35 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#121212</color>
-    <color name="primaryColor_translucent">#90121212</color>
-    <color name="primaryLightColor">#373737</color>
-    <color name="primaryDarkColor">#010101</color>
-    <color name="secondaryColor">#ff5252</color>
-    <color name="secondaryLightColor">#ff867f</color>
-    <color name="secondaryLightColor_transparent">#1FFF867F</color>
-    <color name="secondaryIconColor">@color/secondaryColor</color>
-    <color name="secondaryDarkColor">#c50e29</color>
-    <color name="primaryTextColor">#ffffff</color>
-    <color name="primaryTextColorLight">#bdbdbd</color>
-    <color name="secondaryTextColor">#70ffffff</color>
-    <color name="secondaryTextColor_light">#50ffffff</color>
-    <color name="primaryIconColor">#ffffff</color>
-    <color name="surfaceColor">#323232</color>
-    <color name="completionList_background">#373737</color>
-    <color name="completionList_backgroundSelected">#505050</color>
-    <color name="symbolInput_background">#000000</color>
-    <color name="symbolInput_text">@color/primaryTextColor</color>
-    <color name="tabAction_background">#ffffff</color>
-    <color name="tabAction_text">@color/primaryLightColor</color>
-    <color name="tabAction_icon">#000000</color>
-    <color name="rippleHighlightColor">#85121212</color>
-    <color name="log_warning">#FF7043</color>
-    <color name="diagnostic_error">@color/secondaryDarkColor</color>
-    <color name="diagnostic_warning">@color/log_warning</color>
-    <color name="content_background">#212121</color>
-    <color name="bg_widget_selected">#212121</color>
-    <color name="green_500">#4caf50</color>
 
-    <color name="color_toast_background">#90424242</color>
-    <color name="color_picker_default_color">#f44336</color>
+  <color name="seed">#ff5252</color>
+
+  <!--  light colors-->
+  <color name="md_theme_light_primary">#B81D27</color>
+  <color name="md_theme_light_onPrimary">#FFFFFF</color>
+  <color name="md_theme_light_primaryContainer">#FFDAD7</color>
+  <color name="md_theme_light_onPrimaryContainer">#410004</color>
+  <color name="md_theme_light_secondary">#775654</color>
+  <color name="md_theme_light_onSecondary">#FFFFFF</color>
+  <color name="md_theme_light_secondaryContainer">#FFDAD7</color>
+  <color name="md_theme_light_onSecondaryContainer">#2C1514</color>
+  <color name="md_theme_light_tertiary">#735B2E</color>
+  <color name="md_theme_light_onTertiary">#FFFFFF</color>
+  <color name="md_theme_light_tertiaryContainer">#FFDEA7</color>
+  <color name="md_theme_light_onTertiaryContainer">#271900</color>
+  <color name="md_theme_light_error">#BA1A1A</color>
+  <color name="md_theme_light_errorContainer">#FFDAD6</color>
+  <color name="md_theme_light_onError">#FFFFFF</color>
+  <color name="md_theme_light_onErrorContainer">#410002</color>
+  <color name="md_theme_light_background">#FFFBFF</color>
+  <color name="md_theme_light_onBackground">#201A1A</color>
+  <color name="md_theme_light_surface">#FFFBFF</color>
+  <color name="md_theme_light_onSurface">#201A1A</color>
+  <color name="md_theme_light_surfaceVariant">#F5DDDB</color>
+  <color name="md_theme_light_onSurfaceVariant">#534342</color>
+  <color name="md_theme_light_outline">#857371</color>
+  <color name="md_theme_light_inverseOnSurface">#FBEEEC</color>
+  <color name="md_theme_light_inverseSurface">#362F2E</color>
+  <color name="md_theme_light_inversePrimary">#FFB3AE</color>
+  <color name="md_theme_light_shadow">#000000</color>
+  <color name="md_theme_light_surfaceTint">#B81D27</color>
+  <color name="md_theme_light_outlineVariant">#D8C2C0</color>
+  <color name="md_theme_light_scrim">#000000</color>
+
+  <!--  dark colors-->
+  <color name="md_theme_dark_primary">#FFB3AE</color>
+  <color name="md_theme_dark_onPrimary">#68000C</color>
+  <color name="md_theme_dark_primaryContainer">#930015</color>
+  <color name="md_theme_dark_onPrimaryContainer">#FFDAD7</color>
+  <color name="md_theme_dark_secondary">#E7BDB9</color>
+  <color name="md_theme_dark_onSecondary">#442928</color>
+  <color name="md_theme_dark_secondaryContainer">#5D3F3D</color>
+  <color name="md_theme_dark_onSecondaryContainer">#FFDAD7</color>
+  <color name="md_theme_dark_tertiary">#E2C28C</color>
+  <color name="md_theme_dark_onTertiary">#402D04</color>
+  <color name="md_theme_dark_tertiaryContainer">#594319</color>
+  <color name="md_theme_dark_onTertiaryContainer">#FFDEA7</color>
+  <color name="md_theme_dark_error">#FFB4AB</color>
+  <color name="md_theme_dark_errorContainer">#93000A</color>
+  <color name="md_theme_dark_onError">#690005</color>
+  <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+  <color name="md_theme_dark_background">#201A1A</color>
+  <color name="md_theme_dark_onBackground">#EDE0DE</color>
+  <color name="md_theme_dark_surface">#201A1A</color>
+  <color name="md_theme_dark_onSurface">#EDE0DE</color>
+  <color name="md_theme_dark_surfaceVariant">#534342</color>
+  <color name="md_theme_dark_onSurfaceVariant">#D8C2C0</color>
+  <color name="md_theme_dark_outline">#A08C8B</color>
+  <color name="md_theme_dark_inverseOnSurface">#201A1A</color>
+  <color name="md_theme_dark_inverseSurface">#EDE0DE</color>
+  <color name="md_theme_dark_inversePrimary">#B81D27</color>
+  <color name="md_theme_dark_shadow">#000000</color>
+  <color name="md_theme_dark_surfaceTint">#FFB3AE</color>
+  <color name="md_theme_dark_outlineVariant">#534342</color>
+  <color name="md_theme_dark_scrim">#000000</color>
+
+  <!--  other colors-->
+  <color name="primaryColor">#121212</color>
+  <color name="primaryTextColor">#ffffff</color>
+  <color name="primaryIconColor">#ffffff</color>
+  <color name="completionList_background">?attr/colorPrimaryContainer</color>
+  <color name="completionList_backgroundSelected">?attr/colorPrimaryVariant</color>
+  <color name="rippleHighlightColor">#85121212</color>
+
+  <color name="log_warning">#FF7043</color>
+
+  <color name="diagnostic_error">#f44336</color>
+  <color name="diagnostic_warning">@color/log_warning</color>
+
+  <color name="content_background">#212121</color>
+
+  <color name="green_500">#4caf50</color>
+
+  <color name="tabAction_background">?attr/colorPrimaryContainer</color>
+  <color name="tabAction_text">?attr/colorOnPrimaryContainer</color>
+  <color name="tabAction_icon">?attr/colorPrimary</color>
+
+  <color name="color_toast_background">#90424242</color>
+  <color name="color_picker_default_color">#f44336</color>
+
 </resources>

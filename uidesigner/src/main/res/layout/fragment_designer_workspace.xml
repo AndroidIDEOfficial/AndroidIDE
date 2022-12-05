@@ -38,8 +38,7 @@
       android:id="@+id/workspace"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/bg_designer_view"
-      android:backgroundTint="@color/primaryLightColor"
+      android:background="?android:attr/colorBackground"
       android:backgroundTintMode="src_atop"
       android:orientation="vertical" />
 

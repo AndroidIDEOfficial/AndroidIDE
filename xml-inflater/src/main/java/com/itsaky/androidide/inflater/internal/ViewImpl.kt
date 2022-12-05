@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat.getDrawable
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IView.AttributeChangeListener
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.R.drawable
 import com.itsaky.androidide.inflater.internal.utils.simpleName
@@ -43,6 +44,7 @@ constructor(
   private var fg: Drawable? = null
   private var touched: Drawable? = null
 
+  private val attrChangeListeners = mutableListOf<AttributeChangeListener>()
   private val _attributes = mutableListOf<IAttribute>()
   internal val namespaceDecls = mutableMapOf<String, INamespace>()
 
@@ -59,11 +61,13 @@ constructor(
     } else {
       this._attributes.add(attribute)
       applyAttribute(attribute)
+      notifyAttrAdded(attribute)
     }
   }
 
   override fun removeAttribute(attribute: IAttribute) {
     this._attributes.remove(attribute)
+    notifyAttrRemoved(attribute)
     // TODO(itsaky): Should attribute adapters handle this as well?
   }
 
@@ -71,8 +75,11 @@ constructor(
     val existing =
       findAttribute(attribute)
         ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
+    
+    val oldVal = existing.value
     existing.value = attribute.value
     applyAttribute(existing)
+    notifyAttrUpdated(attribute, oldVal)
   }
 
   override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
@@ -88,6 +95,14 @@ constructor(
       view.foreground = this.fg
     }
   }
+  
+  override fun registerAttributeChangeListener(listener: AttributeChangeListener) {
+    this.attrChangeListeners.add(listener)
+  }
+  
+  override fun unregisterAttributeChangeListener(listener: AttributeChangeListener) {
+    this.attrChangeListeners.remove(listener)
+  }
 
   protected open fun applyAttribute(attribute: IAttribute) {
     val adapter = ViewAdapterIndex.getAdapter(name)
@@ -96,6 +111,19 @@ constructor(
       return
     }
     adapter.apply(this, attribute)
+  }
+  
+  fun findNamespaces(): Set<INamespace> {
+    return hashSetOf<INamespace>().apply {
+      addAll(namespaceDecls.values)
+      if (parent is ViewImpl) {
+        (parent as? ViewImpl)?.findNamespaces()?.let { addAll(it) }
+      }
+    }
+  }
+  
+  fun findNamespaceByUri(uri: String): INamespace? {
+    return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
 
   protected open fun hasAttribute(attribute: IAttribute): Boolean {
@@ -106,19 +134,6 @@ constructor(
     return findAttribute(attribute.namespace.uri, attribute.name)
   }
 
-  fun findNamespaces(): Set<INamespace> {
-    return hashSetOf<INamespace>().apply {
-      addAll(namespaceDecls.values)
-      if (parent is ViewImpl) {
-        (parent as? ViewImpl)?.findNamespaces()?.let { addAll(it) }
-      }
-    }
-  }
-
-  fun findNamespaceByUri(uri: String): INamespace? {
-    return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
-  }
-
   internal open fun printHierarchy(): String {
     return StringBuilder().apply { printHierarchy(this, 0) }.toString()
   }
@@ -127,5 +142,23 @@ constructor(
     builder.append(" ".repeat(indent * 4))
     builder.append(name)
     builder.append("\n")
+  }
+  
+  private fun notifyAttrAdded(attribute: IAttribute) {
+    for (listener in this.attrChangeListeners) {
+      listener.onAttributeAdded(this, attribute)
+    }
+  }
+  
+  private fun notifyAttrRemoved(attribute: IAttribute) {
+    for (listener in this.attrChangeListeners) {
+      listener.onAttributeRemoved(this, attribute)
+    }
+  }
+  
+  private fun notifyAttrUpdated(attribute: IAttribute, oldValue: String) {
+    for (listener in this.attrChangeListeners) {
+      listener.onAttributeUpdated(this, attribute, oldValue)
+    }
   }
 }

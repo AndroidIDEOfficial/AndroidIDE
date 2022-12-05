@@ -101,4 +101,55 @@ interface IView {
   fun removeFromParent() {
     parent?.removeChild(this)
   }
+
+  /**
+   * Registers the given [AttributeChangeListener] to listen for changes in attributes.
+   *
+   * @param listener The listener to register.
+   */
+  fun registerAttributeChangeListener(listener: AttributeChangeListener)
+
+  /**
+   * Unregisters the given [AttributeChangeListener].
+   *
+   * @param listener The listener to unregister.
+   * @see registerAttributeChangeListener
+   */
+  fun unregisterAttributeChangeListener(listener: AttributeChangeListener)
+
+  /** Listener to listen for changes in attributes of an [IView]. */
+  interface AttributeChangeListener {
+
+    /**
+     * Called when a new attribute is added to [view].
+     *
+     * @param view The view to which the attribute was added.
+     * @param attribute The added attribute.
+     */
+    fun onAttributeAdded(view: IView, attribute: IAttribute)
+
+    /**
+     * Called when an attribute is removed from [view].
+     *
+     * @param view The view from which the attribute was removed.
+     * @param attribute The removed attribute.
+     */
+    fun onAttributeRemoved(view: IView, attribute: IAttribute)
+
+    /**
+     * Called when the value of an attribute in the [view] is updated.
+     *
+     * @param view The view whose attribute was updated.
+     * @param attribute The attribute that was updated. This contains the new value of the
+     * attribute.
+     * @param oldValue The old value of the attribute.
+     */
+    fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String)
+  }
+
+  open class SingleAttributeChangeListener : AttributeChangeListener {
+    override fun onAttributeAdded(view: IView, attribute: IAttribute) {}
+    override fun onAttributeRemoved(view: IView, attribute: IAttribute) {}
+    override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {}
+  }
 }

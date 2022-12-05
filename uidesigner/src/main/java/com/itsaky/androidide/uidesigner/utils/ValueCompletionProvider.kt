@@ -20,6 +20,7 @@ package com.itsaky.androidide.uidesigner.utils
 import android.text.Editable
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings
@@ -55,13 +56,18 @@ internal class ValueCompletionProvider(
     }
 
     setupLookupForCompletion(file)
+    val value = s?.toString() ?: ""
     completionThread =
       CompletionThread(completionProvider) { ThreadUtils.runOnUiThread { onComplete(it) } }
         .apply {
           this.attribute = this@ValueCompletionProvider.attribute
-          this.prefix = s?.toString() ?: ""
+          this.prefix = value
           this.start()
         }
+
+    val copy = (attribute as AttributeImpl).copy()
+    copy.value = value
+    view.updateAttribute(copy)
   }
 
   class CompletionThread(

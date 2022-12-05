@@ -18,16 +18,13 @@
 
 package com.itsaky.androidide.adapters;
 
-import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticGroupBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.models.DiagnosticGroup;
@@ -57,12 +54,8 @@ public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.
     final DiagnosticGroup group = diagnostics.get(p2);
     final LayoutDiagnosticGroupBinding binding = p1.binding;
 
-    final int color =
-        ContextCompat.getColor(binding.info.icon.getContext(), R.color.secondaryColor);
     binding.info.icon.setImageResource(group.icon);
-    binding.info.icon.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
     binding.info.title.setText(group.text);
-    binding.info.title.setTextColor(color);
     binding.diagnostics.setLayoutManager(new LinearLayoutManager(binding.diagnostics.getContext()));
     binding.diagnostics.setAdapter(
         new DiagnosticItemAdapter(group.diagnostics, group.file, listener));

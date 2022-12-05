@@ -30,7 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.itsaky.androidide.adapters.SearchListAdapter;
-import com.itsaky.androidide.views.EmptyView;
+import com.itsaky.androidide.ui.EmptyView;
 
 import java.util.Collections;
 

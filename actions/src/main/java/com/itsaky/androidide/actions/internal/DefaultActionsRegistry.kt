@@ -16,6 +16,9 @@
  */
 package com.itsaky.androidide.actions.internal
 
+import android.content.Context
+import android.graphics.PorterDuff.Mode.SRC_ATOP
+import android.graphics.PorterDuffColorFilter
 import android.view.Menu
 import android.view.MenuItem
 import com.blankj.utilcode.util.ThreadUtils
@@ -23,9 +26,11 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.R
 import com.itsaky.androidide.actions.locations.CodeActionsMenu
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.*
+import com.itsaky.androidide.utils.resolveAttr
+import java.util.concurrent.CompletableFuture
 
 /**
  * Default implementation for the [ActionsRegistry]
@@ -37,7 +42,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
   private val log = ILogger.newInstance("DefaultActionsRegistry")
   private val actions: MutableMap<String, MutableMap<String, ActionItem>> = mutableMapOf()
   private val listeners = mutableSetOf<ActionExecListener>()
-  
+
   init {
     registerAction(CodeActionsMenu)
   }
@@ -104,6 +109,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
   }
 
   private fun addActionToMenu(menu: Menu, action: ActionItem, data: ActionData) {
+    val context = data[Context::class.java]
     val item: MenuItem =
       if (action is ActionMenu) {
         val sub = menu.addSubMenu(action.label)
@@ -127,7 +133,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
       }
 
     item.isEnabled = action.enabled
-    item.icon = action.icon
+    item.icon =
+      action.icon?.apply {
+        colorFilter = PorterDuffColorFilter(context!!.resolveAttr(R.attr.colorOnSurface), SRC_ATOP)
+      }
 
     if (item.icon != null) {
       item.icon!!.alpha = if (action.enabled) 255 else 76
@@ -139,10 +148,8 @@ class DefaultActionsRegistry : ActionsRegistry() {
     if (action.getShowAsActionFlags(data) != -1) {
       item.setShowAsAction(action.getShowAsActionFlags(data))
     }
-    
-    action.createActionView(data)?.let {
-      item.actionView = it
-    }
+
+    action.createActionView(data)?.let { item.actionView = it }
 
     if (action !is ActionMenu) {
       item.setOnMenuItemClickListener {

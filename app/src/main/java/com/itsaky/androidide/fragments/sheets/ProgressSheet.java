@@ -39,7 +39,6 @@ public class ProgressSheet extends BaseBottomSheetFragment {
   private String message = "";
   private String subMessage = "";
   private boolean subMessageEnabled = false;
-  private boolean welcomeTextEnabled = false;
 
   @Override
   public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -68,10 +67,6 @@ public class ProgressSheet extends BaseBottomSheetFragment {
       }
       binding.message.setLayoutParams(p);
     }
-
-    if (!welcomeTextEnabled) {
-      binding.welcomeText.setVisibility(View.GONE);
-    }
   }
 
   @Override
@@ -85,22 +80,15 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     container.addView(binding.getRoot());
   }
 
-  public ProgressSheet setWelcomeTextEnabled(boolean enabled) {
-    this.welcomeTextEnabled = enabled;
-    return this;
-  }
-
-  public ProgressSheet setSubMessageEnabled(boolean enabled) {
+  public void setSubMessageEnabled(boolean enabled) {
     this.subMessageEnabled = enabled;
-    return this;
   }
 
-  public ProgressSheet setSubMessage(String msg) {
+  public void setSubMessage(String msg) {
     this.subMessage = msg;
     if (isShowing()) {
       binding.subMessage.setText(msg);
     }
-    return this;
   }
 
   public ProgressSheet setMessage(String message) {

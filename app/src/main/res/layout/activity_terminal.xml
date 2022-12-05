@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.itsaky.androidide.views.virtualkeys.VirtualKeysView
+    <com.itsaky.androidide.ui.virtualkeys.VirtualKeysView
         android:id="@+id/virtual_key_table"
         android:layout_width="match_parent"
         android:layout_height="75dp"

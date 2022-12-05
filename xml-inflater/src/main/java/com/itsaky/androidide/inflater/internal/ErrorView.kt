@@ -22,10 +22,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import com.android.aaptcompiler.XmlResource
 import com.itsaky.androidide.inflater.R
-import java.io.File
+import com.itsaky.androidide.utils.resolveAttr
 
 /**
  * View used to show views that cannot be inflated.
@@ -43,7 +41,7 @@ private fun createErrView(context: Context, message: String): View {
   return TextView(context).apply {
     text = message
     background = ColorDrawable(Color.WHITE)
-    setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
+    setTextColor(context.resolveAttr(R.attr.colorError))
     setTextIsSelectable(true)
   }
 }

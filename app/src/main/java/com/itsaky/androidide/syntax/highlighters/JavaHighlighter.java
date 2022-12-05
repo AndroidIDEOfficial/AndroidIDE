@@ -35,10 +35,9 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 public class JavaHighlighter implements Highlighter {
 
   @Override
-  public SpannableStringBuilder highlight(String code, String match) throws Exception {
+  public SpannableStringBuilder highlight(SchemeAndroidIDE scheme, String code, String match) throws Exception {
     final JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(code)));
     final SpannableStringBuilder sb = new SpannableStringBuilder();
-    final EditorColorScheme scheme = new SchemeAndroidIDE();
     Token token;
     while ((token = lexer.nextToken()) != null) {
       if (token.getType() == JavaLexer.EOF) break;

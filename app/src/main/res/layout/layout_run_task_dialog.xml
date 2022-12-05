@@ -52,7 +52,7 @@
     android:layout_width="match_parent"
     android:layout_height="1dp"
     android:layout_below="@id/exec"
-    android:background="@color/primaryLightColor" />
+    android:background="?attr/colorPrimaryContainer" />
 
   <ViewFlipper
     android:id="@+id/flipper"

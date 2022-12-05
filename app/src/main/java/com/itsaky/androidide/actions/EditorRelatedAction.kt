@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.actions
 
-import com.itsaky.androidide.views.editor.CodeEditorView
-import com.itsaky.androidide.views.editor.IDEEditor
+import com.itsaky.androidide.ui.editor.CodeEditorView
+import com.itsaky.androidide.ui.editor.IDEEditor
 
 /** @author Akash Yadav */
 abstract class EditorRelatedAction : EditorActivityAction(), EditorActionItem {

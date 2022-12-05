@@ -15,16 +15,24 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
+  <include
+    android:id="@+id/border"
+    layout="@layout/layout_divider_horizontal"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="2dp"
+    android:layout_height="0.5dp"
+    android:layout_alignParentTop="true" />
+
   <ViewFlipper
     android:id="@+id/header_container"
     android:layout_width="match_parent"
+    android:layout_below="@id/border"
     android:layout_height="@dimen/editor_sheet_collapsed_height"
-    android:background="@color/primaryDarkColor">
+    android:background="?attr/colorSurface">
 
     <LinearLayout
       android:layout_width="match_parent"
@@ -40,8 +48,8 @@
         android:maxLines="1"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="14sp" />
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        tools:text="Configure project :app" />
 
       <TextView
         android:id="@+id/swipe_hint"
@@ -50,7 +58,8 @@
         android:gravity="center"
         android:maxLines="1"
         android:text="@string/msg_swipe_up"
-        android:textColor="@color/secondaryTextColor"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="11sp" />
 
     </LinearLayout>
@@ -62,14 +71,14 @@
     style="@style/AppTheme.TabLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@id/header_container"
-    android:backgroundTint="@color/primaryDarkColor" />
+    android:layout_below="@id/header_container" />
 
   <androidx.legacy.widget.Space
     android:id="@+id/space_bottom"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
+    android:background="?attr/colorSurface"
     tools:layout_height="56dp" />
 
   <androidx.viewpager2.widget.ViewPager2
@@ -78,7 +87,7 @@
     android:layout_height="match_parent"
     android:layout_above="@id/space_bottom"
     android:layout_below="@id/tabs"
-    android:background="@color/content_background" />
+    android:background="?attr/colorSurface" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/clear_fab"
@@ -87,8 +96,7 @@
     android:layout_above="@id/space_bottom"
     android:layout_alignParentEnd="true"
     android:layout_margin="16dp"
-    android:src="@drawable/ic_close"
-    app:backgroundTint="@color/secondaryColor" />
+    android:src="@drawable/ic_close" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/share_output_fab"
@@ -100,8 +108,7 @@
     android:layout_marginTop="16dp"
     android:layout_marginEnd="16dp"
     android:layout_marginBottom="16dp"
-    android:src="@drawable/ic_share"
-    app:backgroundTint="@color/secondaryColor" />
+    android:src="@drawable/ic_share" />
 
 
 </RelativeLayout>

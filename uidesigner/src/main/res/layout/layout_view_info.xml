@@ -20,7 +20,6 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/content_background"
   android:paddingTop="16dp"
   android:paddingBottom="16dp">
 
@@ -35,7 +34,6 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:tooltipText="@string/title_viewaction_delete"
     app:icon="@drawable/ic_delete"
-    app:iconTint="@color/secondaryIconColor"
     app:layout_constraintBottom_toBottomOf="@id/desc"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="@id/name" />
@@ -48,7 +46,6 @@
     android:background="?attr/selectableItemBackgroundBorderless"
     android:tooltipText="@string/msg_viewaction_add_attr"
     app:icon="@drawable/ic_add"
-    app:iconTint="@color/secondaryIconColor"
     app:layout_constraintBottom_toBottomOf="@id/btn_delete"
     app:layout_constraintEnd_toStartOf="@id/btn_delete"
     app:layout_constraintTop_toTopOf="@id/btn_delete" />

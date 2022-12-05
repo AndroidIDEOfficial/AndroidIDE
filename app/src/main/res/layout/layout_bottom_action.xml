@@ -28,7 +28,6 @@
     android:layout_height="wrap_content"
     android:indeterminate="false"
     android:max="100"
-    app:indicatorColor="@color/secondaryColor"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"

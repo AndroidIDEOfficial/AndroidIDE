@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
-import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.androidide.ui.editor.IDEEditor;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 

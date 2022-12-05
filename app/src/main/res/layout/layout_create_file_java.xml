@@ -33,7 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/classtype_class"
-        android:theme="@style/AppTheme.MaterialToggleButton"
         app:icon="@drawable/ic_language_java" />
 
       <com.google.android.material.button.MaterialButton
@@ -42,7 +41,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/classtype_activity"
-        android:theme="@style/AppTheme.MaterialToggleButton"
         app:icon="@drawable/ic_filetype_activity" />
 
       <com.google.android.material.button.MaterialButton
@@ -51,7 +49,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/classtype_interface"
-        android:theme="@style/AppTheme.MaterialToggleButton"
         app:icon="@drawable/ic_filetype_interface" />
 
       <com.google.android.material.button.MaterialButton
@@ -60,7 +57,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/classtype_enum"
-        android:theme="@style/AppTheme.MaterialToggleButton"
         app:icon="@drawable/ic_filetype_enum" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -75,11 +71,9 @@
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:hint="@string/file_name"
-    android:theme="@style/AppTheme.TextInputLayout"
     app:counterEnabled="true"
     app:counterMaxLength="40"
-    app:startIconDrawable="@drawable/ic_file_rename"
-    app:startIconTint="@color/primaryIconColor">
+    app:startIconDrawable="@drawable/ic_file_rename">
 
     <com.google.android.material.textfield.TextInputEditText
       android:layout_width="match_parent"
