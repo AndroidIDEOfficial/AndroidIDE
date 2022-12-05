@@ -40,6 +40,6 @@ abstract class EditorActivityAction : ActionItem {
 
   fun getActivity(data: ActionData): EditorActivity? {
     val context = data.get(Context::class.java) ?: return null
-    return context as EditorActivity
+    return context as? EditorActivity
   }
 }

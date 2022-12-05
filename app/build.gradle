@@ -110,7 +110,6 @@ dependencies {
     implementation common.utilcode
     implementation common.glide
     implementation common.jsoup
-    implementation common.quickaction
     implementation google.gson
     implementation google.guava
     

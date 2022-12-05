@@ -20,7 +20,6 @@
 package com.itsaky.androidide;
 
 import static com.blankj.utilcode.util.IntentUtils.getShareTextIntent;
-import static com.itsaky.androidide.R.color;
 import static com.itsaky.androidide.R.drawable;
 import static com.itsaky.androidide.R.string;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.NO_OPENED_PROJECT;
@@ -75,6 +74,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.itsaky.androidide.actions.ActionData;
+import com.itsaky.androidide.actions.ActionItem;
 import com.itsaky.androidide.actions.ActionsRegistry;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
@@ -102,14 +102,18 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.ui.EditorBottomSheet;
+import com.itsaky.androidide.ui.MaterialBanner;
+import com.itsaky.androidide.ui.editor.CodeEditorView;
+import com.itsaky.androidide.ui.editor.IDEEditor;
 import com.itsaky.androidide.uidesigner.UIDesignerActivity;
+import com.itsaky.androidide.utils.ActionMenuUtils;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.ILogger;
@@ -120,10 +124,6 @@ import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.ResourceUtilsKt;
 import com.itsaky.androidide.utils.SingleSessionCallback;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
-import com.itsaky.androidide.ui.EditorBottomSheet;
-import com.itsaky.androidide.ui.MaterialBanner;
-import com.itsaky.androidide.ui.editor.CodeEditorView;
-import com.itsaky.androidide.ui.editor.IDEEditor;
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry;
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry;
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry;
@@ -145,8 +145,6 @@ import java.util.stream.Collectors;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
 import kotlin.Unit;
-import me.piruin.quickaction.ActionItem;
-import me.piruin.quickaction.QuickAction;
 
 public class EditorActivity extends IDEActivity
     implements TabLayout.OnTabSelectedListener,
@@ -157,11 +155,7 @@ public class EditorActivity extends IDEActivity
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
   private static final float EDITOR_CONTAINER_SCALE_FACTOR = 0.87f;
   private static final String KEY_PROJECT_PATH = "saved_projectPath";
-  private static final int ACTION_ID_CLOSE = 100;
-  private static final int ACTION_ID_OTHERS = 101;
-  private static final int ACTION_ID_ALL = 102;
   private static final ILogger LOG = ILogger.newInstance("EditorActivity");
-
   private final EditorEventListener mBuildEventListener = new EditorEventListener();
   private final EditorActivityLifecyclerObserver mLifecycleObserver =
       new EditorActivityLifecyclerObserver();
@@ -170,7 +164,6 @@ public class EditorActivity extends IDEActivity
   private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
   private final LogReceiver mLogReceiver = new LogReceiver().setLogListener(this::appendApkLog);
   private FileTreeFragment mFileTreeFragment;
-  private QuickAction mTabCloseAction;
   private TextSheetFragment mDaemonStatusFragment;
   private ProgressSheet mSearchingProgress;
   private AlertDialog mFindInProjectDialog;
@@ -568,7 +561,7 @@ public class EditorActivity extends IDEActivity
 
   @Override
   public void onTabReselected(@NonNull TabLayout.Tab tab) {
-    mTabCloseAction.show(tab.view);
+    ActionMenuUtils.createMenu(this, tab.view, ActionItem.Location.EDITOR_FILE_TABS, true).show();
   }
 
   private void refreshSymbolInput(@NonNull CodeEditorView editor) {
@@ -825,8 +818,7 @@ public class EditorActivity extends IDEActivity
     return mBinding
         .syncBanner
         .setContentTextColor(ResourceUtilsKt.resolveAttr(this, R.attr.colorOnPrimaryContainer))
-        .setBannerBackgroundColor(
-            ResourceUtilsKt.resolveAttr(this, R.attr.colorPrimaryContainer))
+        .setBannerBackgroundColor(ResourceUtilsKt.resolveAttr(this, R.attr.colorPrimaryContainer))
         .setButtonTextColor(ResourceUtilsKt.resolveAttr(this, R.attr.colorOnPrimaryContainer))
         .setIcon(drawable.ic_sync)
         .setContentText(string.msg_sync_needed);
@@ -928,7 +920,6 @@ public class EditorActivity extends IDEActivity
     mBinding.tabs.addOnTabSelectedListener(this);
 
     setupViews();
-    createQuickActions();
 
     mBuildEventListener.setActivity(this);
 
@@ -1479,39 +1470,5 @@ public class EditorActivity extends IDEActivity
     builder.setMessage(string.msg_need_help);
     builder.setPositiveButton(android.R.string.ok, null);
     builder.create().show();
-  }
-
-  private void createQuickActions() {
-    ActionItem closeThis =
-        new ActionItem(ACTION_ID_CLOSE, getString(string.action_closeThis), drawable.ic_close_this);
-    ActionItem closeOthers =
-        new ActionItem(
-            ACTION_ID_OTHERS, getString(string.action_closeOthers), drawable.ic_close_others);
-    ActionItem closeAll =
-        new ActionItem(ACTION_ID_ALL, getString(string.action_closeAll), drawable.ic_close_all);
-    mTabCloseAction = new QuickAction(this, QuickAction.HORIZONTAL);
-    mTabCloseAction.addActionItem(closeThis, closeOthers, closeAll);
-    mTabCloseAction.setColor(ResourceUtilsKt.resolveAttr(this, color.tabAction_background));
-    mTabCloseAction.setTextColor(ResourceUtilsKt.resolveAttr(this, color.tabAction_text));
-
-    mTabCloseAction.setOnActionItemClickListener(
-        (item) -> {
-          final int id = item.getActionId();
-          if (EditorPreferencesKt.getAutoSave()) {
-            saveAll();
-          }
-
-          if (id == ACTION_ID_CLOSE) {
-            closeFile(mBinding.tabs.getSelectedTabPosition());
-          }
-
-          if (id == ACTION_ID_OTHERS) {
-            closeOthers();
-          }
-
-          if (id == ACTION_ID_ALL) {
-            closeAll();
-          }
-        });
   }
 }

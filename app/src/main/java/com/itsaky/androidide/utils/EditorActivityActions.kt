@@ -32,6 +32,9 @@ import com.itsaky.androidide.actions.etc.DaemonStatusAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
 import com.itsaky.androidide.actions.etc.PreviewLayoutAction
+import com.itsaky.androidide.actions.file.CloseAllFilesAction
+import com.itsaky.androidide.actions.file.CloseFileAction
+import com.itsaky.androidide.actions.file.CloseOtherFilesAction
 import com.itsaky.androidide.actions.file.FormatCodeAction
 import com.itsaky.androidide.actions.file.SaveFileAction
 import com.itsaky.androidide.actions.text.RedoAction
@@ -68,6 +71,11 @@ class EditorActivityActions {
       registry.registerAction(CopyAction(context))
       registry.registerAction(PasteAction(context))
       registry.registerAction(FormatCodeAction(context))
+      
+      // file tab actions
+      registry.registerAction(CloseFileAction(context))
+      registry.registerAction(CloseOtherFilesAction(context))
+      registry.registerAction(CloseAllFilesAction(context))
     }
 
     @JvmStatic

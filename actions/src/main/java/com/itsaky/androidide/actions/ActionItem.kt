@@ -84,7 +84,10 @@ interface ActionItem {
      * Location marker for action items shown in 'Code actions' submenu in editor's text action
      * menu.
      */
-    EDITOR_CODE_ACTIONS("editor.codeActions");
+    EDITOR_CODE_ACTIONS("editor.codeActions"),
+
+    /** Location marker for action items shown when file tabs are reselected. */
+    EDITOR_FILE_TABS("editor.fileTabs");
 
     override fun toString(): String {
       return id
