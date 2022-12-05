@@ -38,7 +38,7 @@
       android:id="@+id/workspace"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="?attr/background"
+      android:background="?android:attr/colorBackground"
       android:backgroundTintMode="src_atop"
       android:orientation="vertical" />
 
