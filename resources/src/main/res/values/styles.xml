@@ -105,6 +105,11 @@
     <item name="cornerSize">25dp</item>
   </style>
 
+  <style name="AppTheme.ShapeOverlay.TemplateImage" parent="">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">16dp</item>
+  </style>
+
   <!-- Alert Dialog -->
   <style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
     <item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
