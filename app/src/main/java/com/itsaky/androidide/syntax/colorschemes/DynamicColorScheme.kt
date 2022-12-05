@@ -43,11 +43,12 @@ class DynamicColorScheme : SchemeAndroidIDE() {
     setColor(LINE_NUMBER_PANEL_TEXT, onSurfaceVariant)
     setColor(CURRENT_LINE, surfaceVariant)
     setColor(TEXT_NORMAL, onSurface)
-    setColor(COMPLETION_WND_BACKGROUND, context.resolveAttr(attr.colorPrimaryContainer))
-    setColor(COMPLETION_WND_CORNER, outline)
     setColor(BLOCK_LINE, surfaceVariant)
     setColor(BLOCK_LINE_CURRENT, outline)
     setColor(UNDERLINE, outline)
+    
+    setColor(COMPLETION_WND_BACKGROUND, context.resolveAttr(attr.colorSurfaceVariant))
+    setColor(COMPLETION_WND_CORNER, outline)
 
     if (!isInDarkMode) {
       applyLightColors()
