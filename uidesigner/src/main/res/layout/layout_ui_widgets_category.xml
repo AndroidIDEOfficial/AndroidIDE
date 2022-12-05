@@ -30,6 +30,7 @@
     android:layout_marginTop="4dp"
     android:layout_marginBottom="4dp"
     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorOnBackground"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:text="Widgets" />
