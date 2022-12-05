@@ -50,7 +50,6 @@ public class SymbolInputView extends RecyclerView {
     adapter = new SymbolInputAdapter(editor);
     setAdapter(adapter);
     setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-    setBackgroundColor(resolveAttr(editor.getContext(), R.attr.colorPrimaryContainer));
   }
 
   public void setSymbols(Symbol... symbols) {

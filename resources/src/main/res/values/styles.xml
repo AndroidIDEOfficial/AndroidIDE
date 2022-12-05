@@ -61,7 +61,6 @@
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
-    <item name="android:navigationBarColor">?attr/colorPrimaryContainer</item>
     <item name="android:windowLightStatusBar">true</item>
   </style>
 

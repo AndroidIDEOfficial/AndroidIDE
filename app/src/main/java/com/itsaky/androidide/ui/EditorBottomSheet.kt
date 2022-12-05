@@ -20,6 +20,7 @@ package com.itsaky.androidide.ui
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
@@ -29,6 +30,7 @@ import android.view.ViewTreeObserver
 import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -39,6 +41,9 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
@@ -54,10 +59,11 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.TaskExecutor.CallbackWithError
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsyncProvideError
+import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
-import com.itsaky.androidide.ui.editor.CodeEditorView
+import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File
@@ -189,23 +195,23 @@ constructor(
 
   fun setOffsetAnchor(view: View) {
     val listener =
-       object : ViewTreeObserver.OnGlobalLayoutListener {
-         override fun onGlobalLayout() {
-           val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
-           val offset = view.height + SizeUtils.dp2px(1f)
-           sheet.isFitToContents = false
-           sheet.halfExpandedRatio = 0.3f
-           sheet.isGestureInsetBottomIgnored = false
-           sheet.peekHeight = binding.headerContainer.height
-           sheet.expandedOffset = offset
-           view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-           
-           binding.root.updatePadding(bottom = offset + SizeUtils.dp2px(16f))
-         }
+      object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+          val sheet = BottomSheetBehavior.from(this@EditorBottomSheet)
+          val offset = view.height + SizeUtils.dp2px(1f)
+          sheet.isFitToContents = false
+          sheet.halfExpandedRatio = 0.3f
+          sheet.isGestureInsetBottomIgnored = false
+          sheet.peekHeight = binding.headerContainer.height
+          sheet.expandedOffset = offset
+          view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+          binding.root.updatePadding(bottom = offset + SizeUtils.dp2px(16f))
+        }
       }
     view.viewTreeObserver.addOnGlobalLayoutListener(listener)
   }
-  
+
   fun onSlide(offset: Float) {
     if (offset >= 0.5f) {
       updateCollapsedHeight(((0.5f - offset) + 0.5f) * 2f)

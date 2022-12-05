@@ -80,8 +80,10 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     if (symbols == null || symbols[position] == null) return;
     final Symbol symbol = symbols[position];
     holder.binding.symbol.setText(symbol.getLabel());
-    holder.binding.symbol.setTextColor(resolveAttr(holder.binding.symbol.getContext(), R.attr.colorOnPrimaryContainer));
-    holder.binding.symbol.setOnClickListener(__ -> insertSymbol(symbol.getCommit(), symbol.getOffset()));
+    holder.binding.symbol.setTextColor(
+        resolveAttr(holder.binding.symbol.getContext(), R.attr.colorOnSurface));
+    holder.binding.symbol.setOnClickListener(
+        __ -> insertSymbol(symbol.getCommit(), symbol.getOffset()));
   }
 
   @Override

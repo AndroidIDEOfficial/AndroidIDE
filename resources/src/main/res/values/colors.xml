@@ -2,6 +2,8 @@
 <resources>
 
   <color name="seed">#ff5252</color>
+
+  <!--  light colors-->
   <color name="md_theme_light_primary">#B81D27</color>
   <color name="md_theme_light_onPrimary">#FFFFFF</color>
   <color name="md_theme_light_primaryContainer">#FFDAD7</color>
@@ -32,6 +34,8 @@
   <color name="md_theme_light_surfaceTint">#B81D27</color>
   <color name="md_theme_light_outlineVariant">#D8C2C0</color>
   <color name="md_theme_light_scrim">#000000</color>
+
+  <!--  dark colors-->
   <color name="md_theme_dark_primary">#FFB3AE</color>
   <color name="md_theme_dark_onPrimary">#68000C</color>
   <color name="md_theme_dark_primaryContainer">#930015</color>
@@ -63,6 +67,7 @@
   <color name="md_theme_dark_outlineVariant">#534342</color>
   <color name="md_theme_dark_scrim">#000000</color>
 
+  <!--  other colors-->
   <color name="primaryColor">#121212</color>
   <color name="primaryTextColor">#ffffff</color>
   <color name="primaryIconColor">#ffffff</color>
