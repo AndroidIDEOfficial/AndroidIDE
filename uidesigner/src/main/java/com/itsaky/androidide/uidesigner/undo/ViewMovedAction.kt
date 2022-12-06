@@ -15,20 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner
+package com.itsaky.androidide.uidesigner.undo
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.IViewGroup
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * Represents the action when the user moves a view from one view group to another.
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * @author Akash Yadav
  */
-class ExampleUnitTest {
-  @Test
-  fun addition_isCorrect() {
-    assertEquals(4, 2 + 2)
+class ViewMovedAction(
+  private val child: IView,
+  private val fromParent: IViewGroup,
+  private val toParent: IViewGroup,
+  private val fromIndex: Int,
+  private val toIndex: Int
+) : IUiAction {
+  
+  override fun undo() {
+    child.removeFromParent()
+    fromParent.addChild(fromIndex, child)
+  }
+
+  override fun redo() {
+    child.removeFromParent()
+    toParent.addChild(toIndex, child)
   }
 }
