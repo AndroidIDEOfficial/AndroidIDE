@@ -18,7 +18,9 @@
 package com.itsaky.androidide.uidesigner.adapters
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -26,9 +28,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IView.SingleAttributeChangeListener
+import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewattrItemBinding
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.utils.DialogUtils
 
 /**
  * A [RecyclerView.Adapter] which shows the list of attributes of the selected view in the UI
@@ -36,11 +41,15 @@ import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
  *
  * @author Akash Yadav
  */
-class ViewAttrListAdapter(attributes: List<IAttribute>, private val viewModel: WorkspaceViewModel?, private val onClick: (IAttribute) -> Unit) :
-  RecyclerView.Adapter<VH>() {
-  
-  private val attributes = attributes.sortedBy { it.name }
-  
+class ViewAttrListAdapter(
+  attributes: List<IAttribute>,
+  private val viewModel: WorkspaceViewModel?,
+  private val onDeleteAttr: (IAttribute) -> Boolean,
+  private val onClick: (IAttribute) -> Unit
+) : RecyclerView.Adapter<VH>() {
+
+  private val attributes = attributes.sortedBy { it.name }.toMutableList()
+
   class VH(val binding: LayoutViewattrItemBinding) : RecyclerView.ViewHolder(binding.root)
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -54,28 +63,56 @@ class ViewAttrListAdapter(attributes: List<IAttribute>, private val viewModel: W
   @SuppressLint("SetTextI18n")
   override fun onBindViewHolder(holder: VH, position: Int) {
     val binding = holder.binding
-    val attr = this.attributes[position]
-    
+    val attr = this.attributes[position] as UiAttribute
+
     binding.attrName.text = "${attr.namespace.prefix}:${attr.name}"
     binding.attrValue.text = attr.value
-    
+
+    if (!attr.isRequired) {
+      binding.deleteAttr.visibility = View.VISIBLE
+      binding.deleteAttr.setOnClickListener {
+        confirmDeleteAttr(binding.deleteAttr.context, attr, position)
+      }
+    } else binding.deleteAttr.visibility = View.INVISIBLE
+
     binding.root.setOnClickListener {
       onClick(attr)
       val viewModel = this.viewModel ?: return@setOnClickListener
-      val attrUpdateListener = object : SingleAttributeChangeListener() {
-        override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
-          binding.attrValue.text = attribute.value
-        }
-      }
-      val viewInfoScreenObserver = object : Observer<Int> {
-        override fun onChanged(t: Int?) {
-          if (t == WorkspaceViewModel.SCREEN_VIEW_INFO) {
-            viewModel._viewInfoScreen.removeObserver(this)
+      val attrUpdateListener =
+        object : SingleAttributeChangeListener() {
+          override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
+            binding.attrValue.text = attribute.value
           }
         }
-      }
-      viewModel._viewInfoScreen.observe(binding.root.context as LifecycleOwner, viewInfoScreenObserver)
+      val viewInfoScreenObserver =
+        object : Observer<Int> {
+          override fun onChanged(t: Int?) {
+            if (t == WorkspaceViewModel.SCREEN_VIEW_INFO) {
+              viewModel._viewInfoScreen.removeObserver(this)
+            }
+          }
+        }
+      viewModel._viewInfoScreen.observe(
+        binding.root.context as LifecycleOwner,
+        viewInfoScreenObserver
+      )
       viewModel.view?.registerAttributeChangeListener(attrUpdateListener)
     }
+  }
+
+  private fun confirmDeleteAttr(context: Context, attribute: UiAttribute, position: Int) {
+    DialogUtils.newYesNoDialog(
+        context = context,
+        title = context.getString(R.string.title_confirm_delete),
+        message = context.getString(R.string.msg_confirm_delete),
+        positiveClickListener = { dialog, _ ->
+          dialog.dismiss()
+          if (onDeleteAttr(attribute)) {
+            this.attributes.removeAt(position)
+            notifyItemRemoved(position)
+          }
+        }
+      )
+      .show()
   }
 }

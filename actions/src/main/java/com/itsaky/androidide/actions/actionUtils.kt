@@ -19,32 +19,27 @@ package com.itsaky.androidide.actions
 
 import android.content.Context
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itsaky.androidide.utils.DialogUtils
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 import java.nio.file.Path
 
-fun ActionItem.requireContext(data: ActionData): Context {
-  return data.get(Context::class.java)
-    ?: throw IllegalArgumentException("No context instance provided")
-}
-
-fun ActionItem.requireFile(data: ActionData): File {
+fun requireFile(data: ActionData): File {
   return data.get(File::class.java) ?: throw IllegalArgumentException("No file instance provided")
 }
 
-fun ActionItem.requirePath(data: ActionData): Path {
+fun requirePath(data: ActionData): Path {
   return requireFile(data).toPath()
 }
 
-fun ActionItem.requireEditor(data: ActionData): CodeEditor {
+fun requireEditor(data: ActionData): CodeEditor {
   return data.get(CodeEditor::class.java)
     ?: throw IllegalArgumentException("An editor instance is required but none was provided")
 }
 
-fun ActionItem.newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
-  val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
-  val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
-  return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
+fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
+  val context = data.get(Context::class.java)!!
+  return DialogUtils.newMaterialDialogBuilder(context)
 }
 
 /**
@@ -54,7 +49,7 @@ fun ActionItem.newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
  * @param types The type of objects to look for.
  * @return `true` if the [data] has the given [types], `false` otherwise.
  */
-fun ActionItem.hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
+fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
   for (type in types) {
     data.get(type) ?: return false
   }

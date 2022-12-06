@@ -20,7 +20,6 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
-import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class CommentAction : BaseJavaCodeAction() {

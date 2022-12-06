@@ -39,4 +39,13 @@ abstract class IViewAdapter : AbstractParser() {
    * @param view The view to apply basic attributes to.
    */
   abstract fun applyBasic(view: IView)
+
+  /**
+   * Called to check whether the given attribute required for the view. A required view cannot be
+   * removed by the user.
+   *
+   * @param attribute The attribute to check.
+   * @return `true` if the attribute is required, `false` otherwise.
+   */
+  abstract fun isRequiredAttribute(attribute: IAttribute): Boolean
 }

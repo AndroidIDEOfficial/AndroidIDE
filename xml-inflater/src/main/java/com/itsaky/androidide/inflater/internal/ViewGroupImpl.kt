@@ -103,4 +103,8 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   protected open fun notifyOnViewRemoved(child: IView) {
     this.hierarchyChangeListeners.forEach { it.onViewRemoved(this, child) }
   }
+
+  override fun immutableCopy(): IViewGroup {
+    return ImmutableViewGroupImpl(this)
+  }
 }

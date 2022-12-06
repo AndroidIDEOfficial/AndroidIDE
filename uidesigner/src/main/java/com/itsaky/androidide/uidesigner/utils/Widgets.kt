@@ -45,6 +45,7 @@ import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.uidesigner.R.drawable
 import com.itsaky.androidide.uidesigner.R.string
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.models.UiWidget
 import com.itsaky.androidide.uidesigner.models.UiWidgetCategory
 
@@ -167,7 +168,7 @@ internal object Widgets {
             ) {
             override fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
               return super.createView(context, parent, layoutFile).apply {
-                addAttribute(AttributeImpl(name = "orientation", value = "horizontal"))
+                addAttribute(UiAttribute(name = "orientation", value = "horizontal"))
               }
             }
           }
@@ -181,7 +182,7 @@ internal object Widgets {
             ) {
             override fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
               return super.createView(context, parent, layoutFile).apply {
-                addAttribute(AttributeImpl(name = "orientation", value = "vertical"))
+                addAttribute(UiAttribute(name = "orientation", value = "vertical"))
               }
             }
           }

@@ -59,6 +59,7 @@ import com.android.aaptcompiler.tryParseFlagSymbol
 import com.android.aaptcompiler.tryParseInt
 import com.android.aaptcompiler.tryParseReference
 import com.itsaky.androidide.inflater.drawable.DrawableParserFactory
+import com.itsaky.androidide.inflater.utils.module
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 

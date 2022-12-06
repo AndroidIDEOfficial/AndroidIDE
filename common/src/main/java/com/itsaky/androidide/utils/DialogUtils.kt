@@ -14,51 +14,48 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.androidide.utils
 
-package com.itsaky.androidide.utils;
-
-import android.content.Context;
-import android.content.DialogInterface;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.resources.R;
-
-import org.jetbrains.annotations.Contract;
+import android.content.Context
+import android.content.DialogInterface.OnClickListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.resources.R.style
+import org.jetbrains.annotations.Contract
 
 /**
  * Utility class for creating dialogs.
  *
  * @author Akash Yadav
  */
-public class DialogUtils {
-
+object DialogUtils {
+  
   /**
    * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>. This method
-   * simply calls {@link #newYesNoDialog(Context, String, String, DialogInterface.OnClickListener,
-   * DialogInterface.OnClickListener)} with default values for title and message.
+   * simply calls [.newYesNoDialog] with default values for title and message.
    *
    * @param context The context for the dialog.
    * @param positiveClickListener A listener that will be invoked on the <span>Yes</span> button
-   *     click.
+   * click.
    * @param negativeClickListener A listener that will be invoked on the <span>No</span> button
-   *     click.
+   * click.
    * @return The newly created dialog.
    */
-  @NonNull
-  public static MaterialAlertDialogBuilder newYesNoDialog(
-      Context context,
-      DialogInterface.OnClickListener positiveClickListener,
-      DialogInterface.OnClickListener negativeClickListener) {
+  @JvmStatic
+  @JvmOverloads
+  fun newYesNoDialog(
+    context: Context,
+    positiveClickListener: OnClickListener? = null,
+    negativeClickListener: OnClickListener? = null
+  ): MaterialAlertDialogBuilder {
     return newYesNoDialog(
-        context,
-        context.getString(R.string.msg_yesno_def_title),
-        context.getString(R.string.msg_yesno_def_message),
-        positiveClickListener,
-        negativeClickListener);
+      context,
+      context.getString(string.msg_yesno_def_title),
+      context.getString(string.msg_yesno_def_message),
+      positiveClickListener,
+      negativeClickListener)
   }
-
+  
   /**
    * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>.
    *
@@ -66,36 +63,37 @@ public class DialogUtils {
    * @param title The title of the dialog.
    * @param message The message of the dialog.
    * @param positiveClickListener A listener that will be invoked on the <span>Yes</span> button
-   *     click.
+   * click.
    * @param negativeClickListener A listener that will be invoked on the <span>No</span> button
-   *     click.
+   * click.
    * @return The newly created dialog instance.
    */
-  @NonNull
-  public static MaterialAlertDialogBuilder newYesNoDialog(
-      Context context,
-      String title,
-      String message,
-      DialogInterface.OnClickListener positiveClickListener,
-      DialogInterface.OnClickListener negativeClickListener) {
-    final var builder = DialogUtils.newMaterialDialogBuilder(context);
-    builder.setTitle(title);
-    builder.setMessage(message);
-    builder.setPositiveButton(R.string.yes, positiveClickListener);
-    builder.setNegativeButton(R.string.no, negativeClickListener);
-
-    return builder;
+  @JvmStatic
+  @JvmOverloads
+  fun newYesNoDialog(
+    context: Context,
+    title: String,
+    message: String? = null,
+    positiveClickListener: OnClickListener? = null,
+    negativeClickListener: OnClickListener? = null
+  ): MaterialAlertDialogBuilder {
+    val builder = newMaterialDialogBuilder(context)
+    builder.setTitle(title)
+    builder.setMessage(message)
+    builder.setPositiveButton(string.yes, positiveClickListener)
+    builder.setNegativeButton(string.no, negativeClickListener)
+    return builder
   }
-
+  
   /**
    * Creates a new MaterialAlertDialogBuilder with the app's default style.
    *
    * @param context The context for the dialog builder.
    * @return The new MaterialAlertDialogBuilder instance.
    */
-  @NonNull
+  @JvmStatic
   @Contract("_ -> new")
-  public static MaterialAlertDialogBuilder newMaterialDialogBuilder(Context context) {
-    return new MaterialAlertDialogBuilder(context, R.style.AppTheme_MaterialAlertDialog);
+  fun newMaterialDialogBuilder(context: Context): MaterialAlertDialogBuilder {
+    return MaterialAlertDialogBuilder(context, style.AppTheme_MaterialAlertDialog)
   }
 }

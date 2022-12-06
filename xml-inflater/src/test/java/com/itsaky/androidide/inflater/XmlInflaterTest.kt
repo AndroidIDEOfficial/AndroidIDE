@@ -18,8 +18,8 @@
 package com.itsaky.androidide.inflater
 
 import androidx.appcompat.app.AppCompatActivity
-import com.itsaky.androidide.inflater.internal.utils.endParse
-import com.itsaky.androidide.inflater.internal.utils.startParse
+import com.itsaky.androidide.inflater.utils.endParse
+import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule

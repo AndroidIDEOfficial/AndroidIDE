@@ -26,6 +26,7 @@ import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.ResourceTable
 import com.android.aaptcompiler.ResourceTablePackage
+import com.itsaky.androidide.inflater.utils.module
 import com.itsaky.androidide.utils.ILogger
 
 private val log: ILogger = ILogger.newInstance("ParseLookupUtils")

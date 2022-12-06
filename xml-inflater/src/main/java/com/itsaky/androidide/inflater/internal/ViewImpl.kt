@@ -66,22 +66,19 @@ constructor(
   }
 
   override fun removeAttribute(attribute: IAttribute) {
+    
+    // reset the value of the attribute to its default value
+    attribute.value = ""
+    updateAttributeInternal(attribute = attribute, notify = false)
+    
     this._attributes.remove(attribute)
     notifyAttrRemoved(attribute)
-    // TODO(itsaky): Should attribute adapters handle this as well?
   }
 
   override fun updateAttribute(attribute: IAttribute) {
-    val existing =
-      findAttribute(attribute)
-        ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
-    
-    val oldVal = existing.value
-    existing.value = attribute.value
-    applyAttribute(existing)
-    notifyAttrUpdated(attribute, oldVal)
+    updateAttributeInternal(attribute)
   }
-
+  
   override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
     return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
   }
@@ -142,6 +139,24 @@ constructor(
     builder.append(" ".repeat(indent * 4))
     builder.append(name)
     builder.append("\n")
+  }
+  
+  internal open fun immutableCopy() : IView {
+    return ImmutableViewImpl(this)
+  }
+  
+  private fun updateAttributeInternal(attribute: IAttribute, notify: Boolean = true) {
+    val existing =
+      findAttribute(attribute)
+        ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
+    
+    val oldVal = existing.value
+    existing.value = attribute.value
+    applyAttribute(existing)
+    
+    if (notify) {
+      notifyAttrUpdated(attribute, oldVal)
+    }
   }
   
   private fun notifyAttrAdded(attribute: IAttribute) {

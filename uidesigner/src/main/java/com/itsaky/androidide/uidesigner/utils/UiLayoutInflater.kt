@@ -15,35 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater.internal.utils
+package com.itsaky.androidide.uidesigner.utils
 
-import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
-import java.io.File
+import com.itsaky.androidide.inflater.ILayoutInflater
+import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
+import com.itsaky.androidide.lookup.Lookup
 
-private var currentModule: AndroidModule? = null
-var isParsing: Boolean = false
-  private set
+/**
+ * Layout inflater implmentation for the UI designer.
+ *
+ * @author Akash Yadav
+ */
+class UiLayoutInflater : LayoutInflaterImpl() {
 
-val module: AndroidModule
-  get() =
-    currentModule ?: throw IllegalStateException("You must call startParse(AndroidModule) first")
-
-fun startParse(file: File) {
-  if (isParsing) {
-    return
+  init {
+    this.componentFactory = UiInflaterComponentFactory()
+    Lookup.DEFAULT.update(ILayoutInflater.LOOKUP_KEY, this)
   }
-  (ProjectManager.findModuleForFile(file) as? AndroidModule)?.let {
-    startParse(it)
-  }
-}
-
-fun startParse(m: AndroidModule) {
-  currentModule = m
-  isParsing = true
-}
-
-fun endParse() {
-  currentModule = null
-  isParsing = false
 }

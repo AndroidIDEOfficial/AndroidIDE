@@ -36,9 +36,9 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
-import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.newAttribute
 
 /**
  * Attribute adapter for [View].
@@ -132,8 +132,20 @@ open class ViewAttrAdapter : IViewAdapter() {
   }
 
   override fun applyBasic(view: IView) {
-    view.addAttribute(AttributeImpl(name = "layout_height", value = "wrap_content"))
-    view.addAttribute(AttributeImpl(name = "layout_width", value = "wrap_content"))
+    view.addAttribute(newAttribute(view = view, name = "layout_height", value = "wrap_content"))
+    view.addAttribute(newAttribute(view = view, name = "layout_width", value = "wrap_content"))
+  }
+
+  override fun isRequiredAttribute(attribute: IAttribute): Boolean {
+    if (attribute.namespace.uri != INamespace.ANDROID.uri) {
+      return false
+    }
+
+    return when (attribute.name) {
+      "layout_width",
+      "layout_height" -> true
+      else -> false
+    }
   }
 
   protected open fun applyLayoutParams(

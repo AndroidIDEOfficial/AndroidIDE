@@ -27,15 +27,15 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
-import com.itsaky.androidide.inflater.IInflateEventsListener
-import com.itsaky.androidide.inflater.IInflationEvent
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
-import com.itsaky.androidide.inflater.InflationFinishEvent
-import com.itsaky.androidide.inflater.InflationStartEvent
-import com.itsaky.androidide.inflater.OnInflateViewEvent
+import com.itsaky.androidide.inflater.events.IInflateEventsListener
+import com.itsaky.androidide.inflater.events.IInflationEvent
+import com.itsaky.androidide.inflater.events.InflationFinishEvent
+import com.itsaky.androidide.inflater.events.InflationStartEvent
+import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.viewGroup
@@ -47,8 +47,8 @@ import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
 import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
-import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
+import com.itsaky.androidide.uidesigner.utils.UiLayoutInflater
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
@@ -70,6 +70,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private var isInflating = false
   private val viewInfo by lazy { ViewInfoSheet() }
+  private val inflater by lazy { UiLayoutInflater() }
   private val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
@@ -152,14 +153,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
           placeholder.file = file
         }
       }
-
-      override fun onInterceptCreateView(view: IView): IView {
-        view as ViewImpl
-        if (view is IViewGroup) {
-          return UiViewGroup(view.file, view.name, view.viewGroup)
-        }
-        return UiView(view.file, view.name, view.view)
-      }
     }
   }
 
@@ -177,8 +170,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
-
-    val inflater = ILayoutInflater.newInflater()
+    
     inflater.inflationEventListener = this.inflateListener
     var hasError = false
     val inflated =
@@ -199,6 +191,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
+    this.inflater.close()
   }
 
   private fun setupView(view: IView) {

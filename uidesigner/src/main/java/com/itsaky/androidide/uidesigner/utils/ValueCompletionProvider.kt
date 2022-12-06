@@ -65,7 +65,7 @@ internal class ValueCompletionProvider(
           this.start()
         }
 
-    val copy = (attribute as AttributeImpl).copy()
+    val copy = (attribute as AttributeImpl).copyAttr(view = view)
     copy.value = value
     view.updateAttribute(copy)
   }

@@ -15,38 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater
+package com.itsaky.androidide.inflater.events
 
-/**
- * A listener which listens for XML layout inflation events.
- *
- * @author Akash Yadav
- */
-interface IInflateEventsListener {
-
-  /**
-   * Called when an event occurs. The [event] parameter contains more information about the event.
-   *
-   * @param event The event.
-   */
-  fun onEvent(event: IInflationEvent<*>)
-
-  /**
-   * Allows the listener to intercept the view creation event and return view instance of their own.
-   *
-   * @param view The view that was created. The properties of this view is not expected to be
-   * modified (see [OnInflateViewEvent] instead).
-   * @return The view that should replace the [view] instance.
-   */
-  fun onInterceptCreateView(view: IView): IView = view
-}
-
-/**
- * An inflation event.
- *
- * @author Akash Yadav
- */
-abstract class IInflationEvent<T>(val data: T)
+import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
 
 /** Indicates start of layout inflation. */
 class InflationStartEvent : IInflationEvent<Unit>(Unit)

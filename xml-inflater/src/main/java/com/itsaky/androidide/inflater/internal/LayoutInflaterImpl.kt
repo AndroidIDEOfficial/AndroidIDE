@@ -33,25 +33,30 @@ import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.XmlProcessor
 import com.android.aaptcompiler.extractPathData
 import com.itsaky.androidide.aapt.logging.IDELogger
-import com.itsaky.androidide.inflater.IInflateEventsListener
+import com.itsaky.androidide.inflater.DefaultComponentFactory
+import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IComponentFactory
+import com.itsaky.androidide.inflater.IComponentFactory.Companion.LAYOUT_INFLATER_COMPONENT_FACTORY_KEY
 import com.itsaky.androidide.inflater.ILayoutInflater
+import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.InflateException
-import com.itsaky.androidide.inflater.InflationFinishEvent
-import com.itsaky.androidide.inflater.InflationStartEvent
-import com.itsaky.androidide.inflater.OnApplyAttributeEvent
-import com.itsaky.androidide.inflater.OnInflateViewEvent
+import com.itsaky.androidide.inflater.events.IInflateEventsListener
+import com.itsaky.androidide.inflater.events.InflationFinishEvent
+import com.itsaky.androidide.inflater.events.InflationStartEvent
+import com.itsaky.androidide.inflater.events.OnApplyAttributeEvent
+import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.createViewInstance
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
-import com.itsaky.androidide.inflater.internal.utils.endParse
-import com.itsaky.androidide.inflater.internal.utils.isParsing
+import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
-import com.itsaky.androidide.inflater.internal.utils.startParse
+import com.itsaky.androidide.inflater.utils.endParse
+import com.itsaky.androidide.inflater.utils.startParse
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import java.io.File
@@ -61,12 +66,18 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-open class LayoutInflaterImpl : ILayoutInflater() {
+open class LayoutInflaterImpl : ILayoutInflater {
 
   override var inflationEventListener: IInflateEventsListener? = null
-  private val log = ILogger.newInstance("LayoutInflaterImpl")
+  override var module: AndroidModule? = null
   private var _primaryInflatingFile: File? = null
   private var _currentLayoutFile: LayoutFile? = null
+
+  override var componentFactory: IComponentFactory = DefaultComponentFactory()
+    set(value) {
+      field = value
+      Lookup.DEFAULT.update(LAYOUT_INFLATER_COMPONENT_FACTORY_KEY, value)
+    }
 
   protected val primaryInflatingFile: File
     get() = this._primaryInflatingFile!!
@@ -78,14 +89,26 @@ open class LayoutInflaterImpl : ILayoutInflater() {
     this._primaryInflatingFile = file
     IDTable.newRound()
     if (!isParsing) {
-      startParse(file)
+      if (this.module == null) {
+        startParse(file)
+        this.module = com.itsaky.androidide.inflater.utils.module
+      } else {
+        startParse(this.module!!)
+      }
     }
     inflationEventListener?.onEvent(InflationStartEvent())
     return doInflate(file, parent).apply {
       inflationEventListener?.onEvent(InflationFinishEvent(this))
       _primaryInflatingFile = null
-      endParse()
     }
+  }
+  
+  override fun close() {
+    this.module = null
+    this.inflationEventListener = null
+    this._primaryInflatingFile = null
+    this._currentLayoutFile = null
+    endParse()
   }
 
   protected open fun doInflate(file: File, parent: ViewGroup): List<IView> {
@@ -210,8 +233,7 @@ open class LayoutInflaterImpl : ILayoutInflater() {
         val namespace =
           view.findNamespaceByUri(xmlAttribute.namespaceUri)
             ?: throw InflateException("Unknown namespace : ${xmlAttribute.namespaceUri}")
-        val attr =
-          AttributeImpl(namespace = namespace, name = xmlAttribute.name, value = xmlAttribute.value)
+        val attr = onCreateAttribute(view, namespace, xmlAttribute.name, xmlAttribute.value)
         view.addAttribute(attribute = attr, update = true)
         inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
       }
@@ -275,14 +297,24 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   ): IView {
     return try {
       val v = createViewInstance(widget.qualifiedName, parent.context)
-      val view =
-        if (v is ViewGroup) {
-          ViewGroupImpl(currentLayoutFile, widget.qualifiedName, v)
-        } else ViewImpl(currentLayoutFile, widget.qualifiedName, v)
-      return inflationEventListener?.onInterceptCreateView(view) ?: view
+      return componentFactory.createView(currentLayoutFile, widget.qualifiedName, v)
     } catch (err: Throwable) {
       onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
     }
+  }
+
+  protected open fun onCreateAttribute(
+    view: ViewImpl,
+    namespace: INamespace,
+    name: String,
+    value: String
+  ): IAttribute {
+    return componentFactory.createAttr(
+      view = view,
+      namespace = namespace,
+      name = name,
+      value = value
+    )
   }
 
   protected open fun addNamespaceDecls(element: XmlElement, view: ViewImpl) {
@@ -324,7 +356,8 @@ open class LayoutInflaterImpl : ILayoutInflater() {
   }
 
   private fun wrap(parent: ViewGroup): IViewGroup {
-    return ViewGroupImpl(currentLayoutFile, parent.javaClass.name, parent)
+    return componentFactory.createView(currentLayoutFile, parent.javaClass.name, parent)
+      as IViewGroup
   }
 
   private fun SourcePosition.lineCol(): String {

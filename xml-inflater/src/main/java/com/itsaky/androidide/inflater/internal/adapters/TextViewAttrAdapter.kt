@@ -29,8 +29,8 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.newAttribute
 import java.util.regex.Pattern
 
 /**
@@ -43,12 +43,12 @@ open class TextViewAttrAdapter : ViewAttrAdapter() {
 
   override fun apply(view: IView, attribute: IAttribute): Boolean {
     return doApply<TextView>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
+      _: LayoutFile,
+      context: Context,
+      _: LayoutParams,
+      _: INamespace,
+      name: String,
+      value: String ->
       val drawables = compoundDrawables
       val drawablesRelative = compoundDrawablesRelative
       var applied = true
@@ -130,7 +130,7 @@ open class TextViewAttrAdapter : ViewAttrAdapter() {
 
   override fun applyBasic(view: IView) {
     super.applyBasic(view)
-    view.addAttribute(AttributeImpl(name = "text", value = "AndroidIDE"))
+    view.addAttribute(newAttribute(view = view, name = "text", value = "AndroidIDE"))
   }
 
   protected open fun parseTextStyle(value: String): Int {

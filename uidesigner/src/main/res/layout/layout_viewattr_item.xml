@@ -34,9 +34,9 @@
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintEnd_toStartOf="@id/delete_attr"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintTop_toTopOf="@id/delete_attr"
     tools:text="android:layout_width" />
 
   <com.google.android.material.textview.MaterialTextView
@@ -46,9 +46,24 @@
     android:layout_marginTop="2dp"
     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
     android:textColor="?attr/colorOnSurfaceVariant"
+    app:layout_constraintBottom_toBottomOf="@id/delete_attr"
     app:layout_constraintEnd_toEndOf="@id/attr_name"
     app:layout_constraintStart_toStartOf="@id/attr_name"
     app:layout_constraintTop_toBottomOf="@id/attr_name"
     tools:text="match_parent" />
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/delete_attr"
+    style="@style/Widget.Material3.Button.IconButton"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="16dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:contentDescription="@string/title_viewaction_delete"
+    app:icon="@drawable/ic_delete"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

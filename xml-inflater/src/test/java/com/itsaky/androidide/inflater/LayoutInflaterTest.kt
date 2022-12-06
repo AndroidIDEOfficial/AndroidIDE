@@ -20,17 +20,16 @@ package com.itsaky.androidide.inflater
 import android.view.View
 import android.widget.LinearLayout
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -70,11 +69,11 @@ class LayoutInflaterTest {
 
             (inflated as ViewImpl).attributes.apply {
               assertThat(this)
-                .contains(AttributeImpl(INamespace.ANDROID, "id", "@+id/template_view"))
+                .contains(newAttribute(inflated, INamespace.ANDROID, "id", "@+id/template_view"))
               assertThat(this)
-                .contains(AttributeImpl(INamespace.ANDROID, "layout_height", "match_parent"))
+                .contains(newAttribute(inflated, INamespace.ANDROID, "layout_height", "match_parent"))
               assertThat(this)
-                .contains(AttributeImpl(INamespace.ANDROID, "layout_width", "match_parent"))
+                .contains(newAttribute(inflated, INamespace.ANDROID, "layout_width", "match_parent"))
             }
           }
         }

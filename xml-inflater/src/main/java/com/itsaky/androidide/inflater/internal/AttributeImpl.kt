@@ -20,9 +20,50 @@ package com.itsaky.androidide.inflater.internal
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.INamespace.Companion.ANDROID
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.newAttribute
 
-data class AttributeImpl @JvmOverloads constructor(
+open class AttributeImpl
+@JvmOverloads
+constructor(
   override val namespace: INamespace = ANDROID,
   override val name: String,
   override var value: String
-) : IAttribute
+) : IAttribute {
+
+  @JvmOverloads
+  fun copyAttr(
+    view: IView? = null,
+    namespace: INamespace = this.namespace,
+    name: String = this.name,
+    value: String = this.value
+  ): IAttribute {
+    return newAttribute(view = view, namespace = namespace, name = name, value = value)
+  }
+
+  internal fun immutableCopy(): IAttribute {
+    return ImmutableAttributeImpl(this)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is AttributeImpl) return false
+
+    if (namespace != other.namespace) return false
+    if (name != other.name) return false
+    if (value != other.value) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = namespace.hashCode()
+    result = 31 * result + name.hashCode()
+    result = 31 * result + value.hashCode()
+    return result
+  }
+
+  override fun toString(): String {
+    return "AttributeImpl(namespace=$namespace, name='$name', value='$value')"
+  }
+}
