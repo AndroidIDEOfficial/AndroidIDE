@@ -372,7 +372,7 @@
   <string name="idepref_maxLineWidth_title">Largura máxima da linha</string>
   <string name="idepref_maxLineWidth_summary">O número máximo de caracteres que uma linha deve ter.</string>
   <string name="idepref_splitAttrIndentSize_title">Dividir o tamanho do recuo dos atributos</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to index for splitted attributes.</string>
+  <string name="idepref_splitAttrIndentSize_summary">O número de espaços a serem indexados para atributos divididos.</string>
   <string name="idepref_preservedNewLines_title">Novas linhas preservadas</string>
   <string name="idepref_preservedNewLines_summary">O número máximo de quebras de linha contínuas que devem ser preservadas.</string>
   <string name="idepref_emptyElements_title">Comportamento de elementos vazios</string>
