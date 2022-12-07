@@ -89,9 +89,8 @@ class UndoManagerTest {
       assertThat(parent.childCount).isEqualTo(0)
 
       // add child again
-      // we should still be able to undo the last action in which the view was removed
       undoManager.undo()
-      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canUndo()).isFalse()
       assertThat(undoManager.canRedo()).isTrue()
       assertThat(parent.childCount).isEqualTo(1)
       assertThat(parent[0]).isEqualTo(child)
