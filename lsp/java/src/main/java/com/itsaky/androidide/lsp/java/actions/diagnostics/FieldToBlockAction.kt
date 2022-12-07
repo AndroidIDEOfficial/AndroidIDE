@@ -48,7 +48,7 @@ class FieldToBlockAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!data.hasRequiredData( DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
@@ -62,9 +62,9 @@ class FieldToBlockAction : BaseJavaCodeAction() {
 
   override fun execAction(data: ActionData): Any {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
     val diagnostic = data[DiagnosticItem::class.java]!!
-    val file = requirePath(data)
+    val file = data.requirePath()
 
     return compiler.compile(file).get {
       ConvertFieldToBlock(file, findPosition(it, diagnostic.range.start))

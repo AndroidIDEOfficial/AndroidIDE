@@ -77,6 +77,9 @@ interface ActionItem {
     /** Location marker for action items shown in editor activity's toolbar. */
     EDITOR_TOOLBAR("editor.activity.toolbar"),
 
+    /** Location marker for action items shown in UI Designer activity's toolbar. */
+    UI_DESIGNER_TOOLBAR("editor.activity.toolbar"),
+
     /** Location marker for action items shown in editor's text action menu. */
     EDITOR_TEXT_ACTIONS("editor.textActions"),
 

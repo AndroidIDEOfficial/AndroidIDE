@@ -44,7 +44,7 @@ class RemoveUnusedThrowsAction : BaseJavaCodeAction() {
 
     if (
       !visible ||
-        !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)
+        !data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)
     ) {
       markInvisible()
       return
@@ -60,8 +60,8 @@ class RemoveUnusedThrowsAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val d = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
-    val file = requirePath(data)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+    val file = data.requirePath()
     return compiler.compile(file).get { task ->
       val notThrown = CodeActionUtils.extractNotThrownExceptionName(d.message)
       val methodWithExtraThrow = CodeActionUtils.findMethod(task, d.range)

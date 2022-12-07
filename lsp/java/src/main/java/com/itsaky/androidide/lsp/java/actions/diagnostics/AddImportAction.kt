@@ -27,7 +27,6 @@ import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddImport
@@ -35,6 +34,7 @@ import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.lsp.models.CodeActionItem
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
@@ -52,7 +52,7 @@ class AddImportAction : BaseJavaCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+    if (!visible || !data.hasRequiredData(DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
@@ -63,7 +63,7 @@ class AddImportAction : BaseJavaCodeAction() {
       return
     }
 
-    val file = requireFile(data)
+    val file = data.requireFile()
     val module =
       ProjectManager.findModuleForFile(file)
         ?: run {
@@ -108,7 +108,7 @@ class AddImportAction : BaseJavaCodeAction() {
       JavaDiagnosticUtils.asUnwrapper(
         data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>
       )!!
-    val file = requireFile(data)
+    val file = data.requireFile()
     val module =
       ProjectManager.findModuleForFile(file)
         ?: run {
@@ -132,7 +132,7 @@ class AddImportAction : BaseJavaCodeAction() {
       }
 
       titles.add(klass)
-      rewrites.add(AddImport(requirePath(data), klass))
+      rewrites.add(AddImport(data.requirePath(), klass))
     }
 
     if (rewrites.isEmpty()) {
@@ -149,7 +149,7 @@ class AddImportAction : BaseJavaCodeAction() {
       return
     }
 
-    val file = requireFile(data)
+    val file = data.requireFile()
     val module =
       ProjectManager.findModuleForFile(file)
         ?: run {

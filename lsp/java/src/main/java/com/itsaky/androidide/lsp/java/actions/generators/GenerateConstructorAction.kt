@@ -72,9 +72,9 @@ class GenerateConstructorAction : FieldBasedAction() {
 
   private fun generateConstructor(data: ActionData, selected: MutableSet<String>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
-    val file = requirePath(data)
+    val file = data.requirePath()
 
     compiler.compile(file).run { task ->
       val triple = findFields(task, file, range)

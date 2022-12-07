@@ -82,9 +82,9 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
 
   private fun generateForFields(data: ActionData, names: MutableSet<String>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
-    val file = requirePath(data)
+    val file = data.requirePath()
 
     compiler.compile(file).run { task ->
       val triple = findFields(task, file, range)
@@ -106,7 +106,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
     type: ClassTree,
     paths: List<TreePath>,
   ) {
-    val file = requirePath(data)
+    val file = data.requirePath()
     val editor = data[CodeEditor::class.java]!!
     val trees = Trees.instance(task.task)
     val insert = EditHelper.insertAtEndOfClass(task.task, task.root(file), type)

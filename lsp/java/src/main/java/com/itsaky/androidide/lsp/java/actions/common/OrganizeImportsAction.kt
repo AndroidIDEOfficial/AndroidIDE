@@ -25,7 +25,7 @@ class OrganizeImportsAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, CodeEditor::class.java)) {
+    if (!data.hasRequiredData(CodeEditor::class.java)) {
       markInvisible()
       return
     }
@@ -37,7 +37,7 @@ class OrganizeImportsAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val watch = com.itsaky.androidide.utils.StopWatch("Organize imports")
     return try {
-      val editor = requireEditor(data)
+      val editor = data.requireEditor()
       val content = editor.text
       val server = data[JavaLanguageServer::class.java]
       val settings = server!!.settings as JavaServerSettings
@@ -54,7 +54,7 @@ class OrganizeImportsAction : BaseJavaCodeAction() {
     super.postExec(data, result)
     if (result is String) {
       if (result.isNotEmpty()) {
-        val editor = requireEditor(data)
+        val editor = data.requireEditor()
         editor.setText(result)
       }
     }

@@ -24,7 +24,7 @@ class RemoveUnusedImportsAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, CodeEditor::class.java)) {
+    if (!data.hasRequiredData(CodeEditor::class.java)) {
       markInvisible()
       return
     }
@@ -36,7 +36,7 @@ class RemoveUnusedImportsAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val watch = com.itsaky.androidide.utils.StopWatch("Remove unused imports")
     return try {
-      val editor = requireEditor(data)
+      val editor = data.requireEditor()
       val content = editor.text
       val output = RemoveUnusedImports.removeUnusedImports(content.toString())
       watch.log()
@@ -49,7 +49,7 @@ class RemoveUnusedImportsAction : BaseJavaCodeAction() {
 
   override fun postExec(data: ActionData, result: Any) {
     if (result is String && result.isNotEmpty()) {
-      val editor = requireEditor(data)
+      val editor = data.requireEditor()
       editor.setText(result)
     }
   }

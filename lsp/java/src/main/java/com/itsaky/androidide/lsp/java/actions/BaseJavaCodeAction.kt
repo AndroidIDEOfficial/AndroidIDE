@@ -49,7 +49,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   override fun prepare(data: ActionData) {
 
     if (
-      !hasRequiredData(data, Context::class.java, JavaLanguageServer::class.java, File::class.java)
+      !data.hasRequiredData(Context::class.java, JavaLanguageServer::class.java, File::class.java)
     ) {
       markInvisible()
       return
@@ -59,7 +59,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
       label = data[Context::class.java]!!.getString(titleTextRes)
     }
 
-    val file = requireFile(data)
+    val file = data.requireFile()
     visible = DocumentUtils.isJavaFile(file.toPath())
     enabled = visible
   }
@@ -67,10 +67,10 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   fun performCodeAction(data: ActionData, result: Rewrite) {
     val server = ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
     val client = server.client!!
 
-    val file = requireFile(data)
+    val file = data.requireFile()
 
     client.performCodeAction(file, result.asCodeActions(compiler, label))
   }

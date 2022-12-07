@@ -42,7 +42,7 @@ class RemoveMethodAction : BaseJavaCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!visible || !data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
@@ -57,8 +57,8 @@ class RemoveMethodAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
-    val file = requirePath(data)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+    val file = data.requirePath()
 
     return compiler.compile(file).get {
       val unusedMethod = findMethod(it, diagnostic.range)

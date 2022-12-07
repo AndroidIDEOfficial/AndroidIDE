@@ -41,7 +41,7 @@ class GoToDefinitionAction : BaseJavaCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !hasRequiredData(data, CodeEditor::class.java, File::class.java)) {
+    if (!visible || !data.hasRequiredData( CodeEditor::class.java, File::class.java)) {
       markInvisible()
       return
     }

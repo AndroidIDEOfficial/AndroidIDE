@@ -80,9 +80,9 @@ class GenerateToStringMethodAction : FieldBasedAction() {
 
   private fun generateToString(data: ActionData, selected: MutableSet<String>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
-    val file = requirePath(data)
+    val file = data.requirePath()
 
     compiler.compile(file).run { task ->
       val triple = findFields(task, file, range)
@@ -112,7 +112,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
       return
     }
 
-    val file = requirePath(data)
+    val file = data.requirePath()
     val editor = data[CodeEditor::class.java]!!
     val trees = JavacTrees.instance(task.task)
     val indent = EditHelper.indent(task.task, task.root(), type) + 4

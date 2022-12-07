@@ -45,7 +45,7 @@ class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }

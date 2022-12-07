@@ -31,7 +31,7 @@ class CommentAction : BaseJavaCodeAction() {
   override var requiresUIThread: Boolean = true
   
   override fun execAction(data: ActionData): Boolean {
-    val editor = requireEditor(data)
+    val editor = data.requireEditor()
     val text = editor.text
     val cursor = editor.cursor
 

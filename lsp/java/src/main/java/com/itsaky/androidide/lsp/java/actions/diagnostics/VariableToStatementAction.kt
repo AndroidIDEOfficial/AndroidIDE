@@ -47,7 +47,7 @@ class VariableToStatementAction : BaseJavaCodeAction() {
       return
     }
 
-    if (!hasRequiredData(data, com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
+    if (!data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
@@ -65,8 +65,8 @@ class VariableToStatementAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(requireFile(data)) ?: return Any())
-    val path = requirePath(data)
+      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+    val path = data.requirePath()
 
     return compiler.compile(path).get {
       ConvertVariableToStatement(path, findPosition(it, diagnostic.range.start))

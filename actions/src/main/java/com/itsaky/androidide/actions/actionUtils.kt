@@ -24,16 +24,16 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 import java.nio.file.Path
 
-fun requireFile(data: ActionData): File {
-  return data.get(File::class.java) ?: throw IllegalArgumentException("No file instance provided")
+fun ActionData.requireFile(): File {
+  return get(File::class.java) ?: throw IllegalArgumentException("No file instance provided")
 }
 
-fun requirePath(data: ActionData): Path {
-  return requireFile(data).toPath()
+fun ActionData.requirePath(): Path {
+  return requireFile().toPath()
 }
 
-fun requireEditor(data: ActionData): CodeEditor {
-  return data.get(CodeEditor::class.java)
+fun ActionData.requireEditor(): CodeEditor {
+  return get(CodeEditor::class.java)
     ?: throw IllegalArgumentException("An editor instance is required but none was provided")
 }
 
@@ -45,13 +45,12 @@ fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
 /**
  * Checks if the given [ActionData] has instances of the given [types].
  *
- * @param data The data to check.
  * @param types The type of objects to look for.
- * @return `true` if the [data] has the given [types], `false` otherwise.
+ * @return `true` if this [ActionData] has the given [types], `false` otherwise.
  */
-fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
+fun ActionData.hasRequiredData(vararg types: Class<*>): Boolean {
   for (type in types) {
-    data.get(type) ?: return false
+    get(type) ?: return false
   }
 
   return true

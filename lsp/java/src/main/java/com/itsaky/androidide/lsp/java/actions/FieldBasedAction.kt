@@ -54,8 +54,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
 
     if (
       !visible ||
-        !hasRequiredData(
-          data,
+        !data.hasRequiredData(
           com.itsaky.androidide.models.Range::class.java,
           CodeEditor::class.java
         ) ||
@@ -71,7 +70,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
 
   override fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
-    val file = requirePath(data)
+    val file = data.requirePath()
     val module = ProjectManager.findModuleForFile(file) ?: return Any()
 
     return JavaCompilerProvider.get(module).compile(file).get { task ->
