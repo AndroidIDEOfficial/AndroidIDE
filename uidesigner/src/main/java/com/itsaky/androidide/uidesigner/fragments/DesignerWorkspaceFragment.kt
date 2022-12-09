@@ -23,21 +23,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
-import androidx.transition.ChangeBounds
-import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
-import com.itsaky.androidide.inflater.events.IInflateEventsListener
-import com.itsaky.androidide.inflater.events.IInflationEvent
-import com.itsaky.androidide.inflater.events.InflationFinishEvent
-import com.itsaky.androidide.inflater.events.InflationStartEvent
-import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
@@ -48,15 +38,10 @@ import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.undo.UndoManager
-import com.itsaky.androidide.uidesigner.undo.ViewAddedAction
-import com.itsaky.androidide.uidesigner.undo.ViewMovedAction
-import com.itsaky.androidide.uidesigner.undo.ViewRemovedAction
 import com.itsaky.androidide.uidesigner.utils.UiLayoutInflater
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_ERROR
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_WORKSPACE
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
@@ -71,17 +56,18 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
-  private var isInflating = false
   private val viewInfo by lazy { ViewInfoSheet() }
   private val inflater by lazy { UiLayoutInflater() }
-  private val workspaceView by lazy {
+
+  internal var isInflating = false
+  internal val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
 
   val undoManager: UndoManager
     get() = viewModel.undoManager
 
-  private val placeholder by lazy {
+  internal val placeholder by lazy {
     val view =
       View(requireContext()).apply {
         setBackgroundResource(R.drawable.bg_widget_drag_placeholder)
@@ -94,68 +80,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
     PlaceholderView(view)
   }
 
-  private val hierarchyChangeListener =
-    object : SingleOnHierarchyChangeListener() {
-
-      private fun animateLayoutChange() {
-        TransitionManager.beginDelayedTransition(
-          workspaceView.view,
-          ChangeBounds().setDuration(HIERARCHY_CHANGE_TRANSITION_DURATION)
-        )
-      }
-
-      private fun pushAction(view: IView, parent: IViewGroup, index: Int, added: Boolean) {
-        if (view is PlaceholderView) {
-          return
-        }
-
-        val lastAction = undoManager.peekUndo()
-
-        val action =
-          if (added && lastAction is ViewRemovedAction && lastAction.child == view) {
-            undoManager.popUndo()
-            ViewMovedAction(view, lastAction.parent, parent, lastAction.index, index)
-          } else if (added) {
-            ViewAddedAction(view, parent, index)
-          } else {
-            ViewRemovedAction(view, parent, index)
-          }
-
-        undoManager.push(action)
-        requireActivity().invalidateOptionsMenu()
-      }
-
-      override fun beforeViewAdded(group: IViewGroup, view: IView, index: Int) {
-        animateLayoutChange()
-      }
-
-      override fun beforeViewRemoved(group: IViewGroup, view: IView, index: Int) {
-        animateLayoutChange()
-      }
-
-      override fun onViewAdded(group: IViewGroup, view: IView, index: Int) {
-
-        if (!isInflating && view !is PlaceholderView) {
-          // when the inflation process is in progress, setupView method will be called
-          // after OnInflateViewEvent
-          setupView(view)
-        }
-
-        if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
-          viewModel.workspaceScreen = SCREEN_WORKSPACE
-        }
-
-        pushAction(view, group, index, true)
-      }
-
-      override fun onViewRemoved(group: IViewGroup, view: IView, index: Int) {
-        if (workspaceView.viewGroup.childCount == 0) {
-          viewModel.errText = getString(R.string.msg_empty_ui_layout)
-        }
-
-        pushAction(view, group, index, false)
-      }
-    }
+  private val hierarchyHandler by lazy { WorkspaceHierarchyHandler() }
+  private val inflationHandler by lazy { WorkspaceLayoutInflationHandler() }
 
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
@@ -166,33 +92,14 @@ class DesignerWorkspaceFragment : BaseFragment() {
     private const val PLACEHOLDER_HEIGHT_DP = 20f
   }
 
-  private val inflateListener by lazy {
-    object : IInflateEventsListener {
-      override fun onEvent(event: IInflationEvent<*>) {
-        if (event is InflationStartEvent) {
-          isInflating = true
-        }
-        if (event is InflationFinishEvent) {
-          isInflating = false
-        }
-        if (event is OnInflateViewEvent) {
-          setupView(event.data)
-        }
-        if (event is InflationFinishEvent && event.data.isNotEmpty()) {
-          val file = (event.data[0] as ViewImpl).file
-          workspaceView.file = file
-          placeholder.file = file
-        }
-      }
-    }
-  }
-
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
     this.binding = FragmentDesignerWorkspaceBinding.inflate(inflater, container, false)
+    hierarchyHandler.init(this)
+    inflationHandler.init(this)
     return this.binding!!.root
   }
 
@@ -202,7 +109,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
-    inflater.inflationEventListener = this.inflateListener
+    inflater.inflationEventListener = this.inflationHandler
     var hasError = false
     val inflated =
       try {
@@ -222,10 +129,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
+    this.hierarchyHandler.release()
+    this.inflationHandler.release()
     this.inflater.close()
   }
 
-  private fun setupView(view: IView) {
+  internal fun setupView(view: IView) {
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
         viewModel.view = it
@@ -247,7 +156,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private fun setupViewGroup(viewGroup: UiViewGroup) {
     viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder))
-    viewGroup.addOnHierarchyChangeListener(hierarchyChangeListener)
+    viewGroup.addOnHierarchyChangeListener(hierarchyHandler)
   }
 
   fun setupFromBundle(bundle: Bundle?) {
