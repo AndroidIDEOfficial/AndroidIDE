@@ -26,6 +26,8 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Comp
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.models.UiWidget
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Listens for drag events in the given view group.
@@ -69,9 +71,10 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
             else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
           }
 
-        val index = view.indexOfChild(this.placeholder)
+        var index = view.indexOfChild(this.placeholder) - 1
         this.placeholder.removeFromParent()
-
+        index = min(max(0, index), view.childCount)
+        
         this.view.addChild(index, child)
         this.view.onHighlightStateUpdated(false)
 

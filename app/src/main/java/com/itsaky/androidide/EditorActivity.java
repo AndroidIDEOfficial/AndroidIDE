@@ -261,8 +261,7 @@ public class EditorActivity extends IDEActivity
       data.put(File.class, currentEditor.getEditor().getFile());
     }
 
-    ActionsRegistry.getInstance()
-        .fillMenu(data, com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR, menu);
+    ActionsRegistry.getInstance().fillMenu(data, ActionItem.Location.EDITOR_TOOLBAR, menu);
   }
 
   @Nullable

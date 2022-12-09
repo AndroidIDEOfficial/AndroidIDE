@@ -15,26 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.undo
+package com.itsaky.androidide.uidesigner.actions
 
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IViewGroup
+import android.content.Context
+import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
+import com.itsaky.androidide.actions.ActionsRegistry
 
-/**
- * Represents the action when the user adds a view to a view group.
- *
- * @author Akash Yadav
- */
-class ViewAddedAction
-@JvmOverloads
-constructor(view: IView, parent: IViewGroup, index: Int = parent.indexOfChild(view)) :
-  ViewAction(view, parent, index) {
-
-  override fun undo() {
-    child.removeFromParent()
+fun registerUiDesignerActions(context: Context) {
+  ActionsRegistry.getInstance().apply {
+    registerAction(UndoAction(context))
+    registerAction(RedoAction(context))
   }
+}
 
-  override fun redo() {
-    parent.addChild(index, child)
-  }
+fun clearUiDesignerActions() {
+  ActionsRegistry.getInstance().clearActions(UI_DESIGNER_TOOLBAR)
 }

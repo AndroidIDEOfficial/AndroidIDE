@@ -35,11 +35,11 @@ class ViewMovedAction(
   
   override fun undo() {
     child.removeFromParent()
-    fromParent.addChild(fromIndex, child)
+    fromParent.addChild(fromParent.validateIndex(fromIndex), child)
   }
 
   override fun redo() {
     child.removeFromParent()
-    toParent.addChild(toIndex, child)
+    toParent.addChild(toParent.validateIndex(toIndex), child)
   }
 }

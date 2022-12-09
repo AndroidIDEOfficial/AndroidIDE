@@ -19,23 +19,22 @@ package com.itsaky.androidide.uidesigner.undo
 
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Represents the action when the user removes a view from a view group.
  *
  * @author Akash Yadav
  */
-class ViewRemovedAction(child: IView, parent: IViewGroup, index: Int) : ViewAction(child, parent) {
-  
-  init {
-    this.index = index
-  }
-  
+class ViewRemovedAction(child: IView, parent: IViewGroup, index: Int) :
+  ViewAction(child, parent, index) {
+
   override fun undo() {
-    parent.addChild(index, child)
+    parent.addChild(parent.validateIndex(index), child)
   }
-  
+
   override fun redo() {
-    parent.removeChild(child)
+    child.removeFromParent()
   }
 }

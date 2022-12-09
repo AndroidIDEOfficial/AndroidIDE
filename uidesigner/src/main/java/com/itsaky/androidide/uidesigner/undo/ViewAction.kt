@@ -28,8 +28,10 @@ import com.itsaky.androidide.inflater.IViewGroup
  * @property index The index of [child] in [parent].
  * @author Akash Yadav
  */
-abstract class ViewAction(protected val child: IView, protected val parent: IViewGroup) :
-  IUiAction {
-  
-  protected var index: Int = parent.indexOfChild(child)
-}
+abstract class ViewAction
+@JvmOverloads
+constructor(
+  val child: IView,
+  val parent: IViewGroup,
+  var index: Int = parent.indexOfChild(child)
+) : IUiAction

@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.uidesigner.undo.UndoManager
 import java.io.File
 
 class WorkspaceViewModel : ViewModel() {
@@ -30,6 +31,7 @@ class WorkspaceViewModel : ViewModel() {
   internal val _viewInfoScreen = MutableLiveData(SCREEN_VIEW_INFO)
   internal val _view = MutableLiveData<IView>(null)
   internal val _selectedAttr = MutableLiveData<IAttribute>(null)
+  internal val _undoManager = MutableLiveData(UndoManager())
   private val _file = MutableLiveData<File>()
 
   companion object {
@@ -38,6 +40,9 @@ class WorkspaceViewModel : ViewModel() {
     const val SCREEN_VIEW_INFO = 0
     const val SCREEN_VALUE_EDITOR = 1
   }
+  
+  val undoManager: UndoManager
+    get() = this._undoManager.value!!
 
   var file: File
     get() = _file.value!!

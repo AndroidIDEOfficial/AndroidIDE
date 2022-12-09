@@ -17,24 +17,10 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import kotlin.math.max
+import kotlin.math.min
 
-/**
- * Represents the action when the user adds a view to a view group.
- *
- * @author Akash Yadav
- */
-class ViewAddedAction
-@JvmOverloads
-constructor(view: IView, parent: IViewGroup, index: Int = parent.indexOfChild(view)) :
-  ViewAction(view, parent, index) {
-
-  override fun undo() {
-    child.removeFromParent()
-  }
-
-  override fun redo() {
-    parent.addChild(index, child)
-  }
+internal fun IViewGroup.validateIndex(index: Int) : Int {
+  return min(max(0, index), childCount)
 }

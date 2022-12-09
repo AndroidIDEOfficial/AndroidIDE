@@ -27,7 +27,6 @@ import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
-import com.itsaky.androidide.utils.ILogger
 
 /**
  * Extension of [IView] for the UI Designer.

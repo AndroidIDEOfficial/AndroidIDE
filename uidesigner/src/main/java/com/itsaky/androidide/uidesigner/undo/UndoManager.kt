@@ -24,19 +24,30 @@ package com.itsaky.androidide.uidesigner.undo
  */
 class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFAULT_STACK_SIZE) {
 
-  private var stackPointer = 0
-  private var stack = mutableListOf<IUiAction>()
+  internal var enabled = true
+    private set
+
+  private var undoStack = ArrayDeque<IUiAction>()
+  private var redoStack = ArrayDeque<IUiAction>()
 
   companion object {
     const val DEFAULT_STACK_SIZE = 30
   }
+  
+  fun enable() {
+    this.enabled = true
+  }
+  
+  fun disable() {
+    this.enabled = false
+  }
 
   fun canUndo(): Boolean {
-    return stackPointer > 0
+    return enabled && undoStack.isNotEmpty()
   }
 
   fun canRedo(): Boolean {
-    return stackPointer < stack.size
+    return enabled && redoStack.isNotEmpty()
   }
 
   fun undo() {
@@ -44,8 +55,13 @@ class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFA
       return
     }
 
-    stack[stackPointer - 1].undo()
-    --stackPointer
+    disable()
+    val action = undoStack.removeLast()
+    action.undo()
+
+    redoStack.addLast(action)
+    trimStacks()
+    enable()
   }
 
   fun redo() {
@@ -53,8 +69,13 @@ class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFA
       return
     }
 
-    stack[stackPointer].redo()
-    ++stackPointer
+    disable()
+    val action = redoStack.removeLast()
+    action.redo()
+
+    undoStack.addLast(action)
+    trimStacks()
+    enable()
   }
 
   /**
@@ -63,30 +84,37 @@ class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFA
    * @param action The action to push.
    */
   fun push(action: IUiAction) {
-    if (stack.isEmpty()) {
-      stack.add(action)
-      ++stackPointer
+    if (!enabled) {
       return
     }
     
-    removeRedoable()
-
-    stack.add(action)
-    ++stackPointer
-
-    trimStack()
+    redoStack.clear()
+    undoStack.addLast(action)
+    trimStacks()
   }
-  
-  private fun removeRedoable() {
-    while(stackPointer < stack.size) {
-      stack.removeAt(stack.size - 1)
+
+  fun peekUndo(): IUiAction? {
+    return undoStack.lastOrNull()
+  }
+
+  fun peekRedo(): IUiAction? {
+    return redoStack.lastOrNull()
+  }
+
+  fun popUndo(): IUiAction? {
+    return undoStack.removeLastOrNull()
+  }
+
+  fun popRedo(): IUiAction? {
+    return redoStack.removeLastOrNull()
+  }
+
+  private fun trimStacks() {
+    while (undoStack.size > maxStackSize) {
+      undoStack.removeFirst()
     }
-  }
-
-  private fun trimStack() {
-    while (stackPointer > 1 && stack.size > maxStackSize) {
-      stack.removeAt(0)
-      --stackPointer
+    while (redoStack.size > maxStackSize) {
+      redoStack.removeFirst()
     }
   }
 }

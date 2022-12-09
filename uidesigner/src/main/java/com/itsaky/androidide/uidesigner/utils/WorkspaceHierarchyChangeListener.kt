@@ -15,26 +15,29 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.undo
+package com.itsaky.androidide.uidesigner.utils
 
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.viewGroup
+import com.itsaky.androidide.uidesigner.R
+import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
+import com.itsaky.androidide.uidesigner.models.PlaceholderView
+import com.itsaky.androidide.uidesigner.models.UiViewGroup
+import com.itsaky.androidide.uidesigner.undo.ViewMovedAction
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
- * Represents the action when the user adds a view to a view group.
+ * Handles hierarchy changes in the UI Designer's workspace.
  *
  * @author Akash Yadav
  */
-class ViewAddedAction
-@JvmOverloads
-constructor(view: IView, parent: IViewGroup, index: Int = parent.indexOfChild(view)) :
-  ViewAction(view, parent, index) {
+internal class WorkspaceHierarchyChangeListener(
+  private val viewModel: WorkspaceViewModel,
+  private val workspaceView: UiViewGroup
+) : IViewGroup.SingleOnHierarchyChangeListener() {
 
-  override fun undo() {
-    child.removeFromParent()
-  }
 
-  override fun redo() {
-    parent.addChild(index, child)
-  }
 }

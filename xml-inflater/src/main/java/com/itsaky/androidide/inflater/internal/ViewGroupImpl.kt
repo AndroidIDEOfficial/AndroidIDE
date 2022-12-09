@@ -42,20 +42,21 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     if (view.parent != null) {
       throw IllegalStateException("View already has a parent")
     }
-    notifyBeforeViewAdded(view)
+    notifyBeforeViewAdded(view, index)
     val idx = if (index < 0) childCount else index
     this.children.add(idx, view)
     this.view.addView(view.view, idx)
     view.parent = this
-    notifyOnViewAdded(view)
+    notifyOnViewAdded(view, index)
   }
 
   override fun removeChild(view: IView) {
-    notifyBeforeViewRemoved(view)
+    val index = indexOfChild(view)
+    notifyBeforeViewRemoved(view, index)
     this.view.removeView(view.view)
     this.children.remove(view)
     view.parent = null
-    notifyOnViewRemoved(view)
+    notifyOnViewRemoved(view, index)
   }
 
   override fun removeChild(index: Int) {
@@ -88,20 +89,20 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     this.hierarchyChangeListeners.remove(listener)
   }
 
-  protected open fun notifyBeforeViewAdded(child: IView) {
-    this.hierarchyChangeListeners.forEach { it.beforeViewAdded(this, child) }
+  protected open fun notifyBeforeViewAdded(child: IView, index: Int) {
+    this.hierarchyChangeListeners.forEach { it.beforeViewAdded(this, child, index) }
   }
 
-  protected open fun notifyBeforeViewRemoved(child: IView) {
-    this.hierarchyChangeListeners.forEach { it.beforeViewRemoved(this, child) }
+  protected open fun notifyBeforeViewRemoved(child: IView, index: Int) {
+    this.hierarchyChangeListeners.forEach { it.beforeViewRemoved(this, child, index) }
   }
 
-  protected open fun notifyOnViewAdded(child: IView) {
-    this.hierarchyChangeListeners.forEach { it.onViewAdded(this, child) }
+  protected open fun notifyOnViewAdded(child: IView, index: Int) {
+    this.hierarchyChangeListeners.forEach { it.onViewAdded(this, child, index) }
   }
 
-  protected open fun notifyOnViewRemoved(child: IView) {
-    this.hierarchyChangeListeners.forEach { it.onViewRemoved(this, child) }
+  protected open fun notifyOnViewRemoved(child: IView, index: Int) {
+    this.hierarchyChangeListeners.forEach { it.onViewRemoved(this, child, index) }
   }
 
   override fun immutableCopy(): IViewGroup {

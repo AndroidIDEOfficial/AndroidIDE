@@ -17,15 +17,22 @@
 
 package com.itsaky.androidide.uidesigner
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
-import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN
+import androidx.fragment.app.Fragment
+import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
+import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.app.BaseIDEActivity
+import com.itsaky.androidide.uidesigner.actions.clearUiDesignerActions
+import com.itsaky.androidide.uidesigner.actions.registerUiDesignerActions
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
@@ -83,10 +90,45 @@ class UIDesignerActivity : BaseIDEActivity() {
         binding!!.root.closeDrawer(GravityCompat.START)
       }
     }
+  
+    registerUiDesignerActions(this)
+  }
+  
+  override fun onResume() {
+    super.onResume()
+    registerUiDesignerActions(this)
+  }
+  
+  override fun onPause() {
+    super.onPause()
+    clearUiDesignerActions()
   }
 
   override fun onDestroy() {
     super.onDestroy()
     binding = null
+  }
+  
+  override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    ensureToolbarMenu(menu)
+    return true
+  }
+  
+  @SuppressLint("RestrictedApi")
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    if (menu is MenuBuilder) {
+      menu.setOptionalIconsVisible(true)
+    }
+    return true
+  }
+  
+  private fun ensureToolbarMenu(menu: Menu) {
+    menu.clear()
+    
+    val data = ActionData()
+    data.put(Context::class.java, this)
+    data.put(Fragment::class.java, binding!!.workspace.getFragment())
+    
+    ActionsRegistry.getInstance().fillMenu(data, UI_DESIGNER_TOOLBAR, menu)
   }
 }

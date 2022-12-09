@@ -110,7 +110,7 @@ interface IViewGroup : IView {
      * @param group The group in which the view will be added.
      * @param view The view that will be added to the given view group.
      */
-    fun beforeViewAdded(group: IViewGroup, view: IView) {}
+    fun beforeViewAdded(group: IViewGroup, view: IView, index: Int) {}
   
     /**
      * Called just before the [view] is removed from the [group].
@@ -118,7 +118,7 @@ interface IViewGroup : IView {
      * @param group The group from which the view will be removed.
      * @param view The view that will be removed from the given view group.
      */
-    fun beforeViewRemoved(group: IViewGroup, view: IView) {}
+    fun beforeViewRemoved(group: IViewGroup, view: IView, index: Int) {}
     
     /**
      * Called when a view is added.
@@ -126,7 +126,7 @@ interface IViewGroup : IView {
      * @param group The view group in which the view was added.
      * @param view The added view.
      */
-    fun onViewAdded(group: IViewGroup, view: IView)
+    fun onViewAdded(group: IViewGroup, view: IView, index: Int)
 
     /**
      * Called when a view is removed.
@@ -134,12 +134,12 @@ interface IViewGroup : IView {
      * @param group The view group from which the view was removed.
      * @param view The removed view.
      */
-    fun onViewRemoved(group: IViewGroup, view: IView)
+    fun onViewRemoved(group: IViewGroup, view: IView, index: Int)
   }
 
   /** Allows overriding a single method in [OnHierarchyChangeListener]. */
   open class SingleOnHierarchyChangeListener : OnHierarchyChangeListener {
-    override fun onViewAdded(group: IViewGroup, view: IView) {}
-    override fun onViewRemoved(group: IViewGroup, view: IView) {}
+    override fun onViewAdded(group: IViewGroup, view: IView, index: Int) {}
+    override fun onViewRemoved(group: IViewGroup, view: IView, index: Int) {}
   }
 }

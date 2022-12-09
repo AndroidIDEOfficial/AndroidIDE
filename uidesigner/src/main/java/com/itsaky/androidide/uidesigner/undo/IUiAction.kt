@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
-import android.os.Parcelable
-
 /**
  * An action performed in the UI Designer.
  *

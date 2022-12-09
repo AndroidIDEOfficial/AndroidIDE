@@ -33,7 +33,7 @@ abstract class EditorActivityAction : ActionItem {
   override var requiresUIThread: Boolean = false
 
   override fun prepare(data: ActionData) {
-    if (!hasRequiredData(data, Context::class.java)) {
+    if (!data.hasRequiredData(Context::class.java)) {
       markInvisible()
     }
   }

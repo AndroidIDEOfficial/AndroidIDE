@@ -27,7 +27,6 @@ import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
-import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener
@@ -48,6 +47,10 @@ import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
 import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
+import com.itsaky.androidide.uidesigner.undo.UndoManager
+import com.itsaky.androidide.uidesigner.undo.ViewAddedAction
+import com.itsaky.androidide.uidesigner.undo.ViewMovedAction
+import com.itsaky.androidide.uidesigner.undo.ViewRemovedAction
 import com.itsaky.androidide.uidesigner.utils.UiLayoutInflater
 import com.itsaky.androidide.uidesigner.utils.bgDesignerView
 import com.itsaky.androidide.uidesigner.utils.layeredForeground
@@ -75,6 +78,9 @@ class DesignerWorkspaceFragment : BaseFragment() {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
   }
 
+  val undoManager: UndoManager
+    get() = viewModel.undoManager
+
   private val placeholder by lazy {
     val view =
       View(requireContext()).apply {
@@ -98,18 +104,39 @@ class DesignerWorkspaceFragment : BaseFragment() {
         )
       }
 
-      override fun beforeViewAdded(group: IViewGroup, view: IView) {
+      private fun pushAction(view: IView, parent: IViewGroup, index: Int, added: Boolean) {
+        if (view is PlaceholderView) {
+          return
+        }
+
+        val lastAction = undoManager.peekUndo()
+
+        val action =
+          if (added && lastAction is ViewRemovedAction && lastAction.child == view) {
+            undoManager.popUndo()
+            ViewMovedAction(view, lastAction.parent, parent, lastAction.index, index)
+          } else if (added) {
+            ViewAddedAction(view, parent, index)
+          } else {
+            ViewRemovedAction(view, parent, index)
+          }
+
+        undoManager.push(action)
+        requireActivity().invalidateOptionsMenu()
+      }
+
+      override fun beforeViewAdded(group: IViewGroup, view: IView, index: Int) {
         animateLayoutChange()
       }
 
-      override fun beforeViewRemoved(group: IViewGroup, view: IView) {
+      override fun beforeViewRemoved(group: IViewGroup, view: IView, index: Int) {
         animateLayoutChange()
       }
 
-      override fun onViewAdded(group: IViewGroup, view: IView) {
+      override fun onViewAdded(group: IViewGroup, view: IView, index: Int) {
 
         if (!isInflating && view !is PlaceholderView) {
-          // when the inflation process is in progress, this method will be called
+          // when the inflation process is in progress, setupView method will be called
           // after OnInflateViewEvent
           setupView(view)
         }
@@ -117,12 +144,16 @@ class DesignerWorkspaceFragment : BaseFragment() {
         if (workspaceView.viewGroup.childCount > 0 && viewModel.workspaceScreen == SCREEN_ERROR) {
           viewModel.workspaceScreen = SCREEN_WORKSPACE
         }
+
+        pushAction(view, group, index, true)
       }
 
-      override fun onViewRemoved(group: IViewGroup, view: IView) {
+      override fun onViewRemoved(group: IViewGroup, view: IView, index: Int) {
         if (workspaceView.viewGroup.childCount == 0) {
           viewModel.errText = getString(R.string.msg_empty_ui_layout)
         }
+
+        pushAction(view, group, index, false)
       }
     }
 
@@ -170,7 +201,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
-    
+
     inflater.inflationEventListener = this.inflateListener
     var hasError = false
     val inflated =
