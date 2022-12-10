@@ -28,7 +28,7 @@ data class UnifiedSpan(
   override fun compareTo(other: UnifiedSpan) =
     when {
       firstChar != other.firstChar -> firstChar.compareTo(other.firstChar)
-      lastChar != other.lastChar -> lastChar.compareTo(other.lastChar)
+      lastChar != other.lastChar -> other.lastChar.compareTo(lastChar)
       else -> 0
     }
 }
