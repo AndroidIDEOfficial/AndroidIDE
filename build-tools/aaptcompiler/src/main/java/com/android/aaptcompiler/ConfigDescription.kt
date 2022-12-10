@@ -32,7 +32,7 @@ class ConfigDescription(base: ResTableConfig = ResTableConfig()): ResTableConfig
 const val WILDCARD_NAME: String = "any"
 
 fun parse(config: String): ConfigDescription {
-    val parts = config.split('-').map { it.toLowerCase()}
+    val parts = config.split('-').map { it.lowercase()}
     var index = 0
 
     val configDescription = ConfigDescription()

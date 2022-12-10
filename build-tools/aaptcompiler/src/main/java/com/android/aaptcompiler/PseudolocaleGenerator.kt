@@ -196,16 +196,16 @@ class PseudolocaleGenerator{
     val modified = ConfigDescription(config)
     when (method) {
       Pseudolocalizer.Method.ACCENT -> {
-        modified.language[0] = 'e'.toByte()
-        modified.language[1] = 'n'.toByte()
-        modified.country[0] = 'X'.toByte()
-        modified.country[1] = 'A'.toByte()
+        modified.language[0] = 'e'.code.toByte()
+        modified.language[1] = 'n'.code.toByte()
+        modified.country[0] = 'X'.code.toByte()
+        modified.country[1] = 'A'.code.toByte()
       }
       Pseudolocalizer.Method.BIDI -> {
-        modified.language[0] = 'a'.toByte()
-        modified.language[1] = 'r'.toByte()
-        modified.country[0] = 'X'.toByte()
-        modified.country[1] = 'B'.toByte()
+        modified.language[0] = 'a'.code.toByte()
+        modified.language[1] = 'r'.code.toByte()
+        modified.country[0] = 'X'.code.toByte()
+        modified.country[1] = 'B'.code.toByte()
       }
       else -> {}
     }

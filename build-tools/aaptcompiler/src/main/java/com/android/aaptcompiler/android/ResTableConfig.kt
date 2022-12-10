@@ -22,6 +22,8 @@ import com.android.aaptcompiler.android.LocaleData.localeDataComputeScript
 import com.android.aaptcompiler.android.LocaleData.localeDataIsCloseToUsEnglish
 import com.google.common.base.Preconditions
 import java.nio.ByteBuffer
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Describes a particular resource configuration.
@@ -492,16 +494,16 @@ open class ResTableConfig(
     result.append("-")
   }
 
-  fun unpackLanguage() = unpackLanguageOrRegion(language, 'a'.toByte())
+  fun unpackLanguage() = unpackLanguageOrRegion(language, 'a'.code.toByte())
 
-  fun unpackRegion() = unpackLanguageOrRegion(country, '0'.toByte())
+  fun unpackRegion() = unpackLanguageOrRegion(country, '0'.code.toByte())
 
   fun packLanguage(value: String) {
-    packLanguageOrRegion(value, 'a'.toByte()).copyInto(language, 0, 0, 2)
+    packLanguageOrRegion(value, 'a'.code.toByte()).copyInto(language, 0, 0, 2)
   }
 
   fun packRegion(value: String) {
-    packLanguageOrRegion(value, '0'.toByte()).copyInto(country, 0, 0, 2)
+    packLanguageOrRegion(value, '0'.code.toByte()).copyInto(country, 0, 0, 2)
   }
 
   /**
@@ -646,7 +648,7 @@ open class ResTableConfig(
 
     return 0
   }
-
+  
   fun compareLocales(other: ResTableConfig): Int {
     val locale = getLocale().deviceToHost()
     val oLocale = other.getLocale().deviceToHost()
@@ -657,7 +659,7 @@ open class ResTableConfig(
       locale > oLocale -> return 1
       oLocale > locale -> return -1
     }
-
+    
     // The language & region are equal, so compare the scripts, variants and numbering systems in
     // that order. Comparison of variants and numbering systems should happen very infrequently (if
     // at all.)
@@ -668,14 +670,13 @@ open class ResTableConfig(
     if (scriptDiff != 0) {
       return scriptDiff
     }
-
+    
     val variantDiff = compareArrays(localeVariant, other.localeVariant)
     if (variantDiff != 0) {
       return variantDiff
     }
-
-    val numberDiff = compareArrays(localeNumberSystem, other.localeNumberSystem)
-    return numberDiff
+  
+    return compareArrays(localeNumberSystem, other.localeNumberSystem)
   }
 
   /**
@@ -1017,8 +1018,8 @@ open class ResTableConfig(
         // DENSITY_ANY is now dealt with. We should look to pick a density bucket and potentially
         // scale it. Any density is potentially useful because the system will scale it.  Scaling
         // down is generally better than scaling up.
-        val high = Math.max(myDensity, otherDensity)
-        val low = Math.min(myDensity, otherDensity)
+        val high = max(myDensity, otherDensity)
+        val low = min(myDensity, otherDensity)
         val iAmBigger = high == myDensity
 
         return when {
@@ -1450,10 +1451,10 @@ open class ResTableConfig(
   }
 
   companion object {
-    internal val ENGLISH = byteArrayOf('e'.toByte(), 'n'.toByte()) // packed version of "en"
-    internal val UNITED_STATES = byteArrayOf('U'.toByte(), 'S'.toByte()) // packed version of "US"
+    internal val ENGLISH = byteArrayOf('e'.code.toByte(), 'n'.code.toByte()) // packed version of "en"
+    internal val UNITED_STATES = byteArrayOf('U'.code.toByte(), 'S'.code.toByte()) // packed version of "US"
     internal val FILIPINO = byteArrayOf(0xAD.toByte(), 0x05.toByte()) // packed version of "fil"
-    internal val TAGALOG = byteArrayOf('t'.toByte(), 'l'.toByte()) // packed version of "tl"
+    internal val TAGALOG = byteArrayOf('t'.code.toByte(), 'l'.code.toByte()) // packed version of "tl"
 
     internal const val NUMBERING_SYSTEM_PREFIX = "u-nu-"
 
@@ -1507,13 +1508,13 @@ open class ResTableConfig(
       when {
         input.isNullOrEmpty() -> {}
         input.length <= 2 || input[2] == '-' -> {
-          result[0] = input[0].toByte()
-          result[1] = input[1].toByte()
+          result[0] = input[0].code.toByte()
+          result[1] = input[1].code.toByte()
         }
         else -> {
-          val first = (input[0].toByte() - base) and 0x7f
-          val second = (input[1].toByte() - base) and 0x7f
-          val third = (input[2].toByte() - base) and 0x7f
+          val first = (input[0].code.toByte() - base) and 0x7f
+          val second = (input[1].code.toByte() - base) and 0x7f
+          val third = (input[2].code.toByte() - base) and 0x7f
 
           result[0] = (0x80 or (third shl 2) or (second ushr 3)).toByte()
           result[1] = ((second shl 5) or first).toByte()

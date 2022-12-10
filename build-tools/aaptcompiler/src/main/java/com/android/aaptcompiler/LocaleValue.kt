@@ -22,17 +22,17 @@ class LocaleValue {
     // Language should be stored completely as lower case.
     var language: String = ""
         set(word) {
-            field = word.toLowerCase()
+            field = word.lowercase()
         }
     // Region should be stored completely as upper case.
     var region: String = ""
         set(word) {
-            field = word.toUpperCase()
+            field = word.uppercase()
         }
     // Script needs to start with a capital letter, and the rest needs to be lower case.
     var script: String = ""
         set(word) {
-            field = word.capitalize()
+            field = word.replaceFirstChar { it.titlecase() }
         }
     // Variant is left as-is.
     var variant: String = ""
@@ -95,7 +95,7 @@ class LocaleValue {
     private fun isAlpha(word: String): Boolean = word.all { it.isLetter() }
 
     private fun initFromBcp47TagImpl(word: String, separator: Char): Boolean {
-        val subTags = word.split(separator).map { it.toLowerCase() }
+        val subTags = word.split(separator).map { it.lowercase() }
         when (subTags.size) {
             1 -> language = subTags[0]
             2 -> {

@@ -25,7 +25,7 @@ package com.android.aaptcompiler
 fun parseFloat(text: String): Float? {
   if (text.isEmpty()) return null
 
-  val lowerText = text.toLowerCase()
+  val lowerText = text.lowercase()
   if (lowerText.startsWith("0x") || lowerText.startsWith("0x", 1)) {
     return parseFloatHex(lowerText)
   }
