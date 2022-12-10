@@ -26,9 +26,10 @@ fun parseMcc(part: String, config: ConfigDescription): Boolean {
         config.mcc = 0
         return true
     }
-
-    // The only acceptable format is "mccDDD" (where D is a digit).
-    if (!part.startsWith("mcc") || part.length != 6) {
+    
+    // mnc may have a dynamic sized value ranging from 2 to 3 digits. It is possible to have unique
+    // mcn such as 01 and 001 that are represented by the number digits.
+    if (!part.startsWith("mnc") || part.length !in 4..6) {
         return false
     }
     val value = part.substring(3).toIntOrNull()?.toShort() ?: return false
