@@ -80,7 +80,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     PlaceholderView(view)
   }
 
-  private val hierarchyHandler by lazy { WorkspaceHierarchyHandler() }
+  private val hierarchyHandler by lazy { WorkspaceViewHierarchyHandler() }
   private val inflationHandler by lazy { WorkspaceLayoutInflationHandler() }
 
   companion object {

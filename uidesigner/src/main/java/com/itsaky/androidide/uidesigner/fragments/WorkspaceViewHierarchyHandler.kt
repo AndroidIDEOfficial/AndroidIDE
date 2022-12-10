@@ -34,7 +34,7 @@ import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
  *
  * @author Akash Yadav
  */
-internal class WorkspaceHierarchyHandler : IViewGroup.SingleOnHierarchyChangeListener() {
+internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChangeListener() {
   
   private var fragment: DesignerWorkspaceFragment? = null
 
