@@ -45,9 +45,11 @@ class WorkspaceLayoutInflationHandler : IInflateEventsListener {
     val frag = this.fragment ?: return
     if (event is InflationStartEvent) {
       frag.isInflating = true
+      frag.undoManager.disable()
     }
     if (event is InflationFinishEvent) {
       frag.isInflating = false
+      frag.undoManager.enable()
     }
     if (event is OnInflateViewEvent) {
       frag.setupView(event.data)

@@ -29,7 +29,7 @@ import com.itsaky.androidide.uidesigner.drag.WidgetDragShadowBuilder
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /** @author Akash Yadav */
-class WidgetsItemAdapter(
+internal class WidgetsItemAdapter(
   private val widgets: List<UiWidget>,
   private val viewModel : WorkspaceViewModel
 ) : RecyclerView.Adapter<VH>() {

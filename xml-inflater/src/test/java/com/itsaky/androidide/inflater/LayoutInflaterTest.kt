@@ -24,6 +24,7 @@ import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.IDTable
+import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import org.junit.Test

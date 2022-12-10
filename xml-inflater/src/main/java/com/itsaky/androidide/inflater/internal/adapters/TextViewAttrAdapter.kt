@@ -30,7 +30,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.newAttribute
+import com.itsaky.androidide.inflater.utils.newAttribute
 import java.util.regex.Pattern
 
 /**

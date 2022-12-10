@@ -17,14 +17,11 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
-import android.view.View
-import android.widget.LinearLayout
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewGroupImpl
-import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.uidesigner.createView
+import com.itsaky.androidide.uidesigner.createLayout
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.requiresActivity
-import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -36,8 +33,8 @@ class UndoManagerTest {
   @Test
   fun `test single view addition undo redo`() {
     requiresActivity {
-      val parent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val child = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val parent = createLayout()
+      val child = createView(parent = parent)
       val undoManager = UndoManager()
 
       assertThat(undoManager.canUndo()).isFalse()
@@ -72,8 +69,8 @@ class UndoManagerTest {
   @Test
   fun `test single view removal undo redo`() {
     requiresActivity {
-      val parent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val child = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val parent = createLayout()
+      val child = createView(parent = parent)
       val undoManager = UndoManager()
 
       parent.addChild(child)
@@ -102,22 +99,21 @@ class UndoManagerTest {
       assertThat(parent.childCount).isEqualTo(0)
     }
   }
-  
+
   @Test
   fun `test undo redo when view moved from one parent to another`() {
     requiresActivity {
-      val firstParent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val secondParent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val child = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val firstParent = createLayout()
+      val secondParent = createLayout()
+      val child = createView(parent = firstParent)
       val undoManager = UndoManager()
-      
+
       // view initially added to first parent
       firstParent.addChild(child)
       assertThat(firstParent.childCount).isEqualTo(1)
       assertThat(secondParent.childCount).isEqualTo(0)
       assertThat(firstParent[0]).isEqualTo(child)
-      
-      
+
       // view moved to second parent
       child.removeFromParent()
       secondParent.addChild(child)
@@ -127,7 +123,7 @@ class UndoManagerTest {
       assertThat(firstParent.childCount).isEqualTo(0)
       assertThat(secondParent.childCount).isEqualTo(1)
       assertThat(secondParent[0]).isEqualTo(child)
-      
+
       // undo the last action
       // this should move child from secondParent to firstParent
       undoManager.undo()
@@ -136,7 +132,7 @@ class UndoManagerTest {
       assertThat(firstParent.childCount).isEqualTo(1)
       assertThat(secondParent.childCount).isEqualTo(0)
       assertThat(firstParent[0]).isEqualTo(child)
-  
+
       // redo the last action
       // this should move child from firstParent to secondParent
       undoManager.redo()
@@ -151,8 +147,8 @@ class UndoManagerTest {
   @Test
   fun `test actions not redoable after new action push`() {
     requiresActivity {
-      val parent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val child = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val parent = createLayout()
+      val child = createView(parent = parent)
       val undoManager = UndoManager()
 
       // --------------------------------------------------------
@@ -180,9 +176,9 @@ class UndoManagerTest {
   @Test
   fun `test multiple view undo redo`() {
     requiresActivity {
-      val parent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
-      val firstChild = ViewImpl(LayoutFile(File(""), ""), "", View(this))
-      val secondChild = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val parent = createLayout()
+      val firstChild = createView(parent = parent)
+      val secondChild = createView(parent = parent)
       val undoManager = UndoManager()
 
       assertThat(undoManager.canUndo()).isFalse()
@@ -233,16 +229,16 @@ class UndoManagerTest {
   @Test
   fun `test indexed child addition and removal`() {
     requiresActivity {
-      val parent = ViewGroupImpl(LayoutFile(File(""), ""), "", LinearLayout(this))
+      val parent = createLayout()
       val undoManager = UndoManager()
 
       for (i in 1..5) {
-        parent.addChild(ViewImpl(LayoutFile(File(""), ""), "", View(this)))
+        parent.addChild(createView(parent = parent))
       }
 
       assertThat(parent.childCount).isEqualTo(5)
 
-      val child = ViewImpl(LayoutFile(File(""), ""), "", View(this))
+      val child = createView(parent = parent)
 
       parent.addChild(3, child)
       undoManager.push(ViewAddedAction(child, parent))
@@ -265,6 +261,108 @@ class UndoManagerTest {
       assertThat(undoManager.canRedo()).isFalse()
       assertThat(parent.childCount).isEqualTo(6)
       assertThat(parent[3]).isEqualTo(child)
+    }
+  }
+
+  @Test
+  fun `test undo and redo for simple view attr addition`() {
+    requiresActivity {
+      val child = createView(parent = createLayout())
+      val attr = UiAttribute(name = "layout_height", value = "match_parent")
+      val undoManager = UndoManager()
+
+      child.addAttribute(attr)
+      undoManager.push(AttrAddedAction(child, attr))
+
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+
+      undoManager.undo()
+      assertThat(child.attributes).hasSize(0)
+      assertThat(undoManager.canUndo()).isFalse()
+      assertThat(undoManager.canRedo()).isTrue()
+
+      undoManager.redo()
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+    }
+  }
+
+  @Test
+  fun `test undo and redo for simple view attr removal`() {
+    requiresActivity {
+      val child = createView(parent = createLayout())
+      val attr = UiAttribute(name = "layout_height", value = "match_parent")
+      val undoManager = UndoManager()
+
+      undoManager.push(AttrRemovedAction(child, attr))
+
+      assertThat(child.attributes).hasSize(0)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+
+      undoManager.undo()
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isFalse()
+      assertThat(undoManager.canRedo()).isTrue()
+
+      undoManager.redo()
+      assertThat(child.attributes).hasSize(0)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+    }
+  }
+
+  @Test
+  fun `test undo and redo for simple view attr update`() {
+    requiresActivity {
+      val child = createView(parent = createLayout())
+      val attr = UiAttribute(name = "layout_height", value = "match_parent").immutable()
+      val undoManager = UndoManager()
+      
+      child.addAttribute(UiAttribute(attr))
+
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isFalse()
+      assertThat(undoManager.canRedo()).isFalse()
+      child.findAttribute(attr.namespace.uri, attr.name).apply {
+        assertThat(this).isNotNull()
+        assertThat(this!!.value).isEqualTo("match_parent")
+      }
+
+      val copy = UiAttribute(attr).apply {
+        value = "wrap_content"
+      }
+      child.updateAttribute(copy)
+      undoManager.push(AttrUpdatedAction(child, copy, attr.value))
+
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+      child.findAttribute(attr.namespace.uri, attr.name).apply {
+        assertThat(this).isNotNull()
+        assertThat(this!!.value).isEqualTo("wrap_content")
+      }
+
+      undoManager.undo()
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isFalse()
+      assertThat(undoManager.canRedo()).isTrue()
+      child.findAttribute(attr.namespace.uri, attr.name).apply {
+        assertThat(this).isNotNull()
+        assertThat(this!!.value).isEqualTo("match_parent")
+      }
+
+      undoManager.redo()
+      assertThat(child.attributes).hasSize(1)
+      assertThat(undoManager.canUndo()).isTrue()
+      assertThat(undoManager.canRedo()).isFalse()
+      child.findAttribute(attr.namespace.uri, attr.name).apply {
+        assertThat(this).isNotNull()
+        assertThat(this!!.value).isEqualTo("wrap_content")
+      }
     }
   }
 }

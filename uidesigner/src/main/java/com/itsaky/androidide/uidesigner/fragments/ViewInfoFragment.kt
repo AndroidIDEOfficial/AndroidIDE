@@ -27,8 +27,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
+import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VIEW_INFO
 
 /**
  * A [BottomSheetDialogFragment] which shows information about a clicked view.
@@ -68,6 +70,12 @@ class ViewInfoFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel._view.observe(viewLifecycleOwner) { showViewInfo() }
+    viewModel._viewInfoScreen.observe(viewLifecycleOwner) {
+      viewModel.undoManager.enabled = it != SCREEN_VALUE_EDITOR
+      if (it == SCREEN_VIEW_INFO) {
+        viewModel.notifyAttrUpdated()
+      }
+    }
   }
 
   override fun onDestroyView() {
@@ -83,11 +91,17 @@ class ViewInfoFragment : Fragment() {
     header.name.text = view.simpleName
     header.desc.text = view.name
     binding.attrList.adapter =
-      ViewAttrListAdapter(attributes = view.attributes, viewModel = viewModel, onDeleteAttr = {
-        view.removeAttribute(it)
-        true
-      }) {
-        viewModel.selectedAttr = it
+      ViewAttrListAdapter(
+        attributes = view.attributes,
+        viewModel = viewModel,
+        onDeleteAttr = {
+          view.removeAttribute(it)
+          true
+        }
+      ) {
+        // Store a copy of the attribute so that we can check if the value of the attribute has changed in WorkspaceViewModel.notifyAttrUpdated()
+        //
+        viewModel.selectedAttr = (it as UiAttribute).copyAttr()
         viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
       }
 

@@ -15,19 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater.internal
+package com.itsaky.androidide.uidesigner.undo
 
-import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 
 /**
- * Immutable implementation of [IAttribute].
+ * Represents the action when the user removes an attribute from an [IView].
  *
  * @author Akash Yadav
  */
-class ImmutableAttributeImpl(private val src: AttributeImpl) : IAttribute by src {
-  override var value: String
-    get() = src.value
-    set(value) {
-      throw UnsupportedOperationException("Immutable!")
-    }
+internal class AttrRemovedAction(view: IView, attr: UiAttribute) : AttrAction(view, attr) {
+
+  override fun undo() {
+    view.addAttribute(attr)
+  }
+
+  override fun redo() {
+    view.removeAttribute(attr)
+  }
 }

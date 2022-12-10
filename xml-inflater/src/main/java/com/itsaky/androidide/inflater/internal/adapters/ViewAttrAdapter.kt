@@ -38,7 +38,7 @@ import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.inflater.newAttribute
+import com.itsaky.androidide.inflater.utils.newAttribute
 
 /**
  * Attribute adapter for [View].

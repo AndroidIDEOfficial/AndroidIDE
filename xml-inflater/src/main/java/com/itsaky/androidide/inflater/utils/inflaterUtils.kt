@@ -15,14 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater
+package com.itsaky.androidide.inflater.utils
 
+import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IComponentFactory
+import com.itsaky.androidide.inflater.ILayoutInflater
+import com.itsaky.androidide.inflater.ILayoutInflater.Companion
+import com.itsaky.androidide.inflater.INamespace
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.lookup.Lookup
 
 /** Get the [ILayoutInflater] registered with [Lookup]. */
 fun lookupLayoutInflater(): ILayoutInflater? {
-  return Lookup.DEFAULT.lookup(ILayoutInflater.LOOKUP_KEY)
+  return Lookup.DEFAULT.lookup(Companion.LOOKUP_KEY)
 }
 
 /** Get the [IComponentFactory] registered with [Lookup]. */

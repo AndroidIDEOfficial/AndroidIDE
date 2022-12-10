@@ -105,7 +105,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     this.hierarchyChangeListeners.forEach { it.onViewRemoved(this, child, index) }
   }
 
-  override fun immutableCopy(): IViewGroup {
+  override fun immutable(): IViewGroup {
     return ImmutableViewGroupImpl(this)
   }
 }

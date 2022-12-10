@@ -25,7 +25,6 @@ package com.itsaky.androidide.uidesigner.undo
 class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFAULT_STACK_SIZE) {
 
   internal var enabled = true
-    private set
 
   private var undoStack = ArrayDeque<IUiAction>()
   private var redoStack = ArrayDeque<IUiAction>()

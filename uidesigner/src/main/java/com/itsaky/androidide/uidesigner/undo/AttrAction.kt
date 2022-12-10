@@ -15,19 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater.internal
+package com.itsaky.androidide.uidesigner.undo
 
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 
 /**
- * Immutable implementation of [IAttribute].
+ * [UndoManager] action related to view attributes.
  *
  * @author Akash Yadav
  */
-class ImmutableAttributeImpl(private val src: AttributeImpl) : IAttribute by src {
-  override var value: String
-    get() = src.value
-    set(value) {
-      throw UnsupportedOperationException("Immutable!")
-    }
-}
+internal abstract class AttrAction(protected val view: IView, protected val attr: UiAttribute) : IUiAction

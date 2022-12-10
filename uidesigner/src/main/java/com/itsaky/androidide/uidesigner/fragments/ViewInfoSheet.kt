@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.uidesigner.fragments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +50,12 @@ class ViewInfoSheet : BottomSheetDialogFragment() {
         }
       }
     }
+  
+  override fun onDismiss(dialog: DialogInterface) {
+    viewModel.undoManager.enable()
+    viewModel.notifyAttrUpdated()
+    super.onDismiss(dialog)
+  }
 
   override fun onCreateView(
     inflater: LayoutInflater,

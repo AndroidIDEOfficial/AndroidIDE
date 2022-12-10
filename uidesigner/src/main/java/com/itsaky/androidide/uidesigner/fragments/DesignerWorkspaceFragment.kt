@@ -81,6 +81,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   }
 
   private val hierarchyHandler by lazy { WorkspaceViewHierarchyHandler() }
+  private val attrHandler by lazy { WorkspaceViewAttrHandler() }
   private val inflationHandler by lazy { WorkspaceLayoutInflationHandler() }
 
   companion object {
@@ -99,6 +100,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   ): View {
     this.binding = FragmentDesignerWorkspaceBinding.inflate(inflater, container, false)
     hierarchyHandler.init(this)
+    attrHandler.init(this)
     inflationHandler.init(this)
     return this.binding!!.root
   }
@@ -130,11 +132,13 @@ class DesignerWorkspaceFragment : BaseFragment() {
     super.onDestroyView()
     this.binding = null
     this.hierarchyHandler.release()
+    this.attrHandler.release()
     this.inflationHandler.release()
     this.inflater.close()
   }
 
   internal fun setupView(view: IView) {
+    view.registerAttributeChangeListener(attrHandler)
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
         viewModel.view = it

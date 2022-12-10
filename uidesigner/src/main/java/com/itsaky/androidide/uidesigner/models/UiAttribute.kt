@@ -28,7 +28,7 @@ import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
  *
  * @author Akash Yadav
  */
-internal data class UiAttribute
+internal open class UiAttribute
 @JvmOverloads
 constructor(
   override val namespace: INamespace = INamespace.ANDROID,

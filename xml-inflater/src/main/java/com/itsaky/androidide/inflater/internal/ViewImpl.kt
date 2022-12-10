@@ -94,6 +94,10 @@ constructor(
   }
   
   override fun registerAttributeChangeListener(listener: AttributeChangeListener) {
+    if (this.attrChangeListeners.contains(listener)) {
+      log.warn("Attempt to register an already-registered AttributeChangeListener")
+      return
+    }
     this.attrChangeListeners.add(listener)
   }
   
@@ -122,6 +126,10 @@ constructor(
   fun findNamespaceByUri(uri: String): INamespace? {
     return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
+  
+  open fun immutable() : IView {
+    return ImmutableViewImpl(this)
+  }
 
   protected open fun hasAttribute(attribute: IAttribute): Boolean {
     return hasAttribute(attribute.namespace.uri, attribute.name)
@@ -139,10 +147,6 @@ constructor(
     builder.append(" ".repeat(indent * 4))
     builder.append(name)
     builder.append("\n")
-  }
-  
-  internal open fun immutableCopy() : IView {
-    return ImmutableViewImpl(this)
   }
   
   private fun updateAttributeInternal(attribute: IAttribute, notify: Boolean = true) {

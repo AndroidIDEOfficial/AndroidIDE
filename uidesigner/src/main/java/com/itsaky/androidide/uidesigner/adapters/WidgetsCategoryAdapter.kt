@@ -27,7 +27,7 @@ import com.itsaky.androidide.uidesigner.models.UiWidgetCategory
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /** @author Akash Yadav */
-class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, private val viewModel: WorkspaceViewModel) : RecyclerView.Adapter<VH>() {
+internal class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, private val viewModel: WorkspaceViewModel) : RecyclerView.Adapter<VH>() {
 
   private val categories =
     categories.let {

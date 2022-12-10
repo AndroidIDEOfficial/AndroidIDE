@@ -28,7 +28,7 @@ import com.itsaky.androidide.inflater.IViewGroup
  *
  * @author Akash Yadav
  */
-internal class ImmutableViewImpl(private val src: ViewImpl) : IView by src {
+class ImmutableViewImpl(private val src: ViewImpl) : IView by src {
   
   override fun addAttribute(attribute: IAttribute, update: Boolean) {
     throw UnsupportedOperationException("Immutable!")

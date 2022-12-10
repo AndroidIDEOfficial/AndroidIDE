@@ -41,7 +41,7 @@ import com.itsaky.androidide.utils.DialogUtils
  *
  * @author Akash Yadav
  */
-class ViewAttrListAdapter(
+internal class ViewAttrListAdapter(
   attributes: List<IAttribute>,
   private val viewModel: WorkspaceViewModel?,
   private val onDeleteAttr: (IAttribute) -> Boolean,

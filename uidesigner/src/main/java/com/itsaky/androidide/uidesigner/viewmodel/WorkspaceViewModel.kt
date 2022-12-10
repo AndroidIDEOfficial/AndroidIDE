@@ -21,10 +21,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.uidesigner.models.UiAttribute
+import com.itsaky.androidide.uidesigner.undo.AttrUpdatedAction
 import com.itsaky.androidide.uidesigner.undo.UndoManager
+import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
-class WorkspaceViewModel : ViewModel() {
+internal class WorkspaceViewModel : ViewModel() {
   internal val _drawerOpened = MutableLiveData(false)
   internal val _errText = MutableLiveData("")
   internal val _workspaceScreen = MutableLiveData(SCREEN_WORKSPACE)
@@ -40,7 +43,7 @@ class WorkspaceViewModel : ViewModel() {
     const val SCREEN_VIEW_INFO = 0
     const val SCREEN_VALUE_EDITOR = 1
   }
-  
+
   val undoManager: UndoManager
     get() = this._undoManager.value!!
 
@@ -80,10 +83,26 @@ class WorkspaceViewModel : ViewModel() {
     set(value) {
       _viewInfoScreen.value = value
     }
-  
+
   var selectedAttr: IAttribute?
     get() = this._selectedAttr.value
     set(value) {
       this._selectedAttr.value = value
     }
+
+  fun notifyAttrUpdated() {
+    val attr = this.selectedAttr ?: return
+    val view = this.view ?: return
+    val undoManager = this.undoManager
+
+    val existing = view.findAttribute(attr.namespace.uri, attr.name)
+
+    if (existing !is UiAttribute || existing.value == attr.value) {
+      // value of the attribute is same as before
+      return
+    }
+
+    undoManager.push(AttrUpdatedAction(view, existing.copyAttr(view = view) as UiAttribute, attr.value))
+    this.selectedAttr = null
+  }
 }

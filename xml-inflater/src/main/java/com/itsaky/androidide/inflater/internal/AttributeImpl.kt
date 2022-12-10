@@ -21,7 +21,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.INamespace.Companion.ANDROID
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.newAttribute
+import com.itsaky.androidide.inflater.utils.newAttribute
 
 open class AttributeImpl
 @JvmOverloads
@@ -41,7 +41,7 @@ constructor(
     return newAttribute(view = view, namespace = namespace, name = name, value = value)
   }
 
-  internal fun immutableCopy(): IAttribute {
+  fun immutable(): IAttribute {
     return ImmutableAttributeImpl(this)
   }
 
