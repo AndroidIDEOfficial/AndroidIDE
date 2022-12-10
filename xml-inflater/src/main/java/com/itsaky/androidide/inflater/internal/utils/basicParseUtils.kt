@@ -65,6 +65,9 @@ import java.io.File
 
 private val log = ILogger.newInstance("ParseUtilsKt")
 
+// TODO : We need a more descriptive string here
+private const val DEFAULT_STRING_VALUE = "AndroidIDE"
+
 private val stringResolver =
   fun(it: Value?): String? {
     return when (it) {
@@ -98,6 +101,9 @@ inline fun <reified T> ((Value?) -> T?).arrayResolver(value: Value?): Array<T>? 
 }
 
 fun parseString(value: String): String {
+  if (value.isEmpty()) {
+    return DEFAULT_STRING_VALUE
+  }
   if (value[0] == '@') {
     return parseReference(
       value = value,
@@ -123,6 +129,10 @@ inline fun <reified T> parseArray(
   def: Array<T>? = emptyArray(),
   noinline resolver: (Value?) -> T?
 ): Array<T>? {
+  if (value.isEmpty()) {
+    return emptyArray()
+  }
+
   if (value[0] == '@') {
     return parseReference(
       value = value,
@@ -136,6 +146,9 @@ inline fun <reified T> parseArray(
 
 @JvmOverloads
 fun parseInteger(value: String, def: Int = 0): Int {
+  if (value.isEmpty()) {
+    return def
+  }
   if (value.isDigitsOnly()) {
     tryParseInt(value)?.resValue?.apply {
       return data
@@ -151,6 +164,10 @@ fun parseInteger(value: String, def: Int = 0): Int {
 
 @JvmOverloads
 fun parseBoolean(value: String, def: Boolean = false): Boolean {
+  if (value.isEmpty()) {
+    return def
+  }
+  
   tryParseBool(value)?.resValue?.apply {
     return data == -1
   }
@@ -185,6 +202,10 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
       // If this is a color int, return a color drawable
       return colorResolver.invoke(it)?.let { newColorDrawable(it) }
     }
+  
+  if (value.isEmpty()) {
+    return def
+  }
 
   if (value[0] == '#') {
     return parseColorDrawable(context, value)
@@ -204,10 +225,10 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
 }
 
 fun parseLayoutReference(value: String): File? {
-  if (value[0] != '@') {
+  if (value.isEmpty() || value[0] != '@') {
     throw InflateException("Value must be a reference to a layout file")
   }
-  
+
   val layoutResolver: (Value?) -> File? =
     fun(it): File? {
       return if (it is FileReference) {
@@ -228,6 +249,9 @@ fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPA
 
 @JvmOverloads
 fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
+  if (value.isEmpty()) {
+    return def
+  }
   when (value[0]) {
     '#' -> return parseHexColor(value, def)
     '@' ->
@@ -323,6 +347,10 @@ fun parseLong(value: String, def: Long = 0L): Long {
 
 @JvmOverloads
 fun parseGravity(value: String, def: Int = defaultGravity()): Int {
+  if (value.isEmpty()) {
+    return def
+  }
+  
   val attr = findAttributeResource("android", ATTR, "gravity") ?: return defaultGravity()
   return parseFlag(attr = attr, value = value, def = def)
 }
