@@ -10,7 +10,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Akash Yadav (itsaky)</b></sub></a>
       <br />
-      <sub><b>13965 words</b></sub>
+      <sub><b>14055 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/smith8h"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550455/medium/9c5a3d089c209487340abb35d74b5b7c.jpg" />
@@ -18,6 +18,13 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <sub><b>Hussein Smith (smith8h)</b></sub></a>
       <br />
       <sub><b>2110 words</b></sub>
+    </td>
+    <td align="center" valign="top">
+      <a href="https://crowdin.com/profile/esalessandrx"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15563911/medium/a2262fe354d51d9c991d06fcace20b7a.jpg" />
+        <br />
+        <sub><b>Alessandro (esalessandrx)</b></sub></a>
+      <br />
+      <sub><b>2020 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/adnroid"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15503338/medium/c21cc0623c3ff71d53cb1f1a6e5d7757.png" />
