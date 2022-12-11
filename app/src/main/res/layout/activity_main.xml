@@ -32,6 +32,7 @@
         android:textStyle="bold" />
 
     </RelativeLayout>
+
   </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.fragment.app.FragmentContainerView

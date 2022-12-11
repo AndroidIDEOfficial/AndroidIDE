@@ -32,6 +32,7 @@ import com.itsaky.androidide.utils.resolveAttr
 abstract class BaseIDEActivity : AppCompatActivity() {
 
   @AttrRes protected open var navigationBarColor = R.attr.colorSurface
+  @AttrRes protected open var statusBarColor = R.attr.colorSurface
 
   fun loadFragment(fragment: Fragment?, id: Int) {
     val transaction = supportFragmentManager.beginTransaction()
@@ -40,7 +41,10 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    window?.apply { navigationBarColor = resolveAttr(this@BaseIDEActivity.navigationBarColor) }
+    window?.apply {
+      statusBarColor = resolveAttr(this@BaseIDEActivity.statusBarColor)
+      navigationBarColor = resolveAttr(this@BaseIDEActivity.navigationBarColor)
+    }
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
