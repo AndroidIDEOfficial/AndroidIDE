@@ -77,8 +77,7 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
         
         this.view.addChild(index, child)
         this.view.onHighlightStateUpdated(false)
-
-        child.onHighlightStateUpdated(false)
+        
         if (child is UiView) {
           child.includeInIndexComputation = true
         }
