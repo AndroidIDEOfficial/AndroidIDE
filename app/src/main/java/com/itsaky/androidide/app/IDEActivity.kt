@@ -25,14 +25,4 @@ import com.itsaky.androidide.utils.resolveAttr
 abstract class IDEActivity : BaseIDEActivity() {
   val app: IDEApplication
     get() = application as IDEApplication
-  
-  @AttrRes
-  protected open var navigationBarColor = R.attr.colorSurface
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    window?.apply {
-      navigationBarColor = resolveAttr(this@IDEActivity.navigationBarColor)
-    }
-    super.onCreate(savedInstanceState)
-  }
 }

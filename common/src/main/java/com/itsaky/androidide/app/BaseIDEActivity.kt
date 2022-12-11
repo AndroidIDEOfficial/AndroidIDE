@@ -1,16 +1,16 @@
 /*
  *  This file is part of AndroidIDE.
- *  
+ *
  *  AndroidIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
- *  
+ *
  *  AndroidIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -20,22 +20,27 @@ import android.Manifest.permission
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.AttrRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.itsaky.androidide.common.R
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.resolveAttr
 
 abstract class BaseIDEActivity : AppCompatActivity() {
+
+  @AttrRes protected open var navigationBarColor = R.attr.colorSurface
+
   fun loadFragment(fragment: Fragment?, id: Int) {
     val transaction = supportFragmentManager.beginTransaction()
     transaction.replace(id, fragment!!)
     transaction.commit()
   }
 
-  
-
   override fun onCreate(savedInstanceState: Bundle?) {
+    window?.apply { navigationBarColor = resolveAttr(this@BaseIDEActivity.navigationBarColor) }
     super.onCreate(savedInstanceState)
     preSetContentLayout()
     setContentView(bindLayout())
