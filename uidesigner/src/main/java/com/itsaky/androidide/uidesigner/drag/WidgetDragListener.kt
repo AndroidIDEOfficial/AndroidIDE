@@ -26,7 +26,6 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Comp
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.models.UiWidget
-import com.itsaky.androidide.utils.ILogger
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -36,10 +35,9 @@ import kotlin.math.min
  *
  * @author Akash Yadav
  */
-internal class WidgetDragListener(val view: UiViewGroup, private val placeholder: IView) :
+internal class WidgetDragListener(val view: UiViewGroup, private val placeholder: IView, private val touchSlop: Int) :
   View.OnDragListener {
   
-  private val touchSlop = ViewConfiguration.get(view.view.context).scaledTouchSlop
   private var lastX = 0f
   private var lastY = 0f
 
@@ -55,23 +53,23 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
         if (distX.absoluteValue < touchSlop && distY.absoluteValue < touchSlop) {
           return true
         }
-        
+
         if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
           view.onHighlightStateUpdated(true)
         }
-        
+
         placeholder.removeFromParent()
         val state = event.localState
         if (state is UiView) {
           state.includeInIndexComputation = false
         }
-        
+
         val index = view.computeViewIndex(event.x, event.y)
         view.addChild(index, placeholder)
-        
+
         lastX = event.x
         lastY = event.y
-        
+
         true
       }
       DragEvent.ACTION_DRAG_EXITED -> {

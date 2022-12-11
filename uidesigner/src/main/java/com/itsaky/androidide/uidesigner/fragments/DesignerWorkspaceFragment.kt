@@ -20,13 +20,13 @@ package com.itsaky.androidide.uidesigner.fragments
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewConfiguration.get
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
@@ -56,10 +56,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
-
+  
+  private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
   private val viewInfo by lazy { ViewInfoSheet() }
   private val inflater by lazy { UiLayoutInflater() }
-
+  
   internal var isInflating = false
   internal val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
@@ -126,7 +127,9 @@ class DesignerWorkspaceFragment : BaseFragment() {
     if (inflated.isEmpty() && !hasError) {
       viewModel.errText = getString(R.string.msg_empty_ui_layout)
     }
-    binding!!.workspace.setOnDragListener(WidgetDragListener(workspaceView, this.placeholder))
+    binding!!
+      .workspace
+      .setOnDragListener(WidgetDragListener(workspaceView, this.placeholder, touchSlop))
   }
 
   override fun onDestroyView() {
@@ -142,7 +145,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     if (view is CommonUiView && !view.needSetup) {
       return
     }
-    
+
     view.registerAttributeChangeListener(attrHandler)
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
@@ -151,7 +154,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
         true
       }
     )
-    
+
     when (val fg = view.view.foreground) {
       null -> view.view.foreground = bgDesignerView(requireContext())
       is UiViewLayeredForeground ->
@@ -162,14 +165,14 @@ class DesignerWorkspaceFragment : BaseFragment() {
     if (view is UiViewGroup && view.canModifyChildViews()) {
       setupViewGroup(view)
     }
-    
+
     if (view is CommonUiView) {
       view.needSetup = false
     }
   }
 
   private fun setupViewGroup(viewGroup: UiViewGroup) {
-    viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder))
+    viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder, touchSlop))
     viewGroup.addOnHierarchyChangeListener(hierarchyHandler)
   }
 
