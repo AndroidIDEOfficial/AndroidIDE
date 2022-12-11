@@ -19,7 +19,6 @@ package com.itsaky.androidide.uidesigner.drag
 
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewConfiguration
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
@@ -35,9 +34,12 @@ import kotlin.math.min
  *
  * @author Akash Yadav
  */
-internal class WidgetDragListener(val view: UiViewGroup, private val placeholder: IView, private val touchSlop: Int) :
-  View.OnDragListener {
-  
+internal class WidgetDragListener(
+  val view: UiViewGroup,
+  private val placeholder: IView,
+  private val touchSlop: Int
+) : View.OnDragListener {
+
   private var lastX = 0f
   private var lastY = 0f
 
@@ -48,14 +50,15 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
+        
+        if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
+          view.onHighlightStateUpdated(true)
+        }
+        
         val distX = event.x - lastX
         val distY = event.y - lastY
         if (distX.absoluteValue < touchSlop && distY.absoluteValue < touchSlop) {
           return true
-        }
-
-        if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
-          view.onHighlightStateUpdated(true)
         }
 
         placeholder.removeFromParent()
