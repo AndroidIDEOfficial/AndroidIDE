@@ -21,9 +21,9 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import com.blankj.utilcode.util.ReflectUtils
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.editor.IEditorProvider
+import com.itsaky.androidide.language.xml.XMLLanguage
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
@@ -63,12 +63,7 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.editable = false
       editor.typefaceText = jetbrainsMono()
       editor.typefaceLineNumber = jetbrainsMono()
-
-      // TODO(itsaky): Move language implementations to separate module
-      editor.setEditorLanguage(
-        ReflectUtils.reflect("com.itsaky.androidide.language.xml.XMLLanguage").newInstance().get()
-      )
-
+      editor.setEditorLanguage(XMLLanguage())
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
       editor.subscribeEvent(ScrollEvent::class.java) { event, unsubscribe ->
