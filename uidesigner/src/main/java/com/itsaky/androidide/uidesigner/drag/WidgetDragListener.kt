@@ -19,13 +19,15 @@ package com.itsaky.androidide.uidesigner.drag
 
 import android.view.DragEvent
 import android.view.View
-import android.view.ViewGroup
+import android.view.ViewConfiguration
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.models.UiWidget
+import com.itsaky.androidide.utils.ILogger
+import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
 
@@ -36,6 +38,10 @@ import kotlin.math.min
  */
 internal class WidgetDragListener(val view: UiViewGroup, private val placeholder: IView) :
   View.OnDragListener {
+  
+  private val touchSlop = ViewConfiguration.get(view.view.context).scaledTouchSlop
+  private var lastX = 0f
+  private var lastY = 0f
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
     return when (event.action) {
@@ -44,16 +50,28 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
+        val distX = event.x - lastX
+        val distY = event.y - lastY
+        if (distX.absoluteValue < touchSlop && distY.absoluteValue < touchSlop) {
+          return true
+        }
+        
         if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
           view.onHighlightStateUpdated(true)
         }
+        
         placeholder.removeFromParent()
         val state = event.localState
         if (state is UiView) {
           state.includeInIndexComputation = false
         }
+        
         val index = view.computeViewIndex(event.x, event.y)
         view.addChild(index, placeholder)
+        
+        lastX = event.x
+        lastY = event.y
+        
         true
       }
       DragEvent.ACTION_DRAG_EXITED -> {
@@ -74,10 +92,10 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
         var index = view.indexOfChild(this.placeholder) - 1
         this.placeholder.removeFromParent()
         index = min(max(0, index), view.childCount)
-        
+
         this.view.addChild(index, child)
         this.view.onHighlightStateUpdated(false)
-        
+
         if (child is UiView) {
           child.includeInIndexComputation = true
         }
@@ -91,7 +109,4 @@ internal class WidgetDragListener(val view: UiViewGroup, private val placeholder
       else -> false
     }
   }
-
-  private val IViewGroup.viewGroup: ViewGroup
-    get() = view as ViewGroup
 }
