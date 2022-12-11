@@ -99,8 +99,8 @@ class ViewInfoFragment : Fragment() {
           true
         }
       ) {
-        // Store a copy of the attribute so that we can check if the value of the attribute has changed in WorkspaceViewModel.notifyAttrUpdated()
-        //
+        // Store a copy of the attribute so that we can check if the value of the attribute has
+        // changed in WorkspaceViewModel.notifyAttrUpdated()
         viewModel.selectedAttr = (it as UiAttribute).copyAttr()
         viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
       }

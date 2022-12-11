@@ -24,4 +24,5 @@ package com.itsaky.androidide.uidesigner.models
  */
 class CommonUiViewImpl : CommonUiView {
   override var includeInIndexComputation: Boolean = true
+  override var needSetup: Boolean = true
 }

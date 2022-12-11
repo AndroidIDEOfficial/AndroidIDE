@@ -25,4 +25,6 @@ package com.itsaky.androidide.uidesigner.models
 interface CommonUiView {
   
   var includeInIndexComputation: Boolean
+  
+  var needSetup: Boolean
 }

@@ -35,6 +35,7 @@ import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
 import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
 import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
+import com.itsaky.androidide.uidesigner.models.CommonUiView
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.undo.UndoManager
@@ -138,6 +139,10 @@ class DesignerWorkspaceFragment : BaseFragment() {
   }
 
   internal fun setupView(view: IView) {
+    if (view is CommonUiView && !view.needSetup) {
+      return
+    }
+    
     view.registerAttributeChangeListener(attrHandler)
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
@@ -146,6 +151,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
         true
       }
     )
+    
     when (val fg = view.view.foreground) {
       null -> view.view.foreground = bgDesignerView(requireContext())
       is UiViewLayeredForeground ->
@@ -155,6 +161,10 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
     if (view is IViewGroup) {
       setupViewGroup(view as UiViewGroup)
+    }
+    
+    if (view is CommonUiView) {
+      view.needSetup = false
     }
   }
 
