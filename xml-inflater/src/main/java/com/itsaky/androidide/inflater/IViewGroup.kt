@@ -28,6 +28,20 @@ interface IViewGroup : IView {
   val childCount: Int
 
   /**
+   * Whether this view group can modify child views or not. If this method returns `false`, then
+   * calling calling any of the following methods will result in an [UnsupportedOperationException].
+   *
+   * - [addChild]
+   * - [removeChild]
+   * - [set]
+   *
+   * @return `true` if child views can be added to this view group. `false` otherwise.
+   */
+  fun canModifyChildViews(): Boolean {
+    return true
+  }
+
+  /**
    * Add the given child.
    *
    * @param view The view to add.
@@ -103,7 +117,7 @@ interface IViewGroup : IView {
 
   /** Listener to listen for hierarchy changes in an [IViewGroup]. */
   interface OnHierarchyChangeListener {
-  
+
     /**
      * Called just before the [view] is added to the [group].
      *
@@ -111,7 +125,7 @@ interface IViewGroup : IView {
      * @param view The view that will be added to the given view group.
      */
     fun beforeViewAdded(group: IViewGroup, view: IView, index: Int) {}
-  
+
     /**
      * Called just before the [view] is removed from the [group].
      *
@@ -119,7 +133,7 @@ interface IViewGroup : IView {
      * @param view The view that will be removed from the given view group.
      */
     fun beforeViewRemoved(group: IViewGroup, view: IView, index: Int) {}
-    
+
     /**
      * Called when a view is added.
      *

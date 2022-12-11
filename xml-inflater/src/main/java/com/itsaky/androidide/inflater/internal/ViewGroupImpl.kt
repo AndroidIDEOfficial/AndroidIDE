@@ -24,6 +24,8 @@ import com.itsaky.androidide.inflater.IViewGroup.OnHierarchyChangeListener
 
 open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
+  
+  internal var childrenModifiable = true
 
   protected val children = mutableListOf<IView>()
   protected val hierarchyChangeListeners = mutableListOf<OnHierarchyChangeListener>()
@@ -33,12 +35,20 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   // For easy access
   override val view: ViewGroup
     get() = super.view as ViewGroup
+  
+  override fun canModifyChildViews(): Boolean {
+    return this.childrenModifiable
+  }
 
   override fun addChild(view: IView) {
     addChild(-1, view)
   }
 
   override fun addChild(index: Int, view: IView) {
+    if (!canModifyChildViews()) {
+      throw UnsupportedOperationException("'$name' does not support adding child views.")
+    }
+    
     if (view.parent != null) {
       throw IllegalStateException("View already has a parent")
     }
@@ -51,6 +61,10 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override fun removeChild(view: IView) {
+    if (!canModifyChildViews()) {
+      throw UnsupportedOperationException("'$name' does not support removing child views.")
+    }
+  
     val index = indexOfChild(view)
     notifyBeforeViewRemoved(view, index)
     this.view.removeView(view.view)
@@ -68,6 +82,10 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   }
 
   override operator fun set(index: Int, view: IView): IView {
+    if (!canModifyChildViews()) {
+      throw UnsupportedOperationException("'$name' does not support updating child views.")
+    }
+  
     val existing = this.children[index]
     removeChild(existing)
     addChild(index, view)

@@ -159,8 +159,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
       else -> view.view.foreground = layeredForeground(requireContext(), fg)
     }
 
-    if (view is IViewGroup) {
-      setupViewGroup(view as UiViewGroup)
+    if (view is UiViewGroup && view.canModifyChildViews()) {
+      setupViewGroup(view)
     }
     
     if (view is CommonUiView) {
