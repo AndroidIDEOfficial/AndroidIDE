@@ -17,10 +17,19 @@
 
 package com.itsaky.androidide.uidesigner.utils
 
+import android.content.Context
+import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.lsp.xml.utils.XMLBuilder
+import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.uidesigner.R
+import com.itsaky.androidide.utils.DialogUtils
+import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 
 /**
  * Generates XML code for [IView].
@@ -28,6 +37,56 @@ import com.itsaky.androidide.lsp.xml.utils.XMLBuilder
  * @author Akash Yadav
  */
 object ViewToXml {
+
+  private val log = ILogger.newInstance("ViewToXml")
+
+  @JvmStatic
+  @JvmOverloads
+  fun generateXml(context: Context, workspace: ViewGroupImpl, onGenerated: (String) -> Unit = {}) {
+    context.apply {
+      val future: CompletableFuture<String?> =
+        executeAsyncProvideError({
+          if (workspace.childCount == 0) {
+            throw CompletionException(
+              IllegalStateException("No views have been added to workspace")
+            )
+          }
+
+          if (workspace.childCount > 1) {
+            throw CompletionException(
+              IllegalStateException("Invalid view hierarchy. More than one root views found.")
+            )
+          }
+
+          return@executeAsyncProvideError generateXml(workspace[0] as ViewImpl)
+        }) { _, _ ->
+        }
+
+      val progress =
+        DialogUtils.newProgressDialog(
+            this,
+            getString(R.string.title_generating_xml),
+            getString(R.string.please_wait),
+            false
+          ) { _, _ ->
+            future.cancel(true)
+          }
+          .show()
+
+      future.whenComplete { result, error ->
+        ThreadUtils.runOnUiThread {
+          progress.dismiss()
+
+          if (result.isNullOrBlank() || error != null) {
+            log.error("Unable to generate XML code", error)
+            return@runOnUiThread
+          }
+
+          onGenerated(result)
+        }
+      }
+    }
+  }
 
   @JvmStatic
   fun generateXml(view: ViewImpl): String {
@@ -56,9 +115,9 @@ object ViewToXml {
     }
 
     if (view is IViewGroup) {
-      
+
       closeStartElement()
-      
+
       for (i in 0 until view.childCount) {
         linefeed()
         linefeed()
