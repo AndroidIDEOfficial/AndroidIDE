@@ -20,10 +20,12 @@ package com.itsaky.androidide.uidesigner.actions
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.hasRequiredData
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.ShowXmlActivity
@@ -48,6 +50,18 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
     icon = ContextCompat.getDrawable(context, R.drawable.ic_language_xml)
   }
 
+  override fun prepare(data: ActionData) {
+    if (!data.hasRequiredData(Context::class.java, Fragment::class.java)) {
+      markInvisible()
+      return
+    }
+
+    val fragment = data.requireWorkspace()
+
+    this.visible = true
+    this.enabled = fragment.workspaceView.childCount == 1
+  }
+
   override fun execAction(data: ActionData): Any {
     data.requireActivity().apply {
       val workspace = data.requireWorkspace().workspaceView
@@ -58,7 +72,7 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
               IllegalStateException("No views have been added to workspace")
             )
           }
-          
+
           if (workspace.childCount > 1) {
             throw CompletionException(
               IllegalStateException("Invalid view hierarchy. More than one root views found.")
@@ -68,7 +82,7 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
           return@executeAsyncProvideError ViewToXml.generateXml(workspace[0] as ViewImpl)
         }) { _, _ ->
         }
-      
+
       val progress =
         DialogUtils.newProgressDialog(
             this,
@@ -82,9 +96,8 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
 
       future.whenComplete { result, error ->
         ThreadUtils.runOnUiThread {
-  
           progress.dismiss()
-          
+
           if (result.isNullOrBlank() || error != null) {
             log.error("Unable to generate XML code", error)
             return@runOnUiThread
