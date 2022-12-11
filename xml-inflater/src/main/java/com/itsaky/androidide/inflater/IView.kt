@@ -41,6 +41,9 @@ interface IView {
   /** The parent view. */
   var parent: IViewGroup?
 
+  /** The namespaces that have been declared in this view. */
+  val namespaceDecls: Collection<INamespace>
+
   /** The attributes of this view. */
   val attributes: List<IAttribute>
 

@@ -46,6 +46,7 @@ dependencies {
     
     implementation project(path: ':actions')
     implementation project(path: ':common')
+    implementation project(path: ':editor')
     implementation project(path: ':logger')
     implementation project(path: ':lookup')
     implementation project(path: ':lsp:api')
@@ -56,4 +57,5 @@ dependencies {
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric
+    testImplementation tests.mockito_kotlin
 }

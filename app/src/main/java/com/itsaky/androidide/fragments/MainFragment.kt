@@ -13,8 +13,8 @@ import com.itsaky.androidide.PreferencesActivity
 import com.itsaky.androidide.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.databinding.FragmentMainBinding
-import com.itsaky.androidide.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding

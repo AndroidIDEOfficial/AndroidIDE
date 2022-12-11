@@ -154,7 +154,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   private fun createFileOptionsFragment(file: File): OptionsListFragment {
     val fragment = OptionsListFragment()
     fragment.addOption(
-      SheetOption(ID_COPY_PATH, R.drawable.ic_file_copy_path, string.copy_path, file)
+      SheetOption(ID_COPY_PATH, R.drawable.ic_copy, string.copy_path, file)
     )
     fragment.addOption(
       SheetOption(ID_RENAME_FILE, R.drawable.ic_file_rename, string.rename_file, file)

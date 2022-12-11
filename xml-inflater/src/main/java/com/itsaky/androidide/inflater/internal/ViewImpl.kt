@@ -46,9 +46,11 @@ constructor(
 
   private val attrChangeListeners = mutableListOf<AttributeChangeListener>()
   private val _attributes = mutableListOf<IAttribute>()
-  internal val namespaceDecls = mutableMapOf<String, INamespace>()
+  internal val namespaces = mutableMapOf<String, INamespace>()
 
   override var parent: IViewGroup? = null
+  override val namespaceDecls: Collection<INamespace>
+    get() = this.namespaces.values
   override val attributes: List<IAttribute>
     get() = this._attributes
 
@@ -116,7 +118,7 @@ constructor(
   
   fun findNamespaces(): Set<INamespace> {
     return hashSetOf<INamespace>().apply {
-      addAll(namespaceDecls.values)
+      addAll(namespaces.values)
       if (parent is ViewImpl) {
         (parent as? ViewImpl)?.findNamespaces()?.let { addAll(it) }
       }
@@ -124,7 +126,7 @@ constructor(
   }
   
   fun findNamespaceByUri(uri: String): INamespace? {
-    return this.namespaceDecls[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
+    return this.namespaces[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
   
   open fun immutable() : IView {

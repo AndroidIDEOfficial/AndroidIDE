@@ -18,7 +18,6 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -27,23 +26,21 @@ import org.eclipse.lemminx.dom.DOMDocument;
 
 import java.util.List;
 
-/**
- * XML formatter support.
- *
- */
+/** XML formatter support. */
 public class XMLFormatter {
   private static final ILogger LOG = ILogger.newInstance("XMLFormatter");
-  
+
   /**
-   * Returns a List containing a single TextEdit, containing the newly formatted
-   * changes of the document.
+   * Returns a List containing a single TextEdit, containing the newly formatted changes of the
+   * document.
    *
-   * @param range          specified range in which formatting will be done
+   * @param range specified range in which formatting will be done
    * @return List containing a TextEdit with formatting changes
    */
   public List<? extends TextEdit> format(DOMDocument xmlDocument, Range range) {
     try {
-      XMLFormatterDocument formatterDocument = new XMLFormatterDocument(xmlDocument.getTextDocument(), range);
+      XMLFormatterDocument formatterDocument =
+          new XMLFormatterDocument(xmlDocument.getTextDocument(), range);
       return formatterDocument.format();
     } catch (BadLocationException e) {
       LOG.error("Formatting failed due to BadLocation", e);

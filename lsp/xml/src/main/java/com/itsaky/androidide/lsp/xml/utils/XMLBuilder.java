@@ -44,9 +44,7 @@ public class XMLBuilder {
   private final String lineDelimiter;
   private final StringBuilder xml;
   private final String whitespacesIndent;
-
-  private static final Logger LOGGER = Logger.getLogger(XMLBuilder.class.getName());
-
+  
   public XMLBuilder(String whitespacesIndent, String lineDelimiter) {
     this.whitespacesIndent = whitespacesIndent;
     this.lineDelimiter = lineDelimiter;
@@ -122,11 +120,11 @@ public class XMLBuilder {
   public XMLBuilder addSingleAttribute(
       DOMAttr attr, boolean surroundWithQuotes, boolean prependSpace) {
     return addSingleAttribute(
-        attr.getName(), attr.getOriginalValue(), surroundWithQuotes, prependSpace, attr);
+        attr.getName(), attr.getOriginalValue(), surroundWithQuotes, prependSpace);
   }
 
   public XMLBuilder addSingleAttribute(String name, String value, boolean surroundWithQuotes) {
-    return addSingleAttribute(name, value, surroundWithQuotes, true, null);
+    return addSingleAttribute(name, value, surroundWithQuotes, true);
   }
 
   /**
@@ -140,7 +138,7 @@ public class XMLBuilder {
    * @return this XML Builder
    */
   private XMLBuilder addSingleAttribute(
-      String name, String value, boolean surroundWithQuotes, boolean prependSpace, DOMAttr attr) {
+      String name, String value, boolean surroundWithQuotes, boolean prependSpace) {
     if (prependSpace) {
       appendSpace();
     }

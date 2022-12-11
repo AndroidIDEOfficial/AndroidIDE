@@ -17,9 +17,12 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <application>
+  <application android:theme="@style/Theme.AndroidIDE">
     <activity
       android:name=".UIDesignerActivity"
       android:windowSoftInputMode="adjustResize" />
+    <activity
+      android:name=".ShowXmlActivity"
+      android:windowSoftInputMode="stateAlwaysHidden" />
   </application>
 </manifest>

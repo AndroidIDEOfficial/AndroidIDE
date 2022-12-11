@@ -117,16 +117,18 @@ class DesignerWorkspaceFragment : BaseFragment() {
     var hasError = false
     val inflated =
       try {
-        inflater.inflate(viewModel.file, binding!!.workspace)
+        inflater.inflate(viewModel.file, workspaceView)
       } catch (e: Throwable) {
         log.error(e)
         viewModel.errText = "${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"
         hasError = true
         emptyList()
       }
+    
     if (inflated.isEmpty() && !hasError) {
       viewModel.errText = getString(R.string.msg_empty_ui_layout)
     }
+    
     binding!!
       .workspace
       .setOnDragListener(WidgetDragListener(workspaceView, this.placeholder, touchSlop))

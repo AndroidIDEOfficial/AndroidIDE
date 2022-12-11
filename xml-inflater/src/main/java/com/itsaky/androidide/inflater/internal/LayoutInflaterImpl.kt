@@ -86,20 +86,16 @@ open class LayoutInflaterImpl : ILayoutInflater {
     get() = this._currentLayoutFile!!
 
   override fun inflate(file: File, parent: ViewGroup): List<IView> {
-    this._primaryInflatingFile = file
-    IDTable.newRound()
-    if (!isParsing) {
-      if (this.module == null) {
-        startParse(file)
-        this.module = com.itsaky.androidide.inflater.utils.module
-      } else {
-        startParse(this.module!!)
-      }
-    }
-    inflationEventListener?.onEvent(InflationStartEvent())
+    startInflation(file)
     return doInflate(file, parent).apply {
-      inflationEventListener?.onEvent(InflationFinishEvent(this))
-      _primaryInflatingFile = null
+      finishInflation()
+    }
+  }
+  
+  override fun inflate(file: File, parent: IViewGroup) : List<IView> {
+    startInflation(file)
+    return doInflate(file, parent).apply {
+      finishInflation()
     }
   }
   
@@ -115,6 +111,11 @@ open class LayoutInflaterImpl : ILayoutInflater {
     val (processor, module) = processXmlFile(file)
     return doInflate(processor, parent, module)
   }
+  
+  protected open fun doInflate(file: File, parent: IViewGroup): List<IView> {
+    val (processor, module) = processXmlFile(file)
+    return doInflate(processor, parent, module)
+  }
 
   protected open fun doInflate(
     processor: XmlProcessor,
@@ -122,6 +123,14 @@ open class LayoutInflaterImpl : ILayoutInflater {
     module: AndroidModule,
   ): List<IView> {
     return doInflate(processor, module) { wrap(parent) }
+  }
+  
+  protected open fun doInflate(
+    processor: XmlProcessor,
+    parent: IViewGroup,
+    module: AndroidModule,
+  ): List<IView> {
+    return doInflate(processor, module) { parent }
   }
 
   protected open fun doInflate(
@@ -320,7 +329,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
   protected open fun addNamespaceDecls(element: XmlElement, view: ViewImpl) {
     if (element.namespaceDeclarationCount > 0) {
       for (xmlNamespace in element.namespaceDeclarationList) {
-        view.namespaceDecls[xmlNamespace.uri] = NamespaceImpl(xmlNamespace.prefix, xmlNamespace.uri)
+        view.namespaces[xmlNamespace.uri] = NamespaceImpl(xmlNamespace.prefix, xmlNamespace.uri)
       }
     }
   }
@@ -353,6 +362,25 @@ open class LayoutInflaterImpl : ILayoutInflater {
 
   private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {
     return ErrorView(currentLayoutFile, parent.context, message)
+  }
+  
+  private fun List<IView>.finishInflation() {
+    inflationEventListener?.onEvent(InflationFinishEvent(this))
+    _primaryInflatingFile = null
+  }
+  
+  private fun startInflation(file: File) {
+    this._primaryInflatingFile = file
+    IDTable.newRound()
+    if (!isParsing) {
+      if (this.module == null) {
+        startParse(file)
+        this.module = com.itsaky.androidide.inflater.utils.module
+      } else {
+        startParse(this.module!!)
+      }
+    }
+    inflationEventListener?.onEvent(InflationStartEvent())
   }
 
   private fun wrap(parent: ViewGroup): IViewGroup {

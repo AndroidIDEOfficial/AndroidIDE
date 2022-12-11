@@ -18,7 +18,10 @@ package com.itsaky.androidide.utils
 
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
+import android.view.LayoutInflater
+import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.R.style
 import org.jetbrains.annotations.Contract
@@ -29,7 +32,37 @@ import org.jetbrains.annotations.Contract
  * @author Akash Yadav
  */
 object DialogUtils {
-  
+
+  @JvmStatic
+  @JvmOverloads
+  fun newProgressDialog(
+    context: Context,
+    title: String,
+    message: String? = null,
+    cancelable: Boolean = false,
+    onCancelClick: OnClickListener? = null
+  ): MaterialAlertDialogBuilder {
+    val binding = LayoutDialogProgressBinding.inflate(LayoutInflater.from(context))
+    val builder = newMaterialDialogBuilder(context)
+    builder.setTitle(title)
+    builder.setView(binding.root)
+    builder.setCancelable(cancelable)
+
+    if (message != null) {
+      binding.message.text = message
+      binding.message.visibility = View.VISIBLE
+    }
+
+    if (onCancelClick != null) {
+      builder.setPositiveButton(android.R.string.cancel) { dialog, which ->
+        dialog.dismiss()
+        onCancelClick.onClick(dialog, which)
+      }
+    }
+
+    return builder
+  }
+
   /**
    * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>. This method
    * simply calls [.newYesNoDialog] with default values for title and message.
@@ -53,9 +86,10 @@ object DialogUtils {
       context.getString(string.msg_yesno_def_title),
       context.getString(string.msg_yesno_def_message),
       positiveClickListener,
-      negativeClickListener)
+      negativeClickListener
+    )
   }
-  
+
   /**
    * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>.
    *
@@ -84,7 +118,7 @@ object DialogUtils {
     builder.setNegativeButton(string.no, negativeClickListener)
     return builder
   }
-  
+
   /**
    * Creates a new MaterialAlertDialogBuilder with the app's default style.
    *
