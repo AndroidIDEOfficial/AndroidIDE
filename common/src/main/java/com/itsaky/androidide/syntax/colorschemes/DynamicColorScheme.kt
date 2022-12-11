@@ -18,7 +18,7 @@
 package com.itsaky.androidide.syntax.colorschemes
 
 import android.content.Context
-import com.itsaky.androidide.R.attr
+import com.itsaky.androidide.common.R.attr
 import com.itsaky.androidide.utils.isSystemInDarkMode
 import com.itsaky.androidide.utils.resolveAttr
 
@@ -28,9 +28,11 @@ import com.itsaky.androidide.utils.resolveAttr
  * @author Akash Yadav
  */
 class DynamicColorScheme : SchemeAndroidIDE() {
+  
+  private var isInDarkMode: Boolean = true
 
   fun apply(context: Context) {
-    val isInDarkMode = context.isSystemInDarkMode()
+    this.isInDarkMode = context.isSystemInDarkMode()
     val suface = context.resolveAttr(attr.colorSurface)
     val surfaceVariant = context.resolveAttr(attr.colorSurfaceVariant)
     val onSurface = context.resolveAttr(attr.colorOnSurface)
@@ -53,6 +55,10 @@ class DynamicColorScheme : SchemeAndroidIDE() {
     if (!isInDarkMode) {
       applyLightColors()
     }
+  }
+  
+  override fun isDark(): Boolean {
+    return this.isInDarkMode
   }
 
   private fun applyLightColors() {

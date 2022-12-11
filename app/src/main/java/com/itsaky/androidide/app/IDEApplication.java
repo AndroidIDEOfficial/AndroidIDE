@@ -23,10 +23,13 @@ import android.net.Uri;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.CrashHandlerActivity;
+import com.itsaky.androidide.editor.IEditorProvider;
 import com.itsaky.androidide.events.AppEventsIndex;
 import com.itsaky.androidide.events.LspApiEventsIndex;
 import com.itsaky.androidide.events.LspJavaEventsIndex;
 import com.itsaky.androidide.events.ProjectsApiEventsIndex;
+import com.itsaky.androidide.lookup.Lookup;
+import com.itsaky.androidide.utils.IDEEditorInstanceProvider;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
@@ -56,6 +59,8 @@ public class IDEApplication extends BaseApplication {
         .addIndex(new LspApiEventsIndex())
         .addIndex(new LspJavaEventsIndex())
         .installDefaultEventBus();
+
+    Lookup.DEFAULT.register(IEditorProvider.class, new IDEEditorInstanceProvider());
   }
 
   private void handleCrash(Thread thread, Throwable th) {

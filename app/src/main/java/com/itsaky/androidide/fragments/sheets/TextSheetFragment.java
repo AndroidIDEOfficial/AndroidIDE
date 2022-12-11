@@ -25,9 +25,11 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.editor.IEditorProvider;
+import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.resources.R;
-import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.androidide.ui.editor.IDEEditor;
+import com.itsaky.androidide.utils.TypefaceUtilsKt;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
@@ -116,7 +118,8 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
   }
 
   private IDEEditor createEditor() {
-    editor = new IDEEditor(getContext());
+    //noinspection ConstantConditions
+    editor = (IDEEditor) Lookup.DEFAULT.lookup(IEditorProvider.class).createEditor(getContext());
     editor.setEditable(false);
     editor.setDividerWidth(0);
     editor.setEditorLanguage(new EmptyLanguage());

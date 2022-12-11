@@ -37,8 +37,9 @@ android {
 
 dependencies {
     implementation fileTree (dir: 'libs', include: ['*.jar'])
-    implementation common.utilcode
+    implementation common.editor
     implementation common.lang3
+    implementation common.utilcode
     implementation google.guava
     implementation google.material
     
@@ -51,6 +52,7 @@ dependencies {
     implementation common.kotlin
     
     implementation project (path: ':eventbus-events')
+    implementation project (path: ':lexers')
     implementation project (path: ':resources')
     
     api androidx.multidex
