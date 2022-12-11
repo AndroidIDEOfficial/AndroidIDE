@@ -146,16 +146,16 @@ public abstract class BaseIncrementalAnalyzeManager
     final var tokens = new ArrayList<IncrementalToken>();
     var newState = 0;
     var stateObj = new LineState();
-    if (state.state == NORMAL) {
+    if (state.state == LineState.NORMAL) {
       newState = tokenizeNormal(lineText, 0, tokens, stateObj, state.lexerMode);
-    } else if (state.state == INCOMPLETE) {
+    } else if (state.state == LineState.INCOMPLETE) {
       final var result = fillIncomplete(lineText, tokens, state.lexerMode);
       newState = IntPair.getFirst(result);
-      if (newState == NORMAL) {
+      if (newState == LineState.NORMAL) {
         newState =
             tokenizeNormal(lineText, IntPair.getSecond(result), tokens, stateObj, state.lexerMode);
       } else {
-        newState = INCOMPLETE;
+        newState = LineState.INCOMPLETE;
       }
     }
     stateObj.state = newState;
@@ -199,8 +199,8 @@ public abstract class BaseIncrementalAnalyzeManager
     while (delegate.isNotCancelled() && line < text.getLineCount()) {
       final var tokens = getState(line);
       final var checkForIdentifiers =
-          tokens.state.state == NORMAL
-              || (tokens.state.state == INCOMPLETE && tokens.tokens.size() > 1);
+          tokens.state.state == LineState.NORMAL
+              || (tokens.state.state == LineState.INCOMPLETE && tokens.tokens.size() > 1);
       if (!tokens.state.hasBraces && !checkForIdentifiers) {
         line++;
         continue;
@@ -334,7 +334,7 @@ public abstract class BaseIncrementalAnalyzeManager
     final var start = queues.getFirst();
     final var end = queues.getSecond();
     var isInIncompleteToken = false;
-    var state = NORMAL;
+    var state = LineState.NORMAL;
     IncrementalToken token;
     IncrementalToken incompleteToken = null;
 
@@ -377,7 +377,7 @@ public abstract class BaseIncrementalAnalyzeManager
       }
 
       if (isInIncompleteToken) {
-        state = INCOMPLETE;
+        state = LineState.INCOMPLETE;
       }
     }
 
@@ -409,7 +409,7 @@ public abstract class BaseIncrementalAnalyzeManager
     final var allTokens =
         lexer.getAllTokens().stream().map(IncrementalToken::new).collect(Collectors.toList());
     if (allTokens.isEmpty()) {
-      return IntPair.pack(INCOMPLETE, 0);
+      return IntPair.pack(LineState.INCOMPLETE, 0);
     }
     var completed = false;
     var index = 0;
@@ -432,9 +432,9 @@ public abstract class BaseIncrementalAnalyzeManager
     handleIncompleteToken(first);
     tokens.add(first);
     if (completed) {
-      return IntPair.pack(NORMAL, offset);
+      return IntPair.pack(LineState.NORMAL, offset);
     } else {
-      return IntPair.pack(INCOMPLETE, offset);
+      return IntPair.pack(LineState.INCOMPLETE, offset);
     }
   }
 

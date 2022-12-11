@@ -32,6 +32,9 @@ import java.io.File;
  * @author Akash Yadav
  */
 public interface IEditor {
+  
+  String KEY_FILE = "ide.editor.file";
+  
 
   /**
    * Get the file that this editor is currently editing.

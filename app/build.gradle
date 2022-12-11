@@ -140,6 +140,7 @@ dependencies {
     implementation project (':actions')
     implementation project (':common')
     implementation project (':editor')
+    implementation project (':editor-languages')
     implementation project (':emulatorview')
     implementation project (':eventbus')
     implementation project (':eventbus-android')

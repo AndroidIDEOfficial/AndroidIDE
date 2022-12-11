@@ -88,7 +88,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.setTextSize(12f)
     editor.typefaceText = jetbrainsMono()
     editor.colorScheme = SchemeAndroidIDE.newInstance(requireContext())
-    editor.setEditorLanguage(LogLanguage())
+    editor.setEditorLanguage(com.itsaky.androidide.language.log.LogLanguage())
   }
 
   override fun onDestroy() {

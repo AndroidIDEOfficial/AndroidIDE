@@ -1,18 +1,18 @@
 /*
- * This file is part of AndroidIDE.
+ *  This file is part of AndroidIDE.
  *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.itsaky.androidide.language;
 
@@ -20,12 +20,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.editor.IEditor;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.ui.editor.IDEEditor;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -74,13 +74,13 @@ public abstract class IDELanguage implements Language {
       return;
     }
 
-    if (!extraArguments.containsKey(IDEEditor.KEY_FILE)) {
+    if (!extraArguments.containsKey(IEditor.KEY_FILE)) {
       LOG.warn("Cannot provide completions. No file provided.");
       return;
     }
 
     final var completionProvider = new CommonCompletionProvider(server);
-    final var file = Paths.get(extraArguments.getString(IDEEditor.KEY_FILE));
+    final var file = Paths.get(extraArguments.getString(IEditor.KEY_FILE));
 
     final var completionItems =
         completionProvider.complete(content, file, position, this::checkIsCompletionChar);

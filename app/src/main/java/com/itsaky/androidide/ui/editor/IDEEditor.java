@@ -71,8 +71,7 @@ import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 public class IDEEditor extends CodeEditor implements com.itsaky.androidide.editor.IEditor {
-
-  public static final String KEY_FILE = "editor_file";
+  
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
   private final EditorActionsMenu actionsMenu;
   private IDEEditorSearcher searcher;
