@@ -23,16 +23,28 @@
   android:layout_marginTop="16dp"
   android:layout_marginBottom="4dp">
 
+  <androidx.appcompat.widget.AppCompatImageView
+    android:id="@+id/chevron"
+    android:layout_width="20dp"
+    android:layout_height="20dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    app:layout_constraintEnd_toStartOf="@id/name"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:srcCompat="@drawable/ic_chevron_right"
+    app:tint="?attr/colorOnSurface" />
+
   <TextView
     android:id="@+id/name"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
+    android:layout_marginStart="4dp"
     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
     android:textColor="?attr/colorOnBackground"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="@id/chevron"
+    app:layout_constraintStart_toEndOf="@id/chevron"
+    app:layout_constraintTop_toTopOf="@id/chevron"
     tools:text="Widgets" />
 
   <include

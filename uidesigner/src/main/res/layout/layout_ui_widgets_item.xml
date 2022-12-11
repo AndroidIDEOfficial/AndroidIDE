@@ -39,7 +39,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:tint="?attr/colorOnBackground"
-    tools:src="@drawable/ic_widget_imageview" />
+    tools:src="@drawable/ic_widget_button" />
 
   <TextView
     android:id="@+id/name"

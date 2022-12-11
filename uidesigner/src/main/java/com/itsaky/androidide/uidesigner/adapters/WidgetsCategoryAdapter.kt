@@ -18,16 +18,21 @@
 package com.itsaky.androidide.uidesigner.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.ChangeBounds
+import androidx.transition.TransitionManager.beginDelayedTransition
 import com.itsaky.androidide.uidesigner.adapters.WidgetsCategoryAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutUiWidgetsCategoryBinding
-import com.itsaky.androidide.uidesigner.models.UiWidget
 import com.itsaky.androidide.uidesigner.models.UiWidgetCategory
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /** @author Akash Yadav */
-internal class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, private val viewModel: WorkspaceViewModel) : RecyclerView.Adapter<VH>() {
+internal class WidgetsCategoryAdapter(
+  categories: List<UiWidgetCategory>,
+  private val viewModel: WorkspaceViewModel
+) : RecyclerView.Adapter<VH>() {
 
   private val categories =
     categories.let {
@@ -37,7 +42,12 @@ internal class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, privat
     }
 
   inner class VH(val binding: LayoutUiWidgetsCategoryBinding) :
-    RecyclerView.ViewHolder(binding.root)
+    RecyclerView.ViewHolder(binding.root) {
+    fun updateExpandedState(isExpanded: Boolean) {
+      binding.widgets.visibility = if (isExpanded) View.VISIBLE else View.GONE
+      binding.chevron.rotation = if (isExpanded) 90f else 0f
+    }
+  }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
     return VH(
@@ -53,7 +63,14 @@ internal class WidgetsCategoryAdapter(categories: List<UiWidgetCategory>, privat
     val binding = holder.binding
     val category = categories[position]
     binding.name.setText(category.label)
-    
+
     binding.widgets.adapter = WidgetsItemAdapter(category.widgets, viewModel)
+
+    holder.updateExpandedState(category.isExpanded)
+
+    binding.root.setOnClickListener {
+      category.isExpanded = !category.isExpanded
+      holder.updateExpandedState(category.isExpanded)
+    }
   }
 }

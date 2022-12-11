@@ -19,4 +19,4 @@ package com.itsaky.androidide.uidesigner.models
 
 import androidx.annotation.StringRes
 
-data class UiWidgetCategory(@StringRes val label: Int, val widgets: MutableList<UiWidget> = mutableListOf())
+data class UiWidgetCategory(@StringRes val label: Int, val widgets: MutableList<UiWidget> = mutableListOf(), var isExpanded: Boolean = false)
