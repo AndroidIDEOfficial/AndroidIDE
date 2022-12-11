@@ -75,22 +75,22 @@ interface ActionItem {
   enum class Location(val id: String) {
 
     /** Location marker for action items shown in editor activity's toolbar. */
-    EDITOR_TOOLBAR("editor.activity.toolbar"),
+    EDITOR_TOOLBAR("ide.editor.toolbar"),
 
     /** Location marker for action items shown in UI Designer activity's toolbar. */
-    UI_DESIGNER_TOOLBAR("editor.activity.toolbar"),
+    UI_DESIGNER_TOOLBAR("ide.uidesigner.toolbar"),
 
     /** Location marker for action items shown in editor's text action menu. */
-    EDITOR_TEXT_ACTIONS("editor.textActions"),
+    EDITOR_TEXT_ACTIONS("ide.editor.textActions"),
 
     /**
      * Location marker for action items shown in 'Code actions' submenu in editor's text action
      * menu.
      */
-    EDITOR_CODE_ACTIONS("editor.codeActions"),
+    EDITOR_CODE_ACTIONS("ide.editor.codeActions"),
 
     /** Location marker for action items shown when file tabs are reselected. */
-    EDITOR_FILE_TABS("editor.fileTabs");
+    EDITOR_FILE_TABS("ide.editor.fileTabs");
 
     override fun toString(): String {
       return id
