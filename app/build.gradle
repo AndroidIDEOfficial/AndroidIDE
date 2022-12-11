@@ -114,7 +114,8 @@ dependencies {
     implementation google.guava
     
     //Git
-    implementation git.jgit
+    implementation git.slf4j
+    implementation git.jsch
 
     // AndroidX
     implementation androidx.splashscreen

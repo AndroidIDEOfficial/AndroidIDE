@@ -86,6 +86,7 @@ class ConfigurationPreferences(
     addPreference(GeneralPreferences())
     addPreference(EditorPreferences())
     addPreference(BuildAndRunPreferences())
+    addPreference(GitPreferences())
   }
 }
 
