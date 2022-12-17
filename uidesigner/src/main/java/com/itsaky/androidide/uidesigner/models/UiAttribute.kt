@@ -21,7 +21,6 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 
 /**
  * UI Designer specific implementation of [IAttribute].

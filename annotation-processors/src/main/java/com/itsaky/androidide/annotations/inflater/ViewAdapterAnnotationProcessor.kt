@@ -27,7 +27,6 @@ import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import java.io.File
-import java.util.Map
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -56,6 +55,9 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL)
   private val indexAddStatements = CodeBlock.builder()
 
+  private val listOfString: TypeName =
+    ParameterizedTypeName.get(java.util.ArrayList::class.java, String::class.java)
+
   init {
     addIndexClassMembers()
   }
@@ -68,6 +70,8 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     const val INDEX_PACKAGE_NAME = "com.itsaky.androidide.inflater.internal"
     const val INDEX_CLASS_NAME = "ViewAdapterIndex"
     const val INDEX_MAP_FIELD = "adapterMap"
+
+    const val METHOD_SET_SUPERCLASS_HIERARCHY = "setSuperclassHierarchy"
   }
 
   override fun getSupportedAnnotationTypes(): MutableSet<String> {
@@ -116,6 +120,8 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
       return
     }
 
+    val block = CodeBlock.builder()
+
     val constructors =
       processingEnv.elementUtils.getAllMembers(element).filter {
         "<init>".contentEquals(it.simpleName)
@@ -141,15 +147,26 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
       return
     }
 
-    val annotation =
-      element.getAnnotation(ViewAdapter::class.java) ?: throw IllegalStateException()
+    val annotation = element.getAnnotation(ViewAdapter::class.java) ?: throw IllegalStateException()
     val viewName = getViewName(annotation)
-    indexAddStatements.addStatement(
-      "\$L.put(\$S, new \$T())",
-      INDEX_MAP_FIELD,
-      viewName,
-      TypeName.get(element.asType())
-    )
+
+    val superclasses = getViewSuperclasses(annotation)
+
+    block.addStatement("final var superclasses = new \$T()", listOfString)
+    for (superclass in superclasses) {
+      block.addStatement("superclasses.add(\$S)", superclass)
+    }
+    
+    block.add("\n")
+    block.addStatement("final var adapter = new \$T()", TypeName.get(element.asType()))
+    block.addStatement("adapter.\$L(superclasses)", METHOD_SET_SUPERCLASS_HIERARCHY)
+    block.addStatement("\$L.put(\$S, adapter)", INDEX_MAP_FIELD, viewName)
+
+    indexAddStatements.add("{\n")
+    indexAddStatements.indent()
+    indexAddStatements.add(block.build())
+    indexAddStatements.unindent()
+    indexAddStatements.add("}\n")
   }
 
   private fun addIndexClassMembers() {
@@ -199,5 +216,30 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     } catch (err: MirroredTypeException) {
       (processingEnv.typeUtils.asElement(err.typeMirror) as TypeElement).qualifiedName.toString()
     }
+  }
+
+  private fun getViewSuperclasses(annotation: ViewAdapter): List<String> {
+    val result = mutableListOf<String>()
+    try {
+      val view = annotation.forView
+      var superclass = view.java.superclass
+      while (superclass != null) {
+        result.add(superclass.name)
+        superclass = superclass.superclass
+      }
+    } catch (err: MirroredTypeException) {
+      val typeElement = processingEnv.typeUtils.asElement(err.typeMirror) as TypeElement
+      result.add(typeElement.qualifiedName.toString())
+      
+      var superclass = typeElement.superclass
+      while (superclass != null) {
+        val superType = processingEnv.typeUtils.asElement(superclass) as? TypeElement?
+        superType ?: break
+        result.add(superType.qualifiedName.toString())
+        superclass = superType.superclass
+      }
+    }
+
+    return result
   }
 }

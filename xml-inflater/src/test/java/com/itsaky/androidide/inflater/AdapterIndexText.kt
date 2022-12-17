@@ -20,7 +20,6 @@ package com.itsaky.androidide.inflater
 import android.view.*
 import android.widget.*
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

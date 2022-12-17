@@ -23,7 +23,18 @@ package com.itsaky.androidide.inflater
  * @author Akash Yadav
  */
 abstract class IViewAdapter : AbstractParser() {
-
+  
+  /**
+   * Superclasses of the view that this adpater handles.
+   */
+  var superclassHierarchy: List<String> = emptyList()
+    set(value) {
+      if (field.isNotEmpty()) {
+        throw UnsupportedOperationException();
+      }
+      field = value
+    }
+  
   /**
    * Apply the given attribute to the given view.
    *
