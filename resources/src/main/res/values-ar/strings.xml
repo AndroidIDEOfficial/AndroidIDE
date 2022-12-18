@@ -480,4 +480,5 @@
   <string name="git_clone_in_progress">نسخ مشروع Git...</string>
   <string name="git_clone_success">تم نسخ مشروع Git بنجاح</string>
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
+  <string name="msg_select_attr">Select an attribute from the below list</string>
 </resources>
