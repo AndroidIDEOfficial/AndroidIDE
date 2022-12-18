@@ -29,7 +29,7 @@ import com.itsaky.androidide.inflater.internal.ViewGroupImpl
  *
  * @author Akash Yadav
  */
-abstract class AdapterViewAttrAdapter : ViewGroupAttrAdapter() {
+abstract class AdapterViewAttrAdapter<T: AdapterView<*>> : ViewGroupAttrAdapter<T>() {
 
   companion object {
     const val ADAPTER_DEFAULT_ITEM_COUNT = 3

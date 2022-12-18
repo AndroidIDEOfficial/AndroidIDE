@@ -17,14 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.GridLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [GridLayout].
@@ -32,33 +27,16 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(GridLayout::class)
-open class GridLayoutAttrAdapter : ViewGroupAttrAdapter() {
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<GridLayout>(view, attribute) {
-      _: LayoutFile,
-      _: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-      when (name) {
-        "alignmentMode" -> alignmentMode = parseAlignmentMode(value)
-        "columnCount" -> columnCount = parseInteger(value, Int.MIN_VALUE)
-        "columnOrderPreserved" -> isColumnOrderPreserved = parseBoolean(value)
-        "orientation" -> orientation = parseOrientation(value)
-        "rowCount" -> rowCount = parseInteger(value, Int.MIN_VALUE)
-        "rowOrderPreserved" -> isRowOrderPreserved = parseBoolean(value)
-        "useDefaultMargins" -> useDefaultMargins = parseBoolean(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+open class GridLayoutAttrAdapter<T : GridLayout> : ViewGroupAttrAdapter<T>() {
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("alignmentMode") { view.alignmentMode = parseAlignmentMode(value) }
+    create("columnCount") { view.columnCount = parseInteger(value, Int.MIN_VALUE) }
+    create("columnOrderPreserved") { view.isColumnOrderPreserved = parseBoolean(value) }
+    create("orientation") { view.orientation = parseOrientation(value) }
+    create("rowCount") { view.rowCount = parseInteger(value, Int.MIN_VALUE) }
+    create("rowOrderPreserved") { view.isRowOrderPreserved = parseBoolean(value) }
+    create("useDefaultMargins") { view.useDefaultMargins = parseBoolean(value) }
   }
 
   protected open fun parseOrientation(value: String): Int {

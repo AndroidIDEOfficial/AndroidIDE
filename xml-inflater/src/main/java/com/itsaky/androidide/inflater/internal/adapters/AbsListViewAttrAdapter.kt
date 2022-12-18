@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AbsListView
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 
@@ -26,30 +27,19 @@ import com.itsaky.androidide.inflater.IView
  *
  * @author Akash Yadav
  */
-abstract class AbsListViewAttrAdapter : AdapterViewAttrAdapter() {
-
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<AbsListView>(view, attribute) { _, context, _, _, name, value ->
-      var applied = true
-      when (name) {
-        "cacheColorHint" -> cacheColorHint = parseColor(context, value)
-        "choiceMode" -> choiceMode = parseChoiceMode(value)
-        "drawSelectorOnTop" -> isDrawSelectorOnTop = parseBoolean(value)
-        "fastScrollEnabled" -> isFastScrollEnabled = parseBoolean(value)
-        "listSelector" -> selector = parseDrawable(context, value)
-        "smoothScrollbar" -> isSmoothScrollbarEnabled = parseBoolean(value)
-        "stackFromBottom" -> isStackFromBottom = parseBoolean(value)
-        "textFilterEnabled" -> isTextFilterEnabled = parseBoolean(value)
-        "transcriptMode" -> transcriptMode = parseTranscriptMode(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+abstract class AbsListViewAttrAdapter<T : AbsListView> : AdapterViewAttrAdapter<T>() {
+  
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("cacheColorHint") { view.cacheColorHint = parseColor(context, value) }
+    create("choiceMode") { view.choiceMode = parseChoiceMode(value) }
+    create("drawSelectorOnTop") { view.isDrawSelectorOnTop = parseBoolean(value) }
+    create("fastScrollEnabled") { view.isFastScrollEnabled = parseBoolean(value) }
+    create("listSelector") { view.selector = parseDrawable(context, value) }
+    create("smoothScrollbar") { view.isSmoothScrollbarEnabled = parseBoolean(value) }
+    create("stackFromBottom") { view.isStackFromBottom = parseBoolean(value) }
+    create("textFilterEnabled") { view.isTextFilterEnabled = parseBoolean(value) }
+    create("transcriptMode") { view.transcriptMode = parseTranscriptMode(value) }
   }
 
   protected open fun parseTranscriptMode(value: String): Int {

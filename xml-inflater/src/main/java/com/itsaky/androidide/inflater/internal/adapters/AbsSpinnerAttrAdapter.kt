@@ -18,44 +18,22 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.R.layout
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.AbsSpinner
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [AbsSpinner].
  *
  * @author Akash Yadav
  */
-abstract class AbsSpinnerAttrAdapter : AdapterViewAttrAdapter() {
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<AbsSpinner>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      var applied = true
-      when (name) {
-        "entries" -> {
-          val array = parseStringArray(value)
-          val adapter = newSimpleAdapter(context, array)
-          adapter.setDropDownViewResource(layout.simple_spinner_dropdown_item)
-          setAdapter(adapter)
-        }
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
+abstract class AbsSpinnerAttrAdapter<T : AbsSpinner> : AdapterViewAttrAdapter<T>() {
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("entries") {
+      val array = parseStringArray(value)
+      val adapter = newSimpleAdapter(context, array)
+      adapter.setDropDownViewResource(layout.simple_spinner_dropdown_item)
+      view.adapter = adapter
     }
   }
 }

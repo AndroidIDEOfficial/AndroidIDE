@@ -23,7 +23,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.android.aaptcompiler.AaptResourceType.STYLEABLE
+import com.android.aaptcompiler.AttributeResource
+import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.Styleable
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
+import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -31,6 +39,8 @@ import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VIEW_INFO
+import com.itsaky.androidide.utils.ILogger
+import java.util.TreeSet
 
 /**
  * A [BottomSheetDialogFragment] which shows information about a clicked view.
@@ -53,6 +63,7 @@ class ViewInfoFragment : Fragment() {
     }
 
   private var header: LayoutViewInfoHeaderBinding? = null
+  private val log = ILogger.newInstance("ViewInfoFragment")
 
   companion object {
     const val TAG = "ide.uidesigner.viewinfo"
@@ -86,7 +97,8 @@ class ViewInfoFragment : Fragment() {
   private fun showViewInfo() {
     val binding = this.binding ?: return
     val header = this.header ?: return
-    val view = this.viewModel.view ?: return
+    val view = this.viewModel.view as? ViewImpl ?: return
+    val adapter = ViewAdapterIndex.getAdapter(view.name) ?: return
 
     header.name.text = view.simpleName
     header.desc.text = view.name

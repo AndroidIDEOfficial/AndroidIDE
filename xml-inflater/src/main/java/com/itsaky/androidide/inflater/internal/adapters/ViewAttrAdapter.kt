@@ -30,14 +30,12 @@ import android.widget.RelativeLayout.*
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
-import com.android.SdkConstants
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
-import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.utils.newAttribute
 
 /**
@@ -46,89 +44,93 @@ import com.itsaky.androidide.inflater.utils.newAttribute
  * @author Akash Yadav
  */
 @ViewAdapter(forView = View::class)
-open class ViewAttrAdapter : IViewAdapter() {
+open class ViewAttrAdapter<T : View> : IViewAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<View>(view, attribute) { file, context, layoutParams, _, name, value ->
-      var applied = true
-      @Suppress("DEPRECATION")
-      when (name) {
-        "alpha" -> alpha = parseFloat(value)
-        "background" -> background = parseDrawable(context, value)
-        "backgroundTint" -> backgroundTintList = parseColorStateList(context, value)
-        "backgroundTintMode" -> backgroundTintMode = parsePorterDuffMode(value)
-        "clipToOutline" -> clipToOutline = parseBoolean(value)
-        "contentDescription" -> contentDescription = parseString(value)
-        "contextClickable" -> isContextClickable = parseBoolean(value)
-        "defaultFocusHighlightEnabled" -> defaultFocusHighlightEnabled = parseBoolean(value)
-        "drawingCacheQuality" -> drawingCacheQuality = parseDrawingCacheQuality(value)
-        "duplicateParentState" -> isDuplicateParentStateEnabled = parseBoolean(value)
-        "elevation" -> elevation = parseDimensionF(context, value)
-        "fadeScrollbars" -> isScrollbarFadingEnabled = parseBoolean(value)
-        "fadingEdgeLength" -> setFadingEdgeLength(parseDimension(context, value))
-        "filterTouchesWhenObscured" -> filterTouchesWhenObscured = parseBoolean(value)
-        "foreground" -> foreground = parseDrawable(context, value)
-        "foregroundGravity" -> foregroundGravity = parseGravity(value)
-        "foregroundTint" -> foregroundTintList = parseColorStateList(context, value)
-        "foregroundTintMode" -> foregroundTintMode = parsePorterDuffMode(value)
-        "id" -> id = parseId(file.resName, value)
-        "minHeight" -> minimumWidth = parseDimension(context, value)
-        "minWidth" -> minimumHeight = parseDimension(context, value)
-        "padding" ->
-          parseDimension(context, value).also {
-            updatePadding(left = it, top = it, right = it, bottom = it)
-          }
-        "paddingLeft" -> updatePadding(left = parseDimension(context, value))
-        "paddingTop" -> updatePadding(top = parseDimension(context, value))
-        "paddingRight" -> updatePadding(right = parseDimension(context, value))
-        "paddingBottom" -> updatePadding(bottom = parseDimension(context, value))
-        "paddingStart" -> updatePaddingRelative(start = parseDimension(context, value))
-        "paddingEnd" -> updatePaddingRelative(end = parseDimension(context, value))
-        "rotation" -> rotation = parseFloat(value)
-        "rotationX" -> rotationX = parseFloat(value)
-        "rotationY" -> rotationY = parseFloat(value)
-        "scaleX" -> scaleX = parseFloat(value)
-        "scaleY" -> scaleY = parseFloat(value)
-        "scrollX" -> scrollX = parseInteger(value)
-        "scrollY" -> scrollY = parseInteger(value)
-        "textAlignment" -> textAlignment = parseTextAlignment(value)
-        "textDirection" -> textDirection = parseTextDirection(value)
-        "tooltipText" -> tooltipText = parseString(value)
-        "transformPivotX" -> pivotX = parseFloat(value)
-        "transformPivotY" -> pivotY = parseFloat(value)
-        "translationX" -> translationX = parseFloat(value)
-        "translationY" -> translationY = parseFloat(value)
-        "translationZ" -> translationZ = parseFloat(value)
-        "visibility" -> visibility = parseVisibility(value)
-        else -> applied = false
-      }
-
-      if (!applied && layoutParams is LinearLayout.LayoutParams) {
-        applied = applyLinearLayoutParams(layoutParams, name, value)
-      }
-
-      if (!applied && layoutParams is RelativeLayout.LayoutParams) {
-        applied = applyRelativeLayoutParams(layoutParams, file.resName, name, value)
-      }
-
-      if (!applied && layoutParams is FrameLayout.LayoutParams) {
-        applied = applyFrameLayoutParams(layoutParams, name, value)
-      }
-
-      if (!applied && layoutParams is MarginLayoutParams) {
-        applied = applyMarginParams(context, layoutParams, name, value)
-      }
-
-      if (!applied) {
-        applied = applyLayoutParams(context, layoutParams, name, value)
-      }
-
-      if (applied) {
-        this.layoutParams = layoutParams
-      }
-
-      return@doApply applied
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    create("alpha") { view.alpha = parseFloat(value) }
+    create("background") { view.background = parseDrawable(context, value) }
+    create("backgroundTint") { view.backgroundTintList = parseColorStateList(context, value) }
+    create("backgroundTintMode") { view.backgroundTintMode = parsePorterDuffMode(value) }
+    create("clipToOutline") { view.clipToOutline = parseBoolean(value) }
+    create("contentDescription") { view.contentDescription = parseString(value) }
+    create("contextClickable") { view.isContextClickable = parseBoolean(value) }
+    create("defaultFocusHighlightEnabled") {
+      view.defaultFocusHighlightEnabled = parseBoolean(value)
     }
+    create("drawingCacheQuality") {
+      @Suppress("DEPRECATION")
+      view.drawingCacheQuality = parseDrawingCacheQuality(value)
+    }
+    create("duplicateParentState") { view.isDuplicateParentStateEnabled = parseBoolean(value) }
+    create("elevation") { view.elevation = parseDimensionF(context, value) }
+    create("fadeScrollbars") { view.isScrollbarFadingEnabled = parseBoolean(value) }
+    create("fadingEdgeLength") { view.setFadingEdgeLength(parseDimension(context, value)) }
+    create("filterTouchesWhenObscured") { view.filterTouchesWhenObscured = parseBoolean(value) }
+    create("foreground") { view.foreground = parseDrawable(context, value) }
+    create("foregroundGravity") { view.foregroundGravity = parseGravity(value) }
+    create("foregroundTint") { view.foregroundTintList = parseColorStateList(context, value) }
+    create("foregroundTintMode") { view.foregroundTintMode = parsePorterDuffMode(value) }
+    create("id") { view.id = parseId(file.resName, value) }
+    create("minHeight") { view.minimumWidth = parseDimension(context, value) }
+    create("minWidth") { view.minimumHeight = parseDimension(context, value) }
+    create("padding") {
+      parseDimension(context, value).also {
+        view.updatePadding(left = it, top = it, right = it, bottom = it)
+      }
+    }
+    create("paddingLeft") { view.updatePadding(left = parseDimension(context, value)) }
+    create("paddingTop") { view.updatePadding(top = parseDimension(context, value)) }
+    create("paddingRight") { view.updatePadding(right = parseDimension(context, value)) }
+    create("paddingBottom") { view.updatePadding(bottom = parseDimension(context, value)) }
+    create("paddingStart") { view.updatePaddingRelative(start = parseDimension(context, value)) }
+    create("paddingEnd") { view.updatePaddingRelative(end = parseDimension(context, value)) }
+    create("rotation") { view.rotation = parseFloat(value) }
+    create("rotationX") { view.rotationX = parseFloat(value) }
+    create("rotationY") { view.rotationY = parseFloat(value) }
+    create("scaleX") { view.scaleX = parseFloat(value) }
+    create("scaleY") { view.scaleY = parseFloat(value) }
+    create("scrollX") { view.scrollX = parseInteger(value) }
+    create("scrollY") { view.scrollY = parseInteger(value) }
+    create("textAlignment") { view.textAlignment = parseTextAlignment(value) }
+    create("textDirection") { view.textDirection = parseTextDirection(value) }
+    create("tooltipText") { view.tooltipText = parseString(value) }
+    create("transformPivotX") { view.pivotX = parseFloat(value) }
+    create("transformPivotY") { view.pivotY = parseFloat(value) }
+    create("translationX") { view.translationX = parseFloat(value) }
+    create("translationY") { view.translationY = parseFloat(value) }
+    create("translationZ") { view.translationZ = parseFloat(value) }
+    create("visibility") { view.visibility = parseVisibility(value) }
+  }
+  
+  override fun AttributeHandlerScope<T>.applyLayoutParams() : Boolean {
+    
+    var applied = false
+    
+    if (layoutParams is LinearLayout.LayoutParams) {
+      applied = applyLinearLayoutParams(layoutParams, name, value)
+    }
+  
+    if (!applied && layoutParams is RelativeLayout.LayoutParams) {
+      applied = applyRelativeLayoutParams(layoutParams, file.resName, name, value)
+    }
+  
+    if (!applied && layoutParams is FrameLayout.LayoutParams) {
+      applied = applyFrameLayoutParams(layoutParams, name, value)
+    }
+  
+    if (!applied && layoutParams is MarginLayoutParams) {
+      applied = applyMarginParams(context, layoutParams, name, value)
+    }
+  
+    if (!applied) {
+      applied = applyLayoutParams(context, layoutParams, name, value)
+    }
+  
+    if (applied) {
+      view.layoutParams = layoutParams
+    }
+    
+    return applied
   }
 
   override fun applyBasic(view: IView) {
@@ -248,49 +250,6 @@ open class ViewAttrAdapter : IViewAdapter() {
       applied = false
     }
     return applied
-  }
-
-  protected open fun canHandleNamespace(namespace: INamespace): Boolean {
-    return this.canHandleNamespace(namespace.uri)
-  }
-  protected open fun canHandleNamespace(nsUri: String): Boolean {
-    return SdkConstants.ANDROID_URI == nsUri
-  }
-
-  /**
-   * Provides easy access to various properties related to the view and attribute when applying an
-   * attributes.
-   */
-  protected open fun <T : View> doApply(
-    view: IView,
-    attribute: IAttribute,
-    block:
-      T.(
-        file: LayoutFile,
-        context: Context,
-        layoutParams: LayoutParams,
-        namespace: INamespace,
-        name: String,
-        value: String,
-      ) -> Boolean,
-  ): Boolean {
-    if (!canHandleNamespace(attribute.namespace)) {
-      return false
-    }
-    @Suppress("UNCHECKED_CAST")
-    return (view.view as T).let {
-      val file = (view as ViewImpl).file
-      val applied =
-        it.block(
-          file,
-          it.context,
-          it.layoutParams,
-          attribute.namespace,
-          attribute.name,
-          attribute.value
-        )
-      return@let applied
-    }
   }
 
   protected open fun parseDrawingCacheQuality(value: String): Int {

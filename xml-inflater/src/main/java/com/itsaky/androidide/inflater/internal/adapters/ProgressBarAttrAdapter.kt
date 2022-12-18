@@ -21,6 +21,7 @@ import android.content.Context
 import android.view.ViewGroup.LayoutParams
 import android.widget.ProgressBar
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -32,58 +33,52 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(ProgressBar::class)
-open class ProgressBarAttrAdapter : ViewAttrAdapter() {
+open class ProgressBarAttrAdapter<T : ProgressBar> : ViewAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<ProgressBar>(view, attribute) {
-      _: LayoutFile,
-      context: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-
-      when (name) {
-        "indeterminate" -> isIndeterminate = parseBoolean(value)
-        "indeterminateDrawable" -> indeterminateDrawable = parseDrawable(context, value)
-        "indeterminateTint" -> indeterminateTintList = parseColorStateList(context, value)
-        "indeterminateTintMode" -> indeterminateTintMode = parsePorterDuffMode(value)
-        "max" -> max = parseInteger(value, 100)
-        "maxHeight" ->
-          if (isApi29()) {
-            maxHeight = parseDimension(context, value, Int.MAX_VALUE)
-          }
-        "maxWidth" ->
-          if (isApi29()) {
-            maxWidth = parseDimension(context, value, Int.MAX_VALUE)
-          }
-        "min" -> min = parseInteger(value, 0)
-        "minHeight" ->
-          if (isApi29()) {
-            minHeight = parseDimension(context, value, 0)
-          }
-        "minWidth" ->
-          if (isApi29()) {
-            minWidth = parseDimension(context, value, 0)
-          }
-        "progress" -> progress = parseInteger(value, 50)
-        "progressBackgroundTint" -> progressBackgroundTintList = parseColorStateList(context, value)
-        "progressBackgroundTintMode" -> progressBackgroundTintMode = parsePorterDuffMode(value)
-        "progressDrawable" -> progressDrawable = parseDrawable(context, value)
-        "progressTint" -> progressTintList = parseColorStateList(context, value)
-        "progressTintMode" -> progressTintMode = parsePorterDuffMode(value)
-        "secondaryProgress" -> secondaryProgress = parseInteger(value, 0)
-        "secondaryProgressTint" -> secondaryProgressTintList = parseColorStateList(context, value)
-        "secondaryProgressTintMode" -> secondaryProgressTintMode = parsePorterDuffMode(value)
-        else -> applied = false
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("indeterminate") { view.isIndeterminate = parseBoolean(value) }
+    create("indeterminateDrawable") { view.indeterminateDrawable = parseDrawable(context, value) }
+    create("indeterminateTint") { view.indeterminateTintList = parseColorStateList(context, value) }
+    create("indeterminateTintMode") { view.indeterminateTintMode = parsePorterDuffMode(value) }
+    create("max") { view.max = parseInteger(value, 100) }
+    create("maxHeight") {
+      if (isApi29()) {
+        view.maxHeight = parseDimension(context, value, Int.MAX_VALUE)
       }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
+    }
+    create("maxWidth") {
+      if (isApi29()) {
+        view.maxWidth = parseDimension(context, value, Int.MAX_VALUE)
       }
-
-      return@doApply applied
+    }
+    create("min") { view.min = parseInteger(value, 0) }
+    create("minHeight") {
+      if (isApi29()) {
+        view.minHeight = parseDimension(context, value, 0)
+      }
+    }
+    create("minWidth") {
+      if (isApi29()) {
+        view.minWidth = parseDimension(context, value, 0)
+      }
+    }
+    create("progress") { view.progress = parseInteger(value, 50) }
+    create("progressBackgroundTint") {
+      view.progressBackgroundTintList = parseColorStateList(context, value)
+    }
+    create("progressBackgroundTintMode") {
+      view.progressBackgroundTintMode = parsePorterDuffMode(value)
+    }
+    create("progressDrawable") { view.progressDrawable = parseDrawable(context, value) }
+    create("progressTint") { view.progressTintList = parseColorStateList(context, value) }
+    create("progressTintMode") { view.progressTintMode = parsePorterDuffMode(value) }
+    create("secondaryProgress") { view.secondaryProgress = parseInteger(value, 0) }
+    create("secondaryProgressTint") {
+      view.secondaryProgressTintList = parseColorStateList(context, value)
+    }
+    create("secondaryProgressTintMode") {
+      view.secondaryProgressTintMode = parsePorterDuffMode(value)
     }
   }
 }

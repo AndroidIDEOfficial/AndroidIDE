@@ -25,4 +25,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  *
  * @author Akash Yadav
  */
-@ViewAdapter(CheckBox::class) class CheckBoxAttrAdapter : CompoundButtonAttrAdapter()
+@ViewAdapter(CheckBox::class) open class CheckBoxAttrAdapter<T : CheckBox> : CompoundButtonAttrAdapter<T>()

@@ -18,16 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.R.layout
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [ListView].
@@ -35,34 +30,19 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(ListView::class)
-class ListViewAttrAdapter : AbsListViewAttrAdapter() {
+open class ListViewAttrAdapter<T : ListView> : AbsListViewAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<ListView>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      
-      var applied = true
-      when (name) {
-        "divider" -> divider = parseDrawable(context, value)
-        "dividerHeight" -> dividerHeight = parseDimension(context, value, SizeUtils.dp2px(1f))
-        "entries" -> {
-          val entries = parseStringArray(value)
-          adapter = ArrayAdapter(context, layout.simple_list_item_1, entries)
-        }
-        "footerDividersEnabled" -> setFooterDividersEnabled(parseBoolean(value))
-        "headerDividersEnabled" -> setHeaderDividersEnabled(parseBoolean(value))
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-      return@doApply applied
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("divider") { view.divider = parseDrawable(context, value) }
+    create("dividerHeight") {
+      view.dividerHeight = parseDimension(context, value, SizeUtils.dp2px(1f))
     }
+    create("entries") {
+      val entries = parseStringArray(value)
+      view.adapter = ArrayAdapter(context, layout.simple_list_item_1, entries)
+    }
+    create("footerDividersEnabled") { view.setFooterDividersEnabled(parseBoolean(value)) }
+    create("headerDividersEnabled") { view.setHeaderDividersEnabled(parseBoolean(value)) }
   }
 }

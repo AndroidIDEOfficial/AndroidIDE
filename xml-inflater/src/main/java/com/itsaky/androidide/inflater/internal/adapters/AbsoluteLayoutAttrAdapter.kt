@@ -27,4 +27,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  */
 @Suppress("DEPRECATION")
 @ViewAdapter(AbsoluteLayout::class)
-open class AbsoluteLayoutAttrAdapter : ViewGroupAttrAdapter()
+open class AbsoluteLayoutAttrAdapter<T : AbsoluteLayout> : ViewGroupAttrAdapter<T>()

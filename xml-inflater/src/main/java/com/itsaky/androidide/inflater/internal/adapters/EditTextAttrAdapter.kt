@@ -26,4 +26,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(EditText::class)
-open class EditTextAttrAdapter : TextViewAttrAdapter()
+open class EditTextAttrAdapter<T : EditText> : TextViewAttrAdapter<T>()

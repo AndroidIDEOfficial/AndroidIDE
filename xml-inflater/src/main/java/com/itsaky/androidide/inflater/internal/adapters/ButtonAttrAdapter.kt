@@ -25,4 +25,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  *
  * @author Akash Yadav
  */
-@ViewAdapter(Button::class) open class ButtonAttrAdapter : TextViewAttrAdapter()
+@ViewAdapter(Button::class) open class ButtonAttrAdapter<T : Button> : TextViewAttrAdapter<T>()

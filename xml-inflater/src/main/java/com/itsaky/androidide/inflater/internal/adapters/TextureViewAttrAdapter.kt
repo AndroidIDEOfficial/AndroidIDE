@@ -26,4 +26,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(TextureView::class)
-class TextureViewAttrAdapter : ViewAttrAdapter()
+open class TextureViewAttrAdapter<T : TextureView> : ViewAttrAdapter<T>()

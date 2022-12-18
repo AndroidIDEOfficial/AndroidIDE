@@ -18,39 +18,20 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AbsSeekBar
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [AbsSeekBar].
  *
  * @author Akash Yadav
  */
-abstract class AbsSeekBarAttrAdapter : ProgressBarAttrAdapter() {
+abstract class AbsSeekBarAttrAdapter<T : AbsSeekBar> : ProgressBarAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<AbsSeekBar>(view, attribute) {
-        _,
-        context,
-        _,
-        _,
-        name,
-        value ->
-      var applied = true
-
-      when (name) {
-        "thumbTint" -> thumbTintList = parseColorStateList(context, value)
-        "thumbTintMode" -> thumbTintMode = parsePorterDuffMode(value)
-        "tickMarkTint" -> tickMarkTintList = parseColorStateList(context, value)
-        "tickMarkTintMode" -> tickMarkTintMode = parsePorterDuffMode(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("thumbTint") { view.thumbTintList = parseColorStateList(context, value) }
+    create("thumbTintMode") { view.thumbTintMode = parsePorterDuffMode(value) }
+    create("tickMarkTint") { view.tickMarkTintList = parseColorStateList(context, value) }
+    create("tickMarkTintMode") { view.tickMarkTintMode = parsePorterDuffMode(value) }
   }
 }

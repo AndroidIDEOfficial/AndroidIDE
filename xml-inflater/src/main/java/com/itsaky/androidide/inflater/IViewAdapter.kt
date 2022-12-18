@@ -17,12 +17,17 @@
 
 package com.itsaky.androidide.inflater
 
+import android.view.View
+import com.android.SdkConstants
+import com.itsaky.androidide.inflater.internal.AttributeImpl
+import com.itsaky.androidide.inflater.internal.ViewImpl
+
 /**
  * Handles logic for applying attributes to a view.
  *
  * @author Akash Yadav
  */
-abstract class IViewAdapter : AbstractParser() {
+abstract class IViewAdapter<T : View> : AbstractParser() {
 
   /** Superclasses of the view that this adpater handles. */
   var superclassHierarchy: List<String> = emptyList()
@@ -34,9 +39,9 @@ abstract class IViewAdapter : AbstractParser() {
     }
 
   /**
-   * The package name or namespace of the module/artifact in which the view that this adapter handles is defined.
-   * The value is set to "android" by default unless explicitly specified in the [ViewAdapter]
-   * [com.itsaky.androidide.annotations.inflater.ViewAdapter] annotation.
+   * The package name or namespace of the module/artifact in which the view that this adapter
+   * handles is defined. The value is set to "android" by default unless explicitly specified in the
+   * [ViewAdapter][com.itsaky.androidide.annotations.inflater.ViewAdapter] annotation.
    *
    * This is used by the UI designer to quickly look for attributes of an inflated view from the
    * resource tables.
@@ -49,6 +54,19 @@ abstract class IViewAdapter : AbstractParser() {
       field = value
     }
 
+  /** The attributes that are supported by the adapter. The attributes in the list are immutable. */
+  val supportedAttributes by lazy {
+    attributeHandlers.map {
+      AttributeImpl(namespace = defaultNamespace(), name = it.key, value = "").immutable()
+    }
+  }
+
+  private val attributeHandlers by lazy {
+    val handlers = mutableMapOf<String, AttributeHandlerScope<T>.() -> Unit>()
+    createAttrHandlers(handlers::put)
+    return@lazy handlers
+  }
+
   /**
    * Apply the given attribute to the given view.
    *
@@ -56,7 +74,9 @@ abstract class IViewAdapter : AbstractParser() {
    * @param attribute The attribute to apply.
    * @return Whether the attribute was applied or not.
    */
-  abstract fun apply(view: IView, attribute: IAttribute): Boolean
+  open fun apply(view: IView, attribute: IAttribute): Boolean {
+    return doApply(view, attribute) { applyInternal() }
+  }
 
   /**
    * Apply the basic attributes to a view so that it could be rendered.
@@ -73,4 +93,70 @@ abstract class IViewAdapter : AbstractParser() {
    * @return `true` if the attribute is required, `false` otherwise.
    */
   abstract fun isRequiredAttribute(attribute: IAttribute): Boolean
+
+  /**
+   * The default namespace that will be used by the UI designer to create and apply new attributes.
+   */
+  protected open fun defaultNamespace(): INamespace {
+    return INamespace.ANDROID
+  }
+
+  protected open fun canHandleNamespace(namespace: INamespace): Boolean {
+    return this.canHandleNamespace(namespace.uri)
+  }
+  protected open fun canHandleNamespace(nsUri: String): Boolean {
+    return SdkConstants.ANDROID_URI == nsUri
+  }
+
+  protected open fun AttributeHandlerScope<T>.applyInternal(): Boolean {
+    val handler = attributeHandlers[name]
+    if (handler != null) {
+      handler()
+    }
+    return handler != null || applyLayoutParams()
+  }
+
+  protected open fun AttributeHandlerScope<T>.applyLayoutParams(): Boolean {
+    return false
+  }
+
+  /**
+   * Provides easy access to various properties related to the view and attribute when applying an
+   * attributes.
+   */
+  private fun doApply(
+    view: IView,
+    attribute: IAttribute,
+    apply: AttributeHandlerScope<T>.() -> Boolean,
+  ): Boolean {
+
+    if (!canHandleNamespace(attribute.namespace)) {
+      return false
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    return (view.view as T).let {
+      val file = (view as ViewImpl).file
+      return@let AttributeHandlerScope(
+          it,
+          file,
+          it.context,
+          it.layoutParams,
+          attribute.namespace,
+          attribute.name,
+          attribute.value
+        )
+        .let(apply)
+    }
+  }
+
+  /**
+   * Creates the attribute handlers. Subclasses are expected to use the [create] function to create
+   * new handlers.
+   *
+   * A subclass should call the `super` method and add only the view specific attribute handlers.
+   */
+  protected open fun createAttrHandlers(
+    create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
+  ) {}
 }

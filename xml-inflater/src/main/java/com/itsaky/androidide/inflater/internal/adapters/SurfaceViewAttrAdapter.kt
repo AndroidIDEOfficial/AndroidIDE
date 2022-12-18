@@ -24,4 +24,5 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * Attribute adapter for [SurfaceView].
  * @author Akash Yadav
  */
-@ViewAdapter(SurfaceView::class) class SurfaceViewAttrAdapter : ViewAttrAdapter()
+@ViewAdapter(SurfaceView::class)
+open class SurfaceViewAttrAdapter<T : SurfaceView> : ViewAttrAdapter<T>()

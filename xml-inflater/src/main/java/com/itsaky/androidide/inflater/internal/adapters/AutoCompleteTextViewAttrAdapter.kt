@@ -17,14 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.AutoCompleteTextView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [AutoCompleteTextView].
@@ -32,30 +27,14 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(AutoCompleteTextView::class)
-class AutoCompleteTextViewAttrAdapter : EditTextAttrAdapter() {
+open class AutoCompleteTextViewAttrAdapter<T : AutoCompleteTextView> : EditTextAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<AutoCompleteTextView>(view, attribute) {
-      file: LayoutFile,
-      context: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-      when (name) {
-        "completionHint" -> completionHint = parseString(value)
-        "completionThreshold" -> threshold = parseInteger(value, 1)
-        "dropDownAnchor" -> dropDownAnchor = parseId(file.resName, value)
-        "dropDownWidth" -> dropDownWidth = parseDimension(context, value)
-        "dropDownHeight" -> dropDownHeight = parseDimension(context, value)
-        else -> applied = false
-      }
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-      
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("completionHint") { view.completionHint = parseString(value) }
+    create("completionThreshold") { view.threshold = parseInteger(value, 1) }
+    create("dropDownAnchor") { view.dropDownAnchor = parseId(file.resName, value) }
+    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value) }
+    create("dropDownHeight") { view.dropDownHeight = parseDimension(context, value) }
   }
 }

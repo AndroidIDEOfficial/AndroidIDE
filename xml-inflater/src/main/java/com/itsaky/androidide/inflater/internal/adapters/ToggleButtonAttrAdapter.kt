@@ -17,16 +17,10 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.R.attr.button
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.ToggleButton
 import com.blankj.utilcode.util.ReflectUtils.reflect
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [ToggleButton].
@@ -34,29 +28,12 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(ToggleButton::class)
-class ToggleButtonAttrAdapter : CompoundButtonAttrAdapter() {
+open class ToggleButtonAttrAdapter<T : ToggleButton> : CompoundButtonAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<ToggleButton>(view, attribute) {
-      _: LayoutFile,
-      _: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-      when (name) {
-        "disabledAlpha" -> reflect(button).field("mDisabledAlpha", parseFloat(value, 0.5f))
-        "textOff" -> textOff = parseString(value)
-        "textOn" -> textOn = parseString(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("disabledAlpha") { reflect(view).field("mDisabledAlpha", parseFloat(value, 0.5f)) }
+    create("textOff") { view.textOff = parseString(value) }
+    create("textOn") { view.textOn = parseString(value) }
   }
 }

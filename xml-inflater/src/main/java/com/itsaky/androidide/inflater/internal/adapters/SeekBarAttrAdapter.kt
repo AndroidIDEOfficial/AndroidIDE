@@ -19,8 +19,7 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.SeekBar
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [SeekBar].
@@ -28,22 +27,11 @@ import com.itsaky.androidide.inflater.IView
  * @author Akash Yadav
  */
 @ViewAdapter(SeekBar::class)
-class SeekBarAttrAdapter : AbsSeekBarAttrAdapter() {
+open class SeekBarAttrAdapter<T : SeekBar> : AbsSeekBarAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<SeekBar>(view, attribute) { _, context, _, _, name, value ->
-      var applied = true
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
 
-      when (name) {
-        "thumb" -> thumb = parseDrawable(context, value)
-        else -> applied = false
-      }
-  
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+    create("thumb") { view.thumb = parseDrawable(context, value) }
   }
 }

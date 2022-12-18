@@ -21,6 +21,7 @@ import android.content.Context
 import android.view.ViewGroup.LayoutParams
 import android.widget.FrameLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -32,29 +33,11 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(FrameLayout::class)
-open class FrameLayoutAttrAdapter : ViewGroupAttrAdapter() {
-
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<FrameLayout>(view, attribute) {
-        _: LayoutFile,
-        _: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      
-      var applied = true
-      when (name) {
-        "foregroundGravity" -> foregroundGravity = parseGravity(value)
-        "measureAllChildren" -> measureAllChildren = parseBoolean(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+open class FrameLayoutAttrAdapter<T : FrameLayout> : ViewGroupAttrAdapter<T>() {
+  
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("foregroundGravity") { view.foregroundGravity = parseGravity(value) }
+    create("measureAllChildren") { view.measureAllChildren = parseBoolean(value) }
   }
 }

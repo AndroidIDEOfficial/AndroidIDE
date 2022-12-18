@@ -25,6 +25,7 @@ import com.itsaky.androidide.inflater.LayoutBehavior.HORIZONTAL
 import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
 import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 
 /**

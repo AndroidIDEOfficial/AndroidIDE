@@ -25,4 +25,5 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  *
  * @author Akash Yadav
  */
-@ViewAdapter(RadioButton::class) class RadioButtonAttrAdapter : CompoundButtonAttrAdapter()
+@ViewAdapter(RadioButton::class)
+open class RadioButtonAttrAdapter<T : RadioButton> : CompoundButtonAttrAdapter<T>()

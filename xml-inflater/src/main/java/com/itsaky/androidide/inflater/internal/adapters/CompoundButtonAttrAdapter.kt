@@ -17,45 +17,23 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.CompoundButton
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
  * Attribute adapter for [CompoundButton].
  *
  * @author Akash Yadav
  */
-abstract class CompoundButtonAttrAdapter : ButtonAttrAdapter() {
+abstract class CompoundButtonAttrAdapter<T : CompoundButton> : ButtonAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<CompoundButton>(view, attribute) {
-      _: LayoutFile,
-      context: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-
-      when (name) {
-        "buttonTint" -> buttonTintList = parseColorStateList(context, value)
-        "button" -> buttonDrawable = parseDrawable(context, value)
-        "buttonTintMode" -> buttonTintMode = parsePorterDuffMode(value)
-        "checked" -> isChecked = parseBoolean(value = value, def = true)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("buttonTint") { view.buttonTintList = parseColorStateList(context, value) }
+    create("button") { view.buttonDrawable = parseDrawable(context, value) }
+    create("buttonTintMode") { view.buttonTintMode = parsePorterDuffMode(value) }
+    create("checked") { view.isChecked = parseBoolean(value = value, def = true) }
   }
 
   override fun applyBasic(view: IView) {

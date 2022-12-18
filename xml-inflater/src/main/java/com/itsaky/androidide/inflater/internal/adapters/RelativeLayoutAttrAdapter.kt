@@ -17,14 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.RelativeLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [RelativeLayout].
@@ -32,29 +27,11 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(RelativeLayout::class)
-class RelativeLayoutAttrAdapter : ViewGroupAttrAdapter() {
+open class RelativeLayoutAttrAdapter<T : RelativeLayout> : ViewGroupAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<RelativeLayout>(view, attribute) {
-        file: LayoutFile,
-        _: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      var applied = true
-
-      when (name) {
-        "gravity" -> gravity = parseGravity(value)
-        "ignoreGravity" -> ignoreGravity = parseId(file.resName, value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("gravity") { view.gravity = parseGravity(value) }
+    create("ignoreGravity") { view.ignoreGravity = parseId(file.resName, value) }
   }
 }

@@ -21,6 +21,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 
 /**
  * UI Designer specific implementation of [IAttribute].
@@ -36,7 +37,7 @@ constructor(
 ) : AttributeImpl(namespace, name, value) {
 
   constructor(src: IAttribute) : this(namespace = src.namespace, name = src.name, value = src.value)
-  
+
   /**
    * Whether this attribute is required or not. Required attributes cannot be removed from a view
    * once applied.

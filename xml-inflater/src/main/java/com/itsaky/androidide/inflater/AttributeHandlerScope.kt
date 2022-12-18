@@ -15,23 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.inflater.internal.adapters
+package com.itsaky.androidide.inflater
 
-import android.widget.CheckedTextView
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.AttributeHandlerScope
+import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
- * Attribute adapter for [CheckedTextView].
- *
  * @author Akash Yadav
  */
-@ViewAdapter(CheckedTextView::class)
-open class CheckedTextViewAttrAdapter<T : CheckedTextView> : TextViewAttrAdapter<T>() {
-
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    super.createAttrHandlers(create)
-    create("checkMarkTintMode") { view.checkMarkTintMode = parsePorterDuffMode(value) }
-    create("checkMarkTint") { view.checkMarkTintList = parseColorStateList(context, value) }
-  }
-}
+data class AttributeHandlerScope<T : View>(
+  val view: T,
+  val file: LayoutFile,
+  val context: Context,
+  val layoutParams: ViewGroup.LayoutParams,
+  val namespace: INamespace,
+  val name: String,
+  val value: String
+)

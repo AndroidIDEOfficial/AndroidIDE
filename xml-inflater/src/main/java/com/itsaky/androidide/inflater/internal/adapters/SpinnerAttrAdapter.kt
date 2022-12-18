@@ -17,14 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.Spinner
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [Spinner].
@@ -32,31 +27,17 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(Spinner::class)
-class SpinnerAttrAdapter : AbsSpinnerAttrAdapter() {
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<Spinner>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      var applied = true
-
-      when (name) {
-        "dropDownHorizontalOffset" -> dropDownHorizontalOffset = parseDimension(context, value, 0)
-        "dropDownVerticalOffset" -> dropDownVerticalOffset = parseDimension(context, value, 0)
-        "dropDownWidth" -> dropDownWidth = parseDimension(context, value, 0)
-        "gravity" -> gravity = parseGravity(value)
-        "popupBackground" -> setPopupBackgroundDrawable(parseDrawable(context, value))
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
+open class SpinnerAttrAdapter<T : Spinner> : AbsSpinnerAttrAdapter<T>() {
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("dropDownHorizontalOffset") {
+      view.dropDownHorizontalOffset = parseDimension(context, value, 0)
     }
+    create("dropDownVerticalOffset") {
+      view.dropDownVerticalOffset = parseDimension(context, value, 0)
+    }
+    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value, 0) }
+    create("gravity") { view.gravity = parseGravity(value) }
+    create("popupBackground") { view.setPopupBackgroundDrawable(parseDrawable(context, value)) }
   }
 }

@@ -376,8 +376,25 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    * @param pck The package to look for.
    */
   fun findResourceTableForPackage(pck: String, hasGroup: AaptResourceType? = null): ResourceTable? {
+    return findAllResourceTableForPackage(pck, hasGroup).let {
+      if (it.isNotEmpty()) {
+        return it.first()
+      } else null
+    }
+  }
+
+  /**
+   * Checks all the resource tables from this module and returns if any of the tables contain
+   * resources for the the given package.
+   *
+   * @param pck The package to look for.
+   */
+  fun findAllResourceTableForPackage(
+    pck: String,
+    hasGroup: AaptResourceType? = null
+  ): List<ResourceTable> {
     if (pck == SdkConstants.ANDROID_PKG) {
-      return getFrameworkResourceTable()
+      return getFrameworkResourceTable()?.let { listOf(it) } ?: emptyList()
     }
 
     val tables: List<ResourceTable> =
@@ -387,17 +404,20 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
         addAll(getDependencyResourceTables())
       }
 
+    val result = mutableListOf<ResourceTable>()
     for (table in tables) {
       val resPck = table.findPackage(pck) ?: continue
       if (hasGroup == null) {
-        return table
+        result.add(table)
+        continue
       }
       if (resPck.findGroup(hasGroup) != null) {
-        return table
+        result.add(table)
+        continue
       }
     }
 
-    return null
+    return emptyList()
   }
 
   /**

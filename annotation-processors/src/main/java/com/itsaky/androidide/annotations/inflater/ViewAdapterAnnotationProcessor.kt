@@ -48,7 +48,15 @@ import javax.tools.Diagnostic.Kind.ERROR
 class ViewAdapterAnnotationProcessor : AbstractProcessor() {
 
   private val adapterElement by lazy {
-    processingEnv.elementUtils.getTypeElement(ADAPTER_BASE_CLASS)
+    processingEnv.typeUtils.erasure(
+      processingEnv.elementUtils.getTypeElement(ADAPTER_BASE_CLASS).asType()
+    )
+  }
+
+  private val viewElement by lazy {
+    processingEnv.typeUtils.erasure(
+      processingEnv.elementUtils.getTypeElement("android.view.View").asType()
+    )
   }
 
   private val indexClassBuilder =
@@ -143,9 +151,29 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
       return
     }
 
-    if (!processingEnv.typeUtils.isSubtype(element.asType(), adapterElement.asType())) {
+    if (
+      !processingEnv.typeUtils.isAssignable(
+        processingEnv.typeUtils.erasure(element.asType()),
+        adapterElement
+      )
+    ) {
       processingEnv.messager.printMessage(ERROR, "Class must be a subtype of $ADAPTER_BASE_CLASS")
       return
+    }
+
+    if (element.typeParameters.size != 1) {
+      processingEnv.messager.printMessage(
+        ERROR,
+        "A view adapter must have exactly one type parameter"
+      )
+    }
+
+    val typeParam = element.typeParameters[0]
+    if (!processingEnv.typeUtils.isAssignable(typeParam.asType(), viewElement)) {
+      processingEnv.messager.printMessage(
+        ERROR,
+        "The type parameter of view adapter must be assignable from android.view.View"
+      )
     }
 
     val annotation = element.getAnnotation(ViewAdapter::class.java) ?: throw IllegalStateException()
@@ -157,9 +185,13 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     for (superclass in superclasses) {
       block.addStatement("superclasses.add(\$S)", superclass)
     }
+
     
+    val adapterType = ClassName.get(element)
+    val paramType = getViewTypeName(annotation)
+
     block.add("\n")
-    block.addStatement("final var adapter = new \$T()", TypeName.get(element.asType()))
+    block.addStatement("final var adapter = new \$T()", ParameterizedTypeName.get(adapterType, paramType))
     block.addStatement("adapter.\$L(superclasses)", METHOD_SET_SUPERCLASS_HIERARCHY)
     block.addStatement("adapter.\$L(\$S)", METHOD_SET_MODULE, annotation.moduleNamespace)
     block.addStatement("\$L.put(\$S, adapter)", INDEX_MAP_FIELD, viewName)
@@ -181,7 +213,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
       )
     indexClassBuilder.addField(
       FieldSpec.builder(type, INDEX_MAP_FIELD, PRIVATE, STATIC, FINAL)
-        .initializer("new \$T<>();", HashMap::class.java)
+        .initializer("new \$T<>()", HashMap::class.java)
         .build()
     )
 
@@ -210,6 +242,15 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
         .build()
     )
   }
+  
+  private fun getViewTypeName(annotation: ViewAdapter) : TypeName {
+    return try {
+      ClassName.get(annotation.forView.java)
+        ?: throw IllegalStateException("Cannot find type of $annotation")
+    } catch (err: MirroredTypeException) {
+      (processingEnv.typeUtils.asElement(err.typeMirror) as TypeElement).let { ClassName.get(it) }
+    }
+  }
 
   private fun getViewName(annotation: ViewAdapter): String {
     return try {
@@ -232,7 +273,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     } catch (err: MirroredTypeException) {
       val typeElement = processingEnv.typeUtils.asElement(err.typeMirror) as TypeElement
       result.add(typeElement.qualifiedName.toString())
-      
+
       var superclass = typeElement.superclass
       while (superclass != null) {
         val superType = processingEnv.typeUtils.asElement(superclass) as? TypeElement?

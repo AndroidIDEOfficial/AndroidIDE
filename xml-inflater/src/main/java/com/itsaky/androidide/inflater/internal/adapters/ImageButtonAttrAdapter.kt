@@ -25,4 +25,5 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ImageButton::class) class ImageButtonAttrAdapter : ImageViewAttrAdapter()
+@ViewAdapter(ImageButton::class)
+open class ImageButtonAttrAdapter<T : ImageButton> : ImageViewAttrAdapter<T>()

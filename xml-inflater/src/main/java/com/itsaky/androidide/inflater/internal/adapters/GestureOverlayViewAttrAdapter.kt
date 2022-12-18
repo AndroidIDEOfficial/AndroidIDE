@@ -22,6 +22,7 @@ import android.gesture.GestureOverlayView
 import android.view.ViewGroup.LayoutParams
 import com.blankj.utilcode.util.ReflectUtils
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -33,42 +34,24 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(GestureOverlayView::class)
-open class GestureOverlayViewAttrAdapter : FrameLayoutAttrAdapter() {
-
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<GestureOverlayView>(view, attribute) {
-      _: LayoutFile,
-      context: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-      when (name) {
-        "eventsInterceptionEnabled" -> isEventsInterceptionEnabled = parseBoolean(value)
-        "fadeDuration" ->
-          ReflectUtils.reflect(gesture).field("mFadeDuration", parseLong(value, 150))
-        "fadeEnabled" -> isFadeEnabled = parseBoolean(value)
-        "fadeOffset" -> fadeOffset = parseLong(value, 420)
-        "gestureColor" -> gestureColor = parseColor(context, value)
-        "gestureStrokeAngleThreshold" -> gestureStrokeAngleThreshold = parseFloat(value)
-        "gestureStrokeLengthThreshold" -> gestureStrokeLengthThreshold = parseFloat(value)
-        "gestureStrokeSquarenessThreshold" -> gestureStrokeSquarenessTreshold = parseFloat(value)
-        "gestureStrokeType" -> gestureStrokeType = parseGestureStrokeType(value)
-        "gestureStrokeWidth" -> gestureStrokeWidth = parseFloat(value)
-        "orientation" -> orientation = parseOrientation(value)
-        "uncertainGestureColor" -> uncertainGestureColor = parseColor(context, value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+open class GestureOverlayViewAttrAdapter<T : GestureOverlayView> : FrameLayoutAttrAdapter<T>() {
+  
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("eventsInterceptionEnabled") { view.isEventsInterceptionEnabled = parseBoolean(value) }
+    create("fadeDuration") { ReflectUtils.reflect(view).field("mFadeDuration", parseLong(value, 150)) }
+    create("fadeEnabled") { view.isFadeEnabled = parseBoolean(value) }
+    create("fadeOffset") { view.fadeOffset = parseLong(value, 420) }
+    create("gestureColor") { view.gestureColor = parseColor(context, value) }
+    create("gestureStrokeAngleThreshold") { view.gestureStrokeAngleThreshold = parseFloat(value) }
+    create("gestureStrokeLengthThreshold") { view.gestureStrokeLengthThreshold = parseFloat(value) }
+    create("gestureStrokeSquarenessThreshold") { view.gestureStrokeSquarenessTreshold = parseFloat(value) }
+    create("gestureStrokeType") { view.gestureStrokeType = parseGestureStrokeType(value) }
+    create("gestureStrokeWidth") { view.gestureStrokeWidth = parseFloat(value) }
+    create("orientation") { view.orientation = parseOrientation(value) }
+    create("uncertainGestureColor") { view.uncertainGestureColor = parseColor(context, value) }
   }
-
+  
   protected open fun parseOrientation(value: String): Int {
     return if ("horizontal" == value) {
       GestureOverlayView.ORIENTATION_HORIZONTAL

@@ -17,15 +17,10 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
 import android.graphics.Typeface.DEFAULT
-import android.view.ViewGroup.LayoutParams
 import android.widget.Switch
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
  * Attribute adapter for [Switch].
@@ -33,40 +28,23 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(Switch::class)
-class SwitchAttrAdapter : CompoundButtonAttrAdapter() {
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<Switch>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      var applied = true
-      when (name) {
-        "showText" -> showText = parseBoolean(value)
-        "splitTrack" -> splitTrack = parseBoolean(value)
-        "switchMinWidth" -> switchMinWidth = parseDimension(context, value, 0)
-        "switchPadding" -> switchPadding = parseDimension(context, value, 0)
-        "textOff" -> textOff = parseString(value)
-        "textOn" -> textOn = parseString(value)
-        "textStyle" -> setSwitchTypeface(DEFAULT, parseTextStyle(value))
-        "thumb" -> thumbDrawable = parseDrawable(context, value)
-        "thumbTextPadding" -> thumbTextPadding = parseDimension(context, value, 0)
-        "thumbTint" -> thumbTintList = parseColorStateList(context, value)
-        "thumbTintMode" -> thumbTintMode = parsePorterDuffMode(value)
-        "track" -> trackDrawable = parseDrawable(context, value)
-        "trackTint" -> trackTintList = parseColorStateList(context, value)
-        "trackTintMode" -> trackTintMode = parsePorterDuffMode(value)
-        "typeface" -> setSwitchTypeface(parseTypeface(value))
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+open class SwitchAttrAdapter<T : Switch> : CompoundButtonAttrAdapter<T>() {
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("showText") { view.showText = parseBoolean(value) }
+    create("splitTrack") { view.splitTrack = parseBoolean(value) }
+    create("switchMinWidth") { view.switchMinWidth = parseDimension(context, value, 0) }
+    create("switchPadding") { view.switchPadding = parseDimension(context, value, 0) }
+    create("textOff") { view.textOff = parseString(value) }
+    create("textOn") { view.textOn = parseString(value) }
+    create("textStyle") { view.setSwitchTypeface(DEFAULT, parseTextStyle(value)) }
+    create("thumb") { view.thumbDrawable = parseDrawable(context, value) }
+    create("thumbTextPadding") { view.thumbTextPadding = parseDimension(context, value, 0) }
+    create("thumbTint") { view.thumbTintList = parseColorStateList(context, value) }
+    create("thumbTintMode") { view.thumbTintMode = parsePorterDuffMode(value) }
+    create("track") { view.trackDrawable = parseDrawable(context, value) }
+    create("trackTint") { view.trackTintList = parseColorStateList(context, value) }
+    create("trackTintMode") { view.trackTintMode = parsePorterDuffMode(value) }
+    create("typeface") { view.setSwitchTypeface(parseTypeface(value)) }
   }
 }

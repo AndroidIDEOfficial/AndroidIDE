@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import android.widget.ImageView.ScaleType.CENTER
@@ -30,11 +28,9 @@ import android.widget.ImageView.ScaleType.FIT_START
 import android.widget.ImageView.ScaleType.FIT_XY
 import android.widget.ImageView.ScaleType.MATRIX
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.R
-import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
  * Attribute adpater [ImageView]s.
@@ -42,38 +38,20 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(ImageView::class)
-open class ImageViewAttrAdapter : ViewAttrAdapter() {
+open class ImageViewAttrAdapter<T : ImageView> : ViewAttrAdapter<T>() {
 
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<ImageView>(view, attribute) {
-        _: LayoutFile,
-        context: Context,
-        _: LayoutParams,
-        _: INamespace,
-        name: String,
-        value: String ->
-      var applied = true
-
-      when (name) {
-        "adjustViewBounds" -> adjustViewBounds = parseBoolean(value)
-        "baseline" -> baseline = parseDimension(context, value, 0)
-        "baselineAlignBottom" -> baselineAlignBottom = parseBoolean(value)
-        "cropToPadding" -> cropToPadding = parseBoolean(value)
-        "maxHeight" -> maxHeight = parseDimension(context, value, 0)
-        "maxWidth" -> maxWidth = parseDimension(context, value, 0)
-        "scaleType" -> scaleType = parseScaleType(value)
-        "src" -> setImageDrawable(parseDrawable(context, value))
-        "tint" -> imageTintList = parseColorStateList(context, value)
-        "tintMode" -> imageTintMode = parsePorterDuffMode(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("adjustViewBounds") { view.adjustViewBounds = parseBoolean(value) }
+    create("baseline") { view.baseline = parseDimension(context, value, 0) }
+    create("baselineAlignBottom") { view.baselineAlignBottom = parseBoolean(value) }
+    create("cropToPadding") { view.cropToPadding = parseBoolean(value) }
+    create("maxHeight") { view.maxHeight = parseDimension(context, value, 0) }
+    create("maxWidth") { view.maxWidth = parseDimension(context, value, 0) }
+    create("scaleType") { view.scaleType = parseScaleType(value) }
+    create("src") { view.setImageDrawable(parseDrawable(context, value)) }
+    create("tint") { view.imageTintList = parseColorStateList(context, value) }
+    create("tintMode") { view.imageTintMode = parsePorterDuffMode(value) }
   }
 
   override fun applyBasic(view: IView) {

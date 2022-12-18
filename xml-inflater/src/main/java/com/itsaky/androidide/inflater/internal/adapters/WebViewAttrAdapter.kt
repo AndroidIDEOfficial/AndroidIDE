@@ -26,4 +26,4 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(WebView::class)
-class WebViewAttrAdapter : AbsoluteLayoutAttrAdapter()
+open class WebViewAttrAdapter<T : WebView> : AbsoluteLayoutAttrAdapter<T>()

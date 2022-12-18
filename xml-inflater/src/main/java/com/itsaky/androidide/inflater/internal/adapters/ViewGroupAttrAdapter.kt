@@ -21,6 +21,7 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
@@ -35,34 +36,17 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  *
  * @author Akash Yadav
  */
-abstract class ViewGroupAttrAdapter : ViewAttrAdapter(), IViewGroupAdapter {
-
-  override fun apply(view: IView, attribute: IAttribute): Boolean {
-    return doApply<ViewGroup>(view, attribute) {
-      _: LayoutFile,
-      _: Context,
-      _: LayoutParams,
-      _: INamespace,
-      name: String,
-      value: String ->
-      var applied = true
-      when (name) {
-        "animateLayoutChanges" -> layoutTransition = LayoutTransition()
-        "clipChildren" -> clipChildren = parseBoolean(value)
-        "clipToPadding" -> clipToPadding = parseBoolean(value)
-        "descendantFocusability" -> descendantFocusability = parseDescendantsFocusability(value)
-        "layoutMode" -> layoutMode = parseLayoutMode(value)
-        else -> applied = false
-      }
-
-      if (!applied) {
-        applied = super.apply(view, attribute)
-      }
-
-      return@doApply applied
-    }
+abstract class ViewGroupAttrAdapter<T : ViewGroup> : ViewAttrAdapter<T>(), IViewGroupAdapter {
+  
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("animateLayoutChanges") { view.layoutTransition = LayoutTransition() }
+    create("clipChildren") { view.clipChildren = parseBoolean(value) }
+    create("clipToPadding") { view.clipToPadding = parseBoolean(value) }
+    create("descendantFocusability") { view.descendantFocusability = parseDescendantsFocusability(value) }
+    create("layoutMode") { view.layoutMode = parseLayoutMode(value) }
   }
-
+  
   override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
     return TOP_LEFT
   }
