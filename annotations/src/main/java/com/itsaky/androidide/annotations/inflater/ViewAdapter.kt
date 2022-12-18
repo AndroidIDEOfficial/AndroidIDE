@@ -23,8 +23,11 @@ import kotlin.reflect.KClass
 /**
  * Annotation used to indicate that a class is an attribute adapater for the given view class.
  *
+ * @property forView The view that this adpater handles.
+ * @property moduleNamespace The package name of the artifact/module in which the [view][forView] is
+ * declared. Set to `android` by default.
  * @author Akash Yadav
  */
 @Target(CLASS)
 @Retention(AnnotationRetention.SOURCE)
-annotation class ViewAdapter(val forView: KClass<out View>)
+annotation class ViewAdapter(val forView: KClass<out View>, val moduleNamespace: String = "android")

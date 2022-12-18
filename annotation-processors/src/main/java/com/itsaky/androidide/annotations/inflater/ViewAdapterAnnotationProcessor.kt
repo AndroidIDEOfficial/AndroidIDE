@@ -72,6 +72,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     const val INDEX_MAP_FIELD = "adapterMap"
 
     const val METHOD_SET_SUPERCLASS_HIERARCHY = "setSuperclassHierarchy"
+    const val METHOD_SET_MODULE = "setModuleNamespace"
   }
 
   override fun getSupportedAnnotationTypes(): MutableSet<String> {
@@ -160,6 +161,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     block.add("\n")
     block.addStatement("final var adapter = new \$T()", TypeName.get(element.asType()))
     block.addStatement("adapter.\$L(superclasses)", METHOD_SET_SUPERCLASS_HIERARCHY)
+    block.addStatement("adapter.\$L(\$S)", METHOD_SET_MODULE, annotation.moduleNamespace)
     block.addStatement("\$L.put(\$S, adapter)", INDEX_MAP_FIELD, viewName)
 
     indexAddStatements.add("{\n")

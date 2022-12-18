@@ -23,18 +23,32 @@ package com.itsaky.androidide.inflater
  * @author Akash Yadav
  */
 abstract class IViewAdapter : AbstractParser() {
-  
-  /**
-   * Superclasses of the view that this adpater handles.
-   */
+
+  /** Superclasses of the view that this adpater handles. */
   var superclassHierarchy: List<String> = emptyList()
     set(value) {
       if (field.isNotEmpty()) {
-        throw UnsupportedOperationException();
+        throw UnsupportedOperationException()
       }
       field = value
     }
-  
+
+  /**
+   * The package name or namespace of the module/artifact in which the view that this adapter handles is defined.
+   * The value is set to "android" by default unless explicitly specified in the [ViewAdapter]
+   * [com.itsaky.androidide.annotations.inflater.ViewAdapter] annotation.
+   *
+   * This is used by the UI designer to quickly look for attributes of an inflated view from the
+   * resource tables.
+   */
+  var moduleNamespace: String = ""
+    set(value) {
+      if (field.isNotEmpty()) {
+        throw UnsupportedOperationException()
+      }
+      field = value
+    }
+
   /**
    * Apply the given attribute to the given view.
    *
