@@ -17,32 +17,33 @@
 
 package com.itsaky.androidide.uidesigner.models
 
+import android.os.Parcelable
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
+import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
+import kotlinx.parcelize.Parcelize
 
 /**
  * UI Designer specific implementation of [IAttribute].
  *
  * @author Akash Yadav
  */
-internal open class UiAttribute
+@Parcelize
+open class UiAttribute
 @JvmOverloads
 constructor(
-  override val namespace: INamespace = INamespace.ANDROID,
+  override val namespace: NamespaceImpl = INamespace.ANDROID as NamespaceImpl,
   override val name: String,
-  override var value: String
-) : AttributeImpl(namespace, name, value) {
+  override var value: String,
+  internal var isRequired: Boolean = false
+) : AttributeImpl(namespace, name, value), Parcelable {
 
-  constructor(src: IAttribute) : this(namespace = src.namespace, name = src.name, value = src.value)
-
-  /**
-   * Whether this attribute is required or not. Required attributes cannot be removed from a view
-   * once applied.
-   */
-  internal var isRequired = false
+  constructor(
+    src: IAttribute
+  ) : this(namespace = src.namespace as NamespaceImpl, name = src.name, value = src.value)
 
   companion object {
     @JvmStatic

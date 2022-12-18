@@ -25,32 +25,32 @@ import android.view.ViewGroup
 import androidx.activity.ComponentDialog
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
-import androidx.transition.TransitionManager.beginDelayedTransition
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.transition.MaterialSharedAxis
+import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoSheetBinding
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VIEW_INFO
 
 /** @author Akash Yadav */
 class ViewInfoSheet : BottomSheetDialogFragment() {
   private var binding: LayoutViewInfoSheetBinding? = null
   private val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
-  val isShowing: Boolean
-    get() = dialog?.isShowing ?: false
+  companion object {
+    const val TAG = "ide.uidesigner.viewinfo"
+  }
 
   private val viewInfoBackPressedCallback =
     object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {
-        if (viewModel.viewInfoScreen == SCREEN_VALUE_EDITOR) {
-          viewModel.viewInfoScreen = SCREEN_VIEW_INFO
-          isEnabled = false
-        }
+        val containerView = this@ViewInfoSheet.binding?.navHost ?: return
+        val navController = containerView.findNavController()
+        navController.navigateUp()
       }
     }
-  
+
   override fun onDismiss(dialog: DialogInterface) {
     viewModel.undoManager.enable()
     viewModel.notifyAttrUpdated()
@@ -62,27 +62,34 @@ class ViewInfoSheet : BottomSheetDialogFragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
-    this.binding = LayoutViewInfoSheetBinding.inflate(inflater, container, false)
-    return this.binding!!.root
+    return LayoutViewInfoSheetBinding.inflate(inflater, container, false)
+      .also { this.binding = it }
+      .root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    viewModel._viewInfoScreen.observe(viewLifecycleOwner) {
-      binding?.apply {
-        val prev = flipper.displayedChild
-        beginDelayedTransition(root, MaterialSharedAxis(MaterialSharedAxis.X, prev < it))
-        flipper.displayedChild = it
-      }
-      this.viewInfoBackPressedCallback.isEnabled = it == SCREEN_VALUE_EDITOR
-    }
+    findNavControllerFromFragment()?.addOnDestinationChangedListener { _, destination, _ ->
+      viewInfoBackPressedCallback.isEnabled = destination.id != R.id.viewInfoFragment
 
-    viewModel._view.observe(viewLifecycleOwner) { viewModel.viewInfoScreen = SCREEN_VIEW_INFO }
+      if (destination.id != R.id.attrValueEditorFragment) {
+        viewModel.notifyAttrUpdated()
+        viewModel.selectedAttr = null
+        viewModel.addAttrMode = false
+      } else {
+        viewModel.undoManager.disable()
+      }
+    }
 
     (requireDialog() as ComponentDialog)
       .onBackPressedDispatcher
       .addCallback(viewLifecycleOwner, viewInfoBackPressedCallback)
+  }
+
+  private fun findNavControllerFromFragment(): NavController {
+    val framgent = childFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+    return framgent.navController
   }
 
   override fun onDestroyView() {

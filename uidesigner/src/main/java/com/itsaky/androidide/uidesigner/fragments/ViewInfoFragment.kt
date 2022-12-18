@@ -23,24 +23,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.android.aaptcompiler.AaptResourceType.STYLEABLE
-import com.android.aaptcompiler.AttributeResource
-import com.android.aaptcompiler.ConfigDescription
-import com.android.aaptcompiler.Styleable
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
+import com.google.android.material.transition.MaterialSharedAxis
+import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.inflater.utils.newAttribute
+import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VALUE_EDITOR
-import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel.Companion.SCREEN_VIEW_INFO
-import com.itsaky.androidide.utils.ILogger
-import java.util.TreeSet
 
 /**
  * A [BottomSheetDialogFragment] which shows information about a clicked view.
@@ -63,11 +57,6 @@ class ViewInfoFragment : Fragment() {
     }
 
   private var header: LayoutViewInfoHeaderBinding? = null
-  private val log = ILogger.newInstance("ViewInfoFragment")
-
-  companion object {
-    const val TAG = "ide.uidesigner.viewinfo"
-  }
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -81,12 +70,6 @@ class ViewInfoFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel._view.observe(viewLifecycleOwner) { showViewInfo() }
-    viewModel._viewInfoScreen.observe(viewLifecycleOwner) {
-      viewModel.undoManager.enabled = it != SCREEN_VALUE_EDITOR
-      if (it == SCREEN_VIEW_INFO) {
-        viewModel.notifyAttrUpdated()
-      }
-    }
   }
 
   override fun onDestroyView() {
@@ -98,7 +81,6 @@ class ViewInfoFragment : Fragment() {
     val binding = this.binding ?: return
     val header = this.header ?: return
     val view = this.viewModel.view as? ViewImpl ?: return
-    val adapter = ViewAdapterIndex.getAdapter(view.name) ?: return
 
     header.name.text = view.simpleName
     header.desc.text = view.name
@@ -113,13 +95,22 @@ class ViewInfoFragment : Fragment() {
       ) {
         // Store a copy of the attribute so that we can check if the value of the attribute has
         // changed in WorkspaceViewModel.notifyAttrUpdated()
-        viewModel.selectedAttr = (it as UiAttribute).copyAttr()
-        viewModel.viewInfoScreen = SCREEN_VALUE_EDITOR
+        viewModel.selectedAttr =
+          newAttribute(
+            view = view,
+            namespace = it.namespace as NamespaceImpl,
+            name = it.name,
+            value = it.value
+          )
+            as UiAttribute
+        findNavController().navigate(R.id.attrValueEditorFragment)
       }
 
     binding.btnDelete.setOnClickListener {
       view.removeFromParent()
       (parentFragment as? ViewInfoSheet)?.dismiss()
     }
+
+    binding.btnAdd.setOnClickListener { findNavController().navigate(R.id.addAttrFragment) }
   }
 }

@@ -22,8 +22,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
@@ -84,18 +82,6 @@ internal class ViewAttrListAdapter(
             binding.attrValue.text = attribute.value
           }
         }
-      val viewInfoScreenObserver =
-        object : Observer<Int> {
-          override fun onChanged(t: Int?) {
-            if (t == WorkspaceViewModel.SCREEN_VIEW_INFO) {
-              viewModel._viewInfoScreen.removeObserver(this)
-            }
-          }
-        }
-      viewModel._viewInfoScreen.observe(
-        binding.root.context as LifecycleOwner,
-        viewInfoScreenObserver
-      )
       viewModel.view?.registerAttributeChangeListener(attrUpdateListener)
     }
   }

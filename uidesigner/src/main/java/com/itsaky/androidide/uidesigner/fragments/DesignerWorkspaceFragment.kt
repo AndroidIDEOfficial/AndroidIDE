@@ -34,7 +34,6 @@ import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBin
 import com.itsaky.androidide.uidesigner.drag.WidgetDragListener
 import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
-import com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment.Companion.TAG
 import com.itsaky.androidide.uidesigner.models.CommonUiView
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
@@ -56,11 +55,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private val log = ILogger.newInstance("DesignerWorkspaceFragment")
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
-  
+
   private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
   private val viewInfo by lazy { ViewInfoSheet() }
   private val inflater by lazy { UiLayoutInflater() }
-  
+
   internal var isInflating = false
   internal val workspaceView by lazy {
     UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
@@ -124,11 +123,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
         hasError = true
         emptyList()
       }
-    
+
     if (inflated.isEmpty() && !hasError) {
       viewModel.errText = getString(R.string.msg_empty_ui_layout)
     }
-    
+
     binding!!
       .workspace
       .setOnDragListener(WidgetDragListener(workspaceView, this.placeholder, touchSlop))
@@ -152,7 +151,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
         viewModel.view = it
-        viewInfo.show(childFragmentManager, TAG)
+        viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
         true
       }
     )

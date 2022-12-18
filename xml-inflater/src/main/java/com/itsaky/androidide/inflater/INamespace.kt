@@ -20,6 +20,7 @@ package com.itsaky.androidide.inflater
 import com.android.SdkConstants.ANDROID_NS_NAME
 import com.android.SdkConstants.ANDROID_URI
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
+import kotlinx.parcelize.RawValue
 
 /**
  * An XML namespace declaration.

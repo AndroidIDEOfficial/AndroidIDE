@@ -20,16 +20,13 @@ package com.itsaky.androidide.uidesigner.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextWatcher
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.blankj.utilcode.util.ReflectUtils
+import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.uidesigner.databinding.LayoutAttrValueEditorBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -59,6 +56,11 @@ class AttrValueEditorFragment : Fragment() {
 
   private var textWatcher: TextWatcher? = null
 
+  companion object {
+    const val KEY_EDIT_RESULT = "ide.uidesigner.viewinfo.attreditor.result"
+    const val KEY_EDIT_RESULT_VALUE = "ide.uidesigner.viewinfo.attreditor.result.value"
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -71,6 +73,7 @@ class AttrValueEditorFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel._selectedAttr.observe(viewLifecycleOwner) { showAttrInfo() }
+    showAttrInfo()
   }
 
   @SuppressLint("SetTextI18n")
@@ -91,6 +94,11 @@ class AttrValueEditorFragment : Fragment() {
           )
           textView.dropDownVerticalOffset = -binding.root.height
           textView.showDropDown()
+
+          parentFragmentManager.setFragmentResult(
+            KEY_EDIT_RESULT,
+            Bundle().apply { putString(KEY_EDIT_RESULT_VALUE, binding.attrValue.text.toString()) }
+          )
         }
 
       textView.setText(attr.value)

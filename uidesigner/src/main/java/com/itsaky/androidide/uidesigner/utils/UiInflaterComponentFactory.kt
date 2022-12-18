@@ -24,6 +24,7 @@ import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IComponentFactory
 import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
@@ -48,7 +49,7 @@ open class UiInflaterComponentFactory : IComponentFactory {
     name: String,
     value: String
   ): IAttribute {
-    return UiAttribute(namespace = namespace, name = name, value = value).apply {
+    return UiAttribute(namespace = namespace as NamespaceImpl, name = name, value = value).apply {
       isRequired = UiAttribute.isRequired(view, this)
     }
   }

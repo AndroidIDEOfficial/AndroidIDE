@@ -17,33 +17,17 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <ViewFlipper
-    android:id="@+id/flipper"
+  <androidx.fragment.app.FragmentContainerView
+    android:id="@+id/nav_host"
+    android:name="androidx.navigation.fragment.NavHostFragment"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
-
-    <androidx.fragment.app.FragmentContainerView
-      android:id="@+id/view_info"
-      android:name="com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      tools:layout="@layout/layout_view_info" />
-
-    <androidx.fragment.app.FragmentContainerView
-      android:id="@+id/attr_editor"
-      android:name="com.itsaky.androidide.uidesigner.fragments.AttrValueEditorFragment"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      tools:layout="@layout/layout_attr_value_editor" />
-
-  </ViewFlipper>
+    app:layout_constraintTop_toTopOf="parent"
+    app:navGraph="@navigation/nav_viewinfo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

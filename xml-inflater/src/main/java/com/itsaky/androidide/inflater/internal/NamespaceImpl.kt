@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal
 
+import android.os.Parcelable
 import com.itsaky.androidide.inflater.INamespace
+import kotlinx.parcelize.Parcelize
 
-data class NamespaceImpl(override val prefix: String, override val uri: String) : INamespace
+@Parcelize
+data class NamespaceImpl(override val prefix: String, override val uri: String) : INamespace, Parcelable

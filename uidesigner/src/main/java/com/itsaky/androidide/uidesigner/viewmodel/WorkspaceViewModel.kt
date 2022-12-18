@@ -22,26 +22,24 @@ import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
+import com.itsaky.androidide.uidesigner.undo.AttrAddedAction
 import com.itsaky.androidide.uidesigner.undo.AttrUpdatedAction
 import com.itsaky.androidide.uidesigner.undo.UndoManager
-import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
 internal class WorkspaceViewModel : ViewModel() {
   internal val _drawerOpened = MutableLiveData(false)
   internal val _errText = MutableLiveData("")
   internal val _workspaceScreen = MutableLiveData(SCREEN_WORKSPACE)
-  internal val _viewInfoScreen = MutableLiveData(SCREEN_VIEW_INFO)
   internal val _view = MutableLiveData<IView>(null)
   internal val _selectedAttr = MutableLiveData<IAttribute>(null)
+  internal val _addAttrMode = MutableLiveData(false)
   internal val _undoManager = MutableLiveData(UndoManager())
   private val _file = MutableLiveData<File>()
 
   companion object {
     const val SCREEN_WORKSPACE = 0
     const val SCREEN_ERROR = 1
-    const val SCREEN_VIEW_INFO = 0
-    const val SCREEN_VALUE_EDITOR = 1
   }
 
   val undoManager: UndoManager
@@ -78,22 +76,32 @@ internal class WorkspaceViewModel : ViewModel() {
       this._view.value = value
     }
 
-  var viewInfoScreen: Int
-    get() = _viewInfoScreen.value ?: SCREEN_VIEW_INFO
-    set(value) {
-      _viewInfoScreen.value = value
-    }
-
   var selectedAttr: IAttribute?
     get() = this._selectedAttr.value
     set(value) {
       this._selectedAttr.value = value
     }
 
+  var addAttrMode: Boolean
+    get() = this._addAttrMode.value ?: false
+    set(value) {
+      this._addAttrMode.value = value
+    }
+
   fun notifyAttrUpdated() {
     val attr = this.selectedAttr ?: return
     val view = this.view ?: return
     val undoManager = this.undoManager
+
+    if (addAttrMode) {
+      if (attr.value.isBlank()) {
+        view.removeAttribute(attr)
+        return
+      }
+      
+      undoManager.push(AttrAddedAction(view, attr as UiAttribute))
+      return
+    }
 
     val existing = view.findAttribute(attr.namespace.uri, attr.name)
 
@@ -102,7 +110,9 @@ internal class WorkspaceViewModel : ViewModel() {
       return
     }
 
-    undoManager.push(AttrUpdatedAction(view, existing.copyAttr(view = view) as UiAttribute, attr.value))
+    undoManager.push(
+      AttrUpdatedAction(view, existing.copyAttr(view = view) as UiAttribute, attr.value)
+    )
     this.selectedAttr = null
   }
 }

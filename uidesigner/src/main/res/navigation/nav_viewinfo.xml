@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/nav_viewinfo"
+  app:startDestination="@id/viewInfoFragment">
+
+  <fragment
+    android:id="@+id/viewInfoFragment"
+    android:name="com.itsaky.androidide.uidesigner.fragments.ViewInfoFragment"
+    android:label="ViewInfoFragment"
+    tools:layout="@layout/layout_view_info">
+    <action
+      android:id="@+id/action_viewInfoFragment_to_addAttrFragment2"
+      app:destination="@id/addAttrFragment" />
+    <action
+      android:id="@+id/action_viewInfoFragment_to_attrValueEditorFragment2"
+      app:destination="@id/attrValueEditorFragment">
+    </action>
+  </fragment>
+  <fragment
+    android:id="@+id/addAttrFragment"
+    android:name="com.itsaky.androidide.uidesigner.fragments.AddAttrFragment"
+    android:label="AddAttrFragment"
+    tools:layout="@layout/layout_add_attr">
+    <action
+      android:id="@+id/action_addAttrFragment_to_attrValueEditorFragment2"
+      app:destination="@id/attrValueEditorFragment" />
+  </fragment>
+  <fragment
+    android:id="@+id/attrValueEditorFragment"
+    android:name="com.itsaky.androidide.uidesigner.fragments.AttrValueEditorFragment"
+    android:label="AttrValueEditorFragment"
+    tools:layout="@layout/layout_attr_value_editor">
+    <argument
+      android:name="attribute"
+      app:argType="com.itsaky.androidide.uidesigner.models.UiAttribute" />
+  </fragment>
+</navigation>

@@ -3,12 +3,14 @@ ext {
     kotlin_version = '1.7.22'
     google_java_format_version = '1.15.0'
     oss_licenses_version = '0.10.6'
+    nav_safeargs_version = '2.5.3'
     
     classpaths = [
             agp                 : "com.android.tools.build:gradle:$agp_version",
             kotlin_gradle_plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
             google_java_format  : "com.google.googlejavaformat:google-java-format:$google_java_format_version",
-            oss_licenses        : "com.google.android.gms:oss-licenses-plugin:$oss_licenses_version"
+            oss_licenses        : "com.google.android.gms:oss-licenses-plugin:$oss_licenses_version",
+            nav_safeargs : "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_safeargs_version"
     ]
     
     androidide = [
@@ -32,22 +34,27 @@ ext {
     ]
     
     androidx = [
-            annotation       : 'androidx.annotation:annotation:1.5.0',
-            appcompat        : 'androidx.appcompat:appcompat:1.5.1',
-            cardview         : 'androidx.cardview:cardview:1.0.0',
-            constraintlayout : 'androidx.constraintlayout:constraintlayout:2.1.4',
-            coordinatorlayout: 'androidx.coordinatorlayout:coordinatorlayout:1.2.0',
-            drawer           : 'androidx.drawerlayout:drawerlayout:1.1.1',
-            grid             : 'androidx.gridlayout:gridlayout:1.0.0',
-            preference       : 'androidx.preference:preference:1.2.0',
-            recyclerview     : 'androidx.recyclerview:recyclerview:1.2.1',
-            vectors          : 'androidx.vectordrawable:vectordrawable:1.1.0',
-            animated_vectors : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
-            multidex         : 'androidx.multidex:multidex:2.0.1',
-            ktx              : 'androidx.core:core-ktx:1.9.0',
-            fragment_ktx     : 'androidx.fragment:fragment-ktx:1.5.5',
-            lib_desugaring   : 'com.android.tools:desugar_jdk_libs:1.1.6',
-            splashscreen     : 'androidx.core:core-splashscreen:1.0.0'
+            annotation          : 'androidx.annotation:annotation:1.5.0',
+            appcompat           : 'androidx.appcompat:appcompat:1.5.1',
+            cardview            : 'androidx.cardview:cardview:1.0.0',
+            constraintlayout    : 'androidx.constraintlayout:constraintlayout:2.1.4',
+            coordinatorlayout   : 'androidx.coordinatorlayout:coordinatorlayout:1.2.0',
+            drawer              : 'androidx.drawerlayout:drawerlayout:1.1.1',
+            grid                : 'androidx.gridlayout:gridlayout:1.0.0',
+            preference          : 'androidx.preference:preference:1.2.0',
+            recyclerview        : 'androidx.recyclerview:recyclerview:1.2.1',
+            vectors             : 'androidx.vectordrawable:vectordrawable:1.1.0',
+            animated_vectors    : 'androidx.vectordrawable:vectordrawable-animated:1.1.0',
+            multidex            : 'androidx.multidex:multidex:2.0.1',
+            ktx                 : 'androidx.core:core-ktx:1.9.0',
+            fragment_ktx        : 'androidx.fragment:fragment-ktx:1.5.5',
+            lib_desugaring      : 'com.android.tools:desugar_jdk_libs:1.1.6',
+            splashscreen        : 'androidx.core:core-splashscreen:1.0.0',
+            
+            nav_frag            : 'androidx.navigation:navigation-fragment-ktx:2.5.3',
+            nav_ui              : 'androidx.navigation:navigation-ui-ktx:2.5.3',
+            nav_dynamic_features: 'androidx.navigation:navigation-dynamic-features-fragment:2.5.3'
+    
     ]
     
     google = [
