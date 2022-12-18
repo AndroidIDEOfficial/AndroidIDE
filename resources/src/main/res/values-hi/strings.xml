@@ -480,4 +480,5 @@
   <string name="git_clone_in_progress">रिपॉजिटरी क्लोन हो रही है</string>
   <string name="git_clone_success">Git क्लोन सफल हुआ</string>
   <string name="git_clone_failed">Git रिपॉजिटरी क्लोन करने में विफल</string>
+  <string name="msg_select_attr">Select an attribute from the below list</string>
 </resources>
