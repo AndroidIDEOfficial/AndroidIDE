@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
+  <string name="license_jdk">AndroidIDE JDK-এর একটি পরিবর্তিত বিল্ড ব্যবহার করে যা GNU জেনারেল পাবলিক লাইসেন্স v3.0-এর অধীনে লাইসেন্সপ্রাপ্ত৷ সোর্স কোড এবং JDK এর লাইসেন্স এখানে পাওয়া যাবে : </string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি </string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
@@ -274,7 +274,7 @@
   <string name="msg_file_tree">ফাইল ট্রি</string>
   <string name="hint_color_resource">কালার রিসোর্স</string>
   <string name="title_color_picker">কালার পিকার</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">অ্যাট্রিবিউট-র মান</string>
   <string name="hint_string_resource">স্ট্রিং রিসোর্স</string>
   <string name="hint_resource_reference">যেকোনো রিসোর্স এর উল্লেখ</string>
   <string name="msg_code_actions">ক্রিয়া</string>
@@ -480,5 +480,5 @@
   <string name="git_clone_in_progress">রেপোসিটরি ক্লোন করা হচ্ছে</string>
   <string name="git_clone_success">গিট ক্লোন সফল হয়েছে</string>
   <string name="git_clone_failed">গিট রেপোসিটরি ক্লোন করতে ব্যর্থ</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
+  <string name="msg_select_attr">নীচের লিস্ট থেকে অ্যাট্রিবিউট নির্বাচন করুন</string>
 </resources>
