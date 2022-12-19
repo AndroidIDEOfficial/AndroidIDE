@@ -481,4 +481,5 @@
   <string name="git_clone_success">Git clone successful</string>
   <string name="git_clone_failed">Failed to clone git repository</string>
   <string name="msg_select_attr">Select an attribute from the below list</string>
+  <string name="action_show_hierarchy">Show layout hierarchy</string>
 </resources>
