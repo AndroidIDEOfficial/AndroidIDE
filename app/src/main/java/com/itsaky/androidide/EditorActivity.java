@@ -27,6 +27,7 @@ import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.se
 import static com.itsaky.toaster.ToastUtilsKt.toast;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +54,9 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -144,6 +148,7 @@ import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.text.Content;
 import kotlin.Unit;
 
 public class EditorActivity extends IDEActivity
@@ -186,6 +191,8 @@ public class EditorActivity extends IDEActivity
           LOG.info("Disconnected from Gradle build service...");
         }
       };
+
+  public ActivityResultLauncher<Intent> uiDesignerResultLauncher;
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   @SuppressWarnings("unused")
@@ -726,12 +733,6 @@ public class EditorActivity extends IDEActivity
     }
   }
 
-  public void previewLayout(File file) {
-    final var intent = new Intent(this, UIDesignerActivity.class);
-    intent.putExtra(UIDesignerActivity.EXTRA_FILE, file.getAbsolutePath());
-    startActivity(intent);
-  }
-
   public boolean saveAll(boolean notify) {
     return saveAll(notify, false);
   }
@@ -930,6 +931,10 @@ public class EditorActivity extends IDEActivity
     setupDiagnosticInfo();
 
     EditorActivityActions.register(this);
+
+    uiDesignerResultLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), this::handleUiDesignerResult);
   }
 
   @Override
@@ -1065,6 +1070,31 @@ public class EditorActivity extends IDEActivity
     } catch (Throwable th) {
       // ignored
     }
+  }
+
+  private void handleUiDesignerResult(ActivityResult result) {
+    if (result.getResultCode() != Activity.RESULT_OK
+        || result.getData() == null) {
+      LOG.warn("UI Designer returned invalid result", result.getResultCode(), result.getData());
+      
+      return;
+    }
+
+    final var generated = result.getData().getStringExtra(UIDesignerActivity.RESULT_GENERATED_XML);
+    if (TextUtils.isEmpty(generated)) {
+      LOG.warn("UI Designer returned blank generated XML code");
+      return;
+    }
+
+    final var view = getCurrentEditor();
+    if (view == null || view.getEditor() == null) {
+      LOG.warn("No file opened to append UI designer result");
+      return;
+    }
+
+    final Content text = view.getEditor().getText();
+    final int endLine = text.getLineCount() - 1;
+    text.replace(0, 0, endLine, text.getColumnCount(endLine), generated);
   }
 
   private void setupDrawerToggle() {

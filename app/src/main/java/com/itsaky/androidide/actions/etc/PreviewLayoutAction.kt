@@ -18,14 +18,20 @@
 package com.itsaky.androidide.actions.etc
 
 import android.content.Context
+import android.content.Intent
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.extractPathData
 import com.blankj.utilcode.util.KeyboardUtils
+import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.ui.editor.IDEEditor
+import com.itsaky.androidide.uidesigner.UIDesignerActivity
+import java.io.File
 
 /** @author Akash Yadav */
 class PreviewLayoutAction() : EditorRelatedAction() {
@@ -40,11 +46,18 @@ class PreviewLayoutAction() : EditorRelatedAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
+    val viewModel = getActivity(data)!!.viewModel
+    if (viewModel.isInitializing.value == true) {
+      visible = true
+      enabled = false
+      return
+    }
+
     if (!visible) {
       return
     }
 
-    val editor = getEditor(data)!!
+    val editor = data.requireEditor()
     val file = editor.file!!
 
     val isXml = file.name.endsWith(".xml")
@@ -64,10 +77,21 @@ class PreviewLayoutAction() : EditorRelatedAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override fun execAction(data: ActionData): Boolean {
     val activity = getActivity(data)!!
     activity.saveAll()
-    activity.previewLayout(getEditor(data)!!.file!!)
+    activity.previewLayout(data.requireEditor().file!!)
     return true
+  }
+
+  private fun EditorActivity.previewLayout(file: File) {
+    val intent = Intent(this, UIDesignerActivity::class.java)
+    intent.putExtra(UIDesignerActivity.EXTRA_FILE, file.absolutePath)
+    uiDesignerResultLauncher.launch(intent)
+  }
+
+  private fun ActionData.requireEditor(): IDEEditor {
+    return getEditor(this)
+      ?: throw IllegalArgumentException("An editor instance is required but none was provided")
   }
 }

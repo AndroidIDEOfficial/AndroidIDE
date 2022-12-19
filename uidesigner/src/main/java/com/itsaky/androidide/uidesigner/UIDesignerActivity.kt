@@ -19,9 +19,11 @@ package com.itsaky.androidide.uidesigner
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.view.menu.MenuBuilder
@@ -37,7 +39,9 @@ import com.itsaky.androidide.uidesigner.actions.clearUiDesignerActions
 import com.itsaky.androidide.uidesigner.actions.registerUiDesignerActions
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
+import com.itsaky.androidide.uidesigner.utils.ViewToXml
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.utils.ILogger
 import java.io.File
 
 /**
@@ -48,11 +52,41 @@ import java.io.File
 class UIDesignerActivity : BaseIDEActivity() {
 
   private var binding: ActivityUiDesignerBinding? = null
-
+  private val log = ILogger.newInstance("UIDesignerActivity")
   private val viewModel by viewModels<WorkspaceViewModel>()
+
+  private val backPressHandler =
+    object : OnBackPressedCallback(true) {
+      override fun handleOnBackPressed() {
+        val frag =
+          workspace()
+            ?: run {
+              onFailedToReturnXml("Workspace fragment not found")
+              return
+            }
+
+        if (frag.workspaceView.childCount <= 0) {
+          onFailedToReturnXml("No views have been added")
+        }
+
+        ViewToXml.generateXml(frag.requireContext(), frag.workspaceView) { onXmlGenerated(it) }
+      }
+    }
+
+  private fun onXmlGenerated(xml: String) {
+    setResult(RESULT_OK, Intent().apply { putExtra(RESULT_GENERATED_XML, xml) })
+    finish()
+  }
+
+  private fun onFailedToReturnXml(reason: String) {
+    log.error("Failed to generate XML code because '$reason'")
+    setResult(RESULT_CANCELED)
+    finish()
+  }
 
   companion object {
     const val EXTRA_FILE = "layout_file"
+    const val RESULT_GENERATED_XML = "ide.uidesigner.generatedXml"
   }
 
   override fun bindLayout(): View {
@@ -98,6 +132,8 @@ class UIDesignerActivity : BaseIDEActivity() {
         binding!!.root.closeDrawer(GravityCompat.START)
       }
     }
+
+    onBackPressedDispatcher.addCallback(backPressHandler)
 
     registerUiDesignerActions(this)
   }
