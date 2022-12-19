@@ -66,7 +66,7 @@
   <string name="preparing_first">Preparando. ¡La primera construcción puede tardar hasta 10–15 minutos!</string>
   <string name="msg_installing_gradlew">¡Gradle Wrapper no está disponible!\nInstalando uno predeterminado. Gradle v7.4 se descargará si es necesario</string>
   <string name="msg_getting_daemom_status">Obteniendo estado de Daemon, por favor espere…</string>
-  <string name="gradle_daemon_status">Estado del deamon Gradle</string>
+  <string name="gradle_daemon_status">Estado del Gradle</string>
   <string name="title_install_apks">Instalar APK</string>
   <string name="title_clear_output">Limpiar salida</string>
   <string name="run">Ejecutar</string>
@@ -254,7 +254,7 @@
   <string name="msg_compiler_module_installed">¡Módulo de compilador instalado con éxito!</string>
   <string name="action_expand_selection">Expandir selección</string>
   <string name="idepref_java_matchLower_title">Finalizaciones en minúsculas</string>
-  <string name="title_common">Común</string>
+  <string name="title_common">General</string>
   <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">Archivos sin guardar</string>
   <string name="msg_files_unsaved">Algunos archivos no se han guardado. ¿Desea guardarlos antes de cerrar? Los archivos no guardados son: \n%s</string>
@@ -271,7 +271,7 @@
   <string name="hint_dimension_val">Valor de dimensión</string>
   <string name="hint_dimension_res">Recurso de dimensión</string>
   <string name="hint_boolean_res">Recurso Booleano</string>
-  <string name="msg_file_tree">File tree</string>
+  <string name="msg_file_tree">Archivos</string>
   <string name="hint_color_resource">Recurso de color</string>
   <string name="title_color_picker">Selector de color</string>
   <string name="hint_attr_value">Valor del atributo</string>
@@ -326,8 +326,8 @@
   <string name="idepref_useIcu_summary">Utilice la librería ICU para recuperar los bordes de palabras para doble toque y selección de palabras con pulsación larga.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Deslice a la izquierda para @@files@@.</string>
-  <string name="msg_swipe_for_output">Desliza hacia arriba para @@build output@@.</string>
+  <string name="msg_swipe_for_files">Deslice a la izquierda para ver @@Archivos@@.</string>
+  <string name="msg_swipe_for_output">Desliza hacia arriba para ver el @@Registro@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar pestaña flexible</string>
   <string name="idepref_editor_useSoftTabs_summary">Elija si desea utilizar espacios en lugar del carácter de pestaña (\\t).</string>
   <string name="btn_sponsor">Patrocinador</string>
