@@ -157,7 +157,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
         adapterElement
       )
     ) {
-      processingEnv.messager.printMessage(ERROR, "Class must be a subtype of $ADAPTER_BASE_CLASS")
+      processingEnv.messager.printMessage(ERROR, "Class must be a subtype of $ADAPTER_BASE_CLASS $element $adapterElement")
       return
     }
 
@@ -185,7 +185,6 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     for (superclass in superclasses) {
       block.addStatement("superclasses.add(\$S)", superclass)
     }
-
     
     val adapterType = ClassName.get(element)
     val paramType = getViewTypeName(annotation)

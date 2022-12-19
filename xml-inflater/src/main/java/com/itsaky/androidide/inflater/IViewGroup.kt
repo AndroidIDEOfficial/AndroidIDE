@@ -22,7 +22,7 @@ package com.itsaky.androidide.inflater
  *
  * @author Akash Yadav
  */
-interface IViewGroup : IView {
+interface IViewGroup : IView, Iterable<IView> {
 
   /** The number of children in this view group. */
   val childCount: Int

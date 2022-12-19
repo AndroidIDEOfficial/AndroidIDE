@@ -27,15 +27,18 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.app.BaseIDEActivity
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.actions.clearUiDesignerActions
 import com.itsaky.androidide.uidesigner.actions.registerUiDesignerActions
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import java.io.File
 
 /**
  * The UI Designer activity allows the user to design XML layouts with a drag-n-drop interface.
@@ -45,8 +48,6 @@ import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 class UIDesignerActivity : BaseIDEActivity() {
 
   private var binding: ActivityUiDesignerBinding? = null
-  private val workspace: DesignerWorkspaceFragment?
-    get() = this.binding?.workspace?.getFragment()
 
   private val viewModel by viewModels<WorkspaceViewModel>()
 
@@ -62,7 +63,14 @@ class UIDesignerActivity : BaseIDEActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    workspace?.setupFromBundle(intent.extras)
+    intent?.extras?.let {
+      val path = it.getString(EXTRA_FILE) ?: return
+      val file = File(path)
+      if (!file.exists()) {
+        throw IllegalArgumentException("File does not exist: $file")
+      }
+      viewModel.file = file
+    }
 
     setSupportActionBar(this.binding!!.toolbar)
     supportActionBar?.title = viewModel.file.nameWithoutExtension
@@ -90,15 +98,15 @@ class UIDesignerActivity : BaseIDEActivity() {
         binding!!.root.closeDrawer(GravityCompat.START)
       }
     }
-  
+
     registerUiDesignerActions(this)
   }
-  
+
   override fun onResume() {
     super.onResume()
     registerUiDesignerActions(this)
   }
-  
+
   override fun onPause() {
     super.onPause()
     clearUiDesignerActions()
@@ -108,12 +116,12 @@ class UIDesignerActivity : BaseIDEActivity() {
     super.onDestroy()
     binding = null
   }
-  
+
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
     ensureToolbarMenu(menu)
     return true
   }
-  
+
   @SuppressLint("RestrictedApi")
   override fun onCreateOptionsMenu(menu: Menu): Boolean {
     if (menu is MenuBuilder) {
@@ -121,14 +129,24 @@ class UIDesignerActivity : BaseIDEActivity() {
     }
     return true
   }
-  
+
   private fun ensureToolbarMenu(menu: Menu) {
     menu.clear()
     
     val data = ActionData()
     data.put(Context::class.java, this)
-    data.put(Fragment::class.java, binding!!.workspace.getFragment())
-    
+    data.put(Fragment::class.java, workspace())
+
     ActionsRegistry.getInstance().fillMenu(data, UI_DESIGNER_TOOLBAR, menu)
+  }
+  
+  private fun workspace() : DesignerWorkspaceFragment? {
+    return binding?.workspace?.getFragment<NavHostFragment>()?.let {
+      it.childFragmentManager.fragments[0] as? DesignerWorkspaceFragment?
+    }
+  }
+
+  fun setupHierarchy(view: IView) {
+    binding?.hierarchy?.setupWithView(view)
   }
 }

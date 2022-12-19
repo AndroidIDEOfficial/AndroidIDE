@@ -177,14 +177,9 @@ class DesignerWorkspaceFragment : BaseFragment() {
     viewGroup.addOnHierarchyChangeListener(hierarchyHandler)
   }
 
-  fun setupFromBundle(bundle: Bundle?) {
-    bundle?.let {
-      val path = it.getString(UIDesignerActivity.EXTRA_FILE) ?: return
-      val file = File(path)
-      if (!file.exists()) {
-        throw IllegalArgumentException("File does not exist: $file")
-      }
-      viewModel.file = file
+  fun updateHierarchy() {
+    if (workspaceView.childCount > 0) {
+      (requireActivity() as UIDesignerActivity).setupHierarchy(workspaceView[0])
     }
   }
 }

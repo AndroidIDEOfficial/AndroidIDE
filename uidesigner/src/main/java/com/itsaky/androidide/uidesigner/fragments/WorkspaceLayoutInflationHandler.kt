@@ -23,6 +23,7 @@ import com.itsaky.androidide.inflater.events.InflationFinishEvent
 import com.itsaky.androidide.inflater.events.InflationStartEvent
 import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.uidesigner.UIDesignerActivity
 
 /**
  * Handles layout inflation events in [DesignerWorkspaceFragment].
@@ -50,6 +51,7 @@ class WorkspaceLayoutInflationHandler : IInflateEventsListener {
     if (event is InflationFinishEvent) {
       frag.isInflating = false
       frag.undoManager.enable()
+      frag.updateHierarchy()
     }
     if (event is OnInflateViewEvent) {
       frag.setupView(event.data)

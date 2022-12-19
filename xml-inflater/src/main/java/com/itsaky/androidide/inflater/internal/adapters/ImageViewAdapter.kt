@@ -27,7 +27,6 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import android.widget.ImageView.ScaleType.FIT_XY
 import android.widget.ImageView.ScaleType.MATRIX
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.R
@@ -37,7 +36,7 @@ import com.itsaky.androidide.inflater.R
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ImageView::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(ImageView::class)
 open class ImageViewAdapter<T : ImageView> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {

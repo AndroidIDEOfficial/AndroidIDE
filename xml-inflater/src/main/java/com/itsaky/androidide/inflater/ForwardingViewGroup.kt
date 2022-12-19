@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater
 
-import com.itsaky.androidide.inflater.IViewGroup
-
 /**
  * An [IViewGroup] implementation that forwards all calls to [src].
  *

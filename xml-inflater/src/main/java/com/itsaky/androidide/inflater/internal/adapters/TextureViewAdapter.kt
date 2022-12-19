@@ -18,12 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.view.TextureView
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [TextureView].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(TextureView::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(TextureView::class)
 open class TextureViewAdapter<T : TextureView> : ViewAdapter<T>()

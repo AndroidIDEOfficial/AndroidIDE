@@ -73,6 +73,7 @@ internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChang
       }
 
     frag.undoManager.push(action)
+    frag.updateHierarchy()
     frag.requireActivity().invalidateOptionsMenu()
   }
 

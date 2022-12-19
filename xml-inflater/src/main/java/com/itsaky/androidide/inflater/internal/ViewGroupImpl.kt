@@ -106,6 +106,10 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   override fun removeOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
     this.hierarchyChangeListeners.remove(listener)
   }
+  
+  override fun iterator(): Iterator<IView> {
+    return ViewIterator(immutable())
+  }
 
   protected open fun notifyBeforeViewAdded(child: IView, index: Int) {
     this.hierarchyChangeListeners.forEach { it.beforeViewAdded(this, child, index) }
@@ -125,5 +129,22 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
 
   override fun immutable(): IViewGroup {
     return ImmutableViewGroupImpl(this)
+  }
+  
+  private class ViewIterator(private val group: IViewGroup) : Iterator<IView> {
+    
+    private var index = 0
+    
+    override fun hasNext(): Boolean {
+      return index < group.childCount
+    }
+    
+    override fun next(): IView {
+      if (index < 0 || index >= group.childCount) {
+        throw NoSuchElementException()
+      }
+      
+      return group[index].also { ++index }
+    }
   }
 }

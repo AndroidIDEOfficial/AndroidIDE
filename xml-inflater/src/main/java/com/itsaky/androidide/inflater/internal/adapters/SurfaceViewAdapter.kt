@@ -18,11 +18,10 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.view.SurfaceView
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
  * Attribute adapter for [SurfaceView].
  * @author Akash Yadav
  */
-@ViewAdapter(SurfaceView::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(SurfaceView::class)
 open class SurfaceViewAdapter<T : SurfaceView> : ViewAdapter<T>()

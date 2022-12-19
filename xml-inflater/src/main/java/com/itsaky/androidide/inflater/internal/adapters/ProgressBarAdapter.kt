@@ -18,7 +18,6 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.ProgressBar
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
@@ -26,7 +25,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ProgressBar::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(ProgressBar::class)
 open class ProgressBarAdapter<T : ProgressBar> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {

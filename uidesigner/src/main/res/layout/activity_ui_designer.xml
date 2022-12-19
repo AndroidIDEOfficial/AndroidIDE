@@ -55,7 +55,7 @@
   </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
   <com.google.android.material.navigation.NavigationView
-    android:id="@+id/nav"
+    android:id="@+id/nav_widgets"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="start">
@@ -66,6 +66,20 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       tools:layout="@layout/fragment_ui_widgets" />
+
+  </com.google.android.material.navigation.NavigationView>
+
+  <com.google.android.material.navigation.NavigationView
+    android:id="@+id/nav_hierarchy"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="end">
+
+    <com.itsaky.androidide.uidesigner.views.LayoutHierarchyView
+      android:id="@+id/hierarchy"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:padding="16dp" />
 
   </com.google.android.material.navigation.NavigationView>
 
