@@ -38,7 +38,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Andi Hasan A (andihasan97)</b></sub></a>
       <br />
-      <sub><b>931 words</b></sub>
+      <sub><b>938 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/friostd"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg" />
@@ -54,6 +54,15 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
       <br />
       <sub><b>493 words</b></sub>
     </td>
+    <td align="center" valign="top">
+      <a href="https://crowdin.com/profile/deepkrg17"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png" />
+        <br />
+        <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
+      <br />
+      <sub><b>137 words</b></sub>
+    </td>
+  </tr>
+  <tr>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/TheDonMarv"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549947/medium/7e2d0178f0ff00eba107fac474caa6a2.png" />
         <br />
