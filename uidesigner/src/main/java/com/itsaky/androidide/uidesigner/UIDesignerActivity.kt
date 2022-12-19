@@ -132,15 +132,15 @@ class UIDesignerActivity : BaseIDEActivity() {
 
   private fun ensureToolbarMenu(menu: Menu) {
     menu.clear()
-    
+
     val data = ActionData()
     data.put(Context::class.java, this)
     data.put(Fragment::class.java, workspace())
 
     ActionsRegistry.getInstance().fillMenu(data, UI_DESIGNER_TOOLBAR, menu)
   }
-  
-  private fun workspace() : DesignerWorkspaceFragment? {
+
+  private fun workspace(): DesignerWorkspaceFragment? {
     return binding?.workspace?.getFragment<NavHostFragment>()?.let {
       it.childFragmentManager.fragments[0] as? DesignerWorkspaceFragment?
     }
@@ -148,5 +148,9 @@ class UIDesignerActivity : BaseIDEActivity() {
 
   fun setupHierarchy(view: IView) {
     binding?.hierarchy?.setupWithView(view)
+  }
+
+  fun openHierarchyView() {
+    binding?.root?.openDrawer(GravityCompat.END)
   }
 }

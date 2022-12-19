@@ -25,6 +25,7 @@ fun registerUiDesignerActions(context: Context) {
   ActionsRegistry.getInstance().apply {
     registerAction(UndoAction(context))
     registerAction(RedoAction(context))
+    registerAction(ShowHierarchyAction(context))
     registerAction(ShowXmlAction(context))
   }
 }
