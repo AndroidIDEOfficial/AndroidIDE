@@ -29,7 +29,7 @@ import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.uidesigner.databinding.ActivityShowXmlBinding
 import com.itsaky.androidide.utils.jetbrainsMono
-import io.github.rosemoe.sora.event.ScrollEvent
+import com.itsaky.toaster.toastInfo
 import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.widget.CodeEditor
 
@@ -66,23 +66,16 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.setEditorLanguage(XMLLanguage())
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
-      editor.subscribeEvent(ScrollEvent::class.java) { event, unsubscribe ->
-        this.unsubscribe = unsubscribe
-        val fab = this.binding?.copy ?: return@subscribeEvent
-        event.apply {
-          if (startY > endY && fab.isExtended) {
-            fab.shrink()
-          }
-          if (endY == 0 || startY < endY && !fab.isExtended) {
-            fab.extend()
-          }
-        }
-      }
 
       binding!!.editorContainer.let { container ->
         container.removeAllViews()
         container.addView(editor, ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT))
       }
+    }
+
+    this.binding?.copy?.setOnClickListener {
+      this.editor?.copyText()
+      toastInfo(R.string.copied)
     }
 
     return this.binding!!.root
