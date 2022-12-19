@@ -74,7 +74,7 @@ class ShowXmlActivity : BaseIDEActivity() {
     }
 
     this.binding?.copy?.setOnClickListener {
-      this.editor?.copyText()
+      this.editor?.copyText(false)
       toastInfo(R.string.copied)
     }
 
