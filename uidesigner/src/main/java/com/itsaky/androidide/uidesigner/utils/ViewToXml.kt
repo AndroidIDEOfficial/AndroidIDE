@@ -127,7 +127,7 @@ object ViewToXml {
 
       linefeed()
       linefeed()
-
+      indent(indent - 1)
       endElement(view.tag)
     } else {
       selfCloseElement()
