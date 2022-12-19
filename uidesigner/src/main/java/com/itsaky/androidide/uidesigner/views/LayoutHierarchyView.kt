@@ -21,7 +21,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
 import android.text.TextUtils.TruncateAt.MIDDLE
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -49,7 +48,7 @@ constructor(
   defStyleAttr: Int = 0,
   defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
-  
+
   private val paint = Paint()
   private val pointRadius = SizeUtils.dp2px(3f).toFloat()
   private val dp8 = SizeUtils.dp2px(8f)
@@ -73,9 +72,19 @@ constructor(
     addView(text)
 
     if (view is IViewGroup) {
-      text.childCount = view.childCount
+      text.childCount = computeChildCount(view)
       view.forEach { addViews(it, depth + 1) }
     }
+  }
+
+  private fun computeChildCount(view: IViewGroup): Int {
+    var count = view.childCount
+    view.forEachIndexed { index, child ->
+      if (index != view.childCount - 1 && child is IViewGroup) {
+        count += computeChildCount(child)
+      }
+    }
+    return count
   }
 
   override fun dispatchDraw(canvas: Canvas) {
@@ -84,7 +93,7 @@ constructor(
     if (childCount == 0) {
       return
     }
-    
+
     for (i in 0 until childCount) {
       drawView(getChildAt(i) as HierarchyText, canvas)
     }
@@ -99,7 +108,7 @@ constructor(
     val mid = top + (h / 2)
     val pX = left.toFloat()
     val pY = mid.toFloat()
-    
+
     if (view.hasChildren) {
       canvas.drawRect(
         left - pointRadius,
@@ -108,19 +117,20 @@ constructor(
         mid + pointRadius,
         paint
       )
-      
+
       val endY = pY + (h * view.childCount)
       canvas.drawLine(pX, pY, pX, endY, paint)
     } else {
       canvas.drawCircle(pX, pY, pointRadius, paint)
-      if (view.depth > 1) {
-        canvas.drawLine(pX - dp16, pY, pX, pY, paint)
-      }
+    }
+    if (view.depth > 1) {
+      canvas.drawLine(pX - dp16, pY, pX, pY, paint)
     }
   }
 
   @SuppressLint("ViewConstructor")
-  class HierarchyText(context: Context, val depth: Int, private val offset: Int) : MaterialTextView(context) {
+  class HierarchyText(context: Context, var depth: Int, private val offset: Int) :
+    MaterialTextView(context) {
 
     var childCount = 0
     val hasChildren: Boolean
