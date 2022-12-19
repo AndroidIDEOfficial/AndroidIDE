@@ -17,13 +17,14 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.view.TextureView
+import android.widget.AbsoluteLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [TextureView].
+ * Attribute adapter for [AbsoluteLayout].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(TextureView::class)
-open class TextureViewAttrAdapter<T : TextureView> : ViewAttrAdapter<T>()
+@Suppress("DEPRECATION")
+@ViewAdapter(AbsoluteLayout::class)
+open class AbsoluteLayoutAdapter<T : AbsoluteLayout> : ViewGroupAdapter<T>()

@@ -17,21 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.AbsSeekBar
-import com.itsaky.androidide.inflater.AttributeHandlerScope
+import android.widget.EditText
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [AbsSeekBar].
+ * Attribute adapter for [EditText].
  *
  * @author Akash Yadav
  */
-abstract class AbsSeekBarAttrAdapter<T : AbsSeekBar> : ProgressBarAttrAdapter<T>() {
-
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    super.createAttrHandlers(create)
-    create("thumbTint") { view.thumbTintList = parseColorStateList(context, value) }
-    create("thumbTintMode") { view.thumbTintMode = parsePorterDuffMode(value) }
-    create("tickMarkTint") { view.tickMarkTintList = parseColorStateList(context, value) }
-    create("tickMarkTintMode") { view.tickMarkTintMode = parsePorterDuffMode(value) }
-  }
-}
+@ViewAdapter(EditText::class)
+open class EditTextAdapter<T : EditText> : TextViewAdapter<T>()

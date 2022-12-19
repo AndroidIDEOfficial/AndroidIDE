@@ -17,23 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.ToggleButton
-import com.blankj.utilcode.util.ReflectUtils.reflect
+import android.widget.RadioButton
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [ToggleButton].
+ * Attribute adapter for [RadioButton].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ToggleButton::class)
-open class ToggleButtonAttrAdapter<T : ToggleButton> : CompoundButtonAttrAdapter<T>() {
-
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    super.createAttrHandlers(create)
-    create("disabledAlpha") { reflect(view).field("mDisabledAlpha", parseFloat(value, 0.5f)) }
-    create("textOff") { view.textOff = parseString(value) }
-    create("textOn") { view.textOn = parseString(value) }
-  }
-}
+@ViewAdapter(RadioButton::class)
+open class RadioButtonAdapter<T : RadioButton> : CompoundButtonAdapter<T>()

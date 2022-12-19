@@ -35,7 +35,7 @@ import java.util.regex.Pattern
  * @author Akash Yadav
  */
 @ViewAdapter(TextView::class)
-open class TextViewAttrAdapter<T : TextView> : ViewAttrAdapter<T>() {
+open class TextViewAdapter<T : TextView> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

@@ -17,21 +17,32 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.RelativeLayout
+import android.R.layout
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [RelativeLayout].
+ * Attribute adapter for [ListView].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(RelativeLayout::class)
-open class RelativeLayoutAttrAdapter<T : RelativeLayout> : ViewGroupAttrAdapter<T>() {
+@ViewAdapter(ListView::class)
+open class ListViewAdapter<T : ListView> : AbsListViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("gravity") { view.gravity = parseGravity(value) }
-    create("ignoreGravity") { view.ignoreGravity = parseId(file.resName, value) }
+    create("divider") { view.divider = parseDrawable(context, value) }
+    create("dividerHeight") {
+      view.dividerHeight = parseDimension(context, value, SizeUtils.dp2px(1f))
+    }
+    create("entries") {
+      val entries = parseStringArray(value)
+      view.adapter = ArrayAdapter(context, layout.simple_list_item_1, entries)
+    }
+    create("footerDividersEnabled") { view.setFooterDividersEnabled(parseBoolean(value)) }
+    create("headerDividersEnabled") { view.setHeaderDividersEnabled(parseBoolean(value)) }
   }
 }

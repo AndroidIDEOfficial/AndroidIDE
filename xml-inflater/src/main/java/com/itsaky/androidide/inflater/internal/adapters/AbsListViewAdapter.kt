@@ -19,15 +19,13 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AbsListView
 import com.itsaky.androidide.inflater.AttributeHandlerScope
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
 
 /**
  * Attribute adapter for [AbsListView].
  *
  * @author Akash Yadav
  */
-abstract class AbsListViewAttrAdapter<T : AbsListView> : AdapterViewAttrAdapter<T>() {
+abstract class AbsListViewAdapter<T : AbsListView> : AdapterViewAdapter<T>() {
   
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

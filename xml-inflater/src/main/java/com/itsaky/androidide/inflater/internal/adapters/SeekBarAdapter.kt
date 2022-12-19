@@ -17,21 +17,21 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.CheckedTextView
+import android.widget.SeekBar
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [CheckedTextView].
+ * Attribute adapter for [SeekBar].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(CheckedTextView::class)
-open class CheckedTextViewAttrAdapter<T : CheckedTextView> : TextViewAttrAdapter<T>() {
+@ViewAdapter(SeekBar::class)
+open class SeekBarAdapter<T : SeekBar> : AbsSeekBarAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("checkMarkTintMode") { view.checkMarkTintMode = parsePorterDuffMode(value) }
-    create("checkMarkTint") { view.checkMarkTintList = parseColorStateList(context, value) }
+
+    create("thumb") { view.thumb = parseDrawable(context, value) }
   }
 }

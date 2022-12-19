@@ -38,7 +38,7 @@ import com.itsaky.androidide.inflater.R
  * @author Akash Yadav
  */
 @ViewAdapter(ImageView::class)
-open class ImageViewAttrAdapter<T : ImageView> : ViewAttrAdapter<T>() {
+open class ImageViewAdapter<T : ImageView> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

@@ -17,13 +17,12 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.ImageButton
+import android.widget.CheckBox
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [ImageButton].
+ * Attribute adapter for [CheckBox].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ImageButton::class)
-open class ImageButtonAttrAdapter<T : ImageButton> : ImageViewAttrAdapter<T>()
+@ViewAdapter(CheckBox::class) open class CheckBoxAdapter<T : CheckBox> : CompoundButtonAdapter<T>()

@@ -17,23 +17,12 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.R.layout
-import android.widget.AbsSpinner
-import com.itsaky.androidide.inflater.AttributeHandlerScope
+import android.widget.Button
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [AbsSpinner].
+ * Attribute adapter for [Button].
  *
  * @author Akash Yadav
  */
-abstract class AbsSpinnerAttrAdapter<T : AbsSpinner> : AdapterViewAttrAdapter<T>() {
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    super.createAttrHandlers(create)
-    create("entries") {
-      val array = parseStringArray(value)
-      val adapter = newSimpleAdapter(context, array)
-      adapter.setDropDownViewResource(layout.simple_spinner_dropdown_item)
-      view.adapter = adapter
-    }
-  }
-}
+@ViewAdapter(Button::class) open class ButtonAdapter<T : Button> : TextViewAdapter<T>()

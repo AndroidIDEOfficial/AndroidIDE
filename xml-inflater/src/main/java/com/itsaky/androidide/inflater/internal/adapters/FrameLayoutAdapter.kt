@@ -17,15 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.content.Context
-import android.view.ViewGroup.LayoutParams
 import android.widget.FrameLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
  * Attribute adapter for [FrameLayout].
@@ -33,7 +27,7 @@ import com.itsaky.androidide.inflater.internal.LayoutFile
  * @author Akash Yadav
  */
 @ViewAdapter(FrameLayout::class)
-open class FrameLayoutAttrAdapter<T : FrameLayout> : ViewGroupAttrAdapter<T>() {
+open class FrameLayoutAdapter<T : FrameLayout> : ViewGroupAdapter<T>() {
   
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

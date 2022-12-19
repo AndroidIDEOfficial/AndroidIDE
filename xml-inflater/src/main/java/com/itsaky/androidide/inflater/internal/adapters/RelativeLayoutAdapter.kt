@@ -17,27 +17,21 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.CompoundButton
+import android.widget.RelativeLayout
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
-import com.itsaky.androidide.inflater.IView
 
 /**
- * Attribute adapter for [CompoundButton].
+ * Attribute adapter for [RelativeLayout].
  *
  * @author Akash Yadav
  */
-abstract class CompoundButtonAttrAdapter<T : CompoundButton> : ButtonAttrAdapter<T>() {
+@ViewAdapter(RelativeLayout::class)
+open class RelativeLayoutAdapter<T : RelativeLayout> : ViewGroupAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("buttonTint") { view.buttonTintList = parseColorStateList(context, value) }
-    create("button") { view.buttonDrawable = parseDrawable(context, value) }
-    create("buttonTintMode") { view.buttonTintMode = parsePorterDuffMode(value) }
-    create("checked") { view.isChecked = parseBoolean(value = value, def = true) }
-  }
-
-  override fun applyBasic(view: IView) {
-    super.applyBasic(view)
-    (view.view as CompoundButton).isChecked = true
+    create("gravity") { view.gravity = parseGravity(value) }
+    create("ignoreGravity") { view.ignoreGravity = parseId(file.resName, value) }
   }
 }

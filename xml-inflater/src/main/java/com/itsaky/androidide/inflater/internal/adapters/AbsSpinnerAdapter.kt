@@ -17,27 +17,23 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.Spinner
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import android.R.layout
+import android.widget.AbsSpinner
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [Spinner].
+ * Attribute adapter for [AbsSpinner].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(Spinner::class)
-open class SpinnerAttrAdapter<T : Spinner> : AbsSpinnerAttrAdapter<T>() {
+abstract class AbsSpinnerAdapter<T : AbsSpinner> : AdapterViewAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("dropDownHorizontalOffset") {
-      view.dropDownHorizontalOffset = parseDimension(context, value, 0)
+    create("entries") {
+      val array = parseStringArray(value)
+      val adapter = newSimpleAdapter(context, array)
+      adapter.setDropDownViewResource(layout.simple_spinner_dropdown_item)
+      view.adapter = adapter
     }
-    create("dropDownVerticalOffset") {
-      view.dropDownVerticalOffset = parseDimension(context, value, 0)
-    }
-    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value, 0) }
-    create("gravity") { view.gravity = parseGravity(value) }
-    create("popupBackground") { view.setPopupBackgroundDrawable(parseDrawable(context, value)) }
   }
 }

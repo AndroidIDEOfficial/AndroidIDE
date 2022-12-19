@@ -17,32 +17,23 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.R.layout
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import com.blankj.utilcode.util.SizeUtils
+import android.widget.ToggleButton
+import com.blankj.utilcode.util.ReflectUtils.reflect
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [ListView].
+ * Attribute adapter for [ToggleButton].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(ListView::class)
-open class ListViewAttrAdapter<T : ListView> : AbsListViewAttrAdapter<T>() {
+@ViewAdapter(ToggleButton::class)
+open class ToggleButtonAdapter<T : ToggleButton> : CompoundButtonAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("divider") { view.divider = parseDrawable(context, value) }
-    create("dividerHeight") {
-      view.dividerHeight = parseDimension(context, value, SizeUtils.dp2px(1f))
-    }
-    create("entries") {
-      val entries = parseStringArray(value)
-      view.adapter = ArrayAdapter(context, layout.simple_list_item_1, entries)
-    }
-    create("footerDividersEnabled") { view.setFooterDividersEnabled(parseBoolean(value)) }
-    create("headerDividersEnabled") { view.setHeaderDividersEnabled(parseBoolean(value)) }
+    create("disabledAlpha") { reflect(view).field("mDisabledAlpha", parseFloat(value, 0.5f)) }
+    create("textOff") { view.textOff = parseString(value) }
+    create("textOn") { view.textOn = parseString(value) }
   }
 }

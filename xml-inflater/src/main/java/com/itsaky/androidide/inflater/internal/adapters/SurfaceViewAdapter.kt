@@ -17,24 +17,12 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.AutoCompleteTextView
+import android.view.SurfaceView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
-import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [AutoCompleteTextView].
- *
+ * Attribute adapter for [SurfaceView].
  * @author Akash Yadav
  */
-@ViewAdapter(AutoCompleteTextView::class)
-open class AutoCompleteTextViewAttrAdapter<T : AutoCompleteTextView> : EditTextAttrAdapter<T>() {
-
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    super.createAttrHandlers(create)
-    create("completionHint") { view.completionHint = parseString(value) }
-    create("completionThreshold") { view.threshold = parseInteger(value, 1) }
-    create("dropDownAnchor") { view.dropDownAnchor = parseId(file.resName, value) }
-    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value) }
-    create("dropDownHeight") { view.dropDownHeight = parseDimension(context, value) }
-  }
-}
+@ViewAdapter(SurfaceView::class)
+open class SurfaceViewAdapter<T : SurfaceView> : ViewAdapter<T>()

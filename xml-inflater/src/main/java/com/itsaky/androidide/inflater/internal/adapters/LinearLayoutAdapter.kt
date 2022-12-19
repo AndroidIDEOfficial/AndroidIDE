@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
  * @author Akash Yadav
  */
 @ViewAdapter(LinearLayout::class)
-open class LinearLayoutAttrAdapter<T : LinearLayout> : ViewGroupAttrAdapter<T>() {
+open class LinearLayoutAdapter<T : LinearLayout> : ViewGroupAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

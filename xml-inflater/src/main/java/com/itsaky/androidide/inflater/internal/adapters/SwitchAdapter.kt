@@ -28,7 +28,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(Switch::class)
-open class SwitchAttrAdapter<T : Switch> : CompoundButtonAttrAdapter<T>() {
+open class SwitchAdapter<T : Switch> : CompoundButtonAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("showText") { view.showText = parseBoolean(value) }

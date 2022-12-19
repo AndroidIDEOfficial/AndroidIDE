@@ -17,13 +17,21 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.webkit.WebView
+import android.widget.CheckedTextView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [WebView].
+ * Attribute adapter for [CheckedTextView].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(WebView::class)
-open class WebViewAttrAdapter<T : WebView> : AbsoluteLayoutAttrAdapter<T>()
+@ViewAdapter(CheckedTextView::class)
+open class CheckedTextViewAdapter<T : CheckedTextView> : TextViewAdapter<T>() {
+
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("checkMarkTintMode") { view.checkMarkTintMode = parsePorterDuffMode(value) }
+    create("checkMarkTint") { view.checkMarkTintList = parseColorStateList(context, value) }
+  }
+}

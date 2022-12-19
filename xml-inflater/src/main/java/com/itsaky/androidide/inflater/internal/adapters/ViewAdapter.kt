@@ -44,7 +44,7 @@ import com.itsaky.androidide.inflater.utils.newAttribute
  * @author Akash Yadav
  */
 @ViewAdapter(forView = View::class)
-open class ViewAttrAdapter<T : View> : IViewAdapter<T>() {
+open class ViewAdapter<T : View> : IViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     create("alpha") { view.alpha = parseFloat(value) }

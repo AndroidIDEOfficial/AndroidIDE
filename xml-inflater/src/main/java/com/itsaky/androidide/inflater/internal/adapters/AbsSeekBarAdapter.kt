@@ -17,12 +17,21 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.view.SurfaceView
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import android.widget.AbsSeekBar
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [SurfaceView].
+ * Attribute adapter for [AbsSeekBar].
+ *
  * @author Akash Yadav
  */
-@ViewAdapter(SurfaceView::class)
-open class SurfaceViewAttrAdapter<T : SurfaceView> : ViewAttrAdapter<T>()
+abstract class AbsSeekBarAdapter<T : AbsSeekBar> : ProgressBarAdapter<T>() {
+
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("thumbTint") { view.thumbTintList = parseColorStateList(context, value) }
+    create("thumbTintMode") { view.thumbTintMode = parsePorterDuffMode(value) }
+    create("tickMarkTint") { view.tickMarkTintList = parseColorStateList(context, value) }
+    create("tickMarkTintMode") { view.tickMarkTintMode = parsePorterDuffMode(value) }
+  }
+}

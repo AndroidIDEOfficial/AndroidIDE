@@ -17,21 +17,27 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.SeekBar
-import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import android.widget.CompoundButton
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.IView
 
 /**
- * Attribute adapter for [SeekBar].
+ * Attribute adapter for [CompoundButton].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(SeekBar::class)
-open class SeekBarAttrAdapter<T : SeekBar> : AbsSeekBarAttrAdapter<T>() {
+abstract class CompoundButtonAdapter<T : CompoundButton> : ButtonAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
+    create("buttonTint") { view.buttonTintList = parseColorStateList(context, value) }
+    create("button") { view.buttonDrawable = parseDrawable(context, value) }
+    create("buttonTintMode") { view.buttonTintMode = parsePorterDuffMode(value) }
+    create("checked") { view.isChecked = parseBoolean(value = value, def = true) }
+  }
 
-    create("thumb") { view.thumb = parseDrawable(context, value) }
+  override fun applyBasic(view: IView) {
+    super.applyBasic(view)
+    (view.view as CompoundButton).isChecked = true
   }
 }

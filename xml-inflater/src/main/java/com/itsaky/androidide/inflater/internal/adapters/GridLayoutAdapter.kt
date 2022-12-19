@@ -27,7 +27,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(GridLayout::class)
-open class GridLayoutAttrAdapter<T : GridLayout> : ViewGroupAttrAdapter<T>() {
+open class GridLayoutAdapter<T : GridLayout> : ViewGroupAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("alignmentMode") { view.alignmentMode = parseAlignmentMode(value) }

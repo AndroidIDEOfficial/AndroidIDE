@@ -17,14 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.AbsoluteLayout
+import android.widget.ImageButton
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [AbsoluteLayout].
+ * Attribute adapter for [ImageButton].
  *
  * @author Akash Yadav
  */
-@Suppress("DEPRECATION")
-@ViewAdapter(AbsoluteLayout::class)
-open class AbsoluteLayoutAttrAdapter<T : AbsoluteLayout> : ViewGroupAttrAdapter<T>()
+@ViewAdapter(ImageButton::class)
+open class ImageButtonAdapter<T : ImageButton> : ImageViewAdapter<T>()

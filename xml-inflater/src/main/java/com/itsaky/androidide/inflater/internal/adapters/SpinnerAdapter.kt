@@ -17,12 +17,27 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.CheckBox
+import android.widget.Spinner
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [CheckBox].
+ * Attribute adapter for [Spinner].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(CheckBox::class) open class CheckBoxAttrAdapter<T : CheckBox> : CompoundButtonAttrAdapter<T>()
+@ViewAdapter(Spinner::class)
+open class SpinnerAdapter<T : Spinner> : AbsSpinnerAdapter<T>() {
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("dropDownHorizontalOffset") {
+      view.dropDownHorizontalOffset = parseDimension(context, value, 0)
+    }
+    create("dropDownVerticalOffset") {
+      view.dropDownVerticalOffset = parseDimension(context, value, 0)
+    }
+    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value, 0) }
+    create("gravity") { view.gravity = parseGravity(value) }
+    create("popupBackground") { view.setPopupBackgroundDrawable(parseDrawable(context, value)) }
+  }
+}

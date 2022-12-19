@@ -17,13 +17,24 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.RadioButton
+import android.widget.AutoCompleteTextView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [RadioButton].
+ * Attribute adapter for [AutoCompleteTextView].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(RadioButton::class)
-open class RadioButtonAttrAdapter<T : RadioButton> : CompoundButtonAttrAdapter<T>()
+@ViewAdapter(AutoCompleteTextView::class)
+open class AutoCompleteTextViewAdapter<T : AutoCompleteTextView> : EditTextAdapter<T>() {
+
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("completionHint") { view.completionHint = parseString(value) }
+    create("completionThreshold") { view.threshold = parseInteger(value, 1) }
+    create("dropDownAnchor") { view.dropDownAnchor = parseId(file.resName, value) }
+    create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value) }
+    create("dropDownHeight") { view.dropDownHeight = parseDimension(context, value) }
+  }
+}

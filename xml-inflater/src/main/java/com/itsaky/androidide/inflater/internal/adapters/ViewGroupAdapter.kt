@@ -18,25 +18,19 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.animation.LayoutTransition
-import android.content.Context
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
 import com.itsaky.androidide.inflater.AttributeHandlerScope
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroupAdapter
 import com.itsaky.androidide.inflater.LayoutBehavior
 import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
-import com.itsaky.androidide.inflater.internal.LayoutFile
 
 /**
  * Base attribute adapter for all [ViewGroup].
  *
  * @author Akash Yadav
  */
-abstract class ViewGroupAttrAdapter<T : ViewGroup> : ViewAttrAdapter<T>(), IViewGroupAdapter {
+abstract class ViewGroupAdapter<T : ViewGroup> : ViewAdapter<T>(), IViewGroupAdapter {
   
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)

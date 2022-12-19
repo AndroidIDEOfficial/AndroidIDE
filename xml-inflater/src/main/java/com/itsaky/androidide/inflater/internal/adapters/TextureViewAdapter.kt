@@ -17,12 +17,13 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.Button
+import android.view.TextureView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 
 /**
- * Attribute adapter for [Button].
+ * Attribute adapter for [TextureView].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(Button::class) open class ButtonAttrAdapter<T : Button> : TextViewAttrAdapter<T>()
+@ViewAdapter(TextureView::class)
+open class TextureViewAdapter<T : TextureView> : ViewAdapter<T>()
