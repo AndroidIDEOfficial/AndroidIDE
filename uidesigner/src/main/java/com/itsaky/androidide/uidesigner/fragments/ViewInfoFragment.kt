@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.utils.newAttribute
@@ -108,7 +107,7 @@ class ViewInfoFragment : Fragment() {
 
     binding.btnDelete.setOnClickListener {
       view.removeFromParent()
-      (parentFragment as? ViewInfoSheet)?.dismiss()
+      (parentFragment?.parentFragment as? ViewInfoSheet)?.dismiss()
     }
 
     binding.btnAdd.setOnClickListener { findNavController().navigate(R.id.addAttrFragment) }
