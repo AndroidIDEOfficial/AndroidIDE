@@ -25,9 +25,8 @@ import android.util.AttributeSet;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SymbolInputAdapter;
-import com.itsaky.androidide.ui.editor.IDEEditor;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 
 public class SymbolInputView extends RecyclerView {
 

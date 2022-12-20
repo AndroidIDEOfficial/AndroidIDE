@@ -115,7 +115,7 @@ import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.ui.EditorBottomSheet;
 import com.itsaky.androidide.ui.MaterialBanner;
 import com.itsaky.androidide.ui.editor.CodeEditorView;
-import com.itsaky.androidide.ui.editor.IDEEditor;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.uidesigner.UIDesignerActivity;
 import com.itsaky.androidide.utils.ActionMenuUtils;
 import com.itsaky.androidide.utils.DialogUtils;

@@ -27,9 +27,8 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.ui.editor.IDEEditor
+import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import java.io.File
 

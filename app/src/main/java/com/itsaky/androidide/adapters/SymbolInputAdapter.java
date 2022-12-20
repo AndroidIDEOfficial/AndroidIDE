@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
 import com.itsaky.androidide.ui.SymbolInputView.Symbol;
-import com.itsaky.androidide.ui.editor.IDEEditor;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 
 import java.util.ArrayList;
 import java.util.List;

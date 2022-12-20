@@ -14,7 +14,7 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<com.itsaky.androidide.ui.editor.IDEEditor xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.editor.ui.IDEEditor xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/editor"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

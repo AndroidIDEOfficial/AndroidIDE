@@ -24,8 +24,10 @@ import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
 import com.itsaky.androidide.lsp.models.ShowDocumentParams;
 import com.itsaky.androidide.lsp.models.ShowDocumentResult;
+import com.itsaky.androidide.models.Location;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * A language client handles notifications and events from a {@link ILanguageServer}.
@@ -69,4 +71,12 @@ public interface ILanguageClient {
    *     action.
    */
   ShowDocumentResult showDocument(ShowDocumentParams params);
+
+  /**
+   * Notification sent by the language server to tell teh client client to show the given locations
+   * to the user.
+   *
+   * @param locations The location to show.
+   */
+  void showLocations(List<Location> locations);
 }
