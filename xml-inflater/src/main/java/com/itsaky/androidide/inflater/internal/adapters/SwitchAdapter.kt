@@ -20,7 +20,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.graphics.Typeface.DEFAULT
 import android.widget.Switch
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [Switch].
@@ -28,6 +33,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(Switch::class)
+@IncludeInDesigner(group = WIDGETS)
 open class SwitchAdapter<T : Switch> : CompoundButtonAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
@@ -46,5 +52,9 @@ open class SwitchAdapter<T : Switch> : CompoundButtonAdapter<T>() {
     create("trackTint") { view.trackTintList = parseColorStateList(context, value) }
     create("trackTintMode") { view.trackTintMode = parsePorterDuffMode(value) }
     create("typeface") { view.setSwitchTypeface(parseTypeface(value)) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(Switch::class.java, string.widget_switch, drawable.ic_widget_switch))
   }
 }

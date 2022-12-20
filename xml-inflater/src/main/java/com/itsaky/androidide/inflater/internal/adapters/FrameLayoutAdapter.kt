@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.FrameLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [FrameLayout].
@@ -27,11 +32,18 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(FrameLayout::class)
+@IncludeInDesigner(group = LAYOUTS)
 open class FrameLayoutAdapter<T : FrameLayout> : ViewGroupAdapter<T>() {
-  
+
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("foregroundGravity") { view.foregroundGravity = parseGravity(value) }
     create("measureAllChildren") { view.measureAllChildren = parseBoolean(value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(FrameLayout::class.java, string.widget_frame_layout, drawable.ic_widget_frame_layout)
+    )
   }
 }

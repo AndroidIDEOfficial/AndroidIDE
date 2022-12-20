@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.GridLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [GridLayout].
@@ -27,6 +32,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(GridLayout::class)
+@IncludeInDesigner(group = LAYOUTS)
 open class GridLayoutAdapter<T : GridLayout> : ViewGroupAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
@@ -37,6 +43,12 @@ open class GridLayoutAdapter<T : GridLayout> : ViewGroupAdapter<T>() {
     create("rowCount") { view.rowCount = parseInteger(value, Int.MIN_VALUE) }
     create("rowOrderPreserved") { view.isRowOrderPreserved = parseBoolean(value) }
     create("useDefaultMargins") { view.useDefaultMargins = parseBoolean(value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(GridLayout::class.java, string.widget_grid_layout, drawable.ic_widget_grid_layout)
+    )
   }
 
   protected open fun parseOrientation(value: String): Int {

@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.CheckedTextView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [CheckedTextView].
@@ -27,11 +32,22 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(CheckedTextView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class CheckedTextViewAdapter<T : CheckedTextView> : TextViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("checkMarkTintMode") { view.checkMarkTintMode = parsePorterDuffMode(value) }
     create("checkMarkTint") { view.checkMarkTintList = parseColorStateList(context, value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(
+        CheckedTextView::class.java,
+        string.widget_checked_textview,
+        drawable.ic_widget_checked_textview
+      )
+    )
   }
 }

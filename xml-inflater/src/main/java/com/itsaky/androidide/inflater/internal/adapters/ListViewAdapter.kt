@@ -22,7 +22,12 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [ListView].
@@ -30,6 +35,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(ListView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class ListViewAdapter<T : ListView> : AbsListViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -44,5 +50,11 @@ open class ListViewAdapter<T : ListView> : AbsListViewAdapter<T>() {
     }
     create("footerDividersEnabled") { view.setFooterDividersEnabled(parseBoolean(value)) }
     create("headerDividersEnabled") { view.setHeaderDividersEnabled(parseBoolean(value)) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(ListView::class.java, string.widget_listview, drawable.ic_widget_list_view)
+    )
   }
 }

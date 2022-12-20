@@ -19,6 +19,11 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.EditText
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [EditText].
@@ -26,4 +31,11 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(EditText::class)
-open class EditTextAdapter<T : EditText> : TextViewAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+open class EditTextAdapter<T : EditText> : TextViewAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(EditText::class.java, string.widget_edittext, drawable.ic_widget_edittext)
+    )
+  }
+}

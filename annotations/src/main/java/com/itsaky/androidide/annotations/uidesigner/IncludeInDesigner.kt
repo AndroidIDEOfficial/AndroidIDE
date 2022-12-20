@@ -15,10 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.annotations.inflater
+package com.itsaky.androidide.annotations.uidesigner
 
 /**
+ * Indicates that the view (whose view adapter is annotated with [ViewAdapter]
+ * [com.itsaky.androidide.annotations.inflater.ViewAdapter] and [IncludeInDesigner]) should be
+ * included in the UI Designer and made accessible to the user.
+ *
  * @author Akash Yadav
  */
+annotation class IncludeInDesigner(val group: Group) {
 
-const val KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
+  /** The widget groups that are available in the UI Designer. */
+  enum class Group {
+    /** Includes the Android platform widgets. */
+    WIDGETS,
+
+    /** Includes the Android platform layouts. */
+    LAYOUTS
+  }
+}

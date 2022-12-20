@@ -24,7 +24,7 @@ import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
-import com.itsaky.androidide.uidesigner.models.UiWidget
+import com.itsaky.androidide.inflater.models.UiWidget
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min

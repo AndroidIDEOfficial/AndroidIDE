@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.resources.R.drawable
 import android.gesture.GestureOverlayView
 import com.blankj.utilcode.util.ReflectUtils
 import com.itsaky.androidide.annotations.inflater.ViewAdapter

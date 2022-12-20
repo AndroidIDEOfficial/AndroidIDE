@@ -21,6 +21,9 @@ import android.widget.ToggleButton
 import com.blankj.utilcode.util.ReflectUtils.reflect
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [ToggleButton].
@@ -35,5 +38,15 @@ open class ToggleButtonAdapter<T : ToggleButton> : CompoundButtonAdapter<T>() {
     create("disabledAlpha") { reflect(view).field("mDisabledAlpha", parseFloat(value, 0.5f)) }
     create("textOff") { view.textOff = parseString(value) }
     create("textOn") { view.textOn = parseString(value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(
+        ToggleButton::class.java,
+        string.widget_togglebutton,
+        drawable.ic_widget_toggle_button
+      )
+    )
   }
 }
