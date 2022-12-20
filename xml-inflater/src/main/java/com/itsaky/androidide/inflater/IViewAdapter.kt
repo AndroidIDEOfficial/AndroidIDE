@@ -74,7 +74,7 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
    * Called by the UI Designer to check if the given view group (which this adpater handles) can
    * accept the child view with the given qualified name.
    */
-  fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+  open fun canAcceptChild(view: IViewGroup, name: String): Boolean {
     return true
   }
 

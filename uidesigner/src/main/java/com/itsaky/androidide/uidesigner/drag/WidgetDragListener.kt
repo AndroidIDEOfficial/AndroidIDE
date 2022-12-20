@@ -44,7 +44,7 @@ internal class WidgetDragListener(
   private var lastY = 0f
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
-    return when (event.action) {
+    when (event.action) {
       DragEvent.ACTION_DRAG_STARTED -> {
 
         val name =
@@ -53,10 +53,10 @@ internal class WidgetDragListener(
             is UiWidget -> data.name
             else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
           }
-
-        event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) &&
-          event.localState != this.view &&
-          this.view.canAcceptChild(name)
+ 
+        return event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) &&
+          event.localState != view &&
+          view.canAcceptChild(name)
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
@@ -83,11 +83,11 @@ internal class WidgetDragListener(
         lastX = event.x
         lastY = event.y
 
-        true
+        return true
       }
       DragEvent.ACTION_DRAG_EXITED -> {
         view.onHighlightStateUpdated(false)
-        true
+        return true
       }
       DragEvent.ACTION_DROP -> {
         val child =
@@ -111,13 +111,13 @@ internal class WidgetDragListener(
           child.includeInIndexComputation = true
         }
 
-        true
+        return true
       }
       DragEvent.ACTION_DRAG_ENDED -> {
         this.placeholder.removeFromParent()
-        true
+        return true
       }
-      else -> false
+      else -> return false
     }
   }
 }

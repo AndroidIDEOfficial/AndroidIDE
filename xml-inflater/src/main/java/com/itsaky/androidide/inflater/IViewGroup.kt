@@ -54,7 +54,7 @@ interface IViewGroup : IView, Iterable<IView> {
    */
   fun canAcceptChild(name: String): Boolean {
     return canModifyChildViews() &&
-      ViewAdapterIndex.getAdapter(name)?.canAcceptChild(this, name) == true
+      ViewAdapterIndex.getAdapter(this.name)?.canAcceptChild(this, name) == true
   }
 
   /**
