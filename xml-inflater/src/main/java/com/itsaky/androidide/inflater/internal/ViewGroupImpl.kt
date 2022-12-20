@@ -24,7 +24,7 @@ import com.itsaky.androidide.inflater.IViewGroup.OnHierarchyChangeListener
 
 open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   ViewImpl(file = file, name = name, view = view), IViewGroup {
-  
+
   internal var childrenModifiable = true
 
   protected val children = mutableListOf<IView>()
@@ -35,7 +35,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   // For easy access
   override val view: ViewGroup
     get() = super.view as ViewGroup
-  
+
   override fun canModifyChildViews(): Boolean {
     return this.childrenModifiable
   }
@@ -48,7 +48,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     if (!canModifyChildViews()) {
       throw UnsupportedOperationException("'$name' does not support adding child views.")
     }
-    
+
     if (view.parent != null) {
       throw IllegalStateException("View already has a parent")
     }
@@ -64,7 +64,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     if (!canModifyChildViews()) {
       throw UnsupportedOperationException("'$name' does not support removing child views.")
     }
-  
+
     val index = indexOfChild(view)
     notifyBeforeViewRemoved(view, index)
     this.view.removeView(view.view)
@@ -85,7 +85,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
     if (!canModifyChildViews()) {
       throw UnsupportedOperationException("'$name' does not support updating child views.")
     }
-  
+
     val existing = this.children[index]
     removeChild(existing)
     addChild(index, view)
@@ -106,7 +106,7 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   override fun removeOnHierarchyChangeListener(listener: OnHierarchyChangeListener) {
     this.hierarchyChangeListeners.remove(listener)
   }
-  
+
   override fun iterator(): Iterator<IView> {
     return ViewIterator(immutable())
   }
@@ -130,20 +130,20 @@ open class ViewGroupImpl(file: LayoutFile, name: String, view: ViewGroup) :
   override fun immutable(): IViewGroup {
     return ImmutableViewGroupImpl(this)
   }
-  
+
   private class ViewIterator(private val group: IViewGroup) : Iterator<IView> {
-    
+
     private var index = 0
-    
+
     override fun hasNext(): Boolean {
       return index < group.childCount
     }
-    
+
     override fun next(): IView {
       if (index < 0 || index >= group.childCount) {
         throw NoSuchElementException()
       }
-      
+
       return group[index].also { ++index }
     }
   }
