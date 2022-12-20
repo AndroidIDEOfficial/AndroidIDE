@@ -32,7 +32,7 @@ import com.itsaky.androidide.inflater.models.UiWidget
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(HorizontalScrollView::class)
 @IncludeInDesigner(group = LAYOUTS)
-class HorizontalScrollViewAdapter<T : HorizontalScrollView> : FrameLayoutAdapter<T>() {
+open class HorizontalScrollViewAdapter<T : HorizontalScrollView> : FrameLayoutAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
