@@ -71,6 +71,14 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   private val widget by lazy { createUiWidgets() }
 
   /**
+   * Called by the UI Designer to check if the given view group (which this adpater handles) can
+   * accept the child view with the given qualified name.
+   */
+  open fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+    return true
+  }
+
+  /**
    * Get the [UiWidget] model that can be used to list this adapter's view in the UI designer.
    *
    * @throws UnsupportedOperationException If this view adapter does not adapt a UI designer widget.
@@ -79,6 +87,11 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
     return widget
   }
 
+  /**
+   * Create [UiWidget]s which will be available to the UI Designer.
+   *
+   * The default implementation throws [UnsupportedOperationException].
+   */
   protected open fun createUiWidgets(): List<UiWidget> {
     throw UnsupportedOperationException(
       "${javaClass.simpleName} is not a UI Designer widget adapter"

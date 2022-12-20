@@ -24,7 +24,6 @@ import android.view.ViewConfiguration.get
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IView
@@ -58,6 +57,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
   private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
+  private val viewInfo by lazy { ViewInfoSheet() }
   private val inflater by lazy { UiLayoutInflater() }
 
   internal var isInflating = false
@@ -170,12 +170,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
       view.needSetup = false
     }
   }
-  
+
   internal fun showViewInfo(view: IView) {
     viewModel.view = view
-    findNavController().navigate(R.id.viewInfoSheet)
+    viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
   }
-  
+
   private fun setupViewGroup(viewGroup: UiViewGroup) {
     viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder, touchSlop))
     viewGroup.addOnHierarchyChangeListener(hierarchyHandler)

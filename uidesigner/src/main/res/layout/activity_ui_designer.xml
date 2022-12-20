@@ -45,11 +45,10 @@
 
     <androidx.fragment.app.FragmentContainerView
       android:id="@+id/workspace"
-      android:name="androidx.navigation.fragment.NavHostFragment"
+      android:name="com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
-      app:navGraph="@navigation/nav_uidesigner"
       tools:layout="@layout/fragment_designer_workspace" />
 
   </androidx.coordinatorlayout.widget.CoordinatorLayout>

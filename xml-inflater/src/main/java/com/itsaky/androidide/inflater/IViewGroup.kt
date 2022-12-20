@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.inflater
 
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
+
 /**
  * Inflated model for a [ViewGroup][android.view.ViewGroup].
  *
@@ -29,7 +31,7 @@ interface IViewGroup : IView, Iterable<IView> {
 
   /**
    * Whether this view group can modify child views or not. If this method returns `false`, then
-   * calling calling any of the following methods will result in an [UnsupportedOperationException].
+   * calling any of the following methods will result in an [UnsupportedOperationException].
    *
    * - [addChild]
    * - [removeChild]
@@ -39,6 +41,20 @@ interface IViewGroup : IView, Iterable<IView> {
    */
   fun canModifyChildViews(): Boolean {
     return true
+  }
+
+  /**
+   * Called to check whether this view group can accept child view with the given fully qualifed
+   * name.
+   *
+   * @param name The fully qualified name of the [View][android.view.View] instance.
+   * @return `true` if this view group can accept the child view, `false` otherwise. The default
+   * implementation returns `true` if and only if [canModifyChildViews] returns `true` and this
+   * view's [IViewAdapter.canAcceptChild] returns `true`.
+   */
+  fun canAcceptChild(name: String): Boolean {
+    return canModifyChildViews() &&
+      ViewAdapterIndex.getAdapter(this.name)?.canAcceptChild(this, name) == true
   }
 
   /**

@@ -143,7 +143,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     CompletionItem().apply {
       this.label = simpleName
       this.detail = qualifiedName
-      this.sortText = label.toString()
+      this.ideSortText = label.toString()
       this.insertText = qualifiedName
       this.insertTextFormat = PLAIN_TEXT
       this.editHandler = TagEditHandler()
@@ -180,7 +180,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.insertText = "$title=\"$0\""
       this.insertTextFormat = SNIPPET
       this.snippetDescription = describeSnippet(partial)
-      this.sortText = label.toString()
+      this.ideSortText = label.toString()
       this.matchLevel = matchLevel
       this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
     }
@@ -215,7 +215,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.detail = "From package '$pck'"
       this.kind = VALUE
       this.overrideTypeText = type.uppercase()
-      this.sortText = if (pck == ResourceTableRegistry.PCK_ANDROID) "zzz$text" else text
+      this.ideSortText = if (pck == ResourceTableRegistry.PCK_ANDROID) "zzz$text" else text
       this.insertText = text
       this.insertTextFormat = PLAIN_TEXT
       this.editHandler = AttrValueEditHandler()
@@ -239,7 +239,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       this.label = name
       this.detail = if (pck.isBlank()) "" else "From package '$pck'"
       this.kind = VALUE
-      this.sortText = "000$name"
+      this.ideSortText = "000$name"
       this.insertText = name
       this.editHandler = QualifiedValueEditHandler()
       this.matchLevel = matchLevel

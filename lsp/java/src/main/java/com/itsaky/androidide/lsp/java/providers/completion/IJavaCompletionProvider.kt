@@ -152,7 +152,7 @@ abstract class IJavaCompletionProvider(
     item.setLabel(keyword)
     item.kind = KEYWORD
     item.detail = "keyword"
-    item.sortText = keyword
+    item.ideSortText = keyword
     item.matchLevel = matchLevel
     return item
   }
@@ -171,7 +171,7 @@ abstract class IJavaCompletionProvider(
     item.setLabel(first.simpleName.toString())
     item.kind = CompletionItemKind.METHOD
     item.detail = printMethodDetail(first)
-    item.sortText = item.label.toString()
+    item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
     item.overrideTypeText = EditHelper.printType(first.returnType)
     val data = data(task, first, overloads.size)
@@ -223,7 +223,7 @@ abstract class IJavaCompletionProvider(
     item.kind = kind(element)
     item.detail = element.toString()
     item.data = data(task, element, 1)
-    item.sortText = item.label.toString()
+    item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
 
     if (element is VariableElement) {
@@ -252,7 +252,7 @@ abstract class IJavaCompletionProvider(
     item.setLabel(simpleName(className).toString())
     item.kind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
-    item.sortText = item.label.toString()
+    item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
     item.data = ClassCompletionData(className)
 
@@ -286,7 +286,7 @@ abstract class IJavaCompletionProvider(
       this.detail = packageName
       this.insertText = simpleName
       this.kind = MODULE
-      this.sortText = name
+      this.ideSortText = name
       this.matchLevel = matchLevel
     }
   }

@@ -54,6 +54,9 @@ class UIDesignerActivity : BaseIDEActivity() {
   private var binding: ActivityUiDesignerBinding? = null
   private val log = ILogger.newInstance("UIDesignerActivity")
   private val viewModel by viewModels<WorkspaceViewModel>()
+  
+  private val workspace: DesignerWorkspaceFragment?
+    get() = this.binding?.workspace?.getFragment<DesignerWorkspaceFragment>()
 
   private val backPressHandler =
     object : OnBackPressedCallback(true) {
@@ -177,9 +180,7 @@ class UIDesignerActivity : BaseIDEActivity() {
   }
 
   private fun workspace(): DesignerWorkspaceFragment? {
-    return binding?.workspace?.getFragment<NavHostFragment>()?.let {
-      it.childFragmentManager.fragments[0] as? DesignerWorkspaceFragment?
-    }
+    return workspace
   }
 
   fun setupHierarchy(view: IView) {

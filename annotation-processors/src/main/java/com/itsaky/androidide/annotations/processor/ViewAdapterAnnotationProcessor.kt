@@ -28,6 +28,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.CLASS
 import javax.lang.model.element.ElementKind.PACKAGE
 import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic.Kind.ERROR
 
@@ -55,7 +56,7 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
     if (roundEnv.processingOver()) {
       return true
     }
-    
+
     generator.init(processingEnv)
 
     roundEnv.getElementsAnnotatedWith(ViewAdapter::class.java).forEach {
@@ -132,6 +133,11 @@ class ViewAdapterAnnotationProcessor : AbstractProcessor() {
         ERROR,
         "The type parameter of view adapter must be assignable from android.view.View"
       )
+    }
+
+    if (element.modifiers.contains(FINAL)) {
+      processingEnv.messager.printMessage(ERROR, "${element.qualifiedName} cannot be final")
+      return
     }
 
     generator.addViewAdapter(processingEnv, element)

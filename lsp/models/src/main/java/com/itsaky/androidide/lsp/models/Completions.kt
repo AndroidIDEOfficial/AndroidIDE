@@ -128,7 +128,7 @@ open class CompletionItem(
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
 
-  var sortText: String? = sortText
+  var ideSortText: String? = sortText
     get() {
       if (field == null) {
         return label.toString()
@@ -231,7 +231,7 @@ open class CompletionItem(
     if (matchLevel != other.matchLevel) return false
     if (additionalTextEdits != other.additionalTextEdits) return false
     if (data != other.data) return false
-    if (sortText != other.sortText) return false
+    if (ideSortText != other.ideSortText) return false
     if (insertText != other.insertText) return false
     if (insertTextFormat != other.insertTextFormat) return false
     if (editHandler != other.editHandler) return false
@@ -249,7 +249,7 @@ open class CompletionItem(
     result = 31 * result + matchLevel.hashCode()
     result = 31 * result + (additionalTextEdits?.hashCode() ?: 0)
     result = 31 * result + (data?.hashCode() ?: 0)
-    result = 31 * result + (sortText?.hashCode() ?: 0)
+    result = 31 * result + (ideSortText?.hashCode() ?: 0)
     result = 31 * result + insertText.hashCode()
     result = 31 * result + insertTextFormat.hashCode()
     result = 31 * result + editHandler.hashCode()
@@ -259,7 +259,7 @@ open class CompletionItem(
   }
 
   override fun toString(): String {
-    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$sortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
+    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$ideSortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
 

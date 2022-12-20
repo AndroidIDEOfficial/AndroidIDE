@@ -20,11 +20,11 @@ package com.itsaky.androidide.uidesigner.drag
 import android.view.DragEvent
 import android.view.View
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.viewGroup
 import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment.Companion.DRAGGING_WIDGET_MIME
 import com.itsaky.androidide.uidesigner.models.UiView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
-import com.itsaky.androidide.inflater.models.UiWidget
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -44,17 +44,27 @@ internal class WidgetDragListener(
   private var lastY = 0f
 
   override fun onDrag(v: View, event: DragEvent): Boolean {
-    return when (event.action) {
+    when (event.action) {
       DragEvent.ACTION_DRAG_STARTED -> {
-        event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) && event.localState != this.view
+
+        val name =
+          when (val data = event.localState) {
+            is IView -> data.name
+            is UiWidget -> data.name
+            else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
+          }
+ 
+        return event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) &&
+          event.localState != view &&
+          view.canAcceptChild(name)
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
-        
+
         if (event.action == DragEvent.ACTION_DRAG_ENTERED) {
           view.onHighlightStateUpdated(true)
         }
-        
+
         val distX = event.x - lastX
         val distY = event.y - lastY
         if (distX.absoluteValue < touchSlop && distY.absoluteValue < touchSlop) {
@@ -73,11 +83,11 @@ internal class WidgetDragListener(
         lastX = event.x
         lastY = event.y
 
-        true
+        return true
       }
       DragEvent.ACTION_DRAG_EXITED -> {
         view.onHighlightStateUpdated(false)
-        true
+        return true
       }
       DragEvent.ACTION_DROP -> {
         val child =
@@ -101,13 +111,13 @@ internal class WidgetDragListener(
           child.includeInIndexComputation = true
         }
 
-        true
+        return true
       }
       DragEvent.ACTION_DRAG_ENDED -> {
         this.placeholder.removeFromParent()
-        true
+        return true
       }
-      else -> false
+      else -> return false
     }
   }
 }

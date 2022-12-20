@@ -89,7 +89,7 @@ class TopLevelSnippetsProvider {
     item.insertText = snippet
     item.insertTextFormat = InsertTextFormat.SNIPPET
     item.snippetDescription = description
-    item.sortText = label
+    item.ideSortText = label
     item.matchLevel = CASE_INSENSITIVE_EQUAL
     return item
   }
