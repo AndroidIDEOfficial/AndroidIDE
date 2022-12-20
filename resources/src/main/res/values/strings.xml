@@ -480,6 +480,7 @@
   <string name="widget_image_view" translatable="false">ImageView</string>
   <string name="widget_progressbar" translatable="false">ProgressBar</string>
   <string name="widget_radio_button" translatable="false">RadioButton</string>
+  <string name="widget_radio_group" translatable="false">RadioGroup</string>
   <string name="widget_seekbar" translatable="false">SeekBar</string>
   <string name="widget_spinner" translatable="false">Spinner</string>
   <string name="layout_linear" translatable="false">LinearLayout</string>
