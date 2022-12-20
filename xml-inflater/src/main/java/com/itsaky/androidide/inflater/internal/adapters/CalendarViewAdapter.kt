@@ -17,9 +17,14 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.gesture.CalendarView
+import android.widget.CalendarView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [CalendarView].
@@ -27,6 +32,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Deep Kr. Ghosh
  */
 @ViewAdapter(CalendarView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class CalendarViewAdapter<T : CalendarView> : FrameLayoutAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -46,5 +52,15 @@ open class CalendarViewAdapter<T : CalendarView> : FrameLayoutAdapter<T>() {
     // TODO (theme): create("weekDayTextAppearance")
     create("weekNumberColor") { view.weekNumberColor = parseColor(context, value) }
     create("weekSeparatorLineColor") { view.weekSeparatorLineColor = parseColor(context, value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(
+        CalendarView::class.java,
+        string.widget_calendar_view,
+        drawable.ic_widget_calendar_view
+      )
+    )
   }
 }

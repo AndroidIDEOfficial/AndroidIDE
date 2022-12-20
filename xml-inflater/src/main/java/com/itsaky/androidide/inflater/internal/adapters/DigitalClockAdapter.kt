@@ -19,6 +19,11 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.DigitalClock
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [DigitalClock].
@@ -26,4 +31,11 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Deep Kr. Ghosh
  */
 @ViewAdapter(DigitalClock::class)
-open class DigitalClockAdapter<T : DigitalClock> : TextViewAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+open class DigitalClockAdapter<T : DigitalClock> : TextViewAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(DigitalClock::class.java, string.widget_digital_clock, drawable.ic_widget_text_clock)
+    )
+  }
+}

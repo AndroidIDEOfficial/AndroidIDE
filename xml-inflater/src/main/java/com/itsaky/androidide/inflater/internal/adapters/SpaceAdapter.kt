@@ -18,6 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.Space
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [Space].
@@ -25,4 +30,9 @@ import android.widget.Space
  * @author Deep Kr. Ghosh
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(Space::class)
-class SpaceAdapter<T : Space> : ViewAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+class SpaceAdapter<T : Space> : ViewAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(Space::class.java, string.widget_space, drawable.ic_widget_space))
+  }
+}
