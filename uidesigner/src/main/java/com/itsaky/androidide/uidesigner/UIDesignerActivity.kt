@@ -183,7 +183,9 @@ class UIDesignerActivity : BaseIDEActivity() {
   }
 
   fun setupHierarchy(view: IView) {
-    binding?.hierarchy?.setupWithView(view)
+    binding?.hierarchy?.setupWithView(view) {
+      workspace()?.showViewInfo(it)
+    }
   }
 
   fun openHierarchyView() {

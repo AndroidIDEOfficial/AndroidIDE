@@ -25,6 +25,7 @@ import android.text.TextUtils.TruncateAt.MIDDLE
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View.OnClickListener
 import android.widget.LinearLayout
 import androidx.core.view.updateMarginsRelative
 import androidx.core.view.updatePaddingRelative
@@ -49,6 +50,13 @@ constructor(
   defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
 
+  private val textToIView = mutableMapOf<HierarchyText, IView>()
+  private var onClick: ((IView) -> Unit)? = null
+
+  private val clickListener = OnClickListener { view ->
+    onClick?.let { click -> textToIView[view]?.let(click) }
+  }
+
   private val paint = Paint()
   private val pointRadius = SizeUtils.dp2px(3f).toFloat()
   private val dp8 = SizeUtils.dp2px(8f)
@@ -62,19 +70,28 @@ constructor(
     paint.isAntiAlias = true
   }
 
-  fun setupWithView(view: IView) {
+  fun setupWithView(view: IView, onClick: ((IView) -> Unit)? = null) {
     removeAllViews()
+    textToIView.clear()
+
+    this.onClick = onClick
     addViews(view, 1)
   }
 
   private fun addViews(view: IView, depth: Int) {
-    val text = HierarchyText(context, depth, dp16).apply { this.text = view.tag }
+    val text =
+      HierarchyText(context, depth, dp16).apply {
+        this.text = view.tag
+        setOnClickListener(clickListener)
+      }
     addView(text)
 
     if (view is IViewGroup) {
       text.childCount = computeChildCount(view)
       view.forEach { addViews(it, depth + 1) }
     }
+
+    textToIView[text] = view
   }
 
   private fun computeChildCount(view: IViewGroup): Int {
