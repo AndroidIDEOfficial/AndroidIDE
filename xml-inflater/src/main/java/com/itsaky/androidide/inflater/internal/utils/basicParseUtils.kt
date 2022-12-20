@@ -167,7 +167,7 @@ fun parseBoolean(value: String, def: Boolean = false): Boolean {
   if (value.isEmpty()) {
     return def
   }
-  
+
   tryParseBool(value)?.resValue?.apply {
     return data == -1
   }
@@ -202,7 +202,7 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
       // If this is a color int, return a color drawable
       return colorResolver.invoke(it)?.let { newColorDrawable(it) }
     }
-  
+
   if (value.isEmpty()) {
     return def
   }
@@ -350,7 +350,7 @@ fun parseGravity(value: String, def: Int = defaultGravity()): Int {
   if (value.isEmpty()) {
     return def
   }
-  
+
   val attr = findAttributeResource("android", ATTR, "gravity") ?: return defaultGravity()
   return parseFlag(attr = attr, value = value, def = def)
 }
@@ -502,4 +502,18 @@ private fun throwInvalidResType(type: AaptResourceType, value: String) {
   throw IllegalArgumentException(
     "Value must be a reference to a ${type.tagName} resource type. '$value'"
   )
+}
+
+@JvmOverloads
+fun parseDate(value: String, format: String = "MM/dd/yyyy", def: Long = 0L): Long {
+  if (value.isDigitsOnly()) {
+    return value.toLong()
+  }
+  val formatter = SimpleDateFormat(format)
+  return try {
+    formatter.parse(value).time
+  } catch (err: Throwable) {
+    log.warn("Unable to parse date (format='$format')", value)
+    def
+  }
 }

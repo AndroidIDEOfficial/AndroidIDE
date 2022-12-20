@@ -17,12 +17,22 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.widget.Space
+import android.widget.TextClock
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.inflater.AttributeHandlerScope
 
 /**
- * Attribute adapter for [Space].
+ * Attribute adapter for [TextClock].
  *
  * @author Deep Kr. Ghosh
  */
-@com.itsaky.androidide.annotations.inflater.ViewAdapter(Space::class)
-class SpaceAdapter<T : Space> : ViewAdapter<T>()
+@ViewAdapter(TextClock::class)
+open class TextClockAdapter<T : TextClock> : TextViewAdapter<T>() {
+
+  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+    super.createAttrHandlers(create)
+    create("format12Hour") { view.format12Hour = parseString(value) }
+    create("format24Hour") { view.format24Hour = parseString(value) }
+    create("timeZone") { view.timeZone = parseString(value) }
+  }
+}

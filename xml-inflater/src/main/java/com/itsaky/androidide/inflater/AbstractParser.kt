@@ -52,7 +52,7 @@ abstract class AbstractParser {
   protected open fun parseFloat(value: String, def: Float = 0f): Float {
     return com.itsaky.androidide.inflater.internal.utils.parseFloat(value = value, def = def)
   }
-  
+
   /**
    * Parses the given string value representing a long to its actual value.
    *
@@ -214,6 +214,22 @@ abstract class AbstractParser {
     return com.itsaky.androidide.inflater.internal.utils.parseColorStateList(
       context = context,
       value = value,
+      def = def
+    )
+  }
+
+  /**
+   * Parses the given string value representing a date to miliseconds.
+   *
+   * @param value The string value. Usually value from attributes.
+   * @param format The date format for [java.text.SimpleDateFormat].
+   * @param def The default value.
+   */
+  @JvmOverloads
+  fun parseDate(value: String, format: String = "MM/dd/yyyy", def: Long = 0L): Long {
+    return com.itsaky.androidide.inflater.internal.utils.parseDate(
+      value = value,
+      format = format,
       def = def
     )
   }
