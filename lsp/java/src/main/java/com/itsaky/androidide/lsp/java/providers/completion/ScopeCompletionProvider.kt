@@ -184,7 +184,7 @@ class ScopeCompletionProvider(
     item.setLabel(methodSpec.name)
     item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method
-    item.sortText = item.label.toString()
+    item.ideSortText = item.label.toString()
     item.insertText = insertText
     item.insertTextFormat = SNIPPET
     item.snippetDescription = describeSnippet(partial)

@@ -378,7 +378,7 @@ public class GroovyAutoComplete {
     item.setLabel(itemLabel);
     item.setDetail("");
     item.setInsertText(itemLabel);
-    item.setSortText("0" + itemLabel);
+    item.setIdeSortText("0" + itemLabel);
     item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
     item.setKind(CompletionItemKind.SNIPPET);
     return item;
