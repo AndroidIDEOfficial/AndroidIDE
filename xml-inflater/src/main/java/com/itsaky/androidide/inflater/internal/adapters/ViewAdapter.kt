@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.resources.R.drawable
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Build

@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.resources.R.drawable
 import android.widget.AbsoluteLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
 

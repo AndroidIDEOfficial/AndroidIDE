@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.resources.R.drawable
 import android.widget.CompoundButton
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView

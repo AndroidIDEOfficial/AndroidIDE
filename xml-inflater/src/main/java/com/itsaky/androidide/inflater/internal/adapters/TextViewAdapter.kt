@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.resources.R.drawable
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.util.Linkify
