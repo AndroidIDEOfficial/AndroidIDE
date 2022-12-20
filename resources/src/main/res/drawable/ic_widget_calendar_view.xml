@@ -1,0 +1,27 @@
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="24dp"
+  android:height="24dp"
+  android:viewportWidth="16"
+  android:viewportHeight="16">
+  <path
+    android:fillColor="@color/primaryIconColor"
+    android:fillType="evenOdd"
+    android:pathData="M6,3h4L10,1h2v2h1c1,0 2,0.917 2,1.833v8.334C15,14.083 14,15 13,15L3,15c-1,0 -2,-0.917 -2,-1.833L1,4.833C1,3.917 2,3 3,3h1L4,1h2v2zM3,6v7h10L13,6L3,6zM9,9h3v3L9,12L9,9z" />
+</vector>
