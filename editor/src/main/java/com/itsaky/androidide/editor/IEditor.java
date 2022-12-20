@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.models.Position;
@@ -32,9 +33,8 @@ import java.io.File;
  * @author Akash Yadav
  */
 public interface IEditor {
-  
+
   String KEY_FILE = "ide.editor.file";
-  
 
   /**
    * Get the file that this editor is currently editing.
@@ -172,7 +172,7 @@ public interface IEditor {
 
   /**
    * Set the language server that this editor will connect with. If the language client is not set,
-   * it'll be set to {@link IDELanguageClientImpl}.
+   * it'll be set to {@link ILanguageClient} from the language server.
    *
    * @param server The server to set. Provide <code>null</code> to disable all the language server
    *     features.

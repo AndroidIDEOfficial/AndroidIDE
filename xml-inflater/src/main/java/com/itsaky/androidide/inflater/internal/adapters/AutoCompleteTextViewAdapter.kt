@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AutoCompleteTextView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [AutoCompleteTextView].
@@ -27,6 +32,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(AutoCompleteTextView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class AutoCompleteTextViewAdapter<T : AutoCompleteTextView> : EditTextAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -36,5 +42,13 @@ open class AutoCompleteTextViewAdapter<T : AutoCompleteTextView> : EditTextAdapt
     create("dropDownAnchor") { view.dropDownAnchor = parseId(file.resName, value) }
     create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value) }
     create("dropDownHeight") { view.dropDownHeight = parseDimension(context, value) }
+  }
+  
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(
+      AutoCompleteTextView::class.java,
+      string.widget_auto_complete_textview,
+      drawable.ic_widget_auto_complete_textview
+    ))
   }
 }

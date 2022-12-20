@@ -27,9 +27,14 @@ import android.widget.ImageView.ScaleType.FIT_END
 import android.widget.ImageView.ScaleType.FIT_START
 import android.widget.ImageView.ScaleType.FIT_XY
 import android.widget.ImageView.ScaleType.MATRIX
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adpater [ImageView]s.
@@ -37,6 +42,7 @@ import com.itsaky.androidide.inflater.R
  * @author Akash Yadav
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(ImageView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class ImageViewAdapter<T : ImageView> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -51,6 +57,12 @@ open class ImageViewAdapter<T : ImageView> : ViewAdapter<T>() {
     create("src") { view.setImageDrawable(parseDrawable(context, value)) }
     create("tint") { view.imageTintList = parseColorStateList(context, value) }
     create("tintMode") { view.imageTintMode = parsePorterDuffMode(value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(ImageView::class.java, string.widget_image_view, drawable.ic_widget_imageview)
+    )
   }
 
   override fun applyBasic(view: IView) {

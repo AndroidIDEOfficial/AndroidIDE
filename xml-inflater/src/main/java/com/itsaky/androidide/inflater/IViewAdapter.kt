@@ -21,6 +21,7 @@ import android.view.View
 import com.android.SdkConstants
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
+import com.itsaky.androidide.inflater.models.UiWidget
 
 /**
  * Handles logic for applying attributes to a view.
@@ -65,6 +66,23 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
     val handlers = mutableMapOf<String, AttributeHandlerScope<T>.() -> Unit>()
     createAttrHandlers(handlers::put)
     return@lazy handlers
+  }
+
+  private val widget by lazy { createUiWidgets() }
+
+  /**
+   * Get the [UiWidget] model that can be used to list this adapter's view in the UI designer.
+   *
+   * @throws UnsupportedOperationException If this view adapter does not adapt a UI designer widget.
+   */
+  fun getUiWidgets(): List<UiWidget> {
+    return widget
+  }
+
+  protected open fun createUiWidgets(): List<UiWidget> {
+    throw UnsupportedOperationException(
+      "${javaClass.simpleName} is not a UI Designer widget adapter"
+    )
   }
 
   /**

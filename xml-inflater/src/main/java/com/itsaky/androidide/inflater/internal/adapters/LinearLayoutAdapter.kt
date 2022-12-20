@@ -17,14 +17,26 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import android.content.Context
+import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.INamespace
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.LayoutBehavior
 import com.itsaky.androidide.inflater.LayoutBehavior.HORIZONTAL
 import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
+import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.inflater.utils.newAttribute
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [LinearLayout].
@@ -32,6 +44,7 @@ import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
  * @author Akash Yadav
  */
 @ViewAdapter(LinearLayout::class)
+@IncludeInDesigner(group = LAYOUTS)
 open class LinearLayoutAdapter<T : LinearLayout> : ViewGroupAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -49,6 +62,22 @@ open class LinearLayoutAdapter<T : LinearLayout> : ViewGroupAdapter<T>() {
     create("weightSum") { view.weightSum = parseFloat(value) }
   }
 
+  override fun createUiWidgets(): List<UiWidget> {
+    val horizontal =
+      LinearLayoutWidget(
+        title = string.widget_linear_layout_horz,
+        icon = drawable.ic_widget_linear_layout_horz,
+        isVertical = false
+      )
+    val vertical =
+      LinearLayoutWidget(
+        title = string.widget_linear_layout_vert,
+        icon = drawable.ic_widget_linear_layout_vert,
+        isVertical = true
+      )
+    return listOf(horizontal, vertical)
+  }
+
   override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
     val orientation = group.findAttribute(INamespace.ANDROID.uri, "orientation")
     return if (orientation?.value == "vertical") VERTICAL else HORIZONTAL
@@ -59,6 +88,26 @@ open class LinearLayoutAdapter<T : LinearLayout> : ViewGroupAdapter<T>() {
       "vertical" -> LinearLayout.VERTICAL
       "horizontal" -> LinearLayout.HORIZONTAL
       else -> LinearLayout.HORIZONTAL
+    }
+  }
+
+  private class LinearLayoutWidget(
+    @StringRes title: Int,
+    @DrawableRes icon: Int,
+    private val isVertical: Boolean
+  ) : UiWidget(LinearLayout::class.java, title, icon) {
+
+    companion object {
+      private const val HORIZONTAL = "horizontal"
+      private const val VERTICAL = "vertical"
+    }
+
+    override fun createView(context: Context, parent: ViewGroup, layoutFile: LayoutFile): IView {
+      return super.createView(context, parent, layoutFile).apply {
+        addAttribute(
+          newAttribute(this, name = "orientation", value = if (isVertical) VERTICAL else HORIZONTAL)
+        )
+      }
     }
   }
 }

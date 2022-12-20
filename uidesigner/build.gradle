@@ -52,9 +52,9 @@ dependencies {
     implementation google.material
     
     implementation project(path: ':actions')
+    implementation project(path: ':annotations')
     implementation project(path: ':common')
     implementation project(path: ':editor')
-    implementation project(path: ':editor-languages')
     implementation project(path: ':logger')
     implementation project(path: ':lookup')
     implementation project(path: ':lsp:api')

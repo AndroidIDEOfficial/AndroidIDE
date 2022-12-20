@@ -22,9 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.itsaky.androidide.app.BaseIDEActivity
-import com.itsaky.androidide.editor.IEditorProvider
-import com.itsaky.androidide.language.xml.XMLLanguage
-import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.editor.language.xml.XMLLanguage
+import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.uidesigner.databinding.ActivityShowXmlBinding
@@ -50,8 +49,7 @@ class ShowXmlActivity : BaseIDEActivity() {
 
   override fun bindLayout(): View {
     this.binding = ActivityShowXmlBinding.inflate(layoutInflater)
-    this.editor =
-      Lookup.DEFAULT.lookup(IEditorProvider::class.java)!!.createEditor(this) as CodeEditor
+    this.editor = IDEEditor(this)
 
     setSupportActionBar(this.binding!!.toolbar)
     supportActionBar?.setDisplayHomeAsUpEnabled(true)

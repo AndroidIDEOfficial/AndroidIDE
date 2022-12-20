@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.SeekBar
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [SeekBar].
@@ -27,11 +32,16 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(SeekBar::class)
+@IncludeInDesigner(group = WIDGETS)
 open class SeekBarAdapter<T : SeekBar> : AbsSeekBarAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
 
     create("thumb") { view.thumb = parseDrawable(context, value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(SeekBar::class.java, string.widget_seekbar, drawable.ic_widget_seek_bar))
   }
 }

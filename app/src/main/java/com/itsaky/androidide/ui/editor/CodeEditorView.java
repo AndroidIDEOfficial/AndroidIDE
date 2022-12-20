@@ -51,14 +51,16 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.itsaky.androidide.app.IDEApplication;
-import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.editor.ui.EditorSearchLayout;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
-import com.itsaky.androidide.language.cpp.CppLanguage;
-import com.itsaky.androidide.language.groovy.GroovyLanguage;
-import com.itsaky.androidide.language.java.JavaLanguage;
-import com.itsaky.androidide.language.kotlin.KotlinLanguage;
-import com.itsaky.androidide.language.xml.XMLLanguage;
+import com.itsaky.androidide.editor.language.cpp.CppLanguage;
+import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
+import com.itsaky.androidide.editor.language.java.JavaLanguage;
+import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
+import com.itsaky.androidide.editor.language.xml.XMLLanguage;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
@@ -319,7 +321,7 @@ public class CodeEditorView extends LinearLayout {
       return;
     }
 
-    final var prefs = IDEApplication.getInstance().getPrefManager();
+    final var prefs = BaseApplication.getBaseInstance().getPrefManager();
     switch (event.getKey()) {
       case FONT_SIZE:
         onFontSizePrefChanged();

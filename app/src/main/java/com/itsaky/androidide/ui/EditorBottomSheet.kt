@@ -20,7 +20,6 @@ package com.itsaky.androidide.ui
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
@@ -30,7 +29,6 @@ import android.view.ViewTreeObserver
 import android.widget.RelativeLayout
 import androidx.annotation.GravityInt
 import androidx.appcompat.widget.TooltipCompat
-import androidx.core.view.ViewCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
@@ -41,9 +39,6 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils.runOnUiThread
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
@@ -63,7 +58,6 @@ import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
-import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File

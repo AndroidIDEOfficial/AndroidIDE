@@ -150,8 +150,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     view.registerAttributeChangeListener(attrHandler)
     view.view.setOnTouchListener(
       WidgetTouchListener(view, requireContext()) {
-        viewModel.view = it
-        findNavController().navigate(R.id.viewInfoSheet)
+        showViewInfo(it)
         true
       }
     )
@@ -171,7 +170,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
       view.needSetup = false
     }
   }
-
+  
+  internal fun showViewInfo(view: IView) {
+    viewModel.view = view
+    findNavController().navigate(R.id.viewInfoSheet)
+  }
+  
   private fun setupViewGroup(viewGroup: UiViewGroup) {
     viewGroup.view.setOnDragListener(WidgetDragListener(viewGroup, placeholder, touchSlop))
     viewGroup.addOnHierarchyChangeListener(hierarchyHandler)

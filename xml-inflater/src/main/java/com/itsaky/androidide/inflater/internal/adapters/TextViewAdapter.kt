@@ -23,8 +23,12 @@ import android.text.util.Linkify
 import android.util.TypedValue
 import android.widget.TextView
 import com.blankj.utilcode.util.SizeUtils
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.utils.newAttribute
 import java.util.regex.Pattern
 
@@ -34,6 +38,7 @@ import java.util.regex.Pattern
  * @author Akash Yadav
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(TextView::class)
+@IncludeInDesigner(group = WIDGETS)
 open class TextViewAdapter<T : TextView> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -116,6 +121,12 @@ open class TextViewAdapter<T : TextView> : ViewAdapter<T>() {
     }
     create("textStyle") { view.setTypeface(view.typeface, parseTextStyle(value)) }
     create("typeface") { view.typeface = parseTypeface(value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(TextView::class.java, R.string.widget_textview, R.drawable.ic_widget_textview)
+    )
   }
 
   override fun applyBasic(view: IView) {

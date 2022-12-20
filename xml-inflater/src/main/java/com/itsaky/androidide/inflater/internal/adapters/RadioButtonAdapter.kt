@@ -19,6 +19,11 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.RadioButton
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [RadioButton].
@@ -26,4 +31,12 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(RadioButton::class)
-open class RadioButtonAdapter<T : RadioButton> : CompoundButtonAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+open class RadioButtonAdapter<T : RadioButton> : CompoundButtonAdapter<T>() {
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(RadioButton::class.java, string.widget_radio_button, drawable.ic_widget_radio_button)
+    )
+  }
+}

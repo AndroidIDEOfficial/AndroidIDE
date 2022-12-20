@@ -19,10 +19,23 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.CheckBox
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [CheckBox].
  *
  * @author Akash Yadav
  */
-@ViewAdapter(CheckBox::class) open class CheckBoxAdapter<T : CheckBox> : CompoundButtonAdapter<T>()
+@ViewAdapter(CheckBox::class)
+@IncludeInDesigner(group = WIDGETS)
+open class CheckBoxAdapter<T : CheckBox> : CompoundButtonAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(CheckBox::class.java, string.widget_checkbox, drawable.ic_widget_checkbox)
+    )
+  }
+}

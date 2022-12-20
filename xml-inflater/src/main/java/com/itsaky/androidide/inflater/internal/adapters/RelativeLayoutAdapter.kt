@@ -19,7 +19,12 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.RelativeLayout
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [RelativeLayout].
@@ -27,11 +32,22 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(RelativeLayout::class)
+@IncludeInDesigner(group = LAYOUTS)
 open class RelativeLayoutAdapter<T : RelativeLayout> : ViewGroupAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("gravity") { view.gravity = parseGravity(value) }
     create("ignoreGravity") { view.ignoreGravity = parseId(file.resName, value) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(
+        RelativeLayout::class.java,
+        string.widget_relative_layout,
+        drawable.ic_widget_relative_layout
+      )
+    )
   }
 }

@@ -48,7 +48,7 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.ui.editor.CodeEditorView;
-import com.itsaky.androidide.ui.editor.IDEEditor;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
 
@@ -383,6 +383,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   /** Called by {@link IDEEditor IDEEditor} to show locations in EditorActivity */
+  @Override
   public void showLocations(List<Location> locations) {
 
     // Cannot show anything if the activity() is null

@@ -18,6 +18,11 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.view.TextureView
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [TextureView].
@@ -25,4 +30,11 @@ import android.view.TextureView
  * @author Akash Yadav
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(TextureView::class)
-open class TextureViewAdapter<T : TextureView> : ViewAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+open class TextureViewAdapter<T : TextureView> : ViewAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(TextureView::class.java, string.widget_textureview, drawable.ic_widget_textureview)
+    )
+  }
+}

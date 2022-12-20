@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/relativeLayout2"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?attr/colorPrimaryContainer"
+  android:gravity="center_vertical"
+  tools:ignore="SmallSp">
+
+  <TextView
+    android:id="@+id/completion_type"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:layout_marginEnd="4dp"
+    android:ellipsize="start"
+    android:gravity="center_vertical"
+    android:singleLine="true"
+    android:textColor="?attr/colorSecondaryVariant"
+    android:textSize="11sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="Class" />
+
+  <TextView
+    android:id="@+id/completion_label"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginEnd="4dp"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:singleLine="true"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:textColor="?attr/colorOnPrimaryContainer"
+    android:textSize="13sp"
+    android:textStyle="bold"
+    app:layout_constraintEnd_toStartOf="@id/completion_type"
+    app:layout_constraintStart_toEndOf="@id/completion_iconText"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="MainActivity" />
+
+  <TextView
+    android:id="@+id/completion_detail"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:singleLine="true"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:textColor="?attr/colorSecondaryVariant"
+    android:textSize="11sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/completion_iconText"
+    app:layout_constraintTop_toBottomOf="@id/completion_label"
+    tools:text="com.itsaky.androidide.MainActivity" />
+
+
+  <TextView
+    android:id="@+id/completion_api_info"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginBottom="2dp"
+    android:ellipsize="end"
+    android:gravity="center_vertical"
+    android:singleLine="true"
+    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+    android:textColor="?attr/colorSecondaryVariant"
+    android:textSize="11sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@id/completion_iconText"
+    app:layout_constraintTop_toBottomOf="@id/completion_detail"
+    tools:text="Added in API 1" />
+
+  <TextView
+    android:id="@+id/completion_iconText"
+    android:layout_width="30dp"
+    android:layout_height="0dp"
+    android:layout_marginEnd="8dp"
+    android:backgroundTint="?attr/colorPrimaryContainer"
+    android:gravity="center"
+    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+    android:textSize="14sp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="F" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -19,6 +19,11 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.webkit.WebView
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
+import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [WebView].
@@ -26,4 +31,9 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  * @author Akash Yadav
  */
 @ViewAdapter(WebView::class)
-open class WebViewAdapter<T : WebView> : AbsoluteLayoutAdapter<T>()
+@IncludeInDesigner(group = WIDGETS)
+open class WebViewAdapter<T : WebView> : AbsoluteLayoutAdapter<T>() {
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(WebView::class.java, string.widget_webview, drawable.ic_widget_webview))
+  }
+}
