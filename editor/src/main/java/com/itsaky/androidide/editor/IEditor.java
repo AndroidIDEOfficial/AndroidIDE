@@ -18,6 +18,7 @@
 package com.itsaky.androidide.editor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
@@ -178,6 +179,13 @@ public interface IEditor {
    *     features.
    */
   void setLanguageServer(ILanguageServer server);
+
+  /**
+   * Set the language client to this editor.
+   *
+   * @param client The client to set.
+   */
+  void setLanguageClient(@Nullable ILanguageClient client);
 
   /**
    * Append the given text at the end of the editor's content.

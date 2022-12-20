@@ -61,6 +61,7 @@ import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.editor.language.xml.XMLLanguage;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
 import com.itsaky.androidide.lsp.java.JavaLanguageServer;
@@ -167,6 +168,11 @@ public class CodeEditorView extends LinearLayout {
   protected void postRead() {
     binding.editor.setEditorLanguage(createLanguage(file));
     binding.editor.setLanguageServer(createLanguageServer(file));
+    
+    if (IDELanguageClientImpl.isInitialized()) {
+      binding.editor.setLanguageClient(IDELanguageClientImpl.getInstance());
+    }
+    
     // File must be set only after setting the language server
     // This will make sure that textDocument/didOpen is sent
     binding.editor.setFile(getFile());
