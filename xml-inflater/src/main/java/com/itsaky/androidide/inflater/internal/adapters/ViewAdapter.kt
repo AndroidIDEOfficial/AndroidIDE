@@ -31,11 +31,15 @@ import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.view.updatePadding
 import androidx.core.view.updatePaddingRelative
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
+import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.utils.newAttribute
 
 /**
@@ -44,6 +48,7 @@ import com.itsaky.androidide.inflater.utils.newAttribute
  * @author Akash Yadav
  */
 @ViewAdapter(forView = View::class)
+@IncludeInDesigner(group = WIDGETS)
 open class ViewAdapter<T : View> : IViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
@@ -101,36 +106,40 @@ open class ViewAdapter<T : View> : IViewAdapter<T>() {
     create("translationZ") { view.translationZ = parseFloat(value) }
     create("visibility") { view.visibility = parseVisibility(value) }
   }
-  
-  override fun AttributeHandlerScope<T>.applyLayoutParams() : Boolean {
-    
+
+  override fun AttributeHandlerScope<T>.applyLayoutParams(): Boolean {
+
     var applied = false
-    
+
     if (layoutParams is LinearLayout.LayoutParams) {
       applied = applyLinearLayoutParams(layoutParams, name, value)
     }
-  
+
     if (!applied && layoutParams is RelativeLayout.LayoutParams) {
       applied = applyRelativeLayoutParams(layoutParams, file.resName, name, value)
     }
-  
+
     if (!applied && layoutParams is FrameLayout.LayoutParams) {
       applied = applyFrameLayoutParams(layoutParams, name, value)
     }
-  
+
     if (!applied && layoutParams is MarginLayoutParams) {
       applied = applyMarginParams(context, layoutParams, name, value)
     }
-  
+
     if (!applied) {
       applied = applyLayoutParams(context, layoutParams, name, value)
     }
-  
+
     if (applied) {
       view.layoutParams = layoutParams
     }
-    
+
     return applied
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(UiWidget(View::class.java, R.string.widget_view, R.drawable.ic_widget_view))
   }
 
   override fun applyBasic(view: IView) {

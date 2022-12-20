@@ -470,31 +470,32 @@
   <string name="ui_category_widgets">Widgets</string>
   <string name="ui_category_layouts">Layouts</string>
 
-  <string name="widget_textview">TextView</string>
-  <string name="widget_button">Button</string>
-  <string name="widget_checkbox">CheckBox</string>
-  <string name="widget_checked_textview">CheckedTextView</string>
-  <string name="widget_edittext">EditText</string>
-  <string name="widget_image_button">ImageButton</string>
-  <string name="widget_image_view">ImageView</string>
-  <string name="widget_progressbar">ProgressBar</string>
-  <string name="widget_radio_button">RadioButton</string>
-  <string name="widget_seekbar">SeekBar</string>
-  <string name="widget_spinner">Spinner</string>
-  <string name="layout_linear">LinearLayout</string>
-  <string name="layout_relative">RelativeLayout</string>
-  <string name="widget_auto_complete_textview">AutoCompleteTextView</string>
-  <string name="widget_listview">ListView</string>
-  <string name="widget_surfaceview">SurfaceView</string>
-  <string name="widget_switch">Switch</string>
-  <string name="widget_textureview">TextureView</string>
-  <string name="widget_togglebutton">ToggleButton</string>
-  <string name="widget_webview">WebView</string>
-  <string name="widget_frame_layout">FrameLayout</string>
-  <string name="widget_grid_layout">GridLayout</string>
-  <string name="widget_linear_layout_horz">LinearLayout (H)</string>
-  <string name="widget_linear_layout_vert">LinearLayout (V)</string>
-  <string name="widget_relative_layout">RelativeLayout</string>
+  <string name="widget_view" translatable="false">View</string>
+  <string name="widget_textview" translatable="false">TextView</string>
+  <string name="widget_button" translatable="false">Button</string>
+  <string name="widget_checkbox" translatable="false">CheckBox</string>
+  <string name="widget_checked_textview" translatable="false">CheckedTextView</string>
+  <string name="widget_edittext" translatable="false">EditText</string>
+  <string name="widget_image_button" translatable="false">ImageButton</string>
+  <string name="widget_image_view" translatable="false">ImageView</string>
+  <string name="widget_progressbar" translatable="false">ProgressBar</string>
+  <string name="widget_radio_button" translatable="false">RadioButton</string>
+  <string name="widget_seekbar" translatable="false">SeekBar</string>
+  <string name="widget_spinner" translatable="false">Spinner</string>
+  <string name="layout_linear" translatable="false">LinearLayout</string>
+  <string name="layout_relative" translatable="false">RelativeLayout</string>
+  <string name="widget_auto_complete_textview" translatable="false">AutoCompleteTextView</string>
+  <string name="widget_listview" translatable="false">ListView</string>
+  <string name="widget_surfaceview" translatable="false">SurfaceView</string>
+  <string name="widget_switch" translatable="false">Switch</string>
+  <string name="widget_textureview" translatable="false">TextureView</string>
+  <string name="widget_togglebutton" translatable="false">ToggleButton</string>
+  <string name="widget_webview" translatable="false">WebView</string>
+  <string name="widget_frame_layout" translatable="false">FrameLayout</string>
+  <string name="widget_grid_layout" translatable="false">GridLayout</string>
+  <string name="widget_linear_layout_horz" translatable="false">LinearLayout (H)</string>
+  <string name="widget_linear_layout_vert" translatable="false">LinearLayout (V)</string>
+  <string name="widget_relative_layout" translatable="false">RelativeLayout</string>
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>

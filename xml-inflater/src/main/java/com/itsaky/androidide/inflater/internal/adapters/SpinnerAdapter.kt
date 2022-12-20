@@ -19,7 +19,11 @@ package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.Spinner
 import com.itsaky.androidide.annotations.inflater.ViewAdapter
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
+import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.inflater.models.UiWidget
 
 /**
  * Attribute adapter for [Spinner].
@@ -27,6 +31,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 @ViewAdapter(Spinner::class)
+@IncludeInDesigner(group = WIDGETS)
 open class SpinnerAdapter<T : Spinner> : AbsSpinnerAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
@@ -39,5 +44,11 @@ open class SpinnerAdapter<T : Spinner> : AbsSpinnerAdapter<T>() {
     create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value, 0) }
     create("gravity") { view.gravity = parseGravity(value) }
     create("popupBackground") { view.setPopupBackgroundDrawable(parseDrawable(context, value)) }
+  }
+
+  override fun createUiWidgets(): List<UiWidget> {
+    return listOf(
+      UiWidget(Spinner::class.java, R.string.widget_spinner, R.drawable.ic_widget_spinner)
+    )
   }
 }
