@@ -486,6 +486,7 @@
   <string name="layout_linear" translatable="false">LinearLayout</string>
   <string name="layout_relative" translatable="false">RelativeLayout</string>
   <string name="widget_auto_complete_textview" translatable="false">AutoCompleteTextView</string>
+  <string name="widget_multi_auto_complete_textview" translatable="false">MultiAutoCompleteTextView</string>
   <string name="widget_listview" translatable="false">ListView</string>
   <string name="widget_surfaceview" translatable="false">SurfaceView</string>
   <string name="widget_switch" translatable="false">Switch</string>

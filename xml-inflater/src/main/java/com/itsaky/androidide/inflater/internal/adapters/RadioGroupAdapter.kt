@@ -34,7 +34,7 @@ import com.itsaky.androidide.inflater.models.UiWidget
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(forView = RadioGroup::class)
 @IncludeInDesigner(group = LAYOUTS)
-class RadioGroupAdapter<T : RadioGroup> : LinearLayoutAdapter<T>() {
+open class RadioGroupAdapter<T : RadioGroup> : LinearLayoutAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
