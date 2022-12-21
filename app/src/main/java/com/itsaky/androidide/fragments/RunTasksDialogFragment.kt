@@ -32,20 +32,17 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.adapters.RunTasksCategoryAdapter
 import com.itsaky.androidide.adapters.RunTasksListAdapter
 import com.itsaky.androidide.databinding.LayoutRunTaskBinding
 import com.itsaky.androidide.databinding.LayoutRunTaskDialogBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.Checkable
-import com.itsaky.androidide.models.RunTasksCategory
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
@@ -95,10 +92,8 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
         findViewById<View>(com.google.android.material.R.id.container)?.apply {
           doOnApplyWindowInsets { view, insets, _, margins ->
             insets.getInsets(statusBars() or navigationBars()).apply {
-              view.updateLayoutParams<MarginLayoutParams> {
-                updateMargins(top = margins.top + top)
-              }
-              run.categories.apply {
+              view.updateLayoutParams<MarginLayoutParams> { updateMargins(top = margins.top + top) }
+              run.tasks.apply {
                 updatePadding(bottom = bottom)
                 clipToPadding = false
                 clipChildren = false
@@ -130,22 +125,8 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     }
 
     viewModel.observeQuery(viewLifecycleOwner) {
-      val adapter = run.categories.adapter
-      if (adapter !is RunTasksCategoryAdapter) {
-        return@observeQuery
-      }
-      for (index in 0 until viewModel.categories.size) {
-        val layout =
-          run.categories.layoutManager
-            ?.findViewByPosition(index)
-            ?.findViewById<RecyclerView>(com.itsaky.androidide.R.id.tasks)
-            ?: continue
-        val childAdapter = layout.adapter
-        if (childAdapter !is RunTasksListAdapter) {
-          continue
-        }
-        childAdapter.filter(it)
-      }
+      val adapter = run.tasks.adapter as? RunTasksListAdapter? ?: return@observeQuery
+      adapter.filter(it)
     }
 
     run.searchInput.editText?.addTextChangedListener(
@@ -209,13 +190,8 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
           viewModel.deselect(item.data.path)
         }
       }
-      
-      viewModel.categories =
-        listOf(
-          RunTasksCategory(R.string.title_common, viewModel.commonTasks),
-          RunTasksCategory(R.string.title_all_tasks, viewModel.tasks)
-        )
-      run.categories.adapter = RunTasksCategoryAdapter(viewModel.categories, onCheckChanged)
+
+      run.tasks.adapter = RunTasksListAdapter(viewModel.tasks, onCheckChanged)
     }
   }
 }
