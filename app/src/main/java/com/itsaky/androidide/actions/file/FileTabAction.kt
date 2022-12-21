@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.actions.file
 
-import com.itsaky.androidide.EditorActivity
+import com.itsaky.androidide.EditorHandlerActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
@@ -48,7 +48,7 @@ abstract class FileTabAction : EditorActivityAction() {
           return
         }
 
-    visible = activity.viewModel.openedFiles.isNotEmpty()
+    visible = activity.viewModel.getOpenedFiles().isNotEmpty()
     enabled = visible
   }
 
@@ -57,5 +57,5 @@ abstract class FileTabAction : EditorActivityAction() {
     return activity.doAction(data)
   }
 
-  abstract fun EditorActivity.doAction(data: ActionData): Boolean
+  abstract fun EditorHandlerActivity.doAction(data: ActionData): Boolean
 }

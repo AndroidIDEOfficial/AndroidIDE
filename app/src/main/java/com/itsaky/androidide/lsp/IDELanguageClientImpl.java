@@ -27,11 +27,10 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.EditorActivity;
+import com.itsaky.androidide.EditorHandlerActivity;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
@@ -76,21 +75,21 @@ public class IDELanguageClientImpl implements ILanguageClient {
   protected static final ILogger LOG = ILogger.newInstance("AbstractLanguageClient");
   private static IDELanguageClientImpl mInstance;
   private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
-  protected EditorActivityProvider activityProvider;
+  protected EditorHandlerActivity activity;
 
-  private IDELanguageClientImpl(EditorActivityProvider provider) {
-    setActivityProvider(provider);
+  private IDELanguageClientImpl(EditorHandlerActivity provider) {
+    setActivity(provider);
   }
 
-  public void setActivityProvider(EditorActivityProvider provider) {
-    this.activityProvider = provider;
+  public void setActivity(EditorHandlerActivity provider) {
+    this.activity = provider;
   }
 
-  public static IDELanguageClientImpl initialize(EditorActivityProvider provider) {
+  public static IDELanguageClientImpl initialize(EditorHandlerActivity provider) {
     if (mInstance != null) {
       throw new IllegalStateException("Client is already initialized");
     }
-
+    
     mInstance = new IDELanguageClientImpl(provider);
 
     return getInstance();
@@ -150,9 +149,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
     activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
   }
 
-  protected EditorActivity activity() {
-    if (activityProvider == null) return null;
-    return activityProvider.provide();
+  protected EditorHandlerActivity activity() {
+    if (activity == null) return null;
+    return activity;
   }
 
   @Nullable

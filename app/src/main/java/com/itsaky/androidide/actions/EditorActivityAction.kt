@@ -19,7 +19,7 @@ package com.itsaky.androidide.actions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import com.itsaky.androidide.EditorActivity
+import com.itsaky.androidide.EditorHandlerActivity
 
 /** @author Akash Yadav */
 abstract class EditorActivityAction : ActionItem {
@@ -38,8 +38,8 @@ abstract class EditorActivityAction : ActionItem {
     }
   }
 
-  fun getActivity(data: ActionData): EditorActivity? {
+  fun getActivity(data: ActionData): EditorHandlerActivity? {
     val context = data.get(Context::class.java) ?: return null
-    return context as? EditorActivity
+    return context as? EditorHandlerActivity
   }
 }

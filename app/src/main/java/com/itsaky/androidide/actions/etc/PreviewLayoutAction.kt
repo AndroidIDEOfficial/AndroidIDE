@@ -24,11 +24,11 @@ import androidx.core.content.ContextCompat
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.extractPathData
 import com.blankj.utilcode.util.KeyboardUtils
-import com.itsaky.androidide.EditorActivity
+import com.itsaky.androidide.EditorHandlerActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.editor.ui.IDEEditor
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import java.io.File
 
@@ -83,10 +83,10 @@ class PreviewLayoutAction() : EditorRelatedAction() {
     return true
   }
 
-  private fun EditorActivity.previewLayout(file: File) {
+  private fun EditorHandlerActivity.previewLayout(file: File) {
     val intent = Intent(this, UIDesignerActivity::class.java)
     intent.putExtra(UIDesignerActivity.EXTRA_FILE, file.absolutePath)
-    uiDesignerResultLauncher.launch(intent)
+    uiDesignerResultLauncher?.launch(intent)
   }
 
   private fun ActionData.requireEditor(): IDEEditor {

@@ -19,7 +19,7 @@ package com.itsaky.androidide.actions.file
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.EditorActivity
+import com.itsaky.androidide.EditorHandlerActivity
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 
@@ -37,7 +37,7 @@ class CloseOtherFilesAction(context: Context) : FileTabAction() {
     icon = ContextCompat.getDrawable(context, R.drawable.ic_close_others)
   }
 
-  override fun EditorActivity.doAction(data: ActionData): Boolean {
+  override fun EditorHandlerActivity.doAction(data: ActionData): Boolean {
     closeOthers()
     return true
   }

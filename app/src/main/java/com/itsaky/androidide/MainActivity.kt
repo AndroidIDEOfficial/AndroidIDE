@@ -155,7 +155,7 @@ class MainActivity : IDEActivity() {
 
   private fun openProject(root: File) {
     projectPath = root.absolutePath
-    startActivity(Intent(this, EditorActivity::class.java))
+    startActivity(Intent(this, EditorActivityKt::class.java))
   }
 
   private fun checkToolsIsInstalled(): Boolean {

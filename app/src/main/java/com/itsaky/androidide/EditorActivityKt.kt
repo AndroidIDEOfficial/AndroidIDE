@@ -15,30 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.actions.file
-
-import android.content.Context
-import androidx.core.content.ContextCompat
-import com.itsaky.androidide.EditorHandlerActivity
-import com.itsaky.androidide.R
-import com.itsaky.androidide.actions.ActionData
+package com.itsaky.androidide
 
 /**
- * Closes all opened files.
- *
  * @author Akash Yadav
  */
-class CloseAllFilesAction(context: Context) : FileTabAction() {
-
-  override val id: String = "ide.editor.closeAllFiles"
-
-  init {
-    label = context.getString(R.string.action_closeAll)
-    icon = ContextCompat.getDrawable(context, R.drawable.ic_close_all)
-  }
-
-  override fun EditorHandlerActivity.doAction(data: ActionData): Boolean {
-    closeAll()
-    return true
-  }
+class EditorActivityKt : EditorHandlerActivity() {
 }

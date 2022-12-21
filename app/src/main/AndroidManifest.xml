@@ -45,7 +45,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".EditorActivity"
+      android:name=".EditorActivityKt"
       android:launchMode="singleTop"
       android:configChanges="orientation|screenSize|uiMode"
       android:windowSoftInputMode="adjustResize" />
