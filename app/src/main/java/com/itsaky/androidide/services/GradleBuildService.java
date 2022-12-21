@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,7 +97,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private final IBinder mBinder = new GradleServiceBinder();
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
-  private Thread toolingServerThread;
+  private ToolingServerRunner toolingServerThread;
   private NotificationManager notificationManager;
   private IToolingApiServer server;
   private EventListener eventListener;
@@ -105,8 +106,14 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public void onCreate() {
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     showNotification(getString(R.string.build_status_idle), false);
+  
+    Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, this);
   }
-
+  
+  public boolean isToolingServerStarted() {
+    return isToolingServerStarted;
+  }
+  
   private void showNotification(final String message, final boolean isProgress) {
     LOG.info("Showing notification to user...");
     startForeground(NOTIFICATION_ID, buildNotification(message, isProgress));
@@ -163,6 +170,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
+    LOG.debug("onBind() called with: intent = [" + intent + "]");
     return mBinder;
   }
 
@@ -397,8 +405,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   public void startToolingServer(@Nullable OnServerStartListener listener) {
     if (toolingServerThread == null || !toolingServerThread.isAlive()) {
-      toolingServerThread = new Thread(new ToolingServerRunner(listener));
+      toolingServerThread = new ToolingServerRunner(listener);
       toolingServerThread.start();
+      return;
+    }
+    
+    if (toolingServerThread.isStarted && listener != null) {
+      listener.onServerStarted();
+    } else {
+      toolingServerThread.setListener(listener);
     }
   }
 
@@ -465,14 +480,19 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
   }
 
-  private class ToolingServerRunner implements Runnable {
+  private class ToolingServerRunner extends Thread {
 
-    @Nullable private final OnServerStartListener listener;
+    @Nullable private OnServerStartListener listener;
+    private boolean isStarted = false;
 
     public ToolingServerRunner(@Nullable OnServerStartListener listener) {
       this.listener = listener;
     }
-
+  
+    public void setListener(@Nullable final OnServerStartListener listener) {
+      this.listener = listener;
+    }
+  
     @Override
     public void run() {
       try {
@@ -525,6 +545,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         ProjectManager.INSTANCE.setupProject();
 
+        isStarted = true;
         if (listener != null) {
           listener.onServerStarted();
         }

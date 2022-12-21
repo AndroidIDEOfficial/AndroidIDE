@@ -42,7 +42,7 @@ class FileTreeAction() : EditorActivityAction() {
   override fun execAction(data: ActionData): Boolean {
     val context = getActivity(data) ?: return false
   
-    context.binding?.root?.apply {
+    context.binding.root.apply {
       if (!isDrawerOpen(GravityCompat.END)) {
         openDrawer(GravityCompat.END)
         return true

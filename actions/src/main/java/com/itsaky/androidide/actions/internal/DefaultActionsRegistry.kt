@@ -31,6 +31,7 @@ import com.itsaky.androidide.actions.locations.CodeActionsMenu
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Default implementation for the [ActionsRegistry]
@@ -40,7 +41,7 @@ import java.util.concurrent.CompletableFuture
 class DefaultActionsRegistry : ActionsRegistry() {
 
   private val log = ILogger.newInstance("DefaultActionsRegistry")
-  private val actions: MutableMap<String, MutableMap<String, ActionItem>> = mutableMapOf()
+  private val actions = ConcurrentHashMap<String, HashMap<String, ActionItem>>()
   private val listeners = mutableSetOf<ActionExecListener>()
 
   init {
@@ -49,7 +50,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   override fun getActions(location: ActionItem.Location): MutableMap<String, ActionItem> {
     if (actions[location.id] == null) {
-      actions[location.id] = mutableMapOf()
+      actions[location.id] = hashMapOf()
     }
 
     return actions[location.id]!!

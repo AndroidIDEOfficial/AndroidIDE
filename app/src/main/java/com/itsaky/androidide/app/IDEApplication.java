@@ -38,7 +38,7 @@ public class IDEApplication extends BaseApplication {
   private static final ILogger LOG = ILogger.newInstance("IDEApplication");
   private static IDEApplication instance;
   private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-
+  
   public static IDEApplication getInstance() {
     return instance;
   }
@@ -49,7 +49,7 @@ public class IDEApplication extends BaseApplication {
     this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
     Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
     super.onCreate();
-
+    
     EventBus.builder()
         .addIndex(new AppEventsIndex())
         .addIndex(new ProjectsApiEventsIndex())

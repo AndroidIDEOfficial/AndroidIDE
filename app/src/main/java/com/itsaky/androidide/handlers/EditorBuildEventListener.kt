@@ -37,6 +37,9 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
+  
+  fun releaes() {
+  }
 
   override fun prepareBuild() {
     val isFirstBuild = isFirstBuild

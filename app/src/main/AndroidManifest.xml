@@ -36,7 +36,7 @@
     </activity>
     <activity
       android:name=".activities.MainActivity"
-      android:configChanges="orientation|screenSize|uiMode"
+      android:configChanges="orientation|screenSize"
       android:exported="true"
       android:theme="@style/AppTheme.Splash">
       <intent-filter>
@@ -47,17 +47,17 @@
     <activity
       android:name=".activities.editor.EditorActivityKt"
       android:launchMode="singleTop"
-      android:configChanges="orientation|screenSize|uiMode"
+      android:configChanges="orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".activities.PreferencesActivity"
       android:configChanges="orientation|screenSize" />
     <activity
       android:name=".activities.AboutActivity"
-      android:configChanges="orientation|screenSize|uiMode" />
+      android:configChanges="orientation|screenSize" />
     <activity
       android:name=".activities.TerminalActivity"
-      android:configChanges="orientation|screenSize|uiMode"
+      android:configChanges="orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />
 
     <service

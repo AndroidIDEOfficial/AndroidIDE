@@ -51,43 +51,47 @@ import java.io.File
  * @author Akash Yadav
  */
 open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
-  
+
   override fun doOpenFile(file: File, selection: Range?) {
     openFileAndSelect(file, selection)
   }
-  
+
   override fun doCloseAll(runAfter: () -> Unit) {
     closeAll(runAfter)
   }
-  
+
   override fun doSaveAll(): Boolean {
     return saveAll()
   }
-  
+
   override fun provideCurrentEditor(): CodeEditorView? {
     return getCurrentEditor()
   }
-  
+
   override fun provideEditorAt(index: Int): CodeEditorView? {
     return getEditorAtIndex(index)
   }
-  
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    viewModel._displayedFile.observe(this) { this.binding?.editorContainer?.displayedChild = it }
+    viewModel._displayedFile.observe(this) { this.binding.editorContainer.displayedChild = it }
     viewModel._fileTreeDrawerOpened.observe(this) { opened ->
-      this.binding?.editorDrawerLayout?.apply {
+      this.binding.editorDrawerLayout.apply {
         if (opened) openDrawer(GravityCompat.END) else closeDrawer(GravityCompat.END)
       }
     }
+
+    if (viewModel.getOpenedFileCount() != binding.tabs.tabCount) {
+      // The activity proabably has been restarted after a configuration change
+      // restore the opened files
+
+      val files = viewModel.getOpenedFiles()
+      viewModel.removeAllFiles()
+      files.forEach(this::openFile)
+    }
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-    binding = null
-  }
-  
   @SuppressLint("RestrictedApi")
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     if (menu is MenuBuilder) {
@@ -95,7 +99,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
     return true
   }
-  
+
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
     ensureToolbarMenu(menu)
     return true
@@ -108,7 +112,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getEditorAtIndex(index: Int): CodeEditorView? {
-    return binding?.editorContainer?.getChildAt(index) as CodeEditorView?
+    return binding.editorContainer.getChildAt(index) as CodeEditorView?
   }
 
   override fun openFileAndSelect(file: File, selection: Range?) {
@@ -134,7 +138,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return null
     }
 
-    val binding = this.binding ?: return null
     val index = openFileAndGetIndex(file, range)
     val tab = binding.tabs.getTabAt(index)
     if (tab != null && index >= 0 && !tab.isSelected) {
@@ -154,7 +157,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun openFileAndGetIndex(file: File, selection: Range?): Int {
-    val binding = this.binding ?: return -1
     val openedFileIndex = findIndexOfEditorByFile(file)
     if (openedFileIndex != -1) {
       log.error("File is already opened. File: $file")
@@ -181,7 +183,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getEditorForFile(file: File): CodeEditorView? {
-    val binding = this.binding ?: return null
     for (i in 0 until viewModel.getOpenedFileCount()) {
       val editor = binding.editorContainer.getChildAt(i) as CodeEditorView
       if (file == editor.file) {
@@ -302,7 +303,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       }
 
       viewModel.removeFile(index)
-      binding?.apply {
+      binding.apply {
         tabs.removeTabAt(index)
         editorContainer.removeViewAt(index)
       }
@@ -311,7 +312,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return
     }
 
-    binding?.tabs?.requestLayout()
+    binding.tabs.requestLayout()
   }
 
   override fun closeAll() {
@@ -341,7 +342,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       notifyFilesUnsaved(unsavedFiles) { closeOthers() }
     }
   }
-  
+
   open fun ensureToolbarMenu(menu: Menu) {
     menu.clear()
     val data = ActionData()
@@ -377,7 +378,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     viewModel.removeAllFiles()
-    binding?.apply {
+    binding.apply {
       tabs.removeAllTabs()
       tabs.requestLayout()
       editorContainer.removeAllViews()
