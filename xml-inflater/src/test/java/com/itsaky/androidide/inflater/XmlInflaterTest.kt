@@ -42,7 +42,7 @@ object XmlInflaterTest {
     }
 
     val (server, project) =
-      ToolingApiTestLauncher().launchServer(implDir = "../build-tools/tooling-api-impl")
+      ToolingApiTestLauncher().launchServer(implDir = "../subprojects/tooling-api-impl")
     server.initialize(InitializeProjectMessage(File("../tests/test-project").absolutePath)).get()
 
     Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
