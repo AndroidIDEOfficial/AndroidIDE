@@ -486,6 +486,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     private boolean isStarted = false;
 
     public ToolingServerRunner(@Nullable OnServerStartListener listener) {
+      super(ToolingServerRunner.class.getSimpleName());
       this.listener = listener;
     }
   
@@ -539,7 +540,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         GradleBuildService.this.startServerOutputReader(serverStreams.err);
         GradleBuildService.this.server = (IToolingApiServer) launcher.getRemoteProxy();
-        Lookup.DEFAULT.register(KEY_PROJECT_PROXY, ((IProject) launcher.getRemoteProxy()));
+        Lookup.DEFAULT.update(KEY_PROJECT_PROXY, ((IProject) launcher.getRemoteProxy()));
 
         GradleBuildService.this.isToolingServerStarted = true;
 

@@ -209,6 +209,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
           viewModel.deselect(item.data.path)
         }
       }
+      
       viewModel.categories =
         listOf(
           RunTasksCategory(R.string.title_common, viewModel.commonTasks),
