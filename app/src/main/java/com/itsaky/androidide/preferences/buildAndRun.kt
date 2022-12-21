@@ -68,7 +68,7 @@ private class GradleOptions(
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
     addPreference(GradleClearCache())
-    if (BaseApplication.isAarch64 && VERSION.SDK_INT == VERSION_CODES.R) {
+    if (BaseApplication.isAarch64() && VERSION.SDK_INT == VERSION_CODES.R) {
       addPreference(TagPointersFix())
     }
   }
