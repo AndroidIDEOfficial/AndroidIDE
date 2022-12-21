@@ -20,13 +20,15 @@ plugins {
 }
 
 java {
-    sourceCompatibility rootProject.ext.javaSourceVersion
-    targetCompatibility rootProject.ext.javaTargetVersion
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
-    compileOnly project (path: ':subprojects:framework-stubs')
+    implementation google.guava_jre
+    implementation google.auto_val_annotations
     
-    testImplementation tests.junit
-    testImplementation tests.google_truth
+    annotationProcessor google.auto_val_ap
+    
+    implementation project (path: ':subprojects:javac')
 }

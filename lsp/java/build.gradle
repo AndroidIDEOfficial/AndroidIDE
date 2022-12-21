@@ -70,9 +70,9 @@ dependencies {
     
     implementation project (path: ':resources')
     implementation project (path: ':lsp:api')
-    implementation project (path: ':build-tools:javac')
-    implementation project (path: ':build-tools:javac-services')
-    implementation project (path: ':build-tools:google-java-format')
+    implementation project (path: ':subprojects:javac')
+    implementation project (path: ':subprojects:javac-services')
+    implementation project (path: ':subprojects:google-java-format')
     
     implementation androidx.ktx
     implementation common.kotlin
@@ -80,7 +80,7 @@ dependencies {
     testImplementation project (':lsp:testing')
     testImplementation project (':common')
     testImplementation project (':actions')
-    testImplementation project (':build-tools:javac')
+    testImplementation project (':subprojects:javac')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric

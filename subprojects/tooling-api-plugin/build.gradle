@@ -1,0 +1,73 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+plugins {
+    id 'groovy-gradle-plugin'
+    id 'maven-publish'
+}
+
+group "com.itsaky.androidide"
+version "1.0.0"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+publishing {
+    repositories {
+        maven {
+            url new File (project.buildDir, "repo")
+        }
+    }
+}
+
+gradlePlugin {
+    plugins {
+        androidide {
+            id = "com.itsaky.androidide"
+            implementationClass = "com.itsaky.androidide.tooling.plugin.AndroidIDEToolingApiPlugin"
+        }
+    }
+}
+
+task copyToTestDir (type: Copy) {
+    from "$project.buildDir.absolutePath/libs/tooling-api-plugin-${version}.jar"
+    into "${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/"
+    rename {
+        "plugin.jar"
+    }
+    
+    outputs.upToDateWhen {
+        false
+    }
+}
+
+project.tasks.jar {
+    finalizedBy project.tasks.publish
+}
+
+project.tasks.publish {
+    finalizedBy copyToTestDir
+    outputs.upToDateWhen {
+        false
+    }
+}
+
+dependencies {
+    implementation project (path: ':subprojects:tooling-api-model')
+}

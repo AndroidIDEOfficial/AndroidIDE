@@ -46,5 +46,5 @@ dependencies {
   implementation project(path: ':shared')
   
   kapt google.auto_service
-  kapt project (path: ':build-tools:framework-stubs')
+  kapt project (path: ':subprojects:framework-stubs')
 }

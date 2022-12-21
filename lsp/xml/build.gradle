@@ -69,16 +69,16 @@ dependencies {
     implementation project (':actions')
     implementation project (':lsp:api')
     implementation project (':lexers')
-    implementation project (':build-tools:xml-dom')
-    implementation project (':build-tools:xml-formatter')
-    implementation project (':build-tools:xml-utils')
+    implementation project (':subprojects:xml-dom')
+    implementation project (':subprojects:xml-formatter')
+    implementation project (':subprojects:xml-utils')
     
     implementation androidx.ktx
     implementation common.kotlin
     implementation google.material
     
-    testImplementation project (':build-tools:projects')
-    testImplementation project (':build-tools:tooling-api')
+    testImplementation project (':subprojects:projects')
+    testImplementation project (':subprojects:tooling-api')
     testImplementation project (':lsp:testing')
     testImplementation project (':common')
     testImplementation project (':actions')

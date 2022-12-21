@@ -17,11 +17,8 @@
 
 package com.itsaky.androidide.activities.editor
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.CheckBox
 import androidx.annotation.GravityInt
@@ -49,7 +46,6 @@ import com.itsaky.androidide.projects.ProjectManager.setupProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.GradleBuildService
-import com.itsaky.androidide.services.GradleBuildService.GradleServiceBinder
 import com.itsaky.androidide.services.GradleBuildServiceConnnection
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
@@ -77,10 +73,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
   protected val mBuildEventListener = EditorBuildEventListener()
-  
+
   companion object {
-    @JvmStatic
-    private val buildServiceConnection = GradleBuildServiceConnnection()
+    @JvmStatic private val buildServiceConnection = GradleBuildServiceConnnection()
   }
 
   abstract fun doCloseAll(runAfter: () -> Unit)
@@ -136,22 +131,28 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   override fun startServices() {
-  
+
     val service = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
     if (viewModel.isBoundToBuildSerice && service != null) {
       log.info("Reusing already started Gradle build service")
       onGradleBuildServiceConnected(service)
       return
     }
-    
+
     buildServiceConnection.onConnected = this::onGradleBuildServiceConnected
-    
-    if (bindService(Intent(this, GradleBuildService::class.java), buildServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT)) {
+
+    if (
+      bindService(
+        Intent(this, GradleBuildService::class.java),
+        buildServiceConnection,
+        BIND_AUTO_CREATE or BIND_IMPORTANT
+      )
+    ) {
       log.info("Bind request for Gradle build service was successful...")
     } else {
       log.error("Gradle build service doesn't exist or the IDE is not allowed to access it.")
     }
-    
+
     initLspClient()
   }
 

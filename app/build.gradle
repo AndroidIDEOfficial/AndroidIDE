@@ -144,11 +144,11 @@ dependencies {
     implementation project (':eventbus')
     implementation project (':eventbus-android')
     implementation project (':eventbus-events')
-    implementation project (':build-tools:aaptcompiler')
-    implementation project (':build-tools:javac-services')
-    implementation project (':build-tools:xml-utils')
-    implementation project (':build-tools:projects')
-    implementation project (':build-tools:tooling-api')
+    implementation project (':subprojects:aaptcompiler')
+    implementation project (':subprojects:javac-services')
+    implementation project (':subprojects:xml-utils')
+    implementation project (':subprojects:projects')
+    implementation project (':subprojects:tooling-api')
     implementation project (':lsp:api')
     implementation project (':lsp:java')
     implementation project (':lsp:xml')
@@ -166,7 +166,7 @@ dependencies {
     
     // This is to build the tooling-api-impl project before the app is built
     // So we always copy the latest JAR file to assets
-    compileOnly project (path: ':build-tools:tooling-api-impl')
+    compileOnly project (path: ':subprojects:tooling-api-impl')
     
     testImplementation common.editor
     testImplementation tests.junit
