@@ -150,8 +150,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     val initialized = projectInitialized && cachedInitResult != null
 
-    log.debug(projectInitialized, cachedInitResult, wasInitializing)
-
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
     if (initialized && !wasInitializing) {

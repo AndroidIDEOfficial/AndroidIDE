@@ -273,9 +273,6 @@ abstract class BaseEditorActivity :
   }
 
   override fun onDestroy() {
-    if (isDestroying) {
-      log.debug("EditorActivity is being destroyed")
-    }
     preDestroy()
     super.onDestroy()
     postDestroy()
