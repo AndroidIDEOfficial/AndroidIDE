@@ -53,13 +53,10 @@ constructor(
     binding.check.isChecked = data.isChecked
     binding.taskPath.text = task.path
     binding.taskDesc.text = task.description
-
-    binding.root.setOnClickListener {
-      binding.check.isChecked = !binding.check.isChecked
-    }
     
-    binding.check.addOnCheckedStateChangedListener { checkbox, _ ->
-      data.isChecked = checkbox.isChecked
+    binding.root.setOnClickListener {
+      data.isChecked = !data.isChecked
+      binding.check.isChecked = data.isChecked
       onCheckChanged(data)
     }
   }

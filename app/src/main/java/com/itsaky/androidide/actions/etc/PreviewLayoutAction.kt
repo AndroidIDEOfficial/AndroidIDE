@@ -27,6 +27,7 @@ import com.blankj.utilcode.util.KeyboardUtils
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
@@ -60,10 +61,20 @@ class PreviewLayoutAction() : EditorRelatedAction() {
     val file = editor.file!!
 
     val isXml = file.name.endsWith(".xml")
+    
+    if (!isXml) {
+      markInvisible()
+      return
+    }
+    
+    val type = try {
+      extractPathData(file).type
+    } catch (err: Throwable) {
+      markInvisible()
+      return
+    }
 
-    val type = extractPathData(file).type
-
-    visible = isXml && type == LAYOUT
+    visible = type == LAYOUT
     enabled = visible
   }
 

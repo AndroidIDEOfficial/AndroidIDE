@@ -22,7 +22,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.models.Checkable
-import com.itsaky.androidide.models.RunTasksCategory
 import com.itsaky.androidide.tooling.api.model.GradleTask
 
 /** @author Akash Yadav */
@@ -41,28 +40,16 @@ class RunTasksViewModel : ViewModel() {
       "lintRelease"
     )
 
-  private val _categories = MutableLiveData(listOf<RunTasksCategory>())
   private val _tasks = MutableLiveData(listOf<Checkable<GradleTask>>())
-  private val _commonTasks = MutableLiveData(listOf<Checkable<GradleTask>>())
   private val _selected = MutableLiveData(mutableSetOf<String>())
   private val _displayedChild = MutableLiveData(0)
   private val _query = MutableLiveData("")
 
-  var categories: List<RunTasksCategory>
-    get() = _categories.value!!
-    set(value) {
-      _categories.value = value
-    }
-  
   var tasks: List<Checkable<GradleTask>>
     get() = _tasks.value!!
     set(value) {
       _tasks.value = value
-      _commonTasks.value = value.filter { _commonTaskNames.contains(it.data.name) }
     }
-
-  val commonTasks: List<Checkable<GradleTask>>
-    get() = _commonTasks.value!!
 
   var displayedChild: Int
     get() = this._displayedChild.value!!
