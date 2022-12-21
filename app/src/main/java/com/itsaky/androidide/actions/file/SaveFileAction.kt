@@ -49,7 +49,7 @@ class SaveFileAction() : EditorRelatedAction() {
           return
         }
 
-    visible = context.viewModel.openedFiles.isNotEmpty()
+    visible = context.viewModel.getOpenedFiles().isNotEmpty()
     enabled = context.areFilesModified()
   }
 

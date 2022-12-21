@@ -26,7 +26,7 @@
     android:theme="@style/Theme.AndroidIDE"
     tools:ignore="UnusedAttribute,MediaCapabilities">
     <activity
-      android:name=".CrashHandlerActivity"
+      android:name=".activities.CrashHandlerActivity"
       android:exported="true"
       android:windowSoftInputMode="stateAlwaysHidden">
       <intent-filter>
@@ -35,7 +35,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".MainActivity"
+      android:name=".activities.MainActivity"
       android:configChanges="orientation|screenSize|uiMode"
       android:exported="true"
       android:theme="@style/AppTheme.Splash">
@@ -45,18 +45,18 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".EditorActivity"
+      android:name=".activities.editor.EditorActivityKt"
       android:launchMode="singleTop"
       android:configChanges="orientation|screenSize|uiMode"
       android:windowSoftInputMode="adjustResize" />
     <activity
-      android:name=".PreferencesActivity"
+      android:name=".activities.PreferencesActivity"
       android:configChanges="orientation|screenSize" />
     <activity
-      android:name=".AboutActivity"
+      android:name=".activities.AboutActivity"
       android:configChanges="orientation|screenSize|uiMode" />
     <activity
-      android:name=".TerminalActivity"
+      android:name=".activities.TerminalActivity"
       android:configChanges="orientation|screenSize|uiMode"
       android:windowSoftInputMode="adjustResize" />
 

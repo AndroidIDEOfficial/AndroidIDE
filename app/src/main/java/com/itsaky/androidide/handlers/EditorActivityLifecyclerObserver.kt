@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture
 import org.greenrobot.eventbus.EventBus
 
 /**
- * Observes lifecycle events if [com.itsaky.androidide.EditorActivity].
+ * Observes lifecycle events if [com.itsaky.androidide.EditorActivityKt].
  *
  * @author Akash Yadav
  */

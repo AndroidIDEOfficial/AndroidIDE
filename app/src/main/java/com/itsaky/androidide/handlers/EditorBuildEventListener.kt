@@ -17,26 +17,24 @@
 
 package com.itsaky.androidide.handlers
 
-import com.itsaky.androidide.EditorActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.preferences.internal.isFirstBuild
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
-import com.itsaky.androidide.utils.ILogger
 import java.lang.ref.WeakReference
 
 /**
- * Handles events received from [GradleBuildService] updates [EditorActivity].
+ * Handles events received from [GradleBuildService] updates [EditorHandlerActivity].
  * @author Akash Yadav
  */
-class EditorEventListener : GradleBuildService.EventListener {
+class EditorBuildEventListener : GradleBuildService.EventListener {
 
-  private var activityReference: WeakReference<EditorActivity?> = WeakReference(null)
-  private val log = ILogger.newInstance(javaClass.simpleName)
+  private var activityReference: WeakReference<EditorHandlerActivity> = WeakReference(null)
 
-  fun setActivity(activity: EditorActivity) {
+  fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
 
@@ -70,7 +68,7 @@ class EditorEventListener : GradleBuildService.EventListener {
   }
 
   private fun appendOutputSeparator() {
-    activity().appendBuildOut("\n\n")
+    activity().appendBuildOutput("\n\n")
   }
 
   override fun onBuildFailed(tasks: MutableList<String>) {
@@ -83,8 +81,7 @@ class EditorEventListener : GradleBuildService.EventListener {
   }
 
   override fun onOutput(line: String?) {
-    activity().appendBuildOut(line)
-
+    line?.let { activity().appendBuildOutput(it) }
     // TODO This can be handled better when ProgressEvents are received from Tooling API server
     if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
       activity().setStatus(line)
@@ -92,14 +89,14 @@ class EditorEventListener : GradleBuildService.EventListener {
   }
 
   private fun analyzeCurrentFile() {
-    val editorView = activity().currentEditor
+    val editorView = activity().getCurrentEditor()
     if (editorView != null) {
       val editor = editorView.editor
       editor?.analyze()
     }
   }
 
-  fun activity(): EditorActivity {
+  fun activity(): EditorHandlerActivity {
     return activityReference.get()
       ?: throw IllegalStateException("Activity reference has been destroyed!")
   }

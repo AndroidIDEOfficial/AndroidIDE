@@ -25,9 +25,7 @@ import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
-import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.eventbus.events.Event
@@ -43,6 +41,8 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.DialogUtils
@@ -55,14 +55,14 @@ import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.SUCCESS
 import com.itsaky.toaster.toast
 import com.unnamed.b.atv.model.TreeNode
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern.compile
 import java.util.regex.Pattern.quote
 import javax.lang.model.SourceVersion
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Handles events related to files in filetree.
@@ -102,8 +102,8 @@ class FileTreeActionHandler : BaseEventHandler() {
       return
     }
 
-    val context = event[Context::class.java]!! as EditorActivity
-    context.binding.root.closeDrawer(GravityCompat.END)
+    val context = event[Context::class.java]!! as EditorHandlerActivity
+    context.binding?.root?.closeDrawer(GravityCompat.END)
     if (event.file.name.endsWith(".apk")) {
       ApkInstaller.installApk(
         context,
@@ -124,7 +124,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     }
 
     this.lastHeld = event[TreeNode::class.java]
-    val context = event[Context::class.java]!! as EditorActivity
+    val context = event[Context::class.java]!! as EditorHandlerActivity
     createFileOptionsFragment(event.file)
       .show(context.supportFragmentManager, TAG_FILE_OPTIONS_FRAGMENT)
   }
@@ -153,9 +153,7 @@ class FileTreeActionHandler : BaseEventHandler() {
 
   private fun createFileOptionsFragment(file: File): OptionsListFragment {
     val fragment = OptionsListFragment()
-    fragment.addOption(
-      SheetOption(ID_COPY_PATH, R.drawable.ic_copy, string.copy_path, file)
-    )
+    fragment.addOption(SheetOption(ID_COPY_PATH, R.drawable.ic_copy, string.copy_path, file))
     fragment.addOption(
       SheetOption(ID_RENAME_FILE, R.drawable.ic_file_rename, string.rename_file, file)
     )
@@ -512,7 +510,7 @@ class FileTreeActionHandler : BaseEventHandler() {
             requestFileListing()
           }
 
-          if (context is EditorActivity) {
+          if (context is EditorHandlerActivity) {
             val frag = context.getEditorForFile(file)
             if (frag != null) {
               context.closeFile(context.findIndexOfEditorByFile(frag.file))

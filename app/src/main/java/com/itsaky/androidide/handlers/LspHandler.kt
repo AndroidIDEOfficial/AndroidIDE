@@ -17,26 +17,32 @@
 
 package com.itsaky.androidide.handlers
 
-import android.content.Context
-import com.itsaky.androidide.activities.editor.EditorHandlerActivity
-import com.itsaky.androidide.eventbus.events.Event
-import com.itsaky.androidide.eventbus.events.EventReceiver
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.lsp.api.ILanguageClient
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
+import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 
 /**
- * Base class for event handlers.
  *
  * @author Akash Yadav
  */
-abstract class BaseEventHandler : EventReceiver {
+object LspHandler {
 
-  protected val log = ILogger.newInstance(javaClass.simpleName)
-
-  protected open fun checkIsEditorActivity(event: Event): Boolean {
-    return event.get(Context::class.java) is EditorHandlerActivity
+  fun registerLanguageServers() {
+    ILanguageServerRegistry.getDefault().apply {
+      getServer(JavaLanguageServer.SERVER_ID) ?: register(JavaLanguageServer())
+      getServer(XMLLanguageServer.SERVER_ID) ?: register(XMLLanguageServer())
+    }
+  }
+  
+  fun connectClient(client: ILanguageClient) {
+    ILanguageServerRegistry.getDefault().connectClient(client)
   }
 
-  protected open fun logCannotHandle(event: Event) {
-    log.warn("Context is not EditorActivity. Cannot handle ${event.javaClass.simpleName} event.")
+  fun destroy(isConfigurationChange: Boolean) {
+    if (isConfigurationChange) {
+      return
+    }
+    ILanguageServerRegistry.getDefault().destroy()
   }
 }

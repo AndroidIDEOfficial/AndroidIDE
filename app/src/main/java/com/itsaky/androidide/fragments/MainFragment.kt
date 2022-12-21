@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.PreferencesActivity
-import com.itsaky.androidide.TerminalActivity
+import com.itsaky.androidide.activities.editor.EditorActivityKt
+import com.itsaky.androidide.activities.PreferencesActivity
+import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
@@ -27,9 +27,9 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.toastError
 import com.itsaky.toaster.toastSuccess
+import java.io.File
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
-import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
@@ -103,7 +103,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
   override fun openProject(root: File) {
     projectPath = root.absolutePath
-    startActivity(Intent(requireActivity(), EditorActivity::class.java))
+    startActivity(Intent(requireActivity(), EditorActivityKt::class.java))
   }
 
   private fun cloneGitRepo() {
