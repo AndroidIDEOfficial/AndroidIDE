@@ -84,6 +84,7 @@ import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
+import com.itsaky.androidide.utils.EditorActivityActions.Companion.register as registerActivityActions
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.SingleSessionCallback
@@ -94,12 +95,11 @@ import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
+import java.io.File
+import java.util.Objects
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
-import java.io.File
-import java.util.Objects
-import com.itsaky.androidide.utils.EditorActivityActions.Companion.register as registerActivityActions
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -246,6 +246,7 @@ abstract class BaseEditorActivity :
 
   override fun onStop() {
     super.onStop()
+    this.isDestroying = isFinishing
     EventBus.getDefault().unregister(this)
   }
 
@@ -272,7 +273,9 @@ abstract class BaseEditorActivity :
   }
 
   override fun onDestroy() {
-    this.isDestroying = !isChangingConfigurations
+    if (isDestroying) {
+      log.debug("EditorActivity is being destroyed")
+    }
     preDestroy()
     super.onDestroy()
     postDestroy()
@@ -362,7 +365,7 @@ abstract class BaseEditorActivity :
   }
 
   open fun showDaemonStatus() {
-    val shell = app.newShell { t -> getDaemonStatusFragment().append(t) }
+    val shell = app.newShell(callback = { t -> getDaemonStatusFragment().append(t) })
     shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
     shell.bgAppend(
       String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))

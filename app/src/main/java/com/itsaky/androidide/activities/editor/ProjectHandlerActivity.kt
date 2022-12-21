@@ -17,11 +17,7 @@
 
 package com.itsaky.androidide.activities.editor
 
-import android.content.ComponentName
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.CheckBox
 import androidx.annotation.GravityInt
@@ -49,7 +45,6 @@ import com.itsaky.androidide.projects.ProjectManager.setupProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.GradleBuildService
-import com.itsaky.androidide.services.GradleBuildService.GradleServiceBinder
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.RecursiveFileSearcher
@@ -76,17 +71,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
   protected val mBuildEventListener = EditorBuildEventListener()
-  private val mGradleServiceConnection: ServiceConnection =
-    object : ServiceConnection {
-      override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val buildService = (service as GradleServiceBinder).service
-        onGradleBuildServiceConnected(buildService)
-      }
-
-      override fun onServiceDisconnected(name: ComponentName?) {
-        log.info("Disconnected from Gradle build service")
-      }
-    }
 
   abstract fun doCloseAll(runAfter: () -> Unit)
 
@@ -118,9 +102,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     if (isDestroying) {
       try {
-        app.unbindService(mGradleServiceConnection)
+        app.unbindGradleBuildService()
       } catch (err: Throwable) {
-        log.error("Unable to unbind service", err)
+        log.error("Unable to unbind service")
       } finally {
         Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE)
       }
@@ -147,19 +131,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       onGradleBuildServiceConnected(service)
       return
     }
-
-    if (
-      app.bindService(
-        Intent(this, GradleBuildService::class.java),
-        mGradleServiceConnection,
-        BIND_AUTO_CREATE or BIND_IMPORTANT
-      )
-    ) {
+    
+    if (app.bindGradleBuildService(this::onGradleBuildServiceConnected)) {
       log.info("Bind request for Gradle build service was successful...")
     } else {
       log.error("Gradle build service doesn't exist or the IDE is not allowed to access it.")
     }
-
+    
     initLspClient()
   }
 
@@ -169,17 +147,17 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       log.error("Project directory does not exist. Cannot initialize project")
       return
     }
-    
+
     val initialized = projectInitialized && cachedInitResult != null
-    
+
     log.debug(projectInitialized, cachedInitResult, wasInitializing)
-    
+
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
     if (initialized && !wasInitializing) {
       return
     }
-    
+
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread { preProjectInit() }
 
@@ -188,7 +166,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       log.error("No build service found. Cannot initialize project.")
       return
     }
-    
+
     val future =
       if (!(isConfigChange && wasInitializing) && !initialized) {
         buildService.initializeProject(projectDir.absolutePath)
@@ -207,7 +185,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
         setStatus(getString(string.msg_project_initialization_failed))
         return@whenCompleteAsync
       }
-      
+
       onProjectInitialized(result)
     }
   }
@@ -222,12 +200,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       log.error("Unable to stop editor services. Please report this issue.", err)
     }
   }
-  
+
   protected fun onGradleBuildServiceConnected(service: GradleBuildService) {
     log.info("Connected to Gradle build service")
-    
+
+    Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
-    
+
     if (!service.isToolingServerStarted) {
       service.startToolingServer { initializeProject() }
     } else {

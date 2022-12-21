@@ -63,7 +63,7 @@ val changelog =
     title = string.pref_changelog,
     summary = string.idepref_changelog_summary
   ) {
-    IDEApplication.getInstance().showChangelog()
+    IDEApplication.instance.showChangelog()
     true
   }
 val about =

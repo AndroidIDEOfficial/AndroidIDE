@@ -28,6 +28,7 @@ import androidx.core.text.HtmlCompat
 import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.R.id
+import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.IDEActivity
 import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.databinding.ActivityMainBinding
@@ -49,7 +50,7 @@ class MainActivity : IDEActivity() {
   private var binding: ActivityMainBinding? = null
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    if (!IDEApplication.isAbiSupported()) {
+    if (!BaseApplication.isAbiSupported) {
       showDeviceNotSupported()
       return
     }
