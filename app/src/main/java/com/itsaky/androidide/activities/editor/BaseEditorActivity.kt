@@ -273,9 +273,6 @@ abstract class BaseEditorActivity :
   }
 
   override fun onDestroy() {
-    if (isDestroying) {
-      log.debug("EditorActivity is being destroyed")
-    }
     preDestroy()
     super.onDestroy()
     postDestroy()
@@ -365,7 +362,7 @@ abstract class BaseEditorActivity :
   }
 
   open fun showDaemonStatus() {
-    val shell = app.newShell(callback = { t -> getDaemonStatusFragment().append(t) })
+    val shell = app.newShell{ t -> getDaemonStatusFragment().append(t) }
     shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
     shell.bgAppend(
       String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))

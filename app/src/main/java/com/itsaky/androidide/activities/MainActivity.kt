@@ -50,7 +50,7 @@ class MainActivity : IDEActivity() {
   private var binding: ActivityMainBinding? = null
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    if (!BaseApplication.isAbiSupported) {
+    if (!BaseApplication.isAbiSupported()) {
       showDeviceNotSupported()
       return
     }

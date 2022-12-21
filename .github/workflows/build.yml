@@ -100,7 +100,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run Tooling API tests
-        run: ./gradlew :build-tools:tooling-api-impl:test --continue
+        run: ./gradlew :subprojects:tooling-api-impl:test --continue
         env:
           TEST_TOOLING_API_IMPL: "true"
       - name: Upload Test Reports
@@ -108,4 +108,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tooling-api-test-reports
-          path: 'build-tools/tooling-api-impl/build/reports/tests/'
+          path: 'subprojects/tooling-api-impl/build/reports/tests/'

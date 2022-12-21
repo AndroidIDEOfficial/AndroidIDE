@@ -91,7 +91,7 @@ class ConfigurationPreferences(
 
 @Parcelize
 class AboutPreferences(
-  override val key: String = "idepref_about",
+  override val key: String = "idepref_category_about",
   override val title: Int = string.about,
   override val children: List<IPreference> = mutableListOf()
 ) : IPreferenceGroup() {

@@ -407,19 +407,7 @@ public class CodeEditorView extends LinearLayout {
       editor.onEditorSelected();
     }
   }
-
-  public void undo() {
-    if (binding.editor.canUndo()) {
-      binding.editor.undo();
-    }
-  }
-
-  public void redo() {
-    if (binding.editor.canRedo()) {
-      binding.editor.redo();
-    }
-  }
-
+  
   public void beginSearch() {
     if (this.binding == null || searchLayout == null) {
       LOG.warn("Editor layout is null content=" + binding + ", searchLayout=" + searchLayout);

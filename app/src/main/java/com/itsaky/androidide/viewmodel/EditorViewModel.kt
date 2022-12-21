@@ -30,10 +30,12 @@ class EditorViewModel : ViewModel() {
 
   internal val _isBuildInProgress = MutableLiveData(false)
   internal val _isInitializing = MutableLiveData(false)
-  internal val _isConfigurationChange = MutableLiveData(false)
   internal val _statusText = MutableLiveData<Pair<CharSequence, @GravityInt Int>>("" to CENTER)
   internal val _displayedFile = MutableLiveData(-1)
   internal val _fileTreeDrawerOpened = MutableLiveData(false)
+  
+  private val _isBoundToBuildService = MutableLiveData(false)
+  private val _isConfigurationChange = MutableLiveData(false)
   private val files = MutableLiveData<MutableList<File>>(ArrayList())
   private val fileModified = MutableLiveData(false)
 
@@ -43,12 +45,18 @@ class EditorViewModel : ViewModel() {
    */
   private val mCurrentFile = MutableLiveData<Pair<Int, File?>?>(null)
 
+  var isBoundToBuildSerice: Boolean
+    get() = _isBoundToBuildService.value ?: false
+    set(value) {
+      _isBoundToBuildService.value = value
+    }
+
   var isConfigChange: Boolean
     get() = _isConfigurationChange.value ?: false
     set(value) {
       _isConfigurationChange.value = value
     }
-  
+
   var isBuildInProgress: Boolean
     get() = _isBuildInProgress.value ?: false
     set(value) {

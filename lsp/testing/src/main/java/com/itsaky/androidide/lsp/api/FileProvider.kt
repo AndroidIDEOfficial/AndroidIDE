@@ -41,7 +41,7 @@ class FileProvider {
 
     @JvmStatic fun currentDir(): Path = Paths.get(System.getProperty("user.dir")!!)
 
-    @JvmStatic fun implModule(): Path = currentDir().resolve("../../build-tools/tooling-api-impl")
+    @JvmStatic fun implModule(): Path = currentDir().resolve("../../subprojects/tooling-api-impl")
     @JvmStatic fun projectRoot(): Path = currentDir().resolve("../../tests/test-project")
 
     /**

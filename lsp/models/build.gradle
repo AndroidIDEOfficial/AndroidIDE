@@ -31,7 +31,7 @@ android {
 dependencies {
     implementation common.editor
     implementation project (':common')
-    implementation project (':build-tools:fuzzysearch')
+    implementation project (':subprojects:fuzzysearch')
     
     implementation androidx.appcompat
     implementation androidx.ktx

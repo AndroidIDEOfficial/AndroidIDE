@@ -53,7 +53,7 @@ dependencies {
     implementation project (':actions')
     implementation project (':common')
     implementation project (':eventbus-android')
-    implementation project (':build-tools:tooling-api-testing')
+    implementation project (':subprojects:tooling-api-testing')
     implementation common.editor
     implementation tests.junit
     implementation tests.google_truth

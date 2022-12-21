@@ -40,12 +40,12 @@ class GoogleJavaFormatPlugin : Plugin<Project> {
   companion object {
     private val excludeProjects =
       listOf(
-        ":build-tools:aaptcompiler",
-        ":build-tools:google-java-format",
-        ":build-tools:jaxp",
-        ":build-tools:jdt",
-        ":build-tools:xml-dom",
-        ":build-tools:xml-formatter",
+        ":subprojects:aaptcompiler",
+        ":subprojects:google-java-format",
+        ":subprojects:jaxp",
+        ":subprojects:jdt",
+        ":subprojects:xml-dom",
+        ":subprojects:xml-formatter",
         ":lexers"
       )
   }

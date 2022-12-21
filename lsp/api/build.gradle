@@ -55,7 +55,7 @@ dependencies {
     kapt common.eventbus_ap
     
     implementation common.editor
-    implementation project (':build-tools:fuzzysearch')
+    implementation project (':subprojects:fuzzysearch')
     implementation project (':eventbus-events')
     
     implementation androidx.appcompat
@@ -64,8 +64,8 @@ dependencies {
     implementation common.utilcode
     implementation google.material
     
-    api project (':build-tools:projects')
-    api project (':build-tools:xml-utils')
+    api project (':subprojects:projects')
+    api project (':subprojects:xml-utils')
     api project (':lookup')
     api project (':lsp:models')
     api project (':preferences')
