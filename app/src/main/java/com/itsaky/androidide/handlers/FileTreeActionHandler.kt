@@ -25,7 +25,7 @@ import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
-import com.itsaky.androidide.EditorHandlerActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.eventbus.events.Event

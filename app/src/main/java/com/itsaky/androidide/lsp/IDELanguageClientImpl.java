@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.EditorHandlerActivity;
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;

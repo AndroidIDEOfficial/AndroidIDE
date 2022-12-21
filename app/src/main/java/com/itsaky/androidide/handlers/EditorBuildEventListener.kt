@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.handlers
 
-import com.itsaky.androidide.EditorHandlerActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.preferences.internal.isFirstBuild
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.services.GradleBuildService

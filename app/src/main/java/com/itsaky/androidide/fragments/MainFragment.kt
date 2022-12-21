@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.itsaky.androidide.EditorActivityKt
-import com.itsaky.androidide.PreferencesActivity
-import com.itsaky.androidide.TerminalActivity
+import com.itsaky.androidide.activities.editor.EditorActivityKt
+import com.itsaky.androidide.activities.PreferencesActivity
+import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding

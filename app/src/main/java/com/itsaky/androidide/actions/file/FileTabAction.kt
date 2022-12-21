@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.actions.file
 
-import com.itsaky.androidide.EditorHandlerActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS

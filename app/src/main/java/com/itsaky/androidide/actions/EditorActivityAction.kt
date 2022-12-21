@@ -19,7 +19,7 @@ package com.itsaky.androidide.actions
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import com.itsaky.androidide.EditorHandlerActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 
 /** @author Akash Yadav */
 abstract class EditorActivityAction : ActionItem {

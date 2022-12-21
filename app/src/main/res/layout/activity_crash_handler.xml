@@ -19,6 +19,6 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CrashHandlerActivity">
+    tools:context=".activities.CrashHandlerActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

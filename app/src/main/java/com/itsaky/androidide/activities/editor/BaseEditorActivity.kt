@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide
+package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
 import android.content.IntentFilter
@@ -51,8 +51,11 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
 import com.itsaky.androidide.R.attr
 import com.itsaky.androidide.R.drawable
+import com.itsaky.androidide.R.id
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
+import com.itsaky.androidide.activities.PreferencesActivity
+import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
 import com.itsaky.androidide.app.IDEActivity
@@ -275,15 +278,15 @@ abstract class BaseEditorActivity :
 
   override fun onNavigationItemSelected(item: MenuItem): Boolean {
     when (item.itemId) {
-      R.id.editornav_discuss -> app.openTelegramGroup()
-      R.id.editornav_channel -> app.openTelegramChannel()
-      R.id.editornav_suggest -> app.openGitHub()
-      R.id.editornav_needHelp -> showNeedHelpDialog()
-      R.id.editornav_settings -> startActivity(Intent(this, PreferencesActivity::class.java))
-      R.id.editornav_share ->
+      id.editornav_discuss -> app.openTelegramGroup()
+      id.editornav_channel -> app.openTelegramChannel()
+      id.editornav_suggest -> app.openGitHub()
+      id.editornav_needHelp -> showNeedHelpDialog()
+      id.editornav_settings -> startActivity(Intent(this, PreferencesActivity::class.java))
+      id.editornav_share ->
         startActivity(IntentUtils.getShareTextIntent(getString(string.msg_share_app)))
-      R.id.editornav_close_project -> doConfirmProjectClose()
-      R.id.editornav_terminal -> openTerminal()
+      id.editornav_close_project -> doConfirmProjectClose()
+      id.editornav_terminal -> openTerminal()
     }
 
     binding?.root?.closeDrawer(GravityCompat.START)

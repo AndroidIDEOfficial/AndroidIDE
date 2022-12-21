@@ -18,7 +18,7 @@
 package com.itsaky.androidide.handlers
 
 import android.content.Context
-import com.itsaky.androidide.EditorHandlerActivity
+import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.utils.ILogger
