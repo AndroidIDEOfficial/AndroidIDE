@@ -504,6 +504,7 @@
   <string name="widget_digital_clock" translatable="false">DigitalClock</string>
   <string name="widget_calendar_view" translatable="false">CalendarView</string>
   <string name="widget_space" translatable="false">Space</string>
+  <string name="widget_number_picker" translatable="false">NumberPicker</string>
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>

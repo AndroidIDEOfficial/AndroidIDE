@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
-import android.view.SurfaceView
+import android.widget.NumberPicker
+import com.itsaky.androidide.annotations.inflater.ViewAdapter
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.models.UiWidget
@@ -25,16 +26,20 @@ import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
 
 /**
- * Attribute adapter for [SurfaceView].
+ * Attribute adapter for [NumberPicker].
  *
- * @author Akash Yadav
+ * @author Deep Kr. Ghosh
  */
-@com.itsaky.androidide.annotations.inflater.ViewAdapter(SurfaceView::class)
+@ViewAdapter(NumberPicker::class)
 @IncludeInDesigner(group = WIDGETS)
-open class SurfaceViewAdapter<T : SurfaceView> : ViewAdapter<T>() {
+open class NumberPickerAdapter<T : NumberPicker> : LinearLayoutAdapter<T>() {
   override fun createUiWidgets(): List<UiWidget> {
     return listOf(
-      UiWidget(SurfaceView::class.java, string.widget_surfaceview, drawable.ic_widget_surface_view)
+      UiWidget(
+        NumberPicker::class.java,
+        string.widget_number_picker,
+        drawable.ic_widget_number_picker
+      )
     )
   }
 }

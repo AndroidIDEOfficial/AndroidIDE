@@ -43,12 +43,14 @@ open class AutoCompleteTextViewAdapter<T : AutoCompleteTextView> : EditTextAdapt
     create("dropDownWidth") { view.dropDownWidth = parseDimension(context, value) }
     create("dropDownHeight") { view.dropDownHeight = parseDimension(context, value) }
   }
-  
+
   override fun createUiWidgets(): List<UiWidget> {
-    return listOf(UiWidget(
-      AutoCompleteTextView::class.java,
-      string.widget_auto_complete_textview,
-      drawable.ic_widget_auto_complete_textview
-    ))
+    return listOf(
+      UiWidget(
+        AutoCompleteTextView::class.java,
+        string.widget_auto_complete_textview,
+        drawable.ic_widget_auto_complete_textview
+      )
+    )
   }
 }

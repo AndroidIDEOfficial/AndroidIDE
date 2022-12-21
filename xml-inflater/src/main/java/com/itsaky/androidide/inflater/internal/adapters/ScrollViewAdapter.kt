@@ -33,7 +33,7 @@ import com.itsaky.androidide.inflater.models.UiWidget
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(forView = ScrollView::class)
 @IncludeInDesigner(group = LAYOUTS)
 open class ScrollViewAdapter<T : ScrollView> : FrameLayoutAdapter<T>() {
-  
+
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("fillViewPort") { view.isFillViewport = parseBoolean(value, false) }

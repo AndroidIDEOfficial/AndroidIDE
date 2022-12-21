@@ -29,12 +29,12 @@ import com.itsaky.androidide.inflater.internal.ViewGroupImpl
  *
  * @author Akash Yadav
  */
-abstract class AdapterViewAdapter<T: AdapterView<*>> : ViewGroupAdapter<T>() {
+abstract class AdapterViewAdapter<T : AdapterView<*>> : ViewGroupAdapter<T>() {
 
   companion object {
     const val ADAPTER_DEFAULT_ITEM_COUNT = 3
   }
-  
+
   override fun applyBasic(view: IView) {
     super.applyBasic(view)
     (view.view as AdapterView<*>).adapter = newSimpleAdapter(view.view.context)
