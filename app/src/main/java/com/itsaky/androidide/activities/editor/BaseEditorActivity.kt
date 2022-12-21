@@ -436,7 +436,8 @@ abstract class BaseEditorActivity :
   }
 
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
-    binding?.bottomSheet?.setStatus(text, gravity)
+    viewModel.statusText = text
+    viewModel.statusGravity = gravity
   }
 
   private fun handleUiDesignerResult(result: ActivityResult) {
@@ -476,20 +477,16 @@ abstract class BaseEditorActivity :
     binding.editorDrawerLayout.childId = binding.realContainer.id
   }
 
-  private fun toggleProgressBarVisibility(visible: Boolean) {
+  private fun toggleProgressBarVisibility() {
+    val visible = viewModel.isBuildInProgress || viewModel.isInitializing
     binding?.buildProgressIndicator?.visibility = if (visible) View.VISIBLE else View.GONE
   }
 
   private fun setupViews() {
-    viewModel.progressBarVisible.observe(this) { visible: Boolean ->
-      toggleProgressBarVisibility(
-        visible || java.lang.Boolean.TRUE == viewModel.isInitializing.value
-      )
-    }
-    viewModel.isInitializing.observe(this) { initializing: Boolean ->
-      toggleProgressBarVisibility(
-        initializing || java.lang.Boolean.TRUE == viewModel.progressBarVisible.value
-      )
+    viewModel._isBuildInProgress.observe(this) { toggleProgressBarVisibility() }
+    viewModel._isInitializing.observe(this) { toggleProgressBarVisibility() }
+    viewModel._statusText.observe(this) {
+      binding?.bottomSheet?.setStatus(it.first, it.second)
     }
 
     viewModel.observeFiles(this) { files ->

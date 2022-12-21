@@ -16,20 +16,21 @@
  */
 package com.itsaky.androidide.viewmodel
 
-import androidx.core.util.Pair
+import android.view.Gravity.CENTER
+import androidx.annotation.GravityInt
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import java.io.File
 
-/** ViewModel for data used in [com.itsaky.androidide.EditorActivityKt] */
+/** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
+@Suppress("PropertyName")
 class EditorViewModel : ViewModel() {
-  
-  @JvmField val progressBarVisible = MutableLiveData(false)
-  @JvmField val isInitializing = MutableLiveData(false)
 
-  internal val _statusText = MutableLiveData<CharSequence>("")
+  internal val _isBuildInProgress = MutableLiveData(false)
+  internal val _isInitializing = MutableLiveData(false)
+  internal val _statusText = MutableLiveData<Pair<CharSequence, @GravityInt Int>>("" to CENTER)
   internal val _displayedFile = MutableLiveData(-1)
   internal val _fileTreeDrawerOpened = MutableLiveData(false)
   private val files = MutableLiveData<MutableList<File>>(ArrayList())
@@ -40,20 +41,38 @@ class EditorViewModel : ViewModel() {
    * index of the editor opened. Second value is the file that is opened.
    */
   private val mCurrentFile = MutableLiveData<Pair<Int, File?>?>(null)
-  
-  var statusText: CharSequence
-    get() = this._statusText.value ?: ""
+
+  var isBuildInProgress: Boolean
+    get() = _isBuildInProgress.value ?: false
     set(value) {
-      _statusText.value = value
+      _isBuildInProgress.value = value
     }
-  
+
+  var isInitializing: Boolean
+    get() = _isInitializing.value ?: false
+    set(value) {
+      _isInitializing.value = value
+    }
+
+  var statusText: CharSequence
+    get() = this._statusText.value?.first ?: ""
+    set(value) {
+      _statusText.value = value to (_statusText.value?.second ?: 0)
+    }
+
+  var statusGravity: Int
+    get() = this._statusText.value?.second ?: CENTER
+    set(value) {
+      _statusText.value = (_statusText.value?.first ?: "") to value
+    }
+
   var displayedFileIndex: Int
     get() = _displayedFile.value!!
     set(value) {
       _displayedFile.value = value
     }
-  
-  var fileTreeDrawerOpened : Boolean
+
+  var fileTreeDrawerOpened: Boolean
     get() = _fileTreeDrawerOpened.value ?: false
     set(value) {
       _fileTreeDrawerOpened.value = value
@@ -88,7 +107,7 @@ class EditorViewModel : ViewModel() {
 
   fun setCurrentFile(index: Int, file: File?) {
     displayedFileIndex = index
-    mCurrentFile.value = Pair.create(index, file)
+    mCurrentFile.value = index to file
   }
 
   /**

@@ -49,7 +49,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
       activity().showFirstBuildNotice()
     }
 
-    activity().viewModel.progressBarVisible.value = true
+    activity().viewModel.isBuildInProgress = true
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {
@@ -57,7 +57,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     isFirstBuild = false
-    activity().viewModel.progressBarVisible.value = false
+    activity().viewModel.isBuildInProgress = false
     activity().invalidateOptionsMenu()
   }
 
@@ -76,7 +76,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     isFirstBuild = false
-    activity().viewModel.progressBarVisible.value = false
+    activity().viewModel.isBuildInProgress = false
     activity().invalidateOptionsMenu()
   }
 

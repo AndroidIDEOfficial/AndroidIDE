@@ -46,7 +46,7 @@ class PreviewLayoutAction() : EditorRelatedAction() {
     super.prepare(data)
 
     val viewModel = getActivity(data)!!.viewModel
-    if (viewModel.isInitializing.value == true) {
+    if (viewModel.isInitializing) {
       visible = true
       enabled = false
       return

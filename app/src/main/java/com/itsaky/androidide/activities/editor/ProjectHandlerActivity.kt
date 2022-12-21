@@ -103,8 +103,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    viewModel._statusText.observe(this) { setStatus(it) }
     
     mBuildEventListener.setActivity(this as EditorHandlerActivity)
     startServices()
@@ -194,7 +192,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     this.binding ?: return
     initialSetup()
     setStatus(getString(string.msg_project_initialized))
-    viewModel.isInitializing.value = false
+    viewModel.isInitializing = false
     
     if (mFindInProjectDialog?.isShowing == true) {
       mFindInProjectDialog!!.dismiss()
@@ -356,7 +354,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   
   private fun preProjectInit() {
     setStatus(getString(string.msg_initializing_project))
-    viewModel.isInitializing.value = true
+    viewModel.isInitializing = true
   }
   
   open fun getProgressSheet(msg: Int): ProgressSheet? {
