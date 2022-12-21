@@ -17,7 +17,7 @@
 
 package com.itsaky.toaster
 
-import com.itsaky.androidide.app.BaseApplication.getBaseInstance
+import com.itsaky.androidide.app.BaseApplication.Companion.getBaseInstance
 import com.itsaky.toaster.Toaster.Type
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.Toaster.Type.INFO

@@ -39,7 +39,7 @@ object LspHandler {
     ILanguageServerRegistry.getDefault().connectClient(client)
   }
 
-  fun destroy(isConfigurationChange: Boolean) {
+  fun destroyLanguageServers(isConfigurationChange: Boolean) {
     if (isConfigurationChange) {
       return
     }

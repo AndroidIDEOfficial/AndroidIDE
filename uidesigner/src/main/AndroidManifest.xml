@@ -20,6 +20,7 @@
   <application android:theme="@style/Theme.AndroidIDE">
     <activity
       android:name=".UIDesignerActivity"
+      android:configChanges="orientation|screenSize"
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".ShowXmlActivity"

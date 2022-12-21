@@ -37,6 +37,9 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
+  
+  fun releaes() {
+  }
 
   override fun prepareBuild() {
     val isFirstBuild = isFirstBuild
@@ -49,7 +52,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
       activity().showFirstBuildNotice()
     }
 
-    activity().viewModel.progressBarVisible.value = true
+    activity().viewModel.isBuildInProgress = true
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {
@@ -57,8 +60,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     isFirstBuild = false
-    activity().viewModel.progressBarVisible.value = false
-    activity().invalidateOptionsMenu()
+    activity().viewModel.isBuildInProgress = false
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
@@ -76,8 +78,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     appendOutputSeparator()
 
     isFirstBuild = false
-    activity().viewModel.progressBarVisible.value = false
-    activity().invalidateOptionsMenu()
+    activity().viewModel.isBuildInProgress = false
   }
 
   override fun onOutput(line: String?) {

@@ -119,18 +119,20 @@ abstract class BaseEditorActivity :
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
   protected var isDestroying = false
+  protected var isConfigChange = false
+  protected var wasInitializing = false
+
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
   protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
 
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
   val viewModel by viewModels<EditorViewModel>()
-  var binding: ActivityEditorBinding? = null
+  lateinit var binding: ActivityEditorBinding
     protected set
 
   private val onBackPressedCallback: OnBackPressedCallback =
     object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {
-        val binding = this@BaseEditorActivity.binding ?: return
         if (binding.root.isDrawerOpen(GravityCompat.END)) {
           binding.root.closeDrawer(GravityCompat.END)
         } else if (binding.root.isDrawerOpen(GravityCompat.START)) {
@@ -159,6 +161,7 @@ abstract class BaseEditorActivity :
   protected abstract fun doConfirmProjectClose()
 
   protected open fun preDestroy() {
+    viewModel.isConfigChange = !isDestroying
     try {
       unregisterReceiver(logReceiver)
     } catch (th: Throwable) {
@@ -167,28 +170,27 @@ abstract class BaseEditorActivity :
   }
 
   protected open fun postDestroy() {
-    Lookup.DEFAULT.unregisterAll()
-    ApiVersionsRegistry.getInstance().clear()
-    ResourceTableRegistry.getInstance().clear()
-    WidgetTableRegistry.getInstance().clear()
-
-    binding = null
-    binding = null
+    if (isDestroying) {
+      Lookup.DEFAULT.unregisterAll()
+      ApiVersionsRegistry.getInstance().clear()
+      ResourceTableRegistry.getInstance().clear()
+      WidgetTableRegistry.getInstance().clear()
+    }
   }
 
   override fun bindLayout(): View {
     this.binding = ActivityEditorBinding.inflate(layoutInflater)
-    this.diagnosticInfoBinding = this.binding!!.diagnosticInfo
-    return this.binding!!.root
+    this.diagnosticInfoBinding = this.binding.diagnosticInfo
+    return this.binding.root
   }
 
   @Subscribe(threadMode = MAIN)
   open fun onInstallationResult(event: InstallationResultEvent) {
     val intent = event.intent
-    if (binding == null || isDestroying) {
+    if (isDestroying) {
       return
     }
-    val binding = this.binding ?: return
+
     val packageName = onResult(this, intent)
     if (packageName != null) {
       Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
@@ -209,15 +211,20 @@ abstract class BaseEditorActivity :
       projectPath = savedInstanceState.getString(KEY_PROJECT_PATH)!!
     }
 
+    this.wasInitializing = viewModel.isInitializing
+    this.isConfigChange = viewModel.isConfigChange
+    viewModel.isConfigChange = false
+    viewModel.isInitializing = false
+
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     lifecycle.addObserver(mLifecycleObserver)
 
-    setSupportActionBar(binding?.editorToolbar)
+    setSupportActionBar(binding.editorToolbar)
 
     dmonStatusFragment = getDaemonStatusFragment()
 
     setupDrawerToggle()
-    binding?.tabs?.addOnTabSelectedListener(this)
+    binding.tabs.addOnTabSelectedListener(this)
 
     setupViews()
 
@@ -239,6 +246,7 @@ abstract class BaseEditorActivity :
 
   override fun onStop() {
     super.onStop()
+    this.isDestroying = isFinishing
     EventBus.getDefault().unregister(this)
   }
 
@@ -265,7 +273,9 @@ abstract class BaseEditorActivity :
   }
 
   override fun onDestroy() {
-    this.isDestroying = !isChangingConfigurations
+    if (isDestroying) {
+      log.debug("EditorActivity is being destroyed")
+    }
     preDestroy()
     super.onDestroy()
     postDestroy()
@@ -289,7 +299,7 @@ abstract class BaseEditorActivity :
       id.editornav_terminal -> openTerminal()
     }
 
-    binding?.root?.closeDrawer(GravityCompat.START)
+    binding.root.closeDrawer(GravityCompat.START)
     return false
   }
 
@@ -324,7 +334,7 @@ abstract class BaseEditorActivity :
   }
 
   open fun appendApkLog(line: LogLine) {
-    binding?.bottomSheet?.appendApkLog(line)
+    binding.bottomSheet.appendApkLog(line)
   }
 
   open fun handleSearchResults(map: Map<File, List<SearchResult>>?) {
@@ -347,15 +357,15 @@ abstract class BaseEditorActivity :
   }
 
   open fun setSearchResultAdapter(adapter: SearchListAdapter) {
-    binding?.bottomSheet?.setSearchResultAdapter(adapter)
+    binding.bottomSheet.setSearchResultAdapter(adapter)
   }
 
   open fun setDiagnosticsAdapter(adapter: DiagnosticsAdapter) {
-    binding?.bottomSheet?.setDiagnosticsAdapter(adapter)
+    binding.bottomSheet.setDiagnosticsAdapter(adapter)
   }
 
   open fun showDaemonStatus() {
-    val shell = app.newShell { t -> getDaemonStatusFragment().append(t) }
+    val shell = app.newShell(callback = { t -> getDaemonStatusFragment().append(t) })
     shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
     shell.bgAppend(
       String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))
@@ -387,23 +397,19 @@ abstract class BaseEditorActivity :
     }
 
     val index =
-      binding
-        ?.bottomSheet
-        ?.pagerAdapter
-        ?.findIndexOfFragmentByClass(SearchResultFragment::class.java)
-        ?: -1
+      binding.bottomSheet.pagerAdapter.findIndexOfFragmentByClass(SearchResultFragment::class.java)
 
-    if (index >= 0 && index < (binding?.bottomSheet?.binding?.tabs?.tabCount ?: 0)) {
-      binding?.bottomSheet?.binding?.tabs?.getTabAt(index)?.select()
+    if (index >= 0 && index < binding.bottomSheet.binding.tabs.tabCount) {
+      binding.bottomSheet.binding.tabs.getTabAt(index)?.select()
     }
   }
 
   open fun handleDiagnosticsResultVisibility(errorVisible: Boolean) {
-    binding?.bottomSheet?.handleDiagnosticsResultVisibility(errorVisible)
+    binding.bottomSheet.handleDiagnosticsResultVisibility(errorVisible)
   }
 
   open fun handleSearchResultVisibility(errorVisible: Boolean) {
-    binding?.bottomSheet?.handleSearchResultVisibility(errorVisible)
+    binding.bottomSheet.handleSearchResultVisibility(errorVisible)
   }
 
   open fun showFirstBuildNotice() {
@@ -436,7 +442,8 @@ abstract class BaseEditorActivity :
   }
 
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
-    binding?.bottomSheet?.setStatus(text, gravity)
+    viewModel.statusText = text
+    viewModel.statusGravity = gravity
   }
 
   private fun handleUiDesignerResult(result: ActivityResult) {
@@ -460,7 +467,6 @@ abstract class BaseEditorActivity :
   }
 
   private fun setupDrawerToggle() {
-    val binding = this.binding ?: return
     val toggle =
       ActionBarDrawerToggle(
         this,
@@ -476,28 +482,19 @@ abstract class BaseEditorActivity :
     binding.editorDrawerLayout.childId = binding.realContainer.id
   }
 
-  private fun toggleProgressBarVisibility(visible: Boolean) {
-    binding?.buildProgressIndicator?.visibility = if (visible) View.VISIBLE else View.GONE
+  private fun onBuildStatusChanged() {
+    val visible = viewModel.isBuildInProgress || viewModel.isInitializing
+    binding.buildProgressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
+    invalidateOptionsMenu()
   }
 
   private fun setupViews() {
-    viewModel.progressBarVisible.observe(this) { visible: Boolean ->
-      toggleProgressBarVisibility(
-        visible || java.lang.Boolean.TRUE == viewModel.isInitializing.value
-      )
-    }
-    viewModel.isInitializing.observe(this) { initializing: Boolean ->
-      toggleProgressBarVisibility(
-        initializing || java.lang.Boolean.TRUE == viewModel.progressBarVisible.value
-      )
-    }
+    viewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
+    viewModel._isInitializing.observe(this) { onBuildStatusChanged() }
+    viewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
 
     viewModel.observeFiles(this) { files ->
-      if (binding == null) {
-        return@observeFiles
-      }
-
-      binding?.apply {
+      binding.apply {
         if (files == null || files.isEmpty()) {
           tabs.visibility = View.GONE
           viewContainer.displayedChild = 1
@@ -527,11 +524,11 @@ abstract class BaseEditorActivity :
   }
 
   private fun setupNoEditorView() {
-    binding?.noEditorSummary?.movementMethod = LinkMovementMethod()
+    binding.noEditorSummary.movementMethod = LinkMovementMethod()
     val filesSpan: ClickableSpan =
       object : ClickableSpan() {
         override fun onClick(widget: View) {
-          binding?.root?.openDrawer(GravityCompat.END)
+          binding.root.openDrawer(GravityCompat.END)
         }
       }
     val bottomSheetSpan: ClickableSpan =
@@ -543,7 +540,7 @@ abstract class BaseEditorActivity :
     val sb = SpannableStringBuilder()
     appendClickableSpan(sb, string.msg_swipe_for_files, filesSpan)
     appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan)
-    binding?.noEditorSummary?.text = sb
+    binding.noEditorSummary.text = sb
   }
 
   private fun appendClickableSpan(
@@ -566,7 +563,7 @@ abstract class BaseEditorActivity :
   }
 
   private fun setupBottomSheet() {
-    editorBottomSheet = BottomSheetBehavior.from<View>(binding!!.bottomSheet)
+    editorBottomSheet = BottomSheetBehavior.from<View>(binding.bottomSheet)
     editorBottomSheet?.addBottomSheetCallback(
       object : BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -579,7 +576,7 @@ abstract class BaseEditorActivity :
         }
 
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
-          binding?.apply {
+          binding.apply {
             val editorScale = 1 - slideOffset * (1 - EDITOR_CONTAINER_SCALE_FACTOR)
             this.bottomSheet.onSlide(slideOffset)
             this.viewContainer.scaleX = editorScale
@@ -592,7 +589,7 @@ abstract class BaseEditorActivity :
     val observer: OnGlobalLayoutListener =
       object : OnGlobalLayoutListener {
         override fun onGlobalLayout() {
-          binding?.let {
+          binding.let {
             it.viewContainer.pivotY = 0f
             it.viewContainer.pivotX = it.viewContainer.width / 2f
             it.viewContainer.viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -600,14 +597,14 @@ abstract class BaseEditorActivity :
         }
       }
 
-    binding?.apply {
+    binding.apply {
       viewContainer.viewTreeObserver.addOnGlobalLayoutListener(observer)
       bottomSheet.setOffsetAnchor(editorToolbar)
     }
   }
 
   private fun refreshSymbolInput(editor: CodeEditorView) {
-    binding?.bottomSheet?.refreshSymbolInput(editor)
+    binding.bottomSheet.refreshSymbolInput(editor)
   }
 
   private fun setupDiagnosticInfo() {
@@ -627,7 +624,7 @@ abstract class BaseEditorActivity :
 
   private fun onSoftInputChanged() {
     invalidateOptionsMenu()
-    binding?.bottomSheet?.onSoftInputChanged()
+    binding.bottomSheet.onSoftInputChanged()
   }
 
   private fun openTerminal() {
@@ -654,7 +651,7 @@ abstract class BaseEditorActivity :
   }
 
   private fun getSyncBanner(): MaterialBanner? {
-    return binding?.run {
+    return binding.run {
       return@run syncBanner
         .setContentTextColor(resolveAttr(attr.colorOnPrimaryContainer))
         .setBannerBackgroundColor(resolveAttr(attr.colorPrimaryContainer))
@@ -668,7 +665,7 @@ abstract class BaseEditorActivity :
     return object : SingleSessionCallback() {
       override fun onCreated(sessionId: Int) {
         log.debug("on session created:", sessionId)
-        binding?.apply {
+        binding.apply {
           bottomSheet.setActionText(getString(string.msg_installing_apk))
           bottomSheet.setActionProgress(0)
           bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION)
@@ -676,11 +673,11 @@ abstract class BaseEditorActivity :
       }
 
       override fun onProgressChanged(sessionId: Int, progress: Float) {
-        binding?.bottomSheet?.setActionProgress((progress * 100f).toInt())
+        binding.bottomSheet.setActionProgress((progress * 100f).toInt())
       }
 
       override fun onFinished(sessionId: Int, success: Boolean) {
-        binding?.apply {
+        binding.apply {
           bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER)
           bottomSheet.setActionProgress(0)
           if (!success) {

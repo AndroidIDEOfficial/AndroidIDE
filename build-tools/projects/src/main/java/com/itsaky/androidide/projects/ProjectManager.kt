@@ -30,6 +30,7 @@ import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.ILogger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -52,6 +53,9 @@ object ProjectManager : EventReceiver {
 
   var rootProject: Project? = null
   var app: AndroidModule? = null
+  
+  var projectInitialized: Boolean = false
+  var cachedInitResult: InitializeResult? = null
 
   @JvmOverloads
   fun setupProject(project: IProject = Lookup.DEFAULT.lookup(BuildService.KEY_PROJECT_PROXY)!!) {
@@ -61,7 +65,6 @@ object ProjectManager : EventReceiver {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
       this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
         it.indexSourcesAndClasspaths()
-
         if (it is AndroidModule) {
           it.readResources()
         }
