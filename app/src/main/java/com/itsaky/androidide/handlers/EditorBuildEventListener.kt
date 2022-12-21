@@ -58,7 +58,6 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false
-    activity().invalidateOptionsMenu()
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
@@ -77,7 +76,6 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false
-    activity().invalidateOptionsMenu()
   }
 
   override fun onOutput(line: String?) {

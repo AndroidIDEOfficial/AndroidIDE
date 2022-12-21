@@ -477,14 +477,15 @@ abstract class BaseEditorActivity :
     binding.editorDrawerLayout.childId = binding.realContainer.id
   }
 
-  private fun toggleProgressBarVisibility() {
+  private fun onBuildStatusChanged() {
     val visible = viewModel.isBuildInProgress || viewModel.isInitializing
     binding?.buildProgressIndicator?.visibility = if (visible) View.VISIBLE else View.GONE
+    invalidateOptionsMenu()
   }
 
   private fun setupViews() {
-    viewModel._isBuildInProgress.observe(this) { toggleProgressBarVisibility() }
-    viewModel._isInitializing.observe(this) { toggleProgressBarVisibility() }
+    viewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
+    viewModel._isInitializing.observe(this) { onBuildStatusChanged() }
     viewModel._statusText.observe(this) {
       binding?.bottomSheet?.setStatus(it.first, it.second)
     }
