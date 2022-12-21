@@ -52,6 +52,7 @@ class EditorActivityActions {
   companion object {
     @JvmStatic
     fun register(context: Context) {
+      clear()
       val registry = ActionsRegistry.getInstance()
 
       // Toolbar actions
