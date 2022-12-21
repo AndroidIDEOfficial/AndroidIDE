@@ -17,11 +17,8 @@
  */
 package com.itsaky.androidide.app
 
-import android.content.ComponentName
 import android.content.Intent
-import android.content.ServiceConnection
 import android.net.Uri
-import android.os.IBinder
 import com.blankj.utilcode.util.ThrowableUtils
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
@@ -29,10 +26,6 @@ import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
-import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.services.GradleBuildService
-import com.itsaky.androidide.services.GradleBuildService.GradleServiceBinder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
@@ -43,23 +36,7 @@ import org.greenrobot.eventbus.EventBus
 class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
-  private val log = ILogger.newInstance("IDEApplication")
-
-  private var onGradleBuildServiceConnected: ((GradleBuildService) -> Unit)? = null
-
-  private val mGradleServiceConnection: ServiceConnection =
-    object : ServiceConnection {
-      override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val buildService = (service as GradleServiceBinder).service
-        Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, buildService)
-        onGradleBuildServiceConnected?.invoke(buildService)
-      }
-      
-      override fun onServiceDisconnected(name: ComponentName?) {
-        log.info("Disconnected from Gradle build service")
-      }
-    }
-
+  
   override fun onCreate() {
     instance = this
     uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -73,24 +50,6 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
-  }
-
-  fun bindGradleBuildService(onBound: (GradleBuildService) -> Unit): Boolean {
-    this.onGradleBuildServiceConnected = onBound
-    return bindService(
-      Intent(this, GradleBuildService::class.java),
-      mGradleServiceConnection,
-      BIND_AUTO_CREATE or BIND_IMPORTANT
-    )
-  }
-
-  fun unbindGradleBuildService() {
-    this.onGradleBuildServiceConnected = null
-    try {
-      unbindService(mGradleServiceConnection)
-    } catch (err: Throwable) {
-      log.error("Unable to unbind Gradle build service")
-    }
   }
 
   private fun handleCrash(thread: Thread, th: Throwable) {
