@@ -507,6 +507,8 @@
   <string name="widget_number_picker" translatable="false">NumberPicker</string>
   <string name="widget_chronometer" translatable="false">Chronometer</string>
   <string name="widget_rating_bar" translatable="false">RatingBar</string>
+  <string name="widget_quick_contact_badge" translatable="false">QuickContactBadge</string>
+  <string name="widget_videoview" translatable="false">VideoView</string>
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>
