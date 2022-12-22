@@ -128,6 +128,10 @@ class EditorViewModel : ViewModel() {
     val files = files.value ?: mutableListOf()
     files.removeAt(index)
     this.files.value = files
+    
+    if (this.files.value?.isEmpty() == true) {
+      mCurrentFile.value = null
+    }
   }
 
   fun removeAllFiles() {
@@ -207,9 +211,15 @@ class EditorViewModel : ViewModel() {
     }
   }
 
-  fun writeOpenedFiles(cache: OpenedFilesCache) {
+  fun writeOpenedFiles(cache: OpenedFilesCache?) {
     executeAsync {
       val file = getOpenedFilesCache()
+      
+      if (cache == null) {
+        file.delete()
+        return@executeAsync
+      }
+      
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
       file.writeText(string)

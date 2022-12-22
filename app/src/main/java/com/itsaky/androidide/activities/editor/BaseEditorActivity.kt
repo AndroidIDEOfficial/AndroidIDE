@@ -502,9 +502,6 @@ abstract class BaseEditorActivity :
           tabs.visibility = View.VISIBLE
           viewContainer.displayedChild = 0
         }
-      
-        val currentFile = provideCurrentEditor()?.editor?.file?.absolutePath ?: return@observeFiles
-        getOpenedFiles().also { viewModel.writeOpenedFiles(OpenedFilesCache(currentFile, it)) }
       }
     }
     

@@ -22,7 +22,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
-import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
@@ -90,6 +89,22 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         if (opened) openDrawer(GravityCompat.END) else closeDrawer(GravityCompat.END)
       }
     }
+
+    viewModel.observeFiles(this) {
+      // rewrite the cached files index if there are any opened files
+      val currentFile =
+        getCurrentEditor()?.editor?.file?.absolutePath
+          ?: run {
+            viewModel.writeOpenedFiles(null)
+            viewModel.openedFilesCache = null
+            return@observeFiles
+          }
+      getOpenedFiles().also {
+        val cache = OpenedFilesCache(currentFile, it)
+        viewModel.writeOpenedFiles(cache)
+        viewModel.openedFilesCache = cache
+      }
+    }
   }
 
   @SuppressLint("RestrictedApi")
@@ -103,19 +118,25 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   override fun onPause() {
     super.onPause()
 
-    val current = getCurrentEditor()?.editor?.file?.absolutePath ?: return
+    val current =
+      getCurrentEditor()?.editor?.file?.absolutePath
+        ?: run {
+          viewModel.writeOpenedFiles(null)
+          viewModel.openedFilesCache = null
+          return
+        }
+
     getOpenedFiles().also {
       val cache = OpenedFilesCache(current, it)
       viewModel.writeOpenedFiles(cache)
       viewModel.openedFilesCache = if (!isFinishing) cache else null
     }
   }
-  
+
   override fun onStart() {
     super.onStart()
-  
+
     try {
-      log.debug("try to reopen recently opened files")
       if (viewModel.openedFilesCache != null) {
         viewModel.openedFilesCache?.apply {
           this.allFiles.forEach { openFile(File(it.filePath), it.selection) }
@@ -128,6 +149,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
           openFile(File(it.selectedFile))
         }
       }
+      viewModel.openedFilesCache = null
     } catch (err: Throwable) {
       log.error("Failed to reopen recently opened files", err)
     }
