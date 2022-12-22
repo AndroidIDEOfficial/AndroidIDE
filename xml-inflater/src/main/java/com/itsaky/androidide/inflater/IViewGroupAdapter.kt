@@ -32,4 +32,12 @@ interface IViewGroupAdapter {
    * @return The layout behavior.
    */
   fun getLayoutBehavior(group: IViewGroup): LayoutBehavior
+  
+  /**
+   * Called by the UI Designer to check if the given view group (which this adpater handles) can
+   * accept the child view with the given qualified name.
+   */
+  fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+    return true
+  }
 }
