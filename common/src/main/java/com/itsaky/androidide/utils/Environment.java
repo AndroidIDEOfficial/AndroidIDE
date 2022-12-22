@@ -44,6 +44,7 @@ public final class Environment {
   private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
   private static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
+  private static final String ANDROIDIDE_PROJECT_CACHE_DIR = ".androidide";
   private static final ILogger LOG = ILogger.newInstance("Environment");
   private static final List<String> blacklist = new ArrayList<>();
   public static File ROOT;
@@ -214,7 +215,7 @@ public final class Environment {
     ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
     ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
     ENV_VARS.put("TERM", "screen");
-    
+
     // https://github.com/termux/termux-tools/blob/f2736f7f8232cd19cf52bca9b0ac9afb8ad9e562/scripts/termux-setup-package-manager.in#L3
     ENV_VARS.put("TERMUX_APP_PACKAGE_MANAGER", "apt");
     ENV_VARS.put("TERMUX_PKG_NO_MIRROR_SELECT", "true");
@@ -261,5 +262,13 @@ public final class Environment {
       blacklist.add("SYSROOT");
     }
     return blacklist;
+  }
+  
+  public static File getProjectCacheDir(String projectDir) {
+    return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
+  }
+  
+  public static File getProjectCacheDir(File projectDir) {
+    return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
   }
 }

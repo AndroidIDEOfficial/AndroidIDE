@@ -22,6 +22,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.blankj.utilcode.util.FileUtils
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.itsaky.androidide.models.OpenedFilesCache
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.utils.Environment
 import java.io.File
 
 /** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
@@ -33,10 +40,12 @@ class EditorViewModel : ViewModel() {
   internal val _statusText = MutableLiveData<Pair<CharSequence, @GravityInt Int>>("" to CENTER)
   internal val _displayedFile = MutableLiveData(-1)
   internal val _fileTreeDrawerOpened = MutableLiveData(false)
-  
+
+  private val _openedFiles = MutableLiveData<OpenedFilesCache>()
   private val _isBoundToBuildService = MutableLiveData(false)
   private val _isConfigurationChange = MutableLiveData(false)
   private val files = MutableLiveData<MutableList<File>>(ArrayList())
+
   private val fileModified = MutableLiveData(false)
 
   /**
@@ -44,6 +53,12 @@ class EditorViewModel : ViewModel() {
    * index of the editor opened. Second value is the file that is opened.
    */
   private val mCurrentFile = MutableLiveData<Pair<Int, File?>?>(null)
+
+  var openedFilesCache: OpenedFilesCache?
+    get() = _openedFiles.value
+    set(value) {
+      this._openedFiles.value = value
+    }
 
   var isBoundToBuildSerice: Boolean
     get() = _isBoundToBuildService.value ?: false
@@ -178,5 +193,41 @@ class EditorViewModel : ViewModel() {
   fun areFilesModified(): Boolean {
     val modified = fileModified.value
     return modified != null && modified
+  }
+
+  fun readOpenedFiles(result: (OpenedFilesCache?) -> Unit) {
+    executeAsync({
+      val file = getOpenedFilesCache()
+      if (file.length() == 0L) {
+        return@executeAsync null
+      }
+      return@executeAsync Gson().fromJson(file.readText(), OpenedFilesCache::class.java)
+    }) {
+      result(it)
+    }
+  }
+
+  fun writeOpenedFiles(cache: OpenedFilesCache) {
+    executeAsync {
+      val file = getOpenedFilesCache()
+      val gson = GsonBuilder().setPrettyPrinting().create()
+      val string = gson.toJson(cache)
+      file.writeText(string)
+    }
+  }
+
+  private fun getOpenedFilesCache(): File {
+    var file = Environment.getProjectCacheDir(ProjectManager.projectPath)
+    file = File(file, "editor/openedFiles.json")
+    if (file.exists()) {
+      FileUtils.rename(file, "${file.name}.bak")
+      file.createNewFile()
+    }
+
+    if (file.parentFile?.exists() == false) {
+      file.parentFile?.mkdirs()
+    }
+
+    return file
   }
 }

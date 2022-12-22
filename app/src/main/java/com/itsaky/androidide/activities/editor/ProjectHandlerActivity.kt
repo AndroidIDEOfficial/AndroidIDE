@@ -53,6 +53,7 @@ import com.itsaky.androidide.utils.RecursiveFileSearcher
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File
+import java.util.ServiceLoader
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
 import java.util.stream.Collectors
@@ -92,8 +93,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    mBuildEventListener.setActivity(this as EditorHandlerActivity)
     startServices()
   }
 
@@ -237,6 +236,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     setupProject()
     notifyProjectUpdate()
     ThreadUtils.runOnUiThread { postProjectInit() }
+  }
+  
+  protected open fun preProjectInit() {
+    setStatus(getString(string.msg_initializing_project))
+    viewModel.isInitializing = true
   }
 
   protected open fun postProjectInit() {
@@ -401,11 +405,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       IDELanguageClientImpl.initialize(this as EditorHandlerActivity)
     }
     connectClient(IDELanguageClientImpl.getInstance())
-  }
-
-  private fun preProjectInit() {
-    setStatus(getString(string.msg_initializing_project))
-    viewModel.isInitializing = true
   }
 
   open fun getProgressSheet(msg: Int): ProgressSheet? {

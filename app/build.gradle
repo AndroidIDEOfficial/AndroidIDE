@@ -105,11 +105,14 @@ dependencies {
     // Annotation processors
     kapt common.glide_ap
     kapt common.eventbus_ap
+    kapt google.auto_service
     
     implementation common.editor
     implementation common.utilcode
     implementation common.glide
     implementation common.jsoup
+    
+    implementation google.auto_service_annotations
     implementation google.gson
     implementation google.guava
     

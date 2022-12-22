@@ -22,6 +22,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
+import android.view.View
 import android.view.ViewGroup.LayoutParams
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
@@ -33,6 +34,8 @@ import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.interfaces.IEditorHandler
+import com.itsaky.androidide.models.OpenedFile
+import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.projects.ProjectManager.generateSources
@@ -72,7 +75,13 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     return getEditorAtIndex(index)
   }
 
+  override fun preDestroy() {
+    super.preDestroy()
+    viewModel.removeAllFiles()
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
+    mBuildEventListener.setActivity(this)
     super.onCreate(savedInstanceState)
 
     viewModel._displayedFile.observe(this) { this.binding.editorContainer.displayedChild = it }
@@ -80,15 +89,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       this.binding.editorDrawerLayout.apply {
         if (opened) openDrawer(GravityCompat.END) else closeDrawer(GravityCompat.END)
       }
-    }
-
-    if (viewModel.getOpenedFileCount() != binding.tabs.tabCount) {
-      // The activity proabably has been restarted after a configuration change
-      // restore the opened files
-
-      val files = viewModel.getOpenedFiles()
-      viewModel.removeAllFiles()
-      files.forEach(this::openFile)
     }
   }
 
@@ -98,6 +98,39 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       menu.setOptionalIconsVisible(true)
     }
     return true
+  }
+
+  override fun onPause() {
+    super.onPause()
+
+    val current = getCurrentEditor()?.editor?.file?.absolutePath ?: return
+    getOpenedFiles().also {
+      val cache = OpenedFilesCache(current, it)
+      viewModel.writeOpenedFiles(cache)
+      viewModel.openedFilesCache = if (!isFinishing) cache else null
+    }
+  }
+  
+  override fun onStart() {
+    super.onStart()
+  
+    try {
+      log.debug("try to reopen recently opened files")
+      if (viewModel.openedFilesCache != null) {
+        viewModel.openedFilesCache?.apply {
+          this.allFiles.forEach { openFile(File(it.filePath), it.selection) }
+          openFile(File(selectedFile))
+        }
+      } else {
+        viewModel.readOpenedFiles {
+          it ?: return@readOpenedFiles
+          it.allFiles.forEach { file -> openFile(File(file.filePath), file.selection) }
+          openFile(File(it.selectedFile))
+        }
+      }
+    } catch (err: Throwable) {
+      log.error("Failed to reopen recently opened files", err)
+    }
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -159,8 +192,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   override fun openFileAndGetIndex(file: File, selection: Range?): Int {
     val openedFileIndex = findIndexOfEditorByFile(file)
     if (openedFileIndex != -1) {
-      log.error("File is already opened. File: $file")
       return openedFileIndex
+    }
+
+    if (!file.exists()) {
+      return -1
     }
 
     val position = viewModel.getOpenedFileCount()
@@ -386,6 +422,12 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     runAfter()
   }
+
+  override fun getOpenedFiles() =
+    viewModel.getOpenedFiles().mapNotNull {
+      val editor = getEditorForFile(it)?.editor ?: return@mapNotNull null
+      OpenedFile(it.absolutePath, editor.cursorLSPRange)
+    }
 
   private fun notifyFilesUnsaved(unsavedEditors: List<CodeEditorView?>, invokeAfter: Runnable) {
     if (isDestroying) {

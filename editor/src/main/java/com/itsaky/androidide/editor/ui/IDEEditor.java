@@ -81,8 +81,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   private ILanguageServer languageServer;
   private SignatureHelpWindow signatureHelpWindow;
   private DiagnosticWindow diagnosticWindow;
-  @Nullable
-  ILanguageClient languageClient;
+  @Nullable ILanguageClient languageClient;
 
   public IDEEditor(Context context) {
     this(context, null);
@@ -413,17 +412,17 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
   @Override
   public void setLanguageServer(ILanguageServer server) {
     this.languageServer = server;
-    
+
     if (server != null) {
       this.languageClient = server.getClient();
     }
   }
-  
+
   @Override
   public void setLanguageClient(@Nullable final ILanguageClient languageClient) {
     this.languageClient = languageClient;
   }
-  
+
   /**
    * Append the given text at the end of the editor's content.
    *
@@ -823,7 +822,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
       return;
     }
 
-    final var closeEvent = new DocumentCloseEvent(getFile().toPath());
+    final var closeEvent = new DocumentCloseEvent(getFile().toPath(), getCursorLSPRange());
     EventBus.getDefault().post(closeEvent);
   }
 

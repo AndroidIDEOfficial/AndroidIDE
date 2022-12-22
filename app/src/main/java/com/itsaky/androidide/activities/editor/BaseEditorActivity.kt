@@ -72,6 +72,8 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.models.OpenedFile
+import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
@@ -159,6 +161,7 @@ abstract class BaseEditorActivity :
   protected abstract fun doSaveAll(): Boolean
   protected abstract fun doDismissSearchProgress()
   protected abstract fun doConfirmProjectClose()
+  protected abstract fun getOpenedFiles() : List<OpenedFile>
 
   protected open fun preDestroy() {
     viewModel.isConfigChange = !isDestroying
@@ -489,7 +492,7 @@ abstract class BaseEditorActivity :
     viewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
     viewModel._isInitializing.observe(this) { onBuildStatusChanged() }
     viewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
-
+  
     viewModel.observeFiles(this) { files ->
       binding.apply {
         if (files == null || files.isEmpty()) {
@@ -499,9 +502,12 @@ abstract class BaseEditorActivity :
           tabs.visibility = View.VISIBLE
           viewContainer.displayedChild = 0
         }
+      
+        val currentFile = provideCurrentEditor()?.editor?.file?.absolutePath ?: return@observeFiles
+        getOpenedFiles().also { viewModel.writeOpenedFiles(OpenedFilesCache(currentFile, it)) }
       }
     }
-
+    
     setupNoEditorView()
     setupBottomSheet()
 

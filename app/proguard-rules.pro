@@ -26,6 +26,11 @@
 -keep class org.w3c.** { *; }
 -keep class org.xml.** { *; }
 
+# Services
+-keepclassmembers class ** {
+    @com.google.auto.service.AutoService <methods>;
+}
+
 # EventBus
 -keepattributes *Annotation*
 -keepclassmembers class ** {
@@ -51,7 +56,7 @@
     <init>(...);
 }
 -keep class com.itsaky.androidide.editor.IEditor { *; }
--keep class * extends com.itsaky.androidide.inflater.IAttributeAdapter { *; }
+-keep class * extends com.itsaky.androidide.inflater.IViewAdapter { *; }
 -keep class * extends com.itsaky.androidide.inflater.drawable.IDrawableParser {
     <init>(...);
     android.graphics.drawable.Drawable parse();

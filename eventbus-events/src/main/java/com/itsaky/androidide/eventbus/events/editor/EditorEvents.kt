@@ -33,7 +33,10 @@ data class DocumentOpenEvent(var openedFile: Path, var text: String, var version
   DocumentEvent(openedFile)
 
 /** Dispatched when the given file is closed. Always dispatched after [DocumentOpenEvent]. */
-data class DocumentCloseEvent(var closedFile: Path) : DocumentEvent(closedFile)
+data class DocumentCloseEvent
+@JvmOverloads
+constructor(var closedFile: Path, val selectionRange: Range = Range.NONE) :
+  DocumentEvent(closedFile)
 
 /**
  * Dispatched when the content of the given opened document changes. The change can be either
