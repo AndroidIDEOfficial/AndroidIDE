@@ -41,26 +41,24 @@ class ValueParsersTest {
   @Test
   fun `hardcoded dimension parser test`() {
     inflaterTest { module ->
-      requiresActivity { activity ->
+      requiresActivity {
 
         // Hardcoded dimensions
         val units = arrayOf("dp", "sp", "pt", "px", "in", "mm")
         val results = intArrayOf(1, 1, 2, 1, 160, 6)
         for (i in units.indices) {
-          assertThat(parseDimension(activity, "1" + units[i], -1f).roundToInt())
-            .isEqualTo(results[i])
+          assertThat(parseDimension(this, "1" + units[i], -1f).roundToInt()).isEqualTo(results[i])
         }
 
         // Dimensions from platform resources
-        assertThat(parseDimension(activity, "@android:dimen/app_icon_size")).isEqualTo(48)
-        assertThat(parseDimension(activity, "@android:dimen/status_bar_height_portrait"))
-          .isEqualTo(24)
+        assertThat(parseDimension(this, "@android:dimen/app_icon_size")).isEqualTo(48)
+        assertThat(parseDimension(this, "@android:dimen/status_bar_height_portrait")).isEqualTo(24)
 
         val exists =
           try {
             // The app module here targets android 31 and the dimension resource below was added in
             // android 31. So, this should throw an exception
-            assertThat(parseDimension(activity, "@android:dimen/status_bar_height_default"))
+            assertThat(parseDimension(this, "@android:dimen/status_bar_height_default"))
               .isEqualTo(-2)
             true
           } catch (err: IllegalArgumentException) {
@@ -69,15 +67,15 @@ class ValueParsersTest {
 
         assertThat(exists).isFalse()
 
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp", def = 1f)).isEqualTo(0)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp", def = 0f)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1dp_ref", def = 0f)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0dp_ref", def = 0f)).isEqualTo(0)
+        assertThat(parseDimension(this, "@dimen/test_dimen_0dp", def = 1f)).isEqualTo(0)
+        assertThat(parseDimension(this, "@dimen/test_dimen_1dp", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(this, "@dimen/test_dimen_1dp_ref", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(this, "@dimen/test_dimen_0dp_ref", def = 0f)).isEqualTo(0)
 
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt", def = 1f)).isEqualTo(0)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt", def = 0f)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_1pt_ref", def = 0f)).isEqualTo(1)
-        assertThat(parseDimension(activity, "@dimen/test_dimen_0pt_ref", def = 0f)).isEqualTo(0)
+        assertThat(parseDimension(this, "@dimen/test_dimen_0pt", def = 1f)).isEqualTo(0)
+        assertThat(parseDimension(this, "@dimen/test_dimen_1pt", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(this, "@dimen/test_dimen_1pt_ref", def = 0f)).isEqualTo(1)
+        assertThat(parseDimension(this, "@dimen/test_dimen_0pt_ref", def = 0f)).isEqualTo(0)
       }
     }
   }
@@ -85,17 +83,17 @@ class ValueParsersTest {
   @Test
   fun `drawable parse test`() {
     inflaterTest { module ->
-      requiresActivity { activity ->
-        parseDrawable(activity, "#ff0000").apply {
+      requiresActivity {
+        parseDrawable(this, "#ff0000").apply {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(ColorDrawable::class.java)
           assertThat((this as ColorDrawable).color).isEqualTo(Color.RED)
         }
-        parseDrawable(activity, "@android:drawable/ab_share_pack_material").apply {
+        parseDrawable(this, "@android:drawable/ab_share_pack_material").apply {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(BitmapDrawable::class.java)
         }
-        parseDrawable(activity, "@android:drawable/action_bar_background").apply {
+        parseDrawable(this, "@android:drawable/action_bar_background").apply {
           assertThat(this).isNotNull()
           assertThat(this).isInstanceOf(GradientDrawable::class.java)
         }
@@ -178,17 +176,16 @@ class ValueParsersTest {
   @Test
   fun `color parser test`() {
     inflaterTest {
-      requiresActivity { activity ->
-        assertThat(parseColor(activity, "@android:color/red")).isEqualTo(Color.RED)
-        assertThat(parseColor(activity, "@android:color/black")).isEqualTo(Color.BLACK)
-        assertThat(parseColor(activity, "@android:color/white")).isEqualTo(Color.WHITE)
-        assertThat(parseColor(activity, "@android:color/transparent")).isEqualTo(Color.TRANSPARENT)
-        assertThat(parseColor(activity, "@color/test_color")).isEqualTo(Color.parseColor("#f44336"))
-        assertThat(parseColor(activity, "@color/test_color_ref"))
-          .isEqualTo(Color.parseColor("#f44336"))
+      requiresActivity {
+        assertThat(parseColor(this, "@android:color/red")).isEqualTo(Color.RED)
+        assertThat(parseColor(this, "@android:color/black")).isEqualTo(Color.BLACK)
+        assertThat(parseColor(this, "@android:color/white")).isEqualTo(Color.WHITE)
+        assertThat(parseColor(this, "@android:color/transparent")).isEqualTo(Color.TRANSPARENT)
+        assertThat(parseColor(this, "@color/test_color")).isEqualTo(Color.parseColor("#f44336"))
+        assertThat(parseColor(this, "@color/test_color_ref")).isEqualTo(Color.parseColor("#f44336"))
 
         // TODO Implement color state list parser
-        assertThat(parseColor(activity, "@color/test_selector")).isEqualTo(Color.TRANSPARENT)
+        assertThat(parseColor(this, "@color/test_selector")).isEqualTo(Color.TRANSPARENT)
       }
     }
   }

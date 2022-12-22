@@ -50,15 +50,16 @@ import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.createViewInstance
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
-import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
 import com.itsaky.androidide.inflater.utils.endParse
+import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
+import com.itsaky.androidide.xml.widgets.WidgetType
 import java.io.File
 
 /**
@@ -87,18 +88,14 @@ open class LayoutInflaterImpl : ILayoutInflater {
 
   override fun inflate(file: File, parent: ViewGroup): List<IView> {
     startInflation(file)
-    return doInflate(file, parent).apply {
-      finishInflation()
-    }
+    return doInflate(file, parent).apply { finishInflation() }
   }
-  
-  override fun inflate(file: File, parent: IViewGroup) : List<IView> {
+
+  override fun inflate(file: File, parent: IViewGroup): List<IView> {
     startInflation(file)
-    return doInflate(file, parent).apply {
-      finishInflation()
-    }
+    return doInflate(file, parent).apply { finishInflation() }
   }
-  
+
   override fun close() {
     this.module = null
     this.inflationEventListener = null
@@ -111,7 +108,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
     val (processor, module) = processXmlFile(file)
     return doInflate(processor, parent, module)
   }
-  
+
   protected open fun doInflate(file: File, parent: IViewGroup): List<IView> {
     val (processor, module) = processXmlFile(file)
     return doInflate(processor, parent, module)
@@ -124,7 +121,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
   ): List<IView> {
     return doInflate(processor, module) { wrap(parent) }
   }
-  
+
   protected open fun doInflate(
     processor: XmlProcessor,
     parent: IViewGroup,
@@ -190,7 +187,12 @@ open class LayoutInflaterImpl : ILayoutInflater {
     // TODO(itsaky): Handle views from libraries
     val view: ViewImpl =
       (if (widget == null) {
-        onCreateUnsupportedView("View with name '${element.name}' not found", parentView)
+        onCreateUnsupportedView(
+          element.name,
+          element.childCount > 0,
+          "View with name '${element.name}' not found",
+          parentView
+        )
       } else {
         onCreatePlatformView(widget, parentView, module, widgets)
       })
@@ -224,7 +226,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
     val parentView = parent.view as ViewGroup
     val adapter =
       ViewAdapterIndex.getAdapter(view.name)
-        ?: throw InflateException("No attribute adapter found for view ${view.name}")
+          ?: throw InflateException("No attribute adapter found for view ${view.name}")
 
     view.view.layoutParams = generateLayoutParams(parentView)
 
@@ -308,7 +310,12 @@ open class LayoutInflaterImpl : ILayoutInflater {
       val v = createViewInstance(widget.qualifiedName, parent.context)
       return componentFactory.createView(currentLayoutFile, widget.qualifiedName, v)
     } catch (err: Throwable) {
-      onCreateUnsupportedView("Unable to create view for widget ${widget.qualifiedName}", parent)
+      onCreateUnsupportedView(
+        widget.qualifiedName,
+        widget.type == WidgetType.LAYOUT,
+        "Unable to create view for widget ${widget.qualifiedName}",
+        parent
+      )
     }
   }
 
@@ -360,15 +367,24 @@ open class LayoutInflaterImpl : ILayoutInflater {
     return processor to module
   }
 
-  private fun onCreateUnsupportedView(message: String, parent: ViewGroup): IView {
-    return ErrorView(currentLayoutFile, parent.context, message)
+  private fun onCreateUnsupportedView(
+    name: String,
+    isLayout: Boolean,
+    message: String,
+    parent: ViewGroup
+  ): IView {
+    return if (isLayout) {
+      ErrorLayout(file = currentLayoutFile, name = name, context = parent.context)
+    } else {
+      ErrorView(file = currentLayoutFile, name = name, context = parent.context, message = message)
+    }
   }
-  
+
   private fun List<IView>.finishInflation() {
     inflationEventListener?.onEvent(InflationFinishEvent(this))
     _primaryInflatingFile = null
   }
-  
+
   private fun startInflation(file: File) {
     this._primaryInflatingFile = file
     IDTable.newRound()

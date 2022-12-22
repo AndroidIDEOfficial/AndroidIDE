@@ -48,8 +48,12 @@ internal class UiViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
       return 0
     }
     val adapter =
-      ViewAdapterIndex.getAdapter(name) as? IViewGroupAdapter
-        ?: throw IllegalStateException("No view adapter for '$name'")
+      ViewAdapterIndex.getAdapter(name)
+    
+    if (adapter !is IViewGroupAdapter) {
+      return childCount
+    }
+    
     return when (adapter.getLayoutBehavior(this)) {
       TOP_LEFT -> childCount
       VERTICAL -> computeViewIndexVertically(x, y)

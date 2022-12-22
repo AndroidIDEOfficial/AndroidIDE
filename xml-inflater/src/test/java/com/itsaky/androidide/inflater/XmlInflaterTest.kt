@@ -58,6 +58,6 @@ fun inflaterTest(block: (AndroidModule) -> Unit) {
   endParse()
 }
 
-fun requiresActivity(block: (AppCompatActivity) -> Unit) {
-  block(XmlInflaterTest.activity)
+fun requiresActivity(block: AppCompatActivity.() -> Unit) {
+  XmlInflaterTest.activity.block()
 }
