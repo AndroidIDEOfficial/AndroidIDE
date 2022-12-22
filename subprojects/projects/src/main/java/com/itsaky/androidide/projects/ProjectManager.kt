@@ -29,18 +29,19 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.ILogger
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.ASYNC
-import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.pathString
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.ASYNC
+import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages projects in AndroidIDE.
@@ -53,7 +54,7 @@ object ProjectManager : EventReceiver {
 
   var rootProject: Project? = null
   var app: AndroidModule? = null
-  
+
   var projectInitialized: Boolean = false
   var cachedInitResult: InitializeResult? = null
 
@@ -133,18 +134,20 @@ object ProjectManager : EventReceiver {
 
   fun notifyProjectUpdate() {
 
-    if (rootProject != null) {
-      // Update the source file index
-      rootProject!!.subModules.forEach {
-        if (it is ModuleProject) {
-          it.indexSources()
+    executeAsync {
+      if (rootProject != null) {
+        // Update the source file index
+        rootProject!!.subModules.forEach {
+          if (it is ModuleProject) {
+            it.indexSources()
+          }
         }
       }
-    }
 
-    val event = ProjectInitializedEvent()
-    event.put(Project::class.java, rootProject)
-    EventBus.getDefault().post(event)
+      val event = ProjectInitializedEvent()
+      event.put(Project::class.java, rootProject)
+      EventBus.getDefault().post(event)
+    }
   }
 
   fun findModuleForFile(file: File): ModuleProject? {

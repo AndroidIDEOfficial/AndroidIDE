@@ -50,9 +50,10 @@ dependencies {
     api project (path: ':eventbus-events')
     api project (path: ':subprojects:tooling-api')
     
-    implementation project (path: ':shared')
+    implementation project (path: ':common')
     implementation project (path: ':logger')
     implementation project (path: ':lookup')
+    implementation project (path: ':shared')
     implementation project (path: ':subprojects:javac-services')
     implementation project (path: ':subprojects:xml-utils')
     
