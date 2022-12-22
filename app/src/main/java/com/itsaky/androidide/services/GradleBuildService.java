@@ -37,7 +37,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,8 +65,6 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
-import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent;
-import com.itsaky.androidide.tooling.events.task.TaskStartEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
@@ -106,14 +103,14 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public void onCreate() {
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     showNotification(getString(R.string.build_status_idle), false);
-  
+
     Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, this);
   }
-  
+
   public boolean isToolingServerStarted() {
     return isToolingServerStarted;
   }
-  
+
   private void showNotification(final String message, final boolean isProgress) {
     LOG.info("Showing notification to user...");
     startForeground(NOTIFICATION_ID, buildNotification(message, isProgress));
@@ -409,7 +406,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       toolingServerThread.start();
       return;
     }
-    
+
     if (toolingServerThread.isStarted && listener != null) {
       listener.onServerStarted();
     } else {
@@ -489,11 +486,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       super(ToolingServerRunner.class.getSimpleName());
       this.listener = listener;
     }
-  
+
     public void setListener(@Nullable final OnServerStartListener listener) {
       this.listener = listener;
     }
-  
+
     @Override
     public void run() {
       try {

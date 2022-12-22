@@ -70,6 +70,10 @@ object TaskExecutor {
   }
 }
 
+fun <R : Any?> executeAsync(callable: () -> R?) {
+  executeAsync(callable) {}
+}
+
 fun <R : Any?> executeAsync(callable: () -> R?, callback: (R?) -> Unit): CompletableFuture<R?> =
   TaskExecutor.executeAsync({ callable() }) { callback(it) }
 

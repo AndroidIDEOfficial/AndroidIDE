@@ -10,7 +10,7 @@ ext {
             kotlin_gradle_plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
             google_java_format  : "com.google.googlejavaformat:google-java-format:$google_java_format_version",
             oss_licenses        : "com.google.android.gms:oss-licenses-plugin:$oss_licenses_version",
-            nav_safeargs : "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_safeargs_version"
+            nav_safeargs        : "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_safeargs_version"
     ]
     
     androidide = [

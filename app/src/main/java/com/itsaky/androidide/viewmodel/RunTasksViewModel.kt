@@ -26,20 +26,7 @@ import com.itsaky.androidide.tooling.api.model.GradleTask
 
 /** @author Akash Yadav */
 class RunTasksViewModel : ViewModel() {
-
-  // These tasks should be easily accessible to user
-  private val _commonTaskNames =
-    setOf(
-      "assembleDebug",
-      "assembleRelease",
-      "clean",
-      "build",
-      "bundle",
-      "lint",
-      "lintDebug",
-      "lintRelease"
-    )
-
+  
   private val _tasks = MutableLiveData(listOf<Checkable<GradleTask>>())
   private val _selected = MutableLiveData(mutableSetOf<String>())
   private val _displayedChild = MutableLiveData(0)
