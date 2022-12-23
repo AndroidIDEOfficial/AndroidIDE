@@ -53,14 +53,14 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.editor.ui.EditorSearchLayout;
-import com.itsaky.androidide.editor.ui.IDEEditor;
-import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.editor.language.xml.XMLLanguage;
+import com.itsaky.androidide.editor.ui.EditorSearchLayout;
+import com.itsaky.androidide.editor.ui.IDEEditor;
+import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry;
@@ -123,8 +123,7 @@ public class CodeEditorView extends LinearLayout {
     addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
     addView(
         this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-
-    selection.validate();
+    
     CompletableFuture.runAsync(
         () -> {
           final var contents = FileIOUtils.readFile2String(file);
@@ -132,12 +131,11 @@ public class CodeEditorView extends LinearLayout {
               () -> {
                 binding.editor.setText(contents, createEditorArgs());
                 postRead();
-                if (LSPUtils.isEqual(selection.getStart(), selection.getEnd())) {
-                  getEditor()
-                      .setSelection(
-                          selection.getStart().getLine(), selection.getStart().getColumn());
+                final var validated = binding.editor.validateRange(selection);
+                if (LSPUtils.isEqual(validated.getStart(), validated.getEnd())) {
+                  getEditor().setSelection(validated.getStart());
                 } else {
-                  getEditor().setSelection(selection);
+                  getEditor().setSelection(validated);
                 }
               });
         });
@@ -168,11 +166,11 @@ public class CodeEditorView extends LinearLayout {
   protected void postRead() {
     binding.editor.setEditorLanguage(createLanguage(file));
     binding.editor.setLanguageServer(createLanguageServer(file));
-    
+
     if (IDELanguageClientImpl.isInitialized()) {
       binding.editor.setLanguageClient(IDELanguageClientImpl.getInstance());
     }
-    
+
     // File must be set only after setting the language server
     // This will make sure that textDocument/didOpen is sent
     binding.editor.setFile(getFile());
@@ -407,7 +405,7 @@ public class CodeEditorView extends LinearLayout {
       editor.onEditorSelected();
     }
   }
-  
+
   public void beginSearch() {
     if (this.binding == null || searchLayout == null) {
       LOG.warn("Editor layout is null content=" + binding + ", searchLayout=" + searchLayout);
