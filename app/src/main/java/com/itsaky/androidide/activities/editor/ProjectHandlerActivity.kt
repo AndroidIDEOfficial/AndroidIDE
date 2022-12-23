@@ -53,7 +53,6 @@ import com.itsaky.androidide.utils.RecursiveFileSearcher
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import java.io.File
-import java.util.ServiceLoader
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
 import java.util.stream.Collectors
@@ -237,7 +236,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     notifyProjectUpdate()
     ThreadUtils.runOnUiThread { postProjectInit() }
   }
-  
+
   protected open fun preProjectInit() {
     setStatus(getString(string.msg_initializing_project))
     viewModel.isInitializing = true

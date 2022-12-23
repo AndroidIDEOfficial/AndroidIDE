@@ -32,12 +32,12 @@ class AdapterIndexText {
   @Test
   fun `verify instances of adapters`() {
     viewToAdapter.forEach {
-      ViewAdapterIndex.getAdapter(it.key.qualifiedName).apply {
+      ViewAdapterIndex.getViewAdapter(it.key.qualifiedName).apply {
         assertThat(this).isNotNull()
         assertThat(this).isInstanceOf(it.value.java)
       }
     }
 
-    abstractViews.forEach { assertThat(ViewAdapterIndex.getAdapter(it.qualifiedName)).isNull() }
+    abstractViews.forEach { assertThat(ViewAdapterIndex.getViewAdapter(it.qualifiedName)).isNull() }
   }
 }
