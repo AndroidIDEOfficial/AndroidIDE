@@ -122,6 +122,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(SELECTED_TEXT_BACKGROUND, 0xffef9a9a);
     setColor(LINE_DIVIDER, Color.TRANSPARENT);
     setColor(LINE_NUMBER, 0xffaaaaaa);
+    setColor(LINE_NUMBER_CURRENT, 0xfff5f5f5);
     setColor(LINE_NUMBER_PANEL, 0xff000000);
     setColor(LINE_NUMBER_PANEL_TEXT, 0xffffffff);
     setColor(TEXT_NORMAL, 0xfff5f5f5);
@@ -138,7 +139,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(COMPLETION_WND_BACKGROUND, 0xff757575);
     setColor(COMPLETION_WND_CORNER, 0xff9e9e9e);
     setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
-
+    
     setColor(KEYWORD, 0xffff6060);
     setColor(OPERATOR, 0xff4fc3f7);
     setColor(LITERAL, 0xff8bc34a);
