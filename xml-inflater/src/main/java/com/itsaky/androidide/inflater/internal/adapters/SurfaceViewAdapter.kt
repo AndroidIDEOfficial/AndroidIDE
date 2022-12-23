@@ -26,6 +26,7 @@ import com.itsaky.androidide.resources.R.string
 
 /**
  * Attribute adapter for [SurfaceView].
+ *
  * @author Akash Yadav
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(SurfaceView::class)

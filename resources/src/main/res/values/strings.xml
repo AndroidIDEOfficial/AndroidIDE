@@ -500,6 +500,16 @@
   <string name="widget_relative_layout" translatable="false">RelativeLayout</string>
   <string name="widget_scrollview" translatable="false">ScrollView</string>
   <string name="widget_horizontal_scrollview" translatable="false">HorizontalScrollView</string>
+  <string name="widget_text_clock" translatable="false">TextClock</string>
+  <string name="widget_digital_clock" translatable="false">DigitalClock</string>
+  <string name="widget_calendar_view" translatable="false">CalendarView</string>
+  <string name="widget_space" translatable="false">Space</string>
+  <string name="widget_number_picker" translatable="false">NumberPicker</string>
+  <string name="widget_chronometer" translatable="false">Chronometer</string>
+  <string name="widget_rating_bar" translatable="false">RatingBar</string>
+  <string name="widget_quick_contact_badge" translatable="false">QuickContactBadge</string>
+  <string name="widget_videoview" translatable="false">VideoView</string>
+  <string name="widget_analog_clock" translatable="false">AnalogClock</string>
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>

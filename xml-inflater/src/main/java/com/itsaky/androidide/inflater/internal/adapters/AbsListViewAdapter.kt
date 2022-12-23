@@ -26,7 +26,7 @@ import com.itsaky.androidide.inflater.AttributeHandlerScope
  * @author Akash Yadav
  */
 abstract class AbsListViewAdapter<T : AbsListView> : AdapterViewAdapter<T>() {
-  
+
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     create("cacheColorHint") { view.cacheColorHint = parseColor(context, value) }
