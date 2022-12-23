@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap
 class DefaultActionsRegistry : ActionsRegistry() {
 
   private val log = ILogger.newInstance("DefaultActionsRegistry")
-  private val actions = ConcurrentHashMap<String, HashMap<String, ActionItem>>()
+  private val actions = ConcurrentHashMap<String, LinkedHashMap<String, ActionItem>>()
   private val listeners = mutableSetOf<ActionExecListener>()
 
   init {
@@ -50,15 +50,15 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   override fun getActions(location: ActionItem.Location): MutableMap<String, ActionItem> {
     if (actions[location.id] == null) {
-      actions[location.id] = hashMapOf()
+      actions[location.id] = java.util.LinkedHashMap()
     }
 
     return actions[location.id]!!
   }
 
   override fun registerAction(action: ActionItem): Boolean {
-    val actionsAtLocation = getActions(action.location)
-    actionsAtLocation[action.id] = action
+    val actions = getActions(action.location)
+    actions[action.id] = action
     return true
   }
 

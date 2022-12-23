@@ -73,7 +73,6 @@ import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.models.OpenedFile
-import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
@@ -86,7 +85,6 @@ import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
-import com.itsaky.androidide.utils.EditorActivityActions.Companion.register as registerActivityActions
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.SingleSessionCallback
@@ -161,7 +159,7 @@ abstract class BaseEditorActivity :
   protected abstract fun doSaveAll(): Boolean
   protected abstract fun doDismissSearchProgress()
   protected abstract fun doConfirmProjectClose()
-  protected abstract fun getOpenedFiles() : List<OpenedFile>
+  protected abstract fun getOpenedFiles(): List<OpenedFile>
 
   protected open fun preDestroy() {
     viewModel.isConfigChange = !isDestroying
@@ -236,8 +234,6 @@ abstract class BaseEditorActivity :
     setupContainers()
     setupDiagnosticInfo()
 
-    registerActivityActions(this)
-
     uiDesignerResultLauncher =
       registerForActivityResult(StartActivityForResult(), this::handleUiDesignerResult)
   }
@@ -260,11 +256,6 @@ abstract class BaseEditorActivity :
 
   override fun onResume() {
     super.onResume()
-    // Actions are cleared when the activity is paused to avoid holding references to the activity
-    // So, when resumed, they should be registered and inflated again.
-    // Actions are cleared when the activity is paused to avoid holding references to the activity
-    // So, when resumed, they should be registered and inflated again.
-    registerActivityActions(this)
     invalidateOptionsMenu()
 
     try {
@@ -365,7 +356,7 @@ abstract class BaseEditorActivity :
   }
 
   open fun showDaemonStatus() {
-    val shell = app.newShell{ t -> getDaemonStatusFragment().append(t) }
+    val shell = app.newShell { t -> getDaemonStatusFragment().append(t) }
     shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
     shell.bgAppend(
       String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))
@@ -492,7 +483,7 @@ abstract class BaseEditorActivity :
     viewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
     viewModel._isInitializing.observe(this) { onBuildStatusChanged() }
     viewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
-  
+
     viewModel.observeFiles(this) { files ->
       binding.apply {
         if (files == null || files.isEmpty()) {
@@ -504,7 +495,7 @@ abstract class BaseEditorActivity :
         }
       }
     }
-    
+
     setupNoEditorView()
     setupBottomSheet()
 

@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.handlers
 
+import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.itsaky.androidide.eventbus.events.Event
@@ -31,6 +32,7 @@ import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.EditorActivityActions
+import com.itsaky.androidide.utils.EditorActivityActions.Companion
 import com.itsaky.androidide.utils.Environment
 import java.util.concurrent.CompletableFuture
 import org.greenrobot.eventbus.EventBus
@@ -45,6 +47,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
   private val fileActionsHandler = FileTreeActionHandler()
 
   override fun onCreate(owner: LifecycleOwner) {
+    EditorActivityActions.register(owner as Context)
     dispatchEvent(OnCreateEvent())
   }
 
@@ -56,6 +59,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
   }
 
   override fun onResume(owner: LifecycleOwner) {
+    EditorActivityActions.register(owner as Context)
     dispatchEvent(OnResumeEvent())
   }
 
