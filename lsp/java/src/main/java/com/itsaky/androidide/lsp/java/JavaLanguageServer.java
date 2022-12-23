@@ -150,6 +150,12 @@ public class JavaLanguageServer implements ILanguageServer {
     // Clear cached file managers
     SourceFileManager.clearCache();
 
+    // Clear cached JAR file system for R.jar
+    // Using the cached instance will result in completions not being updated for updated resources
+    // TODO Clearing caches for JAR files ending with '/R.jar' is probably not a good idea
+    //    Maybe this could be improved by using data from the AndroidModule project model
+    CachingJarFileSystemProvider.INSTANCE.clearCachesForPaths(path -> path.endsWith("/R.jar"));
+
     // Clear cached module-specific compilers
     JavaCompilerProvider.getInstance().destory();
 
@@ -230,7 +236,7 @@ public class JavaLanguageServer implements ILanguageServer {
     if (!DocumentUtils.isJavaFile(file)) {
       return DiagnosticResult.NO_UPDATE;
     }
-    
+
     final JavaCompilerService compiler = getCompiler(file);
     if (!settings.codeAnalysisEnabled() || compiler == null) {
       return DiagnosticResult.NO_UPDATE;

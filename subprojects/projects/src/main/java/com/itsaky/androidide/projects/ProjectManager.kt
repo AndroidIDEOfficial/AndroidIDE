@@ -94,13 +94,13 @@ object ProjectManager : EventReceiver {
       log.warn("Cannot run resource and source generation task. No application module found.")
       return
     }
-
+  
     val debug = app!!.getVariant("debug")
     if (debug == null) {
       log.warn("No debug variant found in application project ${app!!.name}")
       return
     }
-
+  
     val mainArtifact = debug.mainArtifact
     val genResourcesTask = mainArtifact.resGenTaskName
     val genSourcesTask = mainArtifact.sourceGenTaskName
@@ -111,7 +111,8 @@ object ProjectManager : EventReceiver {
         ""
       }
     builder
-      .executeProjectTasks(app!!.path, genResourcesTask ?: "", genSourcesTask, genDataBinding)
+      .executeProjectTasks(app!!.path, genResourcesTask
+        ?: "", genSourcesTask, "processDebugResources", genDataBinding)
       .whenComplete { result, taskErr ->
         if (taskErr != null || !result.isSuccessful) {
           log.warn(
@@ -123,7 +124,7 @@ object ProjectManager : EventReceiver {
         }
       }
   }
-
+  
   fun getApplicationModule(): AndroidModule? {
     return app
   }
