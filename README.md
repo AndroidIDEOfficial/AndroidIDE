@@ -56,6 +56,11 @@
 
 ## Installation
 
+> _Please install AndroidIDE from trusted sources only i.e._
+> - [_The AndroidIDE website_](https://androidide.com)
+> - [_GitHub Releases_](https://github.com/AndroidIDEOfficial/AndroidIDE/releases)
+> - [_GitHub Actions_](https://github.com/AndroidIDEOfficial/AndroidIDE/actions)
+
 - Download the AndroidIDE APK from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
   can also download APKs from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions).
 - Follow the
