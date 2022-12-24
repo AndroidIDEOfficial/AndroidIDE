@@ -95,11 +95,20 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     startServices()
   }
 
+  override fun onPause() {
+    super.onPause()
+    if (isFinishing) {
+      // reset these values here
+      // sometimes, when the IDE closed and reopened instantly, these values prevent initialization
+      // of the project
+      projectInitialized = false
+      cachedInitResult = null
+    }
+  }
+
   override fun preDestroy() {
     if (isDestroying) {
       closeProject(false)
-      projectInitialized = false
-      cachedInitResult = null
     }
 
     super.preDestroy()
@@ -129,7 +138,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   override fun startServices() {
-
     val service = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
     if (viewModel.isBoundToBuildSerice && service != null) {
       log.info("Reusing already started Gradle build service")
@@ -162,10 +170,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
     val initialized = projectInitialized && cachedInitResult != null
-
+    log.debug("Is project initialized: $initialized")
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
     if (initialized && !wasInitializing) {
+      log.debug("Skipping init process because initialized && !wasInitializing")
       return
     }
 
@@ -180,10 +189,12 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     val future =
       if (!(isConfigChange && wasInitializing) && !initialized) {
+        log.debug("Sending init request to tooling server..")
         buildService.initializeProject(projectDir.absolutePath)
       } else {
         // The project initialization was in progress before the configuration change
         // In this case, we should not start another project initialization
+        log.debug("Using cached initialize result as the project is already initialized")
         CompletableFuture.supplyAsync {
           log.warn("Project has already been initialized. Skipping initialization process.")
           cachedInitResult
@@ -228,6 +239,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   protected open fun onProjectInitialized(result: InitializeResult) {
     if (isConfigChange && projectInitialized && result == cachedInitResult) {
+      log.debug("Not setting up project as this a configuration change")
       return
     }
 
