@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.schemes.internal.parser
 
 import com.google.gson.stream.JsonReader
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
 
@@ -53,6 +54,24 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
     CODE_BLOCK_LINE_SIDE("code.block.line.side", EditorColorScheme.SIDE_BLOCK_LINE),
     COMPLETION_WINDOW_BG("completion.window.bg", EditorColorScheme.COMPLETION_WND_BACKGROUND),
     COMPLETION_WINDOW_OUTLINE("completion.window.outline", EditorColorScheme.COMPLETION_WND_CORNER),
+    COMPLETION_WINDOW_BG_ICON("completion.window.bg.icon", SchemeAndroidIDE.COMPLETION_WND_BG_ICON),
+    COMPLETION_WINDOW_TEXT_ICON(
+      "completion.window.text.icon",
+      SchemeAndroidIDE.COMPLETION_WND_TEXT_ICON
+    ),
+    COMPLETION_WND_TEXT_LABEL(
+      "completion.window.text.label",
+      SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
+    ),
+    COMPLETION_WND_TEXT_DETAIL(
+      "completion.window.text.detail",
+      SchemeAndroidIDE.COMPLETION_WND_TEXT_DETAIL
+    ),
+    COMPLETION_WND_TEXT_API("completion.window.text.api", SchemeAndroidIDE.COMPLETION_WND_TEXT_API),
+    COMPLETION_WND_TEXT_TYPE(
+      "completion.window.text.type",
+      SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
+    ),
     NON_PRINTABLE_CHAR("non_printable_char", EditorColorScheme.NON_PRINTABLE_CHAR),
     HIGHLIGHTED_DELIMITERS_UNDERLINE(
       "highlighted.delimiters.underline",

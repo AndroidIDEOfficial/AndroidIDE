@@ -34,6 +34,14 @@ public class SchemeAndroidIDE extends EditorColorScheme {
   protected SchemeAndroidIDE() {}
 
   private static int current = EditorColorScheme.END_COLOR_ID;
+  
+  public static final int COMPLETION_WND_BG_ICON = ++current;
+  public static final int COMPLETION_WND_TEXT_LABEL = ++current;
+  public static final int COMPLETION_WND_TEXT_TYPE = ++current;
+  public static final int COMPLETION_WND_TEXT_ICON = ++current;
+  public static final int COMPLETION_WND_TEXT_API = ++current;
+  public static final int COMPLETION_WND_TEXT_DETAIL = ++current;
+  
   public static final int LOG_TEXT_INFO = ++current;
   public static final int LOG_TEXT_DEBUG = ++current;
   public static final int LOG_TEXT_VERBOSE = ++current;

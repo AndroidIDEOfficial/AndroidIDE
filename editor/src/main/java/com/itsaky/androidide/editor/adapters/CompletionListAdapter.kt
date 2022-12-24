@@ -27,7 +27,6 @@ import android.widget.TextView
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.ClassCompletionData
-import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
@@ -41,8 +40,13 @@ import com.itsaky.androidide.resources.R.color
 import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
 import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_BG_ICON
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_API
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_DETAIL
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_ICON
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.customOrJBMono
 import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -50,10 +54,10 @@ import com.itsaky.androidide.xml.versions.Info
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
-
-  private val log = ILogger.newInstance("CompletionListAdapter")
 
   override fun attachValues(window: EditorAutoCompletion, items: List<CompletionItem>) {
     super.attachValues(window, items)
@@ -100,8 +104,50 @@ class CompletionListAdapter : EditorCompletionAdapter() {
       )
     )
     binding.completionApiInfo.visibility = View.GONE
+
+    if (this.colorScheme != null) {
+      applyColorScheme(binding)
+    }
+
     showApiInfoIfNeeded(item, binding.completionApiInfo)
     return binding.root
+  }
+
+  private fun applyColorScheme(binding: LayoutCompletionItemBinding) {
+    var color = getThemeColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)
+    if (color != 0) {
+      binding.root.setBackgroundColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_BG_ICON)
+    if (color != 0) {
+      binding.completionIconText.setBackgroundColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_TEXT_ICON)
+    if (color != 0) {
+      binding.completionIconText.setTextColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_TEXT_LABEL)
+    if (color != 0) {
+      binding.completionLabel.setTextColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_TEXT_DETAIL)
+    if (color != 0) {
+      binding.completionDetail.setTextColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_TEXT_API)
+    if (color != 0) {
+      binding.completionApiInfo.setTextColor(color)
+    }
+
+    color = getThemeColor(COMPLETION_WND_TEXT_TYPE)
+    if (color != 0) {
+      binding.completionType.setTextColor(color)
+    }
   }
 
   private fun showApiInfoIfNeeded(item: LspCompletionItem, textView: TextView) {

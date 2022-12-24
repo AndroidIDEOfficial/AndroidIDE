@@ -76,7 +76,6 @@
     app:layout_constraintTop_toBottomOf="@id/completion_label"
     tools:text="com.itsaky.androidide.activities.MainActivity" />
 
-
   <TextView
     android:id="@+id/completion_api_info"
     android:layout_width="0dp"
@@ -103,6 +102,7 @@
     android:backgroundTint="?attr/colorPrimaryContainer"
     android:gravity="center"
     android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+    android:textColor="?attr/colorOnPrimaryContainer"
     android:textSize="14sp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"

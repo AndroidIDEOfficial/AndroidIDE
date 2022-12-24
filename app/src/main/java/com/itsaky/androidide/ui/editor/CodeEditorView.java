@@ -57,6 +57,7 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
+import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.xml.XMLLanguage;
@@ -210,11 +211,12 @@ public class CodeEditorView extends LinearLayout {
       String ext = FileUtils.getFileExtension(file);
       switch (ext) {
         case "java":
-          binding.editor.setColorScheme(IDEColorSchemeProvider.INSTANCE.getScheme());
-          return new TreeSitterLanguage(
-              getLanguageSpec(
-                  getContext(), ext, TSLanguageJava.newInstance(), newLocalCaptureSpec(ext)),
-              ext);
+//          binding.editor.setColorScheme(IDEColorSchemeProvider.INSTANCE.getScheme());
+//          return new TreeSitterLanguage(
+//              getLanguageSpec(
+//                  getContext(), ext, TSLanguageJava.newInstance(), newLocalCaptureSpec(ext)),
+//              ext);
+          return new JavaLanguage();
         case "xml":
           return new XMLLanguage();
         case "gradle":
