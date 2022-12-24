@@ -408,12 +408,12 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   open fun getProgressSheet(msg: Int): ProgressSheet? {
     doDismissSearchProgress()
-
+  
     mSearchingProgress =
-      ProgressSheet().apply {
-        isCancelable = false
-        setMessage(getString(msg))
-        setSubMessageEnabled(false)
+      ProgressSheet().also {
+        it.isCancelable = false
+        it.setMessage(getString(msg))
+        it.setSubMessageEnabled(false)
       }
 
     return mSearchingProgress
