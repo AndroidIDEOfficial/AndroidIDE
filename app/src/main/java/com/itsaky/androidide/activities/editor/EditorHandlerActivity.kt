@@ -152,8 +152,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         }
       }
       viewModel.openedFilesCache = null
-  
-      executeAsync { IDEColorSchemeProvider.init() }
     } catch (err: Throwable) {
       log.error("Failed to reopen recently opened files", err)
     }

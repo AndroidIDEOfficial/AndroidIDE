@@ -57,6 +57,8 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
+  
+    executeAsync { IDEColorSchemeProvider.init() }
   }
 
   private fun handleCrash(thread: Thread, th: Throwable) {

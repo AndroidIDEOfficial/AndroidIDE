@@ -16,8 +16,6 @@
  */
 package com.itsaky.androidide.ui.editor;
 
-import static com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec;
-import static com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_LINE_BREAK;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_PASSWORD;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
@@ -59,7 +57,6 @@ import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.xml.XMLLanguage;
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
 import com.itsaky.androidide.editor.ui.EditorSearchLayout;
@@ -73,7 +70,6 @@ import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
@@ -212,10 +208,7 @@ public class CodeEditorView extends LinearLayout {
       switch (ext) {
         case "java":
           IDEColorSchemeProvider.INSTANCE.readScheme(binding.editor::setColorScheme);
-          final var tsLangJava = TSLanguageJava.newInstance();
-          final var localsSpec = newLocalCaptureSpec(ext);
-          final var languageSpec = getLanguageSpec(getContext(), ext, tsLangJava, localsSpec);
-          return new TreeSitterLanguage(new JavaLanguage(), languageSpec, ext);
+          return new JavaLanguage(getContext());
         case "xml":
           return new XMLLanguage();
         case "gradle":
