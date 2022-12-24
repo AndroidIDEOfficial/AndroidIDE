@@ -78,7 +78,7 @@ public class ToolsManager {
   }
 
   private static void extractColorScheme(final BaseApplication app) {
-    final var defPath = "editor/schemes";
+    final var defPath = "editor/schemes/default";
     final var dir = new File(Environment.ANDROIDIDE_UI, defPath);
     try {
       for (final String asset : app.getAssets().list(defPath)) {
