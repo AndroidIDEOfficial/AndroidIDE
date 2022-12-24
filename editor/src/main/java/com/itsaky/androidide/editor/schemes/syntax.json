@@ -64,24 +64,24 @@
                 "text.debug": "@f5",
                 "text.verbose": "#4fc3f7",
 
-                "error.priority": {
+                "priority.error": {
                     "fg": "@black",
                     "bg": "#f44336",
                     "completion": false
                 },
-                "warning.priority": {
+                "priority.warning": {
                     "fg": "@black",
                     "bg": "#ffeb3b"
                 },
-                "info.priority": {
+                "priority.info": {
                     "fg": "@white",
                     "bg": "#1f65c0"
                 },
-                "debug.priority": {
+                "priority.debug": {
                     "fg": "@white",
                     "bg": "#9e9d24"
                 },
-                "verbose.priority": {
+                "priority.verbose": {
                     "fg": "@black",
                     "bg": "@white"
                 }

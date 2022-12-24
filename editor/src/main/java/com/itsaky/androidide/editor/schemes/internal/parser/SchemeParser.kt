@@ -122,27 +122,35 @@ private fun IDEColorScheme.parseEditorScheme(reader: JsonReader) {
   while (reader.hasNext()) {
     val color = EditorColors.forKey(reader.nextName())
     val value = reader.nextString()
-    editorScheme[color.id] = parseColorValue(value)
+    editorScheme[color.id] = parseColorValue(value, false)
   }
   reader.endObject()
 }
 
-private fun IDEColorScheme.parseColorValue(value: String?): Int {
+/**
+ * Parses the color and returns the color ID. If [colorId] is `false`, returns the int color value
+ * instead.
+ */
+private fun IDEColorScheme.parseColorValue(value: String?, colorId: Boolean = true): Int {
   require(!value.isNullOrBlank()) { "Color value is not expected to be null or blank" }
-  return when (value[0]) {
-    '@' -> {
-      val refName = value.substring(1)
-      definitions[refName] ?: throw ParseException("Referenced color '$value' not found")
-    }
-    '#' -> {
+  if (value[0] == '@') {
+    val refName = value.substring(1)
+    val refValue = definitions[refName] ?: throw ParseException("Referenced color '$value' not found")
+    return if (colorId) refValue else colorIds[refValue]!!
+  }
+
+  if (value[0] == '#') {
+    val color =
       try {
         Color.parseColor(value)
       } catch (err: Throwable) {
         throw ParseException("Invalid hex color code: '$value'")
       }
-    }
-    else -> throw ParseException("Unsupported color value '$value'")
+
+    return if (colorId) putColor(color) else color
   }
+
+  throw ParseException("Unsupported color value '$value'")
 }
 
 private fun IDEColorScheme.parseDefinitions(reader: JsonReader): Map<String, Int> {

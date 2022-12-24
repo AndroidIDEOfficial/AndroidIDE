@@ -17,10 +17,15 @@
 
 package com.itsaky.androidide.editor.schemes
 
-class IDEColorScheme {
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
+class IDEColorScheme : EditorColorScheme() {
+
+  internal val colorIds = mutableMapOf<Int, Int>()
   internal val editorScheme = mutableMapOf<Int, Int>()
   internal val languages = mutableMapOf<String, LanguageScheme>()
+
+  private var colorId = END_COLOR_ID
 
   var isDarkScheme: Boolean = false
     internal set
@@ -30,6 +35,18 @@ class IDEColorScheme {
 
   fun getLanguageScheme(type: String): LanguageScheme? {
     return this.languages[type]
+  }
+
+  internal fun putColor(color: Int): Int {
+    this.colorIds[++colorId] = color
+    return colorId
+  }
+
+  @Suppress("UNNECESSARY_SAFE_CALL")
+  override fun getColor(type: Int): Int {
+    // getColor is called in superclass constructor
+    // in this case, the below properties will be null
+    return this.editorScheme?.get(type) ?: this.colorIds?.get(type) ?: super.getColor(type)
   }
 }
 
