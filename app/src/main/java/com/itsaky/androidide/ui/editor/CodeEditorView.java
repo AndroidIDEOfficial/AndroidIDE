@@ -211,12 +211,12 @@ public class CodeEditorView extends LinearLayout {
       String ext = FileUtils.getFileExtension(file);
       switch (ext) {
         case "java":
-//          binding.editor.setColorScheme(IDEColorSchemeProvider.INSTANCE.getScheme());
-//          return new TreeSitterLanguage(
-//              getLanguageSpec(
-//                  getContext(), ext, TSLanguageJava.newInstance(), newLocalCaptureSpec(ext)),
-//              ext);
-          return new JavaLanguage();
+          binding.editor.setColorScheme(IDEColorSchemeProvider.INSTANCE.getScheme());
+          return new TreeSitterLanguage(
+              getLanguageSpec(
+                  getContext(), ext, TSLanguageJava.newInstance(), newLocalCaptureSpec(ext)),
+              ext);
+//          return new JavaLanguage();
         case "xml":
           return new XMLLanguage();
         case "gradle":

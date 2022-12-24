@@ -6,7 +6,7 @@
     "text.error": "#f44336",
     "text.warning": "#ffeb3b",
     "text.info": "#4caf50",
-    "text.debug": "@f5",
+    "text.debug": "#f5f5f5",
     "text.verbose": "#4fc3f7",
     "priority.error": {
       "fg": "@black",

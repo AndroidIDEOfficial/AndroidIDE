@@ -25,7 +25,7 @@ import java.io.File
 object IDEColorSchemeProvider {
 
   val scheme: IDEColorScheme by lazy {
-    val baseSchemePath = "editor/schemes"
+    val baseSchemePath = "editor/schemes/default"
     SchemeParser { File(Environment.ANDROIDIDE_UI, "$baseSchemePath/$it") }
       .parse(File(Environment.ANDROIDIDE_UI, "$baseSchemePath/default.json"))
   }
