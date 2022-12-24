@@ -42,6 +42,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayout.Tab
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
@@ -260,10 +261,10 @@ constructor(
 
     val activity = context as Activity
     if (KeyboardUtils.isSoftInputVisible(activity)) {
-      TransitionManager.beginDelayedTransition(binding.root, Slide(Gravity.TOP))
+      TransitionManager.beginDelayedTransition(binding.root, MaterialSharedAxis(MaterialSharedAxis.Y, false))
       binding.headerContainer.displayedChild = CHILD_SYMBOL_INPUT
     } else {
-      TransitionManager.beginDelayedTransition(binding.root, Slide(Gravity.BOTTOM))
+      TransitionManager.beginDelayedTransition(binding.root, MaterialSharedAxis(MaterialSharedAxis.Y, false))
       binding.headerContainer.displayedChild = CHILD_HEADER
     }
   }

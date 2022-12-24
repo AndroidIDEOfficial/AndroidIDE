@@ -17,9 +17,7 @@
 package com.itsaky.androidide.utils
 
 import android.content.Context
-import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
-import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TEXT_ACTIONS
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.build.CancelBuildAction
@@ -75,7 +73,7 @@ class EditorActivityActions {
       registry.registerAction(CopyAction(context))
       registry.registerAction(PasteAction(context))
       registry.registerAction(FormatCodeAction(context))
-      
+
       // file tab actions
       registry.registerAction(CloseFileAction(context))
       registry.registerAction(CloseOtherFilesAction(context))
@@ -84,7 +82,9 @@ class EditorActivityActions {
 
     @JvmStatic
     fun clear() {
-      val locations = arrayOf(EDITOR_TOOLBAR, EDITOR_FILE_TABS, EDITOR_TEXT_ACTIONS)
+      // EDITOR_TEXT_ACTIONS should not be cleared as the language servers register actions there as
+      // well
+      val locations = arrayOf(EDITOR_TOOLBAR, EDITOR_FILE_TABS)
       val registry = ActionsRegistry.getInstance()
       locations.forEach(registry::clearActions)
     }
