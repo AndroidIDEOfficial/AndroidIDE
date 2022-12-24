@@ -96,36 +96,35 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
   }
 
   companion object {
-    const val KEY_NAME = "scheme.name"
-    const val KEY_IS_DARK = "scheme.isDark"
     const val KEY_DEFINITIONS = "definitions"
     const val KEY_EDITOR = "editor"
     const val KEY_LANGUAGES = "languages"
   }
 
-  fun parse(file: File): IDEColorScheme {
+  fun parse(file: File, name: String, isDark: Boolean, langs: Array<String>): IDEColorScheme {
     require(file.exists() && file.isFile) { "File does not exist or is not a file" }
-    return parse(JsonReader(file.reader()))
+    val scheme = IDEColorScheme(file)
+    scheme.name = name
+    scheme.isDarkScheme = isDark
+    scheme.langs = langs
+    load(scheme)
+    return scheme
   }
-
-  private fun parse(reader: JsonReader): IDEColorScheme {
+  
+  internal fun load(scheme: IDEColorScheme) {
+    val reader = JsonReader(scheme.file.reader())
     reader.beginObject()
-    val scheme = IDEColorScheme()
     while (reader.hasNext()) {
       when (reader.nextName()) {
-        KEY_NAME -> scheme.name = reader.nextString()
-        KEY_IS_DARK -> scheme.isDarkScheme = reader.nextBoolean()
         KEY_DEFINITIONS -> scheme.definitions = scheme.parseDefinitions(reader)
         KEY_EDITOR -> scheme.parseEditorScheme(reader, resolveFileRef)
         KEY_LANGUAGES -> scheme.parseLanguages(reader, resolveFileRef)
       }
     }
     reader.endObject()
-    
+  
     if (scheme.name.isBlank()) {
       throw ParseException("A color scheme must a valid name. Current name is '${scheme.name}'")
     }
-    
-    return scheme
   }
 }

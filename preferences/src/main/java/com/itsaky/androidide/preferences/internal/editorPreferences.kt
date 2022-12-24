@@ -37,6 +37,9 @@ const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
 const val USE_CUSTOM_FONT = "idepref_editor_useCustomFont"
 
+const val COLOR_SCHEME = "idepref_editor_colorScheme"
+const val DEFAULT_COLOR_SCHEME = "default"
+
 var completionsMatchLower: Boolean
   get() = prefManager.getBoolean(COMPLETIONS_MATCH_LOWER, false)
   set(value) {
@@ -131,4 +134,10 @@ var useCustomFont: Boolean
   get() = prefManager.getBoolean(USE_CUSTOM_FONT, false)
   set(value) {
     prefManager.putBoolean(USE_CUSTOM_FONT, value)
+  }
+
+var colorScheme: String
+  get() = prefManager.getString(COLOR_SCHEME, DEFAULT_COLOR_SCHEME)
+  set(value) {
+    prefManager.putString(COLOR_SCHEME, value)
   }

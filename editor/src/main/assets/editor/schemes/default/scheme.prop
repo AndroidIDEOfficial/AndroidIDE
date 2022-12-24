@@ -1,0 +1,11 @@
+# Name of the color scheme
+scheme.name=AndroidIDE Default
+
+# Whether the scheme is dark or light
+scheme.isDark=false
+
+# Languages that scheme supports
+scheme.langs=java,@log
+
+# The JSON color scheme definition file
+scheme.file=default.json

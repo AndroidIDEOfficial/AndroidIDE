@@ -17,19 +17,24 @@
 
 package com.itsaky.androidide.editor.schemes
 
+import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import java.io.File
 import java.util.TreeSet
 
-class IDEColorScheme : EditorColorScheme() {
-
-  var name: String = ""
-    internal set
+class IDEColorScheme(internal val file: File) : EditorColorScheme() {
   
   internal val colorIds = mutableMapOf<Int, Int>()
   internal val editorScheme = mutableMapOf<Int, Int>()
   internal val languages = mutableMapOf<String, LanguageScheme>()
+  
+  var name: String = ""
+    internal set
+  
+  var langs: Array<String> = emptyArray()
+    internal set
 
   private var colorId = END_COLOR_ID
 
@@ -38,6 +43,10 @@ class IDEColorScheme : EditorColorScheme() {
 
   var definitions: Map<String, Int> = emptyMap()
     internal set
+  
+  internal fun load() {
+    SchemeParser { name -> File(this.file.parentFile, name) }.load(this)
+  }
   
   fun getLanguageScheme(type: String): LanguageScheme? {
     return this.languages[type]
@@ -63,7 +72,8 @@ class IDEColorScheme : EditorColorScheme() {
  * @property styles The highlight styles.
  * @author Akash Yadav
  */
-class LanguageScheme() {
+class LanguageScheme {
+  
   internal val files = mutableListOf<String>()
   internal val styles = mutableMapOf<String, StyleDef>()
   internal val localScopes = TreeSet<String>()

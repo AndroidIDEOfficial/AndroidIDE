@@ -53,6 +53,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.editor.language.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
@@ -165,7 +166,11 @@ public class CodeEditorView extends LinearLayout {
   }
 
   protected void postRead() {
-    binding.editor.setEditorLanguage(createLanguage(file));
+    final var language = createLanguage(file);
+    if (language instanceof TreeSitterLanguage) {
+      IDEColorSchemeProvider.INSTANCE.readScheme(binding.editor::setColorScheme);
+    }
+    binding.editor.setEditorLanguage(language);
     binding.editor.setLanguageServer(createLanguageServer(file));
 
     if (IDELanguageClientImpl.isInitialized()) {
@@ -207,7 +212,6 @@ public class CodeEditorView extends LinearLayout {
       String ext = FileUtils.getFileExtension(file);
       switch (ext) {
         case "java":
-          IDEColorSchemeProvider.INSTANCE.readScheme(binding.editor::setColorScheme);
           return new JavaLanguage(getContext());
         case "xml":
           return new XMLLanguage();

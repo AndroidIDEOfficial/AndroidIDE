@@ -205,7 +205,7 @@ class SchemeParserTest {
   private fun parseSyntaxJson(name: String = "syntax.json"): IDEColorScheme {
     val basePath = "./src/test/resources"
     val parser = SchemeParser { File("$basePath/$it") }
-    val scheme = parser.parse(File("$basePath/$name"))
+    val scheme = parser.parse(File("$basePath/$name"), "AndroidIDE Test Scheme", false, arrayOf("java", "@log"))
     assertThat(scheme).isNotNull()
     return scheme
   }

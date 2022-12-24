@@ -27,7 +27,7 @@ object LocalCaptureSpecProvider {
 
   @JvmStatic
   fun newLocalCaptureSpec(type: String): LocalsCaptureSpec {
-    val scheme = IDEColorSchemeProvider.scheme
+    val scheme = IDEColorSchemeProvider.currentScheme!!
     val lang = scheme.languages[type] ?: return LocalsCaptureSpec.DEFAULT
     return object : LocalsCaptureSpec() {
       

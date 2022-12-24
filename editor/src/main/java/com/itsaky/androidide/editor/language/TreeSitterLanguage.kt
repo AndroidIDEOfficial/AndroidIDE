@@ -19,9 +19,7 @@ package com.itsaky.androidide.editor.language
 
 import android.content.Context
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
-import com.itsaky.androidide.editor.schemes.LanguageSpecProvider
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
-import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
 import com.itsaky.androidide.treesitter.TSLanguage
 import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
@@ -34,11 +32,8 @@ import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
  *
  * @author Akash Yadav
  */
-abstract class TreeSitterLanguage(
-  context: Context,
-  lang: TSLanguage,
-  type: String
-) : IDELanguage() {
+abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: String) :
+  IDELanguage() {
 
   private lateinit var tsTheme: TsTheme
   private lateinit var languageSpec: TsLanguageSpec
