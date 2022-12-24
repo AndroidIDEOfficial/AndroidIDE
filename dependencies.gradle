@@ -5,6 +5,9 @@ ext {
     oss_licenses_version = '0.10.6'
     nav_safeargs_version = '2.5.3'
     
+    ats_version = '1.0.9'
+    editor_version = '0.20.1'
+    
     classpaths = [
             agp                 : "com.android.tools.build:gradle:$agp_version",
             kotlin_gradle_plugin: "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
@@ -14,11 +17,14 @@ ext {
     ]
     
     androidide = [
-            javac: 'io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT'
+            javac  : 'io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT',
+            ats    : "io.github.itsaky:android-tree-sitter:$ats_version",
+            ts_java: "io.github.itsaky:tree-sitter-java:$ats_version"
     ]
     
     common = [
-            editor     : 'io.github.Rosemoe.sora-editor:editor:0.20.1',
+            editor     : "io.github.Rosemoe.sora-editor:editor:$editor_version",
+            editor_ts  : "io.github.Rosemoe.sora-editor:language-treesitter:$editor_version",
             utilcode   : 'com.blankj:utilcodex:1.31.1',
             glide      : 'com.github.bumptech.glide:glide:4.14.2',
             glide_ap   : 'com.github.bumptech.glide:compiler:4.14.2',

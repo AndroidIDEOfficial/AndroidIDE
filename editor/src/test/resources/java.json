@@ -1,0 +1,32 @@
+{
+  "types": [
+    "java"
+  ],
+  "local.scopes": [
+    "scope"
+  ],
+  "local.definitions": [
+    "definition.var",
+    "definition.field"
+  ],
+  "local.references": [
+    "reference"
+  ],
+  "styles": {
+    "comment": "#a8a8a8",
+    "keyword": "#2196f3",
+    "constant.builtin": "#008080",
+    "string": "#008080",
+    "number": "#008080",
+    "variable.builtin": "#546e7a",
+    "variable": "#546e7a",
+    "constant": "#546e7a",
+    "type.builtin": "#03a9f4",
+    "type": "#03a9f4",
+    "attribute": "#03a9f4",
+    "function.method": "#e040fb",
+    "function.builtin": "#e040fb",
+    "variable.field": "#e040fb",
+    "operator": "#0066d6"
+  }
+}

@@ -37,6 +37,11 @@ class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
   
+  init {
+    System.loadLibrary("android-tree-sitter")
+    System.loadLibrary("tree-sitter-java")
+  }
+  
   override fun onCreate() {
     instance = this
     uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()

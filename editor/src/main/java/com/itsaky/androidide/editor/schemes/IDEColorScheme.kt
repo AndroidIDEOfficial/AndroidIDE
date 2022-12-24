@@ -17,7 +17,10 @@
 
 package com.itsaky.androidide.editor.schemes
 
+import com.itsaky.androidide.utils.ILogger
+import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import java.util.TreeSet
 
 class IDEColorScheme : EditorColorScheme() {
 
@@ -32,7 +35,7 @@ class IDEColorScheme : EditorColorScheme() {
 
   var definitions: Map<String, Int> = emptyMap()
     internal set
-
+  
   fun getLanguageScheme(type: String): LanguageScheme? {
     return this.languages[type]
   }
@@ -46,7 +49,9 @@ class IDEColorScheme : EditorColorScheme() {
   override fun getColor(type: Int): Int {
     // getColor is called in superclass constructor
     // in this case, the below properties will be null
-    return this.editorScheme?.get(type) ?: this.colorIds?.get(type) ?: super.getColor(type)
+    val result = this.editorScheme?.get(type) ?: this.colorIds?.get(type) ?: super.getColor(type)
+    println("getColor($type) = $result")
+    return result
   }
 }
 
@@ -57,7 +62,33 @@ class IDEColorScheme : EditorColorScheme() {
  * @property styles The highlight styles.
  * @author Akash Yadav
  */
-data class LanguageScheme(val files: List<String>, val styles: Map<String, StyleDef>)
+class LanguageScheme() {
+  internal val files = mutableListOf<String>()
+  internal val styles = mutableMapOf<String, StyleDef>()
+  internal val localScopes = TreeSet<String>()
+  internal val localDefs = TreeSet<String>()
+  internal val localDefVals = TreeSet<String>()
+  internal val localRefs = TreeSet<String>()
+  
+  fun getFileTypes() : List<String> = files
+  fun getStyles(): Map<String, StyleDef> = styles
+  
+  fun isLocalScope(capture: String) : Boolean {
+    return localScopes.contains(capture)
+  }
+  
+  fun isLocalDef(capture: String) : Boolean {
+    return localDefs.contains(capture)
+  }
+  
+  fun isLocalDefVal(capture: String) : Boolean {
+    return localDefVals.contains(capture)
+  }
+  fun isLocalRef(capture: String) : Boolean {
+    return localRefs.contains(capture)
+  }
+  
+}
 
 /**
  * A color scheme style definition.
@@ -76,4 +107,12 @@ data class StyleDef(
   var italic: Boolean = false,
   var strikeThrough: Boolean = false,
   var completion: Boolean = true
-)
+) {
+  
+  private val log = ILogger.newInstance("StyleDef")
+  fun makeStyle() : Long {
+    val style = TextStyle.makeStyle(this.fg, this.bg, this.bold, this.italic, this.strikeThrough, !this.completion)
+    log.debug("fg: ${TextStyle.getForegroundColorId(style)}")
+    return style
+  }
+}

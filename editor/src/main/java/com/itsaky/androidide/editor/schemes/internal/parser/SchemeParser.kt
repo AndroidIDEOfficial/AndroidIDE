@@ -17,24 +17,17 @@
 
 package com.itsaky.androidide.editor.schemes.internal.parser
 
-import android.graphics.Color
 import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonToken.BEGIN_OBJECT
-import com.google.gson.stream.JsonToken.STRING
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
-import com.itsaky.androidide.editor.schemes.LanguageScheme
-import com.itsaky.androidide.editor.schemes.StyleDef
-import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser.EditorColors
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
-import java.io.StringReader
 
 /**
  * Parses editor's color scheme.
  *
  * @author Akash Yadav
  */
-class SchemeParser {
+class SchemeParser(private val resolveFileRef: (String) -> File) {
 
   enum class EditorColors(val key: String, val id: Int) {
     BG("bg", EditorColorScheme.WHOLE_BACKGROUND),
@@ -92,13 +85,7 @@ class SchemeParser {
 
   fun parse(file: File): IDEColorScheme {
     require(file.exists() && file.isFile) { "File does not exist or is not a file" }
-    return parse(file.readText())
-  }
-
-  fun parse(content: String): IDEColorScheme {
-    require(content.isNotBlank()) { "Cannot parse blank color scheme content" }
-    val reader = JsonReader(StringReader(content))
-    return parse(reader)
+    return parse(JsonReader(file.reader()))
   }
 
   private fun parse(reader: JsonReader): IDEColorScheme {
@@ -108,127 +95,11 @@ class SchemeParser {
       when (reader.nextName()) {
         KEY_IS_DARK -> scheme.isDarkScheme = reader.nextBoolean()
         KEY_DEFINITIONS -> scheme.definitions = scheme.parseDefinitions(reader)
-        KEY_EDITOR -> scheme.parseEditorScheme(reader)
-        KEY_LANGUAGES -> scheme.parseLanguages(reader)
+        KEY_EDITOR -> scheme.parseEditorScheme(reader, resolveFileRef)
+        KEY_LANGUAGES -> scheme.parseLanguages(reader, resolveFileRef)
       }
     }
     reader.endObject()
     return scheme
   }
-}
-
-private fun IDEColorScheme.parseEditorScheme(reader: JsonReader) {
-  reader.beginObject()
-  while (reader.hasNext()) {
-    val color = EditorColors.forKey(reader.nextName())
-    val value = reader.nextString()
-    editorScheme[color.id] = parseColorValue(value, false)
-  }
-  reader.endObject()
-}
-
-/**
- * Parses the color and returns the color ID. If [colorId] is `false`, returns the int color value
- * instead.
- */
-private fun IDEColorScheme.parseColorValue(value: String?, colorId: Boolean = true): Int {
-  require(!value.isNullOrBlank()) { "Color value is not expected to be null or blank" }
-  if (value[0] == '@') {
-    val refName = value.substring(1)
-    val refValue = definitions[refName] ?: throw ParseException("Referenced color '$value' not found")
-    return if (colorId) refValue else colorIds[refValue]!!
-  }
-
-  if (value[0] == '#') {
-    val color =
-      try {
-        Color.parseColor(value)
-      } catch (err: Throwable) {
-        throw ParseException("Invalid hex color code: '$value'")
-      }
-
-    return if (colorId) putColor(color) else color
-  }
-
-  throw ParseException("Unsupported color value '$value'")
-}
-
-private fun IDEColorScheme.parseDefinitions(reader: JsonReader): Map<String, Int> {
-  val result = mutableMapOf<String, Int>()
-  reader.beginObject()
-  while (reader.hasNext()) {
-    val name = reader.nextName()
-    val value = reader.nextString()
-    result[name] = parseColorValue(value)
-  }
-  reader.endObject()
-  return result
-}
-
-private fun IDEColorScheme.parseLanguages(reader: JsonReader) {
-  reader.beginArray()
-  while (reader.hasNext()) {
-    val lang = parseLanguage(reader)
-    lang.files.forEach { languages[it] = lang }
-  }
-  reader.endArray()
-}
-
-private fun IDEColorScheme.parseLanguage(reader: JsonReader): LanguageScheme {
-  reader.beginObject()
-  val fileTypes = mutableListOf<String>()
-  val styles = mutableMapOf<String, StyleDef>()
-  while (reader.hasNext()) {
-    var name = reader.nextName()
-    when (name) {
-      "types" -> {
-        reader.beginArray()
-        while (reader.hasNext()) {
-          fileTypes.add(reader.nextString())
-        }
-        reader.endArray()
-      }
-      "styles" -> {
-        reader.beginObject()
-        while (reader.hasNext()) {
-          name = reader.nextName()
-          if (reader.peek() == BEGIN_OBJECT) {
-            styles[name] = parseStyleDef(reader)
-          } else if (reader.peek() == STRING) {
-            val color = parseColorValue(reader.nextString())
-            styles[name] = StyleDef(fg = color)
-          } else throw ParseException("A style definition must an object or a string value")
-        }
-        reader.endObject()
-      }
-      else -> throw ParseException("Unexpected key '$name' in language object")
-    }
-  }
-  reader.endObject()
-
-  if (fileTypes.isEmpty()) {
-    throw ParseException("A language must specify the file types")
-  }
-
-  return LanguageScheme(files = fileTypes, styles = styles)
-}
-
-private fun IDEColorScheme.parseStyleDef(reader: JsonReader): StyleDef {
-  reader.beginObject()
-  val def = StyleDef(fg = 0)
-  while (reader.hasNext()) {
-    when (reader.nextName()) {
-      "fg" -> def.fg = parseColorValue(reader.nextString())
-      "bg" -> def.bg = parseColorValue(reader.nextString())
-      "bold" -> def.bold = reader.nextBoolean()
-      "italic" -> def.italic = reader.nextBoolean()
-      "strikethrough" -> def.strikeThrough = reader.nextBoolean()
-      "completion" -> def.completion = reader.nextBoolean()
-    }
-  }
-  if (def.fg == 0) {
-    throw ParseException("A style definition must specify a valid foreground color")
-  }
-  reader.endObject()
-  return def
 }

@@ -60,8 +60,9 @@ public class ToolsManager {
               extractGradlePlugin();
               extractToolingApi();
               extractAndroidJar();
+              extractColorScheme(app);
               writeInitScript();
-              
+
               deleteIdeenv();
             })
         .whenComplete(
@@ -75,7 +76,20 @@ public class ToolsManager {
               }
             });
   }
-  
+
+  private static void extractColorScheme(final BaseApplication app) {
+    final var defPath = "editor/schemes";
+    final var dir = new File(Environment.ANDROIDIDE_UI, defPath);
+    try {
+      for (final String asset : app.getAssets().list(defPath)) {
+        ResourceUtils.copyFileFromAssets(
+            defPath + "/" + asset, new File(dir, asset).getAbsolutePath());
+      }
+    } catch (IOException e) {
+      LOG.error("Failed to extract color schemes", e);
+    }
+  }
+
   private static void writeNoMediaFile() {
     final var noMedia = new File(BaseApplication.getBaseInstance().getProjectsDir(), ".nomedia");
     if (!noMedia.exists()) {
@@ -88,7 +102,7 @@ public class ToolsManager {
       }
     }
   }
-  
+
   private static void extractAndroidJar() {
     if (!Environment.ANDROID_JAR.exists()) {
       ResourceUtils.copyFileFromAssets(

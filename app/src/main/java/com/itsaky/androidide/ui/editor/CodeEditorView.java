@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.ui.editor;
 
+import static com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec;
+import static com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_LINE_BREAK;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_PASSWORD;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
@@ -55,9 +57,10 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
-import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.xml.XMLLanguage;
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
 import com.itsaky.androidide.editor.ui.EditorSearchLayout;
 import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
@@ -69,6 +72,7 @@ import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.treesitter.java.TSLanguageJava;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
@@ -123,7 +127,7 @@ public class CodeEditorView extends LinearLayout {
     addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
     addView(
         this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-    
+
     CompletableFuture.runAsync(
         () -> {
           final var contents = FileIOUtils.readFile2String(file);
@@ -206,7 +210,11 @@ public class CodeEditorView extends LinearLayout {
       String ext = FileUtils.getFileExtension(file);
       switch (ext) {
         case "java":
-          return new JavaLanguage();
+          binding.editor.setColorScheme(IDEColorSchemeProvider.INSTANCE.getScheme());
+          return new TreeSitterLanguage(
+              getLanguageSpec(
+                  getContext(), ext, TSLanguageJava.newInstance(), newLocalCaptureSpec(ext)),
+              ext);
         case "xml":
           return new XMLLanguage();
         case "gradle":

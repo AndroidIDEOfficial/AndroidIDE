@@ -1,0 +1,33 @@
+{
+  "types": [
+    "@log"
+  ],
+  "styles": {
+    "text.error": "#f44336",
+    "text.warning": "#ffeb3b",
+    "text.info": "#4caf50",
+    "text.debug": "@f5",
+    "text.verbose": "#4fc3f7",
+    "priority.error": {
+      "fg": "@black",
+      "bg": "#f44336",
+      "completion": false
+    },
+    "priority.warning": {
+      "fg": "@black",
+      "bg": "#ffeb3b"
+    },
+    "priority.info": {
+      "fg": "@white",
+      "bg": "#1f65c0"
+    },
+    "priority.debug": {
+      "fg": "@white",
+      "bg": "#9e9d24"
+    },
+    "priority.verbose": {
+      "fg": "@black",
+      "bg": "@white"
+    }
+  }
+}
