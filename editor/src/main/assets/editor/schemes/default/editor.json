@@ -10,7 +10,7 @@
   "text.normal": "@onSurface",
   "text.selected": "@onSurface",
   "text.matched.bg": "#FF8F00",
-  "text.selected.bg": "#ff5252",
+  "text.selected.bg": "@primary",
   "snippet.bg.editing": "#cccccc",
   "snippet.bg.related": "#aadddddd",
   "snippet.bg.inactive": "#66dddddd",

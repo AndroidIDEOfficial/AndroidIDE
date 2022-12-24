@@ -13,20 +13,39 @@
     "reference"
   ],
   "styles": {
-    "comment": "#a8a8a8",
-    "keyword": "#2196f3",
-    "constant.builtin": "#008080",
-    "string": "#008080",
-    "number": "#008080",
-    "variable.builtin": "#546e7a",
-    "variable": "#546e7a",
-    "constant": "#546e7a",
-    "type.builtin": "#03a9f4",
-    "type": "#03a9f4",
-    "attribute": "#03a9f4",
-    "function.method": "#e040fb",
-    "function.builtin": "#e040fb",
-    "variable.field": "#e040fb",
-    "operator": "#0066d6"
+    "comment": "@comment",
+    "number": "@number",
+    "variable": "@onSurface",
+    "constant.builtin": "@keyword",
+    "keyword": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "string": {
+      "fg": "@string",
+      "completion": false
+    },
+    "variable.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "function.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "type.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "constant": {
+      "fg": "@constant",
+      "bold": true
+    },
+    "type": "@type",
+    "attribute": "@type",
+    "function.declaration": "@func.decl",
+    "function.invocation": "@func.call",
+    "variable.field": "@field",
+    "operator": "@operator"
   }
 }

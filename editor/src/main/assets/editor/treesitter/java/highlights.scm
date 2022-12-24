@@ -5,9 +5,9 @@
 ; Methods and Fields
 
 (method_declaration
-  name: (identifier) @function.method)
+  name: (identifier) @function.declaration)
 (method_invocation
-  name: (identifier) @function.method)
+  name: (identifier) @function.invocation)
 (super) @function.builtin
 (field_declaration
   declarator: (variable_declarator

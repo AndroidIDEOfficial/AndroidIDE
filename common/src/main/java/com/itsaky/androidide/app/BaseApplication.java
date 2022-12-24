@@ -96,7 +96,7 @@ public abstract class BaseApplication extends MultiDexApplication {
     JavaCharacter.initMap();
     ToolsManager.init(this, null);
 
-    DynamicColors.applyToActivitiesIfAvailable(this);
+//    DynamicColors.applyToActivitiesIfAvailable(this);
 
     createNotificationChannels();
   }
