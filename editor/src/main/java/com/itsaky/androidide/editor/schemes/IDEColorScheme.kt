@@ -24,6 +24,9 @@ import java.util.TreeSet
 
 class IDEColorScheme : EditorColorScheme() {
 
+  var name: String = ""
+    internal set
+  
   internal val colorIds = mutableMapOf<Int, Int>()
   internal val editorScheme = mutableMapOf<Int, Int>()
   internal val languages = mutableMapOf<String, LanguageScheme>()

@@ -1,4 +1,5 @@
 {
+  "scheme.name": "AndroidIDE Default",
   "scheme.isDark": false,
   "definitions": {
     "black": "#ff000000",

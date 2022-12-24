@@ -1,4 +1,5 @@
 {
+  "scheme.name": "Test Scheme with referenced language files",
   "scheme.isDark": false,
   "definitions": {
     "black": "#ff000000",

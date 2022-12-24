@@ -1,4 +1,5 @@
 {
+  "scheme.name": "Test Color Scheme with referenced editor scheme",
   "scheme.isDark": false,
   "definitions": {
     "black": "#ff000000",

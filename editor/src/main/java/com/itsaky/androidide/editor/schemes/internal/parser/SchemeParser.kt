@@ -96,6 +96,7 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
   }
 
   companion object {
+    const val KEY_NAME = "scheme.name"
     const val KEY_IS_DARK = "scheme.isDark"
     const val KEY_DEFINITIONS = "definitions"
     const val KEY_EDITOR = "editor"
@@ -112,6 +113,7 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
     val scheme = IDEColorScheme()
     while (reader.hasNext()) {
       when (reader.nextName()) {
+        KEY_NAME -> scheme.name = reader.nextString()
         KEY_IS_DARK -> scheme.isDarkScheme = reader.nextBoolean()
         KEY_DEFINITIONS -> scheme.definitions = scheme.parseDefinitions(reader)
         KEY_EDITOR -> scheme.parseEditorScheme(reader, resolveFileRef)
@@ -119,6 +121,11 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
       }
     }
     reader.endObject()
+    
+    if (scheme.name.isBlank()) {
+      throw ParseException("A color scheme must a valid name. Current name is '${scheme.name}'")
+    }
+    
     return scheme
   }
 }
