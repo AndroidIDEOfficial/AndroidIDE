@@ -22,10 +22,12 @@ import android.net.Uri
 import com.blankj.utilcode.util.ThrowableUtils
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast

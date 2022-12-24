@@ -47,14 +47,12 @@ class IDEColorScheme : EditorColorScheme() {
     this.colorIds[++colorId] = color
     return colorId
   }
-
+  
   @Suppress("UNNECESSARY_SAFE_CALL")
   override fun getColor(type: Int): Int {
     // getColor is called in superclass constructor
     // in this case, the below properties will be null
-    val result = this.editorScheme?.get(type) ?: this.colorIds?.get(type) ?: super.getColor(type)
-    println("getColor($type) = $result")
-    return result
+    return editorScheme?.get(type) ?: colorIds?.get(type) ?: super.getColor(type)
   }
 }
 
@@ -115,7 +113,6 @@ data class StyleDef(
   private val log = ILogger.newInstance("StyleDef")
   fun makeStyle() : Long {
     val style = TextStyle.makeStyle(this.fg, this.bg, this.bold, this.italic, this.strikeThrough, !this.completion)
-    log.debug("fg: ${TextStyle.getForegroundColorId(style)}")
     return style
   }
 }

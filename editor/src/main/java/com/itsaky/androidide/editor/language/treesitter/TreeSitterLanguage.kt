@@ -17,11 +17,17 @@
 
 package com.itsaky.androidide.editor.language.treesitter
 
+import android.os.Bundle
+import com.itsaky.androidide.editor.language.IDELanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
-import com.itsaky.androidide.preferences.internal.useSoftTab
-import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.TsLanguage
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher
+import io.github.rosemoe.sora.lang.format.Formatter
+import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
+import io.github.rosemoe.sora.text.CharPosition
+import io.github.rosemoe.sora.text.ContentReference
+import io.github.rosemoe.sora.widget.SymbolPairMatch
 
 /**
  * Tree Sitter language implementation.
@@ -29,6 +35,7 @@ import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
  * @author Akash Yadav
  */
 class TreeSitterLanguage(
+  private val lang: IDELanguage,
   languageSpec: TsLanguageSpec,
   type: String,
 ) :
@@ -36,17 +43,45 @@ class TreeSitterLanguage(
     languageSpec = languageSpec,
     tab = false,
     themeDescription = {
-      val scheme = IDEColorSchemeProvider.scheme
-      val lang =
-        checkNotNull(scheme.languages[type]) { "No color scheme found for file type '$type'" }
-      val log = ILogger.newInstance("TreeSitterThemeBuilder")
-      lang.styles.forEach {
-        log.debug("${it.value.makeStyle()} applyTo ${it.key}")
-        it.value.makeStyle() applyTo it.key }
+      IDEColorSchemeProvider.readScheme { scheme ->
+        val langScheme =
+          checkNotNull(scheme.languages[type]) { "No color scheme found for file type '$type'" }
+        langScheme.styles.forEach { it.value.makeStyle() applyTo it.key }
+      }
     }
   ) {
-  
+
+  override fun getInterruptionLevel(): Int {
+    return lang.interruptionLevel
+  }
+
+  override fun requireAutoComplete(
+    content: ContentReference,
+    position: CharPosition,
+    publisher: CompletionPublisher,
+    extraArguments: Bundle
+  ) {
+    lang.requireAutoComplete(content, position, publisher, extraArguments)
+  }
+
   override fun useTab(): Boolean {
-    return !useSoftTab
+    return lang.useTab()
+  }
+
+  override fun getFormatter(): Formatter {
+    return lang.formatter
+  }
+
+  override fun getSymbolPairs(): SymbolPairMatch {
+    return lang.symbolPairs
+  }
+
+  override fun getNewlineHandlers(): Array<NewlineHandler> {
+    return lang.newlineHandlers ?: emptyArray()
+  }
+
+  override fun destroy() {
+    super.destroy()
+    lang.destroy()
   }
 }

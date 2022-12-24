@@ -44,14 +44,11 @@ public class JavaLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguage");
   private final NewlineHandler[] newlineHandlers;
-  private final CommonSymbolPairs symbolPairs = new JavaSymbolPairs();
   private JavaAnalyzer analyzer;
-  private CommonCompletionProvider completer;
 
   public JavaLanguage() {
     final var server = getLanguageServer();
     this.analyzer = new JavaAnalyzer();
-    this.completer = new CommonCompletionProvider(server);
 
     this.newlineHandlers = new NewlineHandler[1];
     this.newlineHandlers[0] = new BraceHandler(this::getIndentAdvance, this::useTab);
@@ -121,7 +118,6 @@ public class JavaLanguage extends IDELanguage {
   @Override
   public void destroy() {
     analyzer = null;
-    completer = null;
   }
 
   public static class JavaSymbolPairs extends CommonSymbolPairs {

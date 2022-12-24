@@ -30,7 +30,7 @@ object LocalCaptureSpecProvider {
     val scheme = IDEColorSchemeProvider.scheme
     val lang = scheme.languages[type] ?: return LocalsCaptureSpec.DEFAULT
     return object : LocalsCaptureSpec() {
-
+      
       override fun isDefinitionCapture(captureName: String): Boolean {
         return lang.isLocalDef(captureName)
       }
