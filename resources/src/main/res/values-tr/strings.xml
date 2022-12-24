@@ -143,7 +143,7 @@
   <string name="msg_file_exists">Dosya zaten mevcut!</string>
   <string name="msg_invalid_name">Geçersiz Ad!</string>
   <string name="text_create">Oluştur</string>
-  <string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
+  <string name="msg_can_contain_slashes">Yolda Dosya ayırıcı (\'/\') varsa, gerekli (üst) dizinler yoksa oluşturulur.</string>
   <string name="folder_name">Klasör Adı</string>
   <string name="file_name">Dosya Adı</string>
   <string name="new_name">Yeni ad</string>
@@ -191,7 +191,7 @@
   <string name="idepref_build_clearCache_title">Gradle çöplerini temizle</string>
   <string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
   <string name="idepref_build_customgradlecommands_title">Ek Gradle komutları</string>
-  <string name="idepref_build_customgradlecommands_summary">Choose additional commands that will be added while executing every task</string>
+  <string name="idepref_build_customgradlecommands_summary">Her görev yürütülüken eklenecek ek komutları seçin</string>
   <string name="idepref_editor_fontsize_title">Font büyüklüğü</string>
   <string name="idepref_editor_fontsize_summary">Editörün font büyüklüğü</string>
   <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
@@ -201,13 +201,13 @@
   <string name="idepref_editor_word_wrap_title">Kelime kaydırma</string>
   <string name="idepref_editor_word_wrap_summary">Editörün yazı kaydırmasını kullan</string>
   <string name="idepref_editor_use_magnifier_title">Büyüteçi etkinleştir</string>
-  <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
+  <string name="idepref_editor_use_magnifier_summary">Düzenleyicide metin seçerken imleç konumundaki metni büyüt</string>
   <string name="idepref_editor_title">Editör</string>
   <string name="idepref_build_title">&amp; \'yi inşa et çalıştır</string>
-  <string name="title_open_projects">Open last project</string>
+  <string name="title_open_projects">En son projeyi aç</string>
   <string name="msg_open_projects">If checked, the IDE will remember the last opened project and it will be reopened on next startup.</string>
-  <string name="title_confirm_project_open">Confirm project opening</string>
-  <string name="msg_confirm_project_open">Ask before opening last opened project.</string>
+  <string name="title_confirm_project_open">Proje açılmasını onaylayın</string>
+  <string name="msg_confirm_project_open">En son projeyi açmadan önce izin iste.</string>
   <string name="title_default_shell">Use system shell in terminal</string>
   <string name="msg_default_shell">If checked, \'/system/bin/sh\' will be used in terminal.</string>
   <string name="title_general">General</string>
