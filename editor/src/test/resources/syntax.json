@@ -1,0 +1,113 @@
+{
+  "scheme.isDark": false,
+  "definitions": {
+    "black": "#ff000000",
+    "white": "#ffffff",
+    "transparent": "#00000000",
+    "21": "#212121",
+    "31": "#313131",
+    "75": "#757575",
+    "9e": "#9e9e9e",
+    "dd": "#dddddd",
+    "f5": "#f5f5f5",
+    "42": "#424242",
+    "aa": "#aaaaaa",
+    "cc": "#cccccc"
+  },
+  "editor": {
+    "bg": "@21",
+    "line.current": "@31",
+    "line.divider": "@transparent",
+    "line.num": "@aa",
+    "line.num.current": "@f5",
+    "line.num.bg": "@21",
+    "line.num.panel": "@black",
+    "line.num.panel.text": "@white",
+    "text.normal": "@f5",
+    "text.selected": "@21",
+    "text.matched.bg": "#FF8F00",
+    "text.selected.bg": "#ef9a9a",
+    "snippet.bg.editing": "@cc",
+    "snippet.bg.related": "#aadddddd",
+    "snippet.bg.inactive": "#66dddddd",
+    "scrollbar.thumb": "@75",
+    "scrollbar.thumb.pressed": "#ff5252",
+    "scrollbar.track": "#bdbdbd",
+    "code.block.line": "@42",
+    "code.block.line.current": "@white",
+    "code.block.line.side": "@42",
+    "highlighted.delimiters.underline": "#3f51b5",
+    "highlighted.delimiters.bg": "#1d000000",
+    "highlighted.delimiters.fg": "#dd000000",
+    "completion.window.bg": "@75",
+    "completion.window.outline": "@9e",
+    "non_printable_char": "@dd"
+  },
+  "languages": [
+    {
+      "types": [
+        "@log"
+      ],
+      "styles": {
+        "text.error": "#f44336",
+        "text.warning": "#ffeb3b",
+        "text.info": "#4caf50",
+        "text.debug": "@f5",
+        "text.verbose": "#4fc3f7",
+        "priority.error": {
+          "fg": "@black",
+          "bg": "#f44336",
+          "completion": false
+        },
+        "priority.warning": {
+          "fg": "@black",
+          "bg": "#ffeb3b"
+        },
+        "priority.info": {
+          "fg": "@white",
+          "bg": "#1f65c0"
+        },
+        "priority.debug": {
+          "fg": "@white",
+          "bg": "#9e9d24"
+        },
+        "priority.verbose": {
+          "fg": "@black",
+          "bg": "@white"
+        }
+      }
+    },
+    {
+      "types": [
+        "java"
+      ],
+      "local.scopes": [
+        "scope"
+      ],
+      "local.definitions": [
+        "definition.var",
+        "definition.field"
+      ],
+      "local.references": [
+        "reference"
+      ],
+      "styles": {
+        "comment": "#a8a8a8",
+        "keyword": "#2196f3",
+        "constant.builtin": "#008080",
+        "string": "#008080",
+        "number": "#008080",
+        "variable.builtin": "#546e7a",
+        "variable": "#546e7a",
+        "constant": "#546e7a",
+        "type.builtin": "#03a9f4",
+        "type": "#03a9f4",
+        "attribute": "#03a9f4",
+        "function.method": "#e040fb",
+        "function.builtin": "#e040fb",
+        "variable.field": "#e040fb",
+        "operator": "#0066d6"
+      }
+    }
+  ]
+}
