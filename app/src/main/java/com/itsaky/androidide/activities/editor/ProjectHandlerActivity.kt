@@ -36,6 +36,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
+import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.ProjectManager.cachedInitResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.notifyProjectUpdate
@@ -97,12 +98,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun onPause() {
     super.onPause()
-    if (isFinishing) {
+    if (isDestroying) {
       // reset these values here
       // sometimes, when the IDE closed and reopened instantly, these values prevent initialization
       // of the project
-      projectInitialized = false
-      cachedInitResult = null
+      ProjectManager.destroy()
       
       viewModel.isInitializing = false
       viewModel.isBuildInProgress = false

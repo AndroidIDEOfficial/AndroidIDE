@@ -72,6 +72,14 @@ object ProjectManager : EventReceiver {
       }
     }
   }
+  
+  fun destroy() {
+    log.info("Destroying project manager")
+    this.rootProject = null
+    this.app = null
+    this.cachedInitResult = null
+    this.projectInitialized = false
+  }
 
   fun getProjectDir(): File {
     return File(getProjectDirPath())

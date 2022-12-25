@@ -121,7 +121,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun onPause() {
 
-    if (isFinishing) {
+    if (isDestroying) {
       IDEColorSchemeProvider.destroy()
     }
 
@@ -138,7 +138,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     getOpenedFiles().also {
       val cache = OpenedFilesCache(current, it)
       viewModel.writeOpenedFiles(cache)
-      viewModel.openedFilesCache = if (!isFinishing) cache else null
+      viewModel.openedFilesCache = if (!isDestroying) cache else null
     }
   }
 

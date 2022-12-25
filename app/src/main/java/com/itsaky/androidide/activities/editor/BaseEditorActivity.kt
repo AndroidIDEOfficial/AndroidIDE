@@ -245,12 +245,12 @@ abstract class BaseEditorActivity :
 
   override fun onStop() {
     super.onStop()
-    this.isDestroying = isFinishing
     EventBus.getDefault().unregister(this)
   }
 
   override fun onPause() {
     super.onPause()
+    this.isDestroying = isFinishing
     getFileTreeFragment()?.saveTreeState()
   }
 
