@@ -120,11 +120,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun onPause() {
-
-    if (isDestroying) {
-      IDEColorSchemeProvider.destroy()
-    }
-
     super.onPause()
 
     val current =
