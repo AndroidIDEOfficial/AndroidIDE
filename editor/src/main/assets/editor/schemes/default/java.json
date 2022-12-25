@@ -13,7 +13,10 @@
     "reference"
   ],
   "styles": {
-    "comment": "@comment",
+    "comment": {
+      "fg": "@comment",
+      "italic": true
+    },
     "number": "@number",
     "variable": "@onSurface",
     "constant.builtin": "@keyword",
