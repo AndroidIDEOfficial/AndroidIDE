@@ -33,35 +33,34 @@ public class SchemeAndroidIDE extends EditorColorScheme {
 
   protected SchemeAndroidIDE() {}
 
-  private static int current = EditorColorScheme.END_COLOR_ID;
+  protected static int endColorId = EditorColorScheme.END_COLOR_ID;
   
-  public static final int COMPLETION_WND_BG_ICON = ++current;
-  public static final int COMPLETION_WND_TEXT_LABEL = ++current;
-  public static final int COMPLETION_WND_TEXT_TYPE = ++current;
-  public static final int COMPLETION_WND_TEXT_ICON = ++current;
-  public static final int COMPLETION_WND_TEXT_API = ++current;
-  public static final int COMPLETION_WND_TEXT_DETAIL = ++current;
+  public static final int COMPLETION_WND_BG_CURRENT_ITEM = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_LABEL = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_TYPE = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_API = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_DETAIL = ++endColorId;
   
-  public static final int LOG_TEXT_INFO = ++current;
-  public static final int LOG_TEXT_DEBUG = ++current;
-  public static final int LOG_TEXT_VERBOSE = ++current;
-  public static final int LOG_TEXT_ERROR = ++current;
-  public static final int LOG_TEXT_WARNING = ++current;
-  public static final int LOG_PRIORITY_FG_INFO = ++current;
-  public static final int LOG_PRIORITY_FG_DEBUG = ++current;
-  public static final int LOG_PRIORITY_FG_VERBOSE = ++current;
-  public static final int LOG_PRIORITY_FG_ERROR = ++current;
-  public static final int LOG_PRIORITY_FG_WARNING = ++current;
-  public static final int LOG_PRIORITY_BG_INFO = ++current;
-  public static final int LOG_PRIORITY_BG_DEBUG = ++current;
-  public static final int LOG_PRIORITY_BG_VERBOSE = ++current;
-  public static final int LOG_PRIORITY_BG_ERROR = ++current;
-  public static final int LOG_PRIORITY_BG_WARNING = ++current;
-  public static final int XML_TAG = ++current;
-  public static final int FIELD = ++current;
-  public static final int TYPE_NAME = ++current;
-  public static final int TODO_COMMENT = ++current;
-  public static final int FIXME_COMMENT = ++current;
+  public static final int LOG_TEXT_INFO = ++endColorId;
+  public static final int LOG_TEXT_DEBUG = ++endColorId;
+  public static final int LOG_TEXT_VERBOSE = ++endColorId;
+  public static final int LOG_TEXT_ERROR = ++endColorId;
+  public static final int LOG_TEXT_WARNING = ++endColorId;
+  public static final int LOG_PRIORITY_FG_INFO = ++endColorId;
+  public static final int LOG_PRIORITY_FG_DEBUG = ++endColorId;
+  public static final int LOG_PRIORITY_FG_VERBOSE = ++endColorId;
+  public static final int LOG_PRIORITY_FG_ERROR = ++endColorId;
+  public static final int LOG_PRIORITY_FG_WARNING = ++endColorId;
+  public static final int LOG_PRIORITY_BG_INFO = ++endColorId;
+  public static final int LOG_PRIORITY_BG_DEBUG = ++endColorId;
+  public static final int LOG_PRIORITY_BG_VERBOSE = ++endColorId;
+  public static final int LOG_PRIORITY_BG_ERROR = ++endColorId;
+  public static final int LOG_PRIORITY_BG_WARNING = ++endColorId;
+  public static final int XML_TAG = ++endColorId;
+  public static final int FIELD = ++endColorId;
+  public static final int TYPE_NAME = ++endColorId;
+  public static final int TODO_COMMENT = ++endColorId;
+  public static final int FIXME_COMMENT = ++endColorId;
 
   /**
    * Delegates to {@link TextStyle#makeStyle(int)}

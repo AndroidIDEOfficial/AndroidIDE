@@ -1,13 +1,13 @@
 {
   "definitions": {
     "primary": "#6f5a4a",
-    "primaryLight": "#fff9ddc9",
-    "primaryInverse": "#ffdcc2ae",
-    "onPrimary": "#ffffffff",
-    "onPrimaryContainer": "#ff27190c",
+    "primaryLight": "#f9ddc9",
+    "primaryInverse": "#dcc2ae",
+    "onPrimary": "#ffffff",
+    "onPrimaryContainer": "#27190c",
     "surface": "#fffbff",
     "surfaceInverse": "#33302e",
-    "surfaceVariant": "#ffe8e1dd",
+    "surfaceVariant": "#e8e1dd",
     "onSurface": "#1e1b19",
     "onSurfaceVariant": "#4a4644",
     "outline": "#7a7572",

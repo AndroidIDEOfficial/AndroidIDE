@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.editor.adapters
 
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Typeface
 import android.text.TextUtils
@@ -24,6 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.ClassCompletionData
@@ -36,14 +38,13 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.preferences.internal.useCustomFont
-import com.itsaky.androidide.resources.R.color
+import com.itsaky.androidide.resources.R.attr
 import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
 import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_BG_ICON
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_API
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_DETAIL
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_ICON
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
 import com.itsaky.androidide.tasks.executeAsync
@@ -99,39 +100,33 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     }
     binding.root.setBackgroundColor(
       context.resolveAttr(
-        if (isCurrentCursorPosition) color.completionList_backgroundSelected
-        else color.completionList_background
+        if (isCurrentCursorPosition) R.color.completionList_backgroundSelected
+        else R.color.completionList_background
       )
     )
     binding.completionApiInfo.visibility = View.GONE
 
     if (this.colorScheme != null) {
-      applyColorScheme(binding)
+      applyColorScheme(binding, isCurrentCursorPosition)
     }
 
     showApiInfoIfNeeded(item, binding.completionApiInfo)
     return binding.root
   }
 
-  private fun applyColorScheme(binding: LayoutCompletionItemBinding) {
-    var color = getThemeColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)
+  private fun applyColorScheme(binding: LayoutCompletionItemBinding, isCurrent: Boolean) {
+    var color =
+      if (isCurrent) getThemeColor(SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM)
+      else getThemeColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)
     if (color != 0) {
-      binding.root.setBackgroundColor(color)
-    }
-
-    color = getThemeColor(COMPLETION_WND_BG_ICON)
-    if (color != 0) {
-      binding.completionIconText.setBackgroundColor(color)
-    }
-
-    color = getThemeColor(COMPLETION_WND_TEXT_ICON)
-    if (color != 0) {
-      binding.completionIconText.setTextColor(color)
+      binding.root.backgroundTintList = ColorStateList.valueOf(color)
+      binding.completionIconText.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     color = getThemeColor(COMPLETION_WND_TEXT_LABEL)
     if (color != 0) {
       binding.completionLabel.setTextColor(color)
+      binding.completionIconText.setTextColor(color)
     }
 
     color = getThemeColor(COMPLETION_WND_TEXT_DETAIL)

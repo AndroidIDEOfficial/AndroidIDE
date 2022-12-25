@@ -27,19 +27,22 @@ import com.itsaky.androidide.utils.resolveAttr
  *
  * @author Akash Yadav
  */
-class DynamicColorScheme : SchemeAndroidIDE() {
-  
+open class DynamicColorScheme : SchemeAndroidIDE() {
+
   private var isInDarkMode: Boolean = true
 
   fun apply(context: Context) {
     this.isInDarkMode = context.isSystemInDarkMode()
-    val suface = context.resolveAttr(attr.colorSurface)
+    val primaryContainer = context.resolveAttr(attr.colorPrimaryContainer)
+    val onPrimaryContainer = context.resolveAttr(attr.colorOnPrimaryContainer)
+    val secondaryVariant = context.resolveAttr(attr.colorSecondaryVariant)
+    val surface = context.resolveAttr(attr.colorSurface)
     val surfaceVariant = context.resolveAttr(attr.colorSurfaceVariant)
     val onSurface = context.resolveAttr(attr.colorOnSurface)
     val onSurfaceVariant = context.resolveAttr(attr.colorOnSurfaceVariant)
     val outline = context.resolveAttr(attr.colorOutline)
-    setColor(WHOLE_BACKGROUND, suface)
-    setColor(LINE_NUMBER_BACKGROUND, suface)
+    setColor(WHOLE_BACKGROUND, surface)
+    setColor(LINE_NUMBER_BACKGROUND, surface)
     setColor(LINE_NUMBER, onSurface)
     setColor(LINE_NUMBER_PANEL, surfaceVariant)
     setColor(LINE_NUMBER_PANEL_TEXT, onSurfaceVariant)
@@ -48,15 +51,20 @@ class DynamicColorScheme : SchemeAndroidIDE() {
     setColor(BLOCK_LINE, surfaceVariant)
     setColor(BLOCK_LINE_CURRENT, outline)
     setColor(UNDERLINE, outline)
-    
-    setColor(COMPLETION_WND_BACKGROUND, context.resolveAttr(attr.colorSurfaceVariant))
+
+    setColor(COMPLETION_WND_BACKGROUND, primaryContainer)
+    setColor(COMPLETION_WND_BG_CURRENT_ITEM, surfaceVariant)
     setColor(COMPLETION_WND_CORNER, outline)
+    setColor(COMPLETION_WND_TEXT_LABEL, onPrimaryContainer)
+    setColor(COMPLETION_WND_TEXT_DETAIL, secondaryVariant)
+    setColor(COMPLETION_WND_TEXT_API, secondaryVariant)
+    setColor(COMPLETION_WND_TEXT_TYPE, secondaryVariant)
 
     if (!isInDarkMode) {
       applyLightColors()
     }
   }
-  
+
   override fun isDark(): Boolean {
     return this.isInDarkMode
   }

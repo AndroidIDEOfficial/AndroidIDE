@@ -18,36 +18,35 @@
 package com.itsaky.androidide.editor.schemes
 
 import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import io.github.rosemoe.sora.lang.styling.TextStyle
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
 import java.util.TreeSet
 
-class IDEColorScheme(internal val file: File, val key: String) : EditorColorScheme() {
-  
+class IDEColorScheme(internal val file: File, val key: String) : DynamicColorScheme() {
+
   internal val colorIds = mutableMapOf<Int, Int>()
   internal val editorScheme = mutableMapOf<Int, Int>()
   internal val languages = mutableMapOf<String, LanguageScheme>()
-  
+
   var name: String = ""
     internal set
-  
+
   var langs: Array<String> = emptyArray()
     internal set
 
-  private var colorId = END_COLOR_ID
+  private var colorId = endColorId
 
   var isDarkScheme: Boolean = false
     internal set
 
   var definitions: Map<String, Int> = emptyMap()
     internal set
-  
+
   internal fun load() {
     SchemeParser { name -> File(this.file.parentFile, name) }.load(this)
   }
-  
+
   fun getLanguageScheme(type: String): LanguageScheme? {
     return this.languages[type]
   }
@@ -56,12 +55,16 @@ class IDEColorScheme(internal val file: File, val key: String) : EditorColorSche
     this.colorIds[++colorId] = color
     return colorId
   }
-  
+
   @Suppress("UNNECESSARY_SAFE_CALL")
   override fun getColor(type: Int): Int {
     // getColor is called in superclass constructor
     // in this case, the below properties will be null
     return editorScheme?.get(type) ?: colorIds?.get(type) ?: super.getColor(type)
+  }
+  
+  override fun isDark(): Boolean {
+    return this.isDarkScheme
   }
 }
 
@@ -73,32 +76,31 @@ class IDEColorScheme(internal val file: File, val key: String) : EditorColorSche
  * @author Akash Yadav
  */
 class LanguageScheme {
-  
+
   internal val files = mutableListOf<String>()
   internal val styles = mutableMapOf<String, StyleDef>()
   internal val localScopes = TreeSet<String>()
   internal val localDefs = TreeSet<String>()
   internal val localDefVals = TreeSet<String>()
   internal val localRefs = TreeSet<String>()
-  
-  fun getFileTypes() : List<String> = files
+
+  fun getFileTypes(): List<String> = files
   fun getStyles(): Map<String, StyleDef> = styles
-  
-  fun isLocalScope(capture: String) : Boolean {
+
+  fun isLocalScope(capture: String): Boolean {
     return localScopes.contains(capture)
   }
-  
-  fun isLocalDef(capture: String) : Boolean {
+
+  fun isLocalDef(capture: String): Boolean {
     return localDefs.contains(capture)
   }
-  
-  fun isLocalDefVal(capture: String) : Boolean {
+
+  fun isLocalDefVal(capture: String): Boolean {
     return localDefVals.contains(capture)
   }
-  fun isLocalRef(capture: String) : Boolean {
+  fun isLocalRef(capture: String): Boolean {
     return localRefs.contains(capture)
   }
-  
 }
 
 /**
@@ -119,10 +121,8 @@ data class StyleDef(
   var strikeThrough: Boolean = false,
   var completion: Boolean = true
 ) {
-  
-  private val log = ILogger.newInstance("StyleDef")
-  fun makeStyle() : Long {
-    val style = TextStyle.makeStyle(this.fg, this.bg, this.bold, this.italic, this.strikeThrough, !this.completion)
-    return style
+
+  fun makeStyle(): Long {
+    return TextStyle.makeStyle(fg, bg, bold, italic, strikeThrough, !completion)
   }
 }

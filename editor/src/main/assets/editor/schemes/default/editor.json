@@ -25,7 +25,6 @@
   "highlighted.delimiters.underline": "@outline",
   "highlighted.delimiters.bg": "@surfaceVariant",
   "highlighted.delimiters.fg": "@onSurface",
-  "completion.window.bg": "@surfaceVariant",
-  "completion.window.outline": "@outline",
+
   "non_printable_char": "@onSurface"
 }

@@ -168,7 +168,10 @@ public class CodeEditorView extends LinearLayout {
   protected void postRead() {
     final var language = createLanguage(file);
     if (language instanceof TreeSitterLanguage) {
-      IDEColorSchemeProvider.INSTANCE.readScheme(binding.editor::setColorScheme);
+      IDEColorSchemeProvider.INSTANCE.readScheme(scheme -> {
+        scheme.apply(getContext());
+        binding.editor.setColorScheme(scheme);
+      });
     }
     binding.editor.setEditorLanguage(language);
     binding.editor.setLanguageServer(createLanguageServer(file));

@@ -54,11 +54,6 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
     CODE_BLOCK_LINE_SIDE("code.block.line.side", EditorColorScheme.SIDE_BLOCK_LINE),
     COMPLETION_WINDOW_BG("completion.window.bg", EditorColorScheme.COMPLETION_WND_BACKGROUND),
     COMPLETION_WINDOW_OUTLINE("completion.window.outline", EditorColorScheme.COMPLETION_WND_CORNER),
-    COMPLETION_WINDOW_BG_ICON("completion.window.bg.icon", SchemeAndroidIDE.COMPLETION_WND_BG_ICON),
-    COMPLETION_WINDOW_TEXT_ICON(
-      "completion.window.text.icon",
-      SchemeAndroidIDE.COMPLETION_WND_TEXT_ICON
-    ),
     COMPLETION_WND_TEXT_LABEL(
       "completion.window.text.label",
       SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
