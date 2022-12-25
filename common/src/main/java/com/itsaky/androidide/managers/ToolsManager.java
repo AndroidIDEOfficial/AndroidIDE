@@ -82,8 +82,18 @@ public class ToolsManager {
     final var dir = new File(Environment.ANDROIDIDE_UI, defPath);
     try {
       for (final String asset : app.getAssets().list(defPath)) {
-        ResourceUtils.copyFileFromAssets(
-            defPath + "/" + asset, new File(dir, asset).getAbsolutePath());
+
+        final var prop = new File(dir, asset + "/" + "scheme.prop");
+        if (prop.exists()) {
+          continue;
+        }
+
+        final File schemeDir = new File(dir, asset);
+        if (schemeDir.exists()) {
+          schemeDir.delete();
+        }
+
+        ResourceUtils.copyFileFromAssets(defPath + "/" + asset, schemeDir.getAbsolutePath());
       }
     } catch (IOException e) {
       LOG.error("Failed to extract color schemes", e);
