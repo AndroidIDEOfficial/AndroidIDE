@@ -107,6 +107,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         viewModel.openedFilesCache = cache
       }
     }
+  
+    executeAsync { IDEColorSchemeProvider.initIfNeeded() }
   }
 
   @SuppressLint("RestrictedApi")
@@ -118,6 +120,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun onPause() {
+
+    if (isFinishing) {
+      IDEColorSchemeProvider.destroy()
+    }
+
     super.onPause()
 
     val current =

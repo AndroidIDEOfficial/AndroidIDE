@@ -102,6 +102,13 @@ object IDEColorSchemeProvider {
 
     currentScheme!!
   }
+  
+  @JvmStatic
+  fun initIfNeeded() {
+    if (this.schemes.isEmpty()) {
+      init()
+    }
+  }
 
   fun readScheme(schemeConsumer: Consumer<IDEColorScheme>) {
     readScheme(schemeConsumer::accept)
@@ -119,5 +126,9 @@ object IDEColorSchemeProvider {
 
   fun list(): List<IDEColorScheme> {
     return this.schemes.values.toList()
+  }
+  
+  fun destroy() {
+    this.schemes.clear()
   }
 }
