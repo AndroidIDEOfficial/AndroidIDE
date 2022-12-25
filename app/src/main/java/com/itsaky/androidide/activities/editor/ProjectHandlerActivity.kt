@@ -103,6 +103,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       // of the project
       projectInitialized = false
       cachedInitResult = null
+      
+      viewModel.isInitializing = false
+      viewModel.isBuildInProgress = false
     }
   }
 
