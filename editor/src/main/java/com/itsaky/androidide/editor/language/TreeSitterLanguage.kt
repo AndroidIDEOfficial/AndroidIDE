@@ -18,10 +18,12 @@
 package com.itsaky.androidide.editor.language
 
 import android.content.Context
+import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
 import com.itsaky.androidide.treesitter.TSLanguage
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
 import io.github.rosemoe.sora.editor.ts.TsTheme
@@ -39,10 +41,22 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   private lateinit var languageSpec: TsLanguageSpec
   private val analyzer by lazy { TsAnalyzeManager(languageSpec, tsTheme) }
 
+  private val log = ILogger.newInstance("TreeSitterLanguage")
+  
   init {
     this.languageSpec = getLanguageSpec(context, type, lang, newLocalCaptureSpec(type))
     this.tsTheme = TsTheme(languageSpec.tsQuery)
     IDEColorSchemeProvider.readScheme { scheme ->
+      if (scheme == null) {
+        log.error("Failed to read color scheme")
+        return@readScheme
+      }
+      
+      if (scheme !is IDEColorScheme) {
+        log.error("Invalid color scheme returned by color scheme provider", scheme)
+        return@readScheme
+      }
+      
       val langScheme =
         checkNotNull(scheme.languages[type]) { "No color scheme found for file type '$type'" }
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }

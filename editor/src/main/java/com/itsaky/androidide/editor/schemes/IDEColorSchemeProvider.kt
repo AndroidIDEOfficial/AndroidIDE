@@ -18,6 +18,7 @@
 package com.itsaky.androidide.editor.schemes
 
 import com.itsaky.androidide.preferences.internal.colorScheme
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
@@ -110,11 +111,13 @@ object IDEColorSchemeProvider {
     }
   }
 
-  fun readScheme(schemeConsumer: Consumer<IDEColorScheme>) {
-    readScheme(schemeConsumer::accept)
+  fun readScheme(schemeConsumer: Consumer<SchemeAndroidIDE?>) {
+    readScheme {
+      schemeConsumer.accept(it)
+    }
   }
 
-  fun readScheme(consume: (IDEColorScheme) -> Unit) {
+  fun readScheme(consume: (SchemeAndroidIDE?) -> Unit) {
     executeAsyncProvideError({ this.currentScheme }) { scheme, error ->
       if (scheme == null || error != null) {
         log.error("Failed to read color scheme", error)

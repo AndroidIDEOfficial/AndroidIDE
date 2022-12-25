@@ -70,6 +70,7 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
@@ -169,11 +170,12 @@ public class CodeEditorView extends LinearLayout {
     final var language = createLanguage(file);
     if (language instanceof TreeSitterLanguage) {
       IDEColorSchemeProvider.INSTANCE.readScheme(scheme -> {
-        scheme.apply(getContext());
-        binding.editor.setColorScheme(scheme);
+        applyTreeSitterLang(language, scheme);
       });
+    } else {
+      binding.editor.setEditorLanguage(language);
     }
-    binding.editor.setEditorLanguage(language);
+    
     binding.editor.setLanguageServer(createLanguageServer(file));
 
     if (IDELanguageClientImpl.isInitialized()) {
@@ -188,7 +190,21 @@ public class CodeEditorView extends LinearLayout {
       ((Activity) getContext()).invalidateOptionsMenu();
     }
   }
-
+  
+  private void applyTreeSitterLang(final Language language, SchemeAndroidIDE scheme) {
+    if (scheme == null) {
+      LOG.error("Failed to read current color scheme");
+      scheme = SchemeAndroidIDE.newInstance(getContext());
+    }
+    
+    if (scheme instanceof DynamicColorScheme) {
+      ((DynamicColorScheme) scheme).apply(getContext());
+    }
+    
+    binding.editor.setColorScheme(scheme);
+    binding.editor.setEditorLanguage(language);
+  }
+  
   private ILanguageServer createLanguageServer(File file) {
     if (!file.isFile()) {
       return null;
