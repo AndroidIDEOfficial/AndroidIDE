@@ -457,4 +457,6 @@
   <string name="git_clone_failed">Git रिपॉजिटरी क्लोन करने में विफल</string>
   <string name="msg_select_attr">Select an attribute from the below list</string>
   <string name="action_show_hierarchy">Show layout hierarchy</string>
+  <string name="idepref_editor_colorScheme">Color Scheme</string>
+  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
 </resources>
