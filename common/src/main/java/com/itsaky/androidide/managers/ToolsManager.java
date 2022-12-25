@@ -30,7 +30,11 @@ import com.itsaky.androidide.utils.ILogger;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 public class ToolsManager {
@@ -60,8 +64,9 @@ public class ToolsManager {
               extractGradlePlugin();
               extractToolingApi();
               extractAndroidJar();
+              extractColorScheme(app);
               writeInitScript();
-              
+
               deleteIdeenv();
             })
         .whenComplete(
@@ -75,7 +80,69 @@ public class ToolsManager {
               }
             });
   }
-  
+
+  private static void extractColorScheme(final BaseApplication app) {
+    final var defPath = "editor/schemes";
+    final var dir = new File(Environment.ANDROIDIDE_UI, defPath);
+    try {
+      for (final String asset : app.getAssets().list(defPath)) {
+
+        final var prop = new File(dir, asset + "/" + "scheme.prop");
+        if (prop.exists()
+            && !shouldExtractScheme(app, new File(dir, asset), defPath + "/" + asset)) {
+          continue;
+        }
+
+        final File schemeDir = new File(dir, asset);
+        if (schemeDir.exists()) {
+          schemeDir.delete();
+        }
+
+        ResourceUtils.copyFileFromAssets(defPath + "/" + asset, schemeDir.getAbsolutePath());
+      }
+    } catch (IOException e) {
+      LOG.error("Failed to extract color schemes", e);
+    }
+  }
+
+  private static boolean shouldExtractScheme(
+      final BaseApplication app, final File dir, final String path) throws IOException {
+
+    final var schemePropFile = new File(dir, "scheme.prop");
+    if (!schemePropFile.exists()) {
+      return true;
+    }
+
+    final var files = app.getAssets().list(path);
+    if (Arrays.stream(files).noneMatch("scheme.prop"::equals)) {
+      // no scheme.prop file
+      return true;
+    }
+
+    try {
+      final var props = new Properties();
+      props.load(new InputStreamReader(app.getAssets().open(path + "/scheme.prop")));
+
+      final var version = Integer.parseInt(props.getProperty("scheme.version", "0"));
+      if (version == 0) {
+        return true;
+      }
+
+      props.clear();
+
+      props.load(new FileReader(schemePropFile));
+      final var fileVersion = Integer.parseInt(props.getProperty("scheme.version", "0"));
+      if (fileVersion < 0) {
+        return true;
+      }
+
+      return version > fileVersion;
+    } catch (Throwable err) {
+      LOG.error("Failed to read color scheme version for scheme '" + path + "'", err);
+      return false;
+    }
+  }
+
   private static void writeNoMediaFile() {
     final var noMedia = new File(BaseApplication.getBaseInstance().getProjectsDir(), ".nomedia");
     if (!noMedia.exists()) {
@@ -88,7 +155,7 @@ public class ToolsManager {
       }
     }
   }
-  
+
   private static void extractAndroidJar() {
     if (!Environment.ANDROID_JAR.exists()) {
       ResourceUtils.copyFileFromAssets(

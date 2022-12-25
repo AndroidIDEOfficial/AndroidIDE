@@ -1,0 +1,32 @@
+{
+  "bg": "@surface",
+  "line.current": "@surfaceVariant",
+  "line.divider": "@surface",
+  "line.num": "@onSurface",
+  "line.num.current": "@surfaceInverse",
+  "line.num.bg": "@surface",
+  "line.num.panel": "@surfaceVariant",
+  "line.num.panel.text": "@onSurfaceVariant",
+  "text.normal": "@onSurface",
+  "text.cursor": "@primary",
+  "text.selection.handle": "@primaryInverse",
+  "text.selected": "@onSurface",
+  "text.matched.bg": "#FF8F00",
+  "text.selected.bg": "@primaryLight",
+  "snippet.bg.editing": "#cccccc",
+  "snippet.bg.related": "#aadddddd",
+  "snippet.bg.inactive": "#66dddddd",
+
+  "scrollbar.thumb": "@surface",
+  "scrollbar.thumb.pressed": "@surfaceInverse",
+  "scrollbar.track": "@surfaceVariant",
+
+  "code.block.line": "@surfaceVariant",
+  "code.block.line.current": "@outline",
+  "code.block.line.side": "@outline",
+  "highlighted.delimiters.underline": "@outline",
+  "highlighted.delimiters.bg": "@surfaceVariant",
+  "highlighted.delimiters.fg": "@onSurface",
+
+  "non_printable_char": "@onSurface"
+}

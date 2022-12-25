@@ -23,26 +23,21 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.multidex.BuildConfig;
 import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.android.material.color.DynamicColors;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
+import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
-
-import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.Arrays;
@@ -55,14 +50,13 @@ public abstract class BaseApplication extends MultiDexApplication {
   public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
   public static final String WEBSITE = "https://androidide.com";
   public static final String SPONSOR_URL = "https://androidide.com/donate.php";
-  
+
   // TODO Replace when available on website
-  public static final String DOCS_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE/tree/main/docs";
+  public static final String DOCS_URL =
+      "https://github.com/AndroidIDEOfficial/AndroidIDE/tree/main/docs";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
-  
-  private static final ILogger LOG = ILogger.newInstance("BaseApplication");
 
   public static BaseApplication getBaseInstance() {
     return instance;
@@ -101,9 +95,9 @@ public abstract class BaseApplication extends MultiDexApplication {
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
     ToolsManager.init(this, null);
-  
-    DynamicColors.applyToActivitiesIfAvailable(this);
-    
+
+//    DynamicColors.applyToActivitiesIfAvailable(this);
+
     createNotificationChannels();
   }
 
@@ -146,7 +140,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
         ThrowableUtils.getFullStackTrace(th));
   }
-  
+
   public final File getTempProjectDir() {
     return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
   }
@@ -154,7 +148,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public PreferenceManager getPrefManager() {
     return mPrefsManager;
   }
-  
+
   public File getProjectsDir() {
     return Environment.PROJECTS_DIR;
   }
@@ -162,7 +156,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void openTelegramGroup() {
     openTelegram(BaseApplication.TELEGRAM_GROUP_URL);
   }
-  
+
   public void openTelegramChannel() {
     openTelegram(BaseApplication.TELEGRAM_CHANNEL_URL);
   }
@@ -178,7 +172,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   public void openSponsors() {
     openUrl(SPONSOR_URL);
   }
-  
+
   public void openDocs() {
     openUrl(DOCS_URL);
   }
@@ -187,15 +181,14 @@ public abstract class BaseApplication extends MultiDexApplication {
     openUrl("mailto:" + EMAIL);
   }
 
-  
   public void openUrl(String url) {
     openUrl(url, null);
   }
-  
+
   public void openTelegram(String url) {
     openUrl(url, "org.telegram.messenger");
   }
-  
+
   public void openUrl(String url, String pkg) {
     try {
       Intent open = new Intent();
