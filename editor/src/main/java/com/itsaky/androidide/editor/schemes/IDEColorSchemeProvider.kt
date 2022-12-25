@@ -23,7 +23,6 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.io.FileFilter
-import java.util.Collections
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -37,6 +36,7 @@ object IDEColorSchemeProvider {
   private val schemes = ConcurrentHashMap<String, IDEColorScheme>()
 
   private const val SCHEME_NAME = "scheme.name"
+  private const val SCHEME_VERSION = "scheme.version"
   private const val SCHEME_IS_DARK = "scheme.isDark"
   private const val SCHEME_LANGS = "scheme.langs"
   private const val SCHEME_FILE = "scheme.file"
@@ -68,6 +68,7 @@ object IDEColorSchemeProvider {
         }
 
       val name = props.getProperty(SCHEME_NAME, "Unknown")
+      val version = props.getProperty(SCHEME_VERSION, "0").toInt()
       val isDark = props.getProperty(SCHEME_IS_DARK, "false").toBoolean()
       val langs = props.getProperty(SCHEME_LANGS, "").split(',').map { it.trim() }
       val file =
@@ -78,7 +79,11 @@ object IDEColorSchemeProvider {
             )
             ""
           }
-
+      
+      if (version <= 0) {
+        log.warn("Version code of color scheme '$schemeDir' must be set to >= 1")
+      }
+      
       if (file.isBlank()) {
         continue
       }
@@ -89,6 +94,7 @@ object IDEColorSchemeProvider {
 
       val scheme = IDEColorScheme(File(schemeDir, file), schemeDir.name)
       scheme.name = name
+      scheme.version = version
       scheme.isDarkScheme = isDark
       scheme.langs = langs.toTypedArray()
       schemes[schemeDir.name] = scheme

@@ -1,6 +1,9 @@
 # Name of the color scheme
 scheme.name=AndroidIDE Default
 
+# The version code of the color scheme
+scheme.version=1
+
 # Whether the scheme is dark or light
 scheme.isDark=false
 
