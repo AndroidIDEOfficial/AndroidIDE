@@ -43,9 +43,13 @@ object IDEColorSchemeProvider {
   private const val SCHEME_FILE = "scheme.file"
 
   val currentScheme: IDEColorScheme? by lazy {
-    this.schemes[colorScheme]?.let {
-      it.load()
-      it
+    val scheme = this.schemes[colorScheme] ?: return@lazy null
+    return@lazy try {
+      scheme.load()
+      scheme
+    } catch (err: Exception) {
+      log.error("An error occurred while loading color scheme '$colorScheme'", err)
+      null
     }
   }
 
@@ -100,8 +104,6 @@ object IDEColorSchemeProvider {
       scheme.langs = langs.toTypedArray()
       schemes[schemeDir.name] = scheme
     }
-
-    currentScheme!!
   }
   
   @JvmStatic

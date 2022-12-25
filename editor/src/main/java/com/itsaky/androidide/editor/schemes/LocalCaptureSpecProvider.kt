@@ -17,20 +17,32 @@
 
 package com.itsaky.androidide.editor.schemes
 
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
 
 /**
  * Provides local
  *
- * @author Akash Yadav */
+ * @author Akash Yadav
+ */
 object LocalCaptureSpecProvider {
+
+  private val log = ILogger.newInstance("LocalCaptureSpecProvider")
 
   @JvmStatic
   fun newLocalCaptureSpec(type: String): LocalsCaptureSpec {
-    val scheme = IDEColorSchemeProvider.currentScheme!!
-    val lang = scheme.languages[type] ?: return LocalsCaptureSpec.DEFAULT
+    val lang =
+      IDEColorSchemeProvider.currentScheme?.languages?.get(type)
+        ?: run {
+          log.error(
+            "Cannot create LocalsCaptureSpec",
+            "Failed to load current color scheme.",
+            "Falling back to default implementation"
+          )
+          return LocalsCaptureSpec.DEFAULT
+        }
     return object : LocalsCaptureSpec() {
-      
+
       override fun isDefinitionCapture(captureName: String): Boolean {
         return lang.isLocalDef(captureName)
       }
