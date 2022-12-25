@@ -119,8 +119,6 @@ abstract class BaseEditorActivity :
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
   protected var isDestroying = false
-  protected var isConfigChange = false
-  protected var wasInitializing = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
   protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
@@ -162,7 +160,6 @@ abstract class BaseEditorActivity :
   protected abstract fun getOpenedFiles(): List<OpenedFile>
 
   protected open fun preDestroy() {
-    viewModel.isConfigChange = !isDestroying
     try {
       unregisterReceiver(logReceiver)
     } catch (th: Throwable) {
@@ -211,11 +208,6 @@ abstract class BaseEditorActivity :
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
       projectPath = savedInstanceState.getString(KEY_PROJECT_PATH)!!
     }
-
-    this.wasInitializing = viewModel.isInitializing
-    this.isConfigChange = viewModel.isConfigChange
-    viewModel.isConfigChange = false
-    viewModel.isInitializing = false
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     lifecycle.addObserver(mLifecycleObserver)
