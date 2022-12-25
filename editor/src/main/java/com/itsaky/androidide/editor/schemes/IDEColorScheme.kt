@@ -24,7 +24,7 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
 import java.util.TreeSet
 
-class IDEColorScheme(internal val file: File) : EditorColorScheme() {
+class IDEColorScheme(internal val file: File, val key: String) : EditorColorScheme() {
   
   internal val colorIds = mutableMapOf<Int, Int>()
   internal val editorScheme = mutableMapOf<Int, Int>()

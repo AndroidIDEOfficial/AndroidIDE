@@ -103,7 +103,7 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
 
   fun parse(file: File, name: String, isDark: Boolean, langs: Array<String>): IDEColorScheme {
     require(file.exists() && file.isFile) { "File does not exist or is not a file" }
-    val scheme = IDEColorScheme(file)
+    val scheme = IDEColorScheme(file, name)
     scheme.name = name
     scheme.isDarkScheme = isDark
     scheme.langs = langs

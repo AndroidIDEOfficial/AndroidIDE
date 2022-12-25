@@ -20,22 +20,24 @@ package com.itsaky.androidide.preferences
 import android.view.LayoutInflater
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.itsaky.androidide.resources.R.drawable
-import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
+import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
+import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.USE_ICU
 import com.itsaky.androidide.preferences.internal.USE_MAGNIFER
 import com.itsaky.androidide.preferences.internal.USE_SOFT_TAB
-import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.WORD_WRAP
 import com.itsaky.androidide.preferences.internal.autoSave
+import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.preferences.internal.completionsMatchLower
 import com.itsaky.androidide.preferences.internal.drawEmptyLineWs
 import com.itsaky.androidide.preferences.internal.drawInnerWs
@@ -45,12 +47,15 @@ import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.useIcu
 import com.itsaky.androidide.preferences.internal.useMagnifier
 import com.itsaky.androidide.preferences.internal.useSoftTab
-import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.visiblePasswordFlag
 import com.itsaky.androidide.preferences.internal.wordwrap
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -76,6 +81,7 @@ private class CommonConfigurations(
   init {
     addPreference(TextSize())
     addPreference(TabSize())
+    addPreference(ColorSchemePreference())
     addPreference(NonPrintablePaintingFlags())
     addPreference(FontLigatures())
     addPreference(UseCustomFont())
@@ -168,6 +174,36 @@ private class TabSize(
       current = 1
     }
     return current
+  }
+}
+
+@Parcelize
+private class ColorSchemePreference(
+  override val key: String = COLOR_SCHEME,
+  override val title: Int = R.string.idepref_editor_colorScheme,
+  override val summary: Int? = R.string.idepref_editor_colorScheme_summary,
+  override val icon: Int? = R.drawable.ic_color_scheme
+) : SingleChoicePreference() {
+
+  @IgnoredOnParcel private val schemes = IDEColorSchemeProvider.list()
+
+  override fun getChoices(): Array<String> {
+    return schemes.map { it.name }.toTypedArray()
+  }
+
+  override fun getSelectedItem(): Int {
+    return schemes.indexOfFirst { it.key == colorScheme }
+  }
+
+  override fun onItemSelected(position: Int, isSelected: Boolean) {
+    if (isSelected) {
+      colorScheme = schemes[position].key
+    }
+  }
+
+  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
+    super.onConfigureDialog(preference, dialog)
+    dialog.setCancelable(true)
   }
 }
 

@@ -23,6 +23,7 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.io.FileFilter
+import java.util.Collections
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -86,13 +87,13 @@ object IDEColorSchemeProvider {
         continue
       }
 
-      val scheme = IDEColorScheme(File(schemeDir, file))
+      val scheme = IDEColorScheme(File(schemeDir, file), schemeDir.name)
       scheme.name = name
       scheme.isDarkScheme = isDark
       scheme.langs = langs.toTypedArray()
       schemes[schemeDir.name] = scheme
     }
-    
+
     currentScheme!!
   }
 
@@ -108,5 +109,9 @@ object IDEColorSchemeProvider {
       }
       consume(scheme)
     }
+  }
+
+  fun list(): List<IDEColorScheme> {
+    return this.schemes.values.toList()
   }
 }
