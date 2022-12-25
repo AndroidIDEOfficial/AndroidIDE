@@ -108,7 +108,7 @@ public class ToolsManager {
   private static boolean shouldExtractScheme(
       final BaseApplication app, final File dir, final String path) throws IOException {
 
-    final var schemePropFile = new File(dir, "scheme.dir");
+    final var schemePropFile = new File(dir, "scheme.prop");
     if (!schemePropFile.exists()) {
       return true;
     }
