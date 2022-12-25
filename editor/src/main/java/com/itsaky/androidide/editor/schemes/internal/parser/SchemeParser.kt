@@ -41,6 +41,11 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
     LINE_NUMBER_PANEL_TEXT("line.num.panel.text", EditorColorScheme.LINE_NUMBER_PANEL_TEXT),
     TEXT_NORMAL("text.normal", EditorColorScheme.TEXT_NORMAL),
     TEXT_SELECTED("text.selected", EditorColorScheme.TEXT_SELECTED),
+    
+    CURSOR("text.cursor", EditorColorScheme.SELECTION_INSERT),
+    SELECTION_HANDLE("text.selection.handle", EditorColorScheme.SELECTION_HANDLE),
+    UNDERLINE("text.underline", EditorColorScheme.UNDERLINE),
+    
     MATCHED_TEXT_BACKGROUND("text.matched.bg", EditorColorScheme.MATCHED_TEXT_BACKGROUND),
     SELECTED_TEXT_BACKGROUND("text.selected.bg", EditorColorScheme.SELECTED_TEXT_BACKGROUND),
     SNIPPET_BG_EDITING("snippet.bg.editing", EditorColorScheme.SNIPPET_BACKGROUND_EDITING),
