@@ -30,7 +30,11 @@ import com.itsaky.androidide.utils.ILogger;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 public class ToolsManager {
@@ -84,7 +88,8 @@ public class ToolsManager {
       for (final String asset : app.getAssets().list(defPath)) {
 
         final var prop = new File(dir, asset + "/" + "scheme.prop");
-        if (prop.exists()) {
+        if (prop.exists()
+            && !shouldExtractScheme(app, new File(dir, asset), defPath + "/" + asset)) {
           continue;
         }
 
@@ -97,6 +102,44 @@ public class ToolsManager {
       }
     } catch (IOException e) {
       LOG.error("Failed to extract color schemes", e);
+    }
+  }
+
+  private static boolean shouldExtractScheme(
+      final BaseApplication app, final File dir, final String path) throws IOException {
+
+    final var schemePropFile = new File(dir, "scheme.dir");
+    if (!schemePropFile.exists()) {
+      return true;
+    }
+
+    final var files = app.getAssets().list(path);
+    if (Arrays.stream(files).noneMatch("scheme.prop"::equals)) {
+      // no scheme.prop file
+      return true;
+    }
+
+    try {
+      final var props = new Properties();
+      props.load(new InputStreamReader(app.getAssets().open(path + "/scheme.prop")));
+
+      final var version = Integer.parseInt(props.getProperty("scheme.version", "0"));
+      if (version == 0) {
+        return true;
+      }
+
+      props.clear();
+
+      props.load(new FileReader(schemePropFile));
+      final var fileVersion = Integer.parseInt(props.getProperty("scheme.version", "0"));
+      if (fileVersion < 0) {
+        return true;
+      }
+
+      return version > fileVersion;
+    } catch (Throwable err) {
+      LOG.error("Failed to read color scheme version for scheme '" + path + "'", err);
+      return false;
     }
   }
 
