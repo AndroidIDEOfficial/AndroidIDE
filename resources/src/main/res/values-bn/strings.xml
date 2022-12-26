@@ -456,7 +456,7 @@
   <string name="git_clone_success">গিট ক্লোন সফল হয়েছে</string>
   <string name="git_clone_failed">গিট রেপোসিটরি ক্লোন করতে ব্যর্থ</string>
   <string name="msg_select_attr">নীচের লিস্ট থেকে অ্যাট্রিবিউট নির্বাচন করুন</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="action_show_hierarchy">লেআউট শ্রেণিবিন্যাস দেখান</string>
+  <string name="idepref_editor_colorScheme">কালার স্কিম</string>
+  <string name="idepref_editor_colorScheme_summary">Editor - এ ব্যাবহার করার জন্য কালার স্কিম পছন্দ করুন</string>
 </resources>
