@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE utiliza una versión modificada del JDK que está licenciado bajo la GNU General Public License v2.0. El código fuente y la licencia del JDK están disponibles en: </string>
+  <string name="license_jdk">Android IDE utiliza una versión modificada del JDK que está licenciado bajo la GNU General Public License v2.0. El código fuente y la licencia del JDK están disponibles en: </string>
   <string name="title_open_source_licenses">Licencias de código abierto</string>
   <string name="msg_about_licensed_under">Bajo Licencia: </string>
   <string name="about_option_email">Correo</string>
@@ -456,7 +456,7 @@
   <string name="git_clone_success">Clon de Git exitoso</string>
   <string name="git_clone_failed">Error al clonar el repositorio git</string>
   <string name="msg_select_attr">Seleccione un atributo de la lista de abajo</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
+  <string name="action_show_hierarchy">Mostrar jerarquía de diseño</string>
   <string name="idepref_editor_colorScheme">Paleta de colores</string>
   <string name="idepref_editor_colorScheme_summary">Elegir esquema de colores a usar en el editor</string>
 </resources>
