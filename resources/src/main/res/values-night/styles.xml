@@ -16,33 +16,35 @@
   -->
 
   <style name="Theme.AndroidIDE.Material" parent="Theme.Material3.Dark.NoActionBar">
-    <item name="colorPrimary">@color/md_theme_dark_primary</item>
-    <item name="colorPrimaryDark">@color/md_theme_dark_background</item>
-    <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
-    <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
-    <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
-    <item name="colorSecondary">@color/md_theme_dark_secondary</item>
-    <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
-    <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
-    <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
-    <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
-    <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
-    <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
-    <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
-    <item name="colorError">@color/md_theme_dark_error</item>
-    <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
-    <item name="colorOnError">@color/md_theme_dark_onError</item>
-    <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
-    <item name="android:colorBackground">@color/md_theme_dark_background</item>
-    <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
-    <item name="colorSurface">@color/md_theme_dark_surface</item>
-    <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
-    <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
-    <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
-    <item name="colorOutline">@color/md_theme_dark_outline</item>
-    <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
-    <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
-    <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+    <item name="colorPrimary">@color/dark_colorPrimary</item>
+    <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
+    <item name="colorOnPrimary">@color/dark_colorOnPrimary</item>
+    <item name="colorPrimaryContainer">@color/dark_colorPrimaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/dark_colorOnPrimaryContainer</item>
+    <item name="colorSecondary">@color/dark_colorSecondary</item>
+    <item name="colorOnSecondary">@color/dark_colorOnSecondary</item>
+    <item name="colorSecondaryContainer">@color/dark_colorSecondaryContainer</item>
+    <item name="colorOnSecondaryContainer">@color/dark_colorOnSecondaryContainer</item>
+    <item name="colorTertiary">@color/dark_colorTertiary</item>
+    <item name="colorOnTertiary">@color/dark_colorOnTertiary</item>
+    <item name="colorTertiaryContainer">@color/dark_colorTertiaryContainer</item>
+    <item name="colorOnTertiaryContainer">@color/dark_colorOnTertiaryContainer</item>
+    <item name="colorError">@color/dark_colorError</item>
+    <item name="colorErrorContainer">@color/dark_colorErrorContainer</item>
+    <item name="colorOnError">@color/dark_colorOnError</item>
+    <item name="colorOnErrorContainer">@color/dark_colorOnErrorContainer</item>
+
+    <item name="android:colorBackground">@color/dark_colorBackground</item>
+    <item name="colorOnBackground">@color/dark_colorOnBackground</item>
+
+    <item name="colorSurface">@color/dark_colorSurface</item>
+    <item name="colorOnSurface">@color/dark_colorOnSurface</item>
+    <item name="colorSurfaceVariant">@color/dark_colorSurfaceVariant</item>
+    <item name="colorOnSurfaceVariant">@color/dark_colorOnSurfaceVariant</item>
+    <item name="colorOutline">@color/dark_colorOutline</item>
+    <item name="colorOnSurfaceInverse">@color/dark_colorOnSurfaceInverse</item>
+    <item name="colorSurfaceInverse">@color/dark_colorSurfaceInverse</item>
+    <item name="colorPrimaryInverse">@color/dark_colorPrimaryInverse</item>
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
@@ -50,7 +52,7 @@
   </style>
 
   <style name="AppTheme.Splash" parent="Theme.SplashScreen">
-    <item name="windowSplashScreenBackground">@color/md_theme_dark_background</item>
+    <item name="windowSplashScreenBackground">@color/dark_colorSurface</item>
     <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated_dark</item>
     <item name="windowSplashScreenAnimationDuration">200</item>
     <item name="postSplashScreenTheme">@style/Theme.AndroidIDE</item>

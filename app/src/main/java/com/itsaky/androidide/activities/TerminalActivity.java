@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.activities;
 
+import static androidx.core.view.WindowCompat.getInsetsController;
 import static com.itsaky.androidide.preferences.internal.GeneralPreferencesKt.getUseSystemShell;
 import static com.itsaky.androidide.utils.Environment.BIN_DIR;
 import static com.itsaky.androidide.utils.Environment.HOME;
@@ -32,6 +33,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -43,14 +45,14 @@ import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.models.Constants;
 import com.itsaky.androidide.preferences.internal.GeneralPreferencesKt;
-import com.itsaky.androidide.utils.BootstrapInstaller;
-import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.androidide.ui.virtualkeys.SpecialButton;
 import com.itsaky.androidide.ui.virtualkeys.VirtualKeyButton;
 import com.itsaky.androidide.ui.virtualkeys.VirtualKeysConstants;
 import com.itsaky.androidide.ui.virtualkeys.VirtualKeysInfo;
 import com.itsaky.androidide.ui.virtualkeys.VirtualKeysView;
+import com.itsaky.androidide.utils.BootstrapInstaller;
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.TypefaceUtilsKt;
 import com.itsaky.terminal.TerminalEmulator;
 import com.itsaky.terminal.TerminalSession;
 import com.itsaky.terminal.TerminalSessionClient;
@@ -293,9 +295,21 @@ public class TerminalActivity extends IDEActivity
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  public int getNavigationBarColor() {
+    return ContextCompat.getColor(this, android.R.color.black);
+  }
 
+  @Override
+  public int getStatusBarColor() {
+    return ContextCompat.getColor(this, android.R.color.black);
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    final var controller = getInsetsController(getWindow(), getWindow().getDecorView());
+    controller.setAppearanceLightNavigationBars(false);
+    controller.setAppearanceLightStatusBars(false);
+    super.onCreate(savedInstanceState);
     final var bash = new File(BIN_DIR, "bash");
     final var useSystemShell = getUseSystemShell();
     if ((PREFIX.exists()

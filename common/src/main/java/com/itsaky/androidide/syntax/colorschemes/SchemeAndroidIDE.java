@@ -33,27 +33,34 @@ public class SchemeAndroidIDE extends EditorColorScheme {
 
   protected SchemeAndroidIDE() {}
 
-  private static int current = EditorColorScheme.END_COLOR_ID;
-  public static final int LOG_TEXT_INFO = ++current;
-  public static final int LOG_TEXT_DEBUG = ++current;
-  public static final int LOG_TEXT_VERBOSE = ++current;
-  public static final int LOG_TEXT_ERROR = ++current;
-  public static final int LOG_TEXT_WARNING = ++current;
-  public static final int LOG_PRIORITY_FG_INFO = ++current;
-  public static final int LOG_PRIORITY_FG_DEBUG = ++current;
-  public static final int LOG_PRIORITY_FG_VERBOSE = ++current;
-  public static final int LOG_PRIORITY_FG_ERROR = ++current;
-  public static final int LOG_PRIORITY_FG_WARNING = ++current;
-  public static final int LOG_PRIORITY_BG_INFO = ++current;
-  public static final int LOG_PRIORITY_BG_DEBUG = ++current;
-  public static final int LOG_PRIORITY_BG_VERBOSE = ++current;
-  public static final int LOG_PRIORITY_BG_ERROR = ++current;
-  public static final int LOG_PRIORITY_BG_WARNING = ++current;
-  public static final int XML_TAG = ++current;
-  public static final int FIELD = ++current;
-  public static final int TYPE_NAME = ++current;
-  public static final int TODO_COMMENT = ++current;
-  public static final int FIXME_COMMENT = ++current;
+  protected static int endColorId = EditorColorScheme.END_COLOR_ID;
+  
+  public static final int COMPLETION_WND_BG_CURRENT_ITEM = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_LABEL = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_TYPE = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_API = ++endColorId;
+  public static final int COMPLETION_WND_TEXT_DETAIL = ++endColorId;
+  
+  public static final int LOG_TEXT_INFO = ++endColorId;
+  public static final int LOG_TEXT_DEBUG = ++endColorId;
+  public static final int LOG_TEXT_VERBOSE = ++endColorId;
+  public static final int LOG_TEXT_ERROR = ++endColorId;
+  public static final int LOG_TEXT_WARNING = ++endColorId;
+  public static final int LOG_PRIORITY_FG_INFO = ++endColorId;
+  public static final int LOG_PRIORITY_FG_DEBUG = ++endColorId;
+  public static final int LOG_PRIORITY_FG_VERBOSE = ++endColorId;
+  public static final int LOG_PRIORITY_FG_ERROR = ++endColorId;
+  public static final int LOG_PRIORITY_FG_WARNING = ++endColorId;
+  public static final int LOG_PRIORITY_BG_INFO = ++endColorId;
+  public static final int LOG_PRIORITY_BG_DEBUG = ++endColorId;
+  public static final int LOG_PRIORITY_BG_VERBOSE = ++endColorId;
+  public static final int LOG_PRIORITY_BG_ERROR = ++endColorId;
+  public static final int LOG_PRIORITY_BG_WARNING = ++endColorId;
+  public static final int XML_TAG = ++endColorId;
+  public static final int FIELD = ++endColorId;
+  public static final int TYPE_NAME = ++endColorId;
+  public static final int TODO_COMMENT = ++endColorId;
+  public static final int FIXME_COMMENT = ++endColorId;
 
   /**
    * Delegates to {@link TextStyle#makeStyle(int)}
@@ -122,6 +129,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(SELECTED_TEXT_BACKGROUND, 0xffef9a9a);
     setColor(LINE_DIVIDER, Color.TRANSPARENT);
     setColor(LINE_NUMBER, 0xffaaaaaa);
+    setColor(LINE_NUMBER_CURRENT, 0xfff5f5f5);
     setColor(LINE_NUMBER_PANEL, 0xff000000);
     setColor(LINE_NUMBER_PANEL_TEXT, 0xffffffff);
     setColor(TEXT_NORMAL, 0xfff5f5f5);
@@ -138,7 +146,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     setColor(COMPLETION_WND_BACKGROUND, 0xff757575);
     setColor(COMPLETION_WND_CORNER, 0xff9e9e9e);
     setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
-
+    
     setColor(KEYWORD, 0xffff6060);
     setColor(OPERATOR, 0xff4fc3f7);
     setColor(LITERAL, 0xff8bc34a);

@@ -39,11 +39,15 @@ android {
 
 dependencies {
     
+    api androidide.ats
+    api androidide.ts_java
+    api common.editor
+    api common.editor_ts
+    
     implementation androidx.annotation
     implementation androidx.appcompat
     implementation androidx.constraintlayout
     
-    implementation common.editor
     implementation common.utilcode
     
     implementation google.material

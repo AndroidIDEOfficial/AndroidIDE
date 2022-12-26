@@ -31,6 +31,7 @@ import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.interfaces.IEditorHandler
 import com.itsaky.androidide.models.OpenedFile
@@ -38,6 +39,7 @@ import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.projects.ProjectManager.generateSources
+import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.DialogUtils.newYesNoDialog
 import com.itsaky.androidide.utils.IntentUtils.openImage
@@ -105,6 +107,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         viewModel.openedFilesCache = cache
       }
     }
+  
+    executeAsync { IDEColorSchemeProvider.initIfNeeded() }
   }
 
   @SuppressLint("RestrictedApi")
@@ -129,7 +133,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     getOpenedFiles().also {
       val cache = OpenedFilesCache(current, it)
       viewModel.writeOpenedFiles(cache)
-      viewModel.openedFilesCache = if (!isFinishing) cache else null
+      viewModel.openedFilesCache = if (!isDestroying) cache else null
     }
   }
 

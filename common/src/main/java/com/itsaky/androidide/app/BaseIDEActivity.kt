@@ -18,21 +18,27 @@ package com.itsaky.androidide.app
 
 import android.Manifest.permission
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.AttrRes
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.isSystemInDarkMode
 import com.itsaky.androidide.utils.resolveAttr
 
 abstract class BaseIDEActivity : AppCompatActivity() {
 
-  @AttrRes protected open var navigationBarColor = R.attr.colorSurface
-  @AttrRes protected open var statusBarColor = R.attr.colorSurface
+  open val navigationBarColor: Int
+    get() = resolveAttr(R.attr.colorSurface)
+
+  open val statusBarColor: Int
+    get() = resolveAttr(R.attr.colorSurface)
 
   fun loadFragment(fragment: Fragment?, id: Int) {
     val transaction = supportFragmentManager.beginTransaction()
@@ -42,8 +48,8 @@ abstract class BaseIDEActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     window?.apply {
-      statusBarColor = resolveAttr(this@BaseIDEActivity.statusBarColor)
-      navigationBarColor = resolveAttr(this@BaseIDEActivity.navigationBarColor)
+      navigationBarColor = this@BaseIDEActivity.navigationBarColor
+      statusBarColor = this@BaseIDEActivity.statusBarColor
     }
     super.onCreate(savedInstanceState)
     preSetContentLayout()

@@ -36,6 +36,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
+import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.ProjectManager.cachedInitResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.notifyProjectUpdate
@@ -63,6 +64,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   protected var mSearchingProgress: ProgressSheet? = null
   protected var mFindInProjectDialog: AlertDialog? = null
+  
+  protected var isFromSavedInstance = false
+  protected var shouldInitialize = false
 
   val findInProjectDialog: AlertDialog
     get() {
@@ -75,6 +79,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   protected val mBuildEventListener = EditorBuildEventListener()
 
   companion object {
+    const val STATE_KEY_FROM_SAVED_INSTANACE = "ide.editor.isFromSavedInstance"
+    const val STATE_KEY_SHOULD_INITIALIZE = "ide.editor.isInitializing"
     @JvmStatic private val buildServiceConnection = GradleBuildServiceConnnection()
   }
 
@@ -92,14 +98,42 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+  
+    savedInstanceState?.let {
+      this.shouldInitialize = it.getBoolean(STATE_KEY_SHOULD_INITIALIZE, true)
+      this.isFromSavedInstance = it.getBoolean(STATE_KEY_FROM_SAVED_INSTANACE, false)
+    } ?: run {
+      this.shouldInitialize = true
+      this.isFromSavedInstance = false
+    }
+    
     startServices()
+  }
+  
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.apply {
+      putBoolean(STATE_KEY_SHOULD_INITIALIZE, viewModel.isInitializing)
+      putBoolean(STATE_KEY_FROM_SAVED_INSTANACE, true)
+    }
+  }
+
+  override fun onPause() {
+    super.onPause()
+    if (isDestroying) {
+      // reset these values here
+      // sometimes, when the IDE closed and reopened instantly, these values prevent initialization
+      // of the project
+      ProjectManager.destroy()
+      
+      viewModel.isInitializing = false
+      viewModel.isBuildInProgress = false
+    }
   }
 
   override fun preDestroy() {
     if (isDestroying) {
       closeProject(false)
-      projectInitialized = false
-      cachedInitResult = null
     }
 
     super.preDestroy()
@@ -129,7 +163,6 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   override fun startServices() {
-
     val service = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
     if (viewModel.isBoundToBuildSerice && service != null) {
       log.info("Reusing already started Gradle build service")
@@ -162,10 +195,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
     val initialized = projectInitialized && cachedInitResult != null
-
+    log.debug("Is project initialized: $initialized")
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
-    if (initialized && !wasInitializing) {
+    if (isFromSavedInstance && initialized && !shouldInitialize) {
+      log.debug("Skipping init process because initialized && !wasInitializing")
       return
     }
 
@@ -179,11 +213,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
     val future =
-      if (!(isConfigChange && wasInitializing) && !initialized) {
+      if (shouldInitialize || (!isFromSavedInstance && !initialized)) {
+        log.debug("Sending init request to tooling server..")
         buildService.initializeProject(projectDir.absolutePath)
       } else {
         // The project initialization was in progress before the configuration change
         // In this case, we should not start another project initialization
+        log.debug("Using cached initialize result as the project is already initialized")
         CompletableFuture.supplyAsync {
           log.warn("Project has already been initialized. Skipping initialization process.")
           cachedInitResult
@@ -227,7 +263,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   protected open fun onProjectInitialized(result: InitializeResult) {
-    if (isConfigChange && projectInitialized && result == cachedInitResult) {
+    if (isFromSavedInstance && projectInitialized && result == cachedInitResult) {
+      log.debug("Not setting up project as this a configuration change")
       return
     }
 

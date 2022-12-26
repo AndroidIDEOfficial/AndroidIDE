@@ -43,7 +43,6 @@ class EditorViewModel : ViewModel() {
 
   private val _openedFiles = MutableLiveData<OpenedFilesCache>()
   private val _isBoundToBuildService = MutableLiveData(false)
-  private val _isConfigurationChange = MutableLiveData(false)
   private val files = MutableLiveData<MutableList<File>>(ArrayList())
 
   private val fileModified = MutableLiveData(false)
@@ -64,12 +63,6 @@ class EditorViewModel : ViewModel() {
     get() = _isBoundToBuildService.value ?: false
     set(value) {
       _isBoundToBuildService.value = value
-    }
-
-  var isConfigChange: Boolean
-    get() = _isConfigurationChange.value ?: false
-    set(value) {
-      _isConfigurationChange.value = value
     }
 
   var isBuildInProgress: Boolean
@@ -128,7 +121,7 @@ class EditorViewModel : ViewModel() {
     val files = files.value ?: mutableListOf()
     files.removeAt(index)
     this.files.value = files
-    
+
     if (this.files.value?.isEmpty() == true) {
       mCurrentFile.value = null
     }
@@ -214,12 +207,12 @@ class EditorViewModel : ViewModel() {
   fun writeOpenedFiles(cache: OpenedFilesCache?) {
     executeAsync {
       val file = getOpenedFilesCache()
-      
+
       if (cache == null) {
         file.delete()
         return@executeAsync
       }
-      
+
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
       file.writeText(string)
