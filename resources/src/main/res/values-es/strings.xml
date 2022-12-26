@@ -457,6 +457,6 @@
   <string name="git_clone_failed">Error al clonar el repositorio git</string>
   <string name="msg_select_attr">Seleccione un atributo de la lista de abajo</string>
   <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="idepref_editor_colorScheme">Paleta de colores</string>
+  <string name="idepref_editor_colorScheme_summary">Elegir esquema de colores a usar en el editor</string>
 </resources>
