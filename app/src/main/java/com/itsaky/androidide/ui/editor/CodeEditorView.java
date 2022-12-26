@@ -134,6 +134,7 @@ public class CodeEditorView extends LinearLayout {
               () -> {
                 binding.editor.setText(contents, createEditorArgs());
                 postRead();
+                selection.validate();
                 final var validated = binding.editor.validateRange(selection);
                 if (LSPUtils.isEqual(validated.getStart(), validated.getEnd())) {
                   getEditor().setSelection(validated.getStart());
