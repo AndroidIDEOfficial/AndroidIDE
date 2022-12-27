@@ -28,6 +28,7 @@ import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
 import io.github.rosemoe.sora.editor.ts.TsTheme
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
+import io.github.rosemoe.sora.widget.SymbolPairMatch
 
 /**
  * Tree Sitter language implementation.
@@ -65,6 +66,10 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
 
   override fun getAnalyzeManager(): AnalyzeManager {
     return this.analyzer
+  }
+  
+  override fun getSymbolPairs(): SymbolPairMatch {
+    return CommonSymbolPairs()
   }
 
   override fun destroy() {

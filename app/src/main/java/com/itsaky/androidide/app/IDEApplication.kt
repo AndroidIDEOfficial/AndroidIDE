@@ -42,6 +42,7 @@ class IDEApplication : BaseApplication() {
   init {
     System.loadLibrary("android-tree-sitter")
     System.loadLibrary("tree-sitter-java")
+    System.loadLibrary("tree-sitter-xml")
   }
   
   override fun onCreate() {

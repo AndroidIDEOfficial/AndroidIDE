@@ -234,7 +234,7 @@ public class CodeEditorView extends LinearLayout {
         case "java":
           return new JavaLanguage(getContext());
         case "xml":
-          return new XMLLanguage();
+          return new XMLLanguage(getContext());
         case "gradle":
           return new GroovyLanguage();
         case "kt":

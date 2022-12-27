@@ -41,6 +41,7 @@ dependencies {
     
     api androidide.ats
     api androidide.ts_java
+    api androidide.ts_xml
     api common.editor
     api common.editor_ts
     

@@ -2,13 +2,13 @@
 scheme.name=AndroidIDE Default
 
 # The version code of the color scheme
-scheme.version=1
+scheme.version=2
 
 # Whether the scheme is dark or light
 scheme.isDark=false
 
 # Languages that scheme supports
-scheme.langs=java,@log
+scheme.langs=java,xml
 
 # The JSON color scheme definition file
 scheme.file=default.json

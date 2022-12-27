@@ -61,7 +61,7 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.editable = false
       editor.typefaceText = jetbrainsMono()
       editor.typefaceLineNumber = jetbrainsMono()
-      editor.setEditorLanguage(XMLLanguage())
+      editor.setEditorLanguage(XMLLanguage(this))
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
 
