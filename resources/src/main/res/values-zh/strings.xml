@@ -112,7 +112,7 @@
   <string name="template_no_activity">无 Activity</string>
   <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
   <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_description_noAndroidX">创建一个不带AndroidX库的项目</string>
   <!-- Files -->
   <string name="save">保存</string>
   <string name="menu_find">查找</string>
@@ -380,12 +380,12 @@
   <string name="xml_formatting_options">XML 格式化选项</string>
   <string name="xml_formatting_options_summary">XML 格式化配置</string>
   <string name="idepref_customFont_title">使用自定义字体</string>
-  <string name="idepref_customFont_summary">If enabled, the file at \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" will be used as Editor font.</string>
+  <string name="idepref_customFont_summary">如果启用，\"/data/data/com.itsaky.androide/files/home/.androidede/ui/font.ttf\"文件将被用作编辑器字体。</string>
   <string name="idepref_chooseFont_title">选择自定义字体</string>
-  <string name="idepref_chooseFont_summary">Choose font to use in the Terminal (and optionally, in the Editor).</string>
-  <string name="msg_installing_apk">Installing APK...</string>
-  <string name="msg_installed_successfully">Installed successfully</string>
-  <string name="msg_action_open_application">Do you want to open the application?</string>
+  <string name="idepref_chooseFont_summary">选择要在终端中使用的字体(或编辑器中)</string>
+  <string name="msg_installing_apk">正在安装应用...</string>
+  <string name="msg_installed_successfully">安装成功</string>
+  <string name="msg_action_open_application">您想要现在打开此应用程序吗？</string>
   <string name="title_gradle_service_notification_channel">AndroidIDE Gradle 构建服务</string>
   <string name="msg_hex_color_code">十六进制颜色代码</string>
   <string name="msg_color_picker_pick">选择</string>
@@ -437,15 +437,15 @@
   <string name="msg_view_not_supported">控件 %s 当前不受支持</string>
   <string name="replace">替换</string>
   <string name="replaceAll">替换全部</string>
-  <string name="title_run_tasks">Run tasks</string>
-  <string name="hint_search_tasks">Search tasks…</string>
-  <string name="title_selected_tasks">Selected tasks</string>
-  <string name="msg_err_select_tasks">Please select tasks to run</string>
+  <string name="title_run_tasks">运行任务</string>
+  <string name="hint_search_tasks">搜索任务…</string>
+  <string name="title_selected_tasks">选定的任务</string>
+  <string name="msg_err_select_tasks">请选择要执行的任务</string>
   <string name="title_confirmation">Confirmation</string>
-  <string name="msg_tasks_to_run">The following tasks will be run, in order. Click the \'Run\' button again to confirm.\n\n%1$s</string>
-  <string name="msg_loading_tasks">Loading tasks...</string>
-  <string name="title_all_tasks">All tasks</string>
-  <string name="msg_feature_unimplemented">This feature is not implemented yet.</string>
+  <string name="msg_tasks_to_run">下列任务将会被按顺序执行。请再次点击“运行”按钮以确认执行\n\n%1$s</string>
+  <string name="msg_loading_tasks">正在加载任务列表...</string>
+  <string name="title_all_tasks">所有任务</string>
+  <string name="msg_feature_unimplemented">此功能尚未实现。</string>
   <string name="ui_category_widgets">Widgets</string>
   <string name="ui_category_layouts">Layouts</string>
   <!-- GIT -->
@@ -455,8 +455,8 @@
   <string name="git_clone_in_progress">克隆存储库</string>
   <string name="git_clone_success">Git 克隆成功</string>
   <string name="git_clone_failed">克隆Git存储库失败</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
+  <string name="msg_select_attr">请从下面列表中选择一个属性</string>
+  <string name="action_show_hierarchy">显示布局层次结构</string>
   <string name="idepref_editor_colorScheme">配色方案</string>
   <string name="idepref_editor_colorScheme_summary">选择要在编辑器中使用的配色方案</string>
 </resources>
