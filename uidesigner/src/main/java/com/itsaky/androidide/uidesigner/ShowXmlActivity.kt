@@ -23,10 +23,12 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.uidesigner.databinding.ActivityShowXmlBinding
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.jetbrainsMono
 import com.itsaky.toaster.toastInfo
 import io.github.rosemoe.sora.event.Unsubscribe
@@ -42,6 +44,8 @@ class ShowXmlActivity : BaseIDEActivity() {
   private var editor: CodeEditor? = null
   private var unsubscribe: Unsubscribe? = null
   private var binding: ActivityShowXmlBinding? = null
+  
+  private val log = ILogger.newInstance("ShowXmlActivity")
 
   companion object {
     const val KEY_XML = "ide.uidesigner.viewXml.Xml"
@@ -61,9 +65,18 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.editable = false
       editor.typefaceText = jetbrainsMono()
       editor.typefaceLineNumber = jetbrainsMono()
-      editor.setEditorLanguage(XMLLanguage(this))
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
+      
+      IDEColorSchemeProvider.readScheme {
+        if (it == null) {
+          log.error("Unable to load color sheme")
+          return@readScheme
+        }
+        
+        editor.colorScheme = it
+        editor.setEditorLanguage(XMLLanguage(this))
+      }
 
       binding!!.editorContainer.let { container ->
         container.removeAllViews()

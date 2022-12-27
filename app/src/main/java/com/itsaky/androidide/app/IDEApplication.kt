@@ -19,7 +19,7 @@ package com.itsaky.androidide.app
 
 import android.content.Intent
 import android.net.Uri
-import com.blankj.utilcode.util.ThrowableUtils
+import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -38,13 +38,13 @@ import org.greenrobot.eventbus.EventBus
 class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
-  
+
   init {
     System.loadLibrary("android-tree-sitter")
     System.loadLibrary("tree-sitter-java")
     System.loadLibrary("tree-sitter-xml")
   }
-  
+
   override fun onCreate() {
     instance = this
     uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
@@ -58,10 +58,8 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
-    
-    executeAsync {
-      IDEColorSchemeProvider.init()
-    }
+
+    executeAsync { IDEColorSchemeProvider.init() }
   }
 
   private fun handleCrash(thread: Thread, th: Throwable) {
@@ -71,7 +69,7 @@ class IDEApplication : BaseApplication() {
 
       val intent = Intent()
       intent.action = CrashHandlerActivity.REPORT_ACTION
-      intent.putExtra(CrashHandlerActivity.TRACE_KEY, ThrowableUtils.getFullStackTrace(th))
+      intent.putExtra(CrashHandlerActivity.TRACE_KEY, getFullStackTrace(th))
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       startActivity(intent)
       if (uncaughtExceptionHandler != null) {
