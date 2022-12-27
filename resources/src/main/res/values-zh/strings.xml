@@ -379,9 +379,9 @@
   <string name="idepref_emptyElements_summary">选择空元素的格式化行为</string>
   <string name="xml_formatting_options">XML 格式化选项</string>
   <string name="xml_formatting_options_summary">XML 格式化配置</string>
-  <string name="idepref_customFont_title">Use custom font</string>
+  <string name="idepref_customFont_title">使用自定义字体</string>
   <string name="idepref_customFont_summary">If enabled, the file at \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" will be used as Editor font.</string>
-  <string name="idepref_chooseFont_title">Choose custom font</string>
+  <string name="idepref_chooseFont_title">选择自定义字体</string>
   <string name="idepref_chooseFont_summary">Choose font to use in the Terminal (and optionally, in the Editor).</string>
   <string name="msg_installing_apk">Installing APK...</string>
   <string name="msg_installed_successfully">Installed successfully</string>
@@ -435,8 +435,8 @@
   <string name="msg_cannot_create_view">无法为标签 %s 创建视图</string>
   <string name="err_no_attr_adapter">未找到可用于 %s 的属性适配器</string>
   <string name="msg_view_not_supported">控件 %s 当前不受支持</string>
-  <string name="replace">Replace</string>
-  <string name="replaceAll">Replace all</string>
+  <string name="replace">替换</string>
+  <string name="replaceAll">替换全部</string>
   <string name="title_run_tasks">Run tasks</string>
   <string name="hint_search_tasks">Search tasks…</string>
   <string name="title_selected_tasks">Selected tasks</string>
@@ -449,14 +449,14 @@
   <string name="ui_category_widgets">Widgets</string>
   <string name="ui_category_layouts">Layouts</string>
   <!-- GIT -->
-  <string name="git_clone">Clone</string>
-  <string name="git_clone_repo">Clone git repository</string>
-  <string name="git_clone_repo_url">Repository URL</string>
-  <string name="git_clone_in_progress">Cloning repository</string>
-  <string name="git_clone_success">Git clone successful</string>
-  <string name="git_clone_failed">Failed to clone git repository</string>
+  <string name="git_clone">克隆</string>
+  <string name="git_clone_repo">克隆Git存储库</string>
+  <string name="git_clone_repo_url">存储库地址</string>
+  <string name="git_clone_in_progress">克隆存储库</string>
+  <string name="git_clone_success">Git 克隆成功</string>
+  <string name="git_clone_failed">克隆Git存储库失败</string>
   <string name="msg_select_attr">Select an attribute from the below list</string>
   <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="idepref_editor_colorScheme">配色方案</string>
+  <string name="idepref_editor_colorScheme_summary">选择要在编辑器中使用的配色方案</string>
 </resources>
