@@ -1,6 +1,4 @@
 {
-  "scheme.name": "Test Color Scheme",
-  "scheme.isDark": false,
   "definitions": {
     "black": "#ff000000",
     "white": "#ffffff",
