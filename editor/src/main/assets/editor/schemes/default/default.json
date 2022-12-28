@@ -12,6 +12,9 @@
     "onSurfaceVariant": "#4a4644",
     "outline": "#7a7572",
     "text.selected": "#ff5252",
+    "black": "#000000",
+    "white": "#ffffff",
+
     "type": "#2196f3",
     "keyword": "#1e88e5",
     "operator": "#2196f3",
@@ -24,12 +27,14 @@
     "comment": "#a8a8a8",
     "func.decl": "#2962ff",
     "func.call": "#2962ff",
-    "black": "#000000",
-    "white": "#ffffff"
+
+    "xml.tag": "#1e88e5",
+    "xml.ref": "#2196f3",
+    "ns_prefix": "#9c27b0"
   },
   "editor": "@editor.json",
   "languages": [
-    "@log.json",
-    "@java.json"
+    "@java.json",
+    "@xml.json"
   ]
 }

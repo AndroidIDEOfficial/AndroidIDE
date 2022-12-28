@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.language.incremental
+package com.itsaky.androidide.editor.language.incremental
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.editor.language.incremental.IncrementalToken

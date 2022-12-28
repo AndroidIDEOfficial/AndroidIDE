@@ -3,11 +3,11 @@
 ; declarations
 (program) @scope
 (class_declaration
-  body: (_) @scope)
+  body: (_) @scope.members)
 (record_declaration
-  body: (_) @scope)
+  body: (_) @scope.members)
 (enum_declaration
-  body: (_) @scope)
+  body: (_) @scope.members)
 (lambda_expression) @scope
 (enhanced_for_statement) @scope
 

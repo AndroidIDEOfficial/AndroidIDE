@@ -134,6 +134,7 @@ public class CodeEditorView extends LinearLayout {
               () -> {
                 binding.editor.setText(contents, createEditorArgs());
                 postRead();
+                selection.validate();
                 final var validated = binding.editor.validateRange(selection);
                 if (LSPUtils.isEqual(validated.getStart(), validated.getEnd())) {
                   getEditor().setSelection(validated.getStart());
@@ -233,7 +234,7 @@ public class CodeEditorView extends LinearLayout {
         case "java":
           return new JavaLanguage(getContext());
         case "xml":
-          return new XMLLanguage();
+          return new XMLLanguage(getContext());
         case "gradle":
           return new GroovyLanguage();
         case "kt":

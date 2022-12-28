@@ -5,8 +5,8 @@ ext {
     oss_licenses_version = '0.10.6'
     nav_safeargs_version = '2.5.3'
     
-    ats_version = '1.0.9'
-    editor_version = '0.20.1'
+    ats_version = '1.0.10'
+    editor_version = '0.20.2'
     
     classpaths = [
             agp                 : "com.android.tools.build:gradle:$agp_version",
@@ -19,7 +19,8 @@ ext {
     androidide = [
             javac  : 'io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT',
             ats    : "io.github.itsaky:android-tree-sitter:$ats_version",
-            ts_java: "io.github.itsaky:tree-sitter-java:$ats_version"
+            ts_java: "io.github.itsaky:tree-sitter-java:$ats_version",
+            ts_xml: "io.github.itsaky:tree-sitter-xml:$ats_version"
     ]
     
     common = [

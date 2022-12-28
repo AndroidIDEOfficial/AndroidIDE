@@ -45,6 +45,7 @@ class LanguageParser(private var reader: JsonReader) {
       when (name) {
         "types" -> parseLangTypes(lang)
         "local.scopes" -> parseLangLocalScopes(lang)
+        "local.scopes.members" -> parseLangLocalsMembersScopes(lang)
         "local.definitions" -> parseLocalLangDefs(lang)
         "local.definitions.values" -> parseLocalLangDefVals(lang)
         "local.references" -> parseLocalLangRefs(lang)
@@ -87,6 +88,10 @@ class LanguageParser(private var reader: JsonReader) {
 
   private fun parseLangLocalScopes(lang: LanguageScheme) {
     addArrStrings(lang.localScopes)
+  }
+  
+  private fun parseLangLocalsMembersScopes(lang: LanguageScheme) {
+    addArrStrings(lang.localMembersScopes)
   }
 
   private fun parseLangTypes(lang: LanguageScheme) {

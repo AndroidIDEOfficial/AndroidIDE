@@ -5,6 +5,9 @@
   "local.scopes": [
     "scope"
   ],
+  "local.scopes.members": [
+    "scope.members"
+  ],
   "local.definitions": [
     "definition.var",
     "definition.field"
