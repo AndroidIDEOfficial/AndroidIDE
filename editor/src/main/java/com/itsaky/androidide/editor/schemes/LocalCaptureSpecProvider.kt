@@ -46,13 +46,21 @@ object LocalCaptureSpecProvider {
       override fun isDefinitionCapture(captureName: String): Boolean {
         return lang.isLocalDef(captureName)
       }
+  
+      override fun isDefinitionValueCapture(captureName: String): Boolean {
+        return lang.isLocalDefVal(captureName)
+      }
 
       override fun isReferenceCapture(captureName: String): Boolean {
         return lang.isLocalRef(captureName)
       }
-
+      
       override fun isScopeCapture(captureName: String): Boolean {
         return lang.isLocalScope(captureName)
+      }
+  
+      override fun isMembersScopeCapture(captureName: String): Boolean {
+        return lang.isMembersScope(captureName)
       }
     }
   }

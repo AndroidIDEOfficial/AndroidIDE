@@ -83,6 +83,7 @@ class LanguageScheme {
   internal val files = mutableListOf<String>()
   internal val styles = mutableMapOf<String, StyleDef>()
   internal val localScopes = TreeSet<String>()
+  internal val localMembersScopes = TreeSet<String>()
   internal val localDefs = TreeSet<String>()
   internal val localDefVals = TreeSet<String>()
   internal val localRefs = TreeSet<String>()
@@ -92,6 +93,10 @@ class LanguageScheme {
 
   fun isLocalScope(capture: String): Boolean {
     return localScopes.contains(capture)
+  }
+  
+  fun isMembersScope(capture: String) : Boolean {
+    return localMembersScopes.contains(capture)
   }
 
   fun isLocalDef(capture: String): Boolean {

@@ -6,7 +6,7 @@ ext {
     nav_safeargs_version = '2.5.3'
     
     ats_version = '1.0.10'
-    editor_version = '0.20.1'
+    editor_version = '0.20.2'
     
     classpaths = [
             agp                 : "com.android.tools.build:gradle:$agp_version",
