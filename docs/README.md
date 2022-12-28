@@ -23,6 +23,7 @@ AndroidIDE is an **Integrated Development Environment (IDE)** to build Gradle ba
 - [File tree](./editor/README.md#the-file-tree).
 - [Bottom sheet](./editor/README.md#editor-bottomsheet).
 - [Code editor](./editor/README.md#the-code-editor).
+- [UI Designer](./uidesigner/README.md).
 
 ## Important links
 
