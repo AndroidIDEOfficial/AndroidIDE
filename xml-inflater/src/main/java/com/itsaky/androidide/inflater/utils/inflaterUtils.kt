@@ -39,6 +39,22 @@ fun lookupComponentFactory(): IComponentFactory? {
 @JvmOverloads
 fun newAttribute(
   view: IView? = null,
+  attribute: IAttribute,
+  namespace: INamespace? = null,
+  name: String? = null,
+  value: String? = null
+): IAttribute {
+  return newAttribute(
+    view = view,
+    namespace = namespace ?: attribute.namespace,
+    name = name ?: attribute.name,
+    value = value ?: attribute.value
+  )
+}
+
+@JvmOverloads
+fun newAttribute(
+  view: IView? = null,
   namespace: INamespace = INamespace.ANDROID,
   name: String,
   value: String

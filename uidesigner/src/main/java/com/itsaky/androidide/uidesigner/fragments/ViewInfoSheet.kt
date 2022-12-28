@@ -32,11 +32,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoSheetBinding
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
+import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
 class ViewInfoSheet : BottomSheetDialogFragment() {
   private var binding: LayoutViewInfoSheetBinding? = null
   private val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
+
+  private val log = ILogger.newInstance("ViewInfoSheet")
 
   companion object {
     const val TAG = "ide.uidesigner.viewinfo"
@@ -70,16 +73,24 @@ class ViewInfoSheet : BottomSheetDialogFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    findNavControllerFromFragment()?.addOnDestinationChangedListener { _, destination, _ ->
+    findNavControllerFromFragment().addOnDestinationChangedListener { _, destination, _ ->
       viewInfoBackPressedCallback.isEnabled = destination.id != R.id.viewInfoFragment
 
-      if (destination.id != R.id.attrValueEditorFragment) {
+      // not disabling the undo manager when going into 'edit mode' will result in a lot
+      // AttrUpdatedAction being pushed to UndoManager's undo stack.
+      viewModel.undoManager.enabled = destination.id != R.id.attrValueEditorFragment
+
+      if (viewModel.currentDestination == R.id.attrValueEditorFragment) {
+        // if we are returning from value editor, then
+        // 1 - if we were updating the value of an existing attribute, then the updated value must
+        //     be updated in the view
+        // 2 - if we were adding a new attribute, then that attribute should be added to the view.
         viewModel.notifyAttrUpdated()
         viewModel.selectedAttr = null
         viewModel.addAttrMode = false
-      } else {
-        viewModel.undoManager.disable()
       }
+
+      viewModel.currentDestination = destination.id
     }
 
     (requireDialog() as ComponentDialog)

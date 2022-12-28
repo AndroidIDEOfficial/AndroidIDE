@@ -251,7 +251,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    */
   @Override
   public void setSelection(@NonNull Range range) {
-    if (isValidRange(range, true)) {
+    if (isValidPosition(range.getStart(), true) && isValidPosition(range.getEnd(), true)) {
       setSelectionRegion(
           range.getStart().getLine(),
           range.getStart().getColumn(),
@@ -290,7 +290,6 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * Validates the range if it is invalid and returns a valid range.
    *
    * @param range Th range to validate.
-   * @return A new, validated range.
    */
   @Override
   public void validateRange(@NonNull final Range range) {

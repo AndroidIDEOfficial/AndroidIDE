@@ -28,6 +28,7 @@ import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.R.drawable
 import com.itsaky.androidide.inflater.internal.utils.simpleName
 import com.itsaky.androidide.inflater.internal.utils.tagName
+import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.utils.ILogger
 
 open class ViewImpl
@@ -68,19 +69,22 @@ constructor(
   }
 
   override fun removeAttribute(attribute: IAttribute) {
-    
+
+    val exising = findAttribute(attribute) ?: return
+    val value = exising.value
+
     // reset the value of the attribute to its default value
-    attribute.value = ""
-    updateAttributeInternal(attribute = attribute, notify = false)
-    
-    this._attributes.remove(attribute)
-    notifyAttrRemoved(attribute)
+    applyAttribute(attribute = newAttribute(view = this, attribute = exising, value = ""))
+
+    if (this._attributes.remove(exising)) {
+      notifyAttrRemoved(newAttribute(view = this, attribute = exising, value = value))
+    }
   }
 
   override fun updateAttribute(attribute: IAttribute) {
     updateAttributeInternal(attribute)
   }
-  
+
   override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
     return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
   }
@@ -94,7 +98,7 @@ constructor(
       view.foreground = this.fg
     }
   }
-  
+
   override fun registerAttributeChangeListener(listener: AttributeChangeListener) {
     if (this.attrChangeListeners.contains(listener)) {
       log.warn("Attempt to register an already-registered AttributeChangeListener")
@@ -102,12 +106,12 @@ constructor(
     }
     this.attrChangeListeners.add(listener)
   }
-  
+
   override fun unregisterAttributeChangeListener(listener: AttributeChangeListener) {
     this.attrChangeListeners.remove(listener)
   }
 
-  protected open fun applyAttribute(attribute: IAttribute) {
+  override fun applyAttribute(attribute: IAttribute) {
     val adapter = ViewAdapterIndex.getAdapter(name)
     if (adapter == null) {
       log.warn("No attribute adapter found for view $name")
@@ -115,7 +119,7 @@ constructor(
     }
     adapter.apply(this, attribute)
   }
-  
+
   fun findNamespaces(): Set<INamespace> {
     return hashSetOf<INamespace>().apply {
       addAll(namespaces.values)
@@ -124,12 +128,12 @@ constructor(
       }
     }
   }
-  
+
   fun findNamespaceByUri(uri: String): INamespace? {
     return this.namespaces[uri] ?: (parent as? ViewImpl)?.findNamespaceByUri(uri)
   }
-  
-  open fun immutable() : IView {
+
+  open fun immutable(): IView {
     return ImmutableViewImpl(this)
   }
 
@@ -150,33 +154,33 @@ constructor(
     builder.append(name)
     builder.append("\n")
   }
-  
+
   private fun updateAttributeInternal(attribute: IAttribute, notify: Boolean = true) {
     val existing =
       findAttribute(attribute)
         ?: throw IllegalArgumentException("Attribute '${attribute.name}' not found")
-    
+
     val oldVal = existing.value
     existing.value = attribute.value
     applyAttribute(existing)
-    
+
     if (notify) {
-      notifyAttrUpdated(attribute, oldVal)
+      notifyAttrUpdated(newAttribute(view = this, attribute = attribute), oldVal)
     }
   }
-  
+
   private fun notifyAttrAdded(attribute: IAttribute) {
     for (listener in this.attrChangeListeners) {
       listener.onAttributeAdded(this, attribute)
     }
   }
-  
+
   private fun notifyAttrRemoved(attribute: IAttribute) {
     for (listener in this.attrChangeListeners) {
       listener.onAttributeRemoved(this, attribute)
     }
   }
-  
+
   private fun notifyAttrUpdated(attribute: IAttribute, oldValue: String) {
     for (listener in this.attrChangeListeners) {
       listener.onAttributeUpdated(this, attribute, oldValue)

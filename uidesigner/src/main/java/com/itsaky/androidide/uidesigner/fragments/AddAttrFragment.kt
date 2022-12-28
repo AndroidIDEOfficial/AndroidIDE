@@ -33,6 +33,7 @@ import com.itsaky.androidide.uidesigner.adapters.AddAttrListAdapter
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutAddAttrBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
@@ -88,10 +89,9 @@ class AddAttrFragment : Fragment() {
     val attributes =
       adapter.supportedAttributes.filterNot { view.hasAttribute(it.namespace.uri, it.name) }
     binding.attrList.adapter = AddAttrListAdapter(attributes) {
-      val attribute = newAttribute(view = viewModel.view, namespace = it.namespace, name = it.name, value = it.value)
-      viewModel.selectedAttr = attribute
+      val attribute = newAttribute(view = viewModel.view, namespace = it.namespace, name = it.name, value = "")
+      viewModel.selectedAttr = attribute as UiAttribute
       viewModel.addAttrMode = true
-      view.addAttribute(attribute)
       findNavController().navigate(R.id.attrValueEditorFragment)
     }
   }

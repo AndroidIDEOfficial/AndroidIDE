@@ -70,6 +70,14 @@ interface IView {
   fun updateAttribute(attribute: IAttribute)
 
   /**
+   * Applies the given attribute without adding it to the attributes list or notifying the attribute
+   * change listeners. Not resetting the attribute to its original value may have unexpected result.
+   *
+   * @param attribute The attribute to apply.
+   */
+  fun applyAttribute(attribute: IAttribute)
+
+  /**
    * Checks whether this view has an attribute entry with the given [namespaceUri] and [name].
    *
    * @param namespaceUri The namespace uri of the attribute.

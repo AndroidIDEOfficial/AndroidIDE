@@ -15,24 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.uidesigner.undo
-
-import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.uidesigner.models.UiAttribute
+package com.itsaky.androidide.inflater.internal.adapters.appcompat
 
 /**
- * Represents the action when the user adds an attribute to an [IView].
- *
  * @author Akash Yadav
  */
-internal class AttrAddedAction(view: IView, attr: UiAttribute) :
-  AttrAction(view, attr.copyAttr(view = view) as UiAttribute) {
-
-  override fun undo() {
-    view.removeAttribute(attr)
-  }
-
-  override fun redo() {
-    view.addAttribute(attr, true)
-  }
+class AppCompatTextView {
 }

@@ -17,13 +17,19 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * [UndoManager] action related to view attributes.
  *
  * @author Akash Yadav
  */
-internal abstract class AttrAction(protected val view: IView, protected val attr: UiAttribute) : IUiAction
+internal abstract class AttrAction(protected val view: IView, protected val attr: UiAttribute) :
+  IUiAction {
+  
+  override fun toString(): String {
+    return "${javaClass.simpleName}(view=$view, attr=$attr)"
+  }
+}
