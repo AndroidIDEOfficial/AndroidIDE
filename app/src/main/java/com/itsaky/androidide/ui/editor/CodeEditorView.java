@@ -130,18 +130,15 @@ public class CodeEditorView extends LinearLayout {
     CompletableFuture.runAsync(
         () -> {
           final var contents = FileIOUtils.readFile2String(file);
-          binding.editor.post(
-              () -> {
-                binding.editor.setText(contents, createEditorArgs());
-                postRead();
-                selection.validate();
-                final var validated = binding.editor.validateRange(selection);
-                if (LSPUtils.isEqual(validated.getStart(), validated.getEnd())) {
-                  getEditor().setSelection(validated.getStart());
-                } else {
-                  getEditor().setSelection(validated);
-                }
-              });
+          final var editor = getEditor();
+          editor.post(() -> {
+            editor.setText(contents, createEditorArgs());
+            postRead();
+            
+            selection.validate();
+            editor.validateRange(selection);
+            editor.setSelection(selection);
+          });
         });
 
     configureEditorIfNeeded();
