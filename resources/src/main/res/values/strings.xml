@@ -512,6 +512,9 @@
   <string name="widget_analog_clock" translatable="false">AnalogClock</string>
   <string name="widget_grid_view" translatable="false">GridView</string>
   <string name="widget_viewanimator" translatable="false">ViewAnimator</string>
+  <string name="widget_viewswitcher" translatable="false">ViewSwitcher</string>
+  <string name="widget_textswitcher" translatable="false">TextSwitcher</string>
+  <string name="widget_imageswitcher" translatable="false">ImageSwitcher</string>
 
   <!-- GIT -->
   <string name="git_clone">Clone</string>
