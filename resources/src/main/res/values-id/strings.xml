@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">Diskusi di Telegram</string>
   <string name="official_tg_channel">Channel Telegram Resmi</string>
   <string name="msg_empty_view">Tidak ada yang dapat kami tampilkan untuk anda&#8230;</string>
-  <string name="btn_terminal">Terminal</string>
+  <string name="title_terminal">Terminal</string>
   <string name="reset">Setel ulang</string>
   <string name="app_logs">Log App</string>
   <string name="ide_logs">Log IDE</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">Lainnya</string>
   <string name="classtype_class">Class</string>
   <string name="classtype_activity">Activity</string>
-  <string name="classtype_interface">Interface</string>
+  <string name="title_interface">Interface</string>
   <string name="classtype_enum">Enum</string>
   <string name="msg_checking_storage_permissions">Mengecek ijin penyimpanan</string>
   <string name="msg_failed_list_files">Gagal memuat file-file dalam projek!</string>
@@ -459,4 +459,12 @@
   <string name="action_show_hierarchy">Tampilkan hierarki tata letak</string>
   <string name="idepref_editor_colorScheme">Skema warna</string>
   <string name="idepref_editor_colorScheme_summary">Pilih skema warna untuk digunakan dalam editor</string>
+  <string name="idepref_general_uiMode">UI Mode</string>
+  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
+  <string name="uiMode_system">Follow system</string>
+  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
+  <string name="idepref_general_projectConfig">Project configuration</string>
 </resources>
