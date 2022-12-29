@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatDelegate
 
 const val IS_FIRST_PROJECT_BUILD = "project_isFirstBuild"
 const val UI_MODE = "idepref_general_uiMode"
+const val ENABLE_MATERIAL_YOU = "idpref_general_enableMaterialYou"
 const val OPEN_PROJECTS = "idepref_general_autoOpenProjects"
 const val CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen"
 const val TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell"
@@ -32,6 +33,12 @@ var uiMode: Int
   get() = prefManager.getInt(UI_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
   set(value) {
     prefManager.putInt(UI_MODE, value)
+  }
+
+var enableMaterialYou: Boolean
+  get() = prefManager.getBoolean(ENABLE_MATERIAL_YOU, true)
+  set(value) {
+    prefManager.putBoolean(ENABLE_MATERIAL_YOU, value)
   }
 
 var isFirstBuild: Boolean

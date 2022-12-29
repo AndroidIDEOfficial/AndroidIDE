@@ -25,9 +25,11 @@ import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.OPEN_PROJECTS
 import com.itsaky.androidide.preferences.internal.TERMINAL_USE_SYSTEM_SHELL
 import com.itsaky.androidide.preferences.internal.UI_MODE
+import com.itsaky.androidide.preferences.internal.ENABLE_MATERIAL_YOU
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
 import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.useSystemShell
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
@@ -42,6 +44,7 @@ class GeneralPreferences(
 ) : IPreferenceScreen() {
   init {
     addPreference(UiMode())
+    addPreference(EnableMaterialYou())
     addPreference(OpenLastProject())
     addPreference(ConfirmProjectOpen())
     addPreference(UseSytemShell())
@@ -83,6 +86,14 @@ class UiMode(
     }
   }
 }
+
+@Parcelize
+class EnableMaterialYou(
+  override val key: String = ENABLE_MATERIAL_YOU,
+  override val title: Int = R.string.idepref_general_materialYou,
+  override val summary: Int? = R.string.idepref_general_materialYou_summary,
+  override val icon: Int? = R.drawable.ic_color_scheme
+) : SwitchPreference(setValue = ::enableMaterialYou::set, getValue = ::enableMaterialYou::get)
 
 @Parcelize
 class OpenLastProject(

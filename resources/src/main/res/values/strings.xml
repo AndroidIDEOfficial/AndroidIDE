@@ -527,4 +527,6 @@
   <string name="uiMode_light">Light</string>
   <string name="uiMode_dark">Dark</string>
   <string name="uiMode_system">Follow system</string>
+  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
 </resources>

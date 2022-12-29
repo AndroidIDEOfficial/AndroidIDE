@@ -29,6 +29,7 @@ import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
@@ -63,7 +64,10 @@ class IDEApplication : BaseApplication() {
       .installDefaultEventBus()
   
     AppCompatDelegate.setDefaultNightMode(uiMode)
-//    DynamicColors.applyToActivitiesIfAvailable(this)
+    
+    if (enableMaterialYou) {
+      DynamicColors.applyToActivitiesIfAvailable(this)
+    }
 
     executeAsync { IDEColorSchemeProvider.init() }
   }
