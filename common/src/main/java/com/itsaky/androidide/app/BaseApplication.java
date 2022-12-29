@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 
@@ -95,8 +96,6 @@ public abstract class BaseApplication extends MultiDexApplication {
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
     ToolsManager.init(this, null);
-
-//    DynamicColors.applyToActivitiesIfAvailable(this);
 
     createNotificationChannels();
   }

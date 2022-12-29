@@ -522,4 +522,9 @@
   <string name="action_show_hierarchy">Show layout hierarchy</string>
   <string name="idepref_editor_colorScheme">Color Scheme</string>
   <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="idepref_general_uiMode">UI Mode</string>
+  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
+  <string name="uiMode_system">Follow system</string>
 </resources>

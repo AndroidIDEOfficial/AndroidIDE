@@ -17,13 +17,22 @@
 
 package com.itsaky.androidide.preferences.internal
 
+import androidx.appcompat.app.AppCompatDelegate
+
 const val IS_FIRST_PROJECT_BUILD = "project_isFirstBuild"
+const val UI_MODE = "idepref_general_uiMode"
 const val OPEN_PROJECTS = "idepref_general_autoOpenProjects"
 const val CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen"
 const val TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell"
 const val LAST_OPENED_PROJECT = "ide_last_project"
 
 const val NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>"
+
+var uiMode: Int
+  get() = prefManager.getInt(UI_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+  set(value) {
+    prefManager.putInt(UI_MODE, value)
+  }
 
 var isFirstBuild: Boolean
   get() = prefManager.getBoolean(IS_FIRST_PROJECT_BUILD, true)

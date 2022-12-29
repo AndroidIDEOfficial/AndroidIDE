@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.preferences
 
+import android.content.Context
 import android.view.LayoutInflater
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -155,9 +156,12 @@ private class TabSize(
   override val summary: Int? = string.msg_tab_size,
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
+  
+  @IgnoredOnParcel
+  private val choices = arrayOf("2", "4", "6", "8")
 
-  override fun getChoices(): Array<String> {
-    return arrayOf("2", "4", "6", "8")
+  override fun getChoices(context: Context): Array<String> {
+    return choices
   }
 
   override fun onItemSelected(position: Int, isSelected: Boolean) {
@@ -170,7 +174,7 @@ private class TabSize(
 
   override fun getSelectedItem(): Int {
     var current = tabSize / 2 - 1
-    if (current < 0 || current >= getChoices().size) {
+    if (current < 0 || current >= choices.size) {
       current = 1
     }
     return current
@@ -187,7 +191,7 @@ private class ColorSchemePreference(
 
   @IgnoredOnParcel private val schemes = IDEColorSchemeProvider.list()
 
-  override fun getChoices(): Array<String> {
+  override fun getChoices(context: Context): Array<String> {
     return schemes.map { it.name }.toTypedArray()
   }
 
@@ -215,7 +219,7 @@ private class NonPrintablePaintingFlags(
   override val icon: Int? = drawable.ic_drawing,
 ) : MultiChoicePreference() {
 
-  override fun getChoices(): Array<String> {
+  override fun getChoices(context: Context): Array<String> {
     return arrayOf("Leading", "Trailing", "Inner", "Empty lines", "Line breaks")
   }
 

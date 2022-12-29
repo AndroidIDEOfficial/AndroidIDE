@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.preferences
 
+import android.content.Context
+
 /**
  * A preference with choices.
  *
@@ -25,7 +27,7 @@ package com.itsaky.androidide.preferences
 interface PreferenceChoices {
 
   /** Get the choices to show in the preference. */
-  fun getChoices(): Array<String>
+  fun getChoices(context: Context): Array<String>
   
   /**
    * Called when an item is selected from the single choice list.

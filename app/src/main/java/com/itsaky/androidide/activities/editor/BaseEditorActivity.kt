@@ -230,16 +230,6 @@ abstract class BaseEditorActivity :
       registerForActivityResult(StartActivityForResult(), this::handleUiDesignerResult)
   }
 
-  override fun onStart() {
-    super.onStart()
-    EventBus.getDefault().register(this)
-  }
-
-  override fun onStop() {
-    super.onStop()
-    EventBus.getDefault().unregister(this)
-  }
-
   override fun onPause() {
     super.onPause()
     this.isDestroying = isFinishing

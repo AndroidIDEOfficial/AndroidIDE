@@ -113,7 +113,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.apply {
-      putBoolean(STATE_KEY_SHOULD_INITIALIZE, viewModel.isInitializing)
+      putBoolean(STATE_KEY_SHOULD_INITIALIZE, !viewModel.isInitializing)
       putBoolean(STATE_KEY_FROM_SAVED_INSTANACE, true)
     }
   }
@@ -168,6 +168,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       log.info("Reusing already started Gradle build service")
       onGradleBuildServiceConnected(service)
       return
+    } else {
+      log.info("Binding to Gradle build service...")
     }
 
     buildServiceConnection.onConnected = this::onGradleBuildServiceConnected

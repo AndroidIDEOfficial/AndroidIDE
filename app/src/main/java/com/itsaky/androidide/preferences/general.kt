@@ -18,15 +18,19 @@
 package com.itsaky.androidide.preferences
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
-import com.itsaky.androidide.resources.R.drawable
-import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.OPEN_PROJECTS
 import com.itsaky.androidide.preferences.internal.TERMINAL_USE_SYSTEM_SHELL
+import com.itsaky.androidide.preferences.internal.UI_MODE
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
+import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.preferences.internal.useSystemShell
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -37,9 +41,46 @@ class GeneralPreferences(
   override val children: List<IPreference> = mutableListOf()
 ) : IPreferenceScreen() {
   init {
+    addPreference(UiMode())
     addPreference(OpenLastProject())
     addPreference(ConfirmProjectOpen())
     addPreference(UseSytemShell())
+  }
+}
+
+@Parcelize
+class UiMode(
+  override val key: String = UI_MODE,
+  override val title: Int = R.string.idepref_general_uiMode,
+  override val summary: Int? = R.string.idepref_general_uiMode_summary,
+  override val icon: Int? = R.drawable.ic_ui_mode
+) : SingleChoicePreference() {
+  override fun getChoices(context: Context): Array<String> {
+    return arrayOf(
+      context.getString(R.string.uiMode_light),
+      context.getString(R.string.uiMode_dark),
+      context.getString(R.string.uiMode_system)
+    )
+  }
+
+  override fun getSelectedItem(): Int {
+    return when (uiMode) {
+      AppCompatDelegate.MODE_NIGHT_NO -> 0
+      AppCompatDelegate.MODE_NIGHT_YES -> 1
+      else -> 2
+    }
+  }
+
+  override fun onItemSelected(position: Int, isSelected: Boolean) {
+    if (isSelected) {
+      val mode =
+        when (position) {
+          0 -> AppCompatDelegate.MODE_NIGHT_NO
+          1 -> AppCompatDelegate.MODE_NIGHT_YES
+          else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+      uiMode = mode
+    }
   }
 }
 
