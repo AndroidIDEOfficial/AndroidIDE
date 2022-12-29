@@ -17,11 +17,13 @@
 
 package com.itsaky.androidide.editor.schemes
 
+import android.content.Context
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.isSystemInDarkMode
 import java.io.File
 import java.io.FileFilter
 import java.util.Properties
@@ -46,6 +48,7 @@ object IDEColorSchemeProvider {
     val scheme = this.schemes[colorScheme] ?: return@lazy null
     return@lazy try {
       scheme.load()
+      scheme.darkVariant?.load()
       scheme
     } catch (err: Exception) {
       log.error("An error occurred while loading color scheme '$colorScheme'", err)
@@ -104,6 +107,10 @@ object IDEColorSchemeProvider {
       scheme.langs = langs.toTypedArray()
       schemes[schemeDir.name] = scheme
     }
+    
+    schemes.values.forEach {
+      it.darkVariant = schemes["${it.key}-dark"]
+    }
   }
   
   @JvmStatic
@@ -113,24 +120,32 @@ object IDEColorSchemeProvider {
     }
   }
 
-  fun readScheme(schemeConsumer: Consumer<SchemeAndroidIDE?>) {
-    readScheme {
+  fun readScheme(context: Context, schemeConsumer: Consumer<SchemeAndroidIDE?>) {
+    readScheme(context) {
       schemeConsumer.accept(it)
     }
   }
 
-  fun readScheme(consume: (SchemeAndroidIDE?) -> Unit) {
+  fun readScheme(context: Context, consume: (SchemeAndroidIDE?) -> Unit) {
     executeAsyncProvideError({ this.currentScheme }) { scheme, error ->
       if (scheme == null || error != null) {
         log.error("Failed to read color scheme", error)
         return@executeAsyncProvideError
       }
-      consume(scheme)
+      
+      val dark = scheme.darkVariant
+      if (context.isSystemInDarkMode() && dark != null) {
+        consume(dark)
+      } else {
+        consume(scheme)
+      }
     }
   }
 
   fun list(): List<IDEColorScheme> {
-    return this.schemes.values.toList()
+    // filter out schemes that are dark variants of other schemes
+    // schemes with both light and dark variant will be used according to system's dark mode
+    return this.schemes.values.filter { !it.key.endsWith("-dark") }.toList()
   }
   
   fun destroy() {
