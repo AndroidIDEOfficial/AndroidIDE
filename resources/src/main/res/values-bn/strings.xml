@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">টেলিগ্রামে আলোচনা</string>
   <string name="official_tg_channel">অফিসিয়াল টেলিগ্রাম চ্যানেল</string>
   <string name="msg_empty_view">আপনাকে দেখানোর মতো আমার কাছে কিছুই নেই…</string>
-  <string name="btn_terminal">টার্মিনাল</string>
+  <string name="title_terminal">Terminal</string>
   <string name="reset">রিসেট করুন</string>
   <string name="app_logs">App লগ</string>
   <string name="ide_logs">IDE লগ</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">অন্যান্য</string>
   <string name="classtype_class">শ্রেণী</string>
   <string name="classtype_activity">ক্রিয়াকলাপ</string>
-  <string name="classtype_interface">ইন্টারফেস</string>
+  <string name="title_interface">Interface</string>
   <string name="classtype_enum">ইনাম</string>
   <string name="msg_checking_storage_permissions">সঞ্চয়স্থানের অনুমতি পরীক্ষা করা হচ্ছে</string>
   <string name="msg_failed_list_files">প্রকল্প ফাইল তালিকাভুক্ত করতে ব্যর্থ!</string>
@@ -459,4 +459,12 @@
   <string name="action_show_hierarchy">লেআউট শ্রেণিবিন্যাস দেখান</string>
   <string name="idepref_editor_colorScheme">কালার স্কিম</string>
   <string name="idepref_editor_colorScheme_summary">Editor - এ ব্যাবহার করার জন্য কালার স্কিম পছন্দ করুন</string>
+  <string name="idepref_general_uiMode">UI Mode</string>
+  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
+  <string name="uiMode_system">Follow system</string>
+  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
+  <string name="idepref_general_projectConfig">Project configuration</string>
 </resources>
