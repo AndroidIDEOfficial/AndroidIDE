@@ -20,6 +20,7 @@ package com.itsaky.androidide.activities;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.R;
@@ -46,7 +47,11 @@ public class PreferencesActivity extends IDEActivity {
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
-
+  
+    if (savedInstanceState != null) {
+      return;
+    }
+    
     final var prefs = IDEPreferences.INSTANCE;
     prefs.getChildren().clear();
     prefs.addPreference(new ConfigurationPreferences());
@@ -55,10 +60,12 @@ public class PreferencesActivity extends IDEActivity {
     final var args = new Bundle();
     args.putParcelableArrayList(
         IDEPreferencesFragment.EXTRA_CHILDREN, new ArrayList<>(prefs.getChildren()));
-    getRootFragment().setArguments(args);
-    loadFragment(getRootFragment());
+    
+    final var root = getRootFragment();
+    root.setArguments(args);
+    loadFragment(root);
   }
-
+  
   @Override
   protected View bindLayout() {
     binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
