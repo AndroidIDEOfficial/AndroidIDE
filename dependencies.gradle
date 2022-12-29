@@ -1,6 +1,6 @@
 ext {
     agp_version = '7.4.0-rc01'
-    kotlin_version = '1.7.22'
+    kotlin_version = '1.8.0'
     google_java_format_version = '1.15.0'
     oss_licenses_version = '0.10.6'
     nav_safeargs_version = '2.5.3'
