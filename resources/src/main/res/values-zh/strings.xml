@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">在 Telegram 上讨论</string>
   <string name="official_tg_channel">官方 Telegram 频道</string>
   <string name="msg_empty_view">没有已可以显示的呢&#8230;</string>
-  <string name="btn_terminal">终端</string>
+  <string name="title_terminal">终端</string>
   <string name="reset">重置</string>
   <string name="app_logs">应用日志</string>
   <string name="ide_logs">IDE日志</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">其他</string>
   <string name="classtype_class">类</string>
   <string name="classtype_activity">活动</string>
-  <string name="classtype_interface">接口</string>
+  <string name="title_interface">接口</string>
   <string name="classtype_enum">枚举</string>
   <string name="msg_checking_storage_permissions">正在检查存储权限</string>
   <string name="msg_failed_list_files">无法列出项目文件列表!</string>

@@ -48,7 +48,7 @@
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/classtype_interface"
+        android:text="@string/title_interface"
         app:icon="@drawable/ic_filetype_interface" />
 
       <com.google.android.material.button.MaterialButton
