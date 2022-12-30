@@ -82,6 +82,9 @@
       <module name="AndroidIDE.build-tools.xml-formatter.main" target="11" />
       <module name="AndroidIDE.build-tools.xml-formatter.test" target="11" />
       <module name="AndroidIDE.build-tools.xml-utils" target="11" />
+      <module name="AndroidIDE.buildSrc" target="11" />
+      <module name="AndroidIDE.buildSrc.main" target="11" />
+      <module name="AndroidIDE.buildSrc.test" target="11" />
       <module name="AndroidIDE.colorschemes" target="11" />
       <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.editor-languages" target="11" />
@@ -91,6 +94,7 @@
       <module name="AndroidIDE.javac" target="1.8" />
       <module name="AndroidIDE.sdk-info" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
+      <module name="AndroidIDE.xml-inflater" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

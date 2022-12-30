@@ -1,8 +1,0 @@
-plugins {
-    id 'java-library'
-}
-
-java {
-    sourceCompatibility = rootProject.ext.javaSourceVersion
-    targetCompatibility = rootProject.ext.javaTargetVersion
-}
