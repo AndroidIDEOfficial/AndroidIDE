@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.annotations.processor
 
+import com.squareup.javapoet.ClassName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeMirror
@@ -31,12 +32,15 @@ const val ADAPTER_BASE_CLASS = "$ADAPTER_BASE_CLASS_PCK.$ADAPTER_BASE_CLASS_NAME
 const val ADAPTER_FUNC_CREATE_WIDGET = "createUiWidgets"
 
 const val INDEX_PACKAGE_NAME = "com.itsaky.androidide.inflater.internal"
-const val INDEX_CLASS_NAME = "ViewAdapterIndex"
+const val INDEX_CLASS_NAME = "ViewAdapterIndexImpl"
 const val INDEX_MAP_FIELD = "adapterMap"
 const val INDEX_PROVIDER_MAP_FIELD = "widgetProviders"
 
 const val METHOD_SET_SUPERCLASS_HIERARCHY = "setSuperclassHierarchy"
 const val METHOD_SET_MODULE = "setModuleNamespace"
+
+val viewAdapterInterface: ClassName =
+  ClassName.get("com.itsaky.androidide.inflater", "IViewAdapterIndex")
 
 private var adapterElement: TypeElement? = null
 private var viewElement: TypeElement? = null

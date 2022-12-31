@@ -37,7 +37,7 @@ import java.io.File
 internal class ValueCompletionProvider(
   private val file: File,
   private val view: ViewImpl,
-  private val attribute: IAttribute,
+  private val attribute: com.itsaky.androidide.inflater.IAttribute,
   private val onComplete: (List<String>) -> Unit
 ) : SingleTextWatcher() {
 
@@ -72,7 +72,7 @@ internal class ValueCompletionProvider(
 
     private val log = ILogger.newInstance("CompletionThread")
     var prefix: String = ""
-    var attribute: IAttribute? = null
+    var attribute: com.itsaky.androidide.inflater.IAttribute? = null
 
     fun cancel() {
       interrupt()

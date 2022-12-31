@@ -27,7 +27,7 @@ import com.itsaky.androidide.inflater.IViewGroup
  */
 class ViewAddedAction
 @JvmOverloads
-constructor(view: IView, parent: IViewGroup, index: Int = parent.indexOfChild(view)) :
+constructor(view: com.itsaky.androidide.inflater.IView, parent: com.itsaky.androidide.inflater.IViewGroup, index: Int = parent.indexOfChild(view)) :
   ViewAction(view, parent, index) {
 
   override fun undo() {

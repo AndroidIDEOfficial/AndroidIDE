@@ -27,7 +27,9 @@ plugins {
   alias(libs.plugins.kotlin) apply false
 }
 
-buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6") } }
+buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+  classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
+} }
 
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
