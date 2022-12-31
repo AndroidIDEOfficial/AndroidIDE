@@ -31,8 +31,8 @@ import com.itsaky.androidide.uidesigner.databinding.LayoutAddAttrItemBinding
  * @author Akash Yadav
  */
 class AddAttrListAdapter(
-  private val attributes: List<IAttribute>,
-  private val onClick: (IAttribute) -> Unit = {}
+  private val attributes: List<com.itsaky.androidide.inflater.IAttribute>,
+  private val onClick: (com.itsaky.androidide.inflater.IAttribute) -> Unit = {}
 ) : RecyclerView.Adapter<VH>() {
 
   class VH(val binding: LayoutAddAttrItemBinding) : RecyclerView.ViewHolder(binding.root)

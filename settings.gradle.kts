@@ -56,6 +56,7 @@ include(
   ":shared",
   ":treeview",
   ":uidesigner",
+  ":xml-inflater",
   
   ":gradle-plugin",
   

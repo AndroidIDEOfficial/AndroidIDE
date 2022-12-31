@@ -94,7 +94,6 @@
       <module name="AndroidIDE.javac" target="1.8" />
       <module name="AndroidIDE.sdk-info" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
-      <module name="AndroidIDE.xml-inflater" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

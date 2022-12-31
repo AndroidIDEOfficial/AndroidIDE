@@ -34,7 +34,7 @@ import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
  *
  * @author Akash Yadav
  */
-internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChangeListener() {
+internal class WorkspaceViewHierarchyHandler : com.itsaky.androidide.inflater.IViewGroup.SingleOnHierarchyChangeListener() {
   
   private var fragment: DesignerWorkspaceFragment? = null
 
@@ -54,7 +54,7 @@ internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChang
     )
   }
 
-  private fun pushAction(view: IView, parent: IViewGroup, index: Int, added: Boolean) {
+  private fun pushAction(view: com.itsaky.androidide.inflater.IView, parent: com.itsaky.androidide.inflater.IViewGroup, index: Int, added: Boolean) {
     val frag = this.fragment ?: return
     if (view is PlaceholderView) {
       return
@@ -77,15 +77,15 @@ internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChang
     frag.requireActivity().invalidateOptionsMenu()
   }
 
-  override fun beforeViewAdded(group: IViewGroup, view: IView, index: Int) {
+  override fun beforeViewAdded(group: com.itsaky.androidide.inflater.IViewGroup, view: com.itsaky.androidide.inflater.IView, index: Int) {
     animateLayoutChange()
   }
 
-  override fun beforeViewRemoved(group: IViewGroup, view: IView, index: Int) {
+  override fun beforeViewRemoved(group: com.itsaky.androidide.inflater.IViewGroup, view: com.itsaky.androidide.inflater.IView, index: Int) {
     animateLayoutChange()
   }
 
-  override fun onViewAdded(group: IViewGroup, view: IView, index: Int) {
+  override fun onViewAdded(group: com.itsaky.androidide.inflater.IViewGroup, view: com.itsaky.androidide.inflater.IView, index: Int) {
     val frag = this.fragment ?: return
     if (!frag.isInflating && view !is PlaceholderView) {
       // when the inflation process is in progress, setupView method will be called
@@ -103,7 +103,7 @@ internal class WorkspaceViewHierarchyHandler : IViewGroup.SingleOnHierarchyChang
     pushAction(view, group, index, true)
   }
 
-  override fun onViewRemoved(group: IViewGroup, view: IView, index: Int) {
+  override fun onViewRemoved(group: com.itsaky.androidide.inflater.IViewGroup, view: com.itsaky.androidide.inflater.IView, index: Int) {
     val frag = this.fragment ?: return
     if (frag.workspaceView.viewGroup.childCount == 0) {
       frag.viewModel.errText = frag.getString(R.string.msg_empty_ui_layout)

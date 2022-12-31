@@ -142,7 +142,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     this.inflater.close()
   }
 
-  internal fun setupView(view: IView) {
+  internal fun setupView(view: com.itsaky.androidide.inflater.IView) {
     if (view is CommonUiView && !view.needSetup) {
       return
     }
@@ -171,7 +171,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     }
   }
 
-  internal fun showViewInfo(view: IView) {
+  internal fun showViewInfo(view: com.itsaky.androidide.inflater.IView) {
     viewModel.view = view
     viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
   }

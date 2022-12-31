@@ -29,7 +29,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
@@ -183,7 +182,7 @@ class UIDesignerActivity : BaseIDEActivity() {
     return workspace
   }
 
-  fun setupHierarchy(view: IView) {
+  fun setupHierarchy(view: com.itsaky.androidide.inflater.IView) {
     binding?.hierarchy?.setupWithView(view) {
       workspace()?.showViewInfo(it)
     }

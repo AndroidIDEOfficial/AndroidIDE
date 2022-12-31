@@ -23,7 +23,6 @@ import com.itsaky.androidide.inflater.events.InflationFinishEvent
 import com.itsaky.androidide.inflater.events.InflationStartEvent
 import com.itsaky.androidide.inflater.events.OnInflateViewEvent
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.uidesigner.UIDesignerActivity
 
 /**
  * Handles layout inflation events in [DesignerWorkspaceFragment].
