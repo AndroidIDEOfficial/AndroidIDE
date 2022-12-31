@@ -49,7 +49,7 @@ import javax.tools.Diagnostic.Kind.ERROR
 class ViewAdapterIndexGenerator {
 
   private val indexClassBuilder =
-    TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL)
+    TypeSpec.classBuilder(INDEX_CLASS_NAME).addModifiers(PUBLIC, FINAL).addSuperinterface(viewAdapterInterface)
   private val indexAddStatements = CodeBlock.builder()
 
   fun init(env: ProcessingEnvironment) {
@@ -77,12 +77,20 @@ class ViewAdapterIndexGenerator {
       )
     )
 
-    addUninstantiableConstructor(indexClassBuilder)
+    addPrivateConstructor(indexClassBuilder)
+
+    val indexImpl = ClassName.get(INDEX_PACKAGE_NAME, INDEX_CLASS_NAME)
+    indexClassBuilder.addField(
+      FieldSpec.builder(indexImpl, "INSTANCE", PUBLIC, STATIC, FINAL)
+        .initializer("new \$T()", indexImpl)
+        .build()
+    )
 
     indexClassBuilder.addMethod(
       MethodSpec.methodBuilder("getAdapter")
+        .addAnnotation(Override::class.java)
         .addAnnotation(ClassName.get("androidx.annotation", "Nullable"))
-        .addModifiers(PUBLIC, STATIC)
+        .addModifiers(PUBLIC)
         .addParameter(String::class.java, "view", FINAL)
         .returns(adapterType)
         .addStatement("var adapter = \$L.get(\$L)", INDEX_MAP_FIELD, "view")
@@ -92,11 +100,12 @@ class ViewAdapterIndexGenerator {
         .addStatement("return adapter")
         .build()
     )
-  
+
     indexClassBuilder.addMethod(
       MethodSpec.methodBuilder("getViewAdapter")
+        .addAnnotation(Override::class.java)
         .addAnnotation(ClassName.get("androidx.annotation", "Nullable"))
-        .addModifiers(PUBLIC, STATIC)
+        .addModifiers(PUBLIC)
         .addParameter(String::class.java, "view", FINAL)
         .returns(adapterType)
         .addStatement("return \$L.get(\$L)", INDEX_MAP_FIELD, "view")
@@ -138,8 +147,9 @@ class ViewAdapterIndexGenerator {
 
     indexClassBuilder.addMethod(
       MethodSpec.methodBuilder("getWidgetProviders")
+        .addAnnotation(Override::class.java)
         .addAnnotation(nonNull)
-        .addModifiers(PUBLIC, STATIC)
+        .addModifiers(PUBLIC)
         .returns(listOfViewAdapters)
         .addParameter(groupParam)
         .addStatement("return \$L.get(group)", INDEX_PROVIDER_MAP_FIELD)
@@ -224,17 +234,8 @@ class ViewAdapterIndexGenerator {
     file.build().writeTo(generatedDir)
   }
 
-  private fun addUninstantiableConstructor(builder: TypeSpec.Builder) {
-    builder.addMethod(
-      MethodSpec.constructorBuilder()
-        .addModifiers(PRIVATE)
-        .addStatement(
-          "throw new \$T(\$S)",
-          UnsupportedOperationException::class.java,
-          "This class cannot be instantiated."
-        )
-        .build()
-    )
+  private fun addPrivateConstructor(builder: TypeSpec.Builder) {
+    builder.addMethod(MethodSpec.constructorBuilder().addModifiers(PRIVATE).build())
   }
 
   private fun getViewTypeName(

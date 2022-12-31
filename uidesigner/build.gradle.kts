@@ -10,8 +10,6 @@ android {
 
 dependencies {
   
-  kapt(projects.annotationProcessors)
-  
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.ktx)
   implementation(libs.androidx.fragment.ktx)
@@ -32,14 +30,8 @@ dependencies {
   implementation(projects.lsp.api)
   implementation(projects.lsp.xml)
   implementation(projects.resources)
+  implementation(projects.xmlInflater)
   
-  implementation(projects.subprojects.aaptcompiler)
-  implementation(projects.subprojects.projects)
-  implementation(projects.subprojects.xmlUtils)
-  
-  
-  testImplementation(projects.subprojects.projects)
-  testImplementation(projects.subprojects.toolingApiTesting)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.robolectric)

@@ -28,7 +28,7 @@ internal class WorkspaceViewModel : ViewModel() {
   internal val _drawerOpened = MutableLiveData(false)
   internal val _errText = MutableLiveData("")
   internal val _workspaceScreen = MutableLiveData(SCREEN_WORKSPACE)
-  internal val _view = MutableLiveData<IView>(null)
+  internal val _view = MutableLiveData<com.itsaky.androidide.inflater.IView>(null)
   internal val _selectedAttr = MutableLiveData<UiAttribute>(null)
   internal val _addAttrMode = MutableLiveData(false)
   internal val _undoManager = MutableLiveData(UndoManager())
@@ -68,7 +68,7 @@ internal class WorkspaceViewModel : ViewModel() {
       _workspaceScreen.value = value
     }
 
-  var view: IView?
+  var view: com.itsaky.androidide.inflater.IView?
     get() = this._view.value
     set(value) {
       this._view.value = value

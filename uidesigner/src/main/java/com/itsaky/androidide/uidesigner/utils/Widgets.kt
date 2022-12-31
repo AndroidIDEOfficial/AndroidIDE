@@ -19,7 +19,7 @@ package com.itsaky.androidide.uidesigner.utils
 
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
+import com.itsaky.androidide.inflater.IViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.utils.simpleName
 import com.itsaky.androidide.uidesigner.R.string
 import com.itsaky.androidide.uidesigner.models.UiWidgetCategory
@@ -45,7 +45,7 @@ internal object Widgets {
         return@apply
       }
       this.widgets =
-        ViewAdapterIndex.getWidgetProviders(WIDGETS)
+        IViewAdapterIndex.instance.getWidgetProviders(WIDGETS)
           .flatMap { it.getUiWidgets() }
           .sortedBy { it.name.simpleName() }
     }
@@ -58,7 +58,7 @@ internal object Widgets {
       }
 
       this.widgets =
-        ViewAdapterIndex.getWidgetProviders(LAYOUTS)
+        IViewAdapterIndex.instance.getWidgetProviders(LAYOUTS)
           .flatMap { it.getUiWidgets() }
           .sortedBy { it.name.simpleName() }
     }

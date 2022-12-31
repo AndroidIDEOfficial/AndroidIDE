@@ -24,8 +24,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.utils.newAttribute
+import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.R.string
 import com.itsaky.androidide.uidesigner.adapters.AddAttrListAdapter
@@ -83,7 +83,7 @@ class AddAttrFragment : Fragment() {
   private fun showAttrs() {
     val binding = this.binding ?: return
     val view = viewModel.view ?: return
-    val adapter = ViewAdapterIndex.getAdapter(view.name) ?: return
+    val adapter = view.viewAdapter ?: return
     val attributes =
       adapter.supportedAttributes.filterNot { view.hasAttribute(it.namespace.uri, it.name) }
     binding.attrList.adapter =

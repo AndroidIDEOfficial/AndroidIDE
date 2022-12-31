@@ -27,10 +27,8 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.itsaky.androidide.inflater.internal.ViewImpl
-import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.uidesigner.databinding.LayoutAttrValueEditorBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
-import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.utils.ValueCompletionProvider
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 

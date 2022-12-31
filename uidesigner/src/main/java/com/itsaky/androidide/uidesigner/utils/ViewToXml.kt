@@ -114,7 +114,7 @@ object ViewToXml {
       addSingleAttribute("${attr.namespace.prefix}:${attr.name}", attr.value, true)
     }
 
-    if (view is IViewGroup) {
+    if (view is com.itsaky.androidide.inflater.IViewGroup) {
 
       closeStartElement()
 

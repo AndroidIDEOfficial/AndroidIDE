@@ -40,10 +40,10 @@ import com.itsaky.androidide.utils.DialogUtils
  * @author Akash Yadav
  */
 internal class ViewAttrListAdapter(
-  attributes: List<IAttribute>,
+  attributes: List<com.itsaky.androidide.inflater.IAttribute>,
   private val viewModel: WorkspaceViewModel?,
-  private val onDeleteAttr: (IAttribute) -> Boolean,
-  private val onClick: (IAttribute) -> Unit
+  private val onDeleteAttr: (com.itsaky.androidide.inflater.IAttribute) -> Boolean,
+  private val onClick: (com.itsaky.androidide.inflater.IAttribute) -> Unit
 ) : RecyclerView.Adapter<VH>() {
 
   private val attributes = attributes.sortedBy { it.name }.toMutableList()
@@ -78,7 +78,7 @@ internal class ViewAttrListAdapter(
       val viewModel = this.viewModel ?: return@setOnClickListener
       val attrUpdateListener =
         object : SingleAttributeChangeListener() {
-          override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
+          override fun onAttributeUpdated(view: com.itsaky.androidide.inflater.IView, attribute: com.itsaky.androidide.inflater.IAttribute, oldValue: String) {
             binding.attrValue.text = attribute.value
           }
         }

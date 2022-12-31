@@ -25,8 +25,8 @@ import com.itsaky.androidide.inflater.LayoutBehavior.HORIZONTAL
 import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
 import com.itsaky.androidide.inflater.LayoutBehavior.VERTICAL
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
+import com.itsaky.androidide.inflater.viewAdapter
 
 /**
  * Extension of [IView] for the UI Designer.
@@ -47,13 +47,12 @@ internal class UiViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
     if (childCount == 0) {
       return 0
     }
-    val adapter =
-      ViewAdapterIndex.getAdapter(name)
-    
+    val adapter = viewAdapter
+
     if (adapter !is IViewGroupAdapter) {
       return childCount
     }
-    
+
     return when (adapter.getLayoutBehavior(this)) {
       TOP_LEFT -> childCount
       VERTICAL -> computeViewIndexVertically(x, y)
