@@ -23,7 +23,7 @@
   <string name="discussions_on_telegram">Discussions on Telegram</string>
   <string name="official_tg_channel">Official Telegram Channel</string>
   <string name="msg_empty_view">I have nothing to show you…</string>
-  <string name="btn_terminal">Terminal</string>
+  <string name="title_terminal">Terminal</string>
   <string name="reset">Reset</string>
   <string name="app_logs">App Logs</string>
   <string name="ide_logs">IDE Logs</string>
@@ -182,7 +182,7 @@
   <string name="restype_other">Other</string>
   <string name="classtype_class">Class</string>
   <string name="classtype_activity">Activity</string>
-  <string name="classtype_interface">Interface</string>
+  <string name="title_interface">Interface</string>
   <string name="classtype_enum">Enum</string>
   <string name="msg_checking_storage_permissions">Checking storage permissions</string>
   <string name="msg_failed_list_files">Failed to list project files!</string>
@@ -528,4 +528,12 @@
   <string name="action_show_hierarchy">Show layout hierarchy</string>
   <string name="idepref_editor_colorScheme">Color Scheme</string>
   <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="idepref_general_uiMode">UI Mode</string>
+  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
+  <string name="uiMode_system">Follow system</string>
+  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
+  <string name="idepref_general_projectConfig">Project configuration</string>
 </resources>

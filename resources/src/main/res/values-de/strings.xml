@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">Auf Telegram diskutieren</string>
   <string name="official_tg_channel">Offizieller Telegram-Kanal</string>
   <string name="msg_empty_view">Es gibt nichts zum anzeigen&#x2026;</string>
-  <string name="btn_terminal">Konsole</string>
+  <string name="title_terminal">Konsole</string>
   <string name="reset">Zur&#xFC;cksetzen</string>
   <string name="app_logs">App-Protokolle</string>
   <string name="ide_logs">IDE-Protokolle</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">Andere</string>
   <string name="classtype_class">Klasse</string>
   <string name="classtype_activity">Aktivity</string>
-  <string name="classtype_interface">Interface</string>
+  <string name="title_interface">Interface</string>
   <string name="classtype_enum">Enum</string>
   <string name="msg_checking_storage_permissions">&#xDC;berpr&#xFC;fung der Speicherberechtigungen</string>
   <string name="msg_failed_list_files">Projektdateien konnten nicht aufgelistet werden!</string>

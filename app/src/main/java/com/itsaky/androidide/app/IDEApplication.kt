@@ -19,7 +19,9 @@ package com.itsaky.androidide.app
 
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
+import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -27,13 +29,15 @@ import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.preferences.internal.enableMaterialYou
+import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
+import org.greenrobot.eventbus.EventBus
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.system.exitProcess
-import org.greenrobot.eventbus.EventBus
 
 class IDEApplication : BaseApplication() {
 
@@ -58,6 +62,12 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
+  
+    AppCompatDelegate.setDefaultNightMode(uiMode)
+    
+    if (enableMaterialYou) {
+      DynamicColors.applyToActivitiesIfAvailable(this)
+    }
 
     executeAsync { IDEColorSchemeProvider.init() }
   }

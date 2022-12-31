@@ -35,7 +35,7 @@ abstract class MultiChoicePreference : DialogPreference(), PreferenceChoices {
 
   override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     super.onConfigureDialog(preference, dialog)
-    dialog.setMultiChoiceItems(getChoices(), getCheckedItems()) { iface, which, checked ->
+    dialog.setMultiChoiceItems(getChoices(preference.context), getCheckedItems()) { _, which, checked ->
       onItemSelected(which, checked)
     }
     dialog.setPositiveButton(android.R.string.ok, null)

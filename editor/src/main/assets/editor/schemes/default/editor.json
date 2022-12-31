@@ -10,7 +10,6 @@
   "text.normal": "@onSurface",
   "text.cursor": "@primary",
   "text.selection.handle": "@primaryInverse",
-  "text.selected": "@onSurface",
   "text.matched.bg": "#FF8F00",
   "text.selected.bg": "@primaryLight",
   "snippet.bg.editing": "#cccccc",

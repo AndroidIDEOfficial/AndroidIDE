@@ -94,7 +94,7 @@ private class GradleCommands(
     )
   }
 
-  override fun getChoices(): Array<String> {
+  override fun getChoices(context: Context): Array<String> {
     return arrayOf(
       "--stacktrace",
       "--info",

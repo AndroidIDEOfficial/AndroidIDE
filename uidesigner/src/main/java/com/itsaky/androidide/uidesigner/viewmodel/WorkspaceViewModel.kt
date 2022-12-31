@@ -19,11 +19,8 @@ package com.itsaky.androidide.uidesigner.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
-import com.itsaky.androidide.uidesigner.undo.AttrAddedAction
-import com.itsaky.androidide.uidesigner.undo.AttrUpdatedAction
 import com.itsaky.androidide.uidesigner.undo.UndoManager
 import java.io.File
 
@@ -32,9 +29,10 @@ internal class WorkspaceViewModel : ViewModel() {
   internal val _errText = MutableLiveData("")
   internal val _workspaceScreen = MutableLiveData(SCREEN_WORKSPACE)
   internal val _view = MutableLiveData<IView>(null)
-  internal val _selectedAttr = MutableLiveData<IAttribute>(null)
+  internal val _selectedAttr = MutableLiveData<UiAttribute>(null)
   internal val _addAttrMode = MutableLiveData(false)
   internal val _undoManager = MutableLiveData(UndoManager())
+  internal val _currentDestination = MutableLiveData(0)
   private val _file = MutableLiveData<File>()
 
   companion object {
@@ -76,7 +74,7 @@ internal class WorkspaceViewModel : ViewModel() {
       this._view.value = value
     }
 
-  var selectedAttr: IAttribute?
+  var selectedAttr: UiAttribute?
     get() = this._selectedAttr.value
     set(value) {
       this._selectedAttr.value = value
@@ -88,31 +86,44 @@ internal class WorkspaceViewModel : ViewModel() {
       this._addAttrMode.value = value
     }
 
+  var currentDestination: Int
+    get() = this._currentDestination.value ?: 0
+    set(value) {
+      this._currentDestination.value = value
+    }
+
   fun notifyAttrUpdated() {
     val attr = this.selectedAttr ?: return
     val view = this.view ?: return
-    val undoManager = this.undoManager
 
-    if (addAttrMode) {
-      if (attr.value.isBlank()) {
-        view.removeAttribute(attr)
-        return
-      }
-      
-      undoManager.push(AttrAddedAction(view, attr as UiAttribute))
+    if (addAttrMode && attr.value.isNotBlank()) {
+      // if we were adding a new attribute, then add the attribute to the view.
+      view.addAttribute(attr)
+      addAttrMode = false
+      selectedAttr = null
       return
     }
 
     val existing = view.findAttribute(attr.namespace.uri, attr.name)
-
-    if (existing !is UiAttribute || existing.value == attr.value) {
-      // value of the attribute is same as before
+    if (existing !is UiAttribute) {
       return
     }
 
-    undoManager.push(
-      AttrUpdatedAction(view, existing.copyAttr(view = view) as UiAttribute, attr.value)
-    )
+    if (existing.value.isBlank()) {
+      // the user left the value field blank, remove the attribute
+      view.removeAttribute(existing)
+      selectedAttr = null
+      return
+    }
+
+    if (existing.value == attr.value) {
+      // value of the attribute is same as before
+      selectedAttr = null
+      return
+    }
+
+    // the user was updating the value af the attribute, so update it in the view
+    view.updateAttribute(existing.copyAttr(view = view, value = attr.value))
     this.selectedAttr = null
   }
 }

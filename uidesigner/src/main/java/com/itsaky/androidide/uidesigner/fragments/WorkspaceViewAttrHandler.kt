@@ -56,7 +56,7 @@ internal class WorkspaceViewAttrHandler : IView.AttributeChangeListener {
     frag.undoManager.push(
       AttrUpdatedAction(
         view = view,
-        attr = (attribute as UiAttribute).copyAttr(view = view) as UiAttribute,
+        attr = attribute as UiAttribute,
         oldValue = oldValue
       )
     )

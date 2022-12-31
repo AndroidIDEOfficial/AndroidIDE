@@ -17,6 +17,7 @@
 package com.itsaky.androidide.app;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -25,10 +26,8 @@ import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.multidex.MultiDexApplication;
 
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.google.android.material.color.DynamicColors;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
@@ -42,7 +41,7 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.util.Arrays;
 
-public abstract class BaseApplication extends MultiDexApplication {
+public abstract class BaseApplication extends Application {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
@@ -95,8 +94,6 @@ public abstract class BaseApplication extends MultiDexApplication {
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
     ToolsManager.init(this, null);
-
-//    DynamicColors.applyToActivitiesIfAvailable(this);
 
     createNotificationChannels();
   }

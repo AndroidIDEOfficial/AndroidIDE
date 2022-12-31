@@ -1,0 +1,37 @@
+{
+  "definitions": {
+    "primary": "#dcc2ae",
+    "primaryLight": "#ff564334",
+    "primaryInverse": "#ff6f5a4a",
+    "onPrimary": "#ff3d2d1f",
+    "onPrimaryContainer": "#fff9ddc9",
+    "surface": "#ff1e1b19",
+    "surfaceInverse": "#ffe8e1dd",
+    "surfaceVariant": "#ff4a4644",
+    "onSurface": "#ffe8e1dd",
+    "onSurfaceVariant": "#ffccc5c2",
+    "outline": "#ff95908d",
+
+    "type": "#4fc3f7",
+    "keyword": "#ff6060",
+    "operator": "#4fc3f7",
+    "attribute": "#4fc3f7",
+    "variable": "#ba68c8",
+    "field" : "#f0be4b",
+    "constant": "#f0be4b",
+    "number": "#8bc34a",
+    "string": "#8bc34a",
+    "comment": "#bdbdbd",
+    "func.decl": "#64b5f6",
+    "func.call": "#64b5f6",
+
+    "xml.tag": "#ff6060",
+    "xml.ref": "#90caf9",
+    "ns_prefix": "#ce93d8"
+  },
+  "editor": "@editor.json",
+  "languages": [
+    "@java.json",
+    "@xml.json"
+  ]
+}

@@ -87,6 +87,8 @@ open class Range
 @JvmOverloads
 constructor(var start: Position = Position(0, 0), var end: Position = Position(0, 0)) :
   Comparable<Range> {
+  
+  constructor(src: Range) : this(Position(src.start.line, src.start.column), Position(src.end.line, src.end.column))
 
   companion object {
     @JvmField val NONE = Range(Position.NONE, Position.NONE)
