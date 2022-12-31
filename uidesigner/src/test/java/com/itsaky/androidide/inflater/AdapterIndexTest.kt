@@ -27,7 +27,7 @@ import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
-class AdapterIndexText {
+class AdapterIndexTest {
 
   @Test
   fun `verify instances of adapters`() {

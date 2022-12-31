@@ -33,6 +33,7 @@ import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
 import org.greenrobot.eventbus.EventBus
@@ -44,9 +45,11 @@ class IDEApplication : BaseApplication() {
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
 
   init {
-    System.loadLibrary("android-tree-sitter")
-    System.loadLibrary("tree-sitter-java")
-    System.loadLibrary("tree-sitter-xml")
+    if (!VMUtils.isJvm()) {
+      System.loadLibrary("android-tree-sitter")
+      System.loadLibrary("tree-sitter-java")
+      System.loadLibrary("tree-sitter-xml")
+    }
   }
 
   override fun onCreate() {

@@ -93,4 +93,3 @@ tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version =
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-oss-licenses = { id = "com.google.android.gms.oss-licenses-plugin", version = "0.10.6" }
