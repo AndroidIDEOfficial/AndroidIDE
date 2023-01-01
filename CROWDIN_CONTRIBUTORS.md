@@ -24,21 +24,21 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Alessandro (esalessandrx)</b></sub></a>
       <br />
-      <sub><b>2020 words</b></sub>
+      <sub><b>2032 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/adnroid"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15503338/medium/c21cc0623c3ff71d53cb1f1a6e5d7757.png" />
         <br />
         <sub><b>Bai (adnroid)</b></sub></a>
       <br />
-      <sub><b>1072 words</b></sub>
+      <sub><b>1257 words</b></sub>
     </td>
     <td align="center" valign="top">
-      <a href="https://crowdin.com/profile/andihasan97"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/dd13b7a47f084fab31e4a75c939eaf82.jpeg" />
+      <a href="https://crowdin.com/profile/andihasan97"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15550047/medium/ac9578131f9d0bd877837b2ac604795d.png" />
         <br />
         <sub><b>Andi Hasan A (andihasan97)</b></sub></a>
       <br />
-      <sub><b>938 words</b></sub>
+      <sub><b>977 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/friostd"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg" />
@@ -59,10 +59,17 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
       <br />
-      <sub><b>137 words</b></sub>
+      <sub><b>149 words</b></sub>
     </td>
   </tr>
   <tr>
+    <td align="center" valign="top">
+      <a href="https://crowdin.com/profile/Rosemoe168"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15594415/medium/0b5e9fd932dea6e26e4a19784a96af1d.jpeg" />
+        <br />
+        <sub><b>Rosemoe (Rosemoe168)</b></sub></a>
+      <br />
+      <sub><b>131 words</b></sub>
+    </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/TheDonMarv"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549947/medium/7e2d0178f0ff00eba107fac474caa6a2.png" />
         <br />
