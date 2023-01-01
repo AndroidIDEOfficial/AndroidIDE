@@ -46,8 +46,8 @@ internal object Widgets {
       }
       this.widgets =
         IViewAdapterIndex.instance.getWidgetProviders(WIDGETS)
-          .flatMap { it.getUiWidgets() }
-          .sortedBy { it.name.simpleName() }
+          ?.flatMap { it.getUiWidgets() }
+          ?.sortedBy { it.name.simpleName() } ?: emptyList()
     }
   }
 
@@ -59,8 +59,8 @@ internal object Widgets {
 
       this.widgets =
         IViewAdapterIndex.instance.getWidgetProviders(LAYOUTS)
-          .flatMap { it.getUiWidgets() }
-          .sortedBy { it.name.simpleName() }
+          ?.flatMap { it.getUiWidgets() }
+          ?.sortedBy { it.name.simpleName() } ?: emptyList()
     }
   }
 }

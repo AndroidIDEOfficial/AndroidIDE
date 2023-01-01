@@ -6,6 +6,7 @@ editor = "0.20.4"
 glide = "4.14.2"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
+ksp = "1.8.0-1.0.8"
 
 [libraries]
 
@@ -30,6 +31,7 @@ common-kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.re
 common-jkotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", version = "3.3.1" }
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
+common-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.5.0" }

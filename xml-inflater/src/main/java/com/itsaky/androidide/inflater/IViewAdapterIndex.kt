@@ -39,7 +39,7 @@ interface IViewAdapterIndex {
    * @return The [IViewAdapter] for the given view name. If no adapter is found for the given view
    * name, returns adapter for `android.view.View` if available or `null`.
    */
-  fun getAdapter(view: String): IViewAdapter<*>?
+  fun getAdapter(view: String): IViewAdapter<out View>?
 
   /**
    * Get the adapter for the given view.
@@ -47,15 +47,15 @@ interface IViewAdapterIndex {
    * @param view The fully qualified name of the view.
    * @return The view adapter instance or `null` if not found.
    */
-  fun getViewAdapter(view: String): IViewAdapter<*>
-  
+  fun getViewAdapter(view: String): IViewAdapter<out View>?
+
   /**
    * Get the view adapters which provide widgets to the UI designer.
    *
    * @param group The group to get widget providers for.
    * @return The widget providers for the [group].
    */
-  fun getWidgetProviders(group: IncludeInDesigner.Group) : List<IViewAdapter<*>>
+  fun getWidgetProviders(group: IncludeInDesigner.Group): List<IViewAdapter<out View>>?
 }
 
 /**
@@ -65,7 +65,7 @@ interface IViewAdapterIndex {
  * @return The [IViewAdapter] for the given view name. If no adapter is found for the given view
  * name, returns adapter for `android.view.View` if available or `null`.
  */
-fun getAdapter(view: String): IViewAdapter<*>? {
+fun getAdapter(view: String): IViewAdapter<out View>? {
   return IViewAdapterIndex.instance.getAdapter(view)
 }
 
@@ -75,7 +75,7 @@ fun getAdapter(view: String): IViewAdapter<*>? {
  * @param view The fully qualified name of the view.
  * @return The view adapter instance or `null` if not found.
  */
-fun getViewAdapter(view: String): IViewAdapter<*> {
+fun getViewAdapter(view: String): IViewAdapter<out View>? {
   return IViewAdapterIndex.instance.getViewAdapter(view)
 }
 
