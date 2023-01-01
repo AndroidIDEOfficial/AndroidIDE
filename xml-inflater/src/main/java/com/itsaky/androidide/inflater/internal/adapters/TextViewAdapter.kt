@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.text.TextUtils
 import android.text.util.Linkify
@@ -27,9 +28,9 @@ import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.utils.newAttribute
+import com.itsaky.androidide.resources.R
 import java.util.regex.Pattern
 
 /**
@@ -129,9 +130,10 @@ open class TextViewAdapter<T : TextView> : ViewAdapter<T>() {
     )
   }
 
+  @SuppressLint("SetTextI18n")
   override fun applyBasic(view: IView) {
     super.applyBasic(view)
-    view.addAttribute(newAttribute(view = view, name = "text", value = "AndroidIDE"))
+    (view.view as? TextView)?.text = "AndroidIDE"
   }
 
   protected open fun parseTextStyle(value: String): Int {

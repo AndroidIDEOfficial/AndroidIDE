@@ -30,10 +30,10 @@ import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -159,8 +159,7 @@ class LayoutInflaterTest {
         assertThat(inflated).hasSize(1)
 
         val root = inflated[0] as ViewGroupImpl
-        
-        
+
         // verity the inflated layout hierarchy
         // this takes care of verifying that the generated XML elements will have proper XML tagsl
         assertThat(root.printHierarchy())
@@ -178,17 +177,17 @@ class LayoutInflaterTest {
 
         // TextView is used to inflate unsupported views
         assertThat(root[0].view).isInstanceOf(TextView::class.java)
-        
+
         // TextView is also used for layouts which do not have any child viewsl
         assertThat(root[1].view).isInstanceOf(TextView::class.java)
-  
+
         // FrameLayout is used to inflate unsupported layouts with child views
         assertThat(root[2].view).isInstanceOf(FrameLayout::class.java)
         assertThat(root[3].view).isInstanceOf(FrameLayout::class.java)
 
         assertThat((root[2] as ViewGroupImpl)[0].view).isInstanceOf(ImageView::class.java)
         assertThat((root[2] as ViewGroupImpl)[1].view).isInstanceOf(ImageView::class.java)
-  
+
         // Unsupported child views
         assertThat((root[3] as ViewGroupImpl)[0].view).isInstanceOf(TextView::class.java)
         assertThat((root[3] as ViewGroupImpl)[1].view).isInstanceOf(TextView::class.java)
