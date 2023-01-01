@@ -298,10 +298,10 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     final var text = getText();
     final var lineCount = text.getLineCount();
     
-    start.setLine(min(max(0, start.getLine()), lineCount));
+    start.setLine(min(max(0, start.getLine()), lineCount - 1));
     start.setColumn(min(max(0, start.getColumn()), text.getColumnCount(start.getLine())));
     
-    end.setLine(min(max(0, end.getLine()), lineCount));
+    end.setLine(min(max(0, end.getLine()), lineCount - 1));
     end.setColumn(min(max(0, end.getColumn()), text.getColumnCount(end.getLine())));
   }
 
