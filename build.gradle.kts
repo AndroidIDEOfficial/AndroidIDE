@@ -17,7 +17,6 @@
 
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -27,9 +26,11 @@ plugins {
   alias(libs.plugins.kotlin) apply false
 }
 
-buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
-  classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
-} }
+buildscript {
+  dependencies {
+    classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+  }
+}
 
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
@@ -69,15 +70,15 @@ subprojects {
   plugins.withId("com.android.application") { configureBaseExtension() }
   plugins.withId("com.android.library") { configureBaseExtension() }
 
-  plugins.withType(JavaLibraryPlugin::class.java) {
+  plugins.withId("java-library") {
     configure<JavaPluginExtension> {
       sourceCompatibility = Versions.javaVersion
       targetCompatibility = Versions.javaVersion
     }
   }
 
-  plugins.withId("kotlin-android") {
-    configure<KotlinAndroidProjectExtension> { jvmToolchain(Versions.javaVersionMajor) }
+  tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = Versions.javaVersion.toString()
   }
 }
 
