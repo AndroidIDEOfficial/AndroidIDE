@@ -1,6 +1,7 @@
 plugins {
   id("com.android.application")
   id("kotlin-android")
+  id("kotlin-kapt")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
 }

@@ -63,7 +63,6 @@ fun Project.configureBaseExtension() {
 
 subprojects {
   apply {
-    plugin("kotlin-kapt")
     plugin(AndroidIDEPlugin::class.java)
   }
 

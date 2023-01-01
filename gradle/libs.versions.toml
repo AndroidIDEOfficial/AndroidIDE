@@ -7,6 +7,7 @@ glide = "4.14.2"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
 ksp = "1.8.0-1.0.8"
+antlr4 = "4.11.1"
 
 [libraries]
 
@@ -23,7 +24,7 @@ common-utilcode = { module = "com.blankj:utilcodex", version = "1.31.1" }
 common-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 common-glide_ap = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 common-jsoup = { module = "org.jsoup:jsoup", version = "1.15.3" }
-common-antlr4 = { module = "org.antlr:antlr4-runtime", version = "4.9.3" }
+common-antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
 common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-core", version = "3.24.10" }
 common-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.12.0" }
 common-io = { module = "commons-io:commons-io", version = "2.11.0" }
