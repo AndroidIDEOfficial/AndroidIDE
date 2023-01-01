@@ -1,11 +1,3 @@
-import android.annotation.SuppressLint
-import org.gradle.api.plugins.antlr.internal.AntlrExecuter
-import org.gradle.api.plugins.antlr.internal.AntlrSpec
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
-import org.jetbrains.kotlin.gradle.internal.KaptTask
-import org.jetbrains.kotlin.gradle.tasks.KaptGenerateStubs
-import java.util.Collections
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -23,21 +15,23 @@ import java.util.Collections
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import java.util.Collections
+
 plugins {
-    id("java-library")
-    kotlin("jvm")
-    antlr
+  id("java-library")
+  kotlin("jvm")
+  antlr
 }
 
 dependencies {
-    antlr(libs.common.antlr4)
-    
-    implementation(libs.common.jkotlin)
-    
-    testImplementation(libs.tests.junit)
-    testImplementation(libs.tests.google.truth)
+  antlr(libs.common.antlr4)
+
+  implementation(libs.common.jkotlin)
+
+  testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.google.truth)
 }
 
 tasks.withType<AntlrTask> {
-    Collections.addAll(arguments, "-visitor", "-listener", "-Xexact-output-dir")
+  Collections.addAll(arguments, "-visitor", "-listener", "-Xexact-output-dir")
 }
