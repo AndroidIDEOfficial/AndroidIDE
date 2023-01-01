@@ -15,22 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id("com.android.library")
-    id("kotlin-android")
-}
+import java.util.Collections
 
-android {
-    namespace = "com.itsaky.androidide.lexers"
+plugins {
+  id("java-library")
+  kotlin("jvm")
+  antlr
 }
 
 dependencies {
-    api(libs.common.antlr4)
-    
-    implementation(libs.androidx.ktx)
-    implementation(libs.common.kotlin)
-    
-    testImplementation(libs.tests.junit)
-    testImplementation(libs.tests.google.truth)
-    testImplementation(libs.tests.robolectric)
+  antlr(libs.common.antlr4)
+
+  implementation(libs.common.jkotlin)
+
+  testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.google.truth)
+}
+
+tasks.withType<AntlrTask> {
+  Collections.addAll(arguments, "-visitor", "-listener", "-Xexact-output-dir")
 }

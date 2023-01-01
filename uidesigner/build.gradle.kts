@@ -20,7 +20,7 @@ dependencies {
   implementation(libs.common.kotlin)
   implementation(libs.common.utilcode)
   implementation(libs.google.material)
-  
+
   implementation(projects.actions)
   implementation(projects.annotations)
   implementation(projects.common)
@@ -31,7 +31,7 @@ dependencies {
   implementation(projects.lsp.xml)
   implementation(projects.resources)
   implementation(projects.xmlInflater)
-  
+
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.robolectric)

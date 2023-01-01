@@ -15,19 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("UnstableApiUsage")
+
 plugins {
   id("com.android.library")
   id("kotlin-android")
-  id("kotlin-kapt")
   id("kotlin-parcelize")
+  id("com.google.devtools.ksp") version libs.versions.ksp
 }
 
 android { namespace = "com.itsaky.androidide.inflater" }
 
 dependencies {
-  
-  kapt(projects.annotationProcessors)
-  
+  ksp(projects.annotationKsp)
+
   implementation(libs.androidx.appcompat)
   implementation(libs.common.kotlin)
   implementation(libs.common.utilcode)

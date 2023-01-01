@@ -38,7 +38,7 @@ dependencyResolutionManagement {
 rootProject.name = "AndroidIDE"
 
 include(
-  ":annotation-processors",
+  ":annotation-ksp",
   ":annotations",
   ":actions",
   ":app",
