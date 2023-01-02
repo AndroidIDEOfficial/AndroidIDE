@@ -21,7 +21,7 @@ plugins {
   id("com.android.library")
   id("kotlin-android")
   id("kotlin-parcelize")
-  id("com.google.devtools.ksp") version libs.versions.ksp
+  id("com.google.devtools.ksp") version 1.8.0-1.0.8
 }
 
 android { namespace = "com.itsaky.androidide.inflater" }
