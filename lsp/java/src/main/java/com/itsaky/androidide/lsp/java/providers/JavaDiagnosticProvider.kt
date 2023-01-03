@@ -89,7 +89,7 @@ class JavaDiagnosticProvider {
       // The returned list is accessed and the list returned by Collections.emptyList()
       // throws exception when trying to access.
       cachedDiagnostics
-    } else DiagnosticResult(file, findDiagnostics(task, file))
+    } else DiagnosticResult(file, findDiagnostics(task, file).sortedBy { it.range })
   }
 
   private fun isTaskValid(task: CompileTask?): Boolean {

@@ -27,6 +27,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
@@ -162,14 +163,17 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     if (file != null) {
       dispatchDocumentOpenEvent();
     }
-
-    if (file != null) {
-      getExtraArguments().putString(KEY_FILE, file.getAbsolutePath());
-    } else {
-      getExtraArguments().remove(KEY_FILE);
-    }
   }
-
+  
+  @NonNull
+  @Override
+  public Bundle getExtraArguments() {
+    var args = super.getExtraArguments();
+    final var path = file == null ? null : file.getAbsolutePath();
+    args.putString(KEY_FILE, path);
+    return args;
+  }
+  
   protected void dispatchDocumentOpenEvent() {
     if (getFile() == null) {
       return;

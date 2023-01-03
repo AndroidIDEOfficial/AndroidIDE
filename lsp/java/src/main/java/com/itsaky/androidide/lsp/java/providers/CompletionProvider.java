@@ -236,6 +236,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return synchronizedTask.get(
         task -> {
           if (task == null || task.task == null || task.task.getContext() == null) {
+            LOG.warn("Compilation resulted in an invalid JavacTask");
             return CompletionResult.EMPTY;
           }
           abortIfCancelled();
