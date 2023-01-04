@@ -18,15 +18,14 @@
 package com.itsaky.androidide.editor.language.java
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.BraceHandler
-import com.itsaky.androidide.editor.language.CommonSymbolPairs
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.utils.CStyleBracketsHandler
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
-import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.util.MyCharacter
 import io.github.rosemoe.sora.widget.SymbolPairMatch
 
@@ -59,7 +58,7 @@ class JavaLanguage(context: Context) :
   }
 
   override fun getNewlineHandlers(): Array<NewlineHandler> {
-    return arrayOf(BraceHandler({ line -> this.getIndentAdvance(line!!) }) { useTab() })
+    return arrayOf(CStyleBracketsHandler({ line -> this.getIndentAdvance(line!!) }) { useTab() })
   }
 
   internal open class JavaSymbolPairs : CommonSymbolPairs() {

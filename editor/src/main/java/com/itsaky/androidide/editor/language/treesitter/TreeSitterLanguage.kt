@@ -18,7 +18,7 @@
 package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.CommonSymbolPairs
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.language.IDELanguage
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider

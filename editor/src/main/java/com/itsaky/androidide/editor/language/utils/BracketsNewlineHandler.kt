@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.language
+package com.itsaky.androidide.editor.language.utils
 
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
@@ -27,12 +27,16 @@ import io.github.rosemoe.sora.text.TextUtils
 import kotlin.math.max
 import kotlin.math.min
 
-internal class BraceHandler(val getIndentAdvance : (String?) -> Int, val useTab: () -> Boolean) : NewlineHandler {
+internal open class BracketsNewlineHandler(val getIndentAdvance : (String?) -> Int, val useTab: () -> Boolean) : NewlineHandler {
+  
+  protected val openingBrackets = mutableListOf("{")
+  protected val closingBrackets = mutableListOf("}")
+  
   override fun matchesRequirement(text: Content, position: CharPosition, style: Styles?): Boolean {
     val line = text.getLine(position.line)
     return !StylesUtils.checkNoCompletion(style, position) &&
-      (getNonEmptyTextBefore(line, position.column, 1) == "{") &&
-      (getNonEmptyTextAfter(line, position.column, 1) == "}")
+      (getNonEmptyTextBefore(line, position.column, 1) in openingBrackets) &&
+      (getNonEmptyTextAfter(line, position.column, 1) in closingBrackets)
   }
 
   override fun handleNewline(
