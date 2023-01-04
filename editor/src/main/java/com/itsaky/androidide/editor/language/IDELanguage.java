@@ -74,13 +74,14 @@ public abstract class IDELanguage implements Language {
       return;
     }
 
-    if (!extraArguments.containsKey(IEditor.KEY_FILE)) {
+    final var path = extraArguments.getString(IEditor.KEY_FILE, null);
+    if (path == null) {
       LOG.warn("Cannot provide completions. No file provided.");
       return;
     }
 
     final var completionProvider = new CommonCompletionProvider(server);
-    final var file = Paths.get(extraArguments.getString(IEditor.KEY_FILE));
+    final var file = Paths.get(path);
 
     final var completionItems =
         completionProvider.complete(content, file, position, this::checkIsCompletionChar);
@@ -121,7 +122,12 @@ public abstract class IDELanguage implements Language {
   public int getTabSize() {
     return EditorPreferencesKt.getTabSize();
   }
-
+  
+  @Override
+  public int getIndentAdvance(@NonNull final ContentReference content, final int line, final int column) {
+    return getIndentAdvance(content.getLine(line).substring(0, column));
+  }
+  
   public int getIndentAdvance(@NonNull String line) {
     return 0;
   }

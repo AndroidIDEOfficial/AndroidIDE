@@ -20,7 +20,7 @@ package com.itsaky.androidide.editor.language.java
 import android.content.Context
 import com.itsaky.androidide.editor.language.BraceHandler
 import com.itsaky.androidide.editor.language.CommonSymbolPairs
-import com.itsaky.androidide.editor.language.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
@@ -52,11 +52,6 @@ class JavaLanguage(context: Context) :
 
   override fun getInterruptionLevel(): Int {
     return INTERRUPTION_LEVEL_SLIGHT
-  }
-
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
-    // TODO Implement this with tree-sitter
-    return 0
   }
 
   override fun getSymbolPairs(): SymbolPairMatch {

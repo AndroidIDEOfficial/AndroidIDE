@@ -22,12 +22,13 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddException
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
+import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
@@ -42,15 +43,12 @@ class AddThrowsAction : BaseJavaCodeAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (
-      !visible ||
-        !data.hasRequiredData( com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)
-    ) {
+    if (!visible || !data.hasRequiredData(DiagnosticItem::class.java)) {
       markInvisible()
       return
     }
 
-    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
+    val diagnostic = data[DiagnosticItem::class.java]!!
     if (diagnosticCode != diagnostic.code) {
       markInvisible()
       return
@@ -58,7 +56,7 @@ class AddThrowsAction : BaseJavaCodeAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
+    val diagnostic = data[DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
     val file = data.requirePath()
