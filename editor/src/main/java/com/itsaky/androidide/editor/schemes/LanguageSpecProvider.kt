@@ -33,7 +33,7 @@ object LanguageSpecProvider {
 
   private const val BASE_SPEC_PATH = "editor/treesitter"
   private val log = ILogger.newInstance("LanguageSpecProvider")
-
+  
   @JvmStatic
   @JvmOverloads
   fun getLanguageSpec(

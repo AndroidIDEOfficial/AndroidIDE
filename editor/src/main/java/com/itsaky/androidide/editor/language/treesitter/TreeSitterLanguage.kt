@@ -26,6 +26,7 @@ import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
 import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.utils.ILogger
@@ -69,10 +70,14 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     }
   }
 
-  fun finalizeIndent(indent: Int) : Int {
+  open fun finalizeIndent(indent: Int): Int {
     return max(0, indent) * tabSize
   }
-  
+
+  open fun validateIndentCapture(match: TSQueryMatch, capture: TSQueryCapture): Boolean {
+    return true
+  }
+
   override fun getAnalyzeManager(): AnalyzeManager {
     return this.analyzer
   }
@@ -80,35 +85,51 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   override fun getSymbolPairs(): SymbolPairMatch {
     return CommonSymbolPairs()
   }
-  
+
   override fun getIndentAdvance(line: String): Int {
+    return computeIndent(line, 0, line.length)
+  }
+
+  protected fun computeIndent(content: String, line: Int, column: Int, decrementBy: Int = 0): Int {
     return TSParser().use { parser ->
       parser.language = languageSpec.language
-      val tree = parser.parseString(line)
-    
+      val tree = parser.parseString(content)
+
       return@use TSQueryCursor().use { cursor ->
         cursor.exec(languageSpec.indentsQuery, tree.rootNode)
-      
+
         var indent = 0
         var match: TSQueryMatch? = cursor.nextMatch()
+        val captures = mutableListOf<TSQueryCapture>()
         while (match != null) {
-          for (capture in match.captures) {
-            val captureName =
-              languageSpec.indentsQuery.getCaptureNameForId(capture.index)
-            if (captureName == "indent") {
-              ++indent
-            } else if (captureName == "outdent") {
-              --indent
-            }
-          }
+          captures.addAll(match.captures)
           match = cursor.nextMatch()
         }
-      
-        if (indent > 1) {
+
+        captures.sortBy { it.node.startByte }
+
+        for (capture in captures) {
+          val capLine = capture.node.startPoint.row
+          val capCol = capture.node.endPoint.column / 2
+  
+          if (capLine > line || (capLine == line && capCol > column)) {
+            break
+          }
+          
+          val captureName =
+            languageSpec.indentsQuery.getCaptureNameForId(capture.index)
+          if (captureName == "indent") {
+            ++indent
+          } else if (captureName == "outdent") {
+            --indent
+          }
+        }
+
+        if (decrementBy == 0 && indent > 1) {
           indent = 1
         }
-        
-        finalizeIndent(indent)
+
+        finalizeIndent(indent) - decrementBy
       }
     }
   }
