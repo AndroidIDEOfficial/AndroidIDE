@@ -38,7 +38,7 @@ object Versions {
   const val targetSdk = 28
 
   /** The version code. */
-  const val versionCode = 213
+  const val versionCode = 214
 
   /**
    * The version name for the IDE. When in CI build, includes the [releaseVersionName], branch name
@@ -58,5 +58,5 @@ object Versions {
   val javaVersionMajor = 11
 
   /** The release version name. */
-  const val releaseVersionName = "2.1.3-beta"
+  const val releaseVersionName = "2.1.4-beta"
 }
