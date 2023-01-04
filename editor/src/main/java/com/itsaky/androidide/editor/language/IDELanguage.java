@@ -122,7 +122,12 @@ public abstract class IDELanguage implements Language {
   public int getTabSize() {
     return EditorPreferencesKt.getTabSize();
   }
-
+  
+  @Override
+  public int getIndentAdvance(@NonNull final ContentReference content, final int line, final int column) {
+    return getIndentAdvance(content.getLine(line).substring(0, column));
+  }
+  
   public int getIndentAdvance(@NonNull String line) {
     return 0;
   }

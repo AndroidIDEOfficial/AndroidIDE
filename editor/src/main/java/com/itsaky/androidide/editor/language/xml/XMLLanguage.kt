@@ -18,7 +18,7 @@
 package com.itsaky.androidide.editor.language.xml
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
@@ -49,10 +49,6 @@ class XMLLanguage(context: Context) :
 
   override fun getInterruptionLevel(): Int {
     return INTERRUPTION_LEVEL_STRONG
-  }
-
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
-    return 0
   }
 
   override fun getNewlineHandlers(): Array<NewlineHandler> {

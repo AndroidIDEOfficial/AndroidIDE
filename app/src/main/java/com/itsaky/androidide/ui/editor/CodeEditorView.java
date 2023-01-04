@@ -53,7 +53,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.editor.language.TreeSitterLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
@@ -74,7 +74,6 @@ import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
 
 import org.greenrobot.eventbus.EventBus;

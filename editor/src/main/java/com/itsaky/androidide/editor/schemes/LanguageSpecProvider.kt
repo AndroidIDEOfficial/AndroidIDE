@@ -18,6 +18,7 @@
 package com.itsaky.androidide.editor.schemes
 
 import android.content.Context
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageSpec
 import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
@@ -40,8 +41,8 @@ object LanguageSpecProvider {
     type: String,
     lang: TSLanguage,
     localsCaptureSpec: LocalsCaptureSpec = LocalsCaptureSpec.DEFAULT
-  ): TsLanguageSpec {
-    return TsLanguageSpec(
+  ): TreeSitterLanguageSpec {
+    val editorLangSpec = TsLanguageSpec(
       language = lang,
       highlightScmSource = readScheme(context, type, "highlights"),
       localsScmSource = readScheme(context, type, "locals"),
@@ -49,6 +50,7 @@ object LanguageSpecProvider {
       bracketsScmSource = readScheme(context, type, "brackets"),
       localsCaptureSpec = localsCaptureSpec
     )
+    return TreeSitterLanguageSpec(spec = editorLangSpec, indentsQueryScm = readScheme(context, type, "indents"))
   }
 
   private fun readScheme(context: Context, type: String, name: String): String {
