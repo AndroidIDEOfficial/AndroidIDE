@@ -119,6 +119,7 @@ dependencies {
   implementation(projects.resources)
   implementation(projects.treeview)
   implementation(projects.uidesigner)
+  implementation(projects.xmlInflater)
 
   coreLibraryDesugaring(libs.androidx.lib.desugaring)
 

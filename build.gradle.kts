@@ -48,7 +48,7 @@ fun Project.configureBaseExtension() {
       sourceCompatibility = Versions.javaVersion
       targetCompatibility = Versions.javaVersion
     }
-
+    
     buildTypes.getByName("debug") { isMinifyEnabled = false }
     buildTypes.getByName("release") {
       isMinifyEnabled = true
