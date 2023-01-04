@@ -10,6 +10,8 @@
 <p align="center">
 <!-- Latest release -->
 <img src="https://img.shields.io/github/v/release/AndroidIDEOfficial/AndroidIDE?include_prereleases&amp;label=latest%20release" alt="Latest release">
+<!-- Repo Size -->
+<img src="https://img.shields.io/github/repo-size/itsaky/AndroidIDE" alt="Repo Size">
 <!-- Downloads -->
 <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fandroidide.com%2Ffunctions%2Fdownloads_shield.php" alt="Total downloads">
 <!-- Build and test -->
