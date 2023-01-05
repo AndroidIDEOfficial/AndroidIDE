@@ -73,11 +73,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   open fun finalizeIndent(indent: Int): Int {
     return max(0, indent) * tabSize
   }
-
-  open fun validateIndentCapture(match: TSQueryMatch, capture: TSQueryCapture): Boolean {
-    return true
-  }
-
+  
   override fun getAnalyzeManager(): AnalyzeManager {
     return this.analyzer
   }
