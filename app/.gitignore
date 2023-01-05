@@ -1,3 +1,7 @@
+# Directories that are created when generating signed APK in Android Studio
+/debug
+/release
+
 # Built application files
 *.apk
 *.aar

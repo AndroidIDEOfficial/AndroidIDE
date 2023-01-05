@@ -1,3 +1,6 @@
+# Downloaded signing key
+signing-key.jks
+
 # Built application files
 *.apk
 *.aar

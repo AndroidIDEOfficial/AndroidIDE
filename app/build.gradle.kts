@@ -1,9 +1,14 @@
+@file:Suppress("UnstableApiUsage")
+
+import de.undercouch.gradle.tasks.download.DownloadAction
+
 plugins {
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
+  id("de.undercouch.download") version "5.3.0"
 }
 
 android {
@@ -16,20 +21,32 @@ android {
 
   compileOptions { isCoreLibraryDesugaringEnabled = true }
 
-  signingConfigs.create("common") {
-    storeFile = file("dev.keystore")
-    keyAlias = "androidide"
-    storePassword = "ed68424fb109e5aa8146e4b86caa72e3"
-    keyPassword = "ed68424fb109e5aa8146e4b86caa72e3"
+  downloadSigningKey()
+
+  // Keystore credentials
+  val alias = checkAndGetEnv(KEY_ALIAS)
+  val storePass = checkAndGetEnv(KEY_STORE_PASS)
+  val keyPass = checkAndGetEnv(KEY_PASS)
+
+  if (alias != null && storePass != null && keyPass != null && signingKey.exists()) {
+    signingConfigs.create("common") {
+      storeFile = signingKey
+      keyAlias = alias
+      storePassword = storePass
+      keyPassword = keyPass
+    }
+
+    buildTypes {
+      debug { signingConfig = signingConfigs.getByName("common") }
+      release { signingConfig = signingConfigs.getByName("common") }
+    }
+  } else {
+    logger.warn(
+      "Signing info not configured. keystoreFile=$signingKey[exists=${signingKey.exists()}]"
+    )
   }
 
-  buildTypes {
-    debug { signingConfig = signingConfigs.getByName("common") }
-    release {
-      isShrinkResources = true
-      signingConfig = signingConfigs.getByName("common")
-    }
-  }
+  buildTypes { release { isShrinkResources = true } }
 
   packagingOptions {
     resources.excludes.addAll(
@@ -134,4 +151,42 @@ dependencies {
   androidTestImplementation(libs.tests.androidx.junit)
   androidTestImplementation(libs.tests.androidx.espresso)
   androidTestImplementation(libs.tests.google.truth)
+}
+
+fun downloadSigningKey() {
+  if (signingKey.exists()) {
+    logger.info("Skipping download as ${signingKey.name} file already exists.")
+    return
+  }
+
+  // URL to download the signing key
+  val url = checkAndGetEnv(KEY_URL) ?: return
+
+  // Username and password required to download the keystore
+  val user = checkAndGetEnv(AUTH_USER) ?: return
+  val pass = checkAndGetEnv(AUTH_PASS) ?: return
+
+  logger.info("Downloading signing key...")
+  DownloadAction(project).apply {
+    src(url)
+    dest(signingKey)
+    username(user)
+    password(pass)
+    overwrite(false)
+    
+    // Must be set to true
+    quiet(true)
+  }.execute()
+    
+    // wait for the download to finish
+    .get()
+}
+
+fun checkAndGetEnv(env: String): String? {
+  val value = System.getenv(env)
+  if (value.isNullOrBlank()) {
+    logger.warn("$env is not set. Debug key will be used to sign the APK")
+    return null
+  }
+  return value
 }
