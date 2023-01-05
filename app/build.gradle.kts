@@ -24,9 +24,9 @@ android {
   downloadSigningKey()
 
   // Keystore credentials
-  val alias = checkAndGetEnv(KEY_ALIAS)
-  val storePass = checkAndGetEnv(KEY_STORE_PASS)
-  val keyPass = checkAndGetEnv(KEY_PASS)
+  val alias = getEnvOrProp(KEY_ALIAS)
+  val storePass = getEnvOrProp(KEY_STORE_PASS)
+  val keyPass = getEnvOrProp(KEY_PASS)
 
   if (alias != null && storePass != null && keyPass != null && signingKey.exists()) {
     signingConfigs.create("common") {
@@ -160,11 +160,11 @@ fun downloadSigningKey() {
   }
 
   // URL to download the signing key
-  val url = checkAndGetEnv(KEY_URL) ?: return
+  val url = getEnvOrProp(KEY_URL) ?: return
 
   // Username and password required to download the keystore
-  val user = checkAndGetEnv(AUTH_USER) ?: return
-  val pass = checkAndGetEnv(AUTH_PASS) ?: return
+  val user = getEnvOrProp(AUTH_USER) ?: return
+  val pass = getEnvOrProp(AUTH_PASS) ?: return
 
   logger.info("Downloading signing key...")
   DownloadAction(project).apply {
@@ -182,10 +182,13 @@ fun downloadSigningKey() {
     .get()
 }
 
-fun checkAndGetEnv(env: String): String? {
-  val value = System.getenv(env)
+fun getEnvOrProp(key: String): String? {
+  var value: String? = System.getenv(key)
   if (value.isNullOrBlank()) {
-    logger.warn("$env is not set. Debug key will be used to sign the APK")
+    value = project.properties[key] as? String?
+  }
+  if (value.isNullOrBlank()) {
+    logger.warn("$key is not set. Debug key will be used to sign the APK")
     return null
   }
   return value
