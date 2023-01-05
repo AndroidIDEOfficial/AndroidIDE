@@ -3,29 +3,40 @@
 ; indent - increments indentation
 ; outdent - decrements indentation
 
-[
-  "("
-  "["
-  "{"
-  ] @indent
+(class_body
+  "{" @indent
+  "}" @outdent)
 
-[
-  (class_body)
-  (enum_body)
-  (interface_body)
-  (constructor_declaration)
-  (constructor_body)
-  (block)
-  (switch_block)
-  (array_initializer)
-  (argument_list)
-  (formal_parameters)
-  ] @indent
+(enum_body
+  "{" @indent
+  "}" @outdent)
 
-(expression_statement (method_invocation) @indent)
+(interface_body
+  "{" @indent
+  "}" @outdent)
 
-[
-  ")"
-  "]"
-  "}"
-] @outdent
+(constructor_body
+  "{" @indent
+  "}" @outdent)
+
+(block
+  "{" @indent
+  "}" @outdent)
+
+(switch_block
+  "{" @indent
+  "}" @outdent)
+
+(array_initializer
+  "{" @indent
+  "}" @outdent)
+
+(formal_parameters
+  "(" @indent
+  ")" @outdent)
+
+(argument_list
+  "(" @indent
+  ")" @outdent)
+
+; (expression_statement (method_invocation) @indent)
