@@ -26,7 +26,8 @@ repositories {
 }
 
 dependencies {
-    implementation(gradleApi())
-  implementation(kotlin("stdlib"))
-  implementation("com.google.googlejavaformat:google-java-format:1.15.0")
+  implementation(gradleApi())
+  implementation(libs.common.jkotlin)
+  implementation(libs.common.antlr4)
+  implementation(libs.google.java.format)
 }

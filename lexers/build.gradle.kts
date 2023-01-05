@@ -15,23 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import java.util.Collections
+import com.itsaky.androidide.plugins.LexerGeneratorPlugin
 
 plugins {
   id("java-library")
   kotlin("jvm")
-  antlr
+}
+
+apply {
+  plugin(LexerGeneratorPlugin::class.java)
+}
+
+java {
+  sourceCompatibility = BuildConfig.javaVersion
+  targetCompatibility = BuildConfig.javaVersion
 }
 
 dependencies {
-  antlr(libs.common.antlr4)
-
+  implementation(libs.common.antlr4.runtime)
   implementation(libs.common.jkotlin)
 
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
-}
-
-tasks.withType<AntlrTask> {
-  Collections.addAll(arguments, "-visitor", "-listener", "-Xexact-output-dir")
 }

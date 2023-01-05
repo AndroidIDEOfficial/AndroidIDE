@@ -12,10 +12,10 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide"
+  namespace = BuildConfig.packageName
 
   defaultConfig {
-    applicationId = "com.itsaky.androidide"
+    applicationId = BuildConfig.packageName
     vectorDrawables.useSupportLibrary = true
   }
 

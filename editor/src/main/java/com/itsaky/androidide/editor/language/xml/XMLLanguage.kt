@@ -69,5 +69,4 @@ class XMLLanguage(context: Context) :
     // Indentation can be negative in XML
     return indent * tabSize
   }
-  
 }

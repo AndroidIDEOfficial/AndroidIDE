@@ -34,19 +34,19 @@ buildscript {
 
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
-    compileSdkVersion(Versions.compileSdk)
-    buildToolsVersion = Versions.buildTools
+    compileSdkVersion(BuildConfig.compileSdk)
+    buildToolsVersion = BuildConfig.buildTools
 
     defaultConfig {
-      minSdk = Versions.minSdk
-      targetSdk = Versions.targetSdk
-      versionCode = Versions.versionCode
-      versionName = Versions.versionName
+      minSdk = BuildConfig.minSdk
+      targetSdk = BuildConfig.targetSdk
+      versionCode = BuildConfig.versionCode
+      versionName = BuildConfig.versionName
     }
 
     compileOptions {
-      sourceCompatibility = Versions.javaVersion
-      targetCompatibility = Versions.javaVersion
+      sourceCompatibility = BuildConfig.javaVersion
+      targetCompatibility = BuildConfig.javaVersion
     }
     
     buildTypes.getByName("debug") { isMinifyEnabled = false }
@@ -71,13 +71,13 @@ subprojects {
 
   plugins.withId("java-library") {
     configure<JavaPluginExtension> {
-      sourceCompatibility = Versions.javaVersion
-      targetCompatibility = Versions.javaVersion
+      sourceCompatibility = BuildConfig.javaVersion
+      targetCompatibility = BuildConfig.javaVersion
     }
   }
 
   tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = Versions.javaVersion.toString()
+    kotlinOptions.jvmTarget = BuildConfig.javaVersion.toString()
   }
 }
 
