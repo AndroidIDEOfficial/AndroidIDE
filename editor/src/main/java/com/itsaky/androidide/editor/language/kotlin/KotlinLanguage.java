@@ -20,9 +20,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.editor.language.utils.BracketsNewlineHandler;
-import com.itsaky.androidide.editor.language.utils.CStyleBracketsHandler;
-import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
+import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
+import com.itsaky.androidide.editor.language.newline.CStyleBracketsHandler;
 import com.itsaky.androidide.editor.language.IDELanguage;
 import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.lexers.kotlin.KotlinLexer;
@@ -46,7 +45,7 @@ public class KotlinLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("KotlinLanguage");
   private final NewlineHandler[] newlineHandlers =
-      new NewlineHandler[] {new CStyleBracketsHandler(this::getIndentAdvance, this::useTab)};
+      new NewlineHandler[] {new BracketsNewlineHandler(this::getIndentAdvance, this::useTab)};
   private KotlinAnalyzer analyzer;
 
   public KotlinLanguage() {

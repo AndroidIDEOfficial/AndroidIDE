@@ -18,8 +18,9 @@
 package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.language.IDELanguage
+import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
@@ -33,8 +34,9 @@ import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsTheme
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
+import io.github.rosemoe.sora.text.ContentReference
+import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.widget.SymbolPairMatch
-import kotlin.math.max
 
 /**
  * Tree Sitter language implementation.
@@ -47,6 +49,8 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   private lateinit var tsTheme: TsTheme
   private lateinit var languageSpec: TreeSitterLanguageSpec
   private val analyzer by lazy { TsAnalyzeManager(languageSpec.spec, tsTheme) }
+
+  private val newlineHandlersLazy by lazy { createNewlineHandlers() }
 
   private val log = ILogger.newInstance("TreeSitterLanguage")
 
@@ -71,9 +75,9 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   }
 
   open fun finalizeIndent(indent: Int): Int {
-    return max(0, indent) * tabSize
+    return indent * tabSize
   }
-  
+
   override fun getAnalyzeManager(): AnalyzeManager {
     return this.analyzer
   }
@@ -82,11 +86,29 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     return CommonSymbolPairs()
   }
 
-  override fun getIndentAdvance(line: String): Int {
-    return computeIndent(line, 0, line.length)
+  open fun createNewlineHandlers(): Array<TSBracketsHandler> {
+    return emptyArray()
   }
 
-  protected fun computeIndent(content: String, line: Int, column: Int, decrementBy: Int = 0): Int {
+  override fun getNewlineHandlers(): Array<TSBracketsHandler> {
+    return newlineHandlersLazy
+  }
+
+  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
+    return computeIndent(
+      content.toString(),
+      line,
+      column,
+      decrementBy = TextUtils.countLeadingSpaceCount(content.getLine(line), tabSize)
+    )
+  }
+
+  protected open fun computeIndent(
+    content: String,
+    line: Int,
+    column: Int,
+    decrementBy: Int = 0
+  ): Int {
     return TSParser().use { parser ->
       parser.language = languageSpec.language
       val tree = parser.parseString(content)
@@ -107,22 +129,17 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
         for (capture in captures) {
           val capLine = capture.node.startPoint.row
           val capCol = capture.node.endPoint.column / 2
-  
+
           if (capLine > line || (capLine == line && capCol > column)) {
             break
           }
-          
-          val captureName =
-            languageSpec.indentsQuery.getCaptureNameForId(capture.index)
+
+          val captureName = languageSpec.indentsQuery.getCaptureNameForId(capture.index)
           if (captureName == "indent") {
             ++indent
           } else if (captureName == "outdent") {
             --indent
           }
-        }
-
-        if (decrementBy == 0 && indent > 1) {
-          indent = 1
         }
 
         finalizeIndent(indent) - decrementBy

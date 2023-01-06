@@ -51,22 +51,4 @@ class XMLLanguage(context: Context) :
   override fun getInterruptionLevel(): Int {
     return INTERRUPTION_LEVEL_STRONG
   }
-
-  override fun getNewlineHandlers(): Array<NewlineHandler> {
-    return emptyArray()
-  }
-
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
-    return computeIndent(
-      content.toString(),
-      line,
-      column,
-      decrementBy = countLeadingSpaceCount(content.getLine(line), tabSize)
-    )
-  }
-
-  override fun finalizeIndent(indent: Int): Int {
-    // Indentation can be negative in XML
-    return indent * tabSize
-  }
 }

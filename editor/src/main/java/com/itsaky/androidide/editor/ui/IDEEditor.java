@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.editor.ui;
 
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getTabSize;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
@@ -219,7 +220,12 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
           });
     }
   }
-
+  
+  @Override
+  public int getTabWidth() {
+    return getTabSize();
+  }
+  
   /**
    * Shows the given signature help in the editor.
    *

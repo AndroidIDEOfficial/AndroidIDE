@@ -32,7 +32,8 @@ java {
 }
 
 dependencies {
-  implementation(libs.common.antlr4.runtime)
+  api(libs.common.antlr4.runtime)
+  
   implementation(libs.common.jkotlin)
 
   testImplementation(libs.tests.junit)
