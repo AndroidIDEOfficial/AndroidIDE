@@ -22,10 +22,10 @@ plugins {
 
 dependencies {
     implementation(projects.shared)
-    implementation(projects.subprojects.jsonrpc)
     implementation(projects.subprojects.jaxp)
     
     implementation(libs.common.jsoup)
+    implementation(libs.common.jsonrpc)
     implementation(libs.google.guava.jre)
     implementation(libs.google.gson)
     implementation(libs.xml.remark)

@@ -16,6 +16,8 @@
  */
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 @Suppress("JavaPluginLanguageLevel")
 plugins {
@@ -24,13 +26,12 @@ plugins {
   id("org.jetbrains.kotlin.jvm")
 }
 
-tasks.withType<Jar> {
-  manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
+shadow {
+  archivesName.set("tooling-api")
 }
 
-tasks.withType<ShadowJar> {
-  archiveBaseName.set("tooling-api")
-  archiveClassifier.set("all")
+tasks.withType<Jar> {
+  manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
 }
 
 tasks.register<Copy>("copyJarToAssets") {
@@ -38,9 +39,23 @@ tasks.register<Copy>("copyJarToAssets") {
   into(project.rootProject.file("app/src/main/assets/data/common/"))
 }
 
+tasks.register("renameJar") {
+  finalizedBy("copyJarToAssets")
+  
+  doLast {
+    val jar = project.file("${project.buildDir}/libs/tooling-api-${project.version}-all.jar")
+    val destJar = jar.parentFile.resolve("tooling-api-all.jar")
+    destJar.exists().ifTrue {
+      destJar.delete()
+    }
+  
+    jar.renameTo(destJar)
+  }
+}
+
 project.tasks.getByName("jar") { finalizedBy("shadowJar") }
 
-project.tasks.getByName("shadowJar") { finalizedBy("copyJarToAssets") }
+project.tasks.getByName("shadowJar") { finalizedBy("renameJar") }
 
 dependencies {
   implementation(projects.subprojects.toolingApi)

@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- @Suppress("JavaPluginLanguageLevel")
+@Suppress("JavaPluginLanguageLevel")
 plugins {
     id("java-library")
     id("org.jetbrains.kotlin.jvm")
@@ -25,4 +25,7 @@ dependencies {
     implementation(libs.common.jkotlin)
     implementation(projects.logger)
     implementation(projects.subprojects.toolingApi)
+    
+    // build tooling API before tests
+    compileOnly(projects.subprojects.toolingApiImpl)
 }

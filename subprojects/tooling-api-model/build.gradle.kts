@@ -24,10 +24,10 @@ plugins {
 dependencies {
     implementation(projects.logger)
     
-    api(projects.subprojects.jsonrpc)
     api(projects.subprojects.xmlDom)
     api(projects.subprojects.builderModelImpl)
-    
+    api(libs.common.jsonrpc)  
+  
     implementation(libs.common.jkotlin)
 }
 

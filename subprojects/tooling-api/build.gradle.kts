@@ -23,11 +23,11 @@ plugins {
 
 dependencies {
     api(projects.logger)
-    api(projects.subprojects.jsonrpc)
     api(projects.subprojects.toolingApiModel)
     api(projects.subprojects.toolingApiEvents)
     
     api(libs.google.gson)
+    api(libs.common.jsonrpc)
     implementation(libs.common.jkotlin)
     
     testImplementation(libs.tests.junit)
