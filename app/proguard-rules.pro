@@ -18,8 +18,8 @@
 # Builder model implementations
 -keep class com.itsaky.androidide.builder.model.** { *; }
 
-# JSONRpc
--keep class org.eclipse.lemminx.uriresolver.URIResolverExtensionManager { *; }
+# Eclipse
+-keep class org.eclipse.** { *; }
 
 # JAXP
 -keep class jaxp.** { *; }
