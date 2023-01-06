@@ -82,7 +82,7 @@ xml-resolver = { module = "xml-resolver:xml-resolver", version = "1.2" }
 xml-jb-annotations = { module = "org.jetbrains:annotations", version = "23.1.0" }
 
 # GIT
-git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.201504261725-r" }
+git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "6.4.0.202211300538-r" }
 
 # Tests
 tests-junit = { module = "junit:junit", version = "4.13.2" }
