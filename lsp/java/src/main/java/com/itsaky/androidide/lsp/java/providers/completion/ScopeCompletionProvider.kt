@@ -199,19 +199,4 @@ class ScopeCompletionProvider(
       MultipleClassImportEditHandler(imports, fileImports, file)
     return item
   }
-
-  private fun findSource(
-    compiler: CompilerProvider,
-    task: CompileTask,
-    method: ExecutableElement,
-  ): MethodTree? {
-    val superClass = method.enclosingElement as TypeElement
-    val superClassName = superClass.qualifiedName.toString()
-    val methodName = method.simpleName.toString()
-    val erasedParameterTypes = FindHelper.erasedParameterTypes(task, method)
-    val sourceFile: Optional<JavaFileObject> = compiler.findAnywhere(superClassName)
-    if (!sourceFile.isPresent) return null
-    val parse: ParseTask = compiler.parse(sourceFile.get())
-    return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes)
-  }
 }
