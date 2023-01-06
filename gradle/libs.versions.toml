@@ -72,7 +72,7 @@ google-java-format = { module ="com.google.googlejavaformat:google-java-format",
 aapt2-common = { module = "com.android.tools:common", version = "30.2.2" }
 aapt2-annotations = { module = "com.android.tools:annotations", version = "30.2.2" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "13.0" }
-aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "7.2.2-7984345" }
+aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "7.3.1-8691043" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
