@@ -17,6 +17,7 @@
 
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
+import com.mooltiverse.oss.nyx.state.State
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -26,11 +27,7 @@ plugins {
   alias(libs.plugins.kotlin) apply false
 }
 
-buildscript {
-  dependencies {
-    classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
-  }
-}
+buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6") } }
 
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
@@ -41,14 +38,14 @@ fun Project.configureBaseExtension() {
       minSdk = BuildConfig.minSdk
       targetSdk = BuildConfig.targetSdk
       versionCode = BuildConfig.versionCode
-      versionName = BuildConfig.versionName
+      versionName = rootProject.version.toString()
     }
 
     compileOptions {
       sourceCompatibility = BuildConfig.javaVersion
       targetCompatibility = BuildConfig.javaVersion
     }
-    
+
     buildTypes.getByName("debug") { isMinifyEnabled = false }
     buildTypes.getByName("release") {
       isMinifyEnabled = true
@@ -62,10 +59,9 @@ fun Project.configureBaseExtension() {
 }
 
 subprojects {
-  apply {
-    plugin(AndroidIDEPlugin::class.java)
-  }
+  apply { plugin(AndroidIDEPlugin::class.java) }
 
+  version = rootProject.version
   plugins.withId("com.android.application") { configureBaseExtension() }
   plugins.withId("com.android.library") { configureBaseExtension() }
 

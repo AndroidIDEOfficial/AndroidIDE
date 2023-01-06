@@ -21,7 +21,6 @@ plugins {
 
 
 group = "com.itsaky.androidide.annotations"
-version = BuildConfig.versionName
 
 dependencies {
   implementation(kotlin("stdlib"))

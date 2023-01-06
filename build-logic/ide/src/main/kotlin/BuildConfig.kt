@@ -15,8 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.itsaky.androidide.CI
 import org.gradle.api.JavaVersion
+import org.gradle.api.Project
 
 /**
  * Build configuration for the IDE.
@@ -24,10 +24,8 @@ import org.gradle.api.JavaVersion
  * @author Akash Yadav
  */
 object BuildConfig {
-  
-  /**
-   * AndroidIDE's package name.
-   */
+
+  /** AndroidIDE's package name. */
   const val packageName = "com.itsaky.androidide"
 
   /** The compile SDK version. */
@@ -45,23 +43,7 @@ object BuildConfig {
   /** The version code. */
   const val versionCode = 214
 
-  /**
-   * The version name for the IDE. When in CI build, includes the [releaseVersionName], branch name
-   * and the short commit hash.
-   */
-  val versionName by lazy {
-    var version = releaseVersionName
-    if (CI.isCiBuild) {
-      // e.g. 2.1.2-beta_main-d5e9c9ea
-      version += "_${CI.branchName}-${CI.commitHash}"
-    }
-    version
-  }
-
   /** The source and target Java compatibility. */
   val javaVersion = JavaVersion.VERSION_11
   val javaVersionMajor = 11
-
-  /** The release version name. */
-  const val releaseVersionName = "2.1.4-beta"
 }
