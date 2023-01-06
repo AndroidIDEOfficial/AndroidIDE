@@ -81,6 +81,13 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Run debug tests
         run: ./gradlew testDebug --continue
+        env:
+          IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
+          IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
+          IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
+          IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
+          IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
+          IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
@@ -114,6 +121,12 @@ jobs:
         run: ./gradlew :subprojects:tooling-api-impl:test --continue
         env:
           TEST_TOOLING_API_IMPL: "true"
+          IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
+          IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
+          IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
+          IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
+          IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
+          IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
