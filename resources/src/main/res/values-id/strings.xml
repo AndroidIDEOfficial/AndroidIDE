@@ -274,7 +274,7 @@
   <string name="msg_file_tree">Cabang file</string>
   <string name="hint_color_resource">Sumber warna</string>
   <string name="title_color_picker">Pemilih warna</string>
-  <string name="hint_string_value">Isi string</string>
+  <string name="hint_attr_value">Attribute value</string>
   <string name="hint_string_resource">Sumber string</string>
   <string name="hint_resource_reference">Referensi sumber lain</string>
   <string name="msg_code_actions">Quickfixes</string>
@@ -372,6 +372,7 @@
   <string name="idepref_maxLineWidth_title">Lebar baris maksimal</string>
   <string name="idepref_maxLineWidth_summary">Jumlah maksimum karakter yang harus dimiliki sebuah baris.</string>
   <string name="idepref_splitAttrIndentSize_title">Pisahkan ukuran indentasi atribut</string>
+  <string name="idepref_splitAttrIndentSize_summary">Jumlah spasi untuk indentasi untuk atribut terpisah.</string>
   <string name="idepref_preservedNewLines_title">Baris baru dipertahankan</string>
   <string name="idepref_preservedNewLines_summary">Jumlah maksimum jeda baris kontinu yang harus dipertahankan.</string>
   <string name="idepref_emptyElements_title">Perilaku elemen kosong</string>
@@ -447,31 +448,6 @@
   <string name="msg_feature_unimplemented">Fitur ini belum diterapkan.</string>
   <string name="ui_category_widgets">Widget</string>
   <string name="ui_category_layouts">Tata letak</string>
-  <string name="widget_textview">TextView</string>
-  <string name="widget_button">Button</string>
-  <string name="widget_checkbox">CheckBox</string>
-  <string name="widget_checked_textview">CheckedTextView</string>
-  <string name="widget_edittext">EditText</string>
-  <string name="widget_image_button">ImageButton</string>
-  <string name="widget_image_view">ImageView</string>
-  <string name="widget_progressbar">ProgressBar</string>
-  <string name="widget_radio_button">RadioButton</string>
-  <string name="widget_seekbar">SeekBar</string>
-  <string name="widget_spinner">Spinner</string>
-  <string name="layout_linear">LinearLayout</string>
-  <string name="layout_relative">RelativeLayout</string>
-  <string name="widget_auto_complete_textview">AutoCompleteTextView</string>
-  <string name="widget_listview">ListView</string>
-  <string name="widget_surfaceview">SurfaceView</string>
-  <string name="widget_switch">Switch</string>
-  <string name="widget_textureview">TextureView</string>
-  <string name="widget_togglebutton">ToggleButton</string>
-  <string name="widget_webview">WebView</string>
-  <string name="widget_frame_layout">FrameLayout</string>
-  <string name="widget_grid_layout">GridLayout</string>
-  <string name="widget_linear_layout_horz">LinearLayout (H)</string>
-  <string name="widget_linear_layout_vert">LinearLayout (V)</string>
-  <string name="widget_relative_layout">RelativeLayout</string>
   <!-- GIT -->
   <string name="git_clone">Clone</string>
   <string name="git_clone_repo">Clone repositori git</string>
@@ -479,5 +455,16 @@
   <string name="git_clone_in_progress">Cloning repositori</string>
   <string name="git_clone_success">Git clone berhasil</string>
   <string name="git_clone_failed">Gagal mengkloning repositori git</string>
-  <string name="idepref_splitAttrIndentSize_summary">Jumlah spasi untuk indentasi untuk atribut terpisah.</string>
+  <string name="msg_select_attr">Select an attribute from the below list</string>
+  <string name="action_show_hierarchy">Show layout hierarchy</string>
+  <string name="idepref_editor_colorScheme">Color Scheme</string>
+  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="idepref_general_uiMode">UI Mode</string>
+  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
+  <string name="uiMode_system">Follow system</string>
+  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
+  <string name="idepref_general_projectConfig">Project configuration</string>
 </resources>
