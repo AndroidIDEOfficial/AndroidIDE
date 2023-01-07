@@ -178,7 +178,7 @@ jobs:
       - name: Download APKs
         uses: actions/download-artifact@v3
         with:
-          name: apks-release
+          name: apk-release
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Restore cache
