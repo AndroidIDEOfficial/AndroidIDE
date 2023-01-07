@@ -17,7 +17,6 @@
 
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
-import com.mooltiverse.oss.nyx.state.State
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -29,6 +28,18 @@ plugins {
 
 buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6") } }
 
+val Project.projectVersionCode by lazy {
+  val version = rootProject.version.toString()
+  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+")
+
+  return@lazy regex.find(version)?.value?.substring(1)?.replace(".", "")?.toInt()?.also {
+    logger.warn("Version code is '$it' (from version ${rootProject.version}).")
+  }
+    ?: throw IllegalStateException(
+      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+    )
+}
+
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(BuildConfig.compileSdk)
@@ -37,7 +48,7 @@ fun Project.configureBaseExtension() {
     defaultConfig {
       minSdk = BuildConfig.minSdk
       targetSdk = BuildConfig.targetSdk
-      versionCode = BuildConfig.versionCode
+      versionCode = projectVersionCode
       versionName = rootProject.version.toString()
     }
 

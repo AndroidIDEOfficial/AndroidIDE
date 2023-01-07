@@ -40,9 +40,6 @@ object BuildConfig {
   /** The target SDK version. */
   const val targetSdk = 28
 
-  /** The version code. */
-  const val versionCode = 214
-
   /** The source and target Java compatibility. */
   val javaVersion = JavaVersion.VERSION_11
   val javaVersionMajor = 11
