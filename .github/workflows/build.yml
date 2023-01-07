@@ -44,9 +44,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Assemble Debug
+      - name: Assemble
         run: ./gradlew assemble
         env:
+          ReleaseAndroidIDE: ${{ github.ref == 'refs/heads/main' }}
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
           IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
