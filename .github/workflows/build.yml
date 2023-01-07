@@ -48,7 +48,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/main' }}
         run: ./gradlew assembleDebug
         env:
-          ReleaseAndroidIDE: ${{ github.ref == 'refs/heads/main' }}
+          ReleaseAndroidIDE: false
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
           IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
@@ -59,7 +59,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run: ./gradlew assembleRelease
         env:
-          ReleaseAndroidIDE: ${{ github.ref == 'refs/heads/main' }}
+          ReleaseAndroidIDE: true
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
           IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
