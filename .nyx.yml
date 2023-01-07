@@ -4,13 +4,6 @@ releasePrefix: "v"
 stateFile: build/nyx-state.json
 scheme: SEMVER
 
-git:
-  remotes:
-    items:
-      name: "origin"
-      user: "{{#environment.variable}}GH_TOKEN{{/environment.variable}}"
-      password: ""
-
 changelog:
   path: build/CHANGELOG.md
   template: .nyx/CHANGELOG.tpl
