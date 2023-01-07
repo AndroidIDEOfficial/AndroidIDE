@@ -4,6 +4,13 @@ releasePrefix: "v"
 stateFile: build/nyx-state.json
 scheme: SEMVER
 
+git:
+  remotes:
+    items:
+      name: "origin"
+      user: "{{#environment.variable}}GH_TOKEN{{/environment.variable}}"
+      password: ""
+
 changelog:
   path: build/CHANGELOG.md
   template: .nyx/CHANGELOG.tpl
@@ -26,6 +33,8 @@ releaseTypes:
     - internal
   publicationServices:
     - github
+  remoteRepositories:
+    - origin
   items:
     mainline:
       description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
