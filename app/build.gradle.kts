@@ -1,14 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
-import de.undercouch.gradle.tasks.download.DownloadAction
-
 plugins {
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
-  id("de.undercouch.download") version "5.3.0"
 }
 
 android {
@@ -167,19 +164,12 @@ fun downloadSigningKey() {
   val pass = getEnvOrProp(AUTH_PASS) ?: return
 
   logger.info("Downloading signing key...")
-  DownloadAction(project).apply {
-    src(url)
-    dest(signingKey)
-    username(user)
-    password(pass)
-    overwrite(false)
-    
-    // Must be set to true
-    quiet(true)
-  }.execute()
-    
-    // wait for the download to finish
-    .get()
+  val result = exec {
+    workingDir(rootProject.projectDir)
+    commandLine("bash", "./.tools/download_key.sh", signingKey.absolutePath, url, user, pass)
+  }
+
+  result.assertNormalExitValue()
 }
 
 fun getEnvOrProp(key: String): String? {
