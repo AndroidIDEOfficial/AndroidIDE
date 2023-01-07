@@ -31,7 +31,7 @@ releaseTypes:
   items:
     mainline:
       description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
-      collapseVersions: false
+      collapseVersions: true
       gitPush: true
       gitTag: true
       publish: true
