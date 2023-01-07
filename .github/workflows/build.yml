@@ -44,8 +44,20 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Assemble
-        run: ./gradlew assemble
+      - name: Assemble Debug
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: ./gradlew assembleDebug
+        env:
+          ReleaseAndroidIDE: ${{ github.ref == 'refs/heads/main' }}
+          IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
+          IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
+          IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
+          IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
+          IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
+          IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+      - name: Assemble Release
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: ./gradlew assembleRelease
         env:
           ReleaseAndroidIDE: ${{ github.ref == 'refs/heads/main' }}
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
@@ -55,7 +67,7 @@ jobs:
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
       - name: Archive APKs
-        run: tar cvJf apks.tar.xz app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/release/app-release.apk
+        run: tar cvJf --ignore-failed-read apks.tar.xz ls app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/release/app-release.apk
       - name: Upload Debug APK
         uses: actions/upload-artifact@v3
         with:
@@ -189,9 +201,3 @@ jobs:
         run: ./gradlew nyxMake nyxMark nyxPublish release --stacktrace
         env:
           ReleaseAndroidIDE: true
-          IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
-          IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
-          IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
-          IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
-          IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
-          IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
