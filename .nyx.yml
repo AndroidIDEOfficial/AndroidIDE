@@ -17,7 +17,7 @@ releaseAssets:
   apk:
     fileName: "androidide-{{version}}.apk"
     description: "AndroidIDE {{version}} release APK"
-    path: app/build/outputs/apk/release/app-release.apk
+    path: app-release.apk
     type: application/octet-stream
 
 releaseTypes:
