@@ -32,4 +32,10 @@ interface IAttribute {
 
   /** The value of the attribute. */
   var value: String
+  
+  /**
+   * The name of this attribute the form `<namespace>:<name>`.
+   */
+  val qualifiedName : String
+    get() = "${namespace.prefix}:${name}"
 }

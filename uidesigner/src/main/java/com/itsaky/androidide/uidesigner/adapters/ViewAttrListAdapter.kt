@@ -90,7 +90,7 @@ internal class ViewAttrListAdapter(
     DialogUtils.newYesNoDialog(
         context = context,
         title = context.getString(R.string.title_confirm_delete),
-        message = context.getString(R.string.msg_confirm_delete),
+        message = context.getString(R.string.msg_confirm_delete, attribute.qualifiedName),
         positiveClickListener = { dialog, _ ->
           dialog.dismiss()
           if (onDeleteAttr(attribute)) {

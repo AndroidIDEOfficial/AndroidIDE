@@ -19,6 +19,7 @@ package com.itsaky.androidide.uidesigner.models
 
 import android.os.Parcelable
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
@@ -34,8 +35,7 @@ import kotlinx.parcelize.Parcelize
 open class UiAttribute
 @JvmOverloads
 constructor(
-  override val namespace: NamespaceImpl =
-    com.itsaky.androidide.inflater.INamespace.ANDROID as NamespaceImpl,
+  override val namespace: NamespaceImpl = INamespace.ANDROID as NamespaceImpl,
   override val name: String,
   override var value: String,
   internal var isRequired: Boolean = false
