@@ -30,9 +30,9 @@ releaseTypes:
     mainline:
       description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
       collapseVersions: false
-      gitPush: "{{#environment.variable}}CI{{/environment.variable}}"
-      gitTag: "{{#environment.variable}}CI{{/environment.variable}}"
-      publish: "{{#environment.variable}}CI{{/environment.variable}}"
+      gitPush: true
+      gitTag: true
+      publish: true
       matchBranches: "^(master|main)$"
       matchWorkspaceStatus: "CLEAN"
       matchEnvironmentVariables:
@@ -65,4 +65,4 @@ services:
       options:
         REPOSITORY_OWNER: "AndroidIDEOfficial"
         REPOSITORY_NAME: "AndroidIDE"
-        AUTHENTICATION_TOKEN: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"
+        AUTHENTICATION_TOKEN: "{{#environment.variable}}GH_TOKEN{{/environment.variable}}"
