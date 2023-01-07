@@ -194,3 +194,4 @@ jobs:
         run: ./gradlew nyxMake nyxMark nyxPublish release --stacktrace
         env:
           ReleaseAndroidIDE: true
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
