@@ -195,3 +195,9 @@ jobs:
         env:
           ReleaseAndroidIDE: true
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Archive Nyx state file
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: .nyx-state-${{ github.job }}.json
+          path: build/nyx-state.json
