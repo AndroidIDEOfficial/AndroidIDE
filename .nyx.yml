@@ -63,6 +63,6 @@ services:
     github:
       type: GITHUB
       options:
-        REPOSITORY_OWNER_NAME: "AndroidIDEOfficial"
+        REPOSITORY_OWNER: "AndroidIDEOfficial"
         REPOSITORY_NAME: "AndroidIDE"
         AUTHENTICATION_TOKEN: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"

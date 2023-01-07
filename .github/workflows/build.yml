@@ -43,7 +43,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Assemble Debug
-        run: ./gradlew assembleDebug
+        run: ./gradlew assemble
         env:
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
@@ -51,11 +51,23 @@ jobs:
           IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
-      - name: Upload APK
+      - name: Archive APKs
+        run: tar cvJf apks.tar.xz app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/release/app-release.apk
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v3
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug/**.apk
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-release
+          path: app/build/outputs/apk/release/**.apk
+      - name: Upload APK archive
+        uses: actions/upload-artifact@v3
+        with:
+          name: apks
+          path: apks.tar.xz
 
   unit_test_debug:
     name: Run local tests
@@ -134,7 +146,7 @@ jobs:
           name: tooling-api-test-reports
           path: 'subprojects/tooling-api-impl/build/reports/tests/'
 
-  publish_release:
+  publish:
     name: Publish release
     runs-on: ubuntu-latest
     needs: [build_apk, unit_test_debug, test_tooling_api]
@@ -147,6 +159,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
+      - name: Download APKs
+        uses: actions/download-artifact@v3
+        with:
+          name: apks
+      - name: Unpack APKs
+        run: tar xvJf apks.tar.xz
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Restore cache
@@ -158,8 +176,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Create release
-        run: ./gradlew release
+      - name: Publish release
+        run: ./gradlew nyxMake nyxMark nyxPublish release --stacktrace
         env:
           ReleaseAndroidIDE: true
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
