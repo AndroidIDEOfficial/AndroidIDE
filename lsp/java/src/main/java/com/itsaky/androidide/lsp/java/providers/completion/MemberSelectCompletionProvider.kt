@@ -136,10 +136,9 @@ class MemberSelectCompletionProvider(
   ): CompletionResult {
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list = mutableListOf<CompletionItem>()
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-    val matchLevels: MutableMap<String, MatchLevel> =
-      mutableMapOf()
+    val matchLevels = mutableMapOf<String, MatchLevel>()
 
     abortIfCancelled()
     abortCompletionIfCancelled()

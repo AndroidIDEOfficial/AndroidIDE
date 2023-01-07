@@ -28,17 +28,14 @@ import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
-import com.itsaky.androidide.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.compiler.ReusableBorrow;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
 import com.sun.source.tree.CompilationUnitTree;
@@ -61,7 +58,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.lang.model.SourceVersion;
 import javax.tools.Diagnostic;
@@ -70,7 +66,6 @@ import javax.tools.JavaFileObject;
 public class CompileBatch implements AutoCloseable {
 
   public static final String DEFAULT_COMPILER_SOURCE_AND_TARGET_VERSION = "11";
-  private static final ILogger LOG = ILogger.newInstance("CompileBatch");
   protected final JavaCompilerService parent;
   protected final ReusableBorrow borrow;
   protected final JavacTaskImpl task;
@@ -141,7 +136,7 @@ public class CompileBatch implements AutoCloseable {
   @NonNull
   private List<String> options() {
     List<String> options = new ArrayList<>();
-    
+
     // This won't be used if the current module is Android module project
     System.setProperty(PROP_ANDROIDIDE_JAVA_HOME, JAVA_HOME.getAbsolutePath());
     if (this.parent.module != null && this.parent.module.getType() == IProject.Type.Android) {
@@ -198,15 +193,6 @@ public class CompileBatch implements AutoCloseable {
     options.add(compilerSettings.getJavaBytecodeVersion());
   }
 
-  /**
-   * Combine source path or class path entries using the system separator, for example ':' in unix
-   */
-  private static String joinPath(@NonNull Collection<Path> classOrSourcePath) {
-    return classOrSourcePath.stream()
-        .map(Path::toString)
-        .collect(Collectors.joining(File.pathSeparator));
-  }
-
   @Override
   public void close() {
     closed = true;
@@ -231,7 +217,6 @@ public class CompileBatch implements AutoCloseable {
       if (!isValidFileRange(err)) {
         continue;
       }
-
       String packageName = packageName(err);
       ClassTrie.Node node = parent.getModule().compileJavaSourceClasses.findNode(packageName);
       if (node != null && node.isClass() && node instanceof SourceClassTrie.SourceNode) {
@@ -241,7 +226,7 @@ public class CompileBatch implements AutoCloseable {
     return addFiles;
   }
 
-  private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
+  private String packageName(Diagnostic<? extends JavaFileObject> err) {
     if (err instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
       JCDiagnostic diagnostic = ((ClientCodeWrapper.DiagnosticSourceUnwrapper) err).d;
       JCDiagnostic.DiagnosticPosition pos = diagnostic.getDiagnosticPosition();
@@ -257,7 +242,7 @@ public class CompileBatch implements AutoCloseable {
     return StringSearch.packageName(file);
   }
 
-  private boolean isValidFileRange(javax.tools.Diagnostic<? extends JavaFileObject> d) {
+  private boolean isValidFileRange(Diagnostic<? extends JavaFileObject> d) {
     return d.getSource().toUri().getScheme().equals("file")
         && d.getStartPosition() >= 0
         && d.getEndPosition() >= 0;
