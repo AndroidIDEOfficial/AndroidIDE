@@ -2,7 +2,7 @@
 agp = "7.4.0-rc03"
 kotlin = "1.8.0"
 tree-sitter = "1.0.10"
-editor = "0.20.4"
+editor = "0.21.0"
 glide = "4.14.2"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
