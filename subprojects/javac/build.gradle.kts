@@ -33,7 +33,8 @@ configurations.all {
 
 
 dependencies {
-    api (libs.androidide.javac) {
-        isChanging = true
-    }
+    api(files("libs/nb-javac-17.0.0.4-android.jar"))
+//    api (libs.androidide.javac) {
+//        isChanging = true
+//    }
 }

@@ -84,12 +84,17 @@ class JavaDiagnosticProvider {
   }
 
   private fun doAnalyze(file: Path, task: CompileTask): DiagnosticResult {
-    return if (!isTaskValid(task)) {
-      // Do not use Collections.emptyList ()
-      // The returned list is accessed and the list returned by Collections.emptyList()
-      // throws exception when trying to access.
-      cachedDiagnostics
-    } else DiagnosticResult(file, findDiagnostics(task, file).sortedBy { it.range })
+    val result =
+      if (!isTaskValid(task)) {
+        // Do not use Collections.emptyList ()
+        // The returned list is accessed and the list returned by Collections.emptyList()
+        // throws exception when trying to access.
+        log.info("Using cached diagnostics")
+        cachedDiagnostics
+      } else DiagnosticResult(file, findDiagnostics(task, file).sortedBy { it.range })
+    return result.also {
+      log.info("Analyze file completed. Found ${result.diagnostics.size} diagnostic items")
+    }
   }
 
   private fun isTaskValid(task: CompileTask?): Boolean {
@@ -105,11 +110,11 @@ class JavaDiagnosticProvider {
         try {
             compiler.compile(file).get { task -> doAnalyze(file, task) }
           } catch (err: Throwable) {
-            
-            if (!CancelChecker.isCancelled(err)) {
+            if (CancelChecker.isCancelled(err)) {
+              log.error("Analyze request cancelled")
+            } else {
               log.warn("Unable to analyze file", err)
             }
-
             DiagnosticResult.NO_UPDATE
           } finally {
             compiler.destroy()

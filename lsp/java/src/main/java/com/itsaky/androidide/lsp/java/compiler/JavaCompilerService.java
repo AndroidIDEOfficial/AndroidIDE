@@ -269,22 +269,22 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   private synchronized void reparseOrRecompile(CompilationRequest request) {
-    if (needsRecompilation(request)) {
-      LOG.warn("Cannot reparse. Recompilation is required");
+//    if (needsRecompilation(request)) {
+//      LOG.warn("Cannot reparse. Recompilation is required");
       recompile(request);
-    } else {
-      LOG.debug("Trying to perform a reparse...");
-      tryReparse(request);
-    }
+//    } else {
+//      LOG.debug("Trying to perform a reparse...");
+//      tryReparse(request);
+//    }
   }
 
   private boolean needsRecompilation(final CompilationRequest request) {
     return this.cachedCompile == null
-        || this.cachedCompile.closed
-        || request.partialRequest == null
-        || request.partialRequest.cursor < 0
-        || !isChangeValidForReparse()
-        || request.sources.size() != 1; // Cannot perform a reparse if there are multiple files
+        || this.cachedCompile.closed;
+//        || request.partialRequest == null
+//        || request.partialRequest.cursor < 0
+//        || !isChangeValidForReparse()
+//        || request.sources.size() != 1; // Cannot perform a reparse if there are multiple files
   }
 
   private boolean isChangeValidForReparse() {

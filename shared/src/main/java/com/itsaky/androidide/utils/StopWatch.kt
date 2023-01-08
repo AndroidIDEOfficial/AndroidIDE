@@ -24,12 +24,13 @@ package com.itsaky.androidide.utils
  * @param label The label for the log message.
  * @author Akash Yadav
  */
-class StopWatch(
+class StopWatch
+@JvmOverloads
+constructor(
   val label: String,
   val start: Long = System.currentTimeMillis(),
   var lastLap: Long = start
 ) {
-  constructor(label: String) : this(label, System.currentTimeMillis())
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 

@@ -25,7 +25,6 @@ import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.models.DiagnosticSeverity
 import com.itsaky.androidide.lsp.models.DiagnosticSeverity.WARNING
 import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.utils.DocumentUtils.isSameFile
@@ -37,11 +36,10 @@ import com.sun.source.tree.MethodTree
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
-import com.sun.tools.javac.code.Symbol.ClassSymbol
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
-import java.util.regex.*
+import java.util.Locale
+import java.util.regex.Pattern
 import javax.lang.model.element.Element
 import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
@@ -74,15 +72,15 @@ object DiagnosticsProvider {
         break
       }
     }
-    
+
     abortIfCancelled()
-    
+
     if (root == null) {
       // CompilationUnitTree for the file was not found
       // Can't do anything...
       return result
     }
-    
+
     addCompilerErrors(task, root, result)
     abortIfCancelled()
     addDiagnosticsByVisiting(task, root, result)

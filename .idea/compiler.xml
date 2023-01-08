@@ -99,6 +99,12 @@
       <module name="AndroidIDE.ksp-processor.main" target="11" />
       <module name="AndroidIDE.ksp-processor.test" target="11" />
       <module name="AndroidIDE.sdk-info" target="11" />
+      <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler.main" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler.test" target="8" />
+      <module name="AndroidIDE.subprojects.jdk-compiler.main" target="8" />
+      <module name="AndroidIDE.subprojects.jdk-compiler.test" target="8" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

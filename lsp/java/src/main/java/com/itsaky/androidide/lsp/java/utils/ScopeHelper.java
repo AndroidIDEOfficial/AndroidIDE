@@ -37,7 +37,7 @@ public class ScopeHelper {
     Trees trees = Trees.instance(task.task);
     Elements elements = task.task.getElements();
     boolean isStatic = false;
-    List<Element> list = new ArrayList<Element>();
+    List<Element> list = new ArrayList<>();
     for (Scope scope : fastScopes(inner)) {
       if (scope.getEnclosingMethod() != null) {
         isStatic = isStatic || scope.getEnclosingMethod().getModifiers().contains(Modifier.STATIC);
@@ -88,9 +88,7 @@ public class ScopeHelper {
     // Scopes may be contained in an enclosing scope.
     // The outermost scope contains those elements available via "star import" declarations;
     // the scope within that contains the top level elements of the compilation unit, including
-    // any
-    // named
-    // imports.
+    // any named imports.
     // https://parent.docs.oracle.com/en/java/javase/11/docs/api/jdk.compiler/com/sun/source/tree/Scope.html
     return scopes.subList(0, scopes.size() - 2);
   }

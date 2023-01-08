@@ -74,7 +74,7 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
         }
 
         // Do not log if completion was interrupted or cancelled
-        if (!(e is ProcessCancelledException || e is CompletionCancelledException)) {
+        if (!(e is  ProcessCancelledException || e is CompletionCancelledException)) {
           if (!server.handleFailure(LSPFailure(COMPLETION, e))) {
             log.error("Unable to compute completions", e)
           }

@@ -95,7 +95,7 @@ public class CompileBatch implements AutoCloseable {
 
   private void processCompilationUnit(final CompilationUnitTree root) {
     roots.add(root);
-    updatePositions(root, false);
+//    updatePositions(root, false);
   }
 
   void updatePositions(CompilationUnitTree tree, boolean allowDuplicate) {
