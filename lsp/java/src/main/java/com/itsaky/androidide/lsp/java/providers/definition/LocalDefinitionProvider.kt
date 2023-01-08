@@ -44,7 +44,7 @@ class LocalDefinitionProvider(
       val path = trees.getPath(element)
       if (path == null) {
         log.error("TreePath of element is null. Cannot find definition.", "Element is", element)
-        emptyList<Location>()
+        return@get emptyList<Location>()
       }
 
       var name = element.simpleName
@@ -52,7 +52,7 @@ class LocalDefinitionProvider(
         name = element.enclosingElement.simpleName
       }
 
-      listOf(FindHelper.location(it, path, name))
+      return@get listOf(FindHelper.location(it, path, name))
     }
   }
 }

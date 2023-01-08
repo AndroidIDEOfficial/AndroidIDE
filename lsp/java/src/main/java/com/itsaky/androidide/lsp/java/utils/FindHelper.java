@@ -128,12 +128,14 @@ public class FindHelper {
   }
 
   public static Location location(CompileTask task, TreePath path, CharSequence name) {
-    LineMap lines = path.getCompilationUnit().getLineMap();
+    final CompilationUnitTree compilationUnit = path.getCompilationUnit();
+    final Tree leaf = path.getLeaf();
+    LineMap lines = compilationUnit.getLineMap();
     SourcePositions pos = Trees.instance(task.task).getSourcePositions();
-    int start = (int) pos.getStartPosition(path.getCompilationUnit(), path.getLeaf());
-    int end = (int) pos.getEndPosition(path.getCompilationUnit(), path.getLeaf());
+    int start = (int) pos.getStartPosition(compilationUnit, leaf);
+    int end = (int) pos.getEndPosition(compilationUnit, leaf);
     if (name.length() > 0) {
-      start = FindHelper.findNameIn(path.getCompilationUnit(), name, start, end);
+      start = FindHelper.findNameIn(compilationUnit, name, start, end);
       end = start + name.length();
     }
 
@@ -144,7 +146,7 @@ public class FindHelper {
     int endColumn = (int) lines.getColumnNumber(end);
     Position endPos = new Position(endLine - 1, endColumn - 1);
     Range range = new Range(startPos, endPos);
-    URI uri = path.getCompilationUnit().getSourceFile().toUri();
+    URI uri = compilationUnit.getSourceFile().toUri();
     return new Location(Paths.get(uri), range);
   }
 
