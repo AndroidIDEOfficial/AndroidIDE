@@ -274,7 +274,7 @@
   <string name="msg_file_tree">Cabang file</string>
   <string name="hint_color_resource">Sumber warna</string>
   <string name="title_color_picker">Pemilih warna</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">Nilai Atribut</string>
   <string name="hint_string_resource">Sumber string</string>
   <string name="hint_resource_reference">Referensi sumber lain</string>
   <string name="msg_code_actions">Quickfixes</string>
@@ -455,16 +455,16 @@
   <string name="git_clone_in_progress">Cloning repositori</string>
   <string name="git_clone_success">Git clone berhasil</string>
   <string name="git_clone_failed">Gagal mengkloning repositori git</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
-  <string name="idepref_general_uiMode">UI Mode</string>
-  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
-  <string name="uiMode_light">Light</string>
-  <string name="uiMode_dark">Dark</string>
-  <string name="uiMode_system">Follow system</string>
+  <string name="msg_select_attr">Pilih atribut dari daftar di bawah ini</string>
+  <string name="action_show_hierarchy">Tampilkan hierarki tata letak</string>
+  <string name="idepref_editor_colorScheme">Skema warna</string>
+  <string name="idepref_editor_colorScheme_summary">Pilih skema warna untuk digunakan dalam editor</string>
+  <string name="idepref_general_uiMode">Mode UI</string>
+  <string name="idepref_general_uiMode_summary">Pilih mode UI untuk IDE</string>
+  <string name="uiMode_light">Terang</string>
+  <string name="uiMode_dark">Gelap</string>
+  <string name="uiMode_system">Ikuti sistem</string>
   <string name="idepref_general_materialYou">Material You</string>
-  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
-  <string name="idepref_general_projectConfig">Project configuration</string>
+  <string name="idepref_general_materialYou_summary">Nikmati pengalaman yang lebih dekat dengan perangkat Anda (perlu dimulai ulang).</string>
+  <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
 </resources>
