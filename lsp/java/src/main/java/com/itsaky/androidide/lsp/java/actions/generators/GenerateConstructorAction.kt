@@ -26,11 +26,12 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
+import com.itsaky.androidide.lsp.java.utils.ShortTypePrinter.NO_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
@@ -147,7 +148,7 @@ class GenerateConstructorAction : FieldBasedAction() {
       val paramType = paramTypes[i]
       val paramName = paramNames[i]
 
-      constructor.addParameter(paramType.tsym.simpleName.toString(), paramName)
+      constructor.addParameter(NO_PACKAGE.print(paramType), paramName)
     }
 
     return constructor
