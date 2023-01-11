@@ -48,7 +48,6 @@ import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
-import com.itsaky.androidide.progress.ProcessCancelledException;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;

@@ -208,11 +208,13 @@ class MemberSelectCompletionProvider(
       if (method != null && method.modifiers.contains(STATIC)) {
         return false
       }
+      
       // If we find the enclosing class
       val thisElement = s.enclosingClass
       if (thisElement != null && thisElement.asType() == type) {
         return true
       }
+      
       // If the enclosing class is static, stop looking
       if (thisElement != null && thisElement.modifiers.contains(STATIC)) {
         return false

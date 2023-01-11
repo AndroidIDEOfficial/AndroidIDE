@@ -133,7 +133,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
   }
 
   private fun createGetter(variable: VariableElement, indent: Int): String {
-    val name: String = variable.simpleName.toString()
+    val name = variable.simpleName.toString()
     val method =
       createMethod(variable, "get", toType(variable.asType())) { _, body ->
         body.addStatement(createReturnStmt(name))
