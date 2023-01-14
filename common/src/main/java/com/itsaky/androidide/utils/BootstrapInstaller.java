@@ -105,7 +105,7 @@ public class BootstrapInstaller {
                 boolean isDirectory = entry.isDirectory();
 
                 final var dir = isDirectory ? targetFile : targetFile.getParentFile();
-                if (!FileUtils.createOrExistsDir(dir)) {
+                if (dir != null && !dir.exists() && !dir.mkdirs()) {
                   LOG.error("Cannot create target file parent directory");
                   throw new CompletionException(
                       new InstallationException("Unable to create directory: " + dir));
