@@ -19,10 +19,8 @@ package com.itsaky.androidide.uidesigner.utils
 
 import android.view.View
 import android.view.ViewGroup
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IComponentFactory
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.uidesigner.models.UiAttribute
@@ -44,12 +42,12 @@ open class UiInflaterComponentFactory : com.itsaky.androidide.inflater.IComponen
   }
 
   override fun createAttr(
-    view: com.itsaky.androidide.inflater.IView,
-    namespace: com.itsaky.androidide.inflater.INamespace,
+    view: IView,
+    namespace: INamespace?,
     name: String,
     value: String
   ): com.itsaky.androidide.inflater.IAttribute {
-    return UiAttribute(namespace = namespace as NamespaceImpl, name = name, value = value).apply {
+    return UiAttribute(namespace = namespace as NamespaceImpl?, name = name, value = value).apply {
       isRequired = UiAttribute.isRequired(view, this)
     }
   }

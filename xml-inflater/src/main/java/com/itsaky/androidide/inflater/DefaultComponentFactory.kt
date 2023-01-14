@@ -35,7 +35,7 @@ open class DefaultComponentFactory : IComponentFactory {
 
   override fun createAttr(
     view: IView,
-    namespace: INamespace,
+    namespace: INamespace?,
     name: String,
     value: String
   ): IAttribute {

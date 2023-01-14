@@ -148,7 +148,7 @@ open class ViewAdapter<T : View> : IViewAdapter<T>() {
   }
 
   override fun isRequiredAttribute(attribute: IAttribute): Boolean {
-    if (attribute.namespace.uri != INamespace.ANDROID.uri) {
+    if (attribute.namespace?.uri != INamespace.ANDROID.uri) {
       return false
     }
 

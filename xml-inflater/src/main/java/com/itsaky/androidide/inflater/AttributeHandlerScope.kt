@@ -30,7 +30,7 @@ data class AttributeHandlerScope<T : View>(
   val file: LayoutFile,
   val context: Context,
   val layoutParams: ViewGroup.LayoutParams,
-  val namespace: INamespace,
+  val namespace: INamespace?,
   val name: String,
   val value: String
 )

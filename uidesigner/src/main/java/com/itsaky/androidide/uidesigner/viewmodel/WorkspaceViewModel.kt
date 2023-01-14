@@ -19,7 +19,6 @@ package com.itsaky.androidide.uidesigner.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.undo.UndoManager
 import java.io.File
@@ -104,7 +103,7 @@ internal class WorkspaceViewModel : ViewModel() {
       return
     }
 
-    val existing = view.findAttribute(attr.namespace.uri, attr.name)
+    val existing = view.findAttribute(attr.name, attr.namespace?.uri)
     if (existing !is UiAttribute) {
       return
     }

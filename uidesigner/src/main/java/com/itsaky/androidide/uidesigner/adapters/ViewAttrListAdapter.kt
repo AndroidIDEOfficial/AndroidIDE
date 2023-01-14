@@ -23,8 +23,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IView.SingleAttributeChangeListener
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter.VH
@@ -62,8 +60,9 @@ internal class ViewAttrListAdapter(
   override fun onBindViewHolder(holder: VH, position: Int) {
     val binding = holder.binding
     val attr = this.attributes[position] as UiAttribute
-
-    binding.attrName.text = "${attr.namespace.prefix}:${attr.name}"
+  
+    val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+    binding.attrName.text = "${ns}${attr.name}"
     binding.attrValue.text = attr.value
 
     if (!attr.isRequired) {

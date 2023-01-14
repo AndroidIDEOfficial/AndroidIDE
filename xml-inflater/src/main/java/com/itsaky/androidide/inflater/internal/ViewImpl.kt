@@ -86,8 +86,8 @@ constructor(
     updateAttributeInternal(attribute)
   }
 
-  override fun findAttribute(namespaceUri: String, name: String): IAttribute? {
-    return this.attributes.find { it.namespace.uri == namespaceUri && it.name == name }
+  override fun findAttribute(name: String, namespaceUri: String?): IAttribute? {
+    return this.attributes.find { it.namespace?.uri == namespaceUri && it.name == name }
   }
 
   override fun onHighlightStateUpdated(highlight: Boolean) {
@@ -139,11 +139,11 @@ constructor(
   }
 
   protected open fun hasAttribute(attribute: IAttribute): Boolean {
-    return hasAttribute(attribute.namespace.uri, attribute.name)
+    return hasAttribute(attribute.name, attribute.namespace?.uri)
   }
 
   protected open fun findAttribute(attribute: IAttribute): IAttribute? {
-    return findAttribute(attribute.namespace.uri, attribute.name)
+    return findAttribute(attribute.name, attribute.namespace?.uri)
   }
 
   internal open fun printHierarchy(): String {

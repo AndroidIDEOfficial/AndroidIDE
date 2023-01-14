@@ -85,7 +85,7 @@ class AddAttrFragment : Fragment() {
     val view = viewModel.view ?: return
     val adapter = view.viewAdapter ?: return
     val attributes =
-      adapter.supportedAttributes.filterNot { view.hasAttribute(it.namespace.uri, it.name) }
+      adapter.supportedAttributes.filterNot { view.hasAttribute(it.name, it.namespace?.uri) }
     binding.attrList.adapter =
       AddAttrListAdapter(attributes) {
         val attribute =

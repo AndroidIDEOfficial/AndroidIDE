@@ -107,16 +107,16 @@ class LayoutInflaterTest {
               "        android.widget.TextView\n"
           )
         val included = view[0]
-        included.findAttribute(INamespace.ANDROID.uri, "layout_height").apply {
+        included.findAttribute("layout_height", INamespace.ANDROID.uri).apply {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
         }
-        included.findAttribute(INamespace.ANDROID.uri, "layout_width").apply {
+        included.findAttribute("layout_width", INamespace.ANDROID.uri).apply {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
         }
-        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "gravity")).isTrue()
-        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "id")).isTrue()
+        assertThat(included.hasAttribute("gravity", INamespace.ANDROID.uri)).isTrue()
+        assertThat(included.hasAttribute("id", INamespace.ANDROID.uri)).isTrue()
       }
     }
   }
@@ -142,7 +142,7 @@ class LayoutInflaterTest {
 
         // attributes on <include> tag must be ignored
         for (i in 0 until view.childCount) {
-          assertThat(view[i].hasAttribute(INamespace.ANDROID.uri, "clickable")).isFalse()
+          assertThat(view[i].hasAttribute("clickable", INamespace.ANDROID.uri)).isFalse()
         }
       }
     }

@@ -111,14 +111,14 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   /**
    * The default namespace that will be used by the UI designer to create and apply new attributes.
    */
-  protected open fun defaultNamespace(): INamespace {
+  protected open fun defaultNamespace(): INamespace? {
     return INamespace.ANDROID
   }
 
-  protected open fun canHandleNamespace(namespace: INamespace): Boolean {
-    return this.canHandleNamespace(namespace.uri)
+  protected open fun canHandleNamespace(namespace: INamespace?): Boolean {
+    return this.canHandleNamespace(namespace?.uri)
   }
-  protected open fun canHandleNamespace(nsUri: String): Boolean {
+  protected open fun canHandleNamespace(nsUri: String?): Boolean {
     return SdkConstants.ANDROID_URI == nsUri
   }
 

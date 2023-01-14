@@ -76,9 +76,10 @@ class AttrValueEditorFragment : Fragment() {
     val header = this.header ?: return
     val view = this.viewModel.view ?: return
     val attr = this.viewModel.selectedAttr ?: return
-
-    header.name.text = "${attr.namespace.prefix}:${attr.name}"
-    header.desc.text = attr.namespace.uri
+  
+    val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+    header.name.text = "${ns}${attr.name}"
+    header.desc.text = attr.namespace?.uri ?: ""
     binding.attrValue.let { textView ->
       textWatcher?.let { watcher -> textView.removeTextChangedListener(watcher) }
 

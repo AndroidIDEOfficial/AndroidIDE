@@ -20,7 +20,6 @@ package com.itsaky.androidide.uidesigner.utils
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.lsp.xml.utils.XMLBuilder
@@ -111,7 +110,9 @@ object ViewToXml {
     for (attr in view.attributes) {
       linefeed()
       indent(indent)
-      addSingleAttribute("${attr.namespace.prefix}:${attr.name}", attr.value, true)
+  
+      val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+      addSingleAttribute("${ns}${attr.name}", attr.value, true)
     }
 
     if (view is com.itsaky.androidide.inflater.IViewGroup) {

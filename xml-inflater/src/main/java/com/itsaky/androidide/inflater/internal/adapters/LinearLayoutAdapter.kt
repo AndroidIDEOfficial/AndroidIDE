@@ -79,7 +79,7 @@ open class LinearLayoutAdapter<T : LinearLayout> : ViewGroupAdapter<T>() {
   }
 
   override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
-    val orientation = group.findAttribute(INamespace.ANDROID.uri, "orientation")
+    val orientation = group.findAttribute("orientation", INamespace.ANDROID.uri)
     return if (orientation?.value == "vertical") VERTICAL else HORIZONTAL
   }
 

@@ -190,8 +190,11 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       ?: throw IllegalStateException("No module project provided")
   }
 
-  override fun findResourceTables(nsUri: String): Set<ResourceTable> {
+  override fun findResourceTables(nsUri: String?): Set<ResourceTable> {
     val tables = manifestResourceTable().toMutableSet()
+    if (nsUri.isNullOrBlank()) {
+      return tables
+    }
     tables.addAll(super.findResourceTables(nsUri))
     log.info("Found ${tables.size} resource tables for namespace: $nsUri")
     return tables

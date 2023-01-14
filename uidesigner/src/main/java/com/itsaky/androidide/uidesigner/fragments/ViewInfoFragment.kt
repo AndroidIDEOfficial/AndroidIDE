@@ -97,7 +97,7 @@ class ViewInfoFragment : Fragment() {
         viewModel.selectedAttr =
           newAttribute(
             view = view,
-            namespace = it.namespace as NamespaceImpl,
+            namespace = it.namespace as NamespaceImpl?,
             name = it.name,
             value = it.value
           )

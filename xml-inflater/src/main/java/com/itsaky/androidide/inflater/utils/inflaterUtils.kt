@@ -55,7 +55,7 @@ fun newAttribute(
 @JvmOverloads
 fun newAttribute(
   view: IView? = null,
-  namespace: INamespace = INamespace.ANDROID,
+  namespace: INamespace? = INamespace.ANDROID,
   name: String,
   value: String
 ): IAttribute {

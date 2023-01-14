@@ -85,8 +85,8 @@ interface IView {
    * @return `true` if this view has an attribute entry with the given name namespace uri and name,
    * `false` otherwise.
    */
-  fun hasAttribute(namespaceUri: String, name: String): Boolean {
-    return findAttribute(namespaceUri, name) != null
+  fun hasAttribute(name: String, namespaceUri: String? = null): Boolean {
+    return findAttribute(name, namespaceUri) != null
   }
 
   /**
@@ -96,7 +96,7 @@ interface IView {
    * @param name The name of the attribute.
    * @return The attribute if found or `null`.
    */
-  fun findAttribute(namespaceUri: String, name: String): IAttribute?
+  fun findAttribute(name: String, namespaceUri: String? = null): IAttribute?
 
   /**
    * Called when the highlighted state of the view is changed. The highlighted state is changed in

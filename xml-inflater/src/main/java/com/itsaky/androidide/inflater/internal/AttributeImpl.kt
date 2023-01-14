@@ -19,14 +19,13 @@ package com.itsaky.androidide.inflater.internal
 
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
-import com.itsaky.androidide.inflater.INamespace.Companion.ANDROID
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.utils.newAttribute
 
 open class AttributeImpl
 @JvmOverloads
 constructor(
-  override val namespace: INamespace = ANDROID,
+  override val namespace: INamespace? = null,
   override val name: String,
   override var value: String
 ) : IAttribute {
@@ -34,7 +33,7 @@ constructor(
   @JvmOverloads
   fun copyAttr(
     view: IView? = null,
-    namespace: INamespace = this.namespace,
+    namespace: INamespace? = this.namespace,
     name: String = this.name,
     value: String = this.value
   ): IAttribute {
@@ -57,7 +56,7 @@ constructor(
   }
 
   override fun hashCode(): Int {
-    var result = namespace.hashCode()
+    var result = namespace?.hashCode() ?: 0
     result = 31 * result + name.hashCode()
     result = 31 * result + value.hashCode()
     return result

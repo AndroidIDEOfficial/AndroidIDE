@@ -19,7 +19,6 @@ package com.itsaky.androidide.uidesigner.utils
 
 import android.text.Editable
 import com.blankj.utilcode.util.ThreadUtils
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings
@@ -85,12 +84,13 @@ internal class ValueCompletionProvider(
             onComplete(emptyList())
             return
           }
-
-      log.info("Complete attribute value: '${attribute.namespace.prefix}:${attribute.name}'")
+  
+      val ns = attribute.namespace?.prefix?.let { "${it}:" } ?: ""
+      log.info("Complete attribute value: '${ns}${attribute.name}'")
 
       val result =
         completionProvider.completeValue(
-          namespace = attribute.namespace.uri,
+          namespace = attribute.namespace?.uri,
           prefix = prefix,
           attrName = attribute.name,
           attrValue = prefix
