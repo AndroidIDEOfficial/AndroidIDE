@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
-  <string name="title_open_source_licenses">Open source licenses</string>
-  <string name="msg_about_licensed_under">Licensed under: </string>
-  <string name="about_option_email">Email</string>
+  <string name="app_name">Android IDE</string>
+  <string name="license_jdk">Android IDE utiliza una versión modificada del JDK que está licenciado bajo la GNU General Public License v2.0. El código fuente y la licencia del JDK están disponibles en: </string>
+  <string name="title_open_source_licenses">Licencias de código abierto</string>
+  <string name="msg_about_licensed_under">Bajo Licencia: </string>
+  <string name="about_option_email">Correo</string>
   <string name="about_option_website">Website</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
   <string name="about_footer">AndroidIDE %1$s for %2$s</string>
