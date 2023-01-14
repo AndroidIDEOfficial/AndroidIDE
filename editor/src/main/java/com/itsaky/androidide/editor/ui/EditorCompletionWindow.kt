@@ -68,7 +68,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     }
   }
   
-  override fun setAdapter(adapter: EditorCompletionAdapter) {
+  override fun setAdapter(adapter: EditorCompletionAdapter?) {
     super.setAdapter(adapter)
     mAdapter = adapter
     mAdapter!!.attachValues(this, mItems)

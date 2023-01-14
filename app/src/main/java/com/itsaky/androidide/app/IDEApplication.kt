@@ -31,11 +31,13 @@ import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
 import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.greenrobot.eventbus.EventBus
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.system.exitProcess
@@ -65,12 +67,14 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
-  
+
     AppCompatDelegate.setDefaultNightMode(uiMode)
-    
+
     if (enableMaterialYou) {
       DynamicColors.applyToActivitiesIfAvailable(this)
     }
+
+    EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
 
     executeAsync { IDEColorSchemeProvider.init() }
   }
