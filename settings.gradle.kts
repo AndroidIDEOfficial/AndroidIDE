@@ -76,7 +76,6 @@ include(
   ":subprojects:javac-services",
   ":subprojects:jaxp",
   ":subprojects:jdt",
-  ":subprojects:jsonrpc",
   ":subprojects:layoutlib-api",
   ":subprojects:projects",
   ":subprojects:tooling-api",

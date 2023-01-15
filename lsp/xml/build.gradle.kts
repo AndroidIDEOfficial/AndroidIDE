@@ -42,7 +42,6 @@ dependencies {
     implementation(projects.lsp.api)
     implementation(projects.lexers)
     implementation(projects.subprojects.xmlDom)
-    implementation(projects.subprojects.xmlFormatter)
     implementation(projects.subprojects.xmlUtils)
     
     implementation(libs.androidx.ktx)
