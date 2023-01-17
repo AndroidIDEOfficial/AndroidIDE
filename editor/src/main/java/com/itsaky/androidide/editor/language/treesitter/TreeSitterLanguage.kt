@@ -67,9 +67,8 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
         log.error("Invalid color scheme returned by color scheme provider", scheme)
         return@readScheme
       }
-
-      val langScheme =
-        checkNotNull(scheme.languages[type]) { "No color scheme found for file type '$type'" }
+      
+      val langScheme = scheme.languages[type] ?: return@readScheme
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
     }
   }

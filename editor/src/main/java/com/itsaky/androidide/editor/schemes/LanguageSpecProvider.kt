@@ -31,7 +31,7 @@ import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
  */
 object LanguageSpecProvider {
 
-  private const val BASE_SPEC_PATH = "editor/treesitter"
+  const val BASE_SPEC_PATH = "editor/treesitter"
   private val log = ILogger.newInstance("LanguageSpecProvider")
   
   @JvmStatic
