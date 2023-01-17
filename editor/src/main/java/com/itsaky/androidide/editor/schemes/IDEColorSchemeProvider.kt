@@ -41,7 +41,6 @@ object IDEColorSchemeProvider {
   private const val SCHEME_NAME = "scheme.name"
   private const val SCHEME_VERSION = "scheme.version"
   private const val SCHEME_IS_DARK = "scheme.isDark"
-  private const val SCHEME_LANGS = "scheme.langs"
   private const val SCHEME_FILE = "scheme.file"
 
   val currentScheme: IDEColorScheme? by lazy {
@@ -78,7 +77,6 @@ object IDEColorSchemeProvider {
       val name = props.getProperty(SCHEME_NAME, "Unknown")
       val version = props.getProperty(SCHEME_VERSION, "0").toInt()
       val isDark = props.getProperty(SCHEME_IS_DARK, "false").toBoolean()
-      val langs = props.getProperty(SCHEME_LANGS, "").split(',').map { it.trim() }
       val file =
         props.getProperty(SCHEME_FILE)
           ?: run {
@@ -95,16 +93,11 @@ object IDEColorSchemeProvider {
       if (file.isBlank()) {
         continue
       }
-      if (langs.isEmpty()) {
-        log.error("Scheme '${schemeDir.name}' does not specify any languages")
-        continue
-      }
 
       val scheme = IDEColorScheme(File(schemeDir, file), schemeDir.name)
       scheme.name = name
       scheme.version = version
       scheme.isDarkScheme = isDark
-      scheme.langs = langs.toTypedArray()
       schemes[schemeDir.name] = scheme
     }
     

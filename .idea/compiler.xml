@@ -105,6 +105,11 @@
       <module name="AndroidIDE.subprojects.java-compiler.test" target="8" />
       <module name="AndroidIDE.subprojects.jdk-compiler.main" target="8" />
       <module name="AndroidIDE.subprojects.jdk-compiler.test" target="8" />
+      <module name="AndroidIDE.subprojects.jsonrpc" target="11" />
+      <module name="AndroidIDE.subprojects.jsonrpc.main" target="11" />
+      <module name="AndroidIDE.subprojects.jsonrpc.test" target="11" />
+      <module name="AndroidIDE.subprojects.xml-formatter.main" target="11" />
+      <module name="AndroidIDE.subprojects.xml-formatter.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

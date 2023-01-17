@@ -35,9 +35,6 @@ class IDEColorScheme(internal val file: File, val key: String) : DynamicColorSch
   var version: Int = 0
     internal set
 
-  var langs: Array<String> = emptyArray()
-    internal set
-
   var isDarkScheme: Boolean = false
     internal set
   
