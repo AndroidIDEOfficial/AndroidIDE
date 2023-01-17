@@ -35,6 +35,7 @@ import com.sun.tools.javac.tree.JCTree.JCMethodInvocation
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl
 import com.sun.tools.javac.tree.TreeScanner
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -44,6 +45,7 @@ import javax.lang.model.type.ArrayType
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
+@Ignore("Partial reparser is currently unused")
 class PartialReparserImplTest {
 
   @Before

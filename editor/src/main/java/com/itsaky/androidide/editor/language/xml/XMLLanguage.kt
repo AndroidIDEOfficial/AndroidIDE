@@ -18,13 +18,14 @@
 package com.itsaky.androidide.editor.language.xml
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
 import io.github.rosemoe.sora.text.ContentReference
+import io.github.rosemoe.sora.text.TextUtils.countLeadingSpaceCount
 import io.github.rosemoe.sora.util.MyCharacter
 
 /**
@@ -49,13 +50,5 @@ class XMLLanguage(context: Context) :
 
   override fun getInterruptionLevel(): Int {
     return INTERRUPTION_LEVEL_STRONG
-  }
-
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
-    return 0
-  }
-
-  override fun getNewlineHandlers(): Array<NewlineHandler> {
-    return emptyArray()
   }
 }

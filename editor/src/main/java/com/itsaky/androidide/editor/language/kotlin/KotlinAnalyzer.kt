@@ -62,10 +62,7 @@ class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
             spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
             first = false
           }
-        KotlinLexer.AT_NO_WS,
-        KotlinLexer.AT_POST_WS,
-        KotlinLexer.AT_PRE_WS,
-        KotlinLexer.AT_BOTH_WS -> spans.add(Span.obtain(offset, makeStyle(ANNOTATION)))
+        KotlinLexer.AT_WS -> spans.add(Span.obtain(offset, makeStyle(ANNOTATION)))
         KotlinLexer.ANNOTATION,
         KotlinLexer.ABSTRACT,
         KotlinLexer.BY,
@@ -99,18 +96,8 @@ class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
         KotlinLexer.TAILREC,
         KotlinLexer.VARARG,
         KotlinLexer.WHERE,
-        KotlinLexer.GET,
-        KotlinLexer.SET,
-        KotlinLexer.FIELD,
-        KotlinLexer.PROPERTY,
-        KotlinLexer.RECEIVER,
-        KotlinLexer.PARAM,
-        KotlinLexer.SETPARAM,
-        KotlinLexer.DELEGATE,
-        KotlinLexer.FILE,
         KotlinLexer.EXPECT,
         KotlinLexer.ACTUAL,
-        KotlinLexer.VALUE,
         KotlinLexer.CONST,
         KotlinLexer.SUSPEND,
         KotlinLexer.RETURN_AT,
@@ -151,7 +138,6 @@ class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
         KotlinLexer.IntegerLiteral,
         KotlinLexer.HexLiteral,
         KotlinLexer.BinLiteral,
-        KotlinLexer.UnsignedLiteral,
         KotlinLexer.LongLiteral,
         KotlinLexer.BooleanLiteral,
         KotlinLexer.NullLiteral,

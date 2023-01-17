@@ -20,9 +20,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.editor.language.BraceHandler;
-import com.itsaky.androidide.editor.language.CommonSymbolPairs;
+import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
 import com.itsaky.androidide.editor.language.IDELanguage;
+import com.itsaky.androidide.editor.language.newline.CStyleBracketsHandler;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -43,7 +44,7 @@ public class CppLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("CppLanguage");
   private final NewlineHandler[] newlineHandlers =
-      new NewlineHandler[] {new BraceHandler(this::getIndentAdvance, this::useTab)};
+      new NewlineHandler[] {new BracketsNewlineHandler(this::getIndentAdvance, this::useTab)};
   private final CommonSymbolPairs symbolPairs = new CommonSymbolPairs();
   private CppAnalyzer analyzer;
 

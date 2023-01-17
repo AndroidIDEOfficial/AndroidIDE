@@ -26,9 +26,9 @@ import com.itsaky.androidide.inflater.IViewGroup
  * @author Akash Yadav
  */
 class ViewMovedAction(
-  private val child: IView,
-  private val fromParent: IViewGroup,
-  private val toParent: IViewGroup,
+  private val child: com.itsaky.androidide.inflater.IView,
+  private val fromParent: com.itsaky.androidide.inflater.IViewGroup,
+  private val toParent: com.itsaky.androidide.inflater.IViewGroup,
   private val fromIndex: Int,
   private val toIndex: Int
 ) : IUiAction {

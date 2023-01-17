@@ -19,8 +19,6 @@ package com.itsaky.androidide.inflater.internal.utils
 
 import android.graphics.PorterDuff
 import android.view.View
-import com.android.aaptcompiler.AaptResourceType.ID
-import com.itsaky.androidide.inflater.internal.ViewImpl
 
 @JvmOverloads
 fun parseId(resName: String, value: String, def: Int = 0): Int {

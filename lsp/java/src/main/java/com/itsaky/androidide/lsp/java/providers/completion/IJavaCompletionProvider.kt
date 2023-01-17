@@ -91,7 +91,7 @@ abstract class IJavaCompletionProvider(
     endsWithParen: Boolean,
   ): CompletionResult {
     val root = task.root(file)
-    filePackage = root.`package`.packageName.toString()
+    filePackage = root.`package`?.packageName?.toString() ?: ""
     fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
     abortIfCancelled()
     abortCompletionIfCancelled()

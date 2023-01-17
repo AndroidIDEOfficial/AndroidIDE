@@ -30,10 +30,10 @@ import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.utils.newAttribute
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
+import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.File
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -107,16 +107,16 @@ class LayoutInflaterTest {
               "        android.widget.TextView\n"
           )
         val included = view[0]
-        included.findAttribute(INamespace.ANDROID.uri, "layout_height").apply {
+        included.findAttribute("layout_height", INamespace.ANDROID.uri).apply {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
         }
-        included.findAttribute(INamespace.ANDROID.uri, "layout_width").apply {
+        included.findAttribute("layout_width", INamespace.ANDROID.uri).apply {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
         }
-        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "gravity")).isTrue()
-        assertThat(included.hasAttribute(INamespace.ANDROID.uri, "id")).isTrue()
+        assertThat(included.hasAttribute("gravity", INamespace.ANDROID.uri)).isTrue()
+        assertThat(included.hasAttribute("id", INamespace.ANDROID.uri)).isTrue()
       }
     }
   }
@@ -142,7 +142,7 @@ class LayoutInflaterTest {
 
         // attributes on <include> tag must be ignored
         for (i in 0 until view.childCount) {
-          assertThat(view[i].hasAttribute(INamespace.ANDROID.uri, "clickable")).isFalse()
+          assertThat(view[i].hasAttribute("clickable", INamespace.ANDROID.uri)).isFalse()
         }
       }
     }
@@ -159,8 +159,7 @@ class LayoutInflaterTest {
         assertThat(inflated).hasSize(1)
 
         val root = inflated[0] as ViewGroupImpl
-        
-        
+
         // verity the inflated layout hierarchy
         // this takes care of verifying that the generated XML elements will have proper XML tagsl
         assertThat(root.printHierarchy())
@@ -178,17 +177,17 @@ class LayoutInflaterTest {
 
         // TextView is used to inflate unsupported views
         assertThat(root[0].view).isInstanceOf(TextView::class.java)
-        
+
         // TextView is also used for layouts which do not have any child viewsl
         assertThat(root[1].view).isInstanceOf(TextView::class.java)
-  
+
         // FrameLayout is used to inflate unsupported layouts with child views
         assertThat(root[2].view).isInstanceOf(FrameLayout::class.java)
         assertThat(root[3].view).isInstanceOf(FrameLayout::class.java)
 
         assertThat((root[2] as ViewGroupImpl)[0].view).isInstanceOf(ImageView::class.java)
         assertThat((root[2] as ViewGroupImpl)[1].view).isInstanceOf(ImageView::class.java)
-  
+
         // Unsupported child views
         assertThat((root[3] as ViewGroupImpl)[0].view).isInstanceOf(TextView::class.java)
         assertThat((root[3] as ViewGroupImpl)[1].view).isInstanceOf(TextView::class.java)

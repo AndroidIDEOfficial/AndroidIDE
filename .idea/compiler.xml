@@ -5,15 +5,18 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10/e97ada61b651d7dff21931c2cc1b158e870cb417/auto-value-1.10.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.1/e0184c26c3a20257c6fb46eaea16fdd3d7b6d357/auto-value-1.10.1.jar" />
         </processorPath>
         <module name="AndroidIDE.subprojects.google-java-format.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="AndroidIDE.annotation-processors" target="11" />
       <module name="AndroidIDE.annotation-processors-java" target="11" />
       <module name="AndroidIDE.annotation-processors-java.main" target="11" />
       <module name="AndroidIDE.annotation-processors-java.test" target="11" />
+      <module name="AndroidIDE.annotation-processors.main" target="11" />
+      <module name="AndroidIDE.annotation-processors.test" target="11" />
       <module name="AndroidIDE.build-tools.aaptcompiler" target="11" />
       <module name="AndroidIDE.build-tools.aaptcompiler.test" target="11" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
@@ -82,6 +85,9 @@
       <module name="AndroidIDE.build-tools.xml-formatter.main" target="11" />
       <module name="AndroidIDE.build-tools.xml-formatter.test" target="11" />
       <module name="AndroidIDE.build-tools.xml-utils" target="11" />
+      <module name="AndroidIDE.buildSrc" target="11" />
+      <module name="AndroidIDE.buildSrc.main" target="11" />
+      <module name="AndroidIDE.buildSrc.test" target="11" />
       <module name="AndroidIDE.colorschemes" target="11" />
       <module name="AndroidIDE.colorschemes.main" target="11" />
       <module name="AndroidIDE.editor-languages" target="11" />
@@ -89,7 +95,21 @@
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
       <module name="AndroidIDE.javac" target="1.8" />
+      <module name="AndroidIDE.ksp-processor" target="11" />
+      <module name="AndroidIDE.ksp-processor.main" target="11" />
+      <module name="AndroidIDE.ksp-processor.test" target="11" />
       <module name="AndroidIDE.sdk-info" target="11" />
+      <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler.main" target="8" />
+      <module name="AndroidIDE.subprojects.java-compiler.test" target="8" />
+      <module name="AndroidIDE.subprojects.jdk-compiler.main" target="8" />
+      <module name="AndroidIDE.subprojects.jdk-compiler.test" target="8" />
+      <module name="AndroidIDE.subprojects.jsonrpc" target="11" />
+      <module name="AndroidIDE.subprojects.jsonrpc.main" target="11" />
+      <module name="AndroidIDE.subprojects.jsonrpc.test" target="11" />
+      <module name="AndroidIDE.subprojects.xml-formatter.main" target="11" />
+      <module name="AndroidIDE.subprojects.xml-formatter.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

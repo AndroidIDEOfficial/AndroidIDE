@@ -29,7 +29,7 @@ import com.itsaky.androidide.uidesigner.undo.AttrUpdatedAction
  *
  * @author Akash Yadav
  */
-internal class WorkspaceViewAttrHandler : IView.AttributeChangeListener {
+internal class WorkspaceViewAttrHandler : com.itsaky.androidide.inflater.IView.AttributeChangeListener {
 
   private var fragment: DesignerWorkspaceFragment? = null
 
@@ -41,22 +41,22 @@ internal class WorkspaceViewAttrHandler : IView.AttributeChangeListener {
     this.fragment = null
   }
 
-  override fun onAttributeAdded(view: IView, attribute: IAttribute) {
+  override fun onAttributeAdded(view: com.itsaky.androidide.inflater.IView, attribute: com.itsaky.androidide.inflater.IAttribute) {
     val frag = this.fragment ?: return
     frag.undoManager.push(AttrAddedAction(view = view, attr = attribute as UiAttribute))
   }
 
-  override fun onAttributeRemoved(view: IView, attribute: IAttribute) {
+  override fun onAttributeRemoved(view: com.itsaky.androidide.inflater.IView, attribute: com.itsaky.androidide.inflater.IAttribute) {
     val frag = this.fragment ?: return
     frag.undoManager.push(AttrRemovedAction(view = view, attr = attribute as UiAttribute))
   }
 
-  override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
+  override fun onAttributeUpdated(view: com.itsaky.androidide.inflater.IView, attribute: com.itsaky.androidide.inflater.IAttribute, oldValue: String) {
     val frag = this.fragment ?: return
     frag.undoManager.push(
       AttrUpdatedAction(
         view = view,
-        attr = (attribute as UiAttribute).copyAttr(view = view) as UiAttribute,
+        attr = attribute as UiAttribute,
         oldValue = oldValue
       )
     )

@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.inflater
 
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
-
 /**
  * Inflated model for a [ViewGroup][android.view.ViewGroup].
  *
@@ -54,7 +52,7 @@ interface IViewGroup : IView, Iterable<IView> {
    */
   fun canAcceptChild(name: String): Boolean {
     return canModifyChildViews() &&
-      (ViewAdapterIndex.getAdapter(this.name) as? IViewGroupAdapter)?.canAcceptChild(this, name) == true
+      (this.viewAdapter as? IViewGroupAdapter)?.canAcceptChild(this, name) == true
   }
 
   /**

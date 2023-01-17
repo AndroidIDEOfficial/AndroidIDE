@@ -43,7 +43,7 @@ interface IComponentFactory {
    * @param value The value of the attribute.
    * @return The [IAttribute] instance.
    */
-  fun createAttr(view: IView, namespace: INamespace, name: String, value: String): IAttribute
+  fun createAttr(view: IView, namespace: INamespace?, name: String, value: String): IAttribute
 
   companion object {
     @JvmField val LAYOUT_INFLATER_COMPONENT_FACTORY_KEY = Key<IComponentFactory>()

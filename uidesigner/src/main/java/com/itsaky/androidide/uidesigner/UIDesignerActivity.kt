@@ -29,12 +29,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.app.BaseIDEActivity
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.uidesigner.actions.clearUiDesignerActions
 import com.itsaky.androidide.uidesigner.actions.registerUiDesignerActions
 import com.itsaky.androidide.uidesigner.databinding.ActivityUiDesignerBinding
@@ -54,7 +52,7 @@ class UIDesignerActivity : BaseIDEActivity() {
   private var binding: ActivityUiDesignerBinding? = null
   private val log = ILogger.newInstance("UIDesignerActivity")
   private val viewModel by viewModels<WorkspaceViewModel>()
-  
+
   private val workspace: DesignerWorkspaceFragment?
     get() = this.binding?.workspace?.getFragment<DesignerWorkspaceFragment>()
 
@@ -183,10 +181,8 @@ class UIDesignerActivity : BaseIDEActivity() {
     return workspace
   }
 
-  fun setupHierarchy(view: IView) {
-    binding?.hierarchy?.setupWithView(view) {
-      workspace()?.showViewInfo(it)
-    }
+  fun setupHierarchy(view: com.itsaky.androidide.inflater.IView) {
+    binding?.hierarchy?.setupWithView(view) { workspace()?.showViewInfo(it) }
   }
 
   fun openHierarchyView() {

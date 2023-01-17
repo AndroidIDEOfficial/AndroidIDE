@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">टेलीग्राम पर चर्चाएं</string>
   <string name="official_tg_channel">आधिकारिक टेलीग्राम चैनल</string>
   <string name="msg_empty_view">मेरे पास आपको दिखाने के लिए कुछ नहीं है &#8230;</string>
-  <string name="btn_terminal">टर्मिनल</string>
+  <string name="title_terminal">टर्मिनल</string>
   <string name="reset">रिसेट</string>
   <string name="app_logs">एप लॉग्स</string>
   <string name="ide_logs">IDE लॉग्स</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">अन्य</string>
   <string name="classtype_class">क्लास</string>
   <string name="classtype_activity">एक्टिविटी</string>
-  <string name="classtype_interface">इंटरफेस</string>
+  <string name="title_interface">इंटरफेस</string>
   <string name="classtype_enum">इनम</string>
   <string name="msg_checking_storage_permissions">स्टोरेज अनुमति की जांच हो रही है</string>
   <string name="msg_failed_list_files">प्रोजेक्ट फ़ाइलें लिस्ट करने में विफल! </string>

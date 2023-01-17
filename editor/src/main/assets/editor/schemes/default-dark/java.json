@@ -1,0 +1,57 @@
+{
+  "types": [
+    "java"
+  ],
+  "local.scopes": [
+    "scope"
+  ],
+  "local.scopes.members": [
+    "scope.members"
+  ],
+  "local.definitions": [
+    "definition.var",
+    "definition.field"
+  ],
+  "local.references": [
+    "reference"
+  ],
+  "styles": {
+    "comment": {
+      "fg": "@comment",
+      "italic": true
+    },
+    "number": "@number",
+    "variable": "@onSurface",
+    "constant.builtin": "@keyword",
+    "keyword": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "string": {
+      "fg": "@string",
+      "completion": false
+    },
+    "variable.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "function.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "type.builtin": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "constant": {
+      "fg": "@constant",
+      "bold": true
+    },
+    "type": "@type",
+    "attribute": "@type",
+    "function.declaration": "@func.decl",
+    "function.invocation": "@func.call",
+    "variable.field": "@field",
+    "operator": "@operator"
+  }
+}

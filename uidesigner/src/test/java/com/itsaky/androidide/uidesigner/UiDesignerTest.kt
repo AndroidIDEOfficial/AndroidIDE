@@ -45,7 +45,7 @@ fun requiresActivity(initComponentFactory: Boolean = true, block: AppCompatActiv
   activity.block()
 }
 
-fun Context.createLayout(parent: IViewGroup? = null): ViewGroupImpl {
+fun Context.createLayout(parent: com.itsaky.androidide.inflater.IViewGroup? = null): ViewGroupImpl {
   return ViewGroupImpl(
       LayoutFile(File(""), ""),
       LinearLayout::class.qualifiedName!!,
@@ -54,12 +54,12 @@ fun Context.createLayout(parent: IViewGroup? = null): ViewGroupImpl {
     .apply { parent?.let { applyLayoutParams(it) } }
 }
 
-fun Context.createView(parent: IViewGroup? = null): ViewImpl {
+fun Context.createView(parent: com.itsaky.androidide.inflater.IViewGroup? = null): ViewImpl {
   return ViewImpl(LayoutFile(File(""), ""), View::class.qualifiedName!!, View(this)).apply {
     parent?.let { applyLayoutParams(it) }
   }
 }
 
-fun ViewImpl.applyLayoutParams(parent: IViewGroup) {
+fun ViewImpl.applyLayoutParams(parent: com.itsaky.androidide.inflater.IViewGroup) {
   view.layoutParams = ViewFactory.generateLayoutParams(parent.viewGroup)
 }

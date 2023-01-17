@@ -42,7 +42,7 @@ class ManifestAttrCompletionProvider(provider: ICompletionProvider) :
     return super.canProvideCompletions(pathData, type) && canCompleteManifest(pathData, type)
   }
 
-  override fun findResourceTables(nsUri: String) = manifestResourceTable()
+  override fun findResourceTables(nsUri: String?) = manifestResourceTable()
 
   override fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val name = node.nodeName

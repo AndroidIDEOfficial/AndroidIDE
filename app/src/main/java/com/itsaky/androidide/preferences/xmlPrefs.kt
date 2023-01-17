@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.preferences
 
+import android.content.Context
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.xml.models.EmptyElements
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
@@ -229,7 +230,7 @@ private class EmptyElementsBehavior(
     return EmptyElements.valueOf(emptyElementsBehavior).ordinal
   }
 
-  override fun getChoices(): Array<String> {
+  override fun getChoices(context: Context): Array<String> {
     return EmptyElements.values().map { it.toString() }.toTypedArray()
   }
 

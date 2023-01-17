@@ -17,25 +17,25 @@
 
 package com.itsaky.androidide.uidesigner.models
 
+import android.os.Parcel
 import android.os.Parcelable
+import android.os.Parcelable.Creator
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
-import kotlinx.parcelize.Parcelize
+import com.itsaky.androidide.inflater.viewAdapter
 
 /**
  * UI Designer specific implementation of [IAttribute].
  *
  * @author Akash Yadav
  */
-@Parcelize
 open class UiAttribute
 @JvmOverloads
 constructor(
-  override val namespace: NamespaceImpl = INamespace.ANDROID as NamespaceImpl,
+  override val namespace: INamespace? = null,
   override val name: String,
   override var value: String,
   internal var isRequired: Boolean = false
@@ -43,13 +43,58 @@ constructor(
 
   constructor(
     src: IAttribute
-  ) : this(namespace = src.namespace as NamespaceImpl, name = src.name, value = src.value)
+  ) : this(namespace = src.namespace as NamespaceImpl?, name = src.name, value = src.value)
+
+  private constructor(
+    parcel: Parcel
+  ) : this(createNs(parcel), parcel.readString() ?: "", parcel.readString() ?: "")
 
   companion object {
+
+    @JvmField
+    @Suppress("UNUSED")
+    val CREATOR =
+      object : Creator<UiAttribute> {
+        override fun createFromParcel(parcel: Parcel): UiAttribute {
+          return UiAttribute(parcel)
+        }
+
+        override fun newArray(size: Int): Array<UiAttribute?> {
+          return arrayOfNulls(size)
+        }
+      }
+
     @JvmStatic
     fun isRequired(view: IView, attribute: IAttribute): Boolean {
-      val adapter = ViewAdapterIndex.getAdapter(view.name) ?: return false
+      val adapter = view.viewAdapter ?: return false
       return adapter.isRequiredAttribute(attribute)
+    }
+
+    @JvmStatic
+    private fun createNs(parcel: Parcel): INamespace? {
+      if (parcel.readByte() == 0.toByte()) {
+        return null
+      }
+
+      return NamespaceImpl(parcel.readString() ?: "", parcel.readString() ?: "")
+    }
+  }
+
+  override fun describeContents(): Int {
+    return 0
+  }
+
+  override fun writeToParcel(dest: Parcel, flags: Int) {
+    dest.apply {
+      namespace?.let {
+        writeByte(1)
+        writeString(it.uri)
+        writeString(it.prefix)
+      }
+        ?: writeByte(0)
+
+      writeString(name)
+      writeString(value)
     }
   }
 }

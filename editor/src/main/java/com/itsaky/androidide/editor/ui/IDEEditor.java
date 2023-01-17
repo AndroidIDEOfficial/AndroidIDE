@@ -16,14 +16,19 @@
  */
 package com.itsaky.androidide.editor.ui;
 
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getTabSize;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.androidide.resources.R.string;
 import static com.itsaky.toaster.ToastUtilsKt.toast;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
@@ -65,6 +70,7 @@ import java.util.concurrent.CompletableFuture;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
@@ -158,14 +164,17 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     if (file != null) {
       dispatchDocumentOpenEvent();
     }
-
-    if (file != null) {
-      getExtraArguments().putString(KEY_FILE, file.getAbsolutePath());
-    } else {
-      getExtraArguments().remove(KEY_FILE);
-    }
   }
-
+  
+  @NonNull
+  @Override
+  public Bundle getExtraArguments() {
+    var args = super.getExtraArguments();
+    final var path = file == null ? null : file.getAbsolutePath();
+    args.putString(KEY_FILE, path);
+    return args;
+  }
+  
   protected void dispatchDocumentOpenEvent() {
     if (getFile() == null) {
       return;
@@ -211,7 +220,12 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
           });
     }
   }
-
+  
+  @Override
+  public int getTabWidth() {
+    return getTabSize();
+  }
+  
   /**
    * Shows the given signature help in the editor.
    *
@@ -247,7 +261,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    */
   @Override
   public void setSelection(@NonNull Range range) {
-    if (isValidRange(range, true)) {
+    if (isValidPosition(range.getStart(), true) && isValidPosition(range.getEnd(), true)) {
       setSelectionRegion(
           range.getStart().getLine(),
           range.getStart().getColumn(),
@@ -286,52 +300,19 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * Validates the range if it is invalid and returns a valid range.
    *
    * @param range Th range to validate.
-   * @return A new, validated range.
    */
   @Override
-  public Range validateRange(@NonNull final Range range) {
+  public void validateRange(@NonNull final Range range) {
     final var start = range.getStart();
     final var end = range.getEnd();
-
-    if (start.getLine() < 0) {
-      start.setLine(0);
-    } else if (start.getLine() >= getText().getLineCount()) {
-      start.setLine(getText().getLineCount() - 1);
-    }
-
-    if (end.getLine() < 0) {
-      end.setLine(0);
-    } else if (end.getLine() >= getText().getLineCount()) {
-      end.setLine(getText().getLineCount() - 1);
-    }
-
-    if (end.getLine() < start.getLine()) {
-      var l = end.getLine();
-      var l2 = start.getLine();
-      start.setLine(l);
-      end.setLine(l2);
-    }
-
-    if (start.getColumn() < 0) {
-      start.setColumn(0);
-    } else if (start.getColumn() >= getText().getColumnCount(start.getLine())) {
-      start.setColumn(getText().getColumnCount(start.getLine()) - 1);
-    }
-
-    if (end.getColumn() < 0) {
-      end.setColumn(0);
-    } else if (end.getColumn() >= getText().getColumnCount(end.getLine())) {
-      end.setColumn(getText().getColumnCount(end.getLine()) - 1);
-    }
-
-    if (end.getColumn() < start.getColumn()) {
-      final var c = start.getColumn();
-      final var c2 = end.getColumn();
-      start.setColumn(c2);
-      end.setColumn(c);
-    }
-
-    return new Range(start, end);
+    final var text = getText();
+    final var lineCount = text.getLineCount();
+    
+    start.setLine(min(max(0, start.getLine()), lineCount - 1));
+    start.setColumn(min(max(0, start.getColumn()), text.getColumnCount(start.getLine())));
+    
+    end.setLine(min(max(0, end.getLine()), lineCount - 1));
+    end.setColumn(min(max(0, end.getColumn()), text.getColumnCount(end.getLine())));
   }
 
   /**

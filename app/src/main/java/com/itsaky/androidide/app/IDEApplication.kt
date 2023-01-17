@@ -19,7 +19,9 @@ package com.itsaky.androidide.app
 
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
+import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -27,22 +29,29 @@ import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.preferences.internal.enableMaterialYou
+import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.greenrobot.eventbus.EventBus
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.system.exitProcess
-import org.greenrobot.eventbus.EventBus
 
 class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
 
   init {
-    System.loadLibrary("android-tree-sitter")
-    System.loadLibrary("tree-sitter-java")
-    System.loadLibrary("tree-sitter-xml")
+    if (!VMUtils.isJvm()) {
+      System.loadLibrary("android-tree-sitter")
+      System.loadLibrary("tree-sitter-java")
+      System.loadLibrary("tree-sitter-xml")
+    }
   }
 
   override fun onCreate() {
@@ -58,6 +67,14 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus()
+
+    AppCompatDelegate.setDefaultNightMode(uiMode)
+
+    if (enableMaterialYou) {
+      DynamicColors.applyToActivitiesIfAvailable(this)
+    }
+
+    EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
 
     executeAsync { IDEColorSchemeProvider.init() }
   }

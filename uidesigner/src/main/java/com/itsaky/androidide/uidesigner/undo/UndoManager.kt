@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.uidesigner.undo
 
+import com.itsaky.androidide.utils.ILogger
+
 /**
  * Handles undo and redo actions in the UI designer.
  *
@@ -32,11 +34,11 @@ class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFA
   companion object {
     const val DEFAULT_STACK_SIZE = 30
   }
-  
+
   fun enable() {
     this.enabled = true
   }
-  
+
   fun disable() {
     this.enabled = false
   }
@@ -86,7 +88,7 @@ class UndoManager @JvmOverloads constructor(private var maxStackSize: Int = DEFA
     if (!enabled) {
       return
     }
-    
+
     redoStack.clear()
     undoStack.addLast(action)
     trimStacks()

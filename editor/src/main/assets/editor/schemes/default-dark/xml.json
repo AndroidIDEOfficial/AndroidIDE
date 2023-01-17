@@ -1,0 +1,33 @@
+{
+  "types": ["xml"],
+  "styles": {
+    "xml_decl": {
+      "fg": "@operator",
+      "bold": true
+    },
+    "element.tag": {
+      "fg": "@xml.tag",
+      "bold": true
+    },
+    "ns_declarator": {
+      "fg": "@keyword",
+      "bold": true
+    },
+    "xml.ref": {
+      "fg": "@xml.ref",
+      "italic": true
+    },
+    "comment": {
+      "fg": "@comment",
+      "italic": true
+    },
+    "operator": "@operator",
+    "cdata.start": "@xml.tag",
+    "cdata.end": "@xml.tag",
+    "cdata": "@onSurface",
+    "xmlns.prefix": "@ns_prefix",
+    "attr.prefix" : "@ns_prefix",
+    "attr.name": "@onSurface",
+    "attr.value": "@string"
+  }
+}

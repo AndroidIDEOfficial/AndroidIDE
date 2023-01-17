@@ -34,7 +34,6 @@ import com.android.aaptcompiler.AaptResourceType.ATTR
 import com.android.aaptcompiler.AaptResourceType.BOOL
 import com.android.aaptcompiler.AaptResourceType.COLOR
 import com.android.aaptcompiler.AaptResourceType.DIMEN
-import com.android.aaptcompiler.AaptResourceType.DRAWABLE
 import com.android.aaptcompiler.AaptResourceType.INTEGER
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
 import com.android.aaptcompiler.AaptResourceType.STRING
@@ -211,13 +210,10 @@ fun parseDrawable(context: Context, value: String, def: Drawable = unknownDrawab
   if (value[0] == '#') {
     return parseColorDrawable(context, value)
   } else if (value[0] == '@') {
-    val type = parseResourceReference(value)?.second
-    if (type == null) {
-      throwInvalidResType(DRAWABLE, value)
-    }
+    val type = parseResourceReference(value)?.second ?: return def
     return parseReference(
       value = value,
-      expectedType = type!!,
+      expectedType = type,
       def = def,
       resolver = drawableResolver
     )
@@ -238,7 +234,8 @@ fun parseLayoutReference(value: String): File? {
     }
   val type = parseResourceReference(value)?.second ?: return null
   if (type != LAYOUT) {
-    throwInvalidResType(LAYOUT, value)
+    log.warn("Layout file reference is expected but '$type' was found for value '$value'")
+    return null
   }
   return parseReference(value, type, null, layoutResolver)
 }
@@ -372,7 +369,10 @@ fun <T> parseReference(
 ): T {
   val (pck, type, name) = parseResourceReference(value) ?: return def
   if (type != expectedType) {
-    throwInvalidResType(expectedType, value)
+    log.warn(
+      "Reference of type '$expectedType' is expected but '$type' was found for value '$value'"
+    )
+    return def
   }
   return if (pck.isNullOrBlank()) {
     resolveUnqualifiedResourceReference(
@@ -497,12 +497,6 @@ internal fun parseResourceReference(value: String): Triple<String?, AaptResource
     }
     return Triple(pck, type, name)
   }
-}
-
-private fun throwInvalidResType(type: AaptResourceType, value: String) {
-  throw IllegalArgumentException(
-    "Value must be a reference to a ${type.tagName} resource type. '$value'"
-  )
 }
 
 @JvmOverloads

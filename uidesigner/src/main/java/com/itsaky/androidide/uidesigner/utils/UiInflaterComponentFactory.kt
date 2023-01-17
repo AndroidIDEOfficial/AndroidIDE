@@ -19,10 +19,8 @@ package com.itsaky.androidide.uidesigner.utils
 
 import android.view.View
 import android.view.ViewGroup
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
-import com.itsaky.androidide.inflater.IComponentFactory
 import com.itsaky.androidide.inflater.internal.LayoutFile
 import com.itsaky.androidide.inflater.internal.NamespaceImpl
 import com.itsaky.androidide.uidesigner.models.UiAttribute
@@ -34,9 +32,9 @@ import com.itsaky.androidide.uidesigner.models.UiViewGroup
  *
  * @author Akash Yadav
  */
-open class UiInflaterComponentFactory : IComponentFactory {
+open class UiInflaterComponentFactory : com.itsaky.androidide.inflater.IComponentFactory {
 
-  override fun createView(file: LayoutFile, name: String, view: View): IView {
+  override fun createView(file: LayoutFile, name: String, view: View): com.itsaky.androidide.inflater.IView {
     if (view is ViewGroup) {
       return UiViewGroup(file, name, view)
     }
@@ -45,11 +43,11 @@ open class UiInflaterComponentFactory : IComponentFactory {
 
   override fun createAttr(
     view: IView,
-    namespace: INamespace,
+    namespace: INamespace?,
     name: String,
     value: String
-  ): IAttribute {
-    return UiAttribute(namespace = namespace as NamespaceImpl, name = name, value = value).apply {
+  ): com.itsaky.androidide.inflater.IAttribute {
+    return UiAttribute(namespace = namespace as NamespaceImpl?, name = name, value = value).apply {
       isRequired = UiAttribute.isRequired(view, this)
     }
   }

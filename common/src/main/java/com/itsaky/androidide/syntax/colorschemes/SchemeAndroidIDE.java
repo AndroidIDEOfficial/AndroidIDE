@@ -112,6 +112,9 @@ public class SchemeAndroidIDE extends EditorColorScheme {
   }
 
   public static SchemeAndroidIDE newInstance(Context context) {
+    if (context == null) {
+      return new SchemeAndroidIDE();
+    }
     final var scheme = new DynamicColorScheme();
     scheme.apply(context);
     return scheme;

@@ -98,7 +98,7 @@ public interface IEditor {
    * @param range Th range to validate.
    * @return A new, validated range.
    */
-  Range validateRange(@NonNull Range range);
+  void validateRange(@NonNull Range range);
 
   /**
    * Checks if the given range is valid for this editor's text.

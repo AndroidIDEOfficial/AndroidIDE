@@ -21,7 +21,6 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.uidesigner.adapters.AddAttrListAdapter.VH
 import com.itsaky.androidide.uidesigner.databinding.LayoutAddAttrItemBinding
 
@@ -31,8 +30,8 @@ import com.itsaky.androidide.uidesigner.databinding.LayoutAddAttrItemBinding
  * @author Akash Yadav
  */
 class AddAttrListAdapter(
-  private val attributes: List<IAttribute>,
-  private val onClick: (IAttribute) -> Unit = {}
+  private val attributes: List<com.itsaky.androidide.inflater.IAttribute>,
+  private val onClick: (com.itsaky.androidide.inflater.IAttribute) -> Unit = {}
 ) : RecyclerView.Adapter<VH>() {
 
   class VH(val binding: LayoutAddAttrItemBinding) : RecyclerView.ViewHolder(binding.root)
@@ -50,7 +49,8 @@ class AddAttrListAdapter(
     val binding = holder.binding
     val attr = this.attributes[position]
 
-    binding.name.text = "${attr.namespace.prefix}:${attr.name}"
+    val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+    binding.name.text = "${ns}${attr.name}"
     binding.root.setOnClickListener { onClick(attr) }
   }
 }

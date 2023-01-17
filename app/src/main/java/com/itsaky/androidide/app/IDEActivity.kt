@@ -18,11 +18,36 @@
 package com.itsaky.androidide.app
 
 import android.os.Bundle
-import androidx.annotation.AttrRes
-import com.itsaky.androidide.R
-import com.itsaky.androidide.utils.resolveAttr
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode
+import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
+import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
+import com.itsaky.androidide.preferences.internal.UI_MODE
+import com.itsaky.androidide.preferences.internal.uiMode
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 abstract class IDEActivity : BaseIDEActivity() {
   val app: IDEApplication
     get() = application as IDEApplication
+  
+  
+  
+  override fun onStart() {
+    super.onStart()
+    EventBus.getDefault().register(this)
+  }
+
+  override fun onStop() {
+    super.onStop()
+    EventBus.getDefault().unregister(this)
+  }
+
+  @Subscribe(threadMode = MAIN)
+  fun onPrefChanged(event: PreferenceChangeEvent) {
+    if (event.key == UI_MODE && uiMode != getDefaultNightMode()) {
+      setDefaultNightMode(uiMode)
+    }
+  }
 }

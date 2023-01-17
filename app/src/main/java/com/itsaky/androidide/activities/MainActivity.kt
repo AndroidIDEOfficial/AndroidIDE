@@ -26,11 +26,11 @@ import android.widget.TextView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
 import com.blankj.utilcode.util.SizeUtils
-import com.itsaky.androidide.activities.editor.EditorActivityKt
+import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.R.id
+import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.IDEActivity
-import com.itsaky.androidide.app.IDEApplication
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.fragments.MainFragment
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
@@ -72,7 +72,10 @@ class MainActivity : IDEActivity() {
   }
 
   override fun preSetContentLayout() {
-    installSplashScreen()
+    installSplashScreen().setOnExitAnimationListener {
+      it.remove()
+      DynamicColors.applyToActivityIfAvailable(this)
+    }
   }
 
   override fun bindLayout(): View {

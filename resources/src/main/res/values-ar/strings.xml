@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">المناقشات على التيليغرام</string>
   <string name="official_tg_channel">قناة التيليغرام الرسمية</string>
   <string name="msg_empty_view">ليس لدي ما أعرضه عليك…</string>
-  <string name="btn_terminal">التيرمنال</string>
+  <string name="title_terminal">التيرمنال</string>
   <string name="reset">إعادة تعيين</string>
   <string name="app_logs">سجلات التطبيق</string>
   <string name="ide_logs">سجلات IDE</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">أخرى</string>
   <string name="classtype_class">كلاس</string>
   <string name="classtype_activity">نشاط (واجهة)</string>
-  <string name="classtype_interface">واجهة مستخدم (انترفيس)</string>
+  <string name="title_interface">واجهة مستخدم (انترفيس)</string>
   <string name="classtype_enum">Enum</string>
   <string name="msg_checking_storage_permissions">التحقق من أذونات التخزين</string>
   <string name="msg_failed_list_files">فشل في إدراج ملفات المشروع!</string>

@@ -76,9 +76,9 @@ import com.github.javaparser.ast.type.TypeParameter
 import com.github.javaparser.printer.DefaultPrettyPrinter
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration
 import com.github.javaparser.printer.configuration.PrinterConfiguration
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.lsp.java.visitors.PrettyPrintingVisitor
+import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.AnnotationTree
 import com.sun.source.tree.AssignmentTree
 import com.sun.source.tree.BlockTree
@@ -98,7 +98,6 @@ import com.sun.source.tree.StatementTree
 import com.sun.source.tree.Tree
 import com.sun.source.tree.TypeParameterTree
 import com.sun.source.tree.VariableTree
-import org.jetbrains.annotations.Contract
 import java.util.*
 import java.util.function.*
 import java.util.stream.*
@@ -110,6 +109,8 @@ import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 import javax.lang.model.type.TypeVariable
+import kotlin.jvm.optionals.getOrNull
+import org.jetbrains.annotations.Contract
 
 object JavaParserUtils {
 
@@ -245,6 +246,7 @@ object JavaParserUtils {
     }
   }
 
+  @Suppress("Since15")
   fun toCompilationUnit(tree: CompilationUnitTree): CompilationUnit {
     val compilationUnit = CompilationUnit()
     compilationUnit.setPackageDeclaration(toPackageDeclaration(tree.getPackage()))
@@ -259,6 +261,7 @@ object JavaParserUtils {
     return compilationUnit
   }
 
+  @Suppress("Since15")
   fun toPackageDeclaration(tree: PackageTree): PackageDeclaration {
     val declaration = PackageDeclaration()
     declaration.setName(tree.packageName.toString())
@@ -464,22 +467,19 @@ object JavaParserUtils {
       method.modifiers.flags.stream().map { toModifier(it) }.collect(NodeList.toNodeList())
     methodDeclaration.parameters =
       method.parameters
-        .stream()
-        .map { toParameter(it) }
-        .peek { parameter: Parameter? ->
-          val firstType = getTypeWithoutBounds(parameter!!.type)
-          parameter.type = firstType
+        .map { variable ->
+          return@map toParameter(variable).also { param ->
+            val firstType = getTypeWithoutBounds(param.type)
+            param.type = firstType
+          }
         }
-        .collect(NodeList.toNodeList())
+        .toNodeList()
     methodDeclaration.typeParameters =
       method.typeParameters
-        .stream()
-        .map { toType(it as Tree?) }
-        .filter { obj: Type? -> Objects.nonNull(obj) }
-        .map { type1: Type? -> if (type1 != null) type1.toTypeParameter() else Optional.empty() }
-        .filter { obj: Optional<TypeParameter?>? -> obj!!.isPresent }
-        .map { obj: Optional<TypeParameter?>? -> obj!!.get() }
-        .collect(NodeList.toNodeList())
+        .mapNotNull {
+          return@mapNotNull toType(it as Tree?)?.toTypeParameter()?.getOrNull()
+        }
+        .toNodeList()
     if (method.body != null) {
       methodDeclaration.setBody(toBlockStatement(method.body))
     }
@@ -505,29 +505,23 @@ object JavaParserUtils {
     expr.setName(toType(tree.annotationType).toString())
     expr.pairs =
       tree.arguments
-        .stream()
-        .map { arg: ExpressionTree? ->
-          if (arg is AssignmentTree) {
-            val assignExpr = toAssignExpression((arg as AssignmentTree?)!!)
+        .map {
+          return@map if (it is AssignmentTree) {
+            val assignExpr = toAssignExpression((it as AssignmentTree?)!!)
             val pair = MemberValuePair()
             pair.setName(assignExpr.target.toString())
             pair.value = assignExpr.value
-            return@map pair
-          }
-          null
+            pair
+          } else null
         }
-        .collect(NodeList.toNodeList())
+        .toNodeList()
     return expr
   }
 
   fun toParameter(tree: VariableTree): Parameter {
     val parameter = Parameter()
     parameter.type = toType(tree.type)
-    tree.modifiers.flags
-      .stream()
-      .map { toModifier(it) }
-      .collect(NodeList.toNodeList())
-      .also { parameter.modifiers = it }
+    tree.modifiers.flags.map { toModifier(it) }.toNodeList().also { parameter.modifiers = it }
     parameter.setName(tree.name.toString())
     return parameter
   }
@@ -540,8 +534,7 @@ object JavaParserUtils {
     val parameter = Parameter()
     parameter.setType(EditHelper.printType(type))
     parameter.setName(name.name.toString())
-    parameter.modifiers =
-      name.modifiers.flags.stream().map { toModifier(it) }.collect(NodeList.toNodeList())
+    parameter.modifiers = name.modifiers.flags.map { toModifier(it) }.toNodeList()
     parameter.setName(name.name.toString())
     return parameter
   }
@@ -578,22 +571,19 @@ object JavaParserUtils {
     )
     methodDeclaration.parameters =
       IntStream.range(0, method.parameters.size)
-        .mapToObj { i: Int -> toParameter(type!!.parameterTypes[i], method.parameters[i]) }
-        .peek { parameter: Parameter? ->
-          val firstType = getTypeWithoutBounds(parameter!!.type)
-          parameter.type = firstType
+        .mapToObj {
+          return@mapToObj toParameter(type!!.parameterTypes[it], method.parameters[it]).also {
+            parameter ->
+            val firstType = getTypeWithoutBounds(parameter.type)
+            parameter.type = firstType
+          }
         }
         .collect(NodeList.toNodeList())
     methodDeclaration.typeParameters =
       type!!
         .typeVariables
-        .stream()
-        .map { toType(it as TypeMirror?) }
-        .filter { obj: Type? -> Objects.nonNull(obj) }
-        .map { type1: Type? -> if (type1 != null) type1.toTypeParameter() else Optional.empty() }
-        .filter { obj: Optional<TypeParameter?>? -> obj!!.isPresent }
-        .map { obj: Optional<TypeParameter?>? -> obj!!.get() }
-        .collect(NodeList.toNodeList())
+        .mapNotNull { toType(it as TypeMirror?)?.toTypeParameter()?.getOrNull() }
+        .toNodeList()
     return methodDeclaration
   }
 
@@ -620,26 +610,31 @@ object JavaParserUtils {
         }
       }
     }
-    if (type.isClassOrInterfaceType) {
-      val typeArguments = type.asClassOrInterfaceType().typeArguments
-      if (typeArguments!!.isPresent) {
-        if (typeArguments.get().isNonEmpty) {
-          val first = typeArguments.get().first
-          if (first!!.isPresent) {
-            if (first.get().isTypeParameter) {
-              val typeBound = first.get().asTypeParameter().typeBound
-              if (typeBound!!.isNonEmpty) {
-                val first1 = typeBound.first
-                if (first1!!.isPresent) {
-                  type.asClassOrInterfaceType().setTypeArguments(first1.get())
-                  return type
-                }
-              }
-            }
-          }
-        }
-      }
+    if (!type.isClassOrInterfaceType) {
+      return type
     }
+
+    val typeArguments = type.asClassOrInterfaceType().typeArguments
+    if (!typeArguments!!.isPresent || !typeArguments.get().isNonEmpty) {
+      return type
+    }
+
+    val first = typeArguments.get().first
+    if (!first!!.isPresent || !first.get().isTypeParameter) {
+      return type
+    }
+
+    val typeBound = first.get().asTypeParameter().typeBound
+    if (!typeBound!!.isNonEmpty) {
+      return type
+    }
+
+    val first1 = typeBound.first
+    if (!first1!!.isPresent) {
+      return type
+    }
+
+    type.asClassOrInterfaceType().setTypeArguments(first1.get())
     return type
   }
 
@@ -681,8 +676,7 @@ object JavaParserUtils {
       }
     }
     parameter.setName(name!!.simpleName.toString())
-    parameter.modifiers =
-      name.modifiers.stream().map { toModifier(it) }.collect(NodeList.toNodeList())
+    parameter.modifiers = name.modifiers.map { toModifier(it) }.toNodeList()
     parameter.setName(name.simpleName.toString())
     return parameter
   }
@@ -781,6 +775,10 @@ object JavaParserUtils {
     }
     return name
   }
+}
+
+private fun <E : Node?> Collection<E>.toNodeList(): NodeList<E?> {
+  return NodeList(this)
 }
 
 private inline fun <reified T> Stream<T>.asArray(): Array<T> {

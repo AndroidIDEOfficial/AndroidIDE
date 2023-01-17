@@ -1,0 +1,70 @@
+preset: simple
+releaseLenient: false
+releasePrefix: "v"
+stateFile: build/nyx-state.json
+scheme: SEMVER
+
+changelog:
+  path: build/CHANGELOG.md
+  template: .nyx/CHANGELOG.tpl
+  sections:
+    Added: "^feat$"
+    Fixed: "^fix$"
+  substitutions:
+    "(?m)#([0-9]+)(?s)": "[#%s](https://github.com/AndroidIDEOfficial/AndroidIDE/issues/%s)"
+
+releaseAssets:
+  apk:
+    fileName: "androidide-{{version}}.apk"
+    description: "AndroidIDE {{version}} release APK"
+    path: app-release.apk
+    type: application/octet-stream
+
+releaseTypes:
+  enabled:
+    - mainline
+    - internal
+  publicationServices:
+    - github
+  remoteRepositories:
+    - origin
+  items:
+    mainline:
+      description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
+      collapseVersions: true
+      gitPush: true
+      gitTag: true
+      publish: true
+      matchBranches: "^(master|main)$"
+      matchWorkspaceStatus: "CLEAN"
+      matchEnvironmentVariables:
+        CI: "^true$"
+        ReleaseAndroidIDE: "^true$"
+    internal:
+      description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
+      collapseVersions: true
+      collapsedVersionQualifier: "internal"
+      gitPush: false
+      gitTag: false
+      publish: false
+      identifiers:
+        -
+          qualifier: "branch"
+          value: "{{#sanitizeLower}}{{branch}}{{/sanitizeLower}}"
+          position: "BUILD"
+        -
+          qualifier: "commit"
+          value: "{{#short7}}{{releaseScope.finalCommit}}{{/short7}}"
+          position: "BUILD"
+        - 
+          qualifier: "timestamp"
+          value: "{{#timestampYYYYMMDDHHMMSS}}{{timestamp}}{{/timestampYYYYMMDDHHMMSS}}"
+          position: "BUILD"
+
+services:
+    github:
+      type: GITHUB
+      options:
+        REPOSITORY_OWNER: "AndroidIDEOfficial"
+        REPOSITORY_NAME: "AndroidIDE"
+        AUTHENTICATION_TOKEN: "{{#environment.variable}}GH_TOKEN{{/environment.variable}}"

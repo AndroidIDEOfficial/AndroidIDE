@@ -40,9 +40,9 @@ abstract class BaseIDEActivity : AppCompatActivity() {
   open val statusBarColor: Int
     get() = resolveAttr(R.attr.colorSurface)
 
-  fun loadFragment(fragment: Fragment?, id: Int) {
+  fun loadFragment(fragment: Fragment, id: Int) {
     val transaction = supportFragmentManager.beginTransaction()
-    transaction.replace(id, fragment!!)
+    transaction.replace(id, fragment)
     transaction.commit()
   }
 

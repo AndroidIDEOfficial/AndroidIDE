@@ -224,12 +224,13 @@ class EditorViewModel : ViewModel() {
     file = File(file, "editor/openedFiles.json")
     if (file.exists()) {
       FileUtils.rename(file, "${file.name}.bak")
-      file.createNewFile()
     }
 
     if (file.parentFile?.exists() == false) {
       file.parentFile?.mkdirs()
     }
+  
+    file.createNewFile()
 
     return file
   }

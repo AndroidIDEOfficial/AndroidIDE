@@ -35,16 +35,16 @@ class IDEColorScheme(internal val file: File, val key: String) : DynamicColorSch
   var version: Int = 0
     internal set
 
-  var langs: Array<String> = emptyArray()
-    internal set
-
-  private var colorId = endColorId
-
   var isDarkScheme: Boolean = false
+    internal set
+  
+  var darkVariant: IDEColorScheme? = null
     internal set
 
   var definitions: Map<String, Int> = emptyMap()
     internal set
+  
+  private var colorId = endColorId
 
   internal fun load() {
     SchemeParser { name -> File(this.file.parentFile, name) }.load(this)

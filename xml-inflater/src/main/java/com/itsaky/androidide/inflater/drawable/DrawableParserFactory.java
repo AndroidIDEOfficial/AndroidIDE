@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.utils.ILogger;
-import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
+import com.itsaky.androidide.inflater.vectormaster.VectorMasterDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

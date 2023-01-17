@@ -30,15 +30,6 @@ import com.itsaky.androidide.inflater.models.UiWidget
  */
 abstract class IViewAdapter<T : View> : AbstractParser() {
 
-  /** Superclasses of the view that this adpater handles. */
-  var superclassHierarchy: List<String> = emptyList()
-    set(value) {
-      if (field.isNotEmpty()) {
-        throw UnsupportedOperationException()
-      }
-      field = value
-    }
-
   /**
    * The package name or namespace of the module/artifact in which the view that this adapter
    * handles is defined. The value is set to "android" by default unless explicitly specified in the
@@ -120,14 +111,14 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   /**
    * The default namespace that will be used by the UI designer to create and apply new attributes.
    */
-  protected open fun defaultNamespace(): INamespace {
+  protected open fun defaultNamespace(): INamespace? {
     return INamespace.ANDROID
   }
 
-  protected open fun canHandleNamespace(namespace: INamespace): Boolean {
-    return this.canHandleNamespace(namespace.uri)
+  protected open fun canHandleNamespace(namespace: INamespace?): Boolean {
+    return this.canHandleNamespace(namespace?.uri)
   }
-  protected open fun canHandleNamespace(nsUri: String): Boolean {
+  protected open fun canHandleNamespace(nsUri: String?): Boolean {
     return SdkConstants.ANDROID_URI == nsUri
   }
 

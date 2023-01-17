@@ -30,6 +30,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
@@ -44,10 +45,9 @@ import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.ui.editor.CodeEditorView;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.ui.editor.CodeEditorView;
-import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.toaster.ToastUtilsKt;
 import com.itsaky.toaster.Toaster;
 
@@ -89,7 +89,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
     if (mInstance != null) {
       throw new IllegalStateException("Client is already initialized");
     }
-    
+
     mInstance = new IDELanguageClientImpl(provider);
 
     return getInstance();
@@ -110,7 +110,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   public static boolean isInitialized() {
     return mInstance != null;
   }
-  
+
   @Override
   public void publishDiagnostics(DiagnosticResult result) {
     if (result == DiagnosticResult.NO_UPDATE) {
@@ -269,8 +269,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   @Override
-  public ShowDocumentResult showDocument(
-      ShowDocumentParams params) {
+  public ShowDocumentResult showDocument(ShowDocumentParams params) {
     boolean success = false;
     final var result = new ShowDocumentResult(false);
     if (activity() == null) {
@@ -441,7 +440,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private CodeEditorView findEditorByFile(File file) {
     return activity().getEditorForFile(file);
   }
-  
+
   private Unit noOp(final Object obj) {
     return Unit.INSTANCE;
   }

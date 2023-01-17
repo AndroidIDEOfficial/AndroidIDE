@@ -29,7 +29,6 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
@@ -41,13 +40,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 
@@ -238,19 +233,5 @@ public class Parser {
       t = t.getParentPath();
     }
     return "";
-  }
-
-  public Set<Name> packagePrivateClasses() {
-    Set<Name> result = new HashSet<>();
-    for (Tree t : root.getTypeDecls()) {
-      if (t instanceof ClassTree) {
-        ClassTree c = (ClassTree) t;
-        boolean isPublic = c.getModifiers().getFlags().contains(Modifier.PUBLIC);
-        if (!isPublic) {
-          result.add(c.getSimpleName());
-        }
-      }
-    }
-    return result;
   }
 }

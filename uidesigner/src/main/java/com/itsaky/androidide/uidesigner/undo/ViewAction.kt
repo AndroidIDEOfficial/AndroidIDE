@@ -31,7 +31,7 @@ import com.itsaky.androidide.inflater.IViewGroup
 abstract class ViewAction
 @JvmOverloads
 constructor(
-  val child: IView,
-  val parent: IViewGroup,
+  val child: com.itsaky.androidide.inflater.IView,
+  val parent: com.itsaky.androidide.inflater.IViewGroup,
   var index: Int = parent.indexOfChild(child)
 ) : IUiAction

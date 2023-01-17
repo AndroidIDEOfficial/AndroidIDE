@@ -34,9 +34,9 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
  * @author Akash Yadav
  */
 internal class WidgetTouchListener(
-  private val view: IView,
+  private val view: com.itsaky.androidide.inflater.IView,
   context: Context,
-  private val onClick: (IView) -> Boolean = { false }
+  private val onClick: (com.itsaky.androidide.inflater.IView) -> Boolean = { false }
 ) : OnTouchListener {
 
   private var touchedView: View? = null

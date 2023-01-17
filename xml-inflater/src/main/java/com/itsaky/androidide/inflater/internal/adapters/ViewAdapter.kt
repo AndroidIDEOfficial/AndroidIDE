@@ -38,7 +38,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
-import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.utils.newAttribute
 
@@ -52,7 +52,7 @@ import com.itsaky.androidide.inflater.utils.newAttribute
 open class ViewAdapter<T : View> : IViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
-    create("alpha") { view.alpha = parseFloat(value) }
+    create("alpha") { view.alpha = parseFloat(value, def = 1f) }
     create("background") { view.background = parseDrawable(context, value) }
     create("backgroundTint") { view.backgroundTintList = parseColorStateList(context, value) }
     create("backgroundTintMode") { view.backgroundTintMode = parsePorterDuffMode(value) }
@@ -148,7 +148,7 @@ open class ViewAdapter<T : View> : IViewAdapter<T>() {
   }
 
   override fun isRequiredAttribute(attribute: IAttribute): Boolean {
-    if (attribute.namespace.uri != INamespace.ANDROID.uri) {
+    if (attribute.namespace?.uri != INamespace.ANDROID.uri) {
       return false
     }
 

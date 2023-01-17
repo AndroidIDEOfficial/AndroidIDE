@@ -24,15 +24,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.transition.MaterialSharedAxis
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex
 import com.itsaky.androidide.inflater.utils.newAttribute
+import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.R.string
 import com.itsaky.androidide.uidesigner.adapters.AddAttrListAdapter
-import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter
 import com.itsaky.androidide.uidesigner.databinding.LayoutAddAttrBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
+import com.itsaky.androidide.uidesigner.models.UiAttribute
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 
 /**
@@ -52,7 +51,7 @@ class AddAttrFragment : Fragment() {
         header = null
         return
       }
-      
+
       field = value
       header = LayoutViewInfoHeaderBinding.bind(value.root)
     }
@@ -75,7 +74,7 @@ class AddAttrFragment : Fragment() {
 
     showAttrs()
   }
-  
+
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
@@ -84,15 +83,16 @@ class AddAttrFragment : Fragment() {
   private fun showAttrs() {
     val binding = this.binding ?: return
     val view = viewModel.view ?: return
-    val adapter = ViewAdapterIndex.getAdapter(view.name) ?: return
+    val adapter = view.viewAdapter ?: return
     val attributes =
-      adapter.supportedAttributes.filterNot { view.hasAttribute(it.namespace.uri, it.name) }
-    binding.attrList.adapter = AddAttrListAdapter(attributes) {
-      val attribute = newAttribute(view = viewModel.view, namespace = it.namespace, name = it.name, value = it.value)
-      viewModel.selectedAttr = attribute
-      viewModel.addAttrMode = true
-      view.addAttribute(attribute)
-      findNavController().navigate(R.id.attrValueEditorFragment)
-    }
+      adapter.supportedAttributes.filterNot { view.hasAttribute(it.name, it.namespace?.uri) }
+    binding.attrList.adapter =
+      AddAttrListAdapter(attributes) {
+        val attribute =
+          newAttribute(view = viewModel.view, namespace = it.namespace, name = it.name, value = "")
+        viewModel.selectedAttr = attribute as UiAttribute
+        viewModel.addAttrMode = true
+        findNavController().navigate(R.id.attrValueEditorFragment)
+      }
   }
 }

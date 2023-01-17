@@ -23,8 +23,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IView.SingleAttributeChangeListener
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.adapters.ViewAttrListAdapter.VH
@@ -40,10 +38,10 @@ import com.itsaky.androidide.utils.DialogUtils
  * @author Akash Yadav
  */
 internal class ViewAttrListAdapter(
-  attributes: List<IAttribute>,
+  attributes: List<com.itsaky.androidide.inflater.IAttribute>,
   private val viewModel: WorkspaceViewModel?,
-  private val onDeleteAttr: (IAttribute) -> Boolean,
-  private val onClick: (IAttribute) -> Unit
+  private val onDeleteAttr: (com.itsaky.androidide.inflater.IAttribute) -> Boolean,
+  private val onClick: (com.itsaky.androidide.inflater.IAttribute) -> Unit
 ) : RecyclerView.Adapter<VH>() {
 
   private val attributes = attributes.sortedBy { it.name }.toMutableList()
@@ -62,8 +60,9 @@ internal class ViewAttrListAdapter(
   override fun onBindViewHolder(holder: VH, position: Int) {
     val binding = holder.binding
     val attr = this.attributes[position] as UiAttribute
-
-    binding.attrName.text = "${attr.namespace.prefix}:${attr.name}"
+  
+    val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+    binding.attrName.text = "${ns}${attr.name}"
     binding.attrValue.text = attr.value
 
     if (!attr.isRequired) {
@@ -78,7 +77,7 @@ internal class ViewAttrListAdapter(
       val viewModel = this.viewModel ?: return@setOnClickListener
       val attrUpdateListener =
         object : SingleAttributeChangeListener() {
-          override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {
+          override fun onAttributeUpdated(view: com.itsaky.androidide.inflater.IView, attribute: com.itsaky.androidide.inflater.IAttribute, oldValue: String) {
             binding.attrValue.text = attribute.value
           }
         }
@@ -90,7 +89,7 @@ internal class ViewAttrListAdapter(
     DialogUtils.newYesNoDialog(
         context = context,
         title = context.getString(R.string.title_confirm_delete),
-        message = context.getString(R.string.msg_confirm_delete),
+        message = context.getString(R.string.msg_confirm_delete, attribute.qualifiedName),
         positiveClickListener = { dialog, _ ->
           dialog.dismiss()
           if (onDeleteAttr(attribute)) {

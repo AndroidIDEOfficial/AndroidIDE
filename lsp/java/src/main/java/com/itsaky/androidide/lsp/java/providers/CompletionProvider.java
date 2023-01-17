@@ -43,6 +43,7 @@ import com.itsaky.androidide.lsp.java.providers.completion.MemberSelectCompletio
 import com.itsaky.androidide.lsp.java.providers.completion.SwitchConstantCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.TopLevelSnippetsProvider;
 import com.itsaky.androidide.lsp.java.utils.ASTFixer;
+import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
@@ -104,6 +105,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       abortIfCancelled();
       abortCompletionIfCancelled();
       return completeInternal(params);
+    } catch (Throwable err) {
+      if (CancelChecker.isCancelled(err)) {
+        LOG.info("Completion request cancelled");
+      } else {
+        LOG.error("An error occurred while computing completions", err);
+      }
+      throw err;
     } finally {
       completing.set(false);
     }
@@ -236,6 +244,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return synchronizedTask.get(
         task -> {
           if (task == null || task.task == null || task.task.getContext() == null) {
+            LOG.warn("Compilation resulted in an invalid JavacTask");
             return CompletionResult.EMPTY;
           }
           abortIfCancelled();

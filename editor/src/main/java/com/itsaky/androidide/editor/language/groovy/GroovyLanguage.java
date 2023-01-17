@@ -20,9 +20,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.editor.language.CommonSymbolPairs;
+import com.itsaky.androidide.editor.language.newline.BracketsNewlineHandler;
+import com.itsaky.androidide.editor.language.newline.CStyleBracketsHandler;
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs;
 import com.itsaky.androidide.editor.language.IDELanguage;
-import com.itsaky.androidide.editor.language.BraceHandler;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
@@ -46,7 +47,7 @@ public class GroovyLanguage extends IDELanguage {
   private final GroovyAnalyzer analyzer;
   private final GroovyAutoComplete completer;
   private final NewlineHandler[] newlineHandlers =
-      new NewlineHandler[] {new BraceHandler(this::getIndentAdvance, this::useTab)};
+      new NewlineHandler[] {new BracketsNewlineHandler(this::getIndentAdvance, this::useTab)};
   private final CommonSymbolPairs symbolPairs = new CommonSymbolPairs();
 
   public GroovyLanguage() {

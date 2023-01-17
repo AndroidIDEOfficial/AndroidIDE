@@ -25,7 +25,7 @@ import com.itsaky.androidide.uidesigner.models.UiAttribute
  *
  * @author Akash Yadav
  */
-internal class AttrUpdatedAction(view: IView, attr: UiAttribute, private val oldValue: String) :
+internal class AttrUpdatedAction(view: com.itsaky.androidide.inflater.IView, attr: UiAttribute, private val oldValue: String) :
   AttrAction(view, attr) {
 
   override fun undo() {

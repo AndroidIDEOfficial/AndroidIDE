@@ -25,7 +25,8 @@ import com.itsaky.androidide.uidesigner.models.UiAttribute
  *
  * @author Akash Yadav
  */
-internal class AttrRemovedAction(view: IView, attr: UiAttribute) : AttrAction(view, attr) {
+internal class AttrRemovedAction(view: com.itsaky.androidide.inflater.IView, attr: UiAttribute) :
+  AttrAction(view, attr.copyAttr(view = view) as UiAttribute) {
 
   override fun undo() {
     view.addAttribute(attr)

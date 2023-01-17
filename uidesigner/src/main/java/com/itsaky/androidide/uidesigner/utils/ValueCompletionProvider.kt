@@ -19,8 +19,6 @@ package com.itsaky.androidide.uidesigner.utils
 
 import android.text.Editable
 import com.blankj.utilcode.util.ThreadUtils
-import com.itsaky.androidide.inflater.IAttribute
-import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.lsp.util.setupLookupForCompletion
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings
@@ -38,7 +36,7 @@ import java.io.File
 internal class ValueCompletionProvider(
   private val file: File,
   private val view: ViewImpl,
-  private val attribute: IAttribute,
+  private val attribute: com.itsaky.androidide.inflater.IAttribute,
   private val onComplete: (List<String>) -> Unit
 ) : SingleTextWatcher() {
 
@@ -64,10 +62,6 @@ internal class ValueCompletionProvider(
           this.prefix = value
           this.start()
         }
-
-    val copy = (attribute as AttributeImpl).copyAttr(view = view)
-    copy.value = value
-    view.updateAttribute(copy)
   }
 
   class CompletionThread(
@@ -77,7 +71,7 @@ internal class ValueCompletionProvider(
 
     private val log = ILogger.newInstance("CompletionThread")
     var prefix: String = ""
-    var attribute: IAttribute? = null
+    var attribute: com.itsaky.androidide.inflater.IAttribute? = null
 
     fun cancel() {
       interrupt()
@@ -90,12 +84,13 @@ internal class ValueCompletionProvider(
             onComplete(emptyList())
             return
           }
-
-      log.info("Complete attribute value: '${attribute.namespace.prefix}:${attribute.name}'")
+  
+      val ns = attribute.namespace?.prefix?.let { "${it}:" } ?: ""
+      log.info("Complete attribute value: '${ns}${attribute.name}'")
 
       val result =
         completionProvider.completeValue(
-          namespace = attribute.namespace.uri,
+          namespace = attribute.namespace?.uri,
           prefix = prefix,
           attrName = attribute.name,
           attrValue = prefix

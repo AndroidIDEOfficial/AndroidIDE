@@ -70,7 +70,7 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
         it.isChecked = !it.isChecked
 
         val ignoreCase = searchOptions.ignoreCase
-        val regex = searchOptions.useRegex
+        val regex = searchOptions.type == SearchOptions.TYPE_REGULAR_EXPRESSION
         searchOptions =
           when (it.itemId) {
             0 -> SearchOptions(it.isChecked, regex)
@@ -149,7 +149,7 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
       // Handle bad regexp
       val query =
         s.toString().let {
-          if (searchOptions.useRegex) {
+          if (searchOptions.type == SearchOptions.TYPE_REGULAR_EXPRESSION) {
             try {
               Pattern.compile(it)
               it

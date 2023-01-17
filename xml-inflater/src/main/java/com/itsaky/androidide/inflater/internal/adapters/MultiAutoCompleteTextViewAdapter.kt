@@ -20,7 +20,7 @@ package com.itsaky.androidide.inflater.internal.adapters
 import android.widget.MultiAutoCompleteTextView
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
-import com.itsaky.androidide.inflater.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
 
 /**

@@ -30,6 +30,7 @@ import com.sun.source.tree.MemberSelectTree
 import com.sun.source.tree.Scope
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
+import com.sun.tools.javac.code.Symbol
 import java.nio.file.Path
 import javax.lang.model.element.ElementKind.CONSTRUCTOR
 import javax.lang.model.element.ElementKind.METHOD
@@ -59,7 +60,13 @@ class MemberSelectCompletionProvider(
     endsWithParen: Boolean,
   ): CompletionResult {
     val trees = Trees.instance(task.task)
-    val select = path.leaf as MemberSelectTree
+    val select =
+      path.leaf as? MemberSelectTree
+        ?: run {
+          log.error("A member select tree was expected but was ${path.leaf.javaClass}")
+          return CompletionResult.EMPTY
+        }
+
     log.info("...complete members of " + select.expression)
 
     val exprPath = TreePath(path, select.expression)
@@ -136,10 +143,11 @@ class MemberSelectCompletionProvider(
   ): CompletionResult {
     val trees = Trees.instance(task.task)
     val typeElement = type.asElement() as TypeElement
-    val list: MutableList<CompletionItem> = ArrayList()
+    val list = mutableListOf<CompletionItem>()
     val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-    val matchLevels: MutableMap<String, MatchLevel> =
-      mutableMapOf()
+    val matchLevels = mutableMapOf<String, MatchLevel>()
+
+    log.debug("DeclaredType $typeElement with members ${(typeElement as Symbol).members()} in scope: $scope")
 
     abortIfCancelled()
     abortCompletionIfCancelled()
@@ -167,6 +175,8 @@ class MemberSelectCompletionProvider(
         list.add(item(task, member, matchLevel))
       }
     }
+
+    log.debug("Found ${list.size} members along with ${methods.size} methods")
 
     abortIfCancelled()
     abortCompletionIfCancelled()
@@ -198,11 +208,13 @@ class MemberSelectCompletionProvider(
       if (method != null && method.modifiers.contains(STATIC)) {
         return false
       }
+      
       // If we find the enclosing class
       val thisElement = s.enclosingClass
       if (thisElement != null && thisElement.asType() == type) {
         return true
       }
+      
       // If the enclosing class is static, stop looking
       if (thisElement != null && thisElement.modifiers.contains(STATIC)) {
         return false

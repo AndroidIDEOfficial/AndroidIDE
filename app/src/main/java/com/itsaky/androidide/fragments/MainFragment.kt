@@ -54,7 +54,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val cloneGitRepository =
       MainScreenAction(string.git_clone_repo, R.drawable.ic_git) { cloneGitRepo() }
     val openTerminal =
-      MainScreenAction(string.btn_terminal, R.drawable.ic_terminal) {
+      MainScreenAction(string.title_terminal, R.drawable.ic_terminal) {
         startActivity(Intent(requireActivity(), TerminalActivity::class.java))
       }
     val preferences =

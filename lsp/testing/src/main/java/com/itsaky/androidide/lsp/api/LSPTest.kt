@@ -80,7 +80,7 @@ abstract class LSPTest {
     this.toolingProject = project
     this.toolingServer = server
     
-    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    Lookup.DEFAULT.update(BuildService.KEY_PROJECT_PROXY, project)
 
     server
       .initialize(InitializeProjectMessage(FileProvider.projectRoot().toFile().absolutePath))

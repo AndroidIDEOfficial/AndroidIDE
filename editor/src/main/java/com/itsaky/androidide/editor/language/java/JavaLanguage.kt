@@ -18,15 +18,14 @@
 package com.itsaky.androidide.editor.language.java
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.BraceHandler
-import com.itsaky.androidide.editor.language.CommonSymbolPairs
-import com.itsaky.androidide.editor.language.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
+import com.itsaky.androidide.editor.language.newline.TSCStyleBracketsHandler
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
-import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.util.MyCharacter
 import io.github.rosemoe.sora.widget.SymbolPairMatch
 
@@ -54,17 +53,12 @@ class JavaLanguage(context: Context) :
     return INTERRUPTION_LEVEL_SLIGHT
   }
 
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
-    // TODO Implement this with tree-sitter
-    return 0
-  }
-
   override fun getSymbolPairs(): SymbolPairMatch {
     return JavaSymbolPairs()
   }
-
-  override fun getNewlineHandlers(): Array<NewlineHandler> {
-    return arrayOf(BraceHandler({ line -> this.getIndentAdvance(line!!) }) { useTab() })
+  
+  override fun createNewlineHandlers(): Array<TSBracketsHandler> {
+    return arrayOf(TSCStyleBracketsHandler(this))
   }
 
   internal open class JavaSymbolPairs : CommonSymbolPairs() {

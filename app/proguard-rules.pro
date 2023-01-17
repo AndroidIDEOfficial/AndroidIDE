@@ -18,8 +18,8 @@
 # Builder model implementations
 -keep class com.itsaky.androidide.builder.model.** { *; }
 
-# JSONRpc
--keep class org.eclipse.lemminx.uriresolver.URIResolverExtensionManager { *; }
+# Eclipse
+-keep class org.eclipse.** { *; }
 
 # JAXP
 -keep class jaxp.** { *; }
@@ -77,3 +77,10 @@
 # Used in preferences
 -keep enum com.itsaky.androidide.lsp.xml.models.EmptyElements { *; }
 -keep enum com.itsaky.androidide.xml.permissions.Permission { *; }
+
+# Lots of native methods in tree-sitter
+# There are some fields as well that are accessed from native field
+-keepclasseswithmembers class ** {
+    native <methods>;
+}
+-keep class com.itsaky.androidide.treesitter.** { *; }

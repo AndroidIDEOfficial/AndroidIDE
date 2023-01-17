@@ -37,7 +37,11 @@ class DefaultCompilationTaskProcessor : CompilationTaskProcessor {
 
     trees.forEach(processCompilationUnit::accept)
     watch.lapFromLast("Processed trees")
-
+    
+//    val entered = JavacTaskUtil.enterTrees(task, trees)
+//    watch.lapFromLast("Entered trees")
+//
+//    val analyzed = JavacTaskUtil.analyze(task, entered)
     task.analyze()
     watch.lapFromLast("Analyzed all trees")
   }

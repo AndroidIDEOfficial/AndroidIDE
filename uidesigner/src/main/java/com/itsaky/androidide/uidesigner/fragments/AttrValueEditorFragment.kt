@@ -26,7 +26,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.uidesigner.databinding.LayoutAttrValueEditorBinding
 import com.itsaky.androidide.uidesigner.databinding.LayoutViewInfoHeaderBinding
@@ -56,11 +55,6 @@ class AttrValueEditorFragment : Fragment() {
 
   private var textWatcher: TextWatcher? = null
 
-  companion object {
-    const val KEY_EDIT_RESULT = "ide.uidesigner.viewinfo.attreditor.result"
-    const val KEY_EDIT_RESULT_VALUE = "ide.uidesigner.viewinfo.attreditor.result.value"
-  }
-
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -80,10 +74,12 @@ class AttrValueEditorFragment : Fragment() {
   private fun showAttrInfo() {
     val binding = this.binding ?: return
     val header = this.header ?: return
+    val view = this.viewModel.view ?: return
     val attr = this.viewModel.selectedAttr ?: return
-
-    header.name.text = "${attr.namespace.prefix}:${attr.name}"
-    header.desc.text = attr.namespace.uri
+  
+    val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
+    header.name.text = "${ns}${attr.name}"
+    header.desc.text = attr.namespace?.uri ?: ""
     binding.attrValue.let { textView ->
       textWatcher?.let { watcher -> textView.removeTextChangedListener(watcher) }
 
@@ -94,11 +90,10 @@ class AttrValueEditorFragment : Fragment() {
           )
           textView.dropDownVerticalOffset = -binding.root.height
           textView.showDropDown()
-
-          parentFragmentManager.setFragmentResult(
-            KEY_EDIT_RESULT,
-            Bundle().apply { putString(KEY_EDIT_RESULT_VALUE, binding.attrValue.text.toString()) }
-          )
+  
+          val value = binding.attrValue.text.toString()
+          attr.value = value
+          view.applyAttribute(attr.copyAttr(value = value))
         }
 
       textView.setText(attr.value)

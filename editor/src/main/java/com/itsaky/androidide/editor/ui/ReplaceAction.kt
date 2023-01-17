@@ -58,11 +58,7 @@ object ReplaceAction {
         return@setNeutralButton
       }
 
-      editor.searcher.replaceAllAsync(input.text.toString()).whenComplete { _, error ->
-        if (error != null) {
-          log.error("Unable to replace all matched text", error)
-        }
-      }
+      editor.searcher.replaceAll(input.text.toString())
     }
     builder.show()
   }

@@ -53,12 +53,12 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.editor.language.TreeSitterLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
-import com.itsaky.androidide.editor.language.java.JavaLanguage;
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
-import com.itsaky.androidide.editor.language.xml.XMLLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
+import com.itsaky.androidide.editor.schemes.IDEColorScheme;
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
 import com.itsaky.androidide.editor.ui.EditorSearchLayout;
 import com.itsaky.androidide.editor.ui.IDEEditor;
@@ -74,7 +74,6 @@ import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
 
 import org.greenrobot.eventbus.EventBus;
@@ -89,6 +88,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.text.LineSeparator;
 import io.github.rosemoe.sora.widget.component.Magnifier;
+import kotlin.io.FilesKt;
 
 /**
  * A view that handles opened code editors.
@@ -130,18 +130,15 @@ public class CodeEditorView extends LinearLayout {
     CompletableFuture.runAsync(
         () -> {
           final var contents = FileIOUtils.readFile2String(file);
-          binding.editor.post(
-              () -> {
-                binding.editor.setText(contents, createEditorArgs());
-                postRead();
-                selection.validate();
-                final var validated = binding.editor.validateRange(selection);
-                if (LSPUtils.isEqual(validated.getStart(), validated.getEnd())) {
-                  getEditor().setSelection(validated.getStart());
-                } else {
-                  getEditor().setSelection(validated);
-                }
-              });
+          final var editor = getEditor();
+          editor.post(() -> {
+            editor.setText(contents, createEditorArgs());
+            postRead();
+            
+            selection.validate();
+            editor.validateRange(selection);
+            editor.setSelection(selection);
+          });
         });
 
     configureEditorIfNeeded();
@@ -169,9 +166,10 @@ public class CodeEditorView extends LinearLayout {
 
   protected void postRead() {
     final var language = createLanguage(file);
+    final var extension = FilesKt.getExtension(file);
     if (language instanceof TreeSitterLanguage) {
-      IDEColorSchemeProvider.INSTANCE.readScheme(scheme -> {
-        applyTreeSitterLang(language, scheme);
+      IDEColorSchemeProvider.INSTANCE.readScheme(getContext(), scheme -> {
+        applyTreeSitterLang(language, extension, scheme);
       });
     } else {
       binding.editor.setEditorLanguage(language);
@@ -192,12 +190,17 @@ public class CodeEditorView extends LinearLayout {
     }
   }
   
-  private void applyTreeSitterLang(final Language language, SchemeAndroidIDE scheme) {
+  private void applyTreeSitterLang(final Language language, final String extension, SchemeAndroidIDE scheme) {
     if (scheme == null) {
       LOG.error("Failed to read current color scheme");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }
-    
+
+    if (scheme instanceof IDEColorScheme && ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
+      LOG.warn("Color scheme does not support file type '" + extension + "'");
+      scheme = SchemeAndroidIDE.newInstance(getContext());
+    }
+
     if (scheme instanceof DynamicColorScheme) {
       ((DynamicColorScheme) scheme).apply(getContext());
     }
@@ -228,29 +231,31 @@ public class CodeEditorView extends LinearLayout {
   }
 
   private Language createLanguage(File file) {
-    if (file.isFile()) {
-      String ext = FileUtils.getFileExtension(file);
-      switch (ext) {
-        case "java":
-          return new JavaLanguage(getContext());
-        case "xml":
-          return new XMLLanguage(getContext());
-        case "gradle":
-          return new GroovyLanguage();
-        case "kt":
-        case "kts":
-          return new KotlinLanguage();
-        case "c":
-        case "h":
-        case "cc":
-        case "cpp":
-        case "cxx":
-          return new CppLanguage();
-        default:
-          return new EmptyLanguage();
-      }
+    if (!file.isFile()) {
+      return new EmptyLanguage();
     }
-    return new EmptyLanguage();
+    
+    final var tsLang = TreeSitterLanguageProvider.INSTANCE.forFile(file, getContext());
+    if (tsLang != null) {
+      return tsLang;
+    }
+    
+    String ext = FileUtils.getFileExtension(file);
+    switch (ext) {
+      case "gradle":
+        return new GroovyLanguage();
+      case "kt":
+      case "kts":
+        return new KotlinLanguage();
+      case "c":
+      case "h":
+      case "cc":
+      case "cpp":
+      case "cxx":
+        return new CppLanguage();
+      default:
+        return new EmptyLanguage();
+    }
   }
 
   private void configureEditorIfNeeded() {

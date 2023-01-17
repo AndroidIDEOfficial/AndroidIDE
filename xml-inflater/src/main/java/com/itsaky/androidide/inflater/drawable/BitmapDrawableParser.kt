@@ -26,7 +26,6 @@ import android.graphics.Shader.TileMode.MIRROR
 import android.graphics.Shader.TileMode.REPEAT
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.inflater.InflateException
 import org.jetbrains.annotations.Contract
 import org.xmlpull.v1.XmlPullParser

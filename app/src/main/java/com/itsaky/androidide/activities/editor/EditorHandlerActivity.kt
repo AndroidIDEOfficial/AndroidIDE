@@ -180,12 +180,13 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     if (opened?.editor != null) {
       val editor = opened.editor
       editor.post {
-        val range = editor.validateRange(selection ?: Range.NONE)
-        if (LSPUtils.isEqual(range.start, range.end)) {
-          editor.setSelection(range.start.line, range.end.column)
-        } else {
-          editor.setSelection(range)
+        if (selection == null) {
+          editor.setSelection(0, 0)
+          return@post
         }
+        
+        editor.validateRange(selection)
+        editor.setSelection(selection)
       }
     }
   }

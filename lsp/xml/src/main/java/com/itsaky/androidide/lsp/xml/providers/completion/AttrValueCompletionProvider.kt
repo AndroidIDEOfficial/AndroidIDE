@@ -101,11 +101,15 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   fun completeValue(
-    namespace: String,
+    namespace: String?,
     prefix: String,
     attrName: String,
     attrValue: String? = null
   ): CompletionResult {
+
+    if (namespace.isNullOrBlank()) {
+      return EMPTY
+    }
 
     val tables = findResourceTables(namespace)
     if (tables.isEmpty()) {
@@ -377,9 +381,14 @@ open class AttrValueCompletionProvider(provider: ICompletionProvider) :
     }
   }
 
-  override fun findResourceTables(nsUri: String): Set<ResourceTable> {
+  override fun findResourceTables(nsUri: String?): Set<ResourceTable> {
     // When completing values, all namespaces must be included
     val tables = HashSet(findAllModuleResourceTables())
+
+    if (nsUri.isNullOrBlank()) {
+      return tables
+    }
+
     tables.addAll(super.findResourceTables(nsUri))
     log.info("Found ${tables.size} resource tables for namespace: $nsUri")
     return tables

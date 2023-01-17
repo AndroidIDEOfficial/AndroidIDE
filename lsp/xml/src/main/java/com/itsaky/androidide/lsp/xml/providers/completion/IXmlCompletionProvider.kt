@@ -246,7 +246,10 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     }
   }
 
-  protected open fun findResourceTables(nsUri: String): Set<ResourceTable> {
+  protected open fun findResourceTables(nsUri: String?): Set<ResourceTable> {
+    if (nsUri.isNullOrBlank()) {
+      return emptySet()
+    }
     if (nsUri == NAMESPACE_AUTO) {
       return findAllModuleResourceTables()
     }

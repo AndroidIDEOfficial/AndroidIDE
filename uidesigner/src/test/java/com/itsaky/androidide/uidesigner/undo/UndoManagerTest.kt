@@ -327,7 +327,7 @@ class UndoManagerTest {
       assertThat(child.attributes).hasSize(1)
       assertThat(undoManager.canUndo()).isFalse()
       assertThat(undoManager.canRedo()).isFalse()
-      child.findAttribute(attr.namespace.uri, attr.name).apply {
+      child.findAttribute(attr.name, attr.namespace?.uri).apply {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isEqualTo("match_parent")
       }
@@ -341,7 +341,7 @@ class UndoManagerTest {
       assertThat(child.attributes).hasSize(1)
       assertThat(undoManager.canUndo()).isTrue()
       assertThat(undoManager.canRedo()).isFalse()
-      child.findAttribute(attr.namespace.uri, attr.name).apply {
+      child.findAttribute(attr.name, attr.namespace?.uri).apply {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isEqualTo("wrap_content")
       }
@@ -350,7 +350,7 @@ class UndoManagerTest {
       assertThat(child.attributes).hasSize(1)
       assertThat(undoManager.canUndo()).isFalse()
       assertThat(undoManager.canRedo()).isTrue()
-      child.findAttribute(attr.namespace.uri, attr.name).apply {
+      child.findAttribute(attr.name, attr.namespace?.uri).apply {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isEqualTo("match_parent")
       }
@@ -359,7 +359,7 @@ class UndoManagerTest {
       assertThat(child.attributes).hasSize(1)
       assertThat(undoManager.canUndo()).isTrue()
       assertThat(undoManager.canRedo()).isFalse()
-      child.findAttribute(attr.namespace.uri, attr.name).apply {
+      child.findAttribute(attr.name, attr.namespace?.uri).apply {
         assertThat(this).isNotNull()
         assertThat(this!!.value).isEqualTo("wrap_content")
       }

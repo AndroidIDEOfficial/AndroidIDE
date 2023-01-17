@@ -23,8 +23,8 @@ import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.inflater.R.drawable
-import com.itsaky.androidide.inflater.R.string
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.inflater.models.UiWidget
 
 /**

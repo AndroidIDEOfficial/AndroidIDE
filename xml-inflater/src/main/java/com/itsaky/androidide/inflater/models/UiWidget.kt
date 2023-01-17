@@ -27,12 +27,12 @@ import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.internal.LayoutFile
-import com.itsaky.androidide.inflater.internal.ViewAdapterIndex.getAdapter
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory
 import com.itsaky.androidide.inflater.internal.utils.ViewFactory.generateLayoutParams
 import com.itsaky.androidide.inflater.utils.lookupComponentFactory
+import com.itsaky.androidide.inflater.viewAdapter
 
 open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes val icon: Int) {
 
@@ -60,7 +60,7 @@ open class UiWidget(val name: String, @StringRes val label: Int, @DrawableRes va
 
     view.view.layoutParams = generateLayoutParams(parent)
     val adapter =
-      getAdapter(view.name)
+      view.viewAdapter
         ?: throw IllegalStateException("No attribute adapter found for '${view.name}'")
     adapter.applyBasic(view)
     return view

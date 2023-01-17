@@ -35,7 +35,7 @@ abstract class SingleChoicePreference : DialogPreference(), PreferenceChoices {
 
   override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     super.onConfigureDialog(preference, dialog)
-    dialog.setSingleChoiceItems(getChoices(), getSelectedItem()) { dialogInterface, position ->
+    dialog.setSingleChoiceItems(getChoices(preference.context), getSelectedItem()) { dialogInterface, position ->
       dialogInterface.dismiss()
       onItemSelected(position)
     }

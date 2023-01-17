@@ -18,10 +18,8 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.CancelService
-import com.itsaky.androidide.utils.ILogger
 import com.sun.tools.javac.api.JavacTaskImpl
 import com.sun.tools.javac.api.JavacTool
-import java.util.stream.*
 import javax.tools.DiagnosticListener
 import javax.tools.JavaFileManager
 import javax.tools.JavaFileObject
@@ -52,9 +50,9 @@ import javax.tools.JavaFileObject
  */
 class ReusableCompiler {
   private val systemProvider = JavacTool.create()
-  private val currentOptions: MutableList<String> = java.util.ArrayList()
+  private val currentOptions = mutableListOf<String>()
   @JvmField var currentContext: ReusableContext? = null
-  
+
   internal var checkedOut = false
 
   /**
@@ -64,16 +62,16 @@ class ReusableCompiler {
    *
    * @param fileManager a file manager; if `null` use the compiler's standard filemanager
    * @param diagnosticListener a diagnostic listener; if `null` use the compiler's default method
-   * for reporting diagnostics
+   *   for reporting diagnostics
    * @param options compiler options, `null` means no options
    * @param classes names of classes to be processed by annotation processing, `null` means no class
-   * names
+   *   names
    * @param compilationUnits the compilation units to compile, `null` means no compilation units
    * @return an object representing the compilation
    * @throws RuntimeException if an unrecoverable error occurred in a user supplied component. The
-   * [cause][Throwable.cause] will be the error in user code.
+   *   [cause][Throwable.cause] will be the error in user code.
    * @throws IllegalArgumentException if any of the options are invalid, or if any of the given
-   * compilation units are of other kind than [source][JavaFileObject.Kind.SOURCE]
+   *   compilation units are of other kind than [source][JavaFileObject.Kind.SOURCE]
    */
   fun getTask(
     fileManager: JavaFileManager?,
@@ -112,7 +110,6 @@ class ReusableCompiler {
   }
 
   companion object {
-    private val log = ILogger.newInstance(ReusableCompiler::class.java.simpleName)
     private val cancelService: CancelService = CancelServiceImpl()
   }
 }

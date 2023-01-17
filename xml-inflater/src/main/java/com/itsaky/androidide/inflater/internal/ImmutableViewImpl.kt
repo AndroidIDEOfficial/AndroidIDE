@@ -17,11 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal
 
-import android.view.View
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IView.AttributeChangeListener
-import com.itsaky.androidide.inflater.IViewGroup
 
 /**
  * An immutable implementation of [IView].

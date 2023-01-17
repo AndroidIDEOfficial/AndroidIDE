@@ -54,6 +54,7 @@ import com.itsaky.androidide.inflater.internal.utils.parseLayoutReference
 import com.itsaky.androidide.inflater.utils.endParse
 import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.utils.startParse
+import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
@@ -225,8 +226,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
   ) {
     val parentView = parent.view as ViewGroup
     val adapter =
-      ViewAdapterIndex.getAdapter(view.name)
-          ?: throw InflateException("No attribute adapter found for view ${view.name}")
+      view.viewAdapter ?: throw InflateException("No attribute adapter found for view ${view.name}")
 
     view.view.layoutParams = generateLayoutParams(parentView)
 
@@ -241,9 +241,11 @@ open class LayoutInflaterImpl : ILayoutInflater {
         if (!checkAttr(xmlAttribute)) {
           continue
         }
+        
         val namespace =
-          view.findNamespaceByUri(xmlAttribute.namespaceUri)
-            ?: throw InflateException("Unknown namespace : ${xmlAttribute.namespaceUri}")
+          if (xmlAttribute.namespaceUri.isNullOrBlank()) null
+          else view.findNamespaceByUri(xmlAttribute.namespaceUri)
+        
         val attr = onCreateAttribute(view, namespace, xmlAttribute.name, xmlAttribute.value)
         view.addAttribute(attribute = attr, update = true)
         inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
@@ -321,7 +323,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
 
   protected open fun onCreateAttribute(
     view: ViewImpl,
-    namespace: INamespace,
+    namespace: INamespace?,
     name: String,
     value: String
   ): IAttribute {

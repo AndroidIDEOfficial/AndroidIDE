@@ -22,7 +22,7 @@
   <string name="discussions_on_telegram">Обсуждение в Telegram</string>
   <string name="official_tg_channel">Официальный канал в Telegram</string>
   <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
-  <string name="btn_terminal">Терминал</string>
+  <string name="title_terminal">Терминал</string>
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
   <string name="ide_logs">Логи IDE</string>
@@ -175,7 +175,7 @@
   <string name="restype_other">Другое</string>
   <string name="classtype_class">Класс</string>
   <string name="classtype_activity">Активность</string>
-  <string name="classtype_interface">Интерфейс</string>
+  <string name="title_interface">Интерфейс</string>
   <string name="classtype_enum">Перечисление (Enum)</string>
   <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
   <string name="msg_failed_list_files">Не удалось получить список проектов!</string>
