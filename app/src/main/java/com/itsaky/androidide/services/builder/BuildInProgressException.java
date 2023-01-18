@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services;
+package com.itsaky.androidide.services.builder;
 
 /**
  * Thrown when a build is requested but another build is already in progress.

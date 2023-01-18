@@ -90,6 +90,11 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.colorScheme = SchemeAndroidIDE.newInstance(requireContext())
     editor.setEditorLanguage(LogLanguage())
   }
+  
+  override fun onDestroyView() {
+    binding?.editor?.release()
+    super.onDestroyView()
+  }
 
   override fun onDestroy() {
     super.onDestroy()

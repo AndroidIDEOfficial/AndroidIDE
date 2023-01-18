@@ -29,9 +29,9 @@ import java.util.concurrent.Callable;
 
 public class ProjectCreatorCallable implements Callable<Void> {
 
-  private ProjectTemplate template;
-  private NewProjectDetails details;
-  private ProjectWriterCallback callback;
+  private final ProjectTemplate template;
+  private final NewProjectDetails details;
+  private final ProjectWriterCallback callback;
 
   public ProjectCreatorCallable(
       ProjectTemplate template, NewProjectDetails details, ProjectWriterCallback callback) {

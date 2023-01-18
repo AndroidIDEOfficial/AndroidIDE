@@ -46,8 +46,8 @@ import com.itsaky.androidide.projects.ProjectManager.rootProject
 import com.itsaky.androidide.projects.ProjectManager.setupProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.services.GradleBuildService
-import com.itsaky.androidide.services.GradleBuildServiceConnnection
+import com.itsaky.androidide.services.builder.GradleBuildService
+import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.RecursiveFileSearcher
@@ -144,6 +144,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       } catch (err: Throwable) {
         log.error("Unable to unbind service")
       } finally {
+        (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)?.setEventListener(null)
         Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE)
         viewModel.isBoundToBuildSerice = false
       }

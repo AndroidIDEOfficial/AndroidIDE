@@ -61,7 +61,7 @@
       android:windowSoftInputMode="adjustResize" />
 
     <service
-      android:name=".services.GradleBuildService"
+      android:name=".services.builder.GradleBuildService"
       android:exported="false" />
 
     <provider

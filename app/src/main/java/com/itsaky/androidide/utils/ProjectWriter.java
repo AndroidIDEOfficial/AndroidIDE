@@ -29,11 +29,11 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.app.IDEApplication;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
+import com.itsaky.androidide.resources.R;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -168,37 +168,42 @@ public class ProjectWriter {
     if (!FileUtils.delete(tempDir) || !Environment.mkdirIfNotExits(tempDir).exists()) {
       notifyFailed(instance.getString(R.string.cannot_create_temp));
     }
+    
     notifyTask(instance.getString(R.string.copying_assets));
     projectDir.mkdirs();
     File destZip = new File(Environment.TMP_DIR, "templates/" + id + ".zip");
     Environment.mkdirIfNotExits(destZip.getParentFile());
-    if (ResourceUtils.copyFileFromAssets(
-        "templates/" + destZip.getName(), destZip.getAbsolutePath())) {
-      unzipTemplate(destZip, tempDir, details);
-      notifyTask(instance.getString(R.string.writing_files));
-      notifyTask(instance.getString(R.string.copying_files));
-      if (FileUtils.createOrExistsDir(projectDir)) {
-        boolean success = true;
-        final var files = tempDir == null ? null : tempDir.listFiles();
-        if (files == null) {
-          success = false;
-        } else {
-          for (File f : files) {
-            if (!(success &= FileUtils.copy(f, new File(projectDir, f.getName())))) {
-              notifyFailed(instance.getString(R.string.failed_write_file, f.getName()));
-              break;
-            }
-          }
+  
+    if (!ResourceUtils.copyFileFromAssets(
+      "templates/" + destZip.getName(), destZip.getAbsolutePath())) {
+        notifyFailed(instance.getString(R.string.asset_copy_failed));
+        return;
+      }
+    
+    unzipTemplate(destZip, tempDir, details);
+    notifyTask(instance.getString(R.string.writing_files));
+    notifyTask(instance.getString(R.string.copying_files));
+    
+    if (!FileUtils.createOrExistsDir(projectDir)) {
+      notifyFailed(instance.getString(R.string.failed_create_project_dir));
+      return;
+    }
+    
+    boolean success = true;
+    final var files = tempDir == null ? null : tempDir.listFiles();
+    if (files != null) {
+      for (File f : files) {
+        if (!(success &= FileUtils.copy(f, new File(projectDir, f.getName())))) {
+          notifyFailed(instance.getString(R.string.failed_write_file, f.getName()));
+          break;
         }
-
-        if (success) {
-          notifySuccess(projectDir);
-        }
-      } else {
-        notifyFailed(instance.getString(R.string.failed_create_project_dir));
       }
     } else {
-      notifyFailed(instance.getString(R.string.asset_copy_failed));
+      success = false;
+    }
+  
+    if (success) {
+      notifySuccess(projectDir);
     }
   }
 
@@ -324,6 +329,8 @@ public class ProjectWriter {
   }
 
   private static void notifySuccess(File root) {
+    final var callback = ProjectWriter.callback;
+    ProjectWriter.callback = null;
     ThreadUtils.runOnUiThread(
         () -> {
           if (callback != null) callback.onSuccess(root);
@@ -331,6 +338,8 @@ public class ProjectWriter {
   }
 
   private static void notifyFailed(String reason) {
+    final var callback = ProjectWriter.callback;
+    ProjectWriter.callback = null;
     ThreadUtils.runOnUiThread(
         () -> {
           if (callback != null) callback.onFailed(reason);

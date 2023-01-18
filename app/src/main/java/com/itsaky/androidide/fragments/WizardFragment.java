@@ -368,7 +368,7 @@ public class WizardFragment extends BaseFragment {
           new ArrayAdapter<>(
               requireContext(),
               androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-              getCppToolchans().keySet().toArray(new String[getCppToolchans().size()])));
+              getCppToolchans().keySet().toArray(new String[0])));
 
       detailsBinding.etToolchain.setListSelection(0);
       detailsBinding.etToolchain.setText(getSelectedItem(0, detailsBinding.etToolchain), false);
