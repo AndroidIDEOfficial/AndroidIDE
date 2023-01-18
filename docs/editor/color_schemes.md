@@ -6,7 +6,7 @@ Custom color schemes are currently used only for languages that use [`tree-sitte
 
 ## File structure
 
-The color schemes store in the schemes directory must have the following file structure : 
+The color schemes stored in the schemes directory must have the following file structure : 
 
 ```
 $HOME/.androidide/ui/editor/schemes
@@ -14,7 +14,7 @@ $HOME/.androidide/ui/editor/schemes
     └── scheme.prop
 ```
 
-Schemes are defined by in a directory whose name is same as the id of the scheme.
+Schemes are defined in a directory whose name is same as the id of the scheme.
 For example, the `default` color scheme has the following directory structure :
 
 ```
@@ -27,7 +27,7 @@ $HOME/.androidide/ui/editor/schemes
 ## Scheme props
 
 The `scheme.prop` file contains basic information about the color scheme such as the scheme name,
-version, supported languages, etc. This is the file that is first read by the IDE get
+version, etc. This is the file that is first read by the IDE get
 information about the color scheme. The supported properties are :
 
 ```properties
@@ -48,6 +48,11 @@ scheme.isDark=<true|false>
 # This is the file which defines the color scheme
 scheme.file=default.json
 ```
+
+- `scheme.name` - The name of the color scheme. This is used in the color scheme selector in IDE preferences.
+- `scheme.version` - The color scheme version. This is primarily used by the IDE's `ToolsManager` to check if the color schemes that are bundled with the IDE have been updated or not.
+- `scheme.isDark` - Flag for light and dark color schemes.
+- `scheme.file` - The JSON file which defines the color schemes.
 
 ## Color scheme definition
 
@@ -87,7 +92,7 @@ For example :
   // "key": "#hex color code"
 
   "definitions": {
-    // we define the 'my_color' here
+    // we define 'my_color' here
     "my_color": "#6f5a4a",
     ...
   },
@@ -96,9 +101,21 @@ For example :
     // then reference 'my_color' here
     "bg": "@my_color",
 
-    // as many times as we want!
-    "line.bg": "@my_color"
+    // or here
+    "line.bg": "@my_color",
+    ...
   },
+
+  "languages" : [
+    {
+      ...
+      "styles" : {
+        // as many times as we want!
+        "comment": "@my_color",
+      }
+      ...
+    }
+  ]
 }
 ```
 
@@ -143,7 +160,7 @@ The keys for the editor colors can be found
 ### Languages array
 
 The `languages` JSON array contains the color schemes for the supported languages.
-Similar to the [`editor`](#editor-object) object, the elements of the `languages` array
+Similar to the [`editor`](#editor-object) object, the _elements_ of the `languages` array
 can be a JSON object or a string value (reference to other JSON files). If the element in
 the array is a reference to a JSON file, then that JSON file must have a JSON object as its
 root element. Either way, the JSON object defines the tree-sitter metadata and styles for
@@ -184,7 +201,7 @@ specific language types. The syntax for a language object is as follows :
   "local.definitions.values": [ "definition.val", ... ],
   "local.references": [ "reference", ... ],
   "styles": {
-    "<capture-name>": {
+    "<capture>": {  // <capture> is the tree-sitter query capture name
       "bg": "#......",
       "fg": "@...",
       "bold": <true|false>,
@@ -195,8 +212,6 @@ specific language types. The syntax for a language object is as follows :
 }
 ```
 
-The following table briefly explains the elements in the language object:
-
 > Note
 >
 > - `Query` - refers to tree-sitter query.
@@ -204,20 +219,19 @@ The following table briefly explains the elements in the language object:
 >
 > Read the [tree-sitter documentation](https://tree-sitter.github.io/tree-sitter/syntax-highlighting#queries) for more details.
 
-| Element                               | Description                                                                                                                                                                                                                                                                                                                                                                 |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `types`                               | The type of files (file extensions) to which this color scheme can be applied. This entry is an array of string. This is helpful for languages that can have multiple file extensions. For example, a C++ source file can have `h`, `cc` or `cpp` file extension.                                                                                                           |
-| `local.scopes`                        | Capture names for syntax nodes that introduce a new local variable scope.                                                                                                                                                                                                                                                                                                   |
-| `local.scopes.members`                | Capture names for syntax nodes that introde a new scope for member definitions (for example, scope for fields in a class).                                                                                                                                                                                                                                                  |
-| `local.definition`                    | Capture names for variable declaration nodes. For example, the `identifier` in a Java variable declaration.                                                                                                                                                                                                                                                                 |
-| `local.definition.values`             | Capture names for the value of the local variable declaration, if any. For example, the initializer in a Java variable declaration.                                                                                                                                                                                                                                         |
-| `local.references`                    | Capture names for syntax nodes that are references to a local variable.                                                                                                                                                                                                                                                                                                     |
-| `styles`                              | JSON object that defines the styles for the query captures. Key for each entry in this object is a tree-sitter query capture name. The value of each entry can be a string with a HEX color code (or color reference) or it can be a JSON object which defines multiple properties for highlighting the text for the captured node. See example below for more information. |
-| `styles.<capture-name>.bg`            | The background color for the node.                                                                                                                                                                                                                                                                                                                                          |
-| `styles.<capture-name>.fg`            | The foreground color for the node.                                                                                                                                                                                                                                                                                                                                          |
-| `styles.<capture-name>.bold`          | Whether the node text must be rendered in bold letters.                                                                                                                                                                                                                                                                                                                     |
-| `styles.<capture-name>.italic`        | Whether the node text must be rendered in italic letters.                                                                                                                                                                                                                                                                                                                   |
-| `styles.<capture-name>.strikethrough` | Whether the node text must have strikethrough.                                                                                                                                                                                                                                                                                                                            |
+- `types`                               - The type of files (file extensions) to which this color scheme can be applied. This entry is an array of string. This is helpful for languages that can have multiple file extensions. For example, a C++ source file can have `h`, `cc` or `cpp` file extension.
+
+- `local.scopes`                        - Capture names for syntax nodes that introduce a new local variable scope.
+- `local.scopes.members`                - Capture names for syntax nodes that introde a new scope for member definitions (for example, scope for fields in a class).
+- `local.definition`                    - Capture names for variable declaration nodes. For example, the `identifier` in a Java variable declaration.
+- `local.definition.values`             - Capture names for the value of the local variable declaration, if any. For example, the initializer in a Java variable declaration.
+- `local.references`                    - Capture names for syntax nodes that are references to a local variable.
+- `styles`                              - JSON object that defines the styles for the query captures. Key for each entry in this object is a tree-sitter query capture name. The value of each entry can be a string with a HEX color code (or color reference) or it can be a JSON object which defines multiple properties for rendering the text for the captured node. See example below for more information.
+- `styles.<capture>.bg`            - The background color for the node.
+- `styles.<capture>.fg`            - The foreground color for the node.
+- `styles.<capture>.bold`          - Whether the node text must be rendered in bold letters.
+- `styles.<capture>.italic`        - Whether the node text must be rendered in italic letters.
+- `styles.<capture>.strikethrough` - Whether the node text must have strikethrough.
 
 
 The JSON object below is a part of the Java language definition in the `default` color scheme. You can refer it for a more practical example.
