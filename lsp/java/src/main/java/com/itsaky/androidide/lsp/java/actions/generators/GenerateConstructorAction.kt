@@ -33,9 +33,7 @@ import com.itsaky.androidide.lsp.java.utils.ShortTypePrinter.NO_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
-import com.itsaky.toaster.toastLong
+import com.itsaky.androidide.utils.flashError
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
@@ -65,7 +63,7 @@ class GenerateConstructorAction : FieldBasedAction() {
         .whenComplete { _, error ->
           if (error != null) {
             log.error("Unable to generate constructor for the selected fields", error)
-            toast(string.msg_cannot_generate_constructor, ERROR)
+            flashError(string.msg_cannot_generate_constructor)
           }
         }
     }
@@ -107,7 +105,7 @@ class GenerateConstructorAction : FieldBasedAction() {
       log.warn(
         "A constructor with same parameter types is already available in class ${type.simpleName}"
       )
-      toastLong(data[Context::class.java]!!.getString(string.msg_constructor_available), ERROR)
+      flashError(data[Context::class.java]!!.getString(string.msg_constructor_available))
       return
     }
 

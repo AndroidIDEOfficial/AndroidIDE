@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="warm_grey">#8e8e8e</color>
+    <color name="white">#fff</color>
+    <color name="shadow_color">#94444444</color>
+    <color name="translucent_black">#22000000</color>
+    <color name="modal">#80272727</color>
+    <color name="slate_black">#FF333333</color>
+    <color name="yellow">#FFEB3B</color>
+</resources>

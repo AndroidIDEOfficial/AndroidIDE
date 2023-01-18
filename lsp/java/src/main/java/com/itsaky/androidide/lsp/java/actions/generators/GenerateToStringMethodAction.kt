@@ -26,15 +26,14 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
@@ -67,9 +66,8 @@ class GenerateToStringMethodAction : FieldBasedAction() {
           if (error != null) {
             log.error("Unable to generate toString() implementation", error)
             ThreadUtils.runOnUiThread {
-              toast(
-                data[Context::class.java]!!.getString(R.string.msg_cannot_generate_toString),
-                ERROR
+              flashError(
+                data[Context::class.java]!!.getString(R.string.msg_cannot_generate_toString)
               )
             }
             return@whenComplete
@@ -106,7 +104,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
   ) {
     if (isToStringOverridden(task, type)) {
       ThreadUtils.runOnUiThread {
-        toast(data[Context::class.java]!!.getString(string.msg_toString_overridden), ERROR)
+        flashError(data[Context::class.java]!!.getString(string.msg_toString_overridden))
       }
       log.warn("toString() method has already been overridden in class ${type.simpleName}")
       return

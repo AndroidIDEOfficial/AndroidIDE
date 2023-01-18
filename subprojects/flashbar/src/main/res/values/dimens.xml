@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fb_content_padding_all">16dp</dimen>
+    <dimen name="fb_title_text_size">16sp</dimen>
+    <dimen name="fb_message_text_size">14sp</dimen>
+    <dimen name="fb_title_message_margin">2dp</dimen>
+    <dimen name="fb_icon_size">28dp</dimen>
+    <dimen name="fb_margin_right_icon">16dp</dimen>
+    <dimen name="fb_button_text_size">16sp</dimen>
+    <dimen name="fb_top_compensation_margin">16dp</dimen>
+    <dimen name="fb_bottom_compensation_margin">30dp</dimen>
+    <dimen name="fb_progress_size">20dp</dimen>
+    <dimen name="fb_margin_secondary_action">12dp</dimen>
+    <dimen name="fb_margin_secondary_action_container">12dp</dimen>
+    <dimen name="fb_margin_progress">20dp</dimen>
+
+</resources>

@@ -73,6 +73,8 @@ android {
 kapt { arguments { arg("eventBusIndex", "com.itsaky.androidide.events.AppEventsIndex") } }
 
 dependencies {
+  
+  debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
   // Annotation processors
   kapt(libs.common.glide.ap)

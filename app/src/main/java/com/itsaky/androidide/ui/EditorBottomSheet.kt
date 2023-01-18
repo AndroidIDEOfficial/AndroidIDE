@@ -22,7 +22,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver
@@ -33,7 +32,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.SizeUtils
@@ -59,8 +57,7 @@ import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.IntentUtils.shareFile
 import com.itsaky.androidide.utils.Symbols.forFile
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
@@ -261,10 +258,16 @@ constructor(
 
     val activity = context as Activity
     if (KeyboardUtils.isSoftInputVisible(activity)) {
-      TransitionManager.beginDelayedTransition(binding.root, MaterialSharedAxis(MaterialSharedAxis.Y, false))
+      TransitionManager.beginDelayedTransition(
+        binding.root,
+        MaterialSharedAxis(MaterialSharedAxis.Y, false)
+      )
       binding.headerContainer.displayedChild = CHILD_SYMBOL_INPUT
     } else {
-      TransitionManager.beginDelayedTransition(binding.root, MaterialSharedAxis(MaterialSharedAxis.Y, false))
+      TransitionManager.beginDelayedTransition(
+        binding.root,
+        MaterialSharedAxis(MaterialSharedAxis.Y, false)
+      )
       binding.headerContainer.displayedChild = CHILD_HEADER
     }
   }
@@ -291,7 +294,7 @@ constructor(
   @Suppress("DEPRECATION")
   private fun shareText(text: String?, type: String) {
     if (text == null || TextUtils.isEmpty(text)) {
-      toast(context.getString(string.msg_output_text_extraction_failed), ERROR)
+      flashError(context.getString(string.msg_output_text_extraction_failed))
       return
     }
     val pd = ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)

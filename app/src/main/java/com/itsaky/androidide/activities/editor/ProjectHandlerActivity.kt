@@ -51,8 +51,7 @@ import com.itsaky.androidide.services.GradleBuildServiceConnnection
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.RecursiveFileSearcher
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
@@ -64,7 +63,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   protected var mSearchingProgress: ProgressSheet? = null
   protected var mFindInProjectDialog: AlertDialog? = null
-  
+
   protected var isFromSavedInstance = false
   protected var shouldInitialize = false
 
@@ -98,18 +97,19 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-  
+
     savedInstanceState?.let {
       this.shouldInitialize = it.getBoolean(STATE_KEY_SHOULD_INITIALIZE, true)
       this.isFromSavedInstance = it.getBoolean(STATE_KEY_FROM_SAVED_INSTANACE, false)
-    } ?: run {
-      this.shouldInitialize = true
-      this.isFromSavedInstance = false
     }
-    
+      ?: run {
+        this.shouldInitialize = true
+        this.isFromSavedInstance = false
+      }
+
     startServices()
   }
-  
+
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.apply {
@@ -125,7 +125,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       // sometimes, when the IDE closed and reopened instantly, these values prevent initialization
       // of the project
       ProjectManager.destroy()
-      
+
       viewModel.isInitializing = false
       viewModel.isBuildInProgress = false
     }
@@ -297,7 +297,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   protected open fun createFindInProjectDialog(): AlertDialog? {
     if (rootProject == null) {
       log.warn("No root project model found. Is the project initialized?")
-      toast(getString(string.msg_project_not_initialized), ERROR)
+      flashError(getString(string.msg_project_not_initialized))
       return null
     }
 
@@ -305,7 +305,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       try {
         rootProject!!.subModules.stream().map(Project::projectDir).collect(Collectors.toList())
       } catch (e: Throwable) {
-        toast(getString(string.msg_no_modules), ERROR)
+        flashError(getString(string.msg_no_modules))
         emptyList()
       }
 
@@ -342,7 +342,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     builder.setPositiveButton(string.menu_find) { dialog, _ ->
       val text = binding.input.editText!!.text.toString().trim()
       if (text.isEmpty()) {
-        toast(string.msg_empty_search_query, ERROR)
+        flashError(string.msg_empty_search_query)
         return@setPositiveButton
       }
 
@@ -374,7 +374,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       }
 
       if (searchDirs.isEmpty()) {
-        toast(string.msg_select_search_modules, ERROR)
+        flashError(string.msg_select_search_modules)
       } else {
         dialog.dismiss()
 
@@ -447,7 +447,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   open fun getProgressSheet(msg: Int): ProgressSheet? {
     doDismissSearchProgress()
-  
+
     mSearchingProgress =
       ProgressSheet().also {
         it.isCancelable = false

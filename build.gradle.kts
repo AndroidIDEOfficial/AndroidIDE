@@ -26,7 +26,9 @@ plugins {
   alias(libs.plugins.kotlin) apply false
 }
 
-buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6") } }
+buildscript { dependencies { classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+  classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
+} }
 
 val Project.projectVersionCode by lazy {
   val version = rootProject.version.toString()

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/fbRoot"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="@color/warm_grey"
+  android:clickable="true"
+  android:focusable="true"
+  android:foreground="?android:attr/selectableItemBackground"
+  android:orientation="vertical"
+  android:padding="@dimen/fb_content_padding_all">
+
+  <LinearLayout
+    android:id="@+id/fbContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <com.itsaky.androidide.flashbar.view.FbProgress
+        android:id="@+id/fbLeftProgress"
+        style="@style/FbCircularIndeterminateProgressStyle"
+        android:layout_width="@dimen/fb_progress_size"
+        android:layout_height="@dimen/fb_progress_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/fb_margin_progress"
+        android:layout_marginRight="@dimen/fb_margin_progress"
+        android:visibility="gone" />
+
+      <ImageView
+        android:id="@+id/fbIcon"
+        android:layout_width="@dimen/fb_icon_size"
+        android:layout_height="@dimen/fb_icon_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/fb_margin_right_icon"
+        android:layout_marginRight="@dimen/fb_margin_right_icon"
+        android:src="@drawable/ic_info"
+        android:visibility="gone"
+        app:tint="@color/white"
+        tools:visibility="visible" />
+
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="8"
+        android:orientation="vertical">
+
+        <TextView
+          android:id="@+id/fbTitle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/fb_title_message_margin"
+          android:textAppearance="@style/FbTitleTextStyle"
+          android:visibility="gone"
+          tools:text="Title"
+          tools:visibility="visible" />
+
+        <TextView
+          android:id="@+id/fbMessage"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/fb_title_message_margin"
+          android:justificationMode="inter_word"
+          android:textAppearance="@style/FbMessageStyle"
+          android:visibility="gone"
+          tools:text="A quick brown fox jumps of the lazy dog."
+          tools:visibility="visible" />
+
+      </LinearLayout>
+
+      <com.itsaky.androidide.flashbar.view.FbButton
+        android:id="@+id/fbPrimaryAction"
+        style="@style/FbButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/FbButtonTextStyle"
+        android:visibility="gone"
+        tools:text="CLICK"
+        tools:visibility="visible" />
+
+      <com.itsaky.androidide.flashbar.view.FbProgress
+        android:id="@+id/fbRightProgress"
+        style="@style/FbCircularIndeterminateProgressStyle"
+        android:layout_width="@dimen/fb_progress_size"
+        android:layout_height="@dimen/fb_progress_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/fb_margin_progress"
+        android:layout_marginLeft="@dimen/fb_margin_progress"
+        android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/fbSecondaryActionContainer"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/fb_margin_secondary_action_container"
+      android:gravity="end"
+      android:visibility="gone">
+
+      <com.itsaky.androidide.flashbar.view.FbButton
+        android:id="@+id/fbPositiveAction"
+        style="@style/FbButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/FbButtonTextStyle"
+        android:visibility="gone"
+        tools:text="OK"
+        tools:visibility="gone" />
+
+      <com.itsaky.androidide.flashbar.view.FbButton
+        android:id="@+id/fbNegativeAction"
+        style="@style/FbButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/fb_margin_secondary_action"
+        android:layout_marginLeft="12dp"
+        android:textAppearance="@style/FbButtonTextStyle"
+        android:visibility="gone"
+        tools:text="CANCEL"
+        tools:visibility="gone" />
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

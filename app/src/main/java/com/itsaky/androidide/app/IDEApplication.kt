@@ -35,12 +35,11 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import org.greenrobot.eventbus.EventBus
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.system.exitProcess
+import org.greenrobot.eventbus.EventBus
 
 class IDEApplication : BaseApplication() {
 
@@ -107,7 +106,7 @@ class IDEApplication : BaseApplication() {
       startActivity(intent)
     } catch (th: Throwable) {
       LOG.error("Unable to start activity to show changelog", th)
-      toast("Unable to start activity", ERROR)
+      flashError("Unable to start activity")
     }
   }
 

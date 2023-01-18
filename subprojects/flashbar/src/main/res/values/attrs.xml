@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FbProgress">
+        <attr name="fbp_progressIndeterminate" format="boolean" />
+        <attr name="fbp_barColor" format="color" />
+        <attr name="fbp_rimColor" format="color" />
+        <attr name="fbp_rimWidth" format="dimension" />
+        <attr name="fbp_spinSpeed" format="float" />
+        <attr name="fbp_barSpinCycleTime" format="integer" />
+        <attr name="fbp_circleRadius" format="dimension" />
+        <attr name="fbp_fillRadius" format="boolean" />
+        <attr name="fbp_barWidth" format="dimension" />
+        <attr name="fbp_linearProgress" format="boolean" />
+    </declare-styleable>
+</resources>

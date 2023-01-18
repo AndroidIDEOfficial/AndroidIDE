@@ -90,17 +90,16 @@ import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.SingleSessionCallback
+import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -251,7 +250,7 @@ abstract class BaseEditorActivity :
       getFileTreeFragment()?.listProjectFiles()
     } catch (th: Throwable) {
       log.error("Failed to update files list", th)
-      toast(string.msg_failed_list_files, ERROR)
+      flashError(string.msg_failed_list_files)
     }
   }
 

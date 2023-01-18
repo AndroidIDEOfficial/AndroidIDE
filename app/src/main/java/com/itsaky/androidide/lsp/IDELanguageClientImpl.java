@@ -46,10 +46,9 @@ import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.ui.editor.CodeEditorView;
+import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.toaster.ToastUtilsKt;
-import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -182,7 +181,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "activity=" + activity(),
           "editor=" + editor,
           "action=" + action);
-      ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+      FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
       return;
     }
 
@@ -199,7 +198,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-            ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
           } else {
             editor.executeCommand(action.getCommand());
           }

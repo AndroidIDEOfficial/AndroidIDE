@@ -51,9 +51,9 @@ import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
+import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.updateSystemBarColors
 import com.itsaky.androidide.viewmodel.RunTasksViewModel
-import com.itsaky.toaster.toastInfo
 
 /**
  * A bottom sheet dialog fragment to show UI which allows the users to select and execute Gradle
@@ -143,7 +143,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
 
     binding.exec.setOnClickListener {
       if (viewModel.selected.isEmpty()) {
-        toastInfo(getString(string.msg_err_select_tasks))
+        requireActivity().flashInfo(getString(string.msg_err_select_tasks))
         return@setOnClickListener
       }
 

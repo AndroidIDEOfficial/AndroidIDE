@@ -34,9 +34,8 @@ import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
-import com.itsaky.toaster.ToastUtilsKt;
-import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.Arrays;
@@ -88,7 +87,6 @@ public abstract class BaseApplication extends Application {
   public void onCreate() {
     instance = this;
     Environment.init();
-    ToastUtilsKt.init();
     super.onCreate();
 
     mPrefsManager = new PreferenceManager(this);
@@ -200,7 +198,7 @@ public abstract class BaseApplication extends Application {
       if (pkg != null) {
         openUrl(url);
       } else {
-        ToastUtilsKt.toast(th.getMessage(), Toaster.Type.ERROR);
+        FlashbarUtilsKt.flashError(th.getMessage());
       }
     }
   }

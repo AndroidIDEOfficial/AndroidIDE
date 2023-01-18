@@ -3,6 +3,9 @@
 import com.mooltiverse.oss.nyx.gradle.NyxExtension
 import com.mooltiverse.oss.nyx.services.github.GitHub
 
+include(":subprojects:flashbar")
+
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

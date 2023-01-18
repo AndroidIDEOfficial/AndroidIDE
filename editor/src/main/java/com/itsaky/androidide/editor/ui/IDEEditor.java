@@ -19,8 +19,6 @@ package com.itsaky.androidide.editor.ui;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getTabSize;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getVisiblePasswordFlag;
 import static com.itsaky.androidide.resources.R.string;
-import static com.itsaky.toaster.ToastUtilsKt.toast;
-
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -59,8 +57,8 @@ import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.toaster.Toaster;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -70,7 +68,6 @@ import java.util.concurrent.CompletableFuture;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
-import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
@@ -475,7 +472,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
             }
 
             final var locations = result.getLocations();
-            if (locations.size() <= 0) {
+            if (locations.size() == 0) {
               LOG.error("No definitions found", "Size:", locations.size());
               showDefinitionNotFound(pd);
               return;
@@ -515,7 +512,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          toast(string.msg_no_definition, Toaster.Type.ERROR);
+          FlashbarUtilsKt.flashError(string.msg_no_definition);
           pd.dismiss();
         });
   }
@@ -613,7 +610,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
         () -> {
-          toast(string.msg_no_references, Toaster.Type.ERROR);
+          FlashbarUtilsKt.flashError(string.msg_no_references);
           pd.dismiss();
         });
   }

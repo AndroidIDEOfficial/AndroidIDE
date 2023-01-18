@@ -43,9 +43,7 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.DialogUtils.newYesNoDialog
 import com.itsaky.androidide.utils.IntentUtils.openImage
-import com.itsaky.androidide.utils.LSPUtils
-import com.itsaky.toaster.Toaster.Type.SUCCESS
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashSuccess
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import java.io.File
 
@@ -107,7 +105,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         viewModel.openedFilesCache = cache
       }
     }
-  
+
     executeAsync { IDEColorSchemeProvider.initIfNeeded() }
   }
 
@@ -184,7 +182,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
           editor.setSelection(0, 0)
           return@post
         }
-        
+
         editor.validateRange(selection)
         editor.setSelection(selection)
       }
@@ -275,7 +273,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     val result = saveAllResult()
 
     if (notify) {
-      toast(string.all_saved, SUCCESS)
+      flashSuccess(string.all_saved)
     }
 
     if (result.gradleSaved) {
