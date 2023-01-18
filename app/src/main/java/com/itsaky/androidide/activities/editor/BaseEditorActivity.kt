@@ -22,6 +22,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.StrictMode
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
@@ -49,6 +50,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
+import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.R.attr
 import com.itsaky.androidide.R.drawable
 import com.itsaky.androidide.R.id
@@ -95,11 +97,10 @@ import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
 import com.itsaky.toaster.Toaster.Type.ERROR
 import com.itsaky.toaster.toast
-import java.io.File
-import java.util.Objects
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
+import java.util.Objects
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -202,6 +203,12 @@ abstract class BaseEditorActivity :
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    if (BuildConfig.DEBUG) {
+      StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).detectLeakedClosableObjects().build()
+      )
+    }
 
     registerLanguageServers()
 

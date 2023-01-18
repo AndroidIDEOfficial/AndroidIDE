@@ -31,7 +31,11 @@ fun IDEColorScheme.parseEditorScheme(reader: JsonReader, resolveFileRef: (String
   val newReader = if (reader.peek() == STRING) {
     readerForFileRef(reader, "editor", resolveFileRef)
   } else reader
-  EditorSchemeParser(newReader).parse(this)
+  EditorSchemeParser(newReader).parse(this).also {
+    if (reader != newReader) {
+      newReader.close()
+    }
+  }
 }
 
 /**
@@ -91,7 +95,11 @@ fun IDEColorScheme.parseLanguage(
       readerForFileRef(reader, "language", resolveFileRef)
     } else reader
 
-  return LanguageParser(newReader).parseLang(this)
+  return LanguageParser(newReader).parseLang(this).also {
+    if (reader != newReader) {
+      newReader.close()
+    }
+  }
 }
 
 private fun readerForFileRef(reader: JsonReader, scheme: String, resolveFileRef: (String) -> File): JsonReader {
