@@ -42,7 +42,7 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient("7.3.0"))
+    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient("7.2.0"))
     server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
     doAssertions(project, server)
   }
