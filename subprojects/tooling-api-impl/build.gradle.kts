@@ -15,7 +15,6 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
@@ -26,9 +25,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm")
 }
 
-shadow {
-  archivesName.set("tooling-api")
-}
+shadow { archivesName.set("tooling-api") }
 
 tasks.withType<Jar> {
   manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
@@ -41,14 +38,12 @@ tasks.register<Copy>("copyJarToAssets") {
 
 tasks.register("renameJar") {
   finalizedBy("copyJarToAssets")
-  
+
   doLast {
     val jar = project.file("${project.buildDir}/libs/tooling-api-${project.version}-all.jar")
     val destJar = jar.parentFile.resolve("tooling-api-all.jar")
-    destJar.exists().ifTrue {
-      destJar.delete()
-    }
-  
+    destJar.exists().ifTrue { destJar.delete() }
+
     jar.renameTo(destJar)
   }
 }
@@ -63,11 +58,11 @@ dependencies {
   implementation(libs.common.jkotlin)
   implementation(libs.xml.xercesImpl)
   implementation(libs.xml.apis)
-  implementation("org.gradle:gradle-tooling-api:7.6")
+  implementation(libs.tooling.gradleApi)
 
   testImplementation(projects.subprojects.toolingApiTesting)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
 
-  runtimeOnly("org.slf4j:slf4j-api:2.0.6")
+  runtimeOnly(libs.tooling.slf4j)
 }

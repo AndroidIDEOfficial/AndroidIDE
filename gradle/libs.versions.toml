@@ -1,5 +1,7 @@
 [versions]
 agp = "7.4.0"
+agp-tooling = "7.3.1"
+gradle-tooling = "7.6"
 kotlin = "1.8.0"
 tree-sitter = "1.0.10"
 editor = "0.21.0"
@@ -94,6 +96,11 @@ tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
 tests-androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
 tests-androidx-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
 tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "4.1.0" }
+
+# Tooling
+tooling-builderModel = { module="com.android.tools.build:builder-model", version.ref = "agp-tooling" }
+tooling-gradleApi = { module="org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
+tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.6" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
