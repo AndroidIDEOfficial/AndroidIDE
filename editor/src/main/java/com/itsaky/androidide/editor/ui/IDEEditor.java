@@ -36,6 +36,8 @@ import androidx.annotation.UiThread;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter;
+import com.itsaky.androidide.editor.api.IEditor;
+import com.itsaky.androidide.editor.api.ILspEditor;
 import com.itsaky.androidide.editor.language.IDELanguage;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
@@ -73,7 +75,7 @@ import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
-public class IDEEditor extends CodeEditor implements com.itsaky.androidide.editor.IEditor {
+public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
   private final EditorActionsMenu actionsMenu;
@@ -535,7 +537,6 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
    * ILanguageClient}.
    */
   @Override
-  @SuppressWarnings("unused")
   public void findReferences() {
     if (getFile() == null) {
       return;
@@ -821,6 +822,7 @@ public class IDEEditor extends CodeEditor implements com.itsaky.androidide.edito
     EventBus.getDefault().post(selectedEvent);
   }
 
+  @Override
   @SuppressWarnings("unused")
   public void executeCommand(Command command) {
     if (command == null) {

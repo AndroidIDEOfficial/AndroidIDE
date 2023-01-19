@@ -1,10 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.mooltiverse.oss.nyx.gradle.NyxExtension
-import com.mooltiverse.oss.nyx.services.github.GitHub
-
-include(":subprojects:flashbar")
-
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -50,6 +46,7 @@ include(
   ":app",
   ":common",
   ":editor",
+  ":editor-api",
   ":emulatorview",
   ":eventbus",
   ":eventbus-android",
@@ -72,6 +69,7 @@ include(
   ":subprojects:aaptcompiler",
   ":subprojects:builder-model-impl",
   ":subprojects:classfile",
+  ":subprojects:flashbar",
   ":subprojects:framework-stubs",
   ":subprojects:fuzzysearch",
   ":subprojects:google-java-format",

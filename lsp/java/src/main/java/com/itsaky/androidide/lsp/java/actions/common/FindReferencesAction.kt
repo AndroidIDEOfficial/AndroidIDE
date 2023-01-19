@@ -19,9 +19,10 @@ package com.itsaky.androidide.lsp.java.actions.common
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
-import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.editor.api.IEditor
+import com.itsaky.androidide.editor.api.ILspEditor
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.resources.R
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 
@@ -31,16 +32,16 @@ import java.io.File
  * @author Akash Yadav
  */
 class FindReferencesAction : BaseJavaCodeAction() {
+
   override val titleTextRes: Int = R.string.action_find_references
   override val id: String = "lsp_java_findReferences"
   override var label: String = ""
   override var requiresUIThread: Boolean = true
-  private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    if (!visible || !data.hasRequiredData( CodeEditor::class.java, File::class.java)) {
+    if (!visible || !data.hasRequiredData(CodeEditor::class.java, File::class.java)) {
       markInvisible()
       return
     }
@@ -48,17 +49,6 @@ class FindReferencesAction : BaseJavaCodeAction() {
 
   override fun execAction(data: ActionData): Any {
     val editor = data[CodeEditor::class.java]!!
-    return tryExecFindDefinition(editor)
-  }
-
-  private fun tryExecFindDefinition(editor: CodeEditor): Boolean {
-    return try {
-      val method = editor::class.java.getDeclaredMethod("findReferences")
-      method.isAccessible = true
-      method.invoke(editor)
-      true
-    } catch (error: Throwable) {
-      false
-    }
+    return (editor as? ILspEditor)?.findReferences() ?: false
   }
 }
