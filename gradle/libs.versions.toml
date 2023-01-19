@@ -1,6 +1,6 @@
 [versions]
 agp = "7.4.0"
-agp-tooling = "7.3.1"
+agp-tooling = "7.4.0"
 gradle-tooling = "7.6"
 kotlin = "1.8.0"
 tree-sitter = "1.0.10"
