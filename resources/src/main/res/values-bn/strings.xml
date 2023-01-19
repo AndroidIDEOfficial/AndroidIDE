@@ -183,8 +183,8 @@
   <string name="msg_storage_granted">সঞ্চয়স্থানের অনুমতি দেওয়া হয়েছে!</string>
   <string name="open_with">অন্য অ্যাপ দিয়ে খুলুন...</string>
   <!-- Code Editor -->
-  <string name="undo">Undo</string>
-  <string name="redo">Redo</string>
+  <string name="undo">আনডু</string>
+  <string name="redo">রিডু</string>
   <!-- Preferences -->
   <string name="title_change_text_size">এডিটর ফন্ট সাইজ</string>
   <string name="idepref_about_title">AndroidIDE সম্পর্কে</string>
@@ -274,7 +274,7 @@
   <string name="msg_file_tree">ফাইল ট্রি</string>
   <string name="hint_color_resource">কালার রিসোর্স</string>
   <string name="title_color_picker">কালার পিকার</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">আ্যট্রিবিউট এর মান</string>
   <string name="hint_string_resource">স্ট্রিং রিসোর্স</string>
   <string name="hint_resource_reference">যেকোনো রিসোর্স এর উল্লেখ</string>
   <string name="msg_code_actions">ক্রিয়া</string>
@@ -455,16 +455,16 @@
   <string name="git_clone_in_progress">রেপোসিটরি ক্লোন করা হচ্ছে</string>
   <string name="git_clone_success">গিট ক্লোন সফল হয়েছে</string>
   <string name="git_clone_failed">গিট রেপোসিটরি ক্লোন করতে ব্যর্থ</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
-  <string name="idepref_general_uiMode">UI Mode</string>
-  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
-  <string name="uiMode_light">Light</string>
-  <string name="uiMode_dark">Dark</string>
-  <string name="uiMode_system">Follow system</string>
-  <string name="idepref_general_materialYou">Material You</string>
-  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
-  <string name="idepref_general_projectConfig">Project configuration</string>
+  <string name="msg_select_attr">নীচের লিস্ট থেকে অ্যাট্রিবিউট নির্বাচন করুন</string>
+  <string name="action_show_hierarchy">লেআউট-এর শ্রেণিবিন্যাস দেখান</string>
+  <string name="idepref_editor_colorScheme">কালার স্কিম</string>
+  <string name="idepref_editor_colorScheme_summary">এডিটর-এ ব্যাবহার করার জন্য কালার স্কিম নির্বাচন করুন</string>
+  <string name="idepref_general_uiMode">UI মোড</string>
+  <string name="idepref_general_uiMode_summary">IDE এর জন্য UI মোড নির্বাচন করুন</string>
+  <string name="uiMode_light">লাইট</string>
+  <string name="uiMode_dark">ডার্ক</string>
+  <string name="uiMode_system">সিস্টেম কে অনুসরন করুন</string>
+  <string name="idepref_general_materialYou">ম্যাটেরিয়াল ইউ</string>
+  <string name="idepref_general_materialYou_summary">আপনার ডিভাইসের কাছাকাছি একটি অভিজ্ঞতা উপভোগ করুন (আ্যপ এর রিস্টার্ট প্রয়োজন)।</string>
+  <string name="idepref_general_projectConfig">প্রকল্প কনফিগারেশন</string>
 </resources>
