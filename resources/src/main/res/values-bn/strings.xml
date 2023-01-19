@@ -8,7 +8,7 @@
   <string name="about_option_email">ইমেল</string>
   <string name="about_option_website">ওয়েবসাইট</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+  <string name="about_footer">%2$s এর জন্য AndroidIDE %1$s</string>
   <string name="about_subtitle">সহজভাবে, Android এর জন্য একটি IDE</string>
   <string name="msg_get_package_failed">প্যাকেজের নাম বের করতে ব্যর্থ!</string>
   <string name="msg_share_app">AndroidIDE হল একটি ইন্টিগ্রেটেড ডেভেলপমেন্ট এনভায়রনমেন্ট যা আপনার অ্যান্ড্রয়েড স্মার্টফোনে অ্যান্ড্রয়েড অ্যাপ তৈরি করার জন্য। এটি সমর্থন করে:\n1. গ্রেডেল \n2. OpenJDK 17.0-22.\n3. উন্নত জাভা অটোকমপ্লিট\n4. XML অটোকমপ্লিট \n5. কটলিন সমর্থন এবং আরও অনেক কিছু।\n\nhttps://androidide.com থেকে AndroidIDE ডাউনলোড করুন</string>
