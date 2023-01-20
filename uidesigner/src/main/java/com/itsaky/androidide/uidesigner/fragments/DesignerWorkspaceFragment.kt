@@ -56,9 +56,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
+  private var _viewInfo: ViewInfoSheet? = null
   private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
-  private val viewInfo by lazy { ViewInfoSheet() }
   private val inflater by lazy { UiLayoutInflater() }
+
+  private val viewInfo: ViewInfoSheet
+    get() = this._viewInfo ?: ViewInfoSheet().also { _viewInfo = it }
 
   internal var isInflating = false
   internal val workspaceView by lazy {
@@ -136,13 +139,14 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
+    this._viewInfo = null
     this.hierarchyHandler.release()
     this.attrHandler.release()
     this.inflationHandler.release()
     this.inflater.close()
   }
 
-  internal fun setupView(view: com.itsaky.androidide.inflater.IView) {
+  internal fun setupView(view: IView) {
     if (view is CommonUiView && !view.needSetup) {
       return
     }
@@ -171,7 +175,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
     }
   }
 
-  internal fun showViewInfo(view: com.itsaky.androidide.inflater.IView) {
+  internal fun showViewInfo(view: IView) {
     viewModel.view = view
     viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
   }
