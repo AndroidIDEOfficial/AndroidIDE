@@ -21,12 +21,14 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuff.Mode.SRC_ATOP
+import android.os.Looper
 import android.widget.ImageView.ScaleType
 import android.widget.ImageView.ScaleType.FIT_CENTER
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.FloatRange
 import androidx.annotation.StringRes
+import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.flashbar.Flashbar
 import com.itsaky.androidide.flashbar.Flashbar.Gravity.TOP
 import com.itsaky.androidide.resources.R
@@ -68,29 +70,41 @@ fun Activity.flashMessage(@StringRes msg: Int, type: FlashType) {
 
 fun Activity.flashSuccess(msg: String?) {
   msg ?: return
-  flashbarBuilder().successIcon().message(msg).show()
+  flashbarBuilder().successIcon().message(msg).showOnUiThread()
 }
 
 fun Activity.flashError(msg: String?) {
   msg ?: return
-  flashbarBuilder().errorIcon().message(msg).show()
+  flashbarBuilder().errorIcon().message(msg).showOnUiThread()
 }
 
 fun Activity.flashInfo(msg: String?) {
   msg ?: return
-  flashbarBuilder().infoIcon().message(msg).show()
+  flashbarBuilder().infoIcon().message(msg).showOnUiThread()
 }
 
 fun Activity.flashSuccess(@StringRes msg: Int) {
-  flashbarBuilder().successIcon().message(msg).show()
+  flashbarBuilder().successIcon().message(msg).showOnUiThread()
 }
 
 fun Activity.flashError(@StringRes msg: Int) {
-  flashbarBuilder().errorIcon().message(msg).show()
+  flashbarBuilder().errorIcon().message(msg).showOnUiThread()
 }
 
 fun Activity.flashInfo(@StringRes msg: Int) {
-  flashbarBuilder().infoIcon().message(msg).show()
+  flashbarBuilder().infoIcon().message(msg).showOnUiThread()
+}
+
+fun Flashbar.Builder.showOnUiThread() {
+  build().showOnUiThread()
+}
+
+fun Flashbar.showOnUiThread() {
+  if (Looper.myLooper() == Looper.getMainLooper()) {
+    show()
+  } else {
+    ThreadUtils.runOnUiThread { show() }
+  }
 }
 
 private fun Flashbar.Builder.successIcon(): Flashbar.Builder {
