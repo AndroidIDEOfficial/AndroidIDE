@@ -23,6 +23,7 @@ import android.view.View
 /**
  * An action that can be registered using the [ActionsRegistry]
  * [com.itsaky.androidide.actions.ActionsRegistry]
+ *
  * @author Akash Yadav
  */
 interface ActionItem {
@@ -37,6 +38,7 @@ interface ActionItem {
 
   /**
    * Prepare the action. Subclasses can modify the visual properties of this action here.
+   *
    * @param data The data containing various information about the event.
    */
   fun prepare(data: ActionData)
@@ -56,6 +58,12 @@ interface ActionItem {
    * @param data The data containing various information about the event.
    */
   fun postExec(data: ActionData, result: Any) = Unit
+
+  /**
+   * Called when the action item is to be destroyed. Any resource references must be released if
+   * held.
+   */
+  fun destroy() = Unit
 
   /**
    * Return the show as action flags for the menu item.

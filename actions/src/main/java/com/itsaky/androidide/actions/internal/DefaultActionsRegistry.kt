@@ -66,6 +66,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     val actions = getActions(action.location)
     val older = actions.remove(action.id)
     if (older != null) {
+      older.destroy()
       return true
     }
 
@@ -76,6 +77,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     for (locations in this.actions.values) {
       val older = locations.remove(id)
       if (older != null) {
+        older.destroy()
         return true
       }
     }
@@ -86,7 +88,13 @@ class DefaultActionsRegistry : ActionsRegistry() {
   override fun findAction(location: ActionItem.Location, id: String): ActionItem? =
     getActions(location)[id]
 
-  override fun clearActions(location: ActionItem.Location) = getActions(location).clear()
+  override fun clearActions(location: ActionItem.Location) {
+    val actions = getActions(location)
+    actions.forEach {
+      it.value.destroy()
+    }
+    actions.clear()
+  }
 
   override fun registerActionExecListener(listener: ActionExecListener) {
     listeners.add(listener)
