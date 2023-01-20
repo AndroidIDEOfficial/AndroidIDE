@@ -2,14 +2,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي:</string>
+  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي: </string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
-  <string name="msg_about_licensed_under">مرخص له تحت:</string>
+  <string name="msg_about_licensed_under">مرخص له تحت: </string>
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
   <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
-  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
+  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للأندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
   <string name="msg_need_help">إذا كنت تواجه مشكلات أثناء استخدام AndroidIDE أو مع بناء التطبيقات ، يمكنك الانضمام إلى مجموعة التيليغرام وطلب المساعدة هناك.\n\nيمكنك أيضًا إرسال ملاحظات متضمنة على بريدنا الإلكتروني.</string>
@@ -459,12 +459,12 @@
   <string name="action_show_hierarchy">عرض التسلسل الهرمي للتخطيط</string>
   <string name="idepref_editor_colorScheme">تشكيلات الألوان</string>
   <string name="idepref_editor_colorScheme_summary">اختر مخطط الألوان لاستخدامه في المحرر</string>
-  <string name="idepref_general_uiMode">UI Mode</string>
-  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
-  <string name="uiMode_light">Light</string>
-  <string name="uiMode_dark">Dark</string>
-  <string name="uiMode_system">Follow system</string>
-  <string name="idepref_general_materialYou">Material You</string>
-  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
-  <string name="idepref_general_projectConfig">Project configuration</string>
+  <string name="idepref_general_uiMode">نمط واجهة المستخدم</string>
+  <string name="idepref_general_uiMode_summary">اختر وضع واجهة المستخدم لـ IDE</string>
+  <string name="uiMode_light">فاتح</string>
+  <string name="uiMode_dark">مظلم</string>
+  <string name="uiMode_system">اتبع النظام</string>
+  <string name="idepref_general_materialYou">واجهة Material You</string>
+  <string name="idepref_general_materialYou_summary">استمتع بتجربة أقرب إلى جهازك (يتطلب إعادة تشغيل).</string>
+  <string name="idepref_general_projectConfig">تهيئة المشروع</string>
 </resources>
