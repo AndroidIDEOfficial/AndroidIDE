@@ -49,4 +49,14 @@ class RunTasksAction() : BaseBuildAction() {
     val activity = getActivity(data)!!
     result.show(activity.supportFragmentManager, this.id)
   }
+  
+  override fun destroy() {
+    super.destroy()
+    try {
+      dialog?.dismiss()
+    } catch (e: Exception) {
+      // ignored
+    }
+    dialog = null
+  }
 }
