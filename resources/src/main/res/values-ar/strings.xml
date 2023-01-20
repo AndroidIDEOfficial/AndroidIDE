@@ -8,7 +8,7 @@
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
   <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+  <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
   <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
@@ -52,9 +52,9 @@
   <string name="lint_debug">lintDebug</string>
   <string name="lint_release">lintRelease</string>
   <string name="build">بناء</string>
-  <string name="build_debug">assembleDebug</string>
+  <string name="build_debug">تجميع تجريبي</string>
   <string name="build_output">مخرجات البناء</string>
-  <string name="build_release">assembleRelease</string>
+  <string name="build_release">تجميع نهائي</string>
   <string name="lint_tasks">مهام Lint</string>
   <string name="clean_amp_build">تنظيف &amp; بناء</string>
   <string name="clean_project">تنظيف</string>
@@ -255,7 +255,7 @@
   <string name="action_expand_selection">توسيع التحديد</string>
   <string name="idepref_java_matchLower_title">مطابقة المكملات في حالة الأحرف الصغيرة</string>
   <string name="title_common">الشائعة</string>
-  <string name="idepref_editor_category_java">Java</string>
+  <string name="idepref_editor_category_java">جافا</string>
   <string name="title_files_unsaved">الملفات غير المحفوظة</string>
   <string name="msg_files_unsaved">لم يتم حفظ بعض الملفات. هل ترغب في حفظها قبل الإغلاق؟ الملفات غير المحفوظة هي: \n%s</string>
   <string name="idepref_editor_autoSave_title">حفظ قبل إغلاق الملفات</string>
@@ -274,7 +274,7 @@
   <string name="msg_file_tree">درج الملفات</string>
   <string name="hint_color_resource">مورد اللون</string>
   <string name="title_color_picker">منتقي ألوان</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">قيمة السمة</string>
   <string name="hint_string_resource">مورد نصي</string>
   <string name="hint_resource_reference">أي مرجع للمورد</string>
   <string name="msg_code_actions">الإجراءات</string>
@@ -345,7 +345,7 @@
   <string name="idepref_about_summary">المزيد عن AndroidIDE.</string>
   <string name="idepref_general_summary">إعدادات IDE العامة.</string>
   <string name="idepref_editor_summary">تهيئة المحرر.</string>
-  <string name="xml">XML</string>
+  <string name="xml">صيغة XML</string>
   <string name="idepref_xml_trimFinalNewLine_title">تقليم السطر الجديد النهائي</string>
   <string name="idepref_xml_insertFinalNewLine_title">إدراج سطر جديد نهائي</string>
   <string name="idepref_xml_trimFinalNewLine_summary">إزالة سطر فارغ إضافي في نهاية الملف</string>
@@ -455,10 +455,10 @@
   <string name="git_clone_in_progress">نسخ مشروع Git...</string>
   <string name="git_clone_success">تم نسخ مشروع Git بنجاح</string>
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
+  <string name="msg_select_attr">حدد سمة من القائمة أدناه</string>
+  <string name="action_show_hierarchy">عرض التسلسل الهرمي للتخطيط</string>
+  <string name="idepref_editor_colorScheme">تشكيلات الألوان</string>
+  <string name="idepref_editor_colorScheme_summary">اختر مخطط الألوان لاستخدامه في المحرر</string>
   <string name="idepref_general_uiMode">UI Mode</string>
   <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
   <string name="uiMode_light">Light</string>
