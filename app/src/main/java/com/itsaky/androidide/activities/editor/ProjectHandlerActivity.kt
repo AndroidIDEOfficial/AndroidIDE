@@ -137,14 +137,27 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
     super.preDestroy()
-
+    
     if (isDestroying) {
+  
+      if (IDELanguageClientImpl.isInitialized()) {
+        IDELanguageClientImpl.shutdown()
+      }
+      
+      try {
+        stopLanguageServers()
+      } catch (err: Exception) {
+        log.error("Failed to stop editor services.")
+      }
+      
       try {
         unbindService(buildServiceConnection)
+        buildServiceConnection.onConnected = {}
       } catch (err: Throwable) {
         log.error("Unable to unbind service")
       } finally {
-        (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)?.setEventListener(null)
+        (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
+          ?.setEventListener(null)
         Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE)
         viewModel.isBoundToBuildSerice = false
       }
@@ -240,11 +253,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
   }
 
-  override fun stopServices() {
+  override fun stopLanguageServers() {
     try {
-      if (IDELanguageClientImpl.isInitialized()) {
-        IDELanguageClientImpl.shutdown()
-      }
       destroyLanguageServers(isChangingConfigurations)
     } catch (err: Throwable) {
       log.error("Unable to stop editor services. Please report this issue.", err)
@@ -415,8 +425,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   private fun closeProject(manualFinish: Boolean) {
-    stopServices()
-
+    
     // Make sure we close files
     // This will make sure that file contents are not erased.
     doCloseAll {

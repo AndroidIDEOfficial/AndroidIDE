@@ -20,7 +20,6 @@ package com.itsaky.androidide.services.builder
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.itsaky.androidide.services.builder.GradleBuildService.GradleServiceBinder
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -34,8 +33,8 @@ class GradleBuildServiceConnnection : ServiceConnection {
   private val log = ILogger.newInstance("GradleBuildServiceConnnection")
   
   override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-    val buildService = (service as GradleServiceBinder).service
-    onConnected(buildService)
+    val serviceBinder = service as GradleServiceBinder
+    onConnected(serviceBinder.service!!)
   }
   
   override fun onServiceDisconnected(name: ComponentName?) {

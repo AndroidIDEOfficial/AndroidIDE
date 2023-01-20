@@ -103,6 +103,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   public static void shutdown() {
+    if (mInstance != null) {
+      mInstance.activity = null;
+    }
     mInstance = null;
   }
 
@@ -308,7 +311,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> map) {
     final var groups = new ArrayList<DiagnosticGroup>();
     var diagnosticMap = map;
-    if (diagnosticMap == null || diagnosticMap.size() <= 0) return groups;
+    if (diagnosticMap == null || diagnosticMap.size() == 0) return groups;
 
     if (diagnosticMap.size() > 10) {
       LOG.warn("Limiting the diagnostics to 10 files");
@@ -317,7 +320,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     for (File file : diagnosticMap.keySet()) {
       var fileDiagnostics = diagnosticMap.get(file);
-      if (fileDiagnostics == null || fileDiagnostics.size() <= 0) continue;
+      if (fileDiagnostics == null || fileDiagnostics.size() == 0) continue;
 
       // Trim the diagnostics list if we have too many diagnostic items.
       // Including a lot of diagnostic items will result in UI lag when they are shown

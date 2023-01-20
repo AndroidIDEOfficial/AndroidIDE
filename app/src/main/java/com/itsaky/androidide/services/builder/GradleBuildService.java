@@ -34,7 +34,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
 
@@ -53,6 +52,7 @@ import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.services.ToolingServerNotStartedException;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
+import com.itsaky.androidide.tooling.api.ForwardingToolingApiClient;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
@@ -66,7 +66,6 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.InputStreamLineReader;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -91,10 +90,18 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private static final int NOTIFICATION_ID = R.string.app_name;
   private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
   private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
-  private final IBinder mBinder = new GradleServiceBinder();
+  private final IBinder mBinder = new GradleServiceBinder(this);
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
+  
+  /**
+   * We do not provide direct access to GradleBuildService instance to the Tooling API launcher as
+   * it may cause memory leaks. Instead, we create another client object which forwards all calls to us.
+   * So, when the service is destroyed, we release the reference to the service from this client.
+   */
+  private ForwardingToolingApiClient _toolingApiClient;
   private ToolingServerRunner toolingServerThread;
+  private OutputReaderThread outputReader;
   private NotificationManager notificationManager;
   private IToolingApiServer server;
   @Nullable
@@ -156,11 +163,32 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     notificationManager.cancel(NOTIFICATION_ID);
     if (server != null) {
       server.cancelCurrentBuild();
-      server.shutdown();
+      final var shutdown = server.shutdown();
+  
+      //noinspection ConstantConditions
+      if (shutdown != null) {
+        try {
+          LOG.info("Shutting down Tooling API server...");
+          shutdown.get();
+        } catch (Throwable e) {
+          LOG.error("Failed to shutdown Tooling API server", e);
+        }
+      }
     }
 
     if (toolingServerThread != null) {
       toolingServerThread.interrupt();
+      toolingServerThread = null;
+    }
+    
+    if (_toolingApiClient != null) {
+      _toolingApiClient.setClient(null);
+      _toolingApiClient = null;
+    }
+    
+    if (outputReader != null) {
+      outputReader.interrupt();
+      outputReader = null;
     }
 
     isToolingServerStarted = false;
@@ -191,7 +219,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public IToolingApiClient getClient() {
-    return this;
+    if (_toolingApiClient == null) {
+      _toolingApiClient = new ForwardingToolingApiClient(this);
+    }
+    return _toolingApiClient;
   }
   
   @Override
@@ -487,19 +518,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   private void startServerOutputReader(InputStream err) {
-    new Thread(new InputStreamLineReader(err, this::onServerOutput)).start();
-  }
-
-  protected void onServerOutput(String line) {
-    SERVER_System_err.error(line);
-  }
-
-  public class GradleServiceBinder extends Binder {
-    public GradleBuildService getService() {
-      return GradleBuildService.this;
+    if (outputReader == null) {
+      outputReader = new OutputReaderThread(err, SERVER_System_err::error);
+    }
+    
+    if (!outputReader.isAlive()) {
+      outputReader.start();
     }
   }
-
+  
   /** Handles events received from a Gradle build. */
   public interface EventListener {
 

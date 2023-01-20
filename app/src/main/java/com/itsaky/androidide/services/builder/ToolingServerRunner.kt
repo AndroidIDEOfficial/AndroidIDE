@@ -123,6 +123,7 @@ internal class ToolingServerRunner(
 
   override fun interrupt() {
     super.interrupt()
+    listener = null
     observer = null
   }
 

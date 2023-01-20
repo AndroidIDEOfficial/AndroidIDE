@@ -253,8 +253,15 @@ abstract class BaseEditorActivity :
       flashError(string.msg_failed_list_files)
     }
   }
-
+  
+  override fun onStop() {
+    super.onStop()
+  
+    checkIsDestroying()
+  }
+  
   override fun onDestroy() {
+    checkIsDestroying()
     preDestroy()
     super.onDestroy()
     postDestroy()
@@ -423,6 +430,12 @@ abstract class BaseEditorActivity :
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
     viewModel.statusText = text
     viewModel.statusGravity = gravity
+  }
+  
+  private fun checkIsDestroying() {
+    if (!isDestroying && isFinishing) {
+      isDestroying = true
+    }
   }
 
   private fun handleUiDesignerResult(result: ActivityResult) {
