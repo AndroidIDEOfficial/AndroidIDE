@@ -17,14 +17,26 @@
 
 package com.itsaky.androidide.inflater.utils
 
+import com.android.aaptcompiler.AaptResourceType
+import com.android.aaptcompiler.BlameLogger
+import com.android.aaptcompiler.ResourceFile
+import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
+import com.android.aaptcompiler.ResourceName
+import com.android.aaptcompiler.XmlProcessor
+import com.android.aaptcompiler.extractPathData
+import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IComponentFactory
 import com.itsaky.androidide.inflater.ILayoutInflater
 import com.itsaky.androidide.inflater.ILayoutInflater.Companion
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
+import com.itsaky.androidide.inflater.InflateException
 import com.itsaky.androidide.inflater.internal.AttributeImpl
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.api.AndroidModule
+import java.io.File
 
 /** Get the [ILayoutInflater] registered with [Lookup]. */
 fun lookupLayoutInflater(): ILayoutInflater? {
@@ -64,4 +76,38 @@ fun newAttribute(
     return componentFactory.createAttr(view, namespace, name, value)
   }
   return AttributeImpl(namespace, name, value)
+}
+
+/**
+ * Processes the XML file using [XmlProcessor].
+ *
+ * @param file The file to process.
+ * @param expectedType The expected [type][AaptResourceType] for the XML file.
+ * @return The pair of [XmlProcessor] (processed) instance and the [AndroidModule] instance for the
+ *   given file.
+ */
+fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcessor, AndroidModule> {
+  val pathData = extractPathData(file)
+  if (pathData.type != expectedType) {
+    throw InflateException("File is not a layout file.")
+  }
+
+  if (ProjectManager.rootProject == null) {
+    throw InflateException("Project is not initialized!")
+  }
+
+  val module =
+    ProjectManager.findModuleForFile(file) as? AndroidModule
+      ?: throw InflateException("Cannot find module for given file. Is the project initialized?")
+  val resFile =
+    ResourceFile(
+      ResourceName(module.packageName, pathData.type!!, pathData.name),
+      pathData.config,
+      pathData.source,
+      ProtoXml
+    )
+
+  val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
+  processor.process(resFile, file.inputStream())
+  return processor to module
 }
