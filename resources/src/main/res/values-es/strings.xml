@@ -51,9 +51,9 @@
   <string name="lint">Lint</string>
   <string name="lint_debug">lintDebug</string>
   <string name="lint_release">lintRelease</string>
-  <string name="build">Build</string>
+  <string name="build">Compilar</string>
   <string name="build_debug">assembleDebug</string>
-  <string name="build_output">Build output</string>
+  <string name="build_output">Salida de Compilación</string>
   <string name="build_release">assembleRelease</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Clean &amp; build</string>
