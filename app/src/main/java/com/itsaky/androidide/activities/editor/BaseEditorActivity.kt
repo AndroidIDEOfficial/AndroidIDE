@@ -80,25 +80,24 @@ import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.LogReceiver
-import com.itsaky.androidide.ui.EditorBottomSheet
 import com.itsaky.androidide.ui.MaterialBanner
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
+import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
-import com.itsaky.androidide.utils.SingleSessionCallback
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
-import java.io.File
-import java.util.Objects
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
+import java.util.Objects
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -120,6 +119,8 @@ abstract class BaseEditorActivity :
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
   protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
+
+  internal var installationCallback: ApkInstallationSessionCallback? = null
 
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
   val viewModel by viewModels<EditorViewModel>()
@@ -156,6 +157,8 @@ abstract class BaseEditorActivity :
   protected abstract fun getOpenedFiles(): List<OpenedFile>
 
   protected open fun preDestroy() {
+    installationCallback?.destroy()
+    installationCallback = null
     try {
       unregisterReceiver(logReceiver)
     } catch (th: Throwable) {
@@ -460,7 +463,7 @@ abstract class BaseEditorActivity :
 
     viewModel.observeFiles(this) { files ->
       binding.apply {
-        if (files == null || files.isEmpty()) {
+        if (files.isNullOrEmpty()) {
           tabs.visibility = View.GONE
           viewContainer.displayedChild = 1
         } else {
@@ -627,30 +630,6 @@ abstract class BaseEditorActivity :
   }
 
   open fun installationSessionCallback(): SessionCallback {
-    return object : SingleSessionCallback() {
-      override fun onCreated(sessionId: Int) {
-        log.debug("on session created:", sessionId)
-        binding.apply {
-          bottomSheet.setActionText(getString(string.msg_installing_apk))
-          bottomSheet.setActionProgress(0)
-          bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION)
-        }
-      }
-
-      override fun onProgressChanged(sessionId: Int, progress: Float) {
-        binding.bottomSheet.setActionProgress((progress * 100f).toInt())
-      }
-
-      override fun onFinished(sessionId: Int, success: Boolean) {
-        binding.apply {
-          bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER)
-          bottomSheet.setActionProgress(0)
-          if (!success) {
-            Snackbar.make(realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
-              .show()
-          }
-        }
-      }
-    }
+    return ApkInstallationSessionCallback(this).also { installationCallback = it }
   }
 }
