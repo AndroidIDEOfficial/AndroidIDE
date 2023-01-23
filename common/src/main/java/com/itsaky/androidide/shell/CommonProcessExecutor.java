@@ -116,7 +116,9 @@ public class CommonProcessExecutor implements IProcessExecutor {
         // Ignored
       }
 
-      listener.onExit(proc.exitValue());
+      if (listener != null) {
+        listener.onExit(proc.exitValue());
+      }
     }
   }
 }

@@ -66,7 +66,6 @@ import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
 import com.itsaky.androidide.fragments.FileTreeFragment
 import com.itsaky.androidide.fragments.SearchResultFragment
-import com.itsaky.androidide.fragments.sheets.TextSheetFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
 import com.itsaky.androidide.interfaces.DiagnosticClickListener
@@ -115,7 +114,6 @@ abstract class BaseEditorActivity :
 
   protected val mLifecycleObserver = EditorActivityLifecyclerObserver()
   protected var diagnosticInfoBinding: LayoutDiagnosticInfoBinding? = null
-  protected var dmonStatusFragment: TextSheetFragment? = null
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
   protected var isDestroying = false
@@ -135,8 +133,6 @@ abstract class BaseEditorActivity :
           binding.root.closeDrawer(GravityCompat.END)
         } else if (binding.root.isDrawerOpen(GravityCompat.START)) {
           binding.root.closeDrawer(GravityCompat.START)
-        } else if (getDaemonStatusFragment().isShowing) {
-          getDaemonStatusFragment().dismiss()
         } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
           editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
         } else {
@@ -220,8 +216,6 @@ abstract class BaseEditorActivity :
 
     setSupportActionBar(binding.editorToolbar)
 
-    dmonStatusFragment = getDaemonStatusFragment()
-
     setupDrawerToggle()
     binding.tabs.addOnTabSelectedListener(this)
 
@@ -253,13 +247,13 @@ abstract class BaseEditorActivity :
       flashError(string.msg_failed_list_files)
     }
   }
-  
+
   override fun onStop() {
     super.onStop()
-  
+
     checkIsDestroying()
   }
-  
+
   override fun onDestroy() {
     checkIsDestroying()
     preDestroy()
@@ -350,27 +344,6 @@ abstract class BaseEditorActivity :
     binding.bottomSheet.setDiagnosticsAdapter(adapter)
   }
 
-  open fun showDaemonStatus() {
-    val shell = app.newShell { t -> getDaemonStatusFragment().append(t) }
-    shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
-    shell.bgAppend(
-      String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))
-    )
-
-    if (!getDaemonStatusFragment().isShowing) {
-      getDaemonStatusFragment().show(supportFragmentManager, "daemon_status")
-    }
-  }
-
-  open fun getDaemonStatusFragment(): TextSheetFragment {
-    return dmonStatusFragment
-      ?: TextSheetFragment().also {
-        it.setTextSelectable(true)
-        it.setTitleText(string.gradle_daemon_status)
-        dmonStatusFragment = it
-      }
-  }
-
   open fun hideBottomSheet() {
     if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
       editorBottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -431,7 +404,7 @@ abstract class BaseEditorActivity :
     viewModel.statusText = text
     viewModel.statusGravity = gravity
   }
-  
+
   private fun checkIsDestroying() {
     if (!isDestroying && isFinishing) {
       isDestroying = true

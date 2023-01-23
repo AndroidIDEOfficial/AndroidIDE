@@ -31,7 +31,6 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
-import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
@@ -104,23 +103,7 @@ public abstract class BaseApplication extends Application {
             NotificationManager.IMPORTANCE_LOW);
     NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
-
-  public ShellServer newShell(ShellServer.Callback callback) {
-    return newShell(callback, true);
-  }
-
-  public ShellServer newShell(ShellServer.Callback callback, boolean redirectErrors) {
-    ShellServer shellServer =
-        new ShellServer(
-            callback,
-            "sh",
-            Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(),
-            Environment.getEnvironment(),
-            redirectErrors);
-    shellServer.start();
-    return shellServer;
-  }
-
+  
   public File getRootDir() {
     return new File(getIDEDataDir(), "home");
   }

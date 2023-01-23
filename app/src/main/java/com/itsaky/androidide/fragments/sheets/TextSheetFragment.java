@@ -16,10 +16,7 @@
  */
 package com.itsaky.androidide.fragments.sheets;
 
-import android.graphics.Color;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -51,29 +48,23 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
   }
 
   public void append(String text) {
-    append(text, -1, true);
+    append(text, true);
   }
 
-  public void append(String text, int spanColor, boolean appendLine) {
+  public void append(String text,  boolean appendLine) {
     if (text != null && text.trim().length() > 0) {
-      appendInternal(appendLine && !text.endsWith("\n") ? text.concat("\n") : text, spanColor);
+      appendInternal(appendLine && !text.endsWith("\n") ? text.concat("\n") : text);
     }
   }
 
-  private void appendInternal(String text, int spanColor) {
-    SpannableString str = new SpannableString(text);
-    str.setSpan(
-        new ForegroundColorSpan(spanColor == -1 ? Color.WHITE : spanColor),
-        0,
-        text.length(),
-        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-    getOutputBuilder().append(str);
+  private void appendInternal(String text) {
+    getOutputBuilder().append(text);
     if (mDialog != null && mDialog.isShowing()) {
-      setToEditor(str);
+      setToEditor(text);
     }
   }
 
-  private void setToEditor(SpannableString line) {
+  private void setToEditor(CharSequence line) {
     if (getActivity() != null)
       getActivity()
           .runOnUiThread(

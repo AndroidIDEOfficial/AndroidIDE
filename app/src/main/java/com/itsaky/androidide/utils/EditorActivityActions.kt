@@ -29,7 +29,6 @@ import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction
 import com.itsaky.androidide.actions.editor.PasteAction
 import com.itsaky.androidide.actions.editor.SelectAllAction
-import com.itsaky.androidide.actions.etc.DaemonStatusAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
 import com.itsaky.androidide.actions.etc.PreviewLayoutAction
@@ -62,7 +61,6 @@ class EditorActivityActions {
       registry.registerAction(PreviewLayoutAction(context))
       registry.registerAction(FindActionMenu(context))
       registry.registerAction(FileTreeAction(context))
-      registry.registerAction(DaemonStatusAction(context))
       registry.registerAction(CancelBuildAction(context))
       registry.registerAction(ProjectSyncAction(context))
 
