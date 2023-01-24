@@ -20,7 +20,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.editor.IEditor;
+import com.itsaky.androidide.editor.api.IEditor;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;

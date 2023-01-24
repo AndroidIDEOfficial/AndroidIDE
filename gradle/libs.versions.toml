@@ -1,5 +1,7 @@
 [versions]
 agp = "7.4.0"
+agp-tooling = "7.4.0"
+gradle-tooling = "7.6"
 kotlin = "1.8.0"
 tree-sitter = "1.0.10"
 editor = "0.21.0"
@@ -35,10 +37,11 @@ common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", 
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
 common-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 common-jsonrpc = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc", version = "0.19.0" }
+common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.10"}
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.5.0" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.5.1" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.0" }
 androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version = "1.2.0" }
@@ -72,7 +75,7 @@ google-java-format = { module ="com.google.googlejavaformat:google-java-format",
 # AAPT2
 aapt2-common = { module = "com.android.tools:common", version = "30.2.2" }
 aapt2-annotations = { module = "com.android.tools:annotations", version = "30.2.2" }
-aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "13.0" }
+aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.0" }
 aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "7.2.2-7984345" }
 
 # XML
@@ -80,7 +83,7 @@ xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
 xml-apis = { module = "xml-apis:xml-apis", version = "2.0.2" }
 xml-remark = { module = "com.kotcrab.remark:remark", version = "1.2.0" }
 xml-resolver = { module = "xml-resolver:xml-resolver", version = "1.2" }
-xml-jb-annotations = { module = "org.jetbrains:annotations", version = "23.1.0" }
+xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.0" }
 
 # GIT
 git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.201504261725-r" }
@@ -93,6 +96,11 @@ tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
 tests-androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
 tests-androidx-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
 tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "4.1.0" }
+
+# Tooling
+tooling-builderModel = { module="com.android.tools.build:builder-model", version.ref = "agp-tooling" }
+tooling-gradleApi = { module="org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
+tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.6" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

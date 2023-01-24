@@ -47,22 +47,24 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.FlashType.ERROR
+import com.itsaky.androidide.utils.FlashType.SUCCESS
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.IntentUtils.startIntent
 import com.itsaky.androidide.utils.ProjectWriter
 import com.itsaky.androidide.utils.SingleTextWatcher
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.Toaster.Type.SUCCESS
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashMessage
+import com.itsaky.androidide.utils.flashSuccess
 import com.unnamed.b.atv.model.TreeNode
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern.compile
 import java.util.regex.Pattern.quote
 import javax.lang.model.SourceVersion
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Handles events related to files in filetree.
@@ -141,7 +143,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     when (option.id) {
       ID_COPY_PATH -> {
         ClipboardUtils.copyText("[AndroidIDE] Copied File Path", file.absolutePath)
-        toast(string.copied, SUCCESS)
+        flashSuccess(string.copied)
       }
       ID_RENAME_FILE -> renameFile(context, file)
       ID_DELETE_FILE -> delete(context, file)
@@ -247,7 +249,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     builder.setPositiveButton(string.text_create) { dialogInterface, _ ->
       dialogInterface.dismiss()
       if (binding.name.isErrorEnabled) {
-        toast(string.msg_invalid_name, ERROR)
+        flashError(string.msg_invalid_name)
         return@setPositiveButton
       }
 
@@ -255,7 +257,7 @@ class FileTreeActionHandler : BaseEventHandler() {
       val autoLayout = binding.checkButton.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
-        toast(string.msg_get_package_failed, ERROR)
+        flashError(string.msg_get_package_failed)
         return@setPositiveButton
       }
 
@@ -312,12 +314,12 @@ class FileTreeActionHandler : BaseEventHandler() {
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
     val newFileLayout = File(dir, layoutName)
     if (newFileLayout.exists()) {
-      toast(string.msg_file_exists, ERROR)
+      flashError(string.msg_file_exists)
       return
     }
 
     if (!FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
-      toast(string.msg_file_creation_failed, ERROR)
+      flashError(string.msg_file_creation_failed)
       return
     }
 
@@ -407,23 +409,23 @@ class FileTreeActionHandler : BaseEventHandler() {
     content: String
   ): Boolean {
     if (name.length !in 1..40 || name.startsWith("/")) {
-      toast(string.msg_invalid_name, ERROR)
+      flashError(string.msg_invalid_name)
       return false
     }
 
     val newFile = File(directory, name)
     if (newFile.exists()) {
-      toast(string.msg_file_exists, ERROR)
+      flashError(string.msg_file_exists)
       return false
     }
     if (!FileIOUtils.writeFileFromString(newFile, content)) {
-      toast(string.msg_file_creation_failed, ERROR)
+      flashError(string.msg_file_creation_failed)
       return false
     }
 
     notifyFileCreated(newFile, context)
     // TODO Notify language servers about file created event
-    toast(string.msg_file_created, SUCCESS)
+    flashSuccess(string.msg_file_created)
     if (lastHeld != null) {
       val node = TreeNode(newFile)
       node.viewHolder = FileTreeViewHolder(context)
@@ -448,22 +450,22 @@ class FileTreeActionHandler : BaseEventHandler() {
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
       if (name.length !in 1..40 || name.startsWith("/")) {
-        toast(string.msg_invalid_name, ERROR)
+        flashError(string.msg_invalid_name)
         return@setPositiveButton
       }
 
       val newDir = File(currentDir, name)
       if (newDir.exists()) {
-        toast(string.msg_folder_exists, ERROR)
+        flashError(string.msg_folder_exists)
         return@setPositiveButton
       }
 
       if (!newDir.mkdirs()) {
-        toast(string.msg_folder_creation_failed, ERROR)
+        flashError(string.msg_folder_creation_failed)
         return@setPositiveButton
       }
 
-      toast(string.msg_folder_created, SUCCESS)
+      flashSuccess(string.msg_folder_created)
       if (lastHeld != null) {
         val node = TreeNode(newDir)
         node.viewHolder = FileTreeViewHolder(context)
@@ -491,7 +493,7 @@ class FileTreeActionHandler : BaseEventHandler() {
 
           val deleted = it ?: false
 
-          toast(
+          flashMessage(
             if (deleted) string.deleted else string.delete_failed,
             if (deleted) SUCCESS else ERROR
           )
@@ -544,7 +546,10 @@ class FileTreeActionHandler : BaseEventHandler() {
       dialogInterface.dismiss()
       val name: String = binding.name.editText!!.text.toString().trim()
       val renamed = name.length in 1..40 && FileUtils.rename(file, name)
-      toast(if (renamed) string.renamed else string.rename_failed, if (renamed) SUCCESS else ERROR)
+      flashMessage(
+        if (renamed) string.renamed else string.rename_failed,
+        if (renamed) SUCCESS else ERROR
+      )
       if (!renamed) {
         return@setPositiveButton
       }

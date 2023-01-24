@@ -15,12 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services
+package com.itsaky.androidide.services.builder
 
 import android.content.ComponentName
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.itsaky.androidide.services.GradleBuildService.GradleServiceBinder
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -30,15 +29,16 @@ import com.itsaky.androidide.utils.ILogger
  */
 class GradleBuildServiceConnnection : ServiceConnection {
   
-  internal var onConnected: (GradleBuildService) -> Unit = {}
+  internal var onConnected: ((GradleBuildService) -> Unit)? = null
   private val log = ILogger.newInstance("GradleBuildServiceConnnection")
   
   override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-    val buildService = (service as GradleServiceBinder).service
-    onConnected(buildService)
+    val serviceBinder = service as GradleServiceBinder
+    onConnected?.invoke(serviceBinder.service!!)
   }
   
   override fun onServiceDisconnected(name: ComponentName?) {
+    onConnected = null
     log.info("Disconnected from Gradle build service")
   }
 }

@@ -18,12 +18,14 @@ package com.itsaky.androidide.builder.model
 
 import com.android.builder.model.v2.ide.AndroidArtifact
 import com.android.builder.model.v2.ide.CodeShrinker
+import com.android.builder.model.v2.ide.PrivacySandboxSdkInfo
 import java.io.File
 import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultAndroidArtifact : AndroidArtifact, Serializable {
   private val serialVersionUID = 1L
+  override var applicationId: String? = ""
   override var resGenTaskName: String? = null
   override var abiFilters: Set<String>? = null
   override var assembleTaskOutputListingFile: File? = null
@@ -43,4 +45,5 @@ class DefaultAndroidArtifact : AndroidArtifact, Serializable {
   override var ideSetupTaskNames: Set<String> = emptySet()
   override var targetSdkVersionOverride: DefaultApiVersion? = null
   override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+  override var privacySandboxSdkInfo: PrivacySandboxSdkInfo? = null
 }

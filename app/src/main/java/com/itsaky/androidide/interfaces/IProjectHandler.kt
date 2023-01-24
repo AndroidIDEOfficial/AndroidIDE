@@ -34,5 +34,5 @@ interface IProjectHandler {
   
   fun startServices()
   fun initializeProject()
-  fun stopServices()
+  fun stopLanguageServers()
 }

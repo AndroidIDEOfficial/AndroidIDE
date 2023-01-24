@@ -111,19 +111,20 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
   }
   
   internal fun load(scheme: IDEColorScheme) {
-    val reader = JsonReader(scheme.file.reader())
-    reader.beginObject()
-    while (reader.hasNext()) {
-      when (reader.nextName()) {
-        KEY_DEFINITIONS -> scheme.definitions = scheme.parseDefinitions(reader)
-        KEY_EDITOR -> scheme.parseEditorScheme(reader, resolveFileRef)
-        KEY_LANGUAGES -> scheme.parseLanguages(reader, resolveFileRef)
+    JsonReader(scheme.file.reader()).use { reader ->
+      reader.beginObject()
+      while (reader.hasNext()) {
+        when (reader.nextName()) {
+          KEY_DEFINITIONS -> scheme.definitions = scheme.parseDefinitions(reader)
+          KEY_EDITOR -> scheme.parseEditorScheme(reader, resolveFileRef)
+          KEY_LANGUAGES -> scheme.parseLanguages(reader, resolveFileRef)
+        }
       }
-    }
-    reader.endObject()
+      reader.endObject()
   
-    if (scheme.name.isBlank()) {
-      throw ParseException("A color scheme must a valid name. Current name is '${scheme.name}'")
+      if (scheme.name.isBlank()) {
+        throw ParseException("A color scheme must a valid name. Current name is '${scheme.name}'")
+      }
     }
   }
 }

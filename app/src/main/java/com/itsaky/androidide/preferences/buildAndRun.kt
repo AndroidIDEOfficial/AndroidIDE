@@ -23,8 +23,6 @@ import android.os.Build.VERSION_CODES
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
-import com.itsaky.androidide.resources.R.drawable
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
 import com.itsaky.androidide.preferences.internal.GRADLE_CLEAR_CACHE
@@ -39,10 +37,12 @@ import com.itsaky.androidide.preferences.internal.isScanEnabled
 import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
 import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
 import com.itsaky.androidide.preferences.internal.tpFix
+import com.itsaky.androidide.resources.R.drawable
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
-import com.itsaky.toaster.toastError
-import com.itsaky.toaster.toastSuccess
+import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashSuccess
 import java.io.File
 import kotlinx.parcelize.Parcelize
 
@@ -162,7 +162,7 @@ private class TagPointersFix(
 }
 
 @Parcelize
-private class GradleClearCache (
+private class GradleClearCache(
   override val key: String = GRADLE_CLEAR_CACHE,
   override val title: Int = string.idepref_build_clearCache_title,
   override val summary: Int? = string.idepref_build_clearCache_summary,
@@ -176,9 +176,9 @@ private class GradleClearCache (
       dlg.dismiss()
       executeAsync(callable = this::deleteCaches) {
         if (it == true) {
-          toastSuccess(string.deleted)
+          flashSuccess(string.deleted)
         } else {
-          toastError(string.delete_failed)
+          flashError(string.delete_failed)
         }
       }
     }

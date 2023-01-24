@@ -19,13 +19,12 @@ package com.itsaky.androidide.actions.file
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.toaster.Toaster
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashSuccess
 
 /** @author Akash Yadav */
 class SaveFileAction() : EditorRelatedAction() {
@@ -77,7 +76,7 @@ class SaveFileAction() : EditorRelatedAction() {
 
   override fun postExec(data: ActionData, result: Any) {
     if (result is Boolean && result) {
-      toast(R.string.all_saved, Toaster.Type.SUCCESS)
+      flashSuccess(R.string.all_saved)
     } else {
       log.error("Failed to save file")
       TODO("Create message in strings.xml")

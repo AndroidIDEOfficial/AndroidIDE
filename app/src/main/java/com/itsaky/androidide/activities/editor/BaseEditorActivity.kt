@@ -22,6 +22,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.StrictMode
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
@@ -49,6 +50,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
+import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.R.attr
 import com.itsaky.androidide.R.drawable
 import com.itsaky.androidide.R.id
@@ -64,7 +66,6 @@ import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
 import com.itsaky.androidide.fragments.FileTreeFragment
 import com.itsaky.androidide.fragments.SearchResultFragment
-import com.itsaky.androidide.fragments.sheets.TextSheetFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
 import com.itsaky.androidide.interfaces.DiagnosticClickListener
@@ -79,27 +80,24 @@ import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.LogReceiver
-import com.itsaky.androidide.ui.EditorBottomSheet
 import com.itsaky.androidide.ui.MaterialBanner
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
+import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
-import com.itsaky.androidide.utils.SingleSessionCallback
+import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
-import java.io.File
-import java.util.Objects
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
+import java.util.Objects
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -115,13 +113,14 @@ abstract class BaseEditorActivity :
 
   protected val mLifecycleObserver = EditorActivityLifecyclerObserver()
   protected var diagnosticInfoBinding: LayoutDiagnosticInfoBinding? = null
-  protected var dmonStatusFragment: TextSheetFragment? = null
   protected var filesTreeFragment: FileTreeFragment? = null
   protected var editorBottomSheet: BottomSheetBehavior<out View?>? = null
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
   protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
+
+  internal var installationCallback: ApkInstallationSessionCallback? = null
 
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
   val viewModel by viewModels<EditorViewModel>()
@@ -135,8 +134,6 @@ abstract class BaseEditorActivity :
           binding.root.closeDrawer(GravityCompat.END)
         } else if (binding.root.isDrawerOpen(GravityCompat.START)) {
           binding.root.closeDrawer(GravityCompat.START)
-        } else if (getDaemonStatusFragment().isShowing) {
-          getDaemonStatusFragment().dismiss()
         } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
           editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
         } else {
@@ -160,6 +157,8 @@ abstract class BaseEditorActivity :
   protected abstract fun getOpenedFiles(): List<OpenedFile>
 
   protected open fun preDestroy() {
+    installationCallback?.destroy()
+    installationCallback = null
     try {
       unregisterReceiver(logReceiver)
     } catch (th: Throwable) {
@@ -203,6 +202,12 @@ abstract class BaseEditorActivity :
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    if (BuildConfig.DEBUG) {
+      StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).detectLeakedClosableObjects().build()
+      )
+    }
+
     registerLanguageServers()
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
@@ -213,8 +218,6 @@ abstract class BaseEditorActivity :
     lifecycle.addObserver(mLifecycleObserver)
 
     setSupportActionBar(binding.editorToolbar)
-
-    dmonStatusFragment = getDaemonStatusFragment()
 
     setupDrawerToggle()
     binding.tabs.addOnTabSelectedListener(this)
@@ -244,11 +247,18 @@ abstract class BaseEditorActivity :
       getFileTreeFragment()?.listProjectFiles()
     } catch (th: Throwable) {
       log.error("Failed to update files list", th)
-      toast(string.msg_failed_list_files, ERROR)
+      flashError(string.msg_failed_list_files)
     }
   }
 
+  override fun onStop() {
+    super.onStop()
+
+    checkIsDestroying()
+  }
+
   override fun onDestroy() {
+    checkIsDestroying()
     preDestroy()
     super.onDestroy()
     postDestroy()
@@ -337,27 +347,6 @@ abstract class BaseEditorActivity :
     binding.bottomSheet.setDiagnosticsAdapter(adapter)
   }
 
-  open fun showDaemonStatus() {
-    val shell = app.newShell { t -> getDaemonStatusFragment().append(t) }
-    shell.bgAppend(String.format("echo '%s'", getString(string.msg_getting_daemom_status)))
-    shell.bgAppend(
-      String.format("cd '%s' && sh gradlew --status", Objects.requireNonNull(getProjectDirPath()))
-    )
-
-    if (!getDaemonStatusFragment().isShowing) {
-      getDaemonStatusFragment().show(supportFragmentManager, "daemon_status")
-    }
-  }
-
-  open fun getDaemonStatusFragment(): TextSheetFragment {
-    return dmonStatusFragment
-      ?: TextSheetFragment().also {
-        it.setTextSelectable(true)
-        it.setTitleText(string.gradle_daemon_status)
-        dmonStatusFragment = it
-      }
-  }
-
   open fun hideBottomSheet() {
     if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
       editorBottomSheet?.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -419,6 +408,12 @@ abstract class BaseEditorActivity :
     viewModel.statusGravity = gravity
   }
 
+  private fun checkIsDestroying() {
+    if (!isDestroying && isFinishing) {
+      isDestroying = true
+    }
+  }
+
   private fun handleUiDesignerResult(result: ActivityResult) {
     if (result.resultCode != RESULT_OK || result.data == null) {
       log.warn("UI Designer returned invalid result", result.resultCode, result.data)
@@ -468,7 +463,7 @@ abstract class BaseEditorActivity :
 
     viewModel.observeFiles(this) { files ->
       binding.apply {
-        if (files == null || files.isEmpty()) {
+        if (files.isNullOrEmpty()) {
           tabs.visibility = View.GONE
           viewContainer.displayedChild = 1
         } else {
@@ -635,30 +630,6 @@ abstract class BaseEditorActivity :
   }
 
   open fun installationSessionCallback(): SessionCallback {
-    return object : SingleSessionCallback() {
-      override fun onCreated(sessionId: Int) {
-        log.debug("on session created:", sessionId)
-        binding.apply {
-          bottomSheet.setActionText(getString(string.msg_installing_apk))
-          bottomSheet.setActionProgress(0)
-          bottomSheet.showChild(EditorBottomSheet.CHILD_ACTION)
-        }
-      }
-
-      override fun onProgressChanged(sessionId: Int, progress: Float) {
-        binding.bottomSheet.setActionProgress((progress * 100f).toInt())
-      }
-
-      override fun onFinished(sessionId: Int, success: Boolean) {
-        binding.apply {
-          bottomSheet.showChild(EditorBottomSheet.CHILD_HEADER)
-          bottomSheet.setActionProgress(0)
-          if (!success) {
-            Snackbar.make(realContainer, string.title_installation_failed, Snackbar.LENGTH_LONG)
-              .show()
-          }
-        }
-      }
-    }
+    return ApkInstallationSessionCallback(this).also { installationCallback = it }
   }
 }

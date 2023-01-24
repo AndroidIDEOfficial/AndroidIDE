@@ -55,7 +55,7 @@
 -keep class * extends com.itsaky.androidide.lsp.java.providers.completion.IJavaCompletionProvider {
     <init>(...);
 }
--keep class com.itsaky.androidide.editor.IEditor { *; }
+-keep class com.itsaky.androidide.editor.api.IEditor { *; }
 -keep class * extends com.itsaky.androidide.inflater.IViewAdapter { *; }
 -keep class * extends com.itsaky.androidide.inflater.drawable.IDrawableParser {
     <init>(...);

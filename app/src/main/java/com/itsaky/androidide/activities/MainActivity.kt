@@ -41,9 +41,8 @@ import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.Toaster.Type.INFO
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashInfo
 import java.io.File
 
 class MainActivity : IDEActivity() {
@@ -67,7 +66,7 @@ class MainActivity : IDEActivity() {
 
   override fun onStorageGranted() {}
   override fun onStorageDenied() {
-    toast(string.msg_storage_denied, ERROR)
+    flashError(string.msg_storage_denied)
     finishAffinity()
   }
 
@@ -130,12 +129,12 @@ class MainActivity : IDEActivity() {
     }
     if (TextUtils.isEmpty(openedProject)) {
       app
-      toast(string.msg_opened_project_does_not_exist, INFO)
+      flashInfo(string.msg_opened_project_does_not_exist)
       return
     }
     val project = File(openedProject)
     if (!project.exists()) {
-      toast(string.msg_opened_project_does_not_exist, INFO)
+      flashInfo(string.msg_opened_project_does_not_exist)
       return
     }
     if (confirmProjectOpen) {

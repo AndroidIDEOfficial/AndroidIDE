@@ -33,7 +33,6 @@ import org.gradle.tooling.events.OperationType;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -86,6 +85,7 @@ public class Main {
     }
   }
 
+  @SuppressWarnings("NewApi")
   public static void finalizeLauncher(ConfigurableLauncher<?> launcher) {
     final var out = new LoggingOutputStream();
     launcher.setStandardError(out);

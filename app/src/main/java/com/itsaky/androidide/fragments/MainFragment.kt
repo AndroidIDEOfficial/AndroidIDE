@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.activities.PreferencesActivity
 import com.itsaky.androidide.activities.TerminalActivity
+import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
@@ -25,11 +25,11 @@ import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.toaster.toastError
-import com.itsaky.toaster.toastSuccess
-import java.io.File
+import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashSuccess
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
+import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
   private var binding: FragmentMainBinding? = null
@@ -179,14 +179,14 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
           if (!future.isCancelled) {
             showCloneError(error)
           }
-        } else toastSuccess(string.git_clone_success)
+        } else flashSuccess(string.git_clone_success)
       }
     }
   }
 
   private fun showCloneError(error: Throwable?) {
     if (error == null) {
-      toastError(string.git_clone_failed)
+      flashError(string.git_clone_failed)
       return
     }
 

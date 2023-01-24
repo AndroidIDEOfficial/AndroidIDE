@@ -24,13 +24,12 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.newDialogBuilder
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.toaster.Toaster
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashInfo
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.Tree.Kind.VARIABLE
 import com.sun.source.tree.VariableTree
@@ -134,7 +133,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
     }
 
     if (result.isEmpty()) {
-      toast(data[Context::class.java]!!.getString(R.string.msg_no_fields_found), Toaster.Type.INFO)
+      flashInfo(data[Context::class.java]!!.getString(R.string.msg_no_fields_found))
       return
     }
 
@@ -175,10 +174,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
       dialog.dismiss()
 
       if (checkedNames.isEmpty()) {
-        toast(
-          data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
-          Toaster.Type.ERROR
-        )
+        flashInfo(data[Context::class.java]!!.getString(R.string.msg_no_fields_selected))
         return@setPositiveButton
       }
 

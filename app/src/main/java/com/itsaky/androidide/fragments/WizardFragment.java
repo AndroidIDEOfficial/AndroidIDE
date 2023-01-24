@@ -34,10 +34,9 @@ import com.itsaky.androidide.utils.AndroidUtils;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.SingleTextWatcher;
 import com.itsaky.androidide.viewmodel.WizardViewModel;
-import com.itsaky.toaster.Toaster;
-import com.itsaky.toaster.ToastUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -133,7 +132,7 @@ public class WizardFragment extends BaseFragment {
               if (mProgressSheet != null && mProgressSheet.isShowing()) {
                 mProgressSheet.dismiss();
               }
-              ToastUtilsKt.toast(message, Toaster.Type.ERROR);
+              FlashbarUtilsKt.flashError(message);
             });
 
     mViewModel
@@ -176,7 +175,7 @@ public class WizardFragment extends BaseFragment {
     if (mProgressSheet != null && mProgressSheet.isShowing()) {
       mProgressSheet.dismiss();
     }
-    ToastUtilsKt.toast(string.project_created_successfully, Toaster.Type.SUCCESS);
+    FlashbarUtilsKt.flashSuccess(string.project_created_successfully);
 
     if (mListener != null) {
       getParentFragmentManager().popBackStack();
@@ -223,7 +222,7 @@ public class WizardFragment extends BaseFragment {
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
       return Integer.parseInt(sdk);
     } catch (Exception e) {
-      ToastUtilsKt.toast(e.getMessage(), Toaster.Type.ERROR);
+      FlashbarUtilsKt.flashError(e.getMessage());
     }
     return -1;
   }
@@ -369,7 +368,7 @@ public class WizardFragment extends BaseFragment {
           new ArrayAdapter<>(
               requireContext(),
               androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-              getCppToolchans().keySet().toArray(new String[getCppToolchans().size()])));
+              getCppToolchans().keySet().toArray(new String[0])));
 
       detailsBinding.etToolchain.setListSelection(0);
       detailsBinding.etToolchain.setText(getSelectedItem(0, detailsBinding.etToolchain), false);

@@ -15,20 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services;
+plugins {
+  id("com.android.library")
+  id("kotlin-android")
+}
 
-/**
- * Thrown when a build is requested but another build is already in progress.
- *
- * @author Akash Yadav
- */
-public class BuildInProgressException extends IllegalStateException {
+android {
+  namespace = "com.itsaky.androidide.editor.api"
+}
 
-  public BuildInProgressException() {
-    this("A build is already running!");
-  }
-
-  public BuildInProgressException(final String s) {
-    super(s);
-  }
+dependencies {
+  api(projects.lsp.api)
+  api(projects.lsp.models)
+  
+  implementation(projects.common)
 }

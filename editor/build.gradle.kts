@@ -15,6 +15,8 @@ dependencies {
     api(libs.common.editor)
     api(libs.common.editor.ts)
     
+    api(projects.editorApi)
+    
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)

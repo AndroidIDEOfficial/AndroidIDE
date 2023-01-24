@@ -26,13 +26,7 @@ import com.android.aapt.Resources.XmlElement
 import com.android.aapt.Resources.XmlNode.NodeCase.ELEMENT
 import com.android.aaptcompiler.AaptResourceType.ID
 import com.android.aaptcompiler.AaptResourceType.LAYOUT
-import com.android.aaptcompiler.BlameLogger
-import com.android.aaptcompiler.ResourceFile
-import com.android.aaptcompiler.ResourceFile.Type.ProtoXml
-import com.android.aaptcompiler.ResourceName
 import com.android.aaptcompiler.XmlProcessor
-import com.android.aaptcompiler.extractPathData
-import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.inflater.DefaultComponentFactory
 import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.IComponentFactory
@@ -56,7 +50,6 @@ import com.itsaky.androidide.inflater.utils.isParsing
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.inflater.viewAdapter
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
@@ -241,11 +234,11 @@ open class LayoutInflaterImpl : ILayoutInflater {
         if (!checkAttr(xmlAttribute)) {
           continue
         }
-        
+
         val namespace =
           if (xmlAttribute.namespaceUri.isNullOrBlank()) null
           else view.findNamespaceByUri(xmlAttribute.namespaceUri)
-        
+
         val attr = onCreateAttribute(view, namespace, xmlAttribute.name, xmlAttribute.value)
         view.addAttribute(attribute = attr, update = true)
         inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
@@ -344,29 +337,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
   }
 
   protected open fun processXmlFile(file: File): Pair<XmlProcessor, AndroidModule> {
-    val pathData = extractPathData(file)
-    if (pathData.type != LAYOUT) {
-      throw InflateException("File is not a layout file.")
-    }
-
-    if (ProjectManager.rootProject == null) {
-      throw InflateException("Project is not initialized!")
-    }
-
-    val module =
-      ProjectManager.findModuleForFile(file) as? AndroidModule
-        ?: throw InflateException("Cannot find module for given file. Is the project initialized?")
-    val resFile =
-      ResourceFile(
-        ResourceName(module.packageName, pathData.type!!, pathData.name),
-        pathData.config,
-        pathData.source,
-        ProtoXml
-      )
-
-    val processor = XmlProcessor(pathData.source, BlameLogger(IDELogger))
-    processor.process(resFile, file.inputStream())
-    return processor to module
+    return com.itsaky.androidide.inflater.utils.processXmlFile(file, LAYOUT)
   }
 
   private fun onCreateUnsupportedView(

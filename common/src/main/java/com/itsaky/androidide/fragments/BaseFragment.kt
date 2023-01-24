@@ -40,16 +40,16 @@ import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.toaster.Toaster.Type.ERROR
-import com.itsaky.toaster.toast
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 
-open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fragment(contentLayoutId) {
+open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) :
+  Fragment(contentLayoutId) {
 
   private var callback: OnDirectoryPickedCallback? = null
   private val allowedAuthorities =
     setOf(ANDROID_DOCS_AUTHORITY, ANDROIDIDE_DOCS_AUTHORITY, TERMUX_DOCS_AUTHORITY)
-  
+
   companion object {
     const val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
     const val ANDROIDIDE_DOCS_AUTHORITY = "com.itsaky.androidide.documents"
@@ -63,12 +63,12 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fr
       val pickedDir = DocumentFile.fromTreeUri(context, uri)
 
       if (pickedDir == null) {
-        toast(getString(string.err_invalid_data_by_intent), ERROR)
+        flashError(string.err_invalid_data_by_intent)
         return@registerForActivityResult
       }
 
       if (!pickedDir.exists()) {
-        toast(getString(string.msg_picked_isnt_dir), ERROR)
+        flashError(getString(string.msg_picked_isnt_dir))
         return@registerForActivityResult
       }
 
@@ -77,7 +77,7 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fr
       val authority = docUri.authority
 
       if (!allowedAuthorities.contains(authority)) {
-        toast(getString(string.err_authority_not_allowed, authority), ERROR)
+        flashError(getString(string.err_authority_not_allowed, authority))
         return@registerForActivityResult
       }
 
@@ -87,7 +87,7 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fr
         } else {
           val split = docId.split(':')
           if ("primary" != split[0]) {
-            toast(getString(string.msg_select_from_primary_storage), ERROR)
+            flashError(getString(string.msg_select_from_primary_storage))
             return@registerForActivityResult
           }
 
@@ -95,7 +95,7 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) : Fr
         }
 
       if (!dir.exists() || !dir.isDirectory) {
-        toast(getString(string.err_invalid_data_by_intent), ERROR)
+        flashError(getString(string.err_invalid_data_by_intent))
         return@registerForActivityResult
       }
 

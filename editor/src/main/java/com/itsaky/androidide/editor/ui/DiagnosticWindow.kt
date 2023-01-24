@@ -23,18 +23,7 @@ import com.itsaky.androidide.lsp.models.DiagnosticItem
  *
  * @author Akash Yadav
  */
-class DiagnosticWindow
-/**
- * Create a popup window for editor
- *
- * @param editor The editor
- * @see .FEATURE_SCROLL_AS_CONTENT
- *
- * @see .FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
- *
- * @see .FEATURE_HIDE_WHEN_FAST_SCROLL
- */
-(editor: IDEEditor) : BaseEditorWindow(editor) {
+class DiagnosticWindow(editor: IDEEditor) : BaseEditorWindow(editor) {
   /**
    * Show the given diagnostic item.
    *

@@ -46,10 +46,9 @@ import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.ui.editor.CodeEditorView;
+import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.toaster.ToastUtilsKt;
-import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -104,6 +103,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   public static void shutdown() {
+    if (mInstance != null) {
+      mInstance.activity = null;
+    }
     mInstance = null;
   }
 
@@ -182,7 +184,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           "activity=" + activity(),
           "editor=" + editor,
           "action=" + action);
-      ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+      FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
       return;
     }
 
@@ -199,7 +201,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
-            ToastUtilsKt.toast(string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
           } else {
             editor.executeCommand(action.getCommand());
           }
@@ -309,7 +311,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> map) {
     final var groups = new ArrayList<DiagnosticGroup>();
     var diagnosticMap = map;
-    if (diagnosticMap == null || diagnosticMap.size() <= 0) return groups;
+    if (diagnosticMap == null || diagnosticMap.size() == 0) return groups;
 
     if (diagnosticMap.size() > 10) {
       LOG.warn("Limiting the diagnostics to 10 files");
@@ -318,7 +320,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     for (File file : diagnosticMap.keySet()) {
       var fileDiagnostics = diagnosticMap.get(file);
-      if (fileDiagnostics == null || fileDiagnostics.size() <= 0) continue;
+      if (fileDiagnostics == null || fileDiagnostics.size() == 0) continue;
 
       // Trim the diagnostics list if we have too many diagnostic items.
       // Including a lot of diagnostic items will result in UI lag when they are shown

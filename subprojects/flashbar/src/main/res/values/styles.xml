@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FbTitleTextStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/fb_title_text_size</item>
+    </style>
+
+    <style name="FbMessageStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/fb_message_text_size</item>
+    </style>
+
+    <style name="FbButtonTextStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/fb_button_text_size</item>
+    </style>
+
+    <style name="FbButtonStyle">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:background">@drawable/fb_button_background_selector</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="FbCircularIndeterminateProgressStyle">
+        <item name="fbp_barColor">@color/white</item>
+        <item name="fbp_barWidth">2dp</item>
+        <item name="fbp_progressIndeterminate">true</item>
+    </style>
+
+</resources>

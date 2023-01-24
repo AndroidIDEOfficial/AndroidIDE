@@ -29,8 +29,8 @@ import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.uidesigner.databinding.ActivityShowXmlBinding
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.jetbrainsMono
-import com.itsaky.toaster.toastInfo
 import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.widget.CodeEditor
 
@@ -44,7 +44,7 @@ class ShowXmlActivity : BaseIDEActivity() {
   private var editor: CodeEditor? = null
   private var unsubscribe: Unsubscribe? = null
   private var binding: ActivityShowXmlBinding? = null
-  
+
   private val log = ILogger.newInstance("ShowXmlActivity")
 
   companion object {
@@ -67,13 +67,13 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.typefaceLineNumber = jetbrainsMono()
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
-      
+
       IDEColorSchemeProvider.readScheme(this) {
         if (it == null) {
           log.error("Unable to load color sheme")
           return@readScheme
         }
-        
+
         editor.colorScheme = it
         editor.setEditorLanguage(XMLLanguage(this))
       }
@@ -86,7 +86,7 @@ class ShowXmlActivity : BaseIDEActivity() {
 
     this.binding?.copy?.setOnClickListener {
       this.editor?.copyText(false)
-      toastInfo(R.string.copied)
+      flashInfo(R.string.copied)
     }
 
     return this.binding!!.root

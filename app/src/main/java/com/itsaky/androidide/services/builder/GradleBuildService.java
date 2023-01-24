@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services;
+package com.itsaky.androidide.services.builder;
 
 import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
 import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.getGradleInstallationDir;
@@ -34,7 +34,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
 
@@ -51,8 +50,9 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.resources.R;
-import com.itsaky.androidide.shell.CommonProcessExecutor;
+import com.itsaky.androidide.services.ToolingServerNotStartedException;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
+import com.itsaky.androidide.tooling.api.ForwardingToolingApiClient;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
@@ -63,11 +63,11 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.InputStreamLineReader;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +76,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -85,18 +84,27 @@ import java.util.concurrent.CompletionException;
  *
  * @author Akash Yadav
  */
-public class GradleBuildService extends Service implements BuildService, IToolingApiClient {
+public class GradleBuildService extends Service implements BuildService, IToolingApiClient, ToolingServerRunner.Observer {
 
   private static final ILogger LOG = newInstance("GradleBuildService");
   private static final int NOTIFICATION_ID = R.string.app_name;
   private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
   private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
-  private final IBinder mBinder = new GradleServiceBinder();
+  private final IBinder mBinder = new GradleServiceBinder(this);
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
+  
+  /**
+   * We do not provide direct access to GradleBuildService instance to the Tooling API launcher as
+   * it may cause memory leaks. Instead, we create another client object which forwards all calls to us.
+   * So, when the service is destroyed, we release the reference to the service from this client.
+   */
+  private ForwardingToolingApiClient _toolingApiClient;
   private ToolingServerRunner toolingServerThread;
+  private OutputReaderThread outputReader;
   private NotificationManager notificationManager;
   private IToolingApiServer server;
+  @Nullable
   private EventListener eventListener;
 
   @Override
@@ -111,6 +119,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     return isToolingServerStarted;
   }
 
+  @SuppressWarnings("SameParameterValue")
   private void showNotification(final String message, final boolean isProgress) {
     LOG.info("Showing notification to user...");
     startForeground(NOTIFICATION_ID, buildNotification(message, isProgress));
@@ -154,11 +163,32 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     notificationManager.cancel(NOTIFICATION_ID);
     if (server != null) {
       server.cancelCurrentBuild();
-      server.shutdown();
+      final var shutdown = server.shutdown();
+  
+      //noinspection ConstantConditions
+      if (shutdown != null) {
+        try {
+          LOG.info("Shutting down Tooling API server...");
+          shutdown.get();
+        } catch (Throwable e) {
+          LOG.error("Failed to shutdown Tooling API server", e);
+        }
+      }
     }
 
     if (toolingServerThread != null) {
       toolingServerThread.interrupt();
+      toolingServerThread = null;
+    }
+    
+    if (_toolingApiClient != null) {
+      _toolingApiClient.setClient(null);
+      _toolingApiClient = null;
+    }
+    
+    if (outputReader != null) {
+      outputReader.interrupt();
+      outputReader = null;
     }
 
     isToolingServerStarted = false;
@@ -170,7 +200,31 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     LOG.debug("onBind() called with: intent = [" + intent + "]");
     return mBinder;
   }
-
+  
+  @Override
+  public void onListenerStarted(@NotNull final IToolingApiServer server, @NotNull IProject projectProxy, @NotNull final ProcessStreamsHolder streams) {
+    startServerOutputReader(streams.err);
+    this.server = server;
+    Lookup.DEFAULT.update(BuildService.KEY_PROJECT_PROXY, projectProxy);
+    this.isToolingServerStarted = true;
+    ProjectManager.INSTANCE.setupProject(projectProxy);
+  }
+  
+  @Override
+  public void onServerExited(int exitCode) {
+    LOG.warn("Tooling API process terminated with exit code:", exitCode);
+    stopForeground(true);
+  }
+  
+  @NonNull
+  @Override
+  public IToolingApiClient getClient() {
+    if (_toolingApiClient == null) {
+      _toolingApiClient = new ForwardingToolingApiClient(this);
+    }
+    return _toolingApiClient;
+  }
+  
   @Override
   public void logMessage(@NonNull LogLine line) {
     SERVER_LOGGER.log(line.priority, line.formattedTagAndMessage());
@@ -400,14 +454,14 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     return result;
   }
 
-  public void startToolingServer(@Nullable OnServerStartListener listener) {
+  public void startToolingServer(@Nullable ToolingServerRunner.OnServerStartListener listener) {
     if (toolingServerThread == null || !toolingServerThread.isAlive()) {
-      toolingServerThread = new ToolingServerRunner(listener);
+      toolingServerThread = new ToolingServerRunner(listener, this);
       toolingServerThread.start();
       return;
     }
 
-    if (toolingServerThread.isStarted && listener != null) {
+    if (toolingServerThread.isStarted() && listener != null) {
       listener.onServerStarted();
     } else {
       toolingServerThread.setListener(listener);
@@ -415,6 +469,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   public GradleBuildService setEventListener(EventListener eventListener) {
+    if (eventListener == null) {
+      this.eventListener = null;
+      return this;
+    }
+    
     this.eventListener = wrap(eventListener);
     return this;
   }
@@ -458,118 +517,16 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     };
   }
 
-  protected void onServerExited(int exitCode) {
-    LOG.warn("Tooling API process terminated with exit code:", exitCode);
-    stopForeground(true);
-  }
-
   private void startServerOutputReader(InputStream err) {
-    new Thread(new InputStreamLineReader(err, this::onServerOutput)).start();
-  }
-
-  protected void onServerOutput(String line) {
-    SERVER_System_err.error(line);
-  }
-
-  public class GradleServiceBinder extends Binder {
-    public GradleBuildService getService() {
-      return GradleBuildService.this;
+    if (outputReader == null) {
+      outputReader = new OutputReaderThread(err, SERVER_System_err::error);
+    }
+    
+    if (!outputReader.isAlive()) {
+      outputReader.start();
     }
   }
-
-  private class ToolingServerRunner extends Thread {
-
-    @Nullable private OnServerStartListener listener;
-    private boolean isStarted = false;
-
-    public ToolingServerRunner(@Nullable OnServerStartListener listener) {
-      super(ToolingServerRunner.class.getSimpleName());
-      this.listener = listener;
-    }
-
-    public void setListener(@Nullable final OnServerStartListener listener) {
-      this.listener = listener;
-    }
-
-    @Override
-    public void run() {
-      try {
-        LOG.info("Starting tooling API server...");
-        final var serverStreams = new ProcessStreamsHolder();
-        final var executor = new CommonProcessExecutor();
-        executor.execAsync(
-            serverStreams,
-            GradleBuildService.this::onServerExited,
-            false,
-
-            // The 'java' binary executable
-            Environment.JAVA.getAbsolutePath(),
-
-            // Allow reflective access to private members of classes in the following
-            // packages:
-            // - java.lang
-            // - java.io
-            // - java.util
-            //
-            // If any of the model classes in 'tooling-api-model' module send/receive
-            // objects from the JDK, their package name must be declared here with
-            // '--add-opens' to prevent InaccessibleObjectException.
-            // For example, some of the model classes has members of type java.io.File.
-            // When sending/receiving these type of objects using LSP4J, members of
-            // these objects are reflectively accessed by Gson. If we do no specify
-            // '--add-opens' for 'java.io' (for java.io.File) package, JVM will throw an
-            // InaccessibleObjectException.
-            "--add-opens",
-            "java.base/java.lang=ALL-UNNAMED",
-            "--add-opens",
-            "java.base/java.util=ALL-UNNAMED",
-            "--add-opens",
-            "java.base/java.io=ALL-UNNAMED",
-
-            // The JAR file to run
-            "-jar",
-            Environment.TOOLING_API_JAR.getAbsolutePath());
-
-        final var launcher =
-            ToolingApiLauncher.newClientLauncher(
-                GradleBuildService.this, serverStreams.in, serverStreams.out);
-        final var future = launcher.startListening();
-
-        GradleBuildService.this.startServerOutputReader(serverStreams.err);
-        GradleBuildService.this.server = (IToolingApiServer) launcher.getRemoteProxy();
-        Lookup.DEFAULT.update(KEY_PROJECT_PROXY, ((IProject) launcher.getRemoteProxy()));
-
-        GradleBuildService.this.isToolingServerStarted = true;
-
-        ProjectManager.INSTANCE.setupProject();
-
-        isStarted = true;
-        if (listener != null) {
-          listener.onServerStarted();
-        }
-
-        // Wait(block) until the process terminates
-        try {
-          future.get();
-        } catch (Throwable err) {
-          if (!(err instanceof CancellationException) && !(err instanceof InterruptedException)) {
-            LOG.error("An error occurred while waiting for tooling API server to terminate", err);
-          }
-        }
-
-      } catch (Throwable e) {
-        LOG.error("Unable to start tooling API server", e);
-      }
-    }
-  }
-
-  /** Callback to listen for Tooling API server start event. */
-  public interface OnServerStartListener {
-
-    /** Called when the tooling API server has been successfully started. */
-    void onServerStarted();
-  }
-
+  
   /** Handles events received from a Gradle build. */
   public interface EventListener {
 

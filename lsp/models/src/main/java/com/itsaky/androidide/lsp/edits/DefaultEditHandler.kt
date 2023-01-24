@@ -105,6 +105,7 @@ open class DefaultEditHandler : IEditHandler {
     if (command == null) {
       return
     }
+    
     try {
       val klass = editor::class.java
       val method = klass.getMethod("executeCommand", Command::class.java)

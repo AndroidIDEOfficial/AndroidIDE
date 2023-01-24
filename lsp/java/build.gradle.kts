@@ -55,6 +55,7 @@ dependencies {
     compileOnly(projects.actions)
     compileOnly(projects.common)
     
+    implementation(projects.editorApi)
     implementation(projects.resources)
     implementation(projects.lsp.api)
     implementation(projects.subprojects.javac)

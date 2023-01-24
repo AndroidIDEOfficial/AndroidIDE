@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.mooltiverse.oss.nyx.gradle.NyxExtension
-import com.mooltiverse.oss.nyx.services.github.GitHub
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -14,7 +13,7 @@ pluginManagement {
   }
 }
 
-plugins { id("com.mooltiverse.oss.nyx") version "1.3.0" }
+plugins { id("com.mooltiverse.oss.nyx") version "1.3.2" }
 
 extensions.configure<NyxExtension> {
   git {
@@ -47,6 +46,7 @@ include(
   ":app",
   ":common",
   ":editor",
+  ":editor-api",
   ":emulatorview",
   ":eventbus",
   ":eventbus-android",
@@ -69,6 +69,7 @@ include(
   ":subprojects:aaptcompiler",
   ":subprojects:builder-model-impl",
   ":subprojects:classfile",
+  ":subprojects:flashbar",
   ":subprojects:framework-stubs",
   ":subprojects:fuzzysearch",
   ":subprojects:google-java-format",

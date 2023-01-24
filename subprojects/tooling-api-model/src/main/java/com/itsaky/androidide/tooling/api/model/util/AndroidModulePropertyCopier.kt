@@ -169,6 +169,7 @@ object AndroidModulePropertyCopier {
     }
 
     return DefaultAndroidArtifact().apply {
+      applicationId = artifact.applicationId
       resGenTaskName = artifact.resGenTaskName
       abiFilters = artifact.abiFilters
       assembleTaskOutputListingFile = artifact.assembleTaskOutputListingFile
