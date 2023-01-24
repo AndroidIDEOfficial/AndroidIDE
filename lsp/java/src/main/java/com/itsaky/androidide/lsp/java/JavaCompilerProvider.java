@@ -64,7 +64,7 @@ public class JavaCompilerProvider {
   // TODO This currently destroys all the compiler instances
   //  We must have a method to destroy only the required instance in
   //  JavaLanguageServer.handleFailure(LSPFailure)
-  public synchronized void destory() {
+  public synchronized void destroy() {
     for (final JavaCompilerService compiler : mCompilers.values()) {
       compiler.destroy();
     }
