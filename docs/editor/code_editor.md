@@ -28,3 +28,8 @@ As of now, only [Java code actions](./java_code_actions.md) are available.
     <summary>See location of code actions item in text actions window</summary>
     <img src="../images/editor_code_actions_item.png" width="250"/>
 </details>
+
+## Color schemes
+
+You can define your own color schemes that can be used in the editor. The color schemes are defined with JSON files. [Learn more](./color_schemes.md) about how to
+define your own color schemes.
