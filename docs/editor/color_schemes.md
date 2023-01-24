@@ -24,10 +24,26 @@ $HOME/.androidide/ui/editor/schemes
     └── scheme.prop
 ```
 
+### Dark variants
+
+Dark variant of a color scheme can be defined by simply creating another color
+scheme with its id suffixed with `-dark`. For example :
+
+```
+$HOME/.androidide/ui/editor/schemes
+├── default  <-- 'default' color scheme
+|   ├── ...
+|   └── scheme.prop
+|
+└── default-dark  <-- Dark variant of 'default' color scheme
+    ├── ...
+    └── scheme.prop
+```
+
 ## Scheme props
 
 The `scheme.prop` file contains basic information about the color scheme such as the scheme name,
-version, etc. This is the file that is first read by the IDE get
+version, etc. This is the file that is first read by the IDE to get
 information about the color scheme. The supported properties are :
 
 ```properties
