@@ -30,7 +30,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Luiz-Otavio Zorzella <zorzella at gmail dot com> - Improve CamelCase algorithm
- *     Gobor Kovesdan - Contribution for Bug 350000 - [content assist] Include non-prefix matches in auto-complete suggestions
+ *     Gabor Kovesdan - Contribution for Bug 350000 - [content assist] Include non-prefix matches in auto-complete suggestions // Note: UTF-8 charsets Windows ignore and build fails
  *     Stefan Xenos <sxenos@gmail.com> (Google) - Bug 501283 - Lots of hash collisions during indexing
  *******************************************************************************/
 package org.eclipse.jdt.core.compiler;
