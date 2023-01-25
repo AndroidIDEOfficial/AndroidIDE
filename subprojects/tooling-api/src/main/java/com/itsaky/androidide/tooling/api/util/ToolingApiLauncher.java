@@ -78,6 +78,7 @@ import com.itsaky.androidide.tooling.events.work.WorkItemStartEvent;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -102,6 +103,7 @@ public class ToolingApiLauncher {
   }
 
   public static void configureGson(GsonBuilder builder) {
+    builder.registerTypeAdapter(File.class, new FileTypeAdapter());
     builder.registerTypeAdapterFactory(
         RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
             .registerSubtype(AndroidModule.class, AndroidModule.class.getName())
