@@ -467,4 +467,5 @@
   <string name="idepref_general_materialYou">Material You</string>
   <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
   <string name="idepref_general_projectConfig">Project configuration</string>
+  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
 </resources>
