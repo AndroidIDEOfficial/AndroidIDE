@@ -34,16 +34,17 @@ class IncludeView(private val embedded: ViewImpl) :
     tag = "include"
   ) {
 
-  override fun applyAttribute(attribute: IAttribute) {
+  override fun applyAttribute(attribute: IAttribute) =
     // The attributes must be applied to the embedded view
     embedded.applyAttribute(attribute)
-  }
+  
+  override fun onHighlightStateUpdated(highlight: Boolean) =
+    embedded.onHighlightStateUpdated(highlight)
+  
+  override fun removeFromParent() = embedded.removeFromParent()
 
-  override fun printHierarchy(): String {
-    return embedded.printHierarchy()
-  }
+  override fun printHierarchy() = embedded.printHierarchy()
 
-  override fun printHierarchy(builder: StringBuilder, indent: Int) {
-    return embedded.printHierarchy(builder, indent)
-  }
+  override fun printHierarchy(builder: StringBuilder, indent: Int) =
+    embedded.printHierarchy(builder, indent)
 }
