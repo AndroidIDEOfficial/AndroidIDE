@@ -37,29 +37,21 @@ public class FileTypeAdapter extends TypeAdapter<File> {
   
   @Override
   public void write(final JsonWriter out, final File value) throws IOException {
-    out.name("path");
+    if (value == null) {
+      out.nullValue();
+      return;
+    }
+    
     out.value(value.getPath());
   }
   
   @Override
   public File read(final JsonReader in) throws IOException {
-    final var next = in.peek();
-    if (next == JsonToken.NULL) {
-      return null;
-    }
-    in.beginObject();
-    final String name = in.nextName();
-    if (!"path".equals(name)) {
-      throw new JsonParseException("Expected 'path' but was '" + name + "'");
-    }
-    
-    final var path = in.nextString();
-    if (path == null) {
+    if (in.peek() == JsonToken.NULL) {
+      in.nextNull();
       return null;
     }
     
-    in.endObject();
-    
-    return new File(path);
+    return new File(in.nextString());
   }
 }
