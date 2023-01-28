@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.compiler
 
-import com.itsaky.androidide.javac.services.util.JavacTaskUtil
 import com.itsaky.androidide.utils.StopWatch
 import openjdk.source.tree.CompilationUnitTree
 import openjdk.tools.javac.api.JavacTaskImpl

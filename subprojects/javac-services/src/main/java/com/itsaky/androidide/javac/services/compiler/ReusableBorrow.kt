@@ -16,12 +16,14 @@
  */
 package com.itsaky.androidide.javac.services.compiler
 
-import com.itsaky.androidide.javac.services.util.JavacTaskUtil
 import openjdk.tools.javac.api.JavacTaskImpl
 
 /** @author Akash Yadav */
-class ReusableBorrow internal constructor(private val reusableCompiler: ReusableCompiler, @JvmField val task: JavacTaskImpl) :
-  AutoCloseable {
+class ReusableBorrow
+internal constructor(
+  private val reusableCompiler: ReusableCompiler,
+  @JvmField val task: JavacTaskImpl
+) : AutoCloseable {
 
   private var closed = false
 
@@ -32,7 +34,7 @@ class ReusableBorrow internal constructor(private val reusableCompiler: Reusable
     // not returning the context to the pool if task crashes with an exception
     // the task/context may be in a broken state
     reusableCompiler.currentContext!!.clear()
-    JavacTaskUtil.cleanup(task)
+    task.cleanup()
     reusableCompiler.checkedOut = false
     closed = true
   }
