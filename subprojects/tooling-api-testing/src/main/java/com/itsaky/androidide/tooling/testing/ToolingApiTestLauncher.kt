@@ -30,7 +30,8 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.concurrent.*
+import java.util.Collections
+import java.util.concurrent.CompletableFuture
 
 /**
  * Launches the Tooling API server in a separate JVM process.
@@ -43,22 +44,23 @@ import java.util.concurrent.*
  */
 class ToolingApiTestLauncher {
 
+  private val opens =
+    mutableMapOf("java.base" to "java.lang", "java.base" to "java.util", "java.base" to "java.io")
+  
+  private val exports =
+    mutableMapOf(
+      "jdk.compiler" to "com.sun.tools.javac.api",
+      "jdk.compiler" to "com.sun.tools.javac.file",
+      "jdk.compiler" to "com.sun.tools.javac.parser",
+      "jdk.compiler" to "com.sun.tools.javac.tree",
+      "jdk.compiler" to "com.sun.tools.javac.util"
+    )
+
   fun launchServer(
     client: IToolingApiClient = TestClient(),
     implDir: String = "../tooling-api-impl"
   ): Pair<IToolingApiServer, IProject> {
-    val builder =
-      ProcessBuilder(
-        "java",
-        "--add-opens",
-        "java.base/java.lang=ALL-UNNAMED",
-        "--add-opens",
-        "java.base/java.util=ALL-UNNAMED",
-        "--add-opens",
-        "java.base/java.io=ALL-UNNAMED",
-        "-jar",
-        "$implDir/build/libs/tooling-api-all.jar"
-      )
+    val builder = ProcessBuilder(createProcessCmd("$implDir/build/libs/tooling-api-all.jar"))
     val androidHome = findAndroidHome()
     println("ANDROID_HOME=$androidHome")
     builder.environment()["ANDROID_SDK_ROOT"] = androidHome
@@ -71,6 +73,23 @@ class ToolingApiTestLauncher {
     launcher.startListening()
 
     return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
+  }
+
+  private fun createProcessCmd(jar: String): List<String> {
+    val cmd = mutableListOf("java")
+    for (open in opens) {
+      cmd.add("--add-opens=${open.key}/${open.value}=ALL-UNNAMED")
+    }
+
+    for (export in exports) {
+      cmd.add("--add-exports=${export.key}/${export.value}=ALL-UNNAMED")
+    }
+
+    Collections.addAll(cmd, "-jar", jar)
+    
+    println("[ToolingApiTestLauncher] Java cmd: " + cmd.joinToString(separator = " "))
+    
+    return cmd
   }
 
   private fun findAndroidHome(): String {
@@ -116,15 +135,14 @@ class ToolingApiTestLauncher {
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
       CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
   }
-  
-  class MultiVersionTestClient(var version: String = "7.2.0") :
-    ToolingApiTestLauncher.TestClient() {
-    
+
+  class MultiVersionTestClient(var version: String = "7.2.0") : TestClient() {
+
     companion object {
       val buildTemplateFile = File("../../tests/test-project/build.gradle.in")
       val buildFile = File(buildTemplateFile.parentFile, "build.gradle")
     }
-    
+
     override fun prepareBuild() {
       super.prepareBuild()
       var contents = buildTemplateFile.bufferedReader().readText()
