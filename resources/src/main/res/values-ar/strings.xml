@@ -467,4 +467,5 @@
   <string name="idepref_general_materialYou">واجهة Material You</string>
   <string name="idepref_general_materialYou_summary">استمتع بتجربة أقرب إلى جهازك (يتطلب إعادة تشغيل).</string>
   <string name="idepref_general_projectConfig">تهيئة المشروع</string>
+  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
 </resources>
