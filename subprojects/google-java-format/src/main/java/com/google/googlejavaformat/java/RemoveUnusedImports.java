@@ -30,30 +30,30 @@ import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeMap;
 import com.google.common.collect.TreeRangeSet;
 import com.google.googlejavaformat.Newlines;
-import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.ReferenceTree;
-import com.sun.source.tree.CaseTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.DocTreePath;
-import com.sun.source.util.DocTreePathScanner;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.TreeScanner;
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.file.JavacFileManager;
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.ParserFactory;
-import com.sun.tools.javac.tree.DCTree;
-import com.sun.tools.javac.tree.DCTree.DCReference;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
-import com.sun.tools.javac.tree.JCTree.JCIdent;
-import com.sun.tools.javac.tree.JCTree.JCImport;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Options;
+import openjdk.source.doctree.DocCommentTree;
+import openjdk.source.doctree.ReferenceTree;
+import openjdk.source.tree.CaseTree;
+import openjdk.source.tree.IdentifierTree;
+import openjdk.source.tree.ImportTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.DocTreePath;
+import openjdk.source.util.DocTreePathScanner;
+import openjdk.source.util.TreePathScanner;
+import openjdk.source.util.TreeScanner;
+import openjdk.tools.javac.api.JavacTrees;
+import openjdk.tools.javac.file.JavacFileManager;
+import openjdk.tools.javac.parser.JavacParser;
+import openjdk.tools.javac.parser.ParserFactory;
+import openjdk.tools.javac.tree.DCTree;
+import openjdk.tools.javac.tree.DCTree.DCReference;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import openjdk.tools.javac.tree.JCTree.JCFieldAccess;
+import openjdk.tools.javac.tree.JCTree.JCIdent;
+import openjdk.tools.javac.tree.JCTree.JCImport;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Log;
+import openjdk.tools.javac.util.Options;
 
 import java.io.IOError;
 import java.io.IOException;
@@ -303,7 +303,7 @@ public class RemoveUnusedImports {
     // scan javadoc comments, checking for references to imported types
     class DocTreeScanner extends DocTreePathScanner<Void, Void> {
       @Override
-      public Void visitIdentifier(com.sun.source.doctree.IdentifierTree node, Void aVoid) {
+      public Void visitIdentifier(openjdk.source.doctree.IdentifierTree node, Void aVoid) {
         return null;
       }
 

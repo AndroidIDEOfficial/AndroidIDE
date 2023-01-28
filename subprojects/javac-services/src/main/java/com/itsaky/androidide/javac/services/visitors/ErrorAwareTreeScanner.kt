@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.javac.services.visitors
 
-import com.sun.source.tree.ErroneousTree
-import com.sun.source.util.TreeScanner
+import openjdk.source.tree.ErroneousTree
+import openjdk.source.util.TreeScanner
 
 /** @author Akash Yadav */
 open class ErrorAwareTreeScanner<R, P> : TreeScanner<R, P>() {

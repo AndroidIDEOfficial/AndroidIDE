@@ -19,7 +19,7 @@ package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.zipfs2.JarPackageProvider
-import com.sun.tools.javac.file.RelativePath.RelativeDirectory
+import openjdk.tools.javac.file.RelativePath.RelativeDirectory
 import java.nio.file.Path
 
 /**

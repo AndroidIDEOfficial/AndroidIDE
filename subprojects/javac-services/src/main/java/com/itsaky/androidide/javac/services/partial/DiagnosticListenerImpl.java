@@ -19,8 +19,8 @@ package com.itsaky.androidide.javac.services.partial;
 
 import androidx.annotation.Nullable;
 
-import com.sun.tools.javac.api.ClientCodeWrapper;
-import com.sun.tools.javac.util.JCDiagnostic;
+import openjdk.tools.javac.api.ClientCodeWrapper;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.util.ArrayList;
 import java.util.Arrays;

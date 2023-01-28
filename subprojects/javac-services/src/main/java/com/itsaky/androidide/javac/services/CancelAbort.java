@@ -36,7 +36,7 @@
 
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.util.Abort;
+import openjdk.tools.javac.util.Abort;
 
 /**
  * @author Tomas Zezula

@@ -25,10 +25,10 @@ import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.ImportTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.Trees;
 
 import java.nio.file.Path;
 import java.util.Collections;

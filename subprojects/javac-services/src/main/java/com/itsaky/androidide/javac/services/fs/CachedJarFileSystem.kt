@@ -19,7 +19,7 @@ package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.zipfs2.ZipFileSystem
 import com.itsaky.androidide.zipfs2.ZipFileSystemProvider
-import com.sun.tools.javac.file.RelativePath.RelativeDirectory
+import openjdk.tools.javac.file.RelativePath.RelativeDirectory
 import java.io.IOException
 import java.nio.file.Path
 import javax.lang.model.SourceVersion

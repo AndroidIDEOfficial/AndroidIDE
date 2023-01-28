@@ -24,9 +24,9 @@ import com.itsaky.androidide.lsp.java.providers.CompletionProvider
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.util.TreePath
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.util.TreePath
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Objects

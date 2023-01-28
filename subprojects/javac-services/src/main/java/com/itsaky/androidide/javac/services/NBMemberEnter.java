@@ -35,14 +35,14 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.source.util.TreePath;
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.comp.MemberEnter;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.tree.JCTree.JCImport;
-import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
-import com.sun.tools.javac.util.Context;
+import openjdk.source.util.TreePath;
+import openjdk.tools.javac.api.JavacTrees;
+import openjdk.tools.javac.comp.MemberEnter;
+import openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import openjdk.tools.javac.tree.JCTree.JCImport;
+import openjdk.tools.javac.tree.JCTree.JCMethodDecl;
+import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author lahvac

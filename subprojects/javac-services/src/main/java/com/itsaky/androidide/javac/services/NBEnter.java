@@ -35,16 +35,16 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Symbol.TypeSymbol;
-import com.sun.tools.javac.code.Symtab;
-import com.sun.tools.javac.comp.AttrContext;
-import com.sun.tools.javac.comp.Enter;
-import com.sun.tools.javac.comp.Env;
-import com.sun.tools.javac.main.JavaCompiler;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.TreeInfo;
-import com.sun.tools.javac.util.Context;
+import openjdk.tools.javac.code.Symbol.TypeSymbol;
+import openjdk.tools.javac.code.Symtab;
+import openjdk.tools.javac.comp.AttrContext;
+import openjdk.tools.javac.comp.Enter;
+import openjdk.tools.javac.comp.Env;
+import openjdk.tools.javac.main.JavaCompiler;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCClassDecl;
+import openjdk.tools.javac.tree.TreeInfo;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author lahvac

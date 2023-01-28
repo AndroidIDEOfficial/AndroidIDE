@@ -17,12 +17,12 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreeScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreeScanner;
+import openjdk.source.util.Trees;
 
 public class FindMethodDeclarationAt extends TreeScanner<MethodTree, Long> {
 

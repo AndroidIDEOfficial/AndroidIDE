@@ -18,8 +18,8 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.NBJavaCompiler
-import com.sun.tools.javac.main.JavaCompiler
-import com.sun.tools.javac.util.Context
+import openjdk.tools.javac.main.JavaCompiler
+import openjdk.tools.javac.util.Context
 
 /**
  * Reusable JavaCompiler; exposes a method to clean up the component from leftovers associated

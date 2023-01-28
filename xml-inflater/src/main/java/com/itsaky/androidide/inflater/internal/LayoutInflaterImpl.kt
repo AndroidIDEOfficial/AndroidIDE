@@ -281,7 +281,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
       return inflated
     }
 
-    val view = inflated[0] as ViewImpl
+    val view = IncludeView(inflated[0] as ViewImpl)
     addNamespaceDecls(element = element, view = view)
 
     // The inflated <include> view is already attached to parent

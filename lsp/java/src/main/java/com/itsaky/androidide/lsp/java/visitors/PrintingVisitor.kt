@@ -18,9 +18,9 @@
 package com.itsaky.androidide.lsp.java.visitors
 
 import com.itsaky.androidide.utils.ILogger
-import com.sun.tools.javac.tree.JCTree
-import com.sun.tools.javac.tree.JCTree.JCErroneous
-import com.sun.tools.javac.tree.TreeScanner
+import openjdk.tools.javac.tree.JCTree
+import openjdk.tools.javac.tree.JCTree.JCErroneous
+import openjdk.tools.javac.tree.TreeScanner
 
 /**
  * Prints all the trees it visits. For debugging/testing purposes only.

@@ -21,13 +21,13 @@ import androidx.core.util.Pair
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.utils.ILogger
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.tree.LineMap
-import com.sun.source.tree.MethodTree
-import com.sun.source.util.TreePath
-import com.sun.source.util.TreePathScanner
-import com.sun.source.util.Trees
-import com.sun.tools.javac.api.JavacTaskImpl
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.tree.LineMap
+import openjdk.source.tree.MethodTree
+import openjdk.source.util.TreePath
+import openjdk.source.util.TreePathScanner
+import openjdk.source.util.Trees
+import openjdk.tools.javac.api.JavacTaskImpl
 
 /**
  * Visits all methods and adds them to the given list of pair of method range and its tree.

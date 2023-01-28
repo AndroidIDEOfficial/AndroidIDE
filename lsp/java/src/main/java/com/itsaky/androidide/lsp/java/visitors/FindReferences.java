@@ -17,14 +17,14 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberReferenceTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.NewClassTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.IdentifierTree;
+import openjdk.source.tree.MemberReferenceTree;
+import openjdk.source.tree.MemberSelectTree;
+import openjdk.source.tree.NewClassTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.TreePathScanner;
+import openjdk.source.util.Trees;
 
 import java.util.List;
 

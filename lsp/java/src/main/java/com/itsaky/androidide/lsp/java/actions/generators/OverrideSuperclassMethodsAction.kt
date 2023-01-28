@@ -39,8 +39,8 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
-import com.sun.source.tree.MethodTree
-import com.sun.source.util.Trees
+import openjdk.source.tree.MethodTree
+import openjdk.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.Arrays
 import java.util.Optional

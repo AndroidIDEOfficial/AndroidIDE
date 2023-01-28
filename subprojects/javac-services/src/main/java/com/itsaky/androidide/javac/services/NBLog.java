@@ -35,10 +35,10 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic;
-import com.sun.tools.javac.util.Log;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.JCDiagnostic;
+import openjdk.tools.javac.util.Log;
 
 import java.io.PrintWriter;
 import java.net.URI;

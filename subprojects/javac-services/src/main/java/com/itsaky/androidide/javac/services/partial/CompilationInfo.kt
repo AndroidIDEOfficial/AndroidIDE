@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.javac.services.partial
 
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.tools.javac.api.JavacTaskImpl
-import com.sun.tools.javac.api.JavacTrees
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.tools.javac.api.JavacTaskImpl
+import openjdk.tools.javac.api.JavacTrees
 import javax.tools.DiagnosticListener
 import javax.tools.JavaFileObject
 

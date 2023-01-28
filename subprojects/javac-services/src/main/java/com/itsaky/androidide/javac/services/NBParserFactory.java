@@ -35,24 +35,24 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.Lexer;
-import com.sun.tools.javac.parser.ParserFactory;
-import com.sun.tools.javac.parser.ScannerFactory;
-import com.sun.tools.javac.parser.Tokens.Comment;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.JCTree.JCEnhancedForLoop;
-import com.sun.tools.javac.tree.JCTree.JCExpression;
-import com.sun.tools.javac.tree.JCTree.JCModifiers;
-import com.sun.tools.javac.tree.JCTree.JCStatement;
-import com.sun.tools.javac.tree.JCTree.JCTypeParameter;
-import com.sun.tools.javac.tree.TreeInfo;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Name;
-import com.sun.tools.javac.util.Names;
-import com.sun.tools.javac.util.Position;
+import openjdk.tools.javac.parser.JavacParser;
+import openjdk.tools.javac.parser.Lexer;
+import openjdk.tools.javac.parser.ParserFactory;
+import openjdk.tools.javac.parser.ScannerFactory;
+import openjdk.tools.javac.parser.Tokens.Comment;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCClassDecl;
+import openjdk.tools.javac.tree.JCTree.JCEnhancedForLoop;
+import openjdk.tools.javac.tree.JCTree.JCExpression;
+import openjdk.tools.javac.tree.JCTree.JCModifiers;
+import openjdk.tools.javac.tree.JCTree.JCStatement;
+import openjdk.tools.javac.tree.JCTree.JCTypeParameter;
+import openjdk.tools.javac.tree.TreeInfo;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.List;
+import openjdk.tools.javac.util.Name;
+import openjdk.tools.javac.util.Names;
+import openjdk.tools.javac.util.Position;
 
 /**
  * @author lahvac

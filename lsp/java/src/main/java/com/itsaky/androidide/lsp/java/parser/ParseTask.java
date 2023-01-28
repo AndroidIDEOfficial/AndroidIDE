@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.parser;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.JavacTask;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.JavacTask;
 
 public class ParseTask {
   public final JavacTask task;

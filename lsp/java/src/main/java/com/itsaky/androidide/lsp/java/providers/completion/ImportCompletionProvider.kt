@@ -30,11 +30,11 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.ClassTrie.Node
-import com.sun.source.util.TreePath
-import com.sun.tools.javac.api.JavacTrees
-import com.sun.tools.javac.code.Symbol.MethodSymbol
-import com.sun.tools.javac.model.JavacTypes
-import com.sun.tools.javac.tree.JCTree.JCImport
+import openjdk.source.util.TreePath
+import openjdk.tools.javac.api.JavacTrees
+import openjdk.tools.javac.code.Symbol.MethodSymbol
+import openjdk.tools.javac.model.JavacTypes
+import openjdk.tools.javac.tree.JCTree.JCImport
 import java.nio.file.Path
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind

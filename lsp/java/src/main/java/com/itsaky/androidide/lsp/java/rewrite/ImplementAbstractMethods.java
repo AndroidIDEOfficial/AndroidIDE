@@ -33,12 +33,12 @@ import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.squareup.javapoet.MethodSpec;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.Trees;
-import com.sun.tools.javac.util.JCDiagnostic;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.ImportTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.Trees;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

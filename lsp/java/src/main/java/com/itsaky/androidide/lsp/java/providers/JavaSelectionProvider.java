@@ -24,7 +24,7 @@ import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.visitors.FindBiggerRange;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.models.Range;
-import com.sun.source.tree.CompilationUnitTree;
+import openjdk.source.tree.CompilationUnitTree;
 
 /**
  * Selection provider implementation for Java.

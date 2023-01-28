@@ -30,9 +30,9 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashInfo
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.Tree.Kind.VARIABLE
-import com.sun.source.tree.VariableTree
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.Tree.Kind.VARIABLE
+import openjdk.source.tree.VariableTree
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture

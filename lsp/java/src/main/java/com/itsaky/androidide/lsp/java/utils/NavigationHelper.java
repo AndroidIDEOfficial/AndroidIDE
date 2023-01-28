@@ -36,9 +36,9 @@ package com.itsaky.androidide.lsp.java.utils;
 
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.visitors.FindNameAt;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.Trees;
 
 import java.nio.file.Path;
 

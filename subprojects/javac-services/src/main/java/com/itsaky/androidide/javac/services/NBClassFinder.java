@@ -35,19 +35,19 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.ClassFinder;
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Kinds.Kind;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.Completer;
-import com.sun.tools.javac.code.Symbol.CompletionFailure;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic;
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticInfo;
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType;
-import com.sun.tools.javac.util.JCDiagnostic.SimpleDiagnosticPosition;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Names;
+import openjdk.tools.javac.code.ClassFinder;
+import openjdk.tools.javac.code.Flags;
+import openjdk.tools.javac.code.Kinds.Kind;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.code.Symbol.Completer;
+import openjdk.tools.javac.code.Symbol.CompletionFailure;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.JCDiagnostic;
+import openjdk.tools.javac.util.JCDiagnostic.DiagnosticInfo;
+import openjdk.tools.javac.util.JCDiagnostic.DiagnosticType;
+import openjdk.tools.javac.util.JCDiagnostic.SimpleDiagnosticPosition;
+import openjdk.tools.javac.util.Log;
+import openjdk.tools.javac.util.Names;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -85,7 +85,7 @@ public class NBClassFinder extends ClassFinder {
   public Completer getCompleter() {
     if (completer == null) {
       try {
-        Class.forName("com.sun.tools.javac.model.LazyTreeLoader");
+        Class.forName("openjdk.tools.javac.model.LazyTreeLoader");
         // patched nb-javac, handles missing java.lang itself:
         completer = super.getCompleter();
       } catch (ClassNotFoundException e) {
@@ -99,7 +99,7 @@ public class NBClassFinder extends ClassFinder {
                 sym.flags_field |= Flags.EXISTS;
                 try {
                   Class<?> dcfhClass =
-                      Class.forName("com.sun.tools.javac.code.DeferredCompletionFailureHandler");
+                      Class.forName("openjdk.tools.javac.code.DeferredCompletionFailureHandler");
                   Constructor<CompletionFailure> constr =
                       CompletionFailure.class.getDeclaredConstructor(
                           Symbol.class, Supplier.class, dcfhClass);

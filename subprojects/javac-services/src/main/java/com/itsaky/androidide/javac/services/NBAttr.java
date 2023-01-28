@@ -35,20 +35,20 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Type;
-import com.sun.tools.javac.comp.Attr;
-import com.sun.tools.javac.comp.AttrContext;
-import com.sun.tools.javac.comp.Env;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCBlock;
-import com.sun.tools.javac.tree.JCTree.JCCatch;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.JCTree.JCExpression;
-import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
+import openjdk.tools.javac.code.Type;
+import openjdk.tools.javac.comp.Attr;
+import openjdk.tools.javac.comp.AttrContext;
+import openjdk.tools.javac.comp.Env;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCBlock;
+import openjdk.tools.javac.tree.JCTree.JCCatch;
+import openjdk.tools.javac.tree.JCTree.JCClassDecl;
+import openjdk.tools.javac.tree.JCTree.JCExpression;
+import openjdk.tools.javac.tree.JCTree.JCMethodDecl;
+import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
+import openjdk.tools.javac.tree.TreeMaker;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.List;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;

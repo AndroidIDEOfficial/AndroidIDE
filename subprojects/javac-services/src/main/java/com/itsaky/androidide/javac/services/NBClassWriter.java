@@ -35,9 +35,9 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.jvm.ClassWriter;
-import com.sun.tools.javac.util.Context;
+import openjdk.tools.javac.code.Types;
+import openjdk.tools.javac.jvm.ClassWriter;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author lahvac

@@ -7,7 +7,7 @@
 -keep class javax.** { *; }
 
 # keep javac classes
--keep class com.sun.** { *; }
+-keep class openjdk.** { *; }
 
 # Android builder model interfaces
 -keep class com.android.** { *; }

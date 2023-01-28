@@ -25,7 +25,7 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.utils.DocumentUtils.isSameFile
-import com.sun.source.util.Trees
+import openjdk.source.util.Trees
 import java.nio.file.Path
 import java.nio.file.Paths
 import javax.lang.model.element.Element

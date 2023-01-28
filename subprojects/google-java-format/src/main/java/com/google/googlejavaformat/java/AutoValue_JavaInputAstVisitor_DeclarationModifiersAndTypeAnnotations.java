@@ -1,7 +1,7 @@
 package com.google.googlejavaformat.java;
 
 import com.google.common.collect.ImmutableList;
-import com.sun.source.tree.AnnotationTree;
+import openjdk.source.tree.AnnotationTree;
 
 import javax.annotation.processing.Generated;
 

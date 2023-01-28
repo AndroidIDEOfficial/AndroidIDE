@@ -17,10 +17,10 @@
 package com.itsaky.androidide.javac.services.visitors
 
 import com.blankj.utilcode.util.ReflectUtils
-import com.sun.tools.javac.code.Symbol.ModuleSymbol
-import com.sun.tools.javac.comp.Enter
-import com.sun.tools.javac.tree.JCTree.JCClassDecl
-import com.sun.tools.javac.tree.TreeScanner
+import openjdk.tools.javac.code.Symbol.ModuleSymbol
+import openjdk.tools.javac.comp.Enter
+import openjdk.tools.javac.tree.JCTree.JCClassDecl
+import openjdk.tools.javac.tree.TreeScanner
 
 /**
  * `Enter.unenter` method is not available in JDK 11. This visitor does the same thing as calling

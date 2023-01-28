@@ -35,16 +35,16 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.TreePath;
-import com.sun.tools.javac.api.JavacTrees;
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
-import com.sun.tools.javac.tree.TreeInfo;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.TreePath;
+import openjdk.tools.javac.api.JavacTrees;
+import openjdk.tools.javac.code.Flags;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
+import openjdk.tools.javac.tree.TreeInfo;
+import openjdk.tools.javac.tree.TreeMaker;
+import openjdk.tools.javac.util.Context;
 
 import java.util.HashMap;
 import java.util.Map;

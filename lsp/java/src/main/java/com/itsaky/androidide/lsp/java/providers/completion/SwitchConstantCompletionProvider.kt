@@ -23,9 +23,9 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.sun.source.tree.SwitchTree
-import com.sun.source.util.TreePath
-import com.sun.source.util.Trees
+import openjdk.source.tree.SwitchTree
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
 import java.nio.file.Path
 import javax.lang.model.element.ElementKind.ENUM
 import javax.lang.model.element.ElementKind.ENUM_CONSTANT

@@ -19,8 +19,8 @@ package com.itsaky.androidide.lsp.java.utils;
 
 import com.itsaky.androidide.lsp.models.MarkupContent;
 import com.itsaky.androidide.lsp.models.MarkupKind;
-import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.DocTree;
+import openjdk.source.doctree.DocCommentTree;
+import openjdk.source.doctree.DocTree;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

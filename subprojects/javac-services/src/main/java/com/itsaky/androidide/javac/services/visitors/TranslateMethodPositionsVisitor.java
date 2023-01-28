@@ -17,13 +17,13 @@
 
 package com.itsaky.androidide.javac.services.visitors;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.tools.javac.tree.EndPosTable;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.tools.javac.tree.EndPosTable;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.JCTree.JCVariableDecl;
 
 /** Helper visitor for partial reparse. Updates tree positions by the given delta. */
 public class TranslateMethodPositionsVisitor extends ErrorAwareTreeScanner<Void, Void> {

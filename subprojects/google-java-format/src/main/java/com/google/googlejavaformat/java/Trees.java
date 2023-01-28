@@ -14,18 +14,18 @@
 
 package com.google.googlejavaformat.java;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompoundAssignmentTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodInvocationTree;
-import com.sun.source.tree.ParenthesizedTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.TreePath;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.Pretty;
-import com.sun.tools.javac.tree.TreeInfo;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompoundAssignmentTree;
+import openjdk.source.tree.ExpressionTree;
+import openjdk.source.tree.IdentifierTree;
+import openjdk.source.tree.MemberSelectTree;
+import openjdk.source.tree.MethodInvocationTree;
+import openjdk.source.tree.ParenthesizedTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.TreePath;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.tree.Pretty;
+import openjdk.tools.javac.tree.TreeInfo;
 
 import java.io.IOError;
 import java.io.IOException;

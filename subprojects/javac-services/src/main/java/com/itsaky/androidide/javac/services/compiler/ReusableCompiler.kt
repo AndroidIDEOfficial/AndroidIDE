@@ -18,8 +18,8 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.CancelService
-import com.sun.tools.javac.api.JavacTaskImpl
-import com.sun.tools.javac.api.JavacTool
+import openjdk.tools.javac.api.JavacTaskImpl
+import openjdk.tools.javac.api.JavacTool
 import javax.tools.DiagnosticListener
 import javax.tools.JavaFileManager
 import javax.tools.JavaFileObject

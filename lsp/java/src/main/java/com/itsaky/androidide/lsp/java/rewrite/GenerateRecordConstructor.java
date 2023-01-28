@@ -27,12 +27,12 @@ import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.Trees;
 
 import java.io.IOException;
 import java.nio.file.Path;

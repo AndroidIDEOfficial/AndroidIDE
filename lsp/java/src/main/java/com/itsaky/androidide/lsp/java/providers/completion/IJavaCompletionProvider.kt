@@ -43,8 +43,8 @@ import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
-import com.sun.source.tree.Tree
-import com.sun.source.util.TreePath
+import openjdk.source.tree.Tree
+import openjdk.source.util.TreePath
 import java.nio.file.Path
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.ANNOTATION_TYPE

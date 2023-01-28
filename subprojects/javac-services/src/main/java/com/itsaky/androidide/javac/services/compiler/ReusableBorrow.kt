@@ -17,7 +17,7 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.util.JavacTaskUtil
-import com.sun.tools.javac.api.JavacTaskImpl
+import openjdk.tools.javac.api.JavacTaskImpl
 
 /** @author Akash Yadav */
 class ReusableBorrow internal constructor(private val reusableCompiler: ReusableCompiler, @JvmField val task: JavacTaskImpl) :

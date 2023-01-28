@@ -17,10 +17,10 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.NBLog
-import com.sun.tools.javac.util.Context
-import com.sun.tools.javac.util.DefinedBy
-import com.sun.tools.javac.util.DefinedBy.Api.COMPILER
-import com.sun.tools.javac.util.Log
+import openjdk.tools.javac.util.Context
+import openjdk.tools.javac.util.DefinedBy
+import openjdk.tools.javac.util.DefinedBy.Api.COMPILER
+import openjdk.tools.javac.util.Log
 import java.io.PrintWriter
 import javax.tools.Diagnostic
 import javax.tools.DiagnosticListener

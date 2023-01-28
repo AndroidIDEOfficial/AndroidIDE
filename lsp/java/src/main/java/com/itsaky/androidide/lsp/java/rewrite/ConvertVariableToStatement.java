@@ -25,12 +25,12 @@ import com.itsaky.androidide.lsp.java.visitors.FindVariableAtCursor;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.ExpressionTree;
+import openjdk.source.tree.LineMap;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.Trees;
 
 import java.nio.file.Path;
 import java.util.Collections;

@@ -35,12 +35,12 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Symtab;
-import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Names;
+import openjdk.tools.javac.code.Symtab;
+import openjdk.tools.javac.code.Types;
+import openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import openjdk.tools.javac.tree.TreeMaker;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Names;
 
 /**
  * @author lahvac

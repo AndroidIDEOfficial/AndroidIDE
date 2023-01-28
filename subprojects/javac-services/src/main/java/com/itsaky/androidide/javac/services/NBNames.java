@@ -35,9 +35,9 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Name;
-import com.sun.tools.javac.util.Names;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Name;
+import openjdk.tools.javac.util.Names;
 
 /**
  * @author lahvac

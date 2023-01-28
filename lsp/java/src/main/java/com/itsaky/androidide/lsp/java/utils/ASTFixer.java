@@ -22,12 +22,12 @@ import androidx.annotation.NonNull;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
-import com.sun.source.tree.LineMap;
-import com.sun.tools.javac.parser.Scanner;
-import com.sun.tools.javac.parser.ScannerFactory;
-import com.sun.tools.javac.parser.Tokens;
-import com.sun.tools.javac.parser.Tokens.TokenKind;
-import com.sun.tools.javac.util.Context;
+import openjdk.source.tree.LineMap;
+import openjdk.tools.javac.parser.Scanner;
+import openjdk.tools.javac.parser.ScannerFactory;
+import openjdk.tools.javac.parser.Tokens;
+import openjdk.tools.javac.parser.Tokens.TokenKind;
+import openjdk.tools.javac.util.Context;
 
 import org.jetbrains.annotations.Contract;
 

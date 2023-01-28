@@ -23,15 +23,15 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.TryTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreeScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.LineMap;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.TryTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreeScanner;
+import openjdk.source.util.Trees;
 
 /**
  * @author Akash Yadav

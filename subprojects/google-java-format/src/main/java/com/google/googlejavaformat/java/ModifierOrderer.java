@@ -23,7 +23,7 @@ import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeMap;
 import com.google.googlejavaformat.Input.Tok;
 import com.google.googlejavaformat.Input.Token;
-import com.sun.tools.javac.parser.Tokens.TokenKind;
+import openjdk.tools.javac.parser.Tokens.TokenKind;
 
 import java.util.ArrayList;
 import java.util.Collection;

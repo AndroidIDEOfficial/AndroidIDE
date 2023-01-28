@@ -28,8 +28,8 @@ import com.itsaky.androidide.lsp.java.visitors.FindReferences;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.models.Location;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.TreePath;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreePath;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

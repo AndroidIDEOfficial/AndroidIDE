@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.lsp.java.visitors;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.TreeScanner;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreeScanner;
 
 import java.util.ArrayList;
 import java.util.List;

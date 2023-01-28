@@ -38,12 +38,12 @@ import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.TreePath;
-import com.sun.tools.javac.api.ClientCodeWrapper;
-import com.sun.tools.javac.api.JavacTaskImpl;
-import com.sun.tools.javac.code.Kinds;
-import com.sun.tools.javac.util.JCDiagnostic;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreePath;
+import openjdk.tools.javac.api.ClientCodeWrapper;
+import openjdk.tools.javac.api.JavacTaskImpl;
+import openjdk.tools.javac.code.Kinds;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.io.File;
 import java.nio.file.Path;

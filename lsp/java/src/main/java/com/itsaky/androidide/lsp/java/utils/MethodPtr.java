@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.squareup.javapoet.ImportCollectingCodeWriter;
 import com.squareup.javapoet.TypeName;
-import com.sun.source.util.JavacTask;
+import openjdk.source.util.JavacTask;
 
 import java.io.IOException;
 import java.util.Arrays;

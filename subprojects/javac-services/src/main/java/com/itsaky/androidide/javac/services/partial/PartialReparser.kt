@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.javac.services.partial
 
-import com.sun.source.util.TreePath
+import openjdk.source.util.TreePath
 
 /**
  * A parser reparser parses part of code.

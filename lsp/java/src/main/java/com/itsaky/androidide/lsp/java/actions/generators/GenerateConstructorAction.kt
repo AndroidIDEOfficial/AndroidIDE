@@ -34,16 +34,16 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.VariableTree
-import com.sun.source.util.TreePath
-import com.sun.tools.javac.api.JavacTrees
-import com.sun.tools.javac.code.Symbol.ClassSymbol
-import com.sun.tools.javac.code.Symbol.VarSymbol
-import com.sun.tools.javac.code.Type
-import com.sun.tools.javac.tree.JCTree
-import com.sun.tools.javac.tree.TreeInfo
-import com.sun.tools.javac.util.ListBuffer
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.VariableTree
+import openjdk.source.util.TreePath
+import openjdk.tools.javac.api.JavacTrees
+import openjdk.tools.javac.code.Symbol.ClassSymbol
+import openjdk.tools.javac.code.Symbol.VarSymbol
+import openjdk.tools.javac.code.Type
+import openjdk.tools.javac.tree.JCTree
+import openjdk.tools.javac.tree.TreeInfo
+import openjdk.tools.javac.util.ListBuffer
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.CompletableFuture
 
@@ -152,7 +152,7 @@ class GenerateConstructorAction : FieldBasedAction() {
     return constructor
   }
 
-  private fun mapTypes(paths: List<TreePath>): com.sun.tools.javac.util.List<Type> {
+  private fun mapTypes(paths: List<TreePath>): openjdk.tools.javac.util.List<Type> {
     val buffer = ListBuffer<Type>()
     for (path in paths) {
       val leaf = path.leaf

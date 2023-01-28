@@ -21,8 +21,8 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.VMUtils;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.tools.javac.api.JavacTaskImpl;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.tools.javac.api.JavacTaskImpl;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

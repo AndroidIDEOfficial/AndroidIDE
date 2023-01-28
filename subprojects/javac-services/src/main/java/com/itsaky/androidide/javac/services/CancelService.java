@@ -36,7 +36,7 @@
 
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.util.Context;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author Tomas Zezula

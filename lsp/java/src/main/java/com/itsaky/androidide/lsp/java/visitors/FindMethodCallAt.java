@@ -18,17 +18,17 @@
 package com.itsaky.androidide.lsp.java.visitors;
 
 import com.itsaky.androidide.utils.ILogger;
-import com.sun.source.tree.AssignmentTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodInvocationTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.AssignmentTree;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.MemberSelectTree;
+import openjdk.source.tree.MethodInvocationTree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.TreePathScanner;
+import openjdk.source.util.Trees;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.NestingKind;

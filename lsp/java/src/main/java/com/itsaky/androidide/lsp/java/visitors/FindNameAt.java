@@ -19,20 +19,20 @@ package com.itsaky.androidide.lsp.java.visitors;
 
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberReferenceTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.NewClassTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.IdentifierTree;
+import openjdk.source.tree.MemberReferenceTree;
+import openjdk.source.tree.MemberSelectTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.NewClassTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.TreePathScanner;
+import openjdk.source.util.Trees;
 
 import javax.lang.model.element.Name;
 

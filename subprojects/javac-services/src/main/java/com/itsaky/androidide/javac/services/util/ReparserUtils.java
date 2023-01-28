@@ -22,13 +22,13 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.javac.services.visitors.UnEnter;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.VMUtils;
-import com.sun.tools.javac.comp.Enter;
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.LazyDocCommentTable;
-import com.sun.tools.javac.tree.DocCommentTable;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Position;
+import openjdk.tools.javac.comp.Enter;
+import openjdk.tools.javac.parser.JavacParser;
+import openjdk.tools.javac.parser.LazyDocCommentTable;
+import openjdk.tools.javac.tree.DocCommentTable;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Position;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -155,7 +155,7 @@ public class ReparserUtils {
     if (lineMapBuild == null) {
       lineMapBuild =
           tryReflectMethod(
-              "com.sun.tools.javac.util.Position$LineMapImpl", "build", char[].class, int.class);
+              "openjdk.tools.javac.util.Position$LineMapImpl", "build", char[].class, int.class);
     }
 
     if (lazyDocCommentsTable == null) {

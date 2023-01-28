@@ -79,25 +79,25 @@ import com.github.javaparser.printer.configuration.PrinterConfiguration
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.lsp.java.visitors.PrettyPrintingVisitor
 import com.itsaky.androidide.utils.ILogger
-import com.sun.source.tree.AnnotationTree
-import com.sun.source.tree.AssignmentTree
-import com.sun.source.tree.BlockTree
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.tree.ErroneousTree
-import com.sun.source.tree.ExpressionStatementTree
-import com.sun.source.tree.ExpressionTree
-import com.sun.source.tree.IdentifierTree
-import com.sun.source.tree.ImportTree
-import com.sun.source.tree.LiteralTree
-import com.sun.source.tree.MemberSelectTree
-import com.sun.source.tree.MethodInvocationTree
-import com.sun.source.tree.MethodTree
-import com.sun.source.tree.PackageTree
-import com.sun.source.tree.StatementTree
-import com.sun.source.tree.Tree
-import com.sun.source.tree.TypeParameterTree
-import com.sun.source.tree.VariableTree
+import openjdk.source.tree.AnnotationTree
+import openjdk.source.tree.AssignmentTree
+import openjdk.source.tree.BlockTree
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.tree.ErroneousTree
+import openjdk.source.tree.ExpressionStatementTree
+import openjdk.source.tree.ExpressionTree
+import openjdk.source.tree.IdentifierTree
+import openjdk.source.tree.ImportTree
+import openjdk.source.tree.LiteralTree
+import openjdk.source.tree.MemberSelectTree
+import openjdk.source.tree.MethodInvocationTree
+import openjdk.source.tree.MethodTree
+import openjdk.source.tree.PackageTree
+import openjdk.source.tree.StatementTree
+import openjdk.source.tree.Tree
+import openjdk.source.tree.TypeParameterTree
+import openjdk.source.tree.VariableTree
 import java.util.*
 import java.util.function.*
 import java.util.stream.*
@@ -670,7 +670,7 @@ object JavaParserUtils {
     val parameter = Parameter()
     parameter.setType(EditHelper.printType(type))
     if (parameter.type.isArrayType) {
-      if ((type as com.sun.tools.javac.code.Type.ArrayType?)!!.isVarargs) {
+      if ((type as openjdk.tools.javac.code.Type.ArrayType?)!!.isVarargs) {
         parameter.type = parameter.type.asArrayType().componentType
         parameter.isVarArgs = true
       }

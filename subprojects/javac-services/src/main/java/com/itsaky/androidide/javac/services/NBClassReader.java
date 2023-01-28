@@ -35,21 +35,21 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import static com.sun.tools.javac.jvm.ClassFile.Version.V45_3;
+import static openjdk.tools.javac.jvm.ClassFile.Version.V45_3;
 
 import android.text.TextUtils;
 
 import com.itsaky.androidide.utils.ILogger;
-import com.sun.tools.javac.code.ClassFinder.BadClassFile;
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
-import com.sun.tools.javac.jvm.ClassFile;
-import com.sun.tools.javac.jvm.ClassFile.Version;
-import com.sun.tools.javac.jvm.ClassReader;
-import com.sun.tools.javac.resources.CompilerProperties.Warnings;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.util.Name;
+import openjdk.tools.javac.code.ClassFinder.BadClassFile;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.code.Symbol.ClassSymbol;
+import openjdk.tools.javac.jvm.ClassFile;
+import openjdk.tools.javac.jvm.ClassFile.Version;
+import openjdk.tools.javac.jvm.ClassReader;
+import openjdk.tools.javac.resources.CompilerProperties.Warnings;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.Log;
+import openjdk.tools.javac.util.Name;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

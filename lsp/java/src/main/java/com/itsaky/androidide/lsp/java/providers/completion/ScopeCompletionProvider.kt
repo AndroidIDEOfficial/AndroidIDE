@@ -38,11 +38,11 @@ import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
 import com.squareup.javapoet.MethodSpec.Builder
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.MethodTree
-import com.sun.source.tree.Tree.Kind.CLASS
-import com.sun.source.util.TreePath
-import com.sun.source.util.Trees
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.MethodTree
+import openjdk.source.tree.Tree.Kind.CLASS
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
 import java.nio.file.Path
 import java.util.*
 import java.util.function.*
@@ -56,7 +56,7 @@ import javax.lang.model.type.DeclaredType
 import javax.tools.JavaFileObject
 
 /**
- * Provides completions using [com.sun.source.tree.Scope].
+ * Provides completions using [openjdk.source.tree.Scope].
  *
  * @author Akash Yadav
  */

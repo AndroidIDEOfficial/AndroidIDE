@@ -20,8 +20,8 @@ package com.itsaky.androidide.lsp.java.compiler;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.tools.javac.api.JavacTaskImpl;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.tools.javac.api.JavacTaskImpl;
 
 import java.nio.file.Path;
 import java.util.List;

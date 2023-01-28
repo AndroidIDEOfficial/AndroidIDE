@@ -19,13 +19,13 @@ package com.itsaky.androidide.lsp.java.visitors;
 
 import androidx.annotation.NonNull;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.VariableTree;
+import openjdk.source.util.JavacTask;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.TreePathScanner;
+import openjdk.source.util.Trees;
 
 import java.util.ArrayList;
 import java.util.List;

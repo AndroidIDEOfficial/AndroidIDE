@@ -22,38 +22,38 @@ import com.itsaky.androidide.javac.services.util.ReparserUtils
 import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor
 import com.itsaky.androidide.javac.services.visitors.TranslateMethodPositionsVisitor
 import com.itsaky.androidide.utils.ILogger
-import com.sun.source.tree.BlockTree
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.tree.Tree.Kind.BLOCK
-import com.sun.source.tree.Tree.Kind.METHOD
-import com.sun.source.util.TreePath
-import com.sun.tools.javac.api.JavacScope
-import com.sun.tools.javac.api.JavacTrees
-import com.sun.tools.javac.code.Flags
-import com.sun.tools.javac.code.Symbol
-import com.sun.tools.javac.code.Symtab
-import com.sun.tools.javac.comp.Attr
-import com.sun.tools.javac.comp.AttrContext
-import com.sun.tools.javac.comp.Enter
-import com.sun.tools.javac.comp.Env
-import com.sun.tools.javac.comp.Flow
-import com.sun.tools.javac.parser.JavacParser
-import com.sun.tools.javac.parser.LazyDocCommentTable.Entry
-import com.sun.tools.javac.parser.ScannerFactory
-import com.sun.tools.javac.tree.DocCommentTable
-import com.sun.tools.javac.tree.EndPosTable
-import com.sun.tools.javac.tree.JCTree
-import com.sun.tools.javac.tree.JCTree.JCBlock
-import com.sun.tools.javac.tree.JCTree.JCClassDecl
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit
-import com.sun.tools.javac.tree.JCTree.JCMethodDecl
-import com.sun.tools.javac.tree.TreeInfo
-import com.sun.tools.javac.tree.TreeMaker
-import com.sun.tools.javac.util.Context
-import com.sun.tools.javac.util.List
-import com.sun.tools.javac.util.Log
-import com.sun.tools.javac.util.Names
+import openjdk.source.tree.BlockTree
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.tree.Tree.Kind.BLOCK
+import openjdk.source.tree.Tree.Kind.METHOD
+import openjdk.source.util.TreePath
+import openjdk.tools.javac.api.JavacScope
+import openjdk.tools.javac.api.JavacTrees
+import openjdk.tools.javac.code.Flags
+import openjdk.tools.javac.code.Symbol
+import openjdk.tools.javac.code.Symtab
+import openjdk.tools.javac.comp.Attr
+import openjdk.tools.javac.comp.AttrContext
+import openjdk.tools.javac.comp.Enter
+import openjdk.tools.javac.comp.Env
+import openjdk.tools.javac.comp.Flow
+import openjdk.tools.javac.parser.JavacParser
+import openjdk.tools.javac.parser.LazyDocCommentTable.Entry
+import openjdk.tools.javac.parser.ScannerFactory
+import openjdk.tools.javac.tree.DocCommentTable
+import openjdk.tools.javac.tree.EndPosTable
+import openjdk.tools.javac.tree.JCTree
+import openjdk.tools.javac.tree.JCTree.JCBlock
+import openjdk.tools.javac.tree.JCTree.JCClassDecl
+import openjdk.tools.javac.tree.JCTree.JCCompilationUnit
+import openjdk.tools.javac.tree.JCTree.JCMethodDecl
+import openjdk.tools.javac.tree.TreeInfo
+import openjdk.tools.javac.tree.TreeMaker
+import openjdk.tools.javac.util.Context
+import openjdk.tools.javac.util.List
+import openjdk.tools.javac.util.Log
+import openjdk.tools.javac.util.Names
 import java.nio.CharBuffer
 import java.util.*
 
@@ -330,7 +330,7 @@ class PartialReparserImpl : PartialReparser {
         // generated one.
         log.error(
           tree.body.stats.head.pos(),
-          com.sun.tools.javac.util.JCDiagnostic.Error(
+          openjdk.tools.javac.util.JCDiagnostic.Error(
             "compiler",
             "call.to.super.not.allowed.in.enum.ctor",
             env.enclClass.sym

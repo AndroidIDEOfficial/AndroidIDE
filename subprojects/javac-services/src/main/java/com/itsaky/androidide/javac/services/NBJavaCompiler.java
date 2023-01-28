@@ -35,13 +35,13 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.comp.AttrContext;
-import com.sun.tools.javac.comp.Env;
-import com.sun.tools.javac.main.JavaCompiler;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Pair;
+import openjdk.tools.javac.comp.AttrContext;
+import openjdk.tools.javac.comp.Env;
+import openjdk.tools.javac.main.JavaCompiler;
+import openjdk.tools.javac.tree.JCTree;
+import openjdk.tools.javac.util.Context;
+import openjdk.tools.javac.util.List;
+import openjdk.tools.javac.util.Pair;
 
 import java.util.Collection;
 import java.util.Collections;

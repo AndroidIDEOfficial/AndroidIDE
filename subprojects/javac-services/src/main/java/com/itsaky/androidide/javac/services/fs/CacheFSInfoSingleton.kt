@@ -18,7 +18,7 @@
 package com.itsaky.androidide.javac.services.fs
 
 import com.itsaky.androidide.utils.VMUtils
-import com.sun.tools.javac.file.CacheFSInfo
+import openjdk.tools.javac.file.CacheFSInfo
 import java.nio.file.Path
 
 /**

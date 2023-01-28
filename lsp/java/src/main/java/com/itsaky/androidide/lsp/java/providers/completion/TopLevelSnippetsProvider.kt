@@ -29,8 +29,8 @@ import com.itsaky.androidide.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
 import com.itsaky.androidide.lsp.models.SnippetDescription
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.ProjectManager
-import com.sun.source.tree.CompilationUnitTree
-import com.sun.source.tree.Tree.Kind.ERRONEOUS
+import openjdk.source.tree.CompilationUnitTree
+import openjdk.source.tree.Tree.Kind.ERRONEOUS
 import java.nio.file.Path
 import java.nio.file.Paths
 

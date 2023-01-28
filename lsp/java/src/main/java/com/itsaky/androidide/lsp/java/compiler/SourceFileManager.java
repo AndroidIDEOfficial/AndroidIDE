@@ -33,9 +33,9 @@ import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
-import com.sun.tools.javac.api.JavacTool;
-import com.sun.tools.javac.file.JavacFileManager;
-import com.sun.tools.javac.util.Context;
+import openjdk.tools.javac.api.JavacTool;
+import openjdk.tools.javac.file.JavacFileManager;
+import openjdk.tools.javac.util.Context;
 
 import java.io.File;
 import java.io.IOException;

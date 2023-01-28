@@ -32,14 +32,14 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.Trees;
-import com.sun.tools.javac.util.JCDiagnostic;
+import openjdk.source.tree.ClassTree;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.LineMap;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.Trees;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 import org.jetbrains.annotations.Contract;
 

@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.javac.services.partial;
 
-import com.sun.tools.javac.api.DiagnosticFormatter;
-import com.sun.tools.javac.util.JCDiagnostic;
+import openjdk.tools.javac.api.DiagnosticFormatter;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.util.Locale;
 

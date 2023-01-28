@@ -35,13 +35,13 @@
  */
 package com.itsaky.androidide.javac.services;
 
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symbol.TypeSymbol;
-import com.sun.tools.javac.code.Type;
-import com.sun.tools.javac.comp.AttrContext;
-import com.sun.tools.javac.comp.Env;
-import com.sun.tools.javac.comp.Resolve;
-import com.sun.tools.javac.util.Context;
+import openjdk.tools.javac.code.Symbol;
+import openjdk.tools.javac.code.Symbol.TypeSymbol;
+import openjdk.tools.javac.code.Type;
+import openjdk.tools.javac.comp.AttrContext;
+import openjdk.tools.javac.comp.Env;
+import openjdk.tools.javac.comp.Resolve;
+import openjdk.tools.javac.util.Context;
 
 /**
  * @author lahvac

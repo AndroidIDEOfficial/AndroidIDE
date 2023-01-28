@@ -17,13 +17,13 @@
 
 package com.itsaky.androidide.lsp.java.utils
 
-import com.sun.source.tree.MethodTree
-import com.sun.source.tree.Tree
-import com.sun.source.tree.Tree.Kind.ANNOTATION_TYPE
-import com.sun.source.tree.Tree.Kind.CLASS
-import com.sun.source.tree.Tree.Kind.ENUM
-import com.sun.source.tree.Tree.Kind.INTERFACE
-import com.sun.source.tree.Tree.Kind.METHOD
+import openjdk.source.tree.MethodTree
+import openjdk.source.tree.Tree
+import openjdk.source.tree.Tree.Kind.ANNOTATION_TYPE
+import openjdk.source.tree.Tree.Kind.CLASS
+import openjdk.source.tree.Tree.Kind.ENUM
+import openjdk.source.tree.Tree.Kind.INTERFACE
+import openjdk.source.tree.Tree.Kind.METHOD
 
 /**
  * Utility methods for Javac Trees.

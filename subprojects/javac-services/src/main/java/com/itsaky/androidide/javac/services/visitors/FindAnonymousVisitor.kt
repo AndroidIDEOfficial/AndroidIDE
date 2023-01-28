@@ -19,10 +19,10 @@ package com.itsaky.androidide.javac.services.visitors
 
 import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor.Mode.CHECK
 import com.itsaky.androidide.javac.services.visitors.FindAnonymousVisitor.Mode.COLLECT
-import com.sun.source.tree.ClassTree
-import com.sun.source.tree.MethodTree
-import com.sun.source.tree.Tree
-import com.sun.source.tree.VariableTree
+import openjdk.source.tree.ClassTree
+import openjdk.source.tree.MethodTree
+import openjdk.source.tree.Tree
+import openjdk.source.tree.VariableTree
 
 /**
  * Partial reparse helper visitor. Finds anonymous and local classes in given method tree.

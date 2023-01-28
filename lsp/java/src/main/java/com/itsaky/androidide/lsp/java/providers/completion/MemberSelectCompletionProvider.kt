@@ -26,11 +26,11 @@ import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.sun.source.tree.MemberSelectTree
-import com.sun.source.tree.Scope
-import com.sun.source.util.TreePath
-import com.sun.source.util.Trees
-import com.sun.tools.javac.code.Symbol
+import openjdk.source.tree.MemberSelectTree
+import openjdk.source.tree.Scope
+import openjdk.source.util.TreePath
+import openjdk.source.util.Trees
+import openjdk.tools.javac.code.Symbol
 import java.nio.file.Path
 import javax.lang.model.element.ElementKind.CONSTRUCTOR
 import javax.lang.model.element.ElementKind.METHOD

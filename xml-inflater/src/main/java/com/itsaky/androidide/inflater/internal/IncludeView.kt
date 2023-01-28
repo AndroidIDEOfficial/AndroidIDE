@@ -15,24 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.compiler
+package com.itsaky.androidide.inflater.internal
 
-import openjdk.source.tree.CompilationUnitTree
-import openjdk.tools.javac.api.JavacTaskImpl
-import java.util.function.*
+import com.itsaky.androidide.inflater.IAttribute
 
 /**
- * A compilation task processor process the [JavacTaskImpl]. Usually, a processor decides what files
- * should be parsed and analyzed.
+ * [IView][com.itsaky.androidide.inflater.IView] implementation for `<include>` tags.
  *
  * @author Akash Yadav
  */
-fun interface CompilationTaskProcessor {
+class IncludeView(private val embedded: ViewImpl) :
+  ViewImpl(embedded.file, embedded.name, embedded.view) {
+  
+  override val tag: String
+    get() = "include"
 
-  /**
-   * Process the given [JavacTaskImpl]. The processor is responsible for parsing and analyzing the
-   * task. For each parsed [CompilationUnitTree], [processCompilationUnit] must be called.
-   */
-  @Throws(Throwable::class)
-  fun process(task: JavacTaskImpl, processCompilationUnit: Consumer<CompilationUnitTree>)
+  override fun applyAttribute(attribute: IAttribute) {
+    // The attributes must be applied to the embedded view
+    embedded.applyAttribute(attribute)
+  }
+  
+  override fun printHierarchy(): String {
+    return embedded.printHierarchy()
+  }
+  
+  override fun printHierarchy(builder: StringBuilder, indent: Int) {
+    return embedded.printHierarchy(builder, indent)
+  }
 }

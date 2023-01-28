@@ -24,7 +24,7 @@ import com.itsaky.androidide.lsp.java.parser.ParseTask;
 import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.sun.source.tree.ClassTree;
+import openjdk.source.tree.ClassTree;
 
 import java.nio.file.Path;
 import java.util.Collections;

@@ -51,8 +51,8 @@ import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.TreePath;
+import openjdk.source.tree.Tree;
+import openjdk.source.util.TreePath;
 
 import java.nio.file.Path;
 import java.time.Duration;

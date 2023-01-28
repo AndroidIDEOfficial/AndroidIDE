@@ -44,11 +44,11 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreePath;
-import com.sun.source.util.Trees;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.tree.MethodTree;
+import openjdk.source.util.SourcePositions;
+import openjdk.source.util.TreePath;
+import openjdk.source.util.Trees;
 
 import java.io.BufferedReader;
 import java.io.File;
