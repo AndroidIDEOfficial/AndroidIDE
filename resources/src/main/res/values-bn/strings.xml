@@ -467,4 +467,5 @@
   <string name="idepref_general_materialYou">ম্যাটেরিয়াল ইউ</string>
   <string name="idepref_general_materialYou_summary">আপনার ডিভাইসের কাছাকাছি একটি অভিজ্ঞতা উপভোগ করুন (আ্যপ এর রিস্টার্ট প্রয়োজন)।</string>
   <string name="idepref_general_projectConfig">প্রকল্প কনফিগারেশন</string>
+  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
 </resources>
