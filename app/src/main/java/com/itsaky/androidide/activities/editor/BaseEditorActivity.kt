@@ -192,13 +192,12 @@ abstract class BaseEditorActivity :
     if (packageName != null) {
       Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
         .setAction(string.yes) {
-          val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
-          launchIntent?.let { startActivity(it) }
+          tryLaunchApp(packageName)
         }
         .show()
     }
   }
-
+  
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -406,6 +405,18 @@ abstract class BaseEditorActivity :
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
     viewModel.statusText = text
     viewModel.statusGravity = gravity
+  }
+  
+  private fun tryLaunchApp(packageName: String) {
+    val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+    launchIntent?.let {
+      try {
+        startActivity(it)
+      } catch (e: Throwable) {
+        flashError(string.msg_app_launch_failed)
+        log.error("Failed to launch application with package name '$packageName'", e)
+      }
+    }
   }
 
   private fun checkIsDestroying() {
