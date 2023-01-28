@@ -292,7 +292,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
       !(it.namespaceUri.isNullOrBlank() && it.name == "layout")
     }
 
-    return inflated
+    return listOf(view)
   }
 
   protected open fun onCreatePlatformView(

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater.internal
 
 import com.itsaky.androidide.inflater.IAttribute
+import com.itsaky.androidide.inflater.IViewGroup
 
 /**
  * [IView][com.itsaky.androidide.inflater.IView] implementation for `<include>` tags.
@@ -25,20 +26,23 @@ import com.itsaky.androidide.inflater.IAttribute
  * @author Akash Yadav
  */
 class IncludeView(private val embedded: ViewImpl) :
-  ViewImpl(embedded.file, embedded.name, embedded.view) {
-  
-  override val tag: String
-    get() = "include"
+  ViewImpl(
+    file = embedded.file,
+    name = embedded.name,
+    view = embedded.view,
+    simpleName = embedded.simpleName,
+    tag = "include"
+  ) {
 
   override fun applyAttribute(attribute: IAttribute) {
     // The attributes must be applied to the embedded view
     embedded.applyAttribute(attribute)
   }
-  
+
   override fun printHierarchy(): String {
     return embedded.printHierarchy()
   }
-  
+
   override fun printHierarchy(builder: StringBuilder, indent: Int) {
     return embedded.printHierarchy(builder, indent)
   }
