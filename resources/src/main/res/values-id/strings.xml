@@ -467,4 +467,5 @@
   <string name="idepref_general_materialYou">Material You</string>
   <string name="idepref_general_materialYou_summary">Nikmati pengalaman yang lebih dekat dengan perangkat Anda (perlu dimulai ulang).</string>
   <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
+  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
 </resources>
