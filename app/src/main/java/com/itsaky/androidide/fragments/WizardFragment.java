@@ -289,7 +289,8 @@ public class WizardFragment extends BaseFragment {
         "API 29: Android 10.0 (Q)",
         "API 30: Android 11.0 (R)",
         "API 31: Android 12.0 (S)",
-        "API 32: Android 12.1L (S)");
+        "API 32: Android 12.1L (S)",
+        "API 33: Android 13.0 (Tiramisu)");
   }
 
   private LinkedHashMap<String, String> getCppToolchans() {
