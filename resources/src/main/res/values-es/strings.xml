@@ -56,10 +56,10 @@
   <string name="build_output">Salida de Compilación</string>
   <string name="build_release">assembleRelease</string>
   <string name="lint_tasks">Lint tasks</string>
-  <string name="clean_amp_build">Clean &amp; build</string>
-  <string name="clean_project">Clean</string>
-  <string name="create_aab">Create AAB</string>
-  <string name="build_tasks">Build tasks</string>
+  <string name="clean_amp_build">Limpiar &amp; compilar</string>
+  <string name="clean_project">Limpiar</string>
+  <string name="create_aab">Crear AAB</string>
+  <string name="build_tasks">Crear tareas</string>
   <string name="quick_run_debug">Quick run</string>
   <string name="msg_sync_needed">Gradle files have changed. Please rebuild your project to sync dependencies and configurations.</string>
   <string name="preparing">Preparing</string>
@@ -112,9 +112,9 @@
   <string name="template_no_activity">No Activity</string>
   <string name="template_no_activity_description">Creates a new project without activity</string>
   <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
+  <string name="template_description_noAndroidX">Crea un nuevo proyecto sin librería de AndroidX</string>
   <!-- Files -->
-  <string name="save">Save</string>
+  <string name="save">Guardar Cambios</string>
   <string name="menu_find">Find</string>
   <string name="menu_find_file">Find in file</string>
   <string name="menu_find_project">Find in project</string>
