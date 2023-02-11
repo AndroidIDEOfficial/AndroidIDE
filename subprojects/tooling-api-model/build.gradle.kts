@@ -32,7 +32,7 @@ dependencies {
 }
 
 tasks.register < Copy > ("copyToTestDir") {
-    from ("$project.buildDir.absolutePath/libs/tooling-api-model.jar")
+    from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
     into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
     rename { "model.jar" }
     
