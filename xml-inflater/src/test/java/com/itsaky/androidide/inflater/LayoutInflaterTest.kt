@@ -23,6 +23,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.inflater.internal.IncludeView
 import com.itsaky.androidide.inflater.internal.LayoutInflaterImpl
 import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
@@ -106,7 +107,7 @@ class LayoutInflaterTest {
               "        android.widget.TextView\n" +
               "        android.widget.TextView\n"
           )
-        val included = view[0]
+        val included = view[0] as IncludeView
         included.findAttribute("layout_height", INamespace.ANDROID.uri).apply {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
@@ -115,8 +116,8 @@ class LayoutInflaterTest {
           assertThat(this).isNotNull()
           assertThat(this!!.value).isEqualTo("48dp")
         }
-        assertThat(included.hasAttribute("gravity", INamespace.ANDROID.uri)).isTrue()
-        assertThat(included.hasAttribute("id", INamespace.ANDROID.uri)).isTrue()
+        assertThat(included.embedded.hasAttribute("gravity", INamespace.ANDROID.uri)).isTrue()
+        assertThat(included.embedded.hasAttribute("id", INamespace.ANDROID.uri)).isTrue()
       }
     }
   }

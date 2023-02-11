@@ -25,7 +25,7 @@ import com.itsaky.androidide.inflater.IViewGroup
  *
  * @author Akash Yadav
  */
-class IncludeView(private val embedded: ViewImpl) :
+class IncludeView(internal val embedded: ViewImpl) :
   ViewImpl(
     file = embedded.file,
     name = embedded.name,
