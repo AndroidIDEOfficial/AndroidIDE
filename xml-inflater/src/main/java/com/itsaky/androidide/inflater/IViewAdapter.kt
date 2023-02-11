@@ -24,7 +24,22 @@ import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.models.UiWidget
 
 /**
- * Handles logic for applying attributes to a view.
+ * A view adapter provides support for a specific view to the layout inflater and the UI designer.
+ * It performs the following tasks :
+ * - Handles how the attributes are applied to the view.
+ * - Provides basic attributes of a view. For example, sets initial text to a TextView.
+ * - Provides [UiWidget] models which are used by the UI designer to show the list of supported
+ *   views.
+ * - Provides list of supported attributes for the view.
+ *
+ * The following annotations are used to provide metadata about the view adapter implementation :
+ * - [ViewAdapter][com.itsaky.androidide.annotations.inflater.ViewAdapter] is used to specify the
+ *   view whose attributes are handled by the view adapter implementation.
+ * - [IncludeInDesigner][com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner] is used to
+ *   indicate that the view adapter provides [UiWidget] models to the UI designer.
+ * - [RequiresApi][androidx.annotation.RequiresApi] is used to indicate that the view adapter
+ *   implementation provides support for views that can be used only for the given API version (or
+ *   newer).
  *
  * @author Akash Yadav
  */
