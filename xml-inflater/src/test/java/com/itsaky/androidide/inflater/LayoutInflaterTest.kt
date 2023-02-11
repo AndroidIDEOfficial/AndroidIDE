@@ -194,6 +194,31 @@ class LayoutInflaterTest {
       }
     }
   }
+  
+  @Test
+  fun `test order of included view with sibling views`() {
+    inflaterTest {
+      requiresActivity {
+        val parent = LinearLayout(this)
+        val inflater = ILayoutInflater.newInflater(it)
+        val inflated = inflater.inflate(layoutFile("include_order"), parent)
+        assertThat(inflated).hasSize(1)
+      
+        val view = inflated[0] as ViewGroupImpl
+        
+        // verify the hierarchy
+        assertThat(view.printHierarchy())
+          .isEqualTo(
+            "android.widget.LinearLayout\n" +
+              "    android.view.View\n" +
+              "    android.widget.RelativeLayout\n" +
+              "        android.widget.TextView\n" +
+              "        android.widget.TextView\n" +
+              "    android.view.View\n"
+          )
+      }
+    }
+  }
 
   private fun layoutFile(name: String): File {
     val app = ProjectManager.app ?: throw IllegalStateException("Project is not initialized")

@@ -149,11 +149,8 @@ open class LayoutInflaterImpl : ILayoutInflater {
       .forEach { IDTable.set(currentLayoutFile.resName, it.name.entry!!, View.generateViewId()) }
 
     val element = node.element
-    val views = onCreateView(element, parent(), module)
 
-    this._currentLayoutFile = null
-
-    return views
+    return onCreateView(element, parent(), module)
   }
 
   protected open fun onCreateView(
@@ -274,18 +271,30 @@ open class LayoutInflaterImpl : ILayoutInflater {
     }
 
     val (processor, module) = processXmlFile(file)
-    val inflated = doInflate(processor, module) { parent }
+    
+    // we need to restore the layout file instance as well
+    val inflated =
+      currentLayoutFile.let { layoutFile ->
+        doInflate(processor, module) { parent }.also { _currentLayoutFile = layoutFile }
+      }
+    
     if (inflated.isEmpty() || inflated.size > 1) {
       // probably a merged view or no views at all
       // no need to apply attributes
       return inflated
     }
 
-    val view = IncludeView(inflated[0] as ViewImpl)
+    val includedView = inflated[0]
+    val view = IncludeView(includedView as ViewImpl)
     addNamespaceDecls(element = element, view = view)
 
     // The inflated <include> view is already attached to parent
-    // so we don't need to do it here
+    // however, we want the parent to have the 'IncludeView' as the child and not the actually
+    // included view
+    val index = parent.indexOfChild(includedView)
+    parent.removeChild(index)
+    parent.addChild(index, view)
+
     // also, the attribute on an <include> tag must override the attributes specified on the root
     // view of the included layout file
     applyAttributes(element = element, view = view, parent = parent, attachToParent = false) {
