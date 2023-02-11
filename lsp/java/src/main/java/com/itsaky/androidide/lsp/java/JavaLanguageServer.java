@@ -113,7 +113,7 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @Override
   public void shutdown() {
-    JavaCompilerProvider.getInstance().destory();
+    JavaCompilerProvider.getInstance().destroy();
     SourceFileManager.clearCache();
     CacheFSInfoSingleton.INSTANCE.clearCache();
     CachingJarFileSystemProvider.INSTANCE.clearCache();
@@ -157,7 +157,7 @@ public class JavaLanguageServer implements ILanguageServer {
     CachingJarFileSystemProvider.INSTANCE.clearCachesForPaths(path -> path.endsWith("/R.jar"));
 
     // Clear cached module-specific compilers
-    JavaCompilerProvider.getInstance().destory();
+    JavaCompilerProvider.getInstance().destroy();
 
     // Cache classpath locations
     for (final Project subModule : project.getSubModules()) {
@@ -260,7 +260,7 @@ public class JavaLanguageServer implements ILanguageServer {
           return true;
         }
 
-        JavaCompilerProvider.getInstance().destory();
+        JavaCompilerProvider.getInstance().destroy();
         return true;
     }
 

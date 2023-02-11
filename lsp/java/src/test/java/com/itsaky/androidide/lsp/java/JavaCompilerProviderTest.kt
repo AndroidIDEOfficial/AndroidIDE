@@ -60,7 +60,7 @@ class JavaCompilerProviderTest {
     assertThat(compilers).hasSize(5)
 
     compilers.clear()
-    JavaCompilerProvider.getInstance().destory()
+    JavaCompilerProvider.getInstance().destroy()
 
     assertThat(JavaCompilerProvider.get(appModule)).isNotEqualTo(appCompiler)
   }
