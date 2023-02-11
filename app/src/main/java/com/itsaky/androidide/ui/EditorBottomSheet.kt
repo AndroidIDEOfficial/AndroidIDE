@@ -18,7 +18,6 @@
 package com.itsaky.androidide.ui
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -139,7 +138,7 @@ constructor(
       val filename = fragment.getFilename()
 
       @Suppress("DEPRECATION")
-      val progress = ProgressDialog.show(context, null, context.getString(string.please_wait))
+      val progress = android.app.ProgressDialog.show(context, null, context.getString(string.please_wait))
       executeAsync(fragment::getContent) {
         progress.dismiss()
         shareText(it, filename)
@@ -297,7 +296,7 @@ constructor(
       flashError(context.getString(string.msg_output_text_extraction_failed))
       return
     }
-    val pd = ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
+    val pd = android.app.ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
     executeAsyncProvideError(
       Callable { writeTempFile(text, type) },
       CallbackWithError<File> { result: File?, error: Throwable? ->

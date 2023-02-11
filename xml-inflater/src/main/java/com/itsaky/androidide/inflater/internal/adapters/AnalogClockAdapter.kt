@@ -15,6 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.graphics.BlendMode

@@ -36,7 +36,7 @@ class WidgetTableRegistryTest {
 
   @Test
   fun `test simple layout retrieval`() {
-    val (platformDir, registry, table) = createTable()
+    val (_, _, table) = createTable()
     table.getWidget("android.widget.FrameLayout").apply {
       assertThat(this).isNotNull()
       assertThat(this!!.qualifiedName).isEqualTo("android.widget.FrameLayout")
@@ -47,7 +47,7 @@ class WidgetTableRegistryTest {
 
   @Test
   fun `test table contains layout params`() {
-    val (platformDir, registry, table) = createTable()
+    val (_, _, table) = createTable()
     table.getWidget("android.widget.FrameLayout.LayoutParams").apply {
       assertThat(this).isNotNull()
       assertThat(this!!.qualifiedName).isEqualTo("android.widget.FrameLayout.LayoutParams")
@@ -58,7 +58,7 @@ class WidgetTableRegistryTest {
 
   @Test
   fun `test find with simple name`() {
-    val (platformDir, registry, table) = createTable()
+    val (_, _, table) = createTable()
     table.findWidgetWithSimpleName("TextView").apply {
       assertThat(this).isNotNull()
       assertThat(this!!.simpleName).isEqualTo("TextView")
@@ -69,7 +69,7 @@ class WidgetTableRegistryTest {
 
   @Test
   fun `test get all widgets list`() {
-    val (file, registry, table) = createTable()
+    val (_, _, table) = createTable()
     assertThat(table.getAllWidgets().map(Widget::simpleName))
       .containsAtLeast(
         "TextView",

@@ -68,6 +68,7 @@ object InstallationResultHandler {
     val message = extras.getString(PackageInstaller.EXTRA_STATUS_MESSAGE)
     return when (status) {
       PackageInstaller.STATUS_PENDING_USER_ACTION -> {
+        @Suppress("DEPRECATION")
         extras.get(Intent.EXTRA_INTENT)?.let {
           if (it is Intent) {
             if ((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) != Intent.FLAG_ACTIVITY_NEW_TASK) {

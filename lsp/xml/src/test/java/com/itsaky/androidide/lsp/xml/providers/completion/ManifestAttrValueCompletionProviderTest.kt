@@ -181,7 +181,7 @@ class ManifestAttrValueCompletionProviderTest : CompletionHelper by CompletionHe
   
   private fun XMLLSPTest.assertHasSingleLineEntries(file: String, expect: Array<String>) {
     openFile("completion/$file")
-    val (incomplete, items) = complete()
+    val (_, items) = complete()
     assertThat(items).containsAtLeastElementsIn(expect)
   }
 }

@@ -27,7 +27,7 @@ import org.xmlpull.v1.XmlPullParser
  *
  * @author Akash Yadav
  */
-class InsetDrawableParser protected constructor(parser: XmlPullParser?, minDepth: Int) :
+open class InsetDrawableParser protected constructor(parser: XmlPullParser?, minDepth: Int) :
   IDrawableParser(parser, minDepth) {
   @Throws(Exception::class)
   public override fun parseDrawable(context: Context): Drawable {
@@ -35,13 +35,8 @@ class InsetDrawableParser protected constructor(parser: XmlPullParser?, minDepth
     if (index == -1) {
       throw InflateException("No drawable specified for <inset> drawable")
     }
-    val value =
-      value(index) ?: throw InflateException("Invalid value specified for android:drawable")
-    val drawable =
-      parseDrawable(context, value)
-        ?: throw InflateException(
-          "Unable to parse inset drawable. Failed to parse android:drawable"
-        )
+    val value = value(index)
+    val drawable = parseDrawable(context, value)
     index = attrIndex("insetLeft")
     val left = if (index == -1) 0 else parseDimension(context, value(index))
     index = attrIndex("insetTop")

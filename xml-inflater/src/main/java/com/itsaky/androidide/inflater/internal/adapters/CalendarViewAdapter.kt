@@ -35,6 +35,7 @@ import com.itsaky.androidide.resources.R.string
 @IncludeInDesigner(group = WIDGETS)
 open class CalendarViewAdapter<T : CalendarView> : FrameLayoutAdapter<T>() {
 
+  @Suppress("DEPRECATION")
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
     // TODO (theme): create("dateTextAppearance")

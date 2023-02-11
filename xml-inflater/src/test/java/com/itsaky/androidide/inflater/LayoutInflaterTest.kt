@@ -91,7 +91,7 @@ class LayoutInflaterTest {
 
   @Test
   fun `verify included view hierarchy`() {
-    inflaterTest { module ->
+    inflaterTest {
       requiresActivity {
         val parent = LinearLayout(this)
         val inflater = ILayoutInflater.newInflater()

@@ -31,7 +31,7 @@ import com.itsaky.androidide.resources.R.string
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(Space::class)
 @IncludeInDesigner(group = WIDGETS)
-open class SpaceAdapter<T : Space> : ViewAdapter<T>() {
+open class SpaceAdapter : ViewAdapter<Space>() {
   override fun createUiWidgets(): List<UiWidget> {
     return listOf(UiWidget(Space::class.java, string.widget_space, drawable.ic_widget_space))
   }

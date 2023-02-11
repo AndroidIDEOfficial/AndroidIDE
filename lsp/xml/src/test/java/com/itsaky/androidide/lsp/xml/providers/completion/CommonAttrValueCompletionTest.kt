@@ -48,7 +48,7 @@ class CommonAttrValueCompletionTest : CompletionHelper by CompletionHelperImpl()
   fun `test simple anim attributes`() {
     XMLLSPTest.apply {
       openFile("../res/anim/TestSimpleAttrValue")
-      val (incomplete, items) = complete()
+      val (_, items) = complete()
       // Only integer values
       assertThat(items.filter { it.startsWith("@integer/") || it.startsWith("@android:integer/") })
         .hasSize(items.size)
@@ -59,7 +59,7 @@ class CommonAttrValueCompletionTest : CompletionHelper by CompletionHelperImpl()
   fun `test simple transition attributes`() {
     XMLLSPTest.apply {
       openFile("../res/transition/TestSimpleAttrValue")
-      val (incomplete, items) = complete()
+      val (_, items) = complete()
       // Only integer values
       assertThat(items.filter { it.startsWith("@integer/") || it.startsWith("@android:integer/") })
         .hasSize(items.size)

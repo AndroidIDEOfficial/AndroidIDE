@@ -15,6 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.widget.AbsoluteLayout
@@ -25,6 +27,5 @@ import com.itsaky.androidide.annotations.inflater.ViewAdapter
  *
  * @author Akash Yadav
  */
-@Suppress("DEPRECATION")
 @ViewAdapter(AbsoluteLayout::class)
 open class AbsoluteLayoutAdapter<T : AbsoluteLayout> : ViewGroupAdapter<T>()

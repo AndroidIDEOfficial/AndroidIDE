@@ -58,11 +58,9 @@ class FindInProjectAction() : EditorActivityAction() {
     val context = getActivity(data) ?: return false
     val dialog = context.findInProjectDialog
 
-    return if (dialog != null) {
+    return run {
       dialog.show()
       true
-    } else {
-      false
     }
   }
 }

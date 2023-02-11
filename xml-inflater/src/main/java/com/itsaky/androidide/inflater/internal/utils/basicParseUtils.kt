@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.inflater.internal.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -246,7 +247,7 @@ fun parseColorDrawable(context: Context, value: String, def: Int = Color.TRANSPA
 }
 
 @JvmOverloads
-fun parseColor(context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
+fun parseColor(@Suppress("UNUSED_PARAMETER") context: Context, value: String, def: Int = Color.TRANSPARENT): Int {
   if (value.isEmpty()) {
     return def
   }
@@ -499,6 +500,7 @@ internal fun parseResourceReference(value: String): Triple<String?, AaptResource
   }
 }
 
+@SuppressLint("SimpleDateFormat")
 @JvmOverloads
 fun parseDate(value: String, format: String = "MM/dd/yyyy", def: Long = 0L): Long {
   if (value.isDigitsOnly()) {
@@ -506,7 +508,7 @@ fun parseDate(value: String, format: String = "MM/dd/yyyy", def: Long = 0L): Lon
   }
   val formatter = SimpleDateFormat(format)
   return try {
-    formatter.parse(value).time
+    formatter.parse(value)!!.time
   } catch (err: Throwable) {
     log.warn("Unable to parse date (format='$format')", value)
     def

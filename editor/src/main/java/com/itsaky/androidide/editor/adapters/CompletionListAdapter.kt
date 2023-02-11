@@ -29,6 +29,7 @@ import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.ClassCompletionData
+import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
@@ -38,7 +39,6 @@ import com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
 import com.itsaky.androidide.lsp.models.MemberCompletionData
 import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.preferences.internal.useCustomFont
-import com.itsaky.androidide.resources.R.attr
 import com.itsaky.androidide.resources.R.string.msg_api_info_deprecated
 import com.itsaky.androidide.resources.R.string.msg_api_info_removed
 import com.itsaky.androidide.resources.R.string.msg_api_info_since
@@ -56,7 +56,6 @@ import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
 
@@ -106,9 +105,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     )
     binding.completionApiInfo.visibility = View.GONE
 
-    if (this.colorScheme != null) {
-      applyColorScheme(binding, isCurrentCursorPosition)
-    }
+    applyColorScheme(binding, isCurrentCursorPosition)
 
     showApiInfoIfNeeded(item, binding.completionApiInfo)
     return binding.root
@@ -198,7 +195,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
 
       return@executeAsync sb
     }) {
-      if (it == null || it.isBlank()) {
+      if (it.isNullOrBlank()) {
         textView.visibility = View.GONE
         return@executeAsync
       }

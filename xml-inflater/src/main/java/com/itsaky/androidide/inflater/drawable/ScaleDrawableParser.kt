@@ -38,9 +38,8 @@ open class ScaleDrawableParser protected constructor(parser: XmlPullParser?, min
     }
     val v =
       value(index)
-        ?: throw InflateException("Invalid value specified for android:drawable attribute")
     val drawable =
-      parseDrawable(context, v) ?: throw InflateException("Unable to parse drawable: $v")
+      parseDrawable(context, v)
     var gravity = Gravity.LEFT
     index = attrIndex("scaleGravity")
     if (index != -1) {

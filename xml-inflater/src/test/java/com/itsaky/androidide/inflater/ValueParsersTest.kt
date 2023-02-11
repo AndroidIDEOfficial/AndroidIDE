@@ -40,7 +40,7 @@ class ValueParsersTest {
 
   @Test
   fun `hardcoded dimension parser test`() {
-    inflaterTest { module ->
+    inflaterTest {
       requiresActivity {
 
         // Hardcoded dimensions
@@ -82,7 +82,7 @@ class ValueParsersTest {
 
   @Test
   fun `drawable parse test`() {
-    inflaterTest { module ->
+    inflaterTest {
       requiresActivity {
         parseDrawable(this, "#ff0000").apply {
           assertThat(this).isNotNull()
@@ -103,7 +103,7 @@ class ValueParsersTest {
 
   @Test
   fun `boolean parser test`() {
-    inflaterTest { module ->
+    inflaterTest {
       requiresActivity {
         assertThat(parseBoolean("true")).isTrue()
         assertThat(parseBoolean("false", def = true)).isFalse()
@@ -119,7 +119,7 @@ class ValueParsersTest {
 
   @Test
   fun `integer parser test`() {
-    inflaterTest { module ->
+    inflaterTest {
       requiresActivity {
         assertThat(parseInteger("0", def = 1)).isEqualTo(0)
         assertThat(parseInteger("10")).isEqualTo(10)
