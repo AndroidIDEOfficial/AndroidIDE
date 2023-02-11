@@ -66,6 +66,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   protected var isFromSavedInstance = false
   protected var shouldInitialize = false
+  
+  protected var initializingFuture: CompletableFuture<out InitializeResult?>? = null
 
   val findInProjectDialog: AlertDialog
     get() {
@@ -133,6 +135,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun preDestroy() {
     if (isDestroying) {
+      
+      this.initializingFuture?.cancel(true)
+      this.initializingFuture = null
+      
       closeProject(false)
     }
 
@@ -228,7 +234,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       return
     }
 
-    val future =
+    this.initializingFuture =
       if (shouldInitialize || (!isFromSavedInstance && !initialized)) {
         log.debug("Sending init request to tooling server..")
         buildService.initializeProject(projectDir.absolutePath)
@@ -242,7 +248,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
         }
       }
 
-    future.whenCompleteAsync { result, error ->
+    this.initializingFuture!!.whenCompleteAsync { result, error ->
       if (result == null || error != null) {
         log.error("An error occurred initializing the project with Tooling API", error)
         setStatus(getString(string.msg_project_initialization_failed))
