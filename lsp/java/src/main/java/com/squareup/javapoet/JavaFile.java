@@ -36,9 +36,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.SimpleJavaFileObject;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.JavaFileObject.Kind;
+import jdkx.tools.SimpleJavaFileObject;
 
 /** A Java file containing a single top level class. */
 public final class JavaFile {

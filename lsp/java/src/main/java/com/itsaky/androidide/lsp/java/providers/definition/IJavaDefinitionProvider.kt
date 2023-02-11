@@ -25,7 +25,7 @@ import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
-import javax.lang.model.element.Element
+import jdkx.lang.model.element.Element
 
 /**
  * Provides definition for a specific symbol in Java source code.

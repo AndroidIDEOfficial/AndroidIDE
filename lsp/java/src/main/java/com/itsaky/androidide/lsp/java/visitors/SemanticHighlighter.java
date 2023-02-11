@@ -47,10 +47,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.Name;
 
 public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightToken>> {
 

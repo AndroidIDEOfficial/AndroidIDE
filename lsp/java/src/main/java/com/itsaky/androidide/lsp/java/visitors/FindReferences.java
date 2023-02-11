@@ -28,7 +28,7 @@ import openjdk.source.util.Trees;
 
 import java.util.List;
 
-import javax.lang.model.element.Element;
+import jdkx.lang.model.element.Element;
 
 public class FindReferences extends TreePathScanner<Void, List<TreePath>> {
 

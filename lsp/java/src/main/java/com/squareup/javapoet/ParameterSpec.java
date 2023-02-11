@@ -25,11 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.VariableElement;
+import jdkx.lang.model.SourceVersion;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.VariableElement;
 
 /** A generated parameter declaration. */
 public final class ParameterSpec {

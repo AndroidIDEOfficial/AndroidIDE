@@ -25,8 +25,8 @@ import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ImplementAbstractMethods
 import com.itsaky.androidide.utils.ILogger
-import javax.tools.Diagnostic
-import javax.tools.JavaFileObject
+import jdkx.tools.Diagnostic
+import jdkx.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class ImplementAbstractMethodsAction : BaseJavaCodeAction() {

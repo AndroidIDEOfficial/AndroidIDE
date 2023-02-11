@@ -24,7 +24,7 @@ import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import openjdk.source.util.Trees
 import java.nio.file.Path
-import javax.lang.model.element.Element
+import jdkx.lang.model.element.Element
 
 /**
  * Provides definition for local elements.

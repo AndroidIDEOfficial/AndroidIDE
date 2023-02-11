@@ -34,7 +34,7 @@ import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
 
-import javax.lang.model.element.Name;
+import jdkx.lang.model.element.Name;
 
 public class FindNameAt extends TreePathScanner<TreePath, Long> {
 

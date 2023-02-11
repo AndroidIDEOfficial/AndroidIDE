@@ -36,8 +36,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.TypeElement;
 
 public class ReferenceProvider {
 

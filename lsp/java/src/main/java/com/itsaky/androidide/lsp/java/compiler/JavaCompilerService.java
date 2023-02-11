@@ -69,9 +69,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.StandardLocation;
 
 public class JavaCompilerService implements CompilerProvider {
 

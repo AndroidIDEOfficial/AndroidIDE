@@ -30,11 +30,11 @@ import openjdk.source.util.TreePath;
 import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.NestingKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.NestingKind;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.lang.model.type.TypeMirror;
 
 public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Integer> {
   private static final ILogger LOG = ILogger.newInstance("main");

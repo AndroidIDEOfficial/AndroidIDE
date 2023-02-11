@@ -42,8 +42,8 @@ import openjdk.source.util.Trees;
 
 import java.nio.file.Path;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.Modifier;
 
 public class NavigationHelper {
 

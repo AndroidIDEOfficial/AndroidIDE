@@ -101,14 +101,14 @@ import openjdk.source.tree.VariableTree
 import java.util.*
 import java.util.function.*
 import java.util.stream.*
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier
-import javax.lang.model.element.TypeParameterElement
-import javax.lang.model.element.VariableElement
-import javax.lang.model.type.ExecutableType
-import javax.lang.model.type.TypeKind
-import javax.lang.model.type.TypeMirror
-import javax.lang.model.type.TypeVariable
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.element.TypeParameterElement
+import jdkx.lang.model.element.VariableElement
+import jdkx.lang.model.type.ExecutableType
+import jdkx.lang.model.type.TypeKind
+import jdkx.lang.model.type.TypeMirror
+import jdkx.lang.model.type.TypeVariable
 import kotlin.jvm.optionals.getOrNull
 import org.jetbrains.annotations.Contract
 

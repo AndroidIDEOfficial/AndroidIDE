@@ -37,7 +37,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
-import javax.lang.model.element.Modifier.STATIC
+import jdkx.lang.model.element.Modifier.STATIC
 
 /**
  * Any action that has to work with fields in the current class can inherit this action.

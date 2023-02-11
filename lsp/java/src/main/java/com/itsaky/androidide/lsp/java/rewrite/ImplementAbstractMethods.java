@@ -50,12 +50,12 @@ import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.util.Elements;
 
 public class ImplementAbstractMethods extends Rewrite {
 

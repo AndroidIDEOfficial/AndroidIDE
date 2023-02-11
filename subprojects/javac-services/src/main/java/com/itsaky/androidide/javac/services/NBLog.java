@@ -49,8 +49,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 
 /**
  * @author Tomas Zezula

@@ -41,14 +41,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeMirror;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.Name;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.ArrayType;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.ExecutableType;
+import jdkx.lang.model.type.TypeMirror;
 
 public class EditHelper {
 

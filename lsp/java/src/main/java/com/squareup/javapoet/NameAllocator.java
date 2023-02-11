@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.lang.model.SourceVersion;
+import jdkx.lang.model.SourceVersion;
 
 /**
  * Assigns Java identifier names to avoid collisions, keywords, and invalid characters. To use,

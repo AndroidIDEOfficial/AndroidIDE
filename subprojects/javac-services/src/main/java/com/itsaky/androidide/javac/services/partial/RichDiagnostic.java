@@ -22,7 +22,7 @@ import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.util.Locale;
 
-import javax.tools.Diagnostic;
+import jdkx.tools.Diagnostic;
 
 /**
  * @author Akash Yadav

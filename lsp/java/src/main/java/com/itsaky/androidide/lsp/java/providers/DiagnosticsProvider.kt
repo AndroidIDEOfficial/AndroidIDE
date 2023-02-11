@@ -40,9 +40,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Locale
 import java.util.regex.Pattern
-import javax.lang.model.element.Element
-import javax.tools.Diagnostic
-import javax.tools.JavaFileObject
+import jdkx.lang.model.element.Element
+import jdkx.tools.Diagnostic
+import jdkx.tools.JavaFileObject
 
 /**
  * Finds errors and warnings from a compilation task.

@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.SimpleElementVisitor8;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.PackageElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.util.SimpleElementVisitor8;
 
 /** A fully-qualified class name for top-level and member classes. */
 public final class ClassName extends TypeName implements Comparable<ClassName> {

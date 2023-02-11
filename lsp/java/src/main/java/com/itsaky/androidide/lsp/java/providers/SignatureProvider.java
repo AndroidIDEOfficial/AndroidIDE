@@ -55,19 +55,19 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.tools.JavaFileObject;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.element.VariableElement;
+import jdkx.lang.model.type.ArrayType;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.ErrorType;
+import jdkx.lang.model.type.PrimitiveType;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.type.TypeVariable;
+import jdkx.tools.JavaFileObject;
 
 public class SignatureProvider {
 

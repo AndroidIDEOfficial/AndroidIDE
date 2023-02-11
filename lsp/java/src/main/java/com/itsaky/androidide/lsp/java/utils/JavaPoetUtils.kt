@@ -20,13 +20,13 @@ package com.itsaky.androidide.lsp.java.utils
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ImportCollectingCodeWriter
 import com.squareup.javapoet.MethodSpec
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.NoType
-import javax.lang.model.type.NullType
-import javax.lang.model.type.TypeKind
-import javax.lang.model.util.Types
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.type.DeclaredType
+import jdkx.lang.model.type.NoType
+import jdkx.lang.model.type.NullType
+import jdkx.lang.model.type.TypeKind
+import jdkx.lang.model.util.Types
 
 /** @author Akash Yadav */
 class JavaPoetUtils {

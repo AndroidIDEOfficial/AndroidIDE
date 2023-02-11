@@ -64,7 +64,7 @@ import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern.compile
 import java.util.regex.Pattern.quote
-import javax.lang.model.SourceVersion
+import jdkx.lang.model.SourceVersion
 
 /**
  * Handles events related to files in filetree.

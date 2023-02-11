@@ -27,10 +27,10 @@ import openjdk.source.tree.SwitchTree
 import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
 import java.nio.file.Path
-import javax.lang.model.element.ElementKind.ENUM
-import javax.lang.model.element.ElementKind.ENUM_CONSTANT
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
+import jdkx.lang.model.element.ElementKind.ENUM
+import jdkx.lang.model.element.ElementKind.ENUM_CONSTANT
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.DeclaredType
 
 /**
  * Provides completions for switch constants.

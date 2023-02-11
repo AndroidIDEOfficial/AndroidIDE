@@ -37,7 +37,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.lang.model.element.Modifier;
+import jdkx.lang.model.element.Modifier;
 
 public class ConvertFieldToBlock extends Rewrite {
   final Path file;

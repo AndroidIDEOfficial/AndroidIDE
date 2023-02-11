@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Modifier;
+import jdkx.lang.model.SourceVersion;
+import jdkx.lang.model.element.Modifier;
 
 /** A generated field declaration. */
 public final class FieldSpec {

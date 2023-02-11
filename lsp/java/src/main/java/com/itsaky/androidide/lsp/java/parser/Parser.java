@@ -43,8 +43,8 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
+import jdkx.tools.JavaCompiler;
+import jdkx.tools.JavaFileObject;
 
 public class Parser {
 
@@ -92,7 +92,7 @@ public class Parser {
             Collections.singletonList(file));
   }
 
-  private static void ignoreError(javax.tools.Diagnostic<? extends JavaFileObject> __) {
+  private static void ignoreError(jdkx.tools.Diagnostic<? extends JavaFileObject> __) {
     // Too noisy, this only comes up in parse tasks which tend to be less important
     // LOG.warning(err.getMessage(Locale.getDefault()));
   }

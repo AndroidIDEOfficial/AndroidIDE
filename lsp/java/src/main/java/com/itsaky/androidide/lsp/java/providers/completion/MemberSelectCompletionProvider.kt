@@ -32,14 +32,14 @@ import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
 import openjdk.tools.javac.code.Symbol
 import java.nio.file.Path
-import javax.lang.model.element.ElementKind.CONSTRUCTOR
-import javax.lang.model.element.ElementKind.METHOD
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier.STATIC
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.ArrayType
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeVariable
+import jdkx.lang.model.element.ElementKind.CONSTRUCTOR
+import jdkx.lang.model.element.ElementKind.METHOD
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier.STATIC
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.ArrayType
+import jdkx.lang.model.type.DeclaredType
+import jdkx.lang.model.type.TypeVariable
 
 /**
  * Completions for member select.

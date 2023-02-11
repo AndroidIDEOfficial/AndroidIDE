@@ -39,13 +39,13 @@ import openjdk.source.util.TreeScanner
 import openjdk.source.util.Trees
 import openjdk.tools.javac.api.JavacTaskImpl
 import java.util.*
-import javax.lang.model.element.Element
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeKind
-import javax.lang.model.type.TypeMirror
+import jdkx.lang.model.element.Element
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.DeclaredType
+import jdkx.lang.model.type.TypeKind
+import jdkx.lang.model.type.TypeMirror
 
 class DiagnosticVisitor(task: JavacTaskImpl?) :
   TreeScanner<Void?, MutableMap<TreePath?, String>>() {

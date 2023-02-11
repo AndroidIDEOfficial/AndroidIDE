@@ -36,8 +36,8 @@ import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
-import javax.tools.Diagnostic
-import javax.tools.JavaFileObject
+import jdkx.tools.Diagnostic
+import jdkx.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class AddImportAction : BaseJavaCodeAction() {

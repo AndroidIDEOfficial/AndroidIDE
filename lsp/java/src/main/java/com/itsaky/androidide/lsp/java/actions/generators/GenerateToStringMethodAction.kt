@@ -45,7 +45,7 @@ import openjdk.tools.javac.tree.TreeInfo
 import openjdk.tools.javac.util.Names
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.CompletableFuture
-import javax.lang.model.element.VariableElement
+import jdkx.lang.model.element.VariableElement
 
 /**
  * Generates the `toString()` method for the current class.

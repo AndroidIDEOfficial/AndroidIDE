@@ -25,8 +25,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.ArrayType;
+import jdkx.lang.model.element.TypeParameterElement;
+import jdkx.lang.model.type.ArrayType;
 
 public final class ArrayTypeName extends TypeName {
   public final TypeName componentType;

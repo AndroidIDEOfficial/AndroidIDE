@@ -26,10 +26,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic;
-import javax.tools.ForwardingJavaFileObject;
-import javax.tools.JavaFileObject;
+import jdkx.annotation.processing.Messager;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.ForwardingJavaFileObject;
+import jdkx.tools.JavaFileObject;
 
 /** A {@link JavaFileObject} decorator which {@linkplain Formatter formats} source code. */
 final class FormattingJavaFileObject extends ForwardingJavaFileObject<JavaFileObject> {

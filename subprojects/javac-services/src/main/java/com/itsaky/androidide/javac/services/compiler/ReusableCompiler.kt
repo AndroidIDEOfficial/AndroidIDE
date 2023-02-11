@@ -20,9 +20,9 @@ package com.itsaky.androidide.javac.services.compiler
 import com.itsaky.androidide.javac.services.CancelService
 import openjdk.tools.javac.api.JavacTaskImpl
 import openjdk.tools.javac.api.JavacTool
-import javax.tools.DiagnosticListener
-import javax.tools.JavaFileManager
-import javax.tools.JavaFileObject
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileManager
+import jdkx.tools.JavaFileObject
 
 /**
  * A pool of reusable JavacTasks. When a task is no valid anymore, it is returned to the pool, and
@@ -56,7 +56,7 @@ class ReusableCompiler {
   internal var checkedOut = false
 
   /**
-   * Creates a new task as if by [javax.tools.JavaCompiler.getTask] and runs the provided worker
+   * Creates a new task as if by [jdkx.tools.JavaCompiler.getTask] and runs the provided worker
    * with it. The task is only valid while the worker is running. The internal structures may be
    * reused from some previous compilation.
    *

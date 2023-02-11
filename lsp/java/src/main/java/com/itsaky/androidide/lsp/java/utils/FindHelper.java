@@ -44,12 +44,12 @@ import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.ElementKind;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.Types;
 
 public class FindHelper {
 

@@ -43,8 +43,8 @@ import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.CompletableFuture
-import javax.lang.model.element.Modifier.FINAL
-import javax.lang.model.element.VariableElement
+import jdkx.lang.model.element.Modifier.FINAL
+import jdkx.lang.model.element.VariableElement
 
 /**
  * Allows the user to select fields from the current class, then generates setters and getters for

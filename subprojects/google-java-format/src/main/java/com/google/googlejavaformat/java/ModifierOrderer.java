@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.lang.model.element.Modifier;
+import jdkx.lang.model.element.Modifier;
 
 /** Fixes sequences of modifiers to be in JLS order. */
 final class ModifierOrderer {
@@ -112,7 +112,7 @@ final class ModifierOrderer {
   }
 
   /**
-   * Returns the given token as a {@link javax.lang.model.element.Modifier}, or {@code null} if it
+   * Returns the given token as a {@link jdkx.lang.model.element.Modifier}, or {@code null} if it
    * is not a modifier.
    */
   private static Modifier asModifier(Token token) {

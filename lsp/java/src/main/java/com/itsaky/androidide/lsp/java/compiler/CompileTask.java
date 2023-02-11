@@ -26,8 +26,8 @@ import openjdk.tools.javac.api.JavacTaskImpl;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 
 public class CompileTask implements AutoCloseable {
 

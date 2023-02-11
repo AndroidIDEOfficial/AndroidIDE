@@ -64,12 +64,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticCollector;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.SimpleJavaFileObject;
+import jdkx.tools.StandardLocation;
 
 /**
  * Removes unused imports from a source file. Imports that are only used in javadoc are also

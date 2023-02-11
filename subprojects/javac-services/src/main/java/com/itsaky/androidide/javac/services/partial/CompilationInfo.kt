@@ -20,8 +20,8 @@ package com.itsaky.androidide.javac.services.partial
 import openjdk.source.tree.CompilationUnitTree
 import openjdk.tools.javac.api.JavacTaskImpl
 import openjdk.tools.javac.api.JavacTrees
-import javax.tools.DiagnosticListener
-import javax.tools.JavaFileObject
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileObject
 
 /**
  * Information about a compilation.

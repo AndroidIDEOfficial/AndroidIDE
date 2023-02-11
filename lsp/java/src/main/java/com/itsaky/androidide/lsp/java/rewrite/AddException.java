@@ -34,7 +34,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.ExecutableElement;
 
 public class AddException extends Rewrite {
   final String className, methodName;

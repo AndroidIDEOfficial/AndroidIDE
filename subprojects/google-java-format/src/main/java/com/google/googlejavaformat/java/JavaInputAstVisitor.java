@@ -161,7 +161,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.lang.model.element.Name;
+import jdkx.lang.model.element.Name;
 
 /**
  * An AST visitor that builds a stream of {@link Op}s to format from the given {@link

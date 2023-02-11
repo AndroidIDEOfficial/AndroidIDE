@@ -26,8 +26,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.TypeMirror;
+import jdkx.lang.model.element.TypeParameterElement;
+import jdkx.lang.model.type.TypeMirror;
 
 public final class WildcardTypeName extends TypeName {
   public final List<TypeName> upperBounds;
@@ -67,12 +67,12 @@ public final class WildcardTypeName extends TypeName {
         Collections.singletonList(OBJECT), Collections.singletonList(lowerBound));
   }
 
-  public static TypeName get(javax.lang.model.type.WildcardType mirror) {
+  public static TypeName get(jdkx.lang.model.type.WildcardType mirror) {
     return get(mirror, new LinkedHashMap<>());
   }
 
   static TypeName get(
-      javax.lang.model.type.WildcardType mirror,
+      jdkx.lang.model.type.WildcardType mirror,
       Map<TypeParameterElement, TypeVariableName> typeVariables) {
     TypeMirror extendsBound = mirror.getExtendsBound();
     if (extendsBound == null) {

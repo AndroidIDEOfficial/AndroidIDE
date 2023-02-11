@@ -28,9 +28,9 @@ import com.itsaky.androidide.utils.DocumentUtils.isSameFile
 import openjdk.source.util.Trees
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.lang.model.element.Element
-import javax.lang.model.element.TypeElement
-import javax.tools.JavaFileObject
+import jdkx.lang.model.element.Element
+import jdkx.lang.model.element.TypeElement
+import jdkx.tools.JavaFileObject
 
 /**
  * Finds definition for erroneous elements.

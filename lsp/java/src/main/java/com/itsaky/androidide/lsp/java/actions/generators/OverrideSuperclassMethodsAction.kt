@@ -45,13 +45,13 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.Arrays
 import java.util.Optional
 import java.util.concurrent.CompletableFuture
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.ExecutableType
-import javax.tools.JavaFileObject
+import jdkx.lang.model.element.ElementKind
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.DeclaredType
+import jdkx.lang.model.type.ExecutableType
+import jdkx.tools.JavaFileObject
 
 /**
  * Allows the user to override multiple methods from superclass at once.

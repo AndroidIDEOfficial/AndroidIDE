@@ -22,7 +22,7 @@ import com.itsaky.androidide.zipfs2.ZipFileSystemProvider
 import openjdk.tools.javac.file.RelativePath.RelativeDirectory
 import java.io.IOException
 import java.nio.file.Path
-import javax.lang.model.SourceVersion
+import jdkx.lang.model.SourceVersion
 
 /**
  * A cached file system for JAR files.

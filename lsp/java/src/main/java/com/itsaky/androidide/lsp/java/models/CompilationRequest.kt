@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.java.models
 
 import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor
 import com.itsaky.androidide.lsp.java.compiler.DefaultCompilationTaskProcessor
-import javax.tools.JavaFileObject
+import jdkx.tools.JavaFileObject
 
 /**
  * Data sent to compiler to request a compilation.

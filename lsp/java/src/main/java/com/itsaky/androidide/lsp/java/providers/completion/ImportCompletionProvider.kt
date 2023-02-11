@@ -36,20 +36,20 @@ import openjdk.tools.javac.code.Symbol.MethodSymbol
 import openjdk.tools.javac.model.JavacTypes
 import openjdk.tools.javac.tree.JCTree.JCImport
 import java.nio.file.Path
-import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.ElementKind.ANNOTATION_TYPE
-import javax.lang.model.element.ElementKind.CLASS
-import javax.lang.model.element.ElementKind.CONSTRUCTOR
-import javax.lang.model.element.ElementKind.ENUM
-import javax.lang.model.element.ElementKind.ENUM_CONSTANT
-import javax.lang.model.element.ElementKind.FIELD
-import javax.lang.model.element.ElementKind.INSTANCE_INIT
-import javax.lang.model.element.ElementKind.INTERFACE
-import javax.lang.model.element.ElementKind.METHOD
-import javax.lang.model.element.ElementKind.STATIC_INIT
-import javax.lang.model.element.Modifier.STATIC
-import javax.lang.model.element.TypeElement
+import jdkx.lang.model.element.Element
+import jdkx.lang.model.element.ElementKind
+import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
+import jdkx.lang.model.element.ElementKind.CLASS
+import jdkx.lang.model.element.ElementKind.CONSTRUCTOR
+import jdkx.lang.model.element.ElementKind.ENUM
+import jdkx.lang.model.element.ElementKind.ENUM_CONSTANT
+import jdkx.lang.model.element.ElementKind.FIELD
+import jdkx.lang.model.element.ElementKind.INSTANCE_INIT
+import jdkx.lang.model.element.ElementKind.INTERFACE
+import jdkx.lang.model.element.ElementKind.METHOD
+import jdkx.lang.model.element.ElementKind.STATIC_INIT
+import jdkx.lang.model.element.Modifier.STATIC
+import jdkx.lang.model.element.TypeElement
 
 /**
  * Provides completions for imports.

@@ -51,10 +51,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.FileObject;
+import jdkx.tools.ForwardingJavaFileManager;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.StandardLocation;
 
 @SuppressWarnings("Since15")
 public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManager> {

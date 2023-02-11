@@ -54,12 +54,12 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticCollector;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.SimpleJavaFileObject;
+import jdkx.tools.StandardLocation;
 
 /** Wraps string literals that exceed the column limit. */
 public final class StringWrapper {

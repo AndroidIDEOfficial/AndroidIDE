@@ -31,12 +31,12 @@ import openjdk.source.tree.MemberSelectTree
 import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
 import java.nio.file.Path
-import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind.METHOD
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier.STATIC
-import javax.lang.model.element.Name
-import javax.lang.model.element.TypeElement
+import jdkx.lang.model.element.Element
+import jdkx.lang.model.element.ElementKind.METHOD
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier.STATIC
+import jdkx.lang.model.element.Name
+import jdkx.lang.model.element.TypeElement
 
 /**
  * Completes static imports.

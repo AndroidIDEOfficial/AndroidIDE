@@ -31,9 +31,9 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.time.Instant;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
-import javax.tools.JavaFileObject;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.NestingKind;
+import jdkx.tools.JavaFileObject;
 
 public class SourceFileObject implements JavaFileObject {
   /** path is the absolute path to this file on disk */

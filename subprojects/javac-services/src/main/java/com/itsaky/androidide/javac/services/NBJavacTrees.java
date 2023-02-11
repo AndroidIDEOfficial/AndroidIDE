@@ -49,7 +49,7 @@ import openjdk.tools.javac.util.Context;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.lang.model.element.Element;
+import jdkx.lang.model.element.Element;
 
 /**
  * @author lahvac

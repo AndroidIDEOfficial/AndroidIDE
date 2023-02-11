@@ -40,9 +40,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.DeclaredType;
 
 public class RemoveException extends Rewrite {
 

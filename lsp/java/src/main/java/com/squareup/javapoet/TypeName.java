@@ -27,17 +27,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.SimpleTypeVisitor8;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.element.TypeParameterElement;
+import jdkx.lang.model.type.ArrayType;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.ErrorType;
+import jdkx.lang.model.type.NoType;
+import jdkx.lang.model.type.PrimitiveType;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.SimpleTypeVisitor8;
 
 /**
  * Any type in Java's type system, plus {@code void}. This class is an identifier for primitive
@@ -184,12 +184,12 @@ public class TypeName {
           }
 
           @Override
-          public TypeName visitTypeVariable(javax.lang.model.type.TypeVariable t, Void p) {
+          public TypeName visitTypeVariable(jdkx.lang.model.type.TypeVariable t, Void p) {
             return TypeVariableName.get(t, typeVariables);
           }
 
           @Override
-          public TypeName visitWildcard(javax.lang.model.type.WildcardType t, Void p) {
+          public TypeName visitWildcard(jdkx.lang.model.type.WildcardType t, Void p) {
             return WildcardTypeName.get(t, typeVariables);
           }
 

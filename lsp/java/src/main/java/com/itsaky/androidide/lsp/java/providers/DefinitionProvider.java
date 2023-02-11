@@ -42,10 +42,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeKind;
-import javax.tools.JavaFileObject;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.tools.JavaFileObject;
 
 public class DefinitionProvider {
   public static final List<Location> NOT_SUPPORTED = Collections.emptyList();

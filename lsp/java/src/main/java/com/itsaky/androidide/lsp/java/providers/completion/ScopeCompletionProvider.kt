@@ -46,14 +46,14 @@ import openjdk.source.util.Trees
 import java.nio.file.Path
 import java.util.*
 import java.util.function.*
-import javax.lang.model.element.ElementKind.METHOD
-import javax.lang.model.element.ExecutableElement
-import javax.lang.model.element.Modifier.FINAL
-import javax.lang.model.element.Modifier.PRIVATE
-import javax.lang.model.element.Modifier.STATIC
-import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
-import javax.tools.JavaFileObject
+import jdkx.lang.model.element.ElementKind.METHOD
+import jdkx.lang.model.element.ExecutableElement
+import jdkx.lang.model.element.Modifier.FINAL
+import jdkx.lang.model.element.Modifier.PRIVATE
+import jdkx.lang.model.element.Modifier.STATIC
+import jdkx.lang.model.element.TypeElement
+import jdkx.lang.model.type.DeclaredType
+import jdkx.tools.JavaFileObject
 
 /**
  * Provides completions using [openjdk.source.tree.Scope].

@@ -32,14 +32,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.SimpleAnnotationValueVisitor8;
+import jdkx.lang.model.SourceVersion;
+import jdkx.lang.model.element.AnnotationMirror;
+import jdkx.lang.model.element.AnnotationValue;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.element.VariableElement;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.SimpleAnnotationValueVisitor8;
 
 /** A generated annotation on a declaration. */
 public final class AnnotationSpec {

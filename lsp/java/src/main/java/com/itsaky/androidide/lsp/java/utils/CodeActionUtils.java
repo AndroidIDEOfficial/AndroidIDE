@@ -47,10 +47,10 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 
 /**
  * @author Akash Yadav

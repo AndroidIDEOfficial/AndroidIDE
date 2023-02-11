@@ -22,9 +22,9 @@ import openjdk.tools.javac.util.DefinedBy
 import openjdk.tools.javac.util.DefinedBy.Api.COMPILER
 import openjdk.tools.javac.util.Log
 import java.io.PrintWriter
-import javax.tools.Diagnostic
-import javax.tools.DiagnosticListener
-import javax.tools.JavaFileObject
+import jdkx.tools.Diagnostic
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileObject
 
 /**
  * Reusable Log; exposes a method to clean up the component from leftovers associated with

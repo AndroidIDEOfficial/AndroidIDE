@@ -24,8 +24,8 @@ import com.itsaky.androidide.lsp.java.utils.NavigationHelper
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
 import java.nio.file.Path
-import javax.lang.model.element.Element
-import javax.tools.JavaFileObject
+import jdkx.lang.model.element.Element
+import jdkx.tools.JavaFileObject
 
 /**
  * Finds definition of an element in other source locations.

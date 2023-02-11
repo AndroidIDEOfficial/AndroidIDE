@@ -6,8 +6,8 @@ import com.itsaky.androidide.preferences.internal.tabSize
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
-import javax.lang.model.element.Modifier.PROTECTED
-import javax.lang.model.element.Modifier.PUBLIC
+import jdkx.lang.model.element.Modifier.PROTECTED
+import jdkx.lang.model.element.Modifier.PUBLIC
 
 object ClassBuilder {
   @JvmStatic

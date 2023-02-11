@@ -30,7 +30,7 @@ import openjdk.tools.javac.tree.TreeInfo;
 import java.io.IOError;
 import java.io.IOException;
 
-import javax.lang.model.element.Name;
+import jdkx.lang.model.element.Name;
 
 /** Utilities for working with {@link Tree}s. */
 class Trees {

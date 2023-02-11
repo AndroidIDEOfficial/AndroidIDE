@@ -64,7 +64,7 @@ import java.util.Objects;
  * is typically used in situations where an existing API only accepts an {@link InputStream}, but
  * where the most natural way to produce the data is as a character stream, i.e. by providing a
  * {@link Reader} instance. An example of a situation where this problem may appear is when
- * implementing the {@code javax.activation.DataSource} interface from the Java Activation
+ * implementing the {@code jdkx.activation.DataSource} interface from the Java Activation
  * Framework.
  *
  * <p>Given the fact that the {@link Reader} class doesn't provide any way to predict whether the

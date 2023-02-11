@@ -3,7 +3,7 @@ package com.google.googlejavaformat.java;
 import com.google.googlejavaformat.Input;
 import openjdk.source.tree.AnnotationTree;
 
-import javax.annotation.processing.Generated;
+import jdkx.annotation.processing.Generated;
 
 @Generated("com.google.auto.value.processor.AutoOneOfProcessor")
 final class AutoOneOf_JavaInputAstVisitor_AnnotationOrModifier {

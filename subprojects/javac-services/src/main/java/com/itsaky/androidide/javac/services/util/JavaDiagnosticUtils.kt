@@ -19,8 +19,8 @@ package com.itsaky.androidide.javac.services.util
 
 import openjdk.tools.javac.api.ClientCodeWrapper
 import openjdk.tools.javac.util.JCDiagnostic
-import javax.tools.Diagnostic
-import javax.tools.JavaFileObject
+import jdkx.tools.Diagnostic
+import jdkx.tools.JavaFileObject
 
 /** @author Akash Yadav */
 class JavaDiagnosticUtils {

@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.util.Elements;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.util.Elements;
 
 public class ScopeHelper {
   public static List<Element> scopeMembers(

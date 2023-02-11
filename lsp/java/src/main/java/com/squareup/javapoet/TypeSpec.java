@@ -36,14 +36,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
+import jdkx.lang.model.SourceVersion;
+import jdkx.lang.model.element.Element;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.NoType;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.ElementFilter;
 
 /** A generated class, interface, or enum declaration. */
 public final class TypeSpec {

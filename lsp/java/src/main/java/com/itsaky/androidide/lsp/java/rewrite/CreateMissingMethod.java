@@ -46,10 +46,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.Name;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.TypeMirror;
 
 public class CreateMissingMethod extends Rewrite {
   private static final ILogger LOG = ILogger.newInstance("main");

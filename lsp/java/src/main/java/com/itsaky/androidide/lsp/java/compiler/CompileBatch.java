@@ -59,9 +59,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import javax.lang.model.SourceVersion;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
+import jdkx.lang.model.SourceVersion;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 

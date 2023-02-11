@@ -40,7 +40,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import javax.lang.model.type.ArrayType
+import jdkx.lang.model.type.ArrayType
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)

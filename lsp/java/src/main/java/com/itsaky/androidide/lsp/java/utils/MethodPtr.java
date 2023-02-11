@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Types;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.element.VariableElement;
+import jdkx.lang.model.type.TypeKind;
+import jdkx.lang.model.type.TypeMirror;
+import jdkx.lang.model.util.Types;
 
 /**
  * @author Akash Yadav

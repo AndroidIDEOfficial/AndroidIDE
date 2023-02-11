@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 
 import openjdk.tools.javac.util.Context;
 
-import javax.tools.JavaFileObject;
+import jdkx.tools.JavaFileObject;
 
 /**
  * @author Akash Yadav

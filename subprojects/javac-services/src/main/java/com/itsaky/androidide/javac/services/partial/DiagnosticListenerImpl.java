@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
 
 /**
  * @author Akash Yadav

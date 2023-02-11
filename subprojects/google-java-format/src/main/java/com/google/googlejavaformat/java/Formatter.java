@@ -49,12 +49,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardLocation;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticCollector;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.SimpleJavaFileObject;
+import jdkx.tools.StandardLocation;
 
 /**
  * This is google-java-format, a new Java formatter that follows the Google Java Style Guide quite

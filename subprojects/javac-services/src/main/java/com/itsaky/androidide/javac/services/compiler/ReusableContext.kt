@@ -55,9 +55,9 @@ import openjdk.tools.javac.util.DefinedBy.Api.COMPILER_TREE
 import openjdk.tools.javac.util.Log
 import java.io.PrintWriter
 import java.net.URI
-import javax.tools.DiagnosticListener
-import javax.tools.JavaFileManager
-import javax.tools.JavaFileObject
+import jdkx.tools.DiagnosticListener
+import jdkx.tools.JavaFileManager
+import jdkx.tools.JavaFileObject
 
 /**
  * Reusable [Context] for [ReusableCompiler].

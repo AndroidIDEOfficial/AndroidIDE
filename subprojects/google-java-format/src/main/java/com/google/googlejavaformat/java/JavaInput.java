@@ -48,12 +48,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.SimpleJavaFileObject;
+import jdkx.tools.Diagnostic;
+import jdkx.tools.DiagnosticCollector;
+import jdkx.tools.DiagnosticListener;
+import jdkx.tools.JavaFileObject;
+import jdkx.tools.JavaFileObject.Kind;
+import jdkx.tools.SimpleJavaFileObject;
 
 /** {@code JavaInput} extends {@link Input} to represent a Java input document. */
 public final class JavaInput extends Input {

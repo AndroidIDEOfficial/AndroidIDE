@@ -35,8 +35,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Modifier;
+import jdkx.lang.model.SourceVersion;
+import jdkx.lang.model.element.Modifier;
 
 /**
  * Converts a {@link JavaFile} to a string suitable to both human- and javac-consumption. This

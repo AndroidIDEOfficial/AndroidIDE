@@ -294,7 +294,9 @@ class SubscriberMethodFinder {
         if (clazzName.startsWith("java.")
             || clazzName.startsWith("javax.")
             || clazzName.startsWith("android.")
-            || clazzName.startsWith("androidx.")) {
+            || clazzName.startsWith("androidx.")
+            || clazzName.startsWith("jdkx.")
+            || clazzName.startsWith("openjdk.")) {
           clazz = null;
         }
       }
