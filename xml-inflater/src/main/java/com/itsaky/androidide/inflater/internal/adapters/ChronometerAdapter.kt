@@ -36,7 +36,7 @@ import com.itsaky.androidide.resources.R.string
 open class ChronometerAdapter<T : Chronometer> : TextViewAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("countDown") { view.setCountDown(parseBoolean(value)) }
+    create("countDown") { view.isCountDown = parseBoolean(value) }
     create("format") { view.format = parseString(value) }
   }
 

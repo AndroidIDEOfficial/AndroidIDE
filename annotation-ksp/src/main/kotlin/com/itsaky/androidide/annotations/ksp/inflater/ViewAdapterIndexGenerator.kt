@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.annotations.ksp.inflater
 
+import androidx.annotation.RequiresApi
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.isAnnotationPresent
@@ -187,6 +188,11 @@ class ViewAdapterIndexGenerator(private val logger: KSPLogger) {
           result
         }
       } else null
+    
+    val requiresApi =
+      if (sym.isAnnotationPresent(RequiresApi::class))
+        sym.getAnnotationsByType(RequiresApi::class).iterator().next()
+      else null
 
     val viewName = getViewName(viewAdapter)
     val moduleNs = getModuleNs(viewAdapter)
@@ -194,6 +200,12 @@ class ViewAdapterIndexGenerator(private val logger: KSPLogger) {
     val adapterTypeName = ClassName.get(sym.packageName.asString(), sym.simpleName.asString())
     val viewTypeName =
       ClassName.get(viewName.substringBeforeLast('.'), viewName.substringAfterLast('.'))
+
+    requiresApi?.let { annotation ->
+      val api = if (annotation.value == 1) annotation.api else annotation.value
+      val androidBuild = ClassName.get("android.os", "Build")
+      block.beginControlFlow("if(\$T.VERSION.SDK_INT >= \$L)", androidBuild, api)
+    }
 
     block.addStatement(
       "final var adapter = new \$T()",
@@ -212,6 +224,8 @@ class ViewAdapterIndexGenerator(private val logger: KSPLogger) {
         ClassName.get(java.util.ArrayList::class.java)
       )
     }
+
+    requiresApi?.let { block.endControlFlow() }
 
     indexAddStatements.add("{\n")
     indexAddStatements.indent()
@@ -238,7 +252,7 @@ class ViewAdapterIndexGenerator(private val logger: KSPLogger) {
     )
 
     indexClassBuilder.addStaticBlock(indexAddStatements.build())
-  
+
     OutputStreamWriter(out).use {
       val file = JavaFile.builder(INDEX_PACKAGE_NAME, indexClassBuilder.build())
       file.build().writeTo(it)
@@ -256,11 +270,11 @@ class ViewAdapterIndexGenerator(private val logger: KSPLogger) {
   }
 
   private fun getViewType(viewAdapter: KSAnnotation) =
-    (getViewAdapterArg(viewAdapter, "forView") as KSType)
+    (getAnnotationArg(viewAdapter, "forView") as KSType)
 
   private fun getModuleNs(viewAdapter: KSAnnotation) =
-    (getViewAdapterArg(viewAdapter, "moduleNamespace") as String)
+    (getAnnotationArg(viewAdapter, "moduleNamespace") as String)
 
-  private fun getViewAdapterArg(viewAdapter: KSAnnotation, arg: String) =
+  private fun getAnnotationArg(viewAdapter: KSAnnotation, arg: String) =
     viewAdapter.arguments.first { it.name!!.asString() == arg }.value
 }

@@ -36,7 +36,7 @@ import com.itsaky.androidide.resources.R.string
 open class ViewFlipperAdapter<T : ViewFlipper> : ViewAnimatorAdapter<T>() {
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
     super.createAttrHandlers(create)
-    create("autoStart") { view.setAutoStart(parseBoolean(value)) }
+    create("autoStart") { view.isAutoStart = parseBoolean(value) }
     create("flipInterval") { view.flipInterval = parseInteger(value) }
   }
 

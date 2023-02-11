@@ -27,6 +27,7 @@ dependencies {
   
   implementation(projects.annotations)
   
+  implementation(libs.androidx.annotation)
   implementation(libs.common.javapoet)
   implementation(libs.common.ksp)
 }

@@ -20,7 +20,10 @@
 package com.itsaky.androidide.inflater.internal.adapters
 
 import android.graphics.BlendMode
+import android.os.Build
+import android.os.Build.VERSION_CODES
 import android.widget.AnalogClock
+import androidx.annotation.RequiresApi
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
@@ -35,6 +38,7 @@ import com.itsaky.androidide.resources.R.string
  */
 @com.itsaky.androidide.annotations.inflater.ViewAdapter(AnalogClock::class)
 @IncludeInDesigner(group = WIDGETS)
+@RequiresApi(VERSION_CODES.S)
 open class AnalogClockAdapter<T : AnalogClock> : ViewAdapter<T>() {
 
   override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
