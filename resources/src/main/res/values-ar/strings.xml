@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">إنشاء نشاط جديد مع أسفل التنقل</string>
   <string name="template_tabs">نشاط التبويب</string>
   <string name="template_tabs_description">إنشاء نشاط فارغ جديد مع علامات التبويب</string>
-  <string name="template_fragment_and_viewmodel">التجزئات (فراغمنت) + عرض النموذج (ViewModel)</string>
   <string name="template_cpp">الأصل C++</string>
   <string name="template_cpp_description">إنشاء مشروع جديد مع نشاط فارغ مكون لاستخدام JNI</string>
   <string name="template_no_activity">لا يوجد نشاط</string>
