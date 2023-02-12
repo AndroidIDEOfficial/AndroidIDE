@@ -74,7 +74,7 @@
   <string name="title_install_apks">Install APK(s)</string>
   <string name="title_clear_output">Clear output</string>
   <string name="run">Run</string>
-  <string name="gradle">Gradle</string>
+  <string name="gradle" translatable="false">Gradle</string>
   <string name="title_first_build">First Build</string>
   <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10–15 minutes. But this totally depends on your network connection.\n\nPlease be patient …</string>
 
@@ -106,7 +106,7 @@
   <string name="template_navigation_drawer">Navigation drawer project</string>
   <string name="template_libgdx">LibGDX Game</string>
   <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
-  <string name="template_compose">Jetpack Compose</string>
+  <string name="template_compose" translatable="false">Jetpack Compose</string>
   <string name="template_description_compose">Basic Jetpack Compose hello world project.</string>
   <string name="template_navigation_tabs">Bottom Navigation Activity</string>
   <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
@@ -534,7 +534,7 @@
   <string name="uiMode_light">Light</string>
   <string name="uiMode_dark">Dark</string>
   <string name="uiMode_system">Follow system</string>
-  <string name="idepref_general_materialYou">Material You</string>
+  <string name="idepref_general_materialYou" translatable="false">Material You</string>
   <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
   <string name="idepref_general_projectConfig">Project configuration</string>
   <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
