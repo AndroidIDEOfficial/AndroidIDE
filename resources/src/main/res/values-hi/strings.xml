@@ -6,7 +6,7 @@
   <string name="msg_about_licensed_under">लाइसेंस</string>
   <string name="about_option_email">ईमेल</string>
   <string name="about_option_website">वेबसाइट</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+  <string name="about_footer">%2$s के लिए AndroidIDE %1$s</string>
   <string name="about_subtitle">बस, एक आईडीई एंड्रॉयड के लिए</string>
   <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
   <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 17.0-22.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n AndroidIDE यहा से डाउनलोड करे https://androidide.com</string>
@@ -264,7 +264,7 @@
   <string name="msg_file_tree">फ़ाइल ट्री</string>
   <string name="hint_color_resource">रंग रिसोर्स</string>
   <string name="title_color_picker">रंग पीकर</string>
-  <string name="hint_attr_value">Attribute value</string>
+  <string name="hint_attr_value">एट्रिब्यूट वैल्यू</string>
   <string name="hint_string_resource">स्ट्रिंग रिसोर्स</string>
   <string name="hint_resource_reference">कोई रिसोर्स संदर्भ</string>
   <string name="msg_code_actions">कोड क्रियाएं</string>
@@ -441,16 +441,16 @@
   <string name="git_clone_in_progress">रिपॉजिटरी क्लोन हो रही है</string>
   <string name="git_clone_success">Git क्लोन सफल हुआ</string>
   <string name="git_clone_failed">Git रिपॉजिटरी क्लोन करने में विफल</string>
-  <string name="msg_select_attr">Select an attribute from the below list</string>
-  <string name="action_show_hierarchy">Show layout hierarchy</string>
-  <string name="idepref_editor_colorScheme">Color Scheme</string>
-  <string name="idepref_editor_colorScheme_summary">Choose color scheme to use in editor</string>
-  <string name="idepref_general_uiMode">UI Mode</string>
-  <string name="idepref_general_uiMode_summary">Choose UI mode for the IDE</string>
-  <string name="uiMode_light">Light</string>
-  <string name="uiMode_dark">Dark</string>
-  <string name="uiMode_system">Follow system</string>
-  <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
-  <string name="idepref_general_projectConfig">Project configuration</string>
-  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
+  <string name="msg_select_attr">नीचे दी गई सूची से एक एट्रिब्यूट का चयन करें</string>
+  <string name="action_show_hierarchy">लेआउट हायरार्की दिखाएं</string>
+  <string name="idepref_editor_colorScheme">कलर स्कीम</string>
+  <string name="idepref_editor_colorScheme_summary">एडिटर में उपयोग करने के लिए कलर स्कीम चुनें</string>
+  <string name="idepref_general_uiMode">UI मोड</string>
+  <string name="idepref_general_uiMode_summary">IDE के लिए UI मोड चुनें</string>
+  <string name="uiMode_light">लाइट</string>
+  <string name="uiMode_dark">डार्क</string>
+  <string name="uiMode_system">सिस्टम का पालन करें</string>
+  <string name="idepref_general_materialYou_summary">अपने डिवाइस के करीब एक अनुभव का आनंद लें (पुनः आरंभ करने की आवश्यकता है)।</string>
+  <string name="idepref_general_projectConfig">प्रोजेक्ट कॉन्फ़िगरेशन</string>
+  <string name="msg_app_launch_failed">एप्लिकेशन लॉन्च करने में विफल। अधिक जानकारी के लिए IDE लॉग देखें।</string>
 </resources>
