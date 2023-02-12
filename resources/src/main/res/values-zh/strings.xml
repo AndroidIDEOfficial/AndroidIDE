@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">创建一个带有底部导航栏的 Activity</string>
   <string name="template_tabs">选项卡 Activity</string>
   <string name="template_tabs_description">新建一个带有选项卡的空白 Activity</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">创建一个使用 JNI 空白 Activity 的新项目</string>
   <string name="template_no_activity">无 Activity</string>
