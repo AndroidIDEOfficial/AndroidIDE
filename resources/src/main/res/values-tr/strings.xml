@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">Al gezinti ile yeni bir etkinlik oluşturur</string>
   <string name="template_tabs">Sekmeli etkinlik</string>
   <string name="template_tabs_description">Sekmeler ile boş bir etkinlik oluşturur</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">JNI kullanacak şekilde yapılandırılmış bir Boş Etkinlik ile yeni bir proje oluşturur</string>
   <string name="template_no_activity">Etkinlik yok</string>
