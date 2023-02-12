@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="app_name">AndroidIDE</string>
   <string name="license_jdk">AndroidIDE JDK-এর একটি পরিবর্তিত বিল্ড ব্যবহার করে যা GNU জেনারেল পাবলিক লাইসেন্স v2.0-এর অধীনে লাইসেন্সপ্রাপ্ত৷ সোর্স কোড এবং JDK এর লাইসেন্স এখানে পাওয়া যাবে : </string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
   <string name="about_option_website">ওয়েবসাইট</string>
-  <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
   <string name="about_footer">%2$s এর জন্য AndroidIDE %1$s</string>
   <string name="about_subtitle">সহজভাবে, Android এর জন্য একটি IDE</string>
   <string name="msg_get_package_failed">প্যাকেজের নাম বের করতে ব্যর্থ!</string>
   <string name="msg_share_app">AndroidIDE হল একটি ইন্টিগ্রেটেড ডেভেলপমেন্ট এনভায়রনমেন্ট যা আপনার অ্যান্ড্রয়েড স্মার্টফোনে অ্যান্ড্রয়েড অ্যাপ তৈরি করার জন্য। এটি সমর্থন করে:\n1. গ্রেডেল \n2. OpenJDK 17.0-22.\n3. উন্নত জাভা অটোকমপ্লিট\n4. XML অটোকমপ্লিট \n5. কটলিন সমর্থন এবং আরও অনেক কিছু।\n\nhttps://androidide.com থেকে AndroidIDE ডাউনলোড করুন</string>
   <string name="msg_need_help">আপনি যদি AndroidIDE ব্যবহার করার সময় বা অ্যান্ড্রয়েড অ্যাপস তৈরি করার সময় সমস্যার সম্মুখীন হন, তাহলে আপনি টেলিগ্রাম গ্রুপে যোগ দিতে পারেন সেখানে সাহায্য চাইতে পারেন।\n\nআপনি আমাদের ইমেলে পরামর্শও পাঠাতে পারেন।</string>
   <string name="discuss_amp_help">আলোচনা এবং সাহায্য করুন</string>
-  <string name="title_github">গিটহাব</string>
   <string name="need_help">সাহায্য প্রয়োজন?</string>
   <string name="other">অন্যান্য</string>
   <string name="share_with_friends">বন্ধুদের সাথে শেয়ার করুন</string>
@@ -49,12 +46,8 @@
   <string name="msg_device_not_supported">দুর্ভাগ্যবশত, আপনার ডিভাইসটি এই মুহূর্তে সমর্থিত নয়৷ অসুবিধার জন্য আমরা দুঃখিত৷\n\nসমর্থিত CPU ABIs: aarch64 এবং armeabi-v7a</string>
   <!-- Project Builder -->
   <string name="lint">লিন্ট</string>
-  <string name="lint_debug">লিন্ট ডিবাগ</string>
-  <string name="lint_release">লিন্ট রিলিজ</string>
   <string name="build">বিল্ড</string>
-  <string name="build_debug">অ্যাসেম্বেল বিভাগ</string>
   <string name="build_output">বিল্ড আউটপুট</string>
-  <string name="build_release">অ্যাসেম্বেল রিলিজ</string>
   <string name="lint_tasks">লিন্ট প্রক্রিয়াগুলি</string>
   <string name="clean_amp_build">পরিষ্কার করে বিল্ড করুন</string>
   <string name="clean_project">পরিষ্কার করুন</string>
@@ -70,7 +63,6 @@
   <string name="title_install_apks">APK(গুলি) ইনস্টল করুন</string>
   <string name="title_clear_output">আউটপুট পরিস্কার করুন</string>
   <string name="run">চালান</string>
-  <string name="gradle">গ্রাডল</string>
   <string name="title_first_build">প্রথম বিল্ড</string>
   <string name="msg_first_build">আপনি AndroidIDE ইনস্টল করার পর এটিই প্রথমবার বিল্ড। প্রথম বিল্ডে সাধারণত সময় লাগে কারণ Gradle সমস্ত ডিপেনডেন্সি এবং প্লাগইন ডাউনলোড করে। এই প্রক্রিয়াটি প্রায় 10-15 মিনিট সময় নিতে পারে। কিন্তু এটি সম্পূর্ণরূপে আপনার নেটওয়ার্ক সংযোগের উপর নির্ভর করে।\n\nদয়া করে ধৈর্য ধরুন।…</string>
   <!-- Project -->
@@ -100,7 +92,6 @@
   <string name="template_navigation_drawer">নেভিগেশন ড্রয়ার প্রকল্প</string>
   <string name="template_libgdx">LibGDX গেম</string>
   <string name="template_description_libgdx">LibGDX গেম প্রজেক্ট এর একটি উদাহরণ হিসেবে একটি ছবি রেন্ডার করার জন্য সেট আপ করা হয়েছে।</string>
-  <string name="template_compose">জেটপ্যাক কম্পোজ</string>
   <string name="template_description_compose">বেসিক জেটপ্যাক কম্পোজ হ্যালো ওয়ার্ল্ড প্রজেক্ট।</string>
   <string name="template_navigation_tabs">বটম নেভিগেশন অ্যাক্টিভিটি</string>
   <string name="template_navigation_tabs_description">নীচে নেভিগেশন সহ একটি নতুন কার্যকলাপ তৈরি করে</string>
@@ -255,7 +246,6 @@
   <string name="action_expand_selection">নির্বাচন প্রসারিত করুন</string>
   <string name="idepref_java_matchLower_title">ছোট হাতের অক্ষর এও কমপ্লিশন করুন</string>
   <string name="title_common">সাধারণ</string>
-  <string name="idepref_editor_category_java">জাভা</string>
   <string name="title_files_unsaved">অসংরক্ষিত ফাইল</string>
   <string name="msg_files_unsaved">কিছু ফাইল সংরক্ষিত নেই৷ আপনি বন্ধ করার আগে তাদের সংরক্ষণ করতে চান? অসংরক্ষিত ফাইলগুলি হল: \n%s</string>
   <string name="idepref_editor_autoSave_title">ফাইলগুলি বন্ধ করার আগে সংরক্ষণ করুন</string>
@@ -318,7 +308,6 @@
   <string name="build_status_failed">বিল্ড ব্যর্থ হয়েছে৷ আরো বিস্তারিত জানার জন্য বিল্ড আউটপুট দেখুন।</string>
   <string name="build_status_sucess">বিল্ড সফল হয়েছে</string>
   <string name="msg_output_text_extraction_failed">সম্পাদক থেকে পাঠ্য পেতে ব্যর্থ</string>
-  <string name="template_def_app_name">My Application</string>
   <string name="err_invalid_data_by_intent">ইন্টেন্ট অবৈধ ডেটা ফেরত দিয়েছে</string>
   <string name="msg_select_from_primary_storage">প্রাথমিক স্টোরেজ থেকে একটি ডিরেক্টরি নির্বাচন করুন</string>
   <string name="err_authority_not_allowed">কর্তৃপক্ষ \'%s\' অনুমোদিত নয়</string>
@@ -345,7 +334,6 @@
   <string name="idepref_about_summary">AndroidIDE সম্পর্কে আরো কিছু।</string>
   <string name="idepref_general_summary">সাধারণ IDE কনফিগারেশন।</string>
   <string name="idepref_editor_summary">সম্পাদক কনফিগার করুন৷</string>
-  <string name="xml">XML</string>
   <string name="idepref_xml_trimFinalNewLine_title">চূড়ান্ত নতুন লাইন বাদ দিন</string>
   <string name="idepref_xml_insertFinalNewLine_title">চূড়ান্ত নতুন লাইন যোগ করুন</string>
   <string name="idepref_xml_trimFinalNewLine_summary">ফাইলের শেষে অতিরিক্ত খালি লাইন সরান</string>
@@ -446,8 +434,6 @@
   <string name="msg_loading_tasks">প্রক্রিয়া লোড করা হচ্ছে...</string>
   <string name="title_all_tasks">সমস্ত প্রক্রিয়াগুলি</string>
   <string name="msg_feature_unimplemented">এই বৈশিষ্ট্যটি এখনও বাস্তবায়িত হয়নি।</string>
-  <string name="ui_category_widgets">Widgets</string>
-  <string name="ui_category_layouts">Layouts</string>
   <!-- GIT -->
   <string name="git_clone">ক্লোন</string>
   <string name="git_clone_repo">গিট রেপোসিটরি ক্লোন করুন</string>
@@ -464,7 +450,6 @@
   <string name="uiMode_light">লাইট</string>
   <string name="uiMode_dark">ডার্ক</string>
   <string name="uiMode_system">সিস্টেম কে অনুসরন করুন</string>
-  <string name="idepref_general_materialYou">ম্যাটেরিয়াল ইউ</string>
   <string name="idepref_general_materialYou_summary">আপনার ডিভাইসের কাছাকাছি একটি অভিজ্ঞতা উপভোগ করুন (আ্যপ এর রিস্টার্ট প্রয়োজন)।</string>
   <string name="idepref_general_projectConfig">প্রকল্প কনফিগারেশন</string>
   <string name="msg_app_launch_failed">অ্যাপ্লিকেশন শুরু করতে ব্যর্থ। আরো তথ্য জানার জন্য IDE লগ চেক করুন।</string>
