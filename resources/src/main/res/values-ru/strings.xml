@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">Создаёт новую пустую активность с Bottom Navigation</string>
   <string name="template_tabs">Проект с вкладками</string>
   <string name="template_tabs_description">Создаёт новую пустую активность с вкладками</string>
-  <string name="template_fragment_and_viewmodel">Проект Fragment + ViewModel</string>
   <string name="template_cpp">Нативный проект на C++</string>
   <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
   <string name="template_no_activity">Проект без активности</string>
