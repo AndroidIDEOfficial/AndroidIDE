@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">Buat Activity baru dengan Bottom Navigation</string>
   <string name="template_tabs">Tabbed Activity</string>
   <string name="template_tabs_description">Buat Blank Activity baru dengan Tabs</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Buat Proyek baru dengan Empty Activity yang dikonfigurasi untuk menggunakan JNI</string>
   <string name="template_no_activity">Tidak ada Activity</string>
