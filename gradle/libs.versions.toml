@@ -60,7 +60,7 @@ androidx-nav_ui = { module = "androidx.navigation:navigation-ui-ktx", version.re
 androidx-nav_dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
 
 # Google
-google-material = { module = "com.google.android.material:material", version = "1.7.0" }
+google-material = { module = "com.google.android.material:material", version = "1.8.0" }
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 google-guava = { module = "com.google.guava:guava", version = "31.1-android" }
 google-guava-jre = { module = "com.google.guava:guava", version = "31.1-jre" }
