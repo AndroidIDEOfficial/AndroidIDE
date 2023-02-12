@@ -451,5 +451,5 @@
   <string name="uiMode_system">اتبع النظام</string>
   <string name="idepref_general_materialYou_summary">استمتع بتجربة أقرب إلى جهازك (يتطلب إعادة تشغيل).</string>
   <string name="idepref_general_projectConfig">تهيئة المشروع</string>
-  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
+  <string name="msg_app_launch_failed">فشل في تشغيل التطبيق. راجع سجلات IDE لمزيد من المعلومات.</string>
 </resources>
