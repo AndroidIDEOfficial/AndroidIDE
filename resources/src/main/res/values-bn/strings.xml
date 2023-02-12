@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">নীচে নেভিগেশন সহ একটি নতুন কার্যকলাপ তৈরি করে</string>
   <string name="template_tabs">ট্যাবড এক্টিভিটি</string>
   <string name="template_tabs_description">ট্যাব সহ একটি নতুন ফাঁকা কার্যকলাপ তৈরি করে</string>
-  <string name="template_fragment_and_viewmodel">ফ্রাগমেন্ট + ভিউ মডেল</string>
   <string name="template_cpp">নেটিভ C++</string>
   <string name="template_cpp_description">JNI ব্যবহার করার জন্য কনফিগার করা একটি খালি কার্যকলাপ সহ একটি নতুন প্রকল্প তৈরি করে</string>
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
