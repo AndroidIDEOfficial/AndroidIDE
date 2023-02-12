@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي: </string>
+  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي:</string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
-  <string name="msg_about_licensed_under">مرخص له تحت: </string>
+  <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
   <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
-  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للأندرويد</string>
+  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
   <string name="msg_need_help">إذا كنت تواجه مشكلات أثناء استخدام AndroidIDE أو مع بناء التطبيقات ، يمكنك الانضمام إلى مجموعة التيليغرام وطلب المساعدة هناك.\n\nيمكنك أيضًا إرسال ملاحظات متضمنة على بريدنا الإلكتروني.</string>
