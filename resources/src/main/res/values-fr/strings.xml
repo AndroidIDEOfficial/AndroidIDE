@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">Créer une nouvelle activité avec le Bottom Navigation </string>
   <string name="template_tabs">Projet avec les Tabs</string>
   <string name="template_tabs_description">Créer un projet vide avec Tabs</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Créez un nouveau projet avec une activité vide configuré pour utiliser JNI</string>
   <string name="template_no_activity">Pas d\'activité</string>
