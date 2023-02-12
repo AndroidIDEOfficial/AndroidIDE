@@ -97,7 +97,6 @@
   <string name="template_navigation_tabs_description">Erstellt eine neue Activity mit eine bottom navigation</string>
   <string name="template_tabs">Tabbed Activity</string>
   <string name="template_tabs_description">Erstellt eine neue leere Activity mit Tabs</string>
-  <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
   <string name="template_cpp">Native C++</string>
   <string name="template_cpp_description">Erstellt ein neues Projekt mit einer leeren Activity konfiguriert um JNI zu benutzen</string>
   <string name="template_no_activity">Keine Activity</string>
