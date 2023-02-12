@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="app_name">AndroidIDE</string>
-  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي:</string>
+  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي: </string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
-  <string name="msg_about_licensed_under">مرخص له تحت:</string>
+  <string name="msg_about_licensed_under">مرخص له تحت: </string>
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
-  <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
-  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
+  <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
+  <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للأندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
   <string name="msg_need_help">إذا كنت تواجه مشكلات أثناء استخدام AndroidIDE أو مع بناء التطبيقات ، يمكنك الانضمام إلى مجموعة التيليغرام وطلب المساعدة هناك.\n\nيمكنك أيضًا إرسال ملاحظات متضمنة على بريدنا الإلكتروني.</string>
   <string name="discuss_amp_help">مناقشة والمساعدة</string>
-  <string name="title_github">GitHub</string>
   <string name="need_help">تحتاج للمساعدة؟</string>
   <string name="other">أخرى</string>
   <string name="share_with_friends">شارك مع الأصدقاء</string>
@@ -49,12 +46,8 @@
   <string name="msg_device_not_supported">لسوء الحظ، جهازك غير مدعوم في الوقت الراهن. نحن آسفون على الإزعاج.\n\nوحدة المعالجة المركزية المدعومة: aarch64 و Armeabi-v7a</string>
   <!-- Project Builder -->
   <string name="lint">Lint</string>
-  <string name="lint_debug">lintDebug</string>
-  <string name="lint_release">lintRelease</string>
   <string name="build">بناء</string>
-  <string name="build_debug">assembleDebug</string>
   <string name="build_output">مخرجات البناء</string>
-  <string name="build_release">assembleRelease</string>
   <string name="lint_tasks">مهام Lint</string>
   <string name="clean_amp_build">تنظيف &amp; بناء</string>
   <string name="clean_project">تنظيف</string>
@@ -70,7 +63,6 @@
   <string name="title_install_apks">تثبيت ملفات APK</string>
   <string name="title_clear_output">مسح المخرجات</string>
   <string name="run">تشغيل</string>
-  <string name="gradle">Gradle</string>
   <string name="title_first_build">أول بناء</string>
   <string name="msg_first_build">هذه هي المرة الأولى التي يتم فيها البناء بعد تثبيت AndroidIDE. يستغرق البناء الأول عادة وقتاً بينما يقوم تنزيل Gradle بتحميل جميع التبعيات والإضافات. قد تستغرق هذه العملية حوالي 10 - 15 دقيقة. لكن هذا يعتمد كلياً على اتصال الشبكة الخاصة بك.\n\nالرجاء التحلي بالصبر…</string>
   <!-- Project -->
@@ -100,13 +92,11 @@
   <string name="template_navigation_drawer">مشروع درج التنقل</string>
   <string name="template_libgdx">لعبة LibGDX</string>
   <string name="template_description_libgdx">مشروع لعبة LibGDX تم إعداده لتقديم صورة كمثال.</string>
-  <string name="template_compose">Jetpack Compose</string>
   <string name="template_description_compose">مشروع Jetpack الأساسي لإنشاء مشروع \"مرحبا بالعالم\".</string>
   <string name="template_navigation_tabs">نشاط التنقل السفلي</string>
   <string name="template_navigation_tabs_description">إنشاء نشاط جديد مع أسفل التنقل</string>
   <string name="template_tabs">نشاط التبويب</string>
   <string name="template_tabs_description">إنشاء نشاط فارغ جديد مع علامات التبويب</string>
-  <string name="template_fragment_and_viewmodel">التجزئات (فراغمنت) + عرض النموذج (ViewModel)</string>
   <string name="template_cpp">الأصل C++</string>
   <string name="template_cpp_description">إنشاء مشروع جديد مع نشاط فارغ مكون لاستخدام JNI</string>
   <string name="template_no_activity">لا يوجد نشاط</string>
@@ -255,7 +245,6 @@
   <string name="action_expand_selection">توسيع التحديد</string>
   <string name="idepref_java_matchLower_title">مطابقة المكملات في حالة الأحرف الصغيرة</string>
   <string name="title_common">الشائعة</string>
-  <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">الملفات غير المحفوظة</string>
   <string name="msg_files_unsaved">لم يتم حفظ بعض الملفات. هل ترغب في حفظها قبل الإغلاق؟ الملفات غير المحفوظة هي: \n%s</string>
   <string name="idepref_editor_autoSave_title">حفظ قبل إغلاق الملفات</string>
@@ -274,7 +263,7 @@
   <string name="msg_file_tree">درج الملفات</string>
   <string name="hint_color_resource">مورد اللون</string>
   <string name="title_color_picker">منتقي ألوان</string>
-  <string name="hint_string_value">قيمة النص</string>
+  <string name="hint_attr_value">قيمة السمة</string>
   <string name="hint_string_resource">مورد نصي</string>
   <string name="hint_resource_reference">أي مرجع للمورد</string>
   <string name="msg_code_actions">الإجراءات</string>
@@ -318,7 +307,6 @@
   <string name="build_status_failed">فشل البناء. راجع إخراج البناء لمزيد من التفاصيل.</string>
   <string name="build_status_sucess">تم البناء بنجاح</string>
   <string name="msg_output_text_extraction_failed">فشل الحصول على نص من المحرر</string>
-  <string name="template_def_app_name">تطبيقي</string>
   <string name="err_invalid_data_by_intent">البيانات غير صالحة للقصد.</string>
   <string name="msg_select_from_primary_storage">حدد مجلد من وحدة التخزين الرئيسية</string>
   <string name="err_authority_not_allowed">السلطة \'\'%s\' غير مسموح بها</string>
@@ -345,7 +333,6 @@
   <string name="idepref_about_summary">المزيد عن AndroidIDE.</string>
   <string name="idepref_general_summary">إعدادات IDE العامة.</string>
   <string name="idepref_editor_summary">تهيئة المحرر.</string>
-  <string name="xml">XML</string>
   <string name="idepref_xml_trimFinalNewLine_title">تقليم السطر الجديد النهائي</string>
   <string name="idepref_xml_insertFinalNewLine_title">إدراج سطر جديد نهائي</string>
   <string name="idepref_xml_trimFinalNewLine_summary">إزالة سطر فارغ إضافي في نهاية الملف</string>
@@ -372,6 +359,7 @@
   <string name="idepref_maxLineWidth_title">أقصى عرض للسطر</string>
   <string name="idepref_maxLineWidth_summary">الحد الأقصى لعدد الأحرف التي يجب أن تكون في السطر.</string>
   <string name="idepref_splitAttrIndentSize_title">فصل حجم العوز للسمات </string>
+  <string name="idepref_splitAttrIndentSize_summary">عدد المسافات المراد إضافتها لسمات التقسيم.</string>
   <string name="idepref_preservedNewLines_title">احتفظ بخطوط جديدة</string>
   <string name="idepref_preservedNewLines_summary">• الحد الأقصى لعدد فترات التوقف المستمرة التي ينبغي الحفاظ عليها.</string>
   <string name="idepref_emptyElements_title">سلوك العناصر الفارغة</string>
@@ -445,33 +433,6 @@
   <string name="msg_loading_tasks">جارٍ تحميل المهام...</string>
   <string name="title_all_tasks">كل المهام</string>
   <string name="msg_feature_unimplemented">لم يتم تنفيذ هذه الميزة بعد.</string>
-  <string name="ui_category_widgets">الأدوات الذكية</string>
-  <string name="ui_category_layouts">الصفحات</string>
-  <string name="widget_textview">TextView</string>
-  <string name="widget_button">Button</string>
-  <string name="widget_checkbox">CheckBox</string>
-  <string name="widget_checked_textview">CheckedTextView</string>
-  <string name="widget_edittext">EditText</string>
-  <string name="widget_image_button">ImageButton</string>
-  <string name="widget_image_view">ImageView</string>
-  <string name="widget_progressbar">ProgressBar</string>
-  <string name="widget_radio_button">RadioButton</string>
-  <string name="widget_seekbar">SeekBar</string>
-  <string name="widget_spinner">Spinner</string>
-  <string name="layout_linear">LinearLayout</string>
-  <string name="layout_relative">RelativeLayout</string>
-  <string name="widget_auto_complete_textview">AutoCompleteTextView</string>
-  <string name="widget_listview">ListView</string>
-  <string name="widget_surfaceview">SurfaceView</string>
-  <string name="widget_switch">Switch</string>
-  <string name="widget_textureview">TextureView</string>
-  <string name="widget_togglebutton">ToggleButton</string>
-  <string name="widget_webview">WebView</string>
-  <string name="widget_frame_layout">FrameLayout</string>
-  <string name="widget_grid_layout">GridLayout</string>
-  <string name="widget_linear_layout_horz">LinearLayout (H)</string>
-  <string name="widget_linear_layout_vert">LinearLayout (V)</string>
-  <string name="widget_relative_layout">RelativeLayout</string>
   <!-- GIT -->
   <string name="git_clone">نسخ</string>
   <string name="git_clone_repo">نسخ مشروع Git</string>
@@ -479,5 +440,16 @@
   <string name="git_clone_in_progress">نسخ مشروع Git...</string>
   <string name="git_clone_success">تم نسخ مشروع Git بنجاح</string>
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
-  <string name="idepref_splitAttrIndentSize_summary">عدد المسافات المراد إضافتها لسمات التقسيم.</string>
+  <string name="msg_select_attr">حدد سمة من القائمة أدناه</string>
+  <string name="action_show_hierarchy">عرض التسلسل الهرمي للتخطيط</string>
+  <string name="idepref_editor_colorScheme">تشكيلات الألوان</string>
+  <string name="idepref_editor_colorScheme_summary">اختر مخطط الألوان لاستخدامه في المحرر</string>
+  <string name="idepref_general_uiMode">نمط واجهة المستخدم</string>
+  <string name="idepref_general_uiMode_summary">اختر وضع واجهة المستخدم لـ IDE</string>
+  <string name="uiMode_light">فاتح</string>
+  <string name="uiMode_dark">مظلم</string>
+  <string name="uiMode_system">اتبع النظام</string>
+  <string name="idepref_general_materialYou_summary">استمتع بتجربة أقرب إلى جهازك (يتطلب إعادة تشغيل).</string>
+  <string name="idepref_general_projectConfig">تهيئة المشروع</string>
+  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
 </resources>
