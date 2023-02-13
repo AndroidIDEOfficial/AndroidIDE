@@ -446,8 +446,8 @@
   <string name="idepref_editor_colorScheme_summary">Pilih skema warna untuk digunakan dalam editor</string>
   <string name="idepref_general_uiMode">Mode UI</string>
   <string name="idepref_general_uiMode_summary">Pilih mode UI untuk IDE</string>
-  <string name="uiMode_light">Terang</string>
-  <string name="uiMode_dark">Gelap</string>
+  <string name="uiMode_light">Light</string>
+  <string name="uiMode_dark">Dark</string>
   <string name="uiMode_system">Ikuti sistem</string>
   <string name="idepref_general_materialYou_summary">Nikmati pengalaman yang lebih dekat dengan perangkat Anda (perlu dimulai ulang).</string>
   <string name="idepref_general_projectConfig">Konfigurasi proyek</string>
