@@ -30,7 +30,7 @@ releaseTypes:
     - origin
   items:
     mainline:
-      description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
+      description: "{{#fileContent}}build/CHANGELOG.md{{/fileContent}}"
       gitPush: true
       gitTag: true
       publish: true
@@ -40,7 +40,7 @@ releaseTypes:
         CI: "^true$"
         ReleaseAndroidIDE: "^true$"
     internal:
-      description: "{{#file.content}}build/CHANGELOG.md{{/file.content}}"
+      description: "{{#fileContent}}build/CHANGELOG.md{{/fileContent}}"
       collapseVersions: true
       collapsedVersionQualifier: "internal"
       gitPush: false
@@ -66,4 +66,4 @@ services:
       options:
         REPOSITORY_OWNER: "AndroidIDEOfficial"
         REPOSITORY_NAME: "AndroidIDE"
-        AUTHENTICATION_TOKEN: "{{#environment.variable}}GH_TOKEN{{/environment.variable}}"
+        AUTHENTICATION_TOKEN: "{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}"

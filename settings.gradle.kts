@@ -18,7 +18,7 @@ plugins { id("com.mooltiverse.oss.nyx") version "2.2.0" }
 extensions.configure<NyxExtension> {
   git {
     remotes.register("origin") {
-      user.set("{{#environment.variable}}GH_TOKEN{{/environment.variable}}")
+      user.set("{{#environmentVariable}}GH_TOKEN{{/environmentVariable}}")
       password.set("")
     }
   }
