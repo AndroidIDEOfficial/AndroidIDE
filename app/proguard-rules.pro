@@ -5,6 +5,7 @@
 -dontobfuscate
 
 -keep class javax.** { *; }
+-keep class jdkx.** { *; }
 
 # keep javac classes
 -keep class openjdk.** { *; }
