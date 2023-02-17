@@ -17,12 +17,13 @@
 
 package com.itsaky.androidide.preferences
 
-import android.content.Context
-import androidx.preference.Preference
+import com.itsaky.androidide.R
+import com.itsaky.androidide.preferences.internal.GOOGLE_CODE_STYLE
+import com.itsaky.androidide.preferences.internal.JAVA_DIAGNOSTICS_ENABLED
+import com.itsaky.androidide.preferences.internal.googleCodeStyle
+import com.itsaky.androidide.preferences.internal.isJavaDiagnosticsEnabled
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.preferences.internal.GOOGLE_CODE_STYLE
-import com.itsaky.androidide.preferences.internal.googleCodeStyle
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -33,28 +34,27 @@ internal class JavaCodeConfigurations(
 ) : IPreferenceGroup() {
   init {
     addPreference(GoogleCodeStyle())
+    addPreference(JavaDiagnosticsEnabled())
   }
 }
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 @Parcelize
 private class GoogleCodeStyle(
   override val key: String = GOOGLE_CODE_STYLE,
   override val title: Int = string.idepref_java_useGoogleStyle_title,
   override val summary: Int? = string.idepref_java_useGoogleStyle_summary,
   override val icon: Int? = drawable.ic_format_code,
-) : SwitchPreference() {
-  
-  override fun onCreatePreference(context: Context): Preference {
-    val preference = super.onCreatePreference(context) as androidx.preference.SwitchPreference
-    preference.isChecked = googleCodeStyle
-    return preference
-  }
-  
-  override fun onPreferenceChanged(preferece: Preference, newValue: Any?): Boolean {
-    googleCodeStyle = newValue as Boolean? ?: googleCodeStyle
-    return true
-  }
-}
+) : SwitchPreference(getValue = ::googleCodeStyle::get, setValue = ::googleCodeStyle::set)
+
+@Parcelize
+private class JavaDiagnosticsEnabled(
+  override val key: String = JAVA_DIAGNOSTICS_ENABLED,
+  override val title: Int = R.string.idepref_java_diagnosticEnabled_title,
+  override val summary: Int? = R.string.idepref_java_diagnosticsEnabled_summary,
+  override val icon: Int? = drawable.ic_compilation_error
+) :
+  SwitchPreference(
+    getValue = ::isJavaDiagnosticsEnabled::get,
+    setValue = ::isJavaDiagnosticsEnabled::set
+  )

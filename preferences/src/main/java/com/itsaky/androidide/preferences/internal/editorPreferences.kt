@@ -18,7 +18,6 @@
 package com.itsaky.androidide.preferences.internal
 
 const val COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower"
-const val GOOGLE_CODE_STYLE = "idepref_editor_java_googleCodeStyle"
 
 const val FLAG_WS_LEADING = "idepref_editor_wsLeading"
 const val FLAG_WS_TRAILING = "idepref_editor_wsTrailing"

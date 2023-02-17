@@ -180,6 +180,10 @@ public class JavaLanguageServer implements ILanguageServer {
         || !this.completionProvider.canComplete(params.getFile())) {
       return CompletionResult.EMPTY;
     }
+    
+    if (diagnosticProvider.isAnalyzing()) {
+      diagnosticProvider.cancel();
+    }
 
     this.completionProvider.reset(
         compiler, this.settings, this.cachedCompletion, this::updateCachedCompletion);
@@ -233,7 +237,7 @@ public class JavaLanguageServer implements ILanguageServer {
   @NonNull
   @Override
   public DiagnosticResult analyze(@NonNull Path file) {
-    if (!DocumentUtils.isJavaFile(file)) {
+    if (!settings.diagnosticsEnabled() || !DocumentUtils.isJavaFile(file)) {
       return DiagnosticResult.NO_UPDATE;
     }
 

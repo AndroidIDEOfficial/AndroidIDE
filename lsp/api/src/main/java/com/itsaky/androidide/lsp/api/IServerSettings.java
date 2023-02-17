@@ -38,6 +38,14 @@ public interface IServerSettings {
    * @return {@code true} if enabled, {@code false} otherwise.
    */
   boolean completionsEnabled();
+  
+  /**
+   * Called by the language server to check if the source code analysis is enabled or not.
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  default boolean diagnosticsEnabled() {
+    return true;
+  }
 
   /**
    * Called by the language server to check if the code actions are enabled.

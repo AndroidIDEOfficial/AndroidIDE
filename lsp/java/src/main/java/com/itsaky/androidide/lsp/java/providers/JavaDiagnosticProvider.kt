@@ -78,6 +78,14 @@ class JavaDiagnosticProvider {
 
     return result
   }
+  
+  fun isAnalyzing(): Boolean {
+    return this.analyzing.get()
+  }
+  
+  fun cancel() {
+    this.analyzingThread?.cancel()
+  }
 
   fun clearTimestamp(file: Path) {
     analyzeTimestamps.remove(file)
@@ -104,6 +112,10 @@ class JavaDiagnosticProvider {
   inner class AnalyzingThread(val compiler: JavaCompilerService, val file: Path) :
     Thread("JavaAnalyzerThread") {
     lateinit var result: DiagnosticResult
+    
+    fun cancel() {
+      ProgressManager.instance.cancel(this)
+    }
 
     override fun run() {
       result =
