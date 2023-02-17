@@ -452,4 +452,6 @@
   <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
   <string name="idepref_general_projectConfig">Project configuration</string>
   <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
 </resources>
