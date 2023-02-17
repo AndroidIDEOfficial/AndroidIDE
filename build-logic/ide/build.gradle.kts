@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  *  This file is part of AndroidIDE.
  *
@@ -23,6 +25,15 @@ repositories {
   google()
   gradlePluginPortal()
   mavenCentral()
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "17"
 }
 
 dependencies {

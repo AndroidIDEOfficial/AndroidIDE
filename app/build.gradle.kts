@@ -185,3 +185,8 @@ fun getEnvOrProp(key: String): String? {
   }
   return value
 }
+
+afterEvaluate {
+  tasks.getByName("mergeDebugAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+  tasks.getByName("mergeReleaseAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+}

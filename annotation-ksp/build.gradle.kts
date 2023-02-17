@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  *  This file is part of AndroidIDE.
  *
@@ -19,7 +21,6 @@ plugins {
   kotlin("jvm")
 }
 
-
 group = "com.itsaky.androidide.annotations"
 
 dependencies {
@@ -34,4 +35,8 @@ dependencies {
 
 sourceSets.main {
   java.srcDirs("src/main/kotlin")
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "17"
 }
