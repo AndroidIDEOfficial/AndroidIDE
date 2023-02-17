@@ -452,4 +452,6 @@
   <string name="idepref_general_materialYou_summary">Aproveite uma experiência mais próxima do seu dispositivo (requer reinicialização).</string>
   <string name="idepref_general_projectConfig">Configuração do projeto</string>
   <string name="msg_app_launch_failed">Falha ao iniciar a aplicação. Consulte os logs do IDE para obter mais informações.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
 </resources>
