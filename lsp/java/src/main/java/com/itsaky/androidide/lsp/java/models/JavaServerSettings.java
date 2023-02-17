@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.itsaky.androidide.lsp.util.PrefBasedServerSettings;
 import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.utils.VMUtils;
 
 /**
  * Server settings for the java language server.
@@ -48,7 +49,7 @@ public class JavaServerSettings extends PrefBasedServerSettings {
   
   @Override
   public boolean diagnosticsEnabled() {
-    return isJavaDiagnosticsEnabled();
+    return VMUtils.isJvm() || isJavaDiagnosticsEnabled();
   }
   
   public JavaFormatterOptions getFormatterOptions() {
