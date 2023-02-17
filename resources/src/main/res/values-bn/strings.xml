@@ -452,6 +452,6 @@
   <string name="idepref_general_materialYou_summary">আপনার ডিভাইসের কাছাকাছি একটি অভিজ্ঞতা উপভোগ করুন (আ্যপ এর রিস্টার্ট প্রয়োজন)।</string>
   <string name="idepref_general_projectConfig">প্রকল্প কনফিগারেশন</string>
   <string name="msg_app_launch_failed">অ্যাপ্লিকেশন শুরু করতে ব্যর্থ। আরো তথ্য জানার জন্য IDE লগ চেক করুন।</string>
-  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
-  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Diagnostics সক্রিয়</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) জাভা সোর্স ফাইলগুলি ত্রুটির জন্য বিশ্লেষণ করা হোক অথবা নয়।</string>
 </resources>
