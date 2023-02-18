@@ -78,11 +78,11 @@ class JavaDiagnosticProvider {
 
     return result
   }
-  
+
   fun isAnalyzing(): Boolean {
     return this.analyzing.get()
   }
-  
+
   fun cancel() {
     this.analyzingThread?.cancel()
   }
@@ -99,20 +99,27 @@ class JavaDiagnosticProvider {
         // throws exception when trying to access.
         log.info("Using cached diagnostics")
         cachedDiagnostics
-      } else DiagnosticResult(file, findDiagnostics(task, file).sortedBy { it.range })
+      } else
+        DiagnosticResult(
+          file,
+          findDiagnostics(task, file).sortedBy {
+            it.range
+          }
+        )
     return result.also {
       log.info("Analyze file completed. Found ${result.diagnostics.size} diagnostic items")
     }
   }
 
   private fun isTaskValid(task: CompileTask?): Boolean {
+    abortIfCancelled()
     return task?.task != null && task.roots != null && task.roots.size > 0
   }
 
   inner class AnalyzingThread(val compiler: JavaCompilerService, val file: Path) :
     Thread("JavaAnalyzerThread") {
     lateinit var result: DiagnosticResult
-    
+
     fun cancel() {
       ProgressManager.instance.cancel(this)
     }

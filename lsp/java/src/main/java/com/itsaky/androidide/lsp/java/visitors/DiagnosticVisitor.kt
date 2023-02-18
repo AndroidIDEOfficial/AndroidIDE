@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.lsp.java.visitors
 
+import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
 import openjdk.source.tree.BlockTree
 import openjdk.source.tree.ClassTree
@@ -63,6 +64,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   private var path: TreePath? = null
 
   private fun scanPath(path: TreePath) {
+    abortIfCancelled()
     val prev = this.path
     this.path = path
     try {
@@ -73,6 +75,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   override fun scan(tree: Tree?, p: MutableMap<TreePath?, String>?): Void? {
+    abortIfCancelled()
     if (tree == null) {
       return null
     }
@@ -100,16 +103,19 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   private fun foundPrivateDeclaration() {
+    abortIfCancelled()
     val element = trees.getElement(path) ?: return
     privateDeclarations[element] = path!!
   }
 
   private fun foundLocalVariable() {
+    abortIfCancelled()
     val element = trees.getElement(path) ?: return
     localVariables[element] = path!!
   }
 
   private fun foundReference() {
+    abortIfCancelled()
     val toEl = trees.getElement(path) ?: return
     if (toEl.asType().kind == TypeKind.ERROR) {
       foundPseudoReference(toEl)
@@ -120,6 +126,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   private fun foundPseudoReference(toEl: Element) {
+    abortIfCancelled()
     val parent = toEl.enclosingElement as? TypeElement ?: return
     val memberName = toEl.simpleName
     for (member in parent.enclosedElements) {
@@ -130,6 +137,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   private fun sweep(toEl: Element) {
+    abortIfCancelled()
     val firstUse = used.add(toEl)
     val notScanned = firstUse && privateDeclarations.containsKey(toEl)
     if (notScanned) {
@@ -138,6 +146,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   private fun isReachable(path: TreePath): Boolean {
+    abortIfCancelled()
     // Check if t is reachable because it's public
     val leaf = path.leaf
     if (leaf is VariableTree) {
@@ -161,13 +170,16 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
         return true
       }
     }
-
+    
+    abortIfCancelled()
+    
     // Check if t has been referenced by a reachable element
     val el = trees.getElement(path)
     return used.contains(el)
   }
 
   private fun isLocalVariable(path: TreePath): Boolean {
+    abortIfCancelled()
     val kind = path.leaf.kind
     if (kind != Tree.Kind.VARIABLE) {
       return false
@@ -187,6 +199,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   private fun declared(t: MethodTree): MutableMap<String, TreePath> {
+    abortIfCancelled()
     val names = mutableMapOf<String, TreePath>()
     for (e in t.throws) {
       val path = TreePath(path, e)
@@ -201,6 +214,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
     t: CompilationUnitTree,
     notThrown: MutableMap<TreePath?, String>
   ): Void? {
+    abortIfCancelled()
     return super.visitCompilationUnit(t, notThrown)
   }
 
@@ -217,6 +231,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   override fun visitMethod(t: MethodTree?, notThrown: MutableMap<TreePath?, String>?): Void? {
+    abortIfCancelled()
     if (t == null || notThrown == null) {
       return null
     }
@@ -226,8 +241,12 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
     val pushObserved = observedExceptions
     declaredExceptions = declared(t)
     observedExceptions = HashSet()
+    
+    abortIfCancelled()
     // Recursively scan for 'throw' and method calls
     super.visitMethod(t, notThrown)
+    abortIfCancelled()
+    
     // Check for exceptions that were never thrown
     for (exception in declaredExceptions.keys) {
       if (!observedExceptions.contains(exception)) {
@@ -281,6 +300,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   override fun visitThrow(t: ThrowTree?, notThrown: MutableMap<TreePath?, String>?): Void? {
+    abortIfCancelled()
     if (t == null) {
       return null
     }
@@ -295,6 +315,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
     t: MethodInvocationTree?,
     notThrown: MutableMap<TreePath?, String>?
   ): Void? {
+    abortIfCancelled()
     val target = trees.getElement(path)
     if (target is ExecutableElement) {
       for (type in target.thrownTypes) {
@@ -306,6 +327,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
   }
 
   override fun visitBlock(node: BlockTree?, p: MutableMap<TreePath?, String>?): Void? {
+    abortIfCancelled()
     if (node != null && node.statements.isEmpty()) {
       val name: String? =
         when (val parent = path!!.parentPath.leaf) {
@@ -368,6 +390,7 @@ class DiagnosticVisitor(task: JavacTaskImpl?) :
     }
 
   private fun addThrown(type: TypeMirror) {
+    abortIfCancelled()
     if (type is DeclaredType) {
       val el = type.asElement() as TypeElement
       val name = el.qualifiedName.toString()

@@ -66,6 +66,7 @@ object DiagnosticsProvider {
     val result = mutableListOf<DiagnosticItem>()
     var root: CompilationUnitTree? = null
     for (tree in task.roots) {
+      abortIfCancelled()
       val path = Paths.get(tree.sourceFile.toUri())
       if (isSameFile(path, file!!)) {
         root = tree
@@ -99,7 +100,7 @@ object DiagnosticsProvider {
     for (unusedEl in scanner.notUsed()) {
       result.add(warnUnused(task, unusedEl))
     }
-
+    
     for (location in notThrown.keys) {
       result.add(warnNotThrown(task, notThrown[location], location!!))
     }
