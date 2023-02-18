@@ -33,7 +33,8 @@ import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.models.PartialReparseRequest;
-import com.itsaky.androidide.lsp.java.parser.ParseTask;
+import com.itsaky.androidide.lsp.java.parser.ts.TSJavaParser;
+import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner;
 import com.itsaky.androidide.lsp.java.providers.completion.IJavaCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.IdentifierCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.ImportCompletionProvider;
@@ -45,14 +46,11 @@ import com.itsaky.androidide.lsp.java.providers.completion.TopLevelSnippetsProvi
 import com.itsaky.androidide.lsp.java.utils.ASTFixer;
 import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
-import com.itsaky.androidide.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
-import openjdk.source.tree.Tree;
-import openjdk.source.util.TreePath;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -61,6 +59,9 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import openjdk.source.tree.Tree;
+import openjdk.source.util.TreePath;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
@@ -124,10 +125,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     int column = params.getPosition().getColumn();
     LOG.info("Complete at " + file.getFileName() + "(" + line + "," + column + ")...");
 
-    // javac expects 1-based line and column indexes
-    line++;
-    column++;
-
     Instant started = Instant.now();
 
     if (this.cache != null && this.cache.canUseCache(params)) {
@@ -155,23 +152,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     abortIfCancelled();
     abortCompletionIfCancelled();
     final StopWatch watch = new StopWatch("Prune method bodies");
-    ParseTask task = compiler.parse(file);
-
-    abortIfCancelled();
-    abortCompletionIfCancelled();
-    long cursor = task.root.getLineMap().getPosition(line, column);
-    StringBuilder pruned = new PruneMethodBodies(task.task).scan(task.root, cursor);
+    final long cursor = params.getPosition().requireIndex();
+    final var sourceObject = new SourceFileObject(file);
+    final var contentBuilder = new StringBuilder(sourceObject.getCharContent(true));
+    final var parseResult = TSJavaParser.INSTANCE.parse(sourceObject);
+    TSMethodPruner.INSTANCE.prune(contentBuilder, parseResult.getTree(), (int) cursor);
     watch.log();
-    int endOfLine = endOfLine(pruned, (int) cursor);
-    pruned.insert(endOfLine, ';');
+    
+    int endOfLine = endOfLine(contentBuilder, (int) cursor);
+    contentBuilder.insert(endOfLine, ';');
 
-    final CharSequence contents;
+    final StringBuilder contents;
     if (compiler.compiler.currentContext != null) {
       abortIfCancelled();
       abortCompletionIfCancelled();
-      contents = new ASTFixer(compiler.compiler.currentContext).fix(pruned);
+      contents = new ASTFixer(compiler.compiler.currentContext).fix(contentBuilder);
     } else {
-      contents = pruned.toString();
+      contents = contentBuilder;
     }
 
     final String contentString = contents.toString();
@@ -186,7 +183,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     abortIfCancelled();
     abortCompletionIfCancelled();
-    new TopLevelSnippetsProvider().complete(params.requirePrefix(), task, result);
     logCompletionDuration(started, result);
 
     abortIfCancelled();
@@ -261,8 +257,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
               newPartial = newPartial.substring(0, newPartial.length() - ASTFixer.IDENT.length());
             }
           }
-
-          return doComplete(file, contents, cursor, newPartial, endsWithParen, task, path);
+  
+          final var result = doComplete(file, contents, cursor, newPartial, endsWithParen, task, path);
+          new TopLevelSnippetsProvider().complete(partial, task.root(), result);
+          return result;
         });
   }
 

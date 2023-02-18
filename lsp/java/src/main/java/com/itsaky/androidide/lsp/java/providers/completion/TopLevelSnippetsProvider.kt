@@ -36,13 +36,13 @@ import java.nio.file.Paths
 
 /** @author Akash Yadav */
 class TopLevelSnippetsProvider {
-  fun complete(prefix: String, task: ParseTask, result: CompletionResult) {
+  fun complete(prefix: String, root: CompilationUnitTree, result: CompletionResult) {
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val file = Paths.get(task.root.sourceFile.toUri())
-    if (!hasTypeDeclaration(task.root)) {
+    val file = Paths.get(root.sourceFile.toUri())
+    if (!hasTypeDeclaration(root)) {
       result.add(classSnippet(prefix, file))
-      if (task.root.getPackage() == null) {
+      if (root.getPackage() == null) {
         val packageSnippet = packageSnippet(prefix, file)
         if (packageSnippet != null) {
           result.add(packageSnippet)

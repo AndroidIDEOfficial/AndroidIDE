@@ -34,6 +34,8 @@ dependencies {
     
     kapt(libs.common.eventbus.ap)
     
+    implementation(libs.androidide.ts)
+    implementation(libs.androidide.ts.java)
     implementation(libs.common.editor)
     implementation(libs.common.javaparser)
     implementation(libs.common.utilcode)

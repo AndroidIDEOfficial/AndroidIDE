@@ -59,7 +59,7 @@ public class ASTFixer {
     this.context = context;
   }
 
-  public CharSequence fix(CharSequence content) {
+  public StringBuilder fix(CharSequence content) {
     Scanner scanner = ScannerFactory.instance(context).newScanner(content, true);
     List<Edit> edits = new ArrayList<>();
     for (; ; scanner.nextToken()) {
@@ -134,7 +134,7 @@ public class ASTFixer {
     }
 
     @NonNull
-    public static CharSequence applyInsertions(CharSequence content, List<Edit> edits) {
+    public static StringBuilder applyInsertions(CharSequence content, List<Edit> edits) {
       ImmutableList<Edit> reverseEdits = REVERSE_INSERTION.immutableSortedCopy(edits);
 
       StringBuilder sb = new StringBuilder(content);

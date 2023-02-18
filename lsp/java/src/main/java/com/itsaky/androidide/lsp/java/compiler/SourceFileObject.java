@@ -103,7 +103,7 @@ public class SourceFileObject implements JavaFileObject {
 
   @Override
   public URI toUri() {
-    return path.toUri();
+    return this.path.toAbsolutePath().toUri();
   }
 
   @Override
