@@ -64,6 +64,7 @@ import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.VMUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -85,6 +86,8 @@ public class JavaLanguageServer implements ILanguageServer {
   private Path selectedFile;
   private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
   private CachedCompletion cachedCompletion;
+  
+  private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
 
   public JavaLanguageServer() {
     this.completionProvider = new CompletionProvider();
@@ -182,6 +185,7 @@ public class JavaLanguageServer implements ILanguageServer {
     }
     
     if (diagnosticProvider.isAnalyzing()) {
+      LOG.warn("Cancelling source code analysis due to completion request");
       diagnosticProvider.cancel();
     }
 
