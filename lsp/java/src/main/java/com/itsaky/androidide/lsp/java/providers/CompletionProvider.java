@@ -51,6 +51,7 @@ import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.StopWatch;
+import com.itsaky.androidide.utils.VMUtils;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -151,13 +152,18 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     abortIfCancelled();
     abortCompletionIfCancelled();
-    final StopWatch watch = new StopWatch("Prune method bodies");
     final long cursor = params.getPosition().requireIndex();
     final var sourceObject = new SourceFileObject(file);
     final var contentBuilder = new StringBuilder(sourceObject.getCharContent(true));
-    final var parseResult = TSJavaParser.INSTANCE.parse(sourceObject);
-    TSMethodPruner.INSTANCE.prune(contentBuilder, parseResult.getTree(), (int) cursor);
-    watch.log();
+    
+    if (!VMUtils.isJvm()) {
+      // Cannot use tree sitter in tests
+      // TODO(itsaky): Should we use the legacy method pruner for tests?
+      final StopWatch watch = new StopWatch("Prune method bodies");
+      final var parseResult = TSJavaParser.INSTANCE.parse(sourceObject);
+      TSMethodPruner.INSTANCE.prune(contentBuilder, parseResult.getTree(), (int) cursor);
+      watch.log();
+    }
     
     int endOfLine = endOfLine(contentBuilder, (int) cursor);
     contentBuilder.insert(endOfLine, ';');
