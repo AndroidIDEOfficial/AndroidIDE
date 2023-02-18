@@ -50,8 +50,10 @@ class ProgressManager private constructor(){
 
   @JvmName("internalAbortIfCancelled")
   private fun abortIfCancelled() {
-    val checker = threads.remove(Thread.currentThread())
+    val thisThread = Thread.currentThread()
+    val checker = threads[thisThread]
     if (checker != null && checker.isCancelled()) {
+      threads.remove(thisThread)
       throw ProcessCancelledException()
     }
   }
