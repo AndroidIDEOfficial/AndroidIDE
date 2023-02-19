@@ -450,8 +450,8 @@
   <string name="uiMode_dark">Тёмная</string>
   <string name="uiMode_system">Как в системе</string>
   <string name="idepref_general_materialYou_summary">Наслаждайтесь динамическим оформлением Material You (требуется перезапуск приложения).</string>
-  <string name="idepref_general_projectConfig">Project configuration</string>
-  <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
-  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
-  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
+  <string name="idepref_general_projectConfig">Настройки проекта</string>
+  <string name="msg_app_launch_failed">Ошибка запуска приложения. Обратитесь к логам IDE.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
 </resources>
