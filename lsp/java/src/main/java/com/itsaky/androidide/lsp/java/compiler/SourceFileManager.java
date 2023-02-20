@@ -28,20 +28,15 @@ import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.util.StringSearch;
-import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.SourceClassTrie;
-import openjdk.tools.javac.api.JavacTool;
-import openjdk.tools.javac.file.JavacFileManager;
-import openjdk.tools.javac.util.Context;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
@@ -55,8 +50,10 @@ import jdkx.tools.FileObject;
 import jdkx.tools.ForwardingJavaFileManager;
 import jdkx.tools.JavaFileObject;
 import jdkx.tools.StandardLocation;
+import openjdk.tools.javac.api.JavacTool;
+import openjdk.tools.javac.file.JavacFileManager;
+import openjdk.tools.javac.util.Context;
 
-@SuppressWarnings("Since15")
 public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManager> {
 
   public static final String ANDROIDIDE_CACHE_LOCATION = "ANDROIDIDE_CACHE_LOCATION";
@@ -121,16 +118,8 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
   private void listLocations(final EnumSet<StandardLocation> locations) {
     for (StandardLocation location : locations) {
       try {
-        list(
-            location,
-            ANDROIDIDE_CACHE_LOCATION,
-            EnumSet.of(
-                JavaFileObject.Kind.CLASS,
-                JavaFileObject.Kind.SOURCE,
-                JavaFileObject.Kind.HTML,
-                JavaFileObject.Kind.OTHER),
-            true);
-      } catch (IOException e) {
+        fileManager.cacheLocation(location);
+      } catch (Exception e) {
         // Ignored
         LOG.debug("Failed to list location:", location, e);
       }
@@ -162,8 +151,7 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
           nodes
               .filter(it -> it instanceof SourceClassTrie.SourceNode)
               .map(it -> asJavaFileObject((SourceClassTrie.SourceNode) it));
-
-      //noinspection NullableProblems
+  
       return stream::iterator;
     }
 

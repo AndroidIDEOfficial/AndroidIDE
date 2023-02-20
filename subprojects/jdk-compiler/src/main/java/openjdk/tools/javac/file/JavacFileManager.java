@@ -857,11 +857,6 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         nullCheck(packageName);
         nullCheck(kinds);
 
-        if ("ANDROIDIDE_CACHE_LOCATION".equals(packageName)) {
-            pathsAndContainersByLocationAndRelativeDirectory.computeIfAbsent(location, this::indexPathsAndContainersByRelativeDirectory);
-            return Collections.emptyList();
-        }
-
         RelativeDirectory subdirectory = RelativeDirectory.forPackage(packageName);
         ListBuffer<JavaFileObject> results = new ListBuffer<>();
 
@@ -872,6 +867,10 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         }
 
         return results.toList();
+    }
+    
+    public void cacheLocation(Location location) {
+        pathsAndContainersByLocationAndRelativeDirectory.computeIfAbsent(location, this::indexPathsAndContainersByRelativeDirectory);
     }
 
     @Override
