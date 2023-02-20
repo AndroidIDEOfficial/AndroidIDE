@@ -90,7 +90,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private static final int NOTIFICATION_ID = R.string.app_name;
   private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
   private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
-  private final IBinder mBinder = new GradleServiceBinder(this);
+  private GradleServiceBinder mBinder = null;
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
   
@@ -197,8 +197,17 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    LOG.debug("onBind() called with: intent = [" + intent + "]");
-    return mBinder;
+    if (mBinder != null && !mBinder.isReleased()) {
+      LOG.verbose("Reusing GradleServiceBinder instance");
+      return mBinder;
+    }
+  
+    if (mBinder != null) {
+      mBinder.release();
+    }
+    
+    LOG.verbose("Creating new GradleServiceBinder instance...");
+    return mBinder = new GradleServiceBinder(this);
   }
   
   @Override

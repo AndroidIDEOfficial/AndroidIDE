@@ -26,16 +26,19 @@ import android.os.Binder
  */
 internal class GradleServiceBinder(service: GradleBuildService?) : Binder() {
 
-  private var released = false
+  var isReleased = false
+    private set
+  
   var service: GradleBuildService? = service
     private set
     get() {
-      check(!released) { "GradleBuildService instance has been released" }
+      check(!isReleased) { "GradleBuildService instance has been released" }
       return field.also { release() }
     }
 
-  private fun release() {
+  @Suppress("ProtectedInFinal")
+  protected fun release() {
     service = null
-    released = true
+    isReleased = true
   }
 }
