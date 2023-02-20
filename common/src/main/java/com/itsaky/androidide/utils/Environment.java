@@ -122,7 +122,6 @@ public final class Environment {
     setExecutable(SHELL);
 
     System.setProperty("user.home", HOME.getAbsolutePath());
-    System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
   }
 
   public static File mkdirIfNotExits(File in) {
