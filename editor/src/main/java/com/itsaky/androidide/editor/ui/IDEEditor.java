@@ -78,7 +78,8 @@ import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
-  private final EditorActionsMenu actionsMenu;
+  @Nullable
+  private EditorActionsMenu actionsMenu;
   private IDEEditorSearcher searcher;
   private int fileVersion;
   private File file;
@@ -102,7 +103,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
-
+    
     this.isModified = false;
     this.actionsMenu = new EditorActionsMenu(this);
     this.actionsMenu.init();
@@ -670,11 +671,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     if (getSignatureHelpWindow().isShowing()) {
       getSignatureHelpWindow().dismiss();
     }
-
-    if (actionsMenu != null) {
-      if (actionsMenu.isShowing()) {
-        actionsMenu.dismiss();
-      }
+  
+    if (actionsMenu != null && actionsMenu.isShowing()) {
+      actionsMenu.dismiss();
     }
   }
 
@@ -791,11 +790,19 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     dispatchDocumentCloseEvent();
-
-    actionsMenu.unsubscribeEvents();
+  
+    if (actionsMenu != null) {
+      actionsMenu.unsubscribeEvents();
+    }
     ensureWindowsDismissed();
   }
-
+  
+  @Override
+  public void release() {
+    super.release();
+    this.actionsMenu = null;
+  }
+  
   protected void dispatchDocumentCloseEvent() {
     if (getFile() == null) {
       return;
