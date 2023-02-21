@@ -433,6 +433,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       val editor = getEditorAtIndex(i)
       if (editor?.editor != null) {
         editor.editor.notifyClose()
+        editor.editor.release()
       } else {
         log.error("Unable to close file at index:", i)
       }
