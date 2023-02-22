@@ -18,11 +18,11 @@
 package com.itsaky.androidide.javac.services.compiler
 
 import com.itsaky.androidide.javac.services.CancelService
-import openjdk.tools.javac.api.JavacTaskImpl
-import openjdk.tools.javac.api.JavacTool
 import jdkx.tools.DiagnosticListener
 import jdkx.tools.JavaFileManager
 import jdkx.tools.JavaFileObject
+import openjdk.tools.javac.api.JavacTaskImpl
+import openjdk.tools.javac.api.JavacTool
 
 /**
  * A pool of reusable JavacTasks. When a task is no valid anymore, it is returned to the pool, and
@@ -48,7 +48,7 @@ import jdkx.tools.JavaFileObject
  * your own risk. This code and its internal interfaces are subject to change or deletion without
  * notice.**
  */
-class ReusableCompiler {
+open class ReusableCompiler {
   private val systemProvider = JavacTool.create()
   private val currentOptions = mutableListOf<String>()
   @JvmField var currentContext: ReusableContext? = null
@@ -56,9 +56,9 @@ class ReusableCompiler {
   internal var checkedOut = false
 
   /**
-   * Creates a new task as if by [jdkx.tools.JavaCompiler.getTask] and runs the provided worker
-   * with it. The task is only valid while the worker is running. The internal structures may be
-   * reused from some previous compilation.
+   * Creates a new task as if by [jdkx.tools.JavaCompiler.getTask] and runs the provided worker with
+   * it. The task is only valid while the worker is running. The internal structures may be reused
+   * from some previous compilation.
    *
    * @param fileManager a file manager; if `null` use the compiler's standard filemanager
    * @param diagnosticListener a diagnostic listener; if `null` use the compiler's default method
@@ -73,7 +73,7 @@ class ReusableCompiler {
    * @throws IllegalArgumentException if any of the options are invalid, or if any of the given
    *   compilation units are of other kind than [source][JavaFileObject.Kind.SOURCE]
    */
-  fun getTask(
+  open fun getTask(
     fileManager: JavaFileManager?,
     diagnosticListener: DiagnosticListener<in JavaFileObject?>?,
     options: Iterable<String>,
@@ -90,7 +90,7 @@ class ReusableCompiler {
     if (opts != currentOptions) {
       currentOptions.clear()
       currentOptions.addAll(opts)
-      currentContext = ReusableContext(cancelService)
+      currentContext = onCreateContext()
     }
 
     val task =
@@ -106,10 +106,19 @@ class ReusableCompiler {
 
     task.addTaskListener(currentContext)
 
+    return onCreateBorrow(task)
+  }
+
+  protected open fun onCreateContext(): ReusableContext {
+    return ReusableContext(cancelService)
+  }
+
+  protected open fun onCreateBorrow(task: JavacTaskImpl): ReusableBorrow {
     return ReusableBorrow(this, task)
   }
 
   companion object {
+    @JvmStatic
     private val cancelService: CancelService = CancelServiceImpl()
   }
 }
