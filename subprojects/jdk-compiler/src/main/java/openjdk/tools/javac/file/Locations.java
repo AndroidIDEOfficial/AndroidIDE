@@ -77,7 +77,7 @@ import jdkx.tools.StandardJavaFileManager;
 import jdkx.tools.StandardJavaFileManager.PathFactory;
 import jdkx.tools.StandardLocation;
 
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 
 import openjdk.tools.javac.code.Lint;
 import openjdk.tools.javac.code.Lint.LintCategory;

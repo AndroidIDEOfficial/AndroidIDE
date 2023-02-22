@@ -17,11 +17,11 @@
 
 package com.itsaky.androidide.lsp.java.compiler;
 
-import static com.itsaky.androidide.config.JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME;
-import static com.itsaky.androidide.config.JavacConfigProvider.disableModules;
-import static com.itsaky.androidide.config.JavacConfigProvider.enableModules;
-import static com.itsaky.androidide.config.JavacConfigProvider.setLatestSourceVersion;
-import static com.itsaky.androidide.config.JavacConfigProvider.setLatestSupportedSourceVersion;
+import static com.itsaky.androidide.javac.config.JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME;
+import static com.itsaky.androidide.javac.config.JavacConfigProvider.disableModules;
+import static com.itsaky.androidide.javac.config.JavacConfigProvider.enableModules;
+import static com.itsaky.androidide.javac.config.JavacConfigProvider.setLatestSourceVersion;
+import static com.itsaky.androidide.javac.config.JavacConfigProvider.setLatestSupportedSourceVersion;
 import static com.itsaky.androidide.utils.Environment.JAVA_HOME;
 
 import androidx.annotation.NonNull;

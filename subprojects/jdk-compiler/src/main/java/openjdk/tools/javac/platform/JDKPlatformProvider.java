@@ -25,6 +25,8 @@
 
 package openjdk.tools.javac.platform;
 
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -49,13 +51,11 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jdkx.annotation.processing.Processor;
 import jdkx.tools.ForwardingJavaFileObject;
 import jdkx.tools.JavaFileManager;
-import jdkx.tools.JavaFileManager.Location;
 import jdkx.tools.JavaFileObject;
 import jdkx.tools.JavaFileObject.Kind;
 import jdkx.tools.StandardJavaFileManager;
@@ -395,7 +395,7 @@ public class JDKPlatformProvider implements PlatformProvider {
 
     static Path findCtSym() {
         // AndroidIDE changed: Allow overriding java home.
-        String javaHome = com.itsaky.androidide.config.JavacConfigProvider.getJavaHome();
+        String javaHome = JavacConfigProvider.getJavaHome();
         Path file = Paths.get(javaHome);
         // file == ${jdk.home}
         for (String name : symbolFileLocation)

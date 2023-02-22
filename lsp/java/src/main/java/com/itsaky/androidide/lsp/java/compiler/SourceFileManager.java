@@ -23,7 +23,7 @@ import static java.util.Collections.emptySet;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.CloseUtils;
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 import com.itsaky.androidide.javac.services.fs.AndroidFsProviderImpl;
 import com.itsaky.androidide.projects.api.AndroidModule;
 import com.itsaky.androidide.projects.api.ModuleProject;

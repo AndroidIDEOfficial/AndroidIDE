@@ -47,7 +47,7 @@ import java.util.Set;
 
 import jdkx.tools.FileObject;
 
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 import com.itsaky.androidide.zipfs2.AndroidFsProvider;
 import openjdk.tools.javac.file.RelativePath.RelativeDirectory;
 import openjdk.tools.javac.util.Context;

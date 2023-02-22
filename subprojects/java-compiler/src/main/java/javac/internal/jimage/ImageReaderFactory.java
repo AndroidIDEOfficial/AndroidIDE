@@ -25,6 +25,8 @@
 
 package javac.internal.jimage;
 
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -47,7 +49,7 @@ public class ImageReaderFactory {
     private ImageReaderFactory() {}
 
     // AndroidIDE changed: Allow overriding java home.
-    private static final String JAVA_HOME = com.itsaky.androidide.config.JavacConfigProvider.getJavaHome();
+    private static final String JAVA_HOME = JavacConfigProvider.getJavaHome();
     private static final Path BOOT_MODULES_JIMAGE =
         Paths.get(JAVA_HOME, "lib", "modules");
 

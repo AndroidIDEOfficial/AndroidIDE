@@ -37,7 +37,7 @@ import java.security.PrivilegedAction;
 import javac.internal.jimage.ImageReader;
 import javac.internal.jimage.ImageReader.Node;
 
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 
 /**
  * @implNote This class needs to maintain JDK 8 source compatibility.

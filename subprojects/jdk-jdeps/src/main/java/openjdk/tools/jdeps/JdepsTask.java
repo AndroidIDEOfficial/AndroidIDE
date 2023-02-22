@@ -30,6 +30,8 @@ import static openjdk.tools.jdeps.Analyzer.Type.*;
 import static openjdk.tools.jdeps.JdepsWriter.*;
 import static java.util.stream.Collectors.*;
 
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.module.ResolutionException;
@@ -1244,7 +1246,7 @@ class JdepsTask {
         Pattern includePattern;
         boolean inverse = false;
         boolean compileTimeView = false;
-        String systemModulePath = com.itsaky.androidide.config.JavacConfigProvider.getJavaHome();
+        String systemModulePath = JavacConfigProvider.getJavaHome();
         String upgradeModulePath;
         String modulePath;
         Set<String> rootModules = new HashSet<>();

@@ -25,10 +25,7 @@
 
 package jdkx.lang.model;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 
 /**
  * Source versions of the Java programming language.

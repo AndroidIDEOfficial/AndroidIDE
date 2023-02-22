@@ -30,7 +30,7 @@ import java.util.*;
 import jdkx.lang.model.SourceVersion;
 import static jdkx.lang.model.SourceVersion.*;
 
-import com.itsaky.androidide.config.JavacConfigProvider;
+import com.itsaky.androidide.javac.config.JavacConfigProvider;
 import openjdk.tools.javac.jvm.Target;
 import openjdk.tools.javac.resources.CompilerProperties.Errors;
 import openjdk.tools.javac.resources.CompilerProperties.Fragments;
