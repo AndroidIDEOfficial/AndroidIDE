@@ -156,7 +156,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final var sourceObject = new SourceFileObject(file);
     final var contentBuilder = new StringBuilder(sourceObject.getCharContent(true));
     
-    if (!VMUtils.isJvm()) {
+    if (false && !VMUtils.isJvm()) {
       // Cannot use tree sitter in tests
       // TODO(itsaky): Should we use the legacy method pruner for tests?
       final StopWatch watch = new StopWatch("Prune method bodies");

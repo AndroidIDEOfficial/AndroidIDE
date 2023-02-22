@@ -86,7 +86,7 @@ public class JavaCompilerService implements CompilerProvider {
   protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
   protected final SourceFileManager fileManager;
   protected final ModuleProject module;
-  public ReusableCompiler compiler = new ReusableCompiler();
+  public ReusableCompiler compiler = new JCReusableCompiler();
   protected Set<String> bootClasspathClasses =
       BootClasspathProvider.getTopLevelClasses(
           Collections.singleton(Environment.ANDROID_JAR.getAbsolutePath()));

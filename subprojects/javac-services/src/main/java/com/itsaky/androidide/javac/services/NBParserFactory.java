@@ -59,9 +59,9 @@ import openjdk.tools.javac.util.Position;
  */
 public class NBParserFactory extends ParserFactory {
 
-  private final ScannerFactory scannerFactory;
-  private final Names names;
-  private final CancelService cancelService;
+  protected final ScannerFactory scannerFactory;
+  protected final Names names;
+  protected final CancelService cancelService;
 
   public static void preRegister(Context context) {
     context.put(parserFactoryKey, (Context.Factory<ParserFactory>) NBParserFactory::new);

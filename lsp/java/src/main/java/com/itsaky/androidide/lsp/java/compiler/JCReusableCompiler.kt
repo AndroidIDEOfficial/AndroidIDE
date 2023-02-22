@@ -15,31 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.javac.services.compiler
+package com.itsaky.androidide.lsp.java.compiler
 
-import com.itsaky.androidide.javac.services.NBJavaCompiler
-import openjdk.tools.javac.main.JavaCompiler
-import openjdk.tools.javac.util.Context
+import com.itsaky.androidide.javac.services.compiler.ReusableCompiler
+import com.itsaky.androidide.javac.services.compiler.ReusableContext
 
 /**
- * Reusable JavaCompiler; exposes a method to clean up the component from leftovers associated
- * with previous compilations.
+ * Implementation of the [ReusableCompiler] which replaces necessary components from the
+ * [ReusableContext].
+ *
+ * @author Akash Yadav
  */
-open class ReusableJavaCompiler(context: Context?) : NBJavaCompiler(context) {
-  
-  companion object {
-    val factory = Context.Factory<JavaCompiler> { ReusableJavaCompiler(it) }
-  }
-  
-  override fun checkReusable() {
-    // Do nothing
-  }
-  
-  override fun close() {
-    // Do nothing
-  }
-  
-  fun clear()   {
-    newRound()
+class JCReusableCompiler : ReusableCompiler() {
+
+  override fun onCreateContext(): ReusableContext {
+    return super.onCreateContext().also {
+      JavaCompilerImpl.preRegister(context = it, replace = true)
+    }
   }
 }
