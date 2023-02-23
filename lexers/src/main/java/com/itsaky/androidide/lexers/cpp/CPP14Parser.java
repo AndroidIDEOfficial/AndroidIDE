@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/cpp/CPP14Parser.g4 by ANTLR 4.12.0
 package com.itsaky.androidide.lexers.cpp;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class CPP14Parser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -248,7 +248,7 @@ public class CPP14Parser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "java-escape"; }
+	public String getGrammarFileName() { return "CPP14Parser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -299,7 +299,7 @@ public class CPP14Parser extends Parser {
 			setState(383);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0) {
+			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0)) {
 				{
 				setState(382);
 				declarationseq();
@@ -939,7 +939,7 @@ public class CPP14Parser extends Parser {
 			setState(453);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 69)) & ~0x3f) == 0 && ((1L << (_la - 69)) & -9223372032291373055L) != 0) {
+			if (((((_la - 69)) & ~0x3f) == 0 && ((1L << (_la - 69)) & -9223372032291373055L) != 0)) {
 				{
 				setState(452);
 				lambdaCapture();
@@ -1410,7 +1410,7 @@ public class CPP14Parser extends Parser {
 			setState(497);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1237504995584196377L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 297237575406461917L) != 0) {
+			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1237504995584196377L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 297237575406461917L) != 0)) {
 				{
 				setState(496);
 				parameterDeclarationClause();
@@ -1612,7 +1612,7 @@ public class CPP14Parser extends Parser {
 					setState(520);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0 || _la==Identifier) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0) || _la==Identifier) {
 						{
 						setState(519);
 						expressionList();
@@ -1638,7 +1638,7 @@ public class CPP14Parser extends Parser {
 				{
 				setState(526);
 				_la = _input.LA(1);
-				if ( !((((_la - 24)) & ~0x3f) == 0 && ((1L << (_la - 24)) & 2216203124865L) != 0) ) {
+				if ( !(((((_la - 24)) & ~0x3f) == 0 && ((1L << (_la - 24)) & 2216203124865L) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -1788,7 +1788,7 @@ public class CPP14Parser extends Parser {
 						setState(555);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0 || _la==Identifier) {
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0) || _la==Identifier) {
 							{
 							setState(554);
 							expressionList();
@@ -2312,7 +2312,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(628);
 			_la = _input.LA(1);
-			if ( !((((_la - 91)) & ~0x3f) == 0 && ((1L << (_la - 91)) & 967L) != 0) ) {
+			if ( !(((((_la - 91)) & ~0x3f) == 0 && ((1L << (_la - 91)) & 967L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2822,7 +2822,7 @@ public class CPP14Parser extends Parser {
 				setState(683);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0 || _la==Identifier) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0) || _la==Identifier) {
 					{
 					setState(682);
 					expressionList();
@@ -3187,12 +3187,12 @@ public class CPP14Parser extends Parser {
 			setState(725);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 7L) != 0) {
+			while (((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 7L) != 0)) {
 				{
 				{
 				setState(721);
 				_la = _input.LA(1);
-				if ( !((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 7L) != 0) ) {
+				if ( !(((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 7L) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -3506,7 +3506,7 @@ public class CPP14Parser extends Parser {
 					{
 					setState(752);
 					_la = _input.LA(1);
-					if ( !((((_la - 102)) & ~0x3f) == 0 && ((1L << (_la - 102)) & 49155L) != 0) ) {
+					if ( !(((((_la - 102)) & ~0x3f) == 0 && ((1L << (_la - 102)) & 49155L) != 0)) ) {
 					_errHandler.recoverInline(this);
 					}
 					else {
@@ -4154,7 +4154,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(823);
 			_la = _input.LA(1);
-			if ( !((((_la - 101)) & ~0x3f) == 0 && ((1L << (_la - 101)) & 8185L) != 0) ) {
+			if ( !(((((_la - 101)) & ~0x3f) == 0 && ((1L << (_la - 101)) & 8185L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -4612,7 +4612,7 @@ public class CPP14Parser extends Parser {
 			setState(863);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0 || _la==Identifier) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0) || _la==Identifier) {
 				{
 				setState(862);
 				expression();
@@ -4672,7 +4672,7 @@ public class CPP14Parser extends Parser {
 			setState(869);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & -137360239606498050L) != 0 || (((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -8989184726396829969L) != 0 || (((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 25L) != 0) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & -137360239606498050L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -8989184726396829969L) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 25L) != 0)) {
 				{
 				setState(868);
 				statementSeq();
@@ -4741,7 +4741,7 @@ public class CPP14Parser extends Parser {
 				setState(876); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( ((_la) & ~0x3f) == 0 && ((1L << _la) & -137360239606498050L) != 0 || (((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -8989184726396829969L) != 0 || (((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 25L) != 0 );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & -137360239606498050L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -8989184726396829969L) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 25L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -5066,7 +5066,7 @@ public class CPP14Parser extends Parser {
 					setState(926);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((_la) & ~0x3f) == 0 && ((1L << _la) & -714116761242538754L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384301683L) != 0 || _la==Identifier) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & -714116761242538754L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384301683L) != 0) || _la==Identifier) {
 						{
 						setState(925);
 						condition();
@@ -5078,7 +5078,7 @@ public class CPP14Parser extends Parser {
 					setState(930);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0 || _la==Identifier) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0) || _la==Identifier) {
 						{
 						setState(929);
 						expression();
@@ -5601,7 +5601,7 @@ public class CPP14Parser extends Parser {
 				setState(975); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0 );
+			} while ( ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -6035,7 +6035,7 @@ public class CPP14Parser extends Parser {
 				setState(1011);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==Decltype || _la==Operator || (((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 215512868999425L) != 0) {
+				if (_la==Decltype || _la==Operator || ((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 215512868999425L) != 0)) {
 					{
 					setState(1010);
 					initDeclaratorList();
@@ -6478,7 +6478,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(1052);
 			_la = _input.LA(1);
-			if ( !((((_la - 36)) & ~0x3f) == 0 && ((1L << (_la - 36)) & 17316186113L) != 0) ) {
+			if ( !(((((_la - 36)) & ~0x3f) == 0 && ((1L << (_la - 36)) & 17316186113L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -6532,7 +6532,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(1054);
 			_la = _input.LA(1);
-			if ( !((((_la - 34)) & ~0x3f) == 0 && ((1L << (_la - 34)) & 70368744178689L) != 0) ) {
+			if ( !(((((_la - 34)) & ~0x3f) == 0 && ((1L << (_la - 34)) & 70368744178689L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -8379,7 +8379,7 @@ public class CPP14Parser extends Parser {
 			setState(1254);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0) {
+			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0)) {
 				{
 				setState(1253);
 				((NamespaceDefinitionContext)_localctx).namespaceBody = declarationseq();
@@ -8832,7 +8832,7 @@ public class CPP14Parser extends Parser {
 				setState(1303);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0) {
+				if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543754443169808157L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 459384754220313597L) != 0)) {
 					{
 					setState(1302);
 					declarationseq();
@@ -9386,7 +9386,7 @@ public class CPP14Parser extends Parser {
 			setState(1359);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & -2L) != 0 || (((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -88080385L) != 0 || (((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 262143L) != 0) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & -2L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -88080385L) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 262143L) != 0)) {
 				{
 				setState(1358);
 				balancedTokenSeq();
@@ -9455,7 +9455,7 @@ public class CPP14Parser extends Parser {
 				setState(1366); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( ((_la) & ~0x3f) == 0 && ((1L << _la) & -2L) != 0 || (((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -88080385L) != 0 || (((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 262143L) != 0 );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & -2L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -88080385L) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 262143L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -9710,7 +9710,7 @@ public class CPP14Parser extends Parser {
 						{
 						setState(1380);
 						_la = _input.LA(1);
-						if ( _la <= 0 || ((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 63L) != 0) ) {
+						if ( _la <= 0 || (((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 63L) != 0)) ) {
 						_errHandler.recoverInline(this);
 						}
 						else {
@@ -9853,7 +9853,7 @@ public class CPP14Parser extends Parser {
 			setState(1397);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 65553L) != 0) {
+			if (((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 65553L) != 0)) {
 				{
 				setState(1396);
 				initializer();
@@ -10153,7 +10153,7 @@ public class CPP14Parser extends Parser {
 						setState(1432);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0 || _la==Identifier) {
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0) || _la==Identifier) {
 							{
 							setState(1431);
 							constantExpression();
@@ -10247,7 +10247,7 @@ public class CPP14Parser extends Parser {
 			setState(1447);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1237504995584196377L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 297237575406461917L) != 0) {
+			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1237504995584196377L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 297237575406461917L) != 0)) {
 				{
 				setState(1446);
 				parameterDeclarationClause();
@@ -10936,7 +10936,7 @@ public class CPP14Parser extends Parser {
 					setState(1515); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( _la==Decltype || (((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 566969237521L) != 0 );
+				} while ( _la==Decltype || ((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 566969237521L) != 0) );
 				setState(1518);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,194,_ctx) ) {
@@ -11039,7 +11039,7 @@ public class CPP14Parser extends Parser {
 				setState(1526);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0 || _la==Identifier) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0) || _la==Identifier) {
 					{
 					setState(1525);
 					constantExpression();
@@ -11103,7 +11103,7 @@ public class CPP14Parser extends Parser {
 						setState(1543);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0 || _la==Identifier) {
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0) || _la==Identifier) {
 							{
 							setState(1542);
 							constantExpression();
@@ -11185,7 +11185,7 @@ public class CPP14Parser extends Parser {
 			setState(1559);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==Decltype || (((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 566969237521L) != 0) {
+			while (_la==Decltype || ((((_la - 93)) & ~0x3f) == 0 && ((1L << (_la - 93)) & 566969237521L) != 0)) {
 				{
 				{
 				setState(1556);
@@ -11297,7 +11297,7 @@ public class CPP14Parser extends Parser {
 						setState(1571);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0 || _la==Identifier) {
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133137L) != 0) || _la==Identifier) {
 							{
 							setState(1570);
 							constantExpression();
@@ -12160,7 +12160,7 @@ public class CPP14Parser extends Parser {
 			setState(1670);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0 || _la==Identifier) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0) || _la==Identifier) {
 				{
 				setState(1666);
 				initializerList();
@@ -12294,7 +12294,7 @@ public class CPP14Parser extends Parser {
 			setState(1681);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543877313594212121L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 463888353847684093L) != 0) {
+			if (((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543877313594212121L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 463888353847684093L) != 0)) {
 				{
 				setState(1680);
 				memberSpecification();
@@ -12738,7 +12738,7 @@ public class CPP14Parser extends Parser {
 				setState(1725); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543877313594212121L) != 0 || (((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 463888353847684093L) != 0 );
+			} while ( ((((_la - 10)) & ~0x3f) == 0 && ((1L << (_la - 10)) & 1543877313594212121L) != 0) || ((((_la - 74)) & ~0x3f) == 0 && ((1L << (_la - 74)) & 463888353847684093L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -12835,7 +12835,7 @@ public class CPP14Parser extends Parser {
 				setState(1734);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 4503599694480384L) != 0 || (((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 217711892254981L) != 0) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 4503599694480384L) != 0) || ((((_la - 85)) & ~0x3f) == 0 && ((1L << (_la - 85)) & 217711892254981L) != 0)) {
 					{
 					setState(1733);
 					memberDeclaratorList();
@@ -13480,7 +13480,7 @@ public class CPP14Parser extends Parser {
 				setState(1809);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 126100789566373888L) != 0) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 126100789566373888L) != 0)) {
 					{
 					setState(1808);
 					accessSpecifier();
@@ -13679,7 +13679,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(1829);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 126100789566373888L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 126100789566373888L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -14056,7 +14056,7 @@ public class CPP14Parser extends Parser {
 				setState(1862);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0 || _la==Identifier) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474400910417L) != 0) || _la==Identifier) {
 					{
 					setState(1861);
 					expressionList();
@@ -14634,7 +14634,7 @@ public class CPP14Parser extends Parser {
 			setState(1926);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979472930990334L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384268307L) != 0 || _la==Identifier) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979472930990334L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384268307L) != 0) || _la==Identifier) {
 				{
 				setState(1925);
 				templateArgumentList();
@@ -14730,7 +14730,7 @@ public class CPP14Parser extends Parser {
 				setState(1937);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979472930990334L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384268307L) != 0 || _la==Identifier) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979472930990334L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384268307L) != 0) || _la==Identifier) {
 					{
 					setState(1936);
 					templateArgumentList();
@@ -15556,7 +15556,7 @@ public class CPP14Parser extends Parser {
 			setState(2019);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0 || (((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0 || _la==Identifier) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 8364979464334764286L) != 0) || ((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 4719772474384133201L) != 0) || _la==Identifier) {
 				{
 				setState(2018);
 				assignmentExpression();
@@ -15680,7 +15680,7 @@ public class CPP14Parser extends Parser {
 			setState(2028);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 13)) & ~0x3f) == 0 && ((1L << (_la - 13)) & -9213942612181769245L) != 0 || (((_la - 77)) & ~0x3f) == 0 && ((1L << (_la - 77)) & 37154696925806707L) != 0) {
+			if (((((_la - 13)) & ~0x3f) == 0 && ((1L << (_la - 13)) & -9213942612181769245L) != 0) || ((((_la - 77)) & ~0x3f) == 0 && ((1L << (_la - 77)) & 37154696925806707L) != 0)) {
 				{
 				setState(2027);
 				typeIdList();
@@ -16290,7 +16290,7 @@ public class CPP14Parser extends Parser {
 			{
 			setState(2107);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 254L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 254L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {

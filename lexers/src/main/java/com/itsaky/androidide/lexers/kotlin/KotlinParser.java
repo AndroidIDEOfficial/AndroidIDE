@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/kotlin/KotlinParser.g4 by ANTLR 4.12.0
 package com.itsaky.androidide.lexers.kotlin;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class KotlinParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -237,7 +237,7 @@ public class KotlinParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "java-escape"; }
+	public String getGrammarFileName() { return "KotlinParser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -352,7 +352,7 @@ public class KotlinParser extends Parser {
 			setState(352);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460752037085183L) != 0 || (((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0) {
+			while (((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460752037085183L) != 0) || ((((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0)) {
 				{
 				{
 				setState(349);
@@ -486,7 +486,7 @@ public class KotlinParser extends Parser {
 			setState(379);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & -594473913808049632L) != 0 || (((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -18220065793L) != 0 || (((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 1571327L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & -594473913808049632L) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & -18220065793L) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 1571327L) != 0)) {
 				{
 				{
 				setState(374);
@@ -609,7 +609,7 @@ public class KotlinParser extends Parser {
 					setState(402); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( (((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0 || (((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0 );
+				} while ( ((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0) || ((((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0) );
 				setState(404);
 				match(RSQUARE);
 				}
@@ -1177,7 +1177,7 @@ public class KotlinParser extends Parser {
 			setState(446);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(445);
 				modifiers();
@@ -1423,12 +1423,12 @@ public class KotlinParser extends Parser {
 			setState(525);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460752034988031L) != 0 || (((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0) {
+			if (((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460752034988031L) != 0) || ((((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0)) {
 				{
 				setState(516);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+				if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 					{
 					setState(515);
 					modifiers();
@@ -2355,7 +2355,7 @@ public class KotlinParser extends Parser {
 			setState(690);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460748547424255L) != 0 || (((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0) {
+			while (((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -576460748547424255L) != 0) || ((((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 939524095L) != 0)) {
 				{
 				{
 				setState(684);
@@ -2587,7 +2587,7 @@ public class KotlinParser extends Parser {
 			setState(709);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(708);
 				modifiers();
@@ -2853,7 +2853,7 @@ public class KotlinParser extends Parser {
 			setState(770);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -306241437738991615L) != 0 || (((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 2200096997375L) != 0) {
+			if (((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -306241437738991615L) != 0) || ((((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 2200096997375L) != 0)) {
 				{
 				setState(769);
 				enumEntries();
@@ -3254,7 +3254,7 @@ public class KotlinParser extends Parser {
 			setState(854);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(853);
 				modifiers();
@@ -3526,7 +3526,7 @@ public class KotlinParser extends Parser {
 			setState(958);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -306241437738991615L) != 0 || (((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 2200096997375L) != 0) {
+			if (((((_la - 40)) & ~0x3f) == 0 && ((1L << (_la - 40)) & -306241437738991615L) != 0) || ((((_la - 104)) & ~0x3f) == 0 && ((1L << (_la - 104)) & 2200096997375L) != 0)) {
 				{
 				setState(938);
 				functionValueParameter();
@@ -4045,7 +4045,7 @@ public class KotlinParser extends Parser {
 			setState(1036);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(1035);
 				modifiers();
@@ -4200,7 +4200,7 @@ public class KotlinParser extends Parser {
 			setState(1072);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(1071);
 				modifiers();
@@ -4402,7 +4402,7 @@ public class KotlinParser extends Parser {
 			setState(1117);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(1116);
 				modifiers();
@@ -4729,7 +4729,7 @@ public class KotlinParser extends Parser {
 					setState(1208);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & 268435521L) != 0) {
+					if (((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & 268435521L) != 0)) {
 						{
 						setState(1207);
 						semi();
@@ -4779,7 +4779,7 @@ public class KotlinParser extends Parser {
 					setState(1223);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & 268435521L) != 0) {
+					if (((((_la - -1)) & ~0x3f) == 0 && ((1L << (_la - -1)) & 268435521L) != 0)) {
 						{
 						setState(1222);
 						semi();
@@ -4997,7 +4997,7 @@ public class KotlinParser extends Parser {
 			setState(1268);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0) {
+			while (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0)) {
 				{
 				{
 				setState(1265);
@@ -5198,7 +5198,7 @@ public class KotlinParser extends Parser {
 				setState(1304);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+				if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 					{
 					setState(1303);
 					modifiers();
@@ -5215,7 +5215,7 @@ public class KotlinParser extends Parser {
 				setState(1308);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+				if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 					{
 					setState(1307);
 					modifiers();
@@ -5395,7 +5395,7 @@ public class KotlinParser extends Parser {
 				setState(1351);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+				if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 					{
 					setState(1350);
 					modifiers();
@@ -5412,7 +5412,7 @@ public class KotlinParser extends Parser {
 				setState(1355);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+				if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 					{
 					setState(1354);
 					modifiers();
@@ -5601,7 +5601,7 @@ public class KotlinParser extends Parser {
 			setState(1401);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0) {
+			if (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 30064771071L) != 0)) {
 				{
 				setState(1400);
 				modifiers();
@@ -7564,7 +7564,7 @@ public class KotlinParser extends Parser {
 			setState(1755);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0) {
+			while (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0)) {
 				{
 				{
 				setState(1752);
@@ -10283,7 +10283,7 @@ public class KotlinParser extends Parser {
 			setState(2157);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0) {
+			while (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0)) {
 				{
 				{
 				setState(2154);
@@ -11584,7 +11584,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(2395);
 			_la = _input.LA(1);
-			if ( !((((_la - 136)) & ~0x3f) == 0 && ((1L << (_la - 136)) & 4601L) != 0) ) {
+			if ( !(((((_la - 136)) & ~0x3f) == 0 && ((1L << (_la - 136)) & 4601L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -11715,7 +11715,7 @@ public class KotlinParser extends Parser {
 			setState(2406);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la - 161)) & ~0x3f) == 0 && ((1L << (_la - 161)) & 15L) != 0) {
+			while (((((_la - 161)) & ~0x3f) == 0 && ((1L << (_la - 161)) & 15L) != 0)) {
 				{
 				setState(2404);
 				_errHandler.sync(this);
@@ -11808,7 +11808,7 @@ public class KotlinParser extends Parser {
 			setState(2417);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la - 166)) & ~0x3f) == 0 && ((1L << (_la - 166)) & 15L) != 0) {
+			while (((((_la - 166)) & ~0x3f) == 0 && ((1L << (_la - 166)) & 15L) != 0)) {
 				{
 				setState(2415);
 				_errHandler.sync(this);
@@ -11885,7 +11885,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(2422);
 			_la = _input.LA(1);
-			if ( !((((_la - 161)) & ~0x3f) == 0 && ((1L << (_la - 161)) & 7L) != 0) ) {
+			if ( !(((((_la - 161)) & ~0x3f) == 0 && ((1L << (_la - 161)) & 7L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -11990,7 +11990,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(2428);
 			_la = _input.LA(1);
-			if ( !((((_la - 166)) & ~0x3f) == 0 && ((1L << (_la - 166)) & 7L) != 0) ) {
+			if ( !(((((_la - 166)) & ~0x3f) == 0 && ((1L << (_la - 166)) & 7L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -14529,7 +14529,7 @@ public class KotlinParser extends Parser {
 			setState(2938);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==AT || (((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0) {
+			while (_la==AT || ((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0)) {
 				{
 				{
 				setState(2935);
@@ -15365,7 +15365,7 @@ public class KotlinParser extends Parser {
 			setState(3081);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 1152922604118475264L) != 0 || (((_la - 68)) & ~0x3f) == 0 && ((1L << (_la - 68)) & -1140838257L) != 0 || (((_la - 132)) & ~0x3f) == 0 && ((1L << (_la - 132)) & 8195L) != 0) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 1152922604118475264L) != 0) || ((((_la - 68)) & ~0x3f) == 0 && ((1L << (_la - 68)) & -1140838257L) != 0) || ((((_la - 132)) & ~0x3f) == 0 && ((1L << (_la - 132)) & 8195L) != 0)) {
 				{
 				setState(3080);
 				receiverType();
@@ -15508,7 +15508,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3100);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 16642998272L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 16642998272L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -15563,7 +15563,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3102);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 7599824371187712L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 7599824371187712L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -15618,7 +15618,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3104);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 263882790666240L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 263882790666240L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -15831,7 +15831,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3112);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 229376L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 229376L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -16444,7 +16444,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3156);
 			_la = _input.LA(1);
-			if ( !((((_la - 111)) & ~0x3f) == 0 && ((1L << (_la - 111)) & 31L) != 0) ) {
+			if ( !(((((_la - 111)) & ~0x3f) == 0 && ((1L << (_la - 111)) & 31L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -16552,7 +16552,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3160);
 			_la = _input.LA(1);
-			if ( !((((_la - 107)) & ~0x3f) == 0 && ((1L << (_la - 107)) & 15L) != 0) ) {
+			if ( !(((((_la - 107)) & ~0x3f) == 0 && ((1L << (_la - 107)) & 15L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -16662,7 +16662,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3164);
 			_la = _input.LA(1);
-			if ( !((((_la - 116)) & ~0x3f) == 0 && ((1L << (_la - 116)) & 63L) != 0) ) {
+			if ( !(((((_la - 116)) & ~0x3f) == 0 && ((1L << (_la - 116)) & 63L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -16759,7 +16759,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3168);
 			_la = _input.LA(1);
-			if ( !((((_la - 123)) & ~0x3f) == 0 && ((1L << (_la - 123)) & 7L) != 0) ) {
+			if ( !(((((_la - 123)) & ~0x3f) == 0 && ((1L << (_la - 123)) & 7L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -16813,7 +16813,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3170);
 			_la = _input.LA(1);
-			if ( !((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 7L) != 0) ) {
+			if ( !(((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & 7L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -17291,7 +17291,7 @@ public class KotlinParser extends Parser {
 					setState(3231); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( (((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0 || (((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0 );
+				} while ( ((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0) || ((((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0) );
 				setState(3233);
 				match(RSQUARE);
 				}
@@ -17316,7 +17316,7 @@ public class KotlinParser extends Parser {
 					setState(3240); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( (((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0 || (((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0 );
+				} while ( ((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0) || ((((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0) );
 				setState(3242);
 				match(RSQUARE);
 				}
@@ -17374,7 +17374,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3246);
 			_la = _input.LA(1);
-			if ( !((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0) ) {
+			if ( !(((((_la - 99)) & ~0x3f) == 0 && ((1L << (_la - 99)) & 255L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -17526,7 +17526,7 @@ public class KotlinParser extends Parser {
 			{
 			setState(3252);
 			_la = _input.LA(1);
-			if ( !((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0 || (((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0) ) {
+			if ( !(((((_la - 60)) & ~0x3f) == 0 && ((1L << (_la - 60)) & -140479787135231L) != 0) || ((((_la - 124)) & ~0x3f) == 0 && ((1L << (_la - 124)) & 2098175L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {

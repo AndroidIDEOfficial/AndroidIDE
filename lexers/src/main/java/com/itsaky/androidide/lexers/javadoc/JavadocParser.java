@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/javadoc/JavadocParser.g4 by ANTLR 4.12.0
 package com.itsaky.androidide.lexers.javadoc;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class JavadocParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -88,7 +88,7 @@ public class JavadocParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "java-escape"; }
+	public String getGrammarFileName() { return "JavadocParser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -788,7 +788,7 @@ public class JavadocParser extends Parser {
 			{
 			setState(144);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 6354L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 6354L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1403,7 +1403,7 @@ public class JavadocParser extends Parser {
 			{
 			setState(190);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 6362L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 6362L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1488,7 +1488,7 @@ public class JavadocParser extends Parser {
 			setState(201);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0)) {
 				{
 				setState(200);
 				inlineTagContent();
@@ -1600,7 +1600,7 @@ public class JavadocParser extends Parser {
 				setState(210); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( ((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0 );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -1655,7 +1655,7 @@ public class JavadocParser extends Parser {
 			setState(216);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 2270L) != 0)) {
 				{
 				{
 				setState(213);
@@ -1825,7 +1825,7 @@ public class JavadocParser extends Parser {
 			{
 			setState(237);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 222L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 222L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {

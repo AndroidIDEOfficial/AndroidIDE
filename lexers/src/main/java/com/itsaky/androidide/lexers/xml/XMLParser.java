@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/xml/XMLParser.g4 by ANTLR 4.12.0
 package com.itsaky.androidide.lexers.xml;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class XMLParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -85,7 +85,7 @@ public class XMLParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "java-escape"; }
+	public String getGrammarFileName() { return "XMLParser.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -154,7 +154,7 @@ public class XMLParser extends Parser {
 			setState(28);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0)) {
 				{
 				{
 				setState(25);
@@ -170,7 +170,7 @@ public class XMLParser extends Parser {
 			setState(35);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0)) {
 				{
 				{
 				setState(32);
@@ -332,7 +332,7 @@ public class XMLParser extends Parser {
 			setState(62);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 67114688L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 67114688L) != 0)) {
 				{
 				{
 				setState(55);
@@ -867,7 +867,7 @@ public class XMLParser extends Parser {
 			{
 			setState(107);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 67110976L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {

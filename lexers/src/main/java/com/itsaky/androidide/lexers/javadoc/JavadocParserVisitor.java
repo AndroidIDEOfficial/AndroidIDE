@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/javadoc/JavadocParser.g4 by ANTLR 4.12.0
 package com.itsaky.androidide.lexers.javadoc;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
