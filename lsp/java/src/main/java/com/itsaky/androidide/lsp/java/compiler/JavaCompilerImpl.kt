@@ -25,6 +25,7 @@ import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner.prune
 import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
+import com.itsaky.androidide.utils.VMUtils
 import jdkx.tools.JavaFileObject
 import jdkx.tools.JavaFileObject.Kind.SOURCE
 import kotlin.io.path.name
@@ -37,6 +38,11 @@ class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
   private val _log = ILogger.newInstance("JavaCompilerImpl")
 
   override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
+    
+    if (VMUtils.isJvm()) {
+      return super.parse(filename, content)
+    }
+    
     val file = ClientCodeWrapper.instance(context).unwrap(filename)
     val compilerConfig = JavaCompilerConfig.instance(context)
 
