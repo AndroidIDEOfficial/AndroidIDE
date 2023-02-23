@@ -101,6 +101,8 @@ public class CompileBatch implements AutoCloseable {
     } catch (Throwable e) {
       throw new RuntimeException(e);
     }
+    
+    config.setFiles(null);
   }
 
   private void processCompilationUnit(final CompilationUnitTree root) {
