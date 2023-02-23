@@ -28,8 +28,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Objects;
 
 import jdkx.lang.model.element.Modifier;
 import jdkx.lang.model.element.NestingKind;
@@ -53,19 +55,7 @@ public class SourceFileObject implements JavaFileObject {
     this.contents = contents;
     this.modified = modified;
   }
-
-  @Override
-  public int hashCode() {
-    return this.path.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    if (other.getClass() != SourceFileObject.class) return false;
-    SourceFileObject that = (SourceFileObject) other;
-    return DocumentUtils.isSameFile(this.path, that.path);
-  }
-
+  
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("path", this.path.toString()).toString();
@@ -157,5 +147,29 @@ public class SourceFileObject implements JavaFileObject {
   @Override
   public boolean delete() {
     throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof SourceFileObject)) {
+      return false;
+    }
+    final SourceFileObject that = (SourceFileObject) o;
+    try {
+      return this.path != null && that.path != null
+        && Files.isSameFile(this.path, that.path)
+        && Objects.equals(contents, that.contents)
+        && Objects.equals(modified, that.modified);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(path, contents, modified);
   }
 }

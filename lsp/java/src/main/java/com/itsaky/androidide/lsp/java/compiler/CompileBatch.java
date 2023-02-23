@@ -30,6 +30,7 @@ import androidx.core.util.Pair;
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings;
 import com.itsaky.androidide.javac.services.compiler.ReusableBorrow;
 import com.itsaky.androidide.javac.services.partial.DiagnosticListenerImpl;
+import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.visitors.MethodRangeScanner;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.projects.api.ModuleProject;
@@ -43,6 +44,7 @@ import openjdk.source.util.TreePath;
 import openjdk.tools.javac.api.ClientCodeWrapper;
 import openjdk.tools.javac.api.JavacTaskImpl;
 import openjdk.tools.javac.code.Kinds;
+import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.io.File;
@@ -76,18 +78,26 @@ public class CompileBatch implements AutoCloseable {
   boolean closed;
 
   CompileBatch(
-      JavaCompilerService parent,
-      Collection<? extends JavaFileObject> files,
-      CompilationTaskProcessor taskProcessor) {
+    JavaCompilerService parent,
+    Collection<? extends JavaFileObject> files,
+    CompilationRequest compilationRequest) {
     this.parent = parent;
     this.borrow = batchTask(parent, files);
     this.task = borrow.task;
     this.roots = new ArrayList<>();
-
-    Objects.requireNonNull(taskProcessor, "A task processor is required");
+  
+    final var context = task.getContext();
+    final var config = JavaCompilerConfig.instance(context);
+    config.setFiles(files);
+    
+    if (compilationRequest.configureContext != null) {
+      compilationRequest.configureContext.accept(context);
+    }
+  
+    Objects.requireNonNull(compilationRequest, "A task processor is required");
 
     try {
-      taskProcessor.process(borrow.task, this::processCompilationUnit);
+      compilationRequest.compilationTaskProcessor.process(borrow.task, this::processCompilationUnit);
     } catch (Throwable e) {
       throw new RuntimeException(e);
     }

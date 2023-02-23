@@ -28,13 +28,13 @@ import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.IServerSettings;
 import com.itsaky.androidide.lsp.internal.model.CachedCompletion;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
+import com.itsaky.androidide.lsp.java.compiler.CompletionInfo;
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerConfig;
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.models.CompilationRequest;
 import com.itsaky.androidide.lsp.java.models.PartialReparseRequest;
-import com.itsaky.androidide.lsp.java.parser.ts.TSJavaParser;
-import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner;
 import com.itsaky.androidide.lsp.java.providers.completion.IJavaCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.IdentifierCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.ImportCompletionProvider;
@@ -50,8 +50,6 @@ import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.StopWatch;
-import com.itsaky.androidide.utils.VMUtils;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -156,23 +154,15 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     final var sourceObject = new SourceFileObject(file);
     final var contentBuilder = new StringBuilder(sourceObject.getCharContent(true));
     
-    if (false && !VMUtils.isJvm()) {
-      // Cannot use tree sitter in tests
-      // TODO(itsaky): Should we use the legacy method pruner for tests?
-      final StopWatch watch = new StopWatch("Prune method bodies");
-      final var parseResult = TSJavaParser.INSTANCE.parse(sourceObject);
-      TSMethodPruner.INSTANCE.prune(contentBuilder, parseResult.getTree(), (int) cursor);
-      watch.log();
-    }
-    
     int endOfLine = endOfLine(contentBuilder, (int) cursor);
     contentBuilder.insert(endOfLine, ';');
 
     final StringBuilder contents;
-    if (compiler.compiler.currentContext != null) {
+    final var context = compiler.compiler.currentContext;
+    if (context != null) {
       abortIfCancelled();
       abortCompletionIfCancelled();
-      contents = new ASTFixer(compiler.compiler.currentContext).fix(contentBuilder);
+      contents = new ASTFixer(context).fix(contentBuilder);
     } else {
       contents = contentBuilder;
     }
@@ -182,7 +172,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         new PartialReparseRequest(cursor - params.requirePrefix().length(), contentString);
     abortIfCancelled();
     abortCompletionIfCancelled();
-    CompletionResult result = compileAndComplete(file, contentString, cursor, partialRequest);
+  
+    CompletionResult result = compileAndComplete(contentString, params, partialRequest);
     if (result == null) {
       result = CompletionResult.EMPTY;
     }
@@ -231,17 +222,24 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   private CompletionResult compileAndComplete(
-      Path file, String contents, final long cursor, PartialReparseRequest partialRequest) {
-    final Instant started = Instant.now();
-    final SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
-    final String partial = partialIdentifier(contents, (int) cursor);
-    final boolean endsWithParen = endsWithParen(contents, (int) cursor);
+    String contents, CompletionParams params, PartialReparseRequest partialRequest) {
+    final long cursor = params.getPosition().requireIndex();
+    final var file = params.getFile();
+    final var started = Instant.now();
+    final var source = new SourceFileObject(file, contents, Instant.now());
+    final var partial = partialIdentifier(contents, (int) cursor);
+    final var endsWithParen = endsWithParen(contents, (int) cursor);
 
     abortIfCancelled();
     abortCompletionIfCancelled();
 
     final CompilationRequest request =
         new CompilationRequest(Collections.singletonList(source), partialRequest);
+    request.configureContext = ctx -> {
+      final var config = JavaCompilerConfig.instance(ctx);
+      config.setCompletionInfo(new CompletionInfo(params.getPosition()));
+    };
+    
     SynchronizedTask synchronizedTask = compiler.compile(request);
     return synchronizedTask.get(
         task -> {
@@ -266,6 +264,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   
           final var result = doComplete(file, contents, cursor, newPartial, endsWithParen, task, path);
           new TopLevelSnippetsProvider().complete(partial, task.root(), result);
+          
+          // IMPORTANT: Unregister the completion info from the compiler configuration
+          if (task.task.getContext() != null) {
+            final var compilerConfig = JavaCompilerConfig.instance(task.task.getContext());
+            compilerConfig.setCompletionInfo(null);
+          }
+          
           return result;
         });
   }

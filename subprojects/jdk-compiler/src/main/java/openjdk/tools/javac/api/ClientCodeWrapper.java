@@ -129,7 +129,8 @@ public class ClientCodeWrapper {
         return new WrappedFileObject(fo);
     }
 
-    FileObject unwrap(FileObject fo) {
+    // AndroidIDE Changed: Make public
+    public FileObject unwrap(FileObject fo) {
         if (fo instanceof WrappedFileObject)
             return ((WrappedFileObject) fo).clientFileObject;
         else
@@ -148,8 +149,9 @@ public class ClientCodeWrapper {
             wrapped.add(wrap(fo));
         return Collections.unmodifiableList(wrapped);
     }
-
-    JavaFileObject unwrap(JavaFileObject fo) {
+    
+    // AndroidIDE Changed: Make public
+    public JavaFileObject unwrap(JavaFileObject fo) {
           if (fo instanceof WrappedJavaFileObject)
             return ((JavaFileObject) ((WrappedJavaFileObject) fo).clientFileObject);
         else
@@ -181,9 +183,10 @@ public class ClientCodeWrapper {
             c.add(unwrap(l));
         return c;
     }
-
+    
+    // AndroidIDE Changed: Make public
     @SuppressWarnings("unchecked")
-    private <T> Diagnostic<T> unwrap(final Diagnostic<T> diagnostic) {
+    public  <T> Diagnostic<T> unwrap(final Diagnostic<T> diagnostic) {
         if (diagnostic instanceof JCDiagnostic) {
             JCDiagnostic d = (JCDiagnostic) diagnostic;
             return (Diagnostic<T>) new DiagnosticSourceUnwrapper(d);

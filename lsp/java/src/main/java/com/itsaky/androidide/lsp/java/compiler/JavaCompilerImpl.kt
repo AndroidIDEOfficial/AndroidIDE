@@ -17,17 +17,61 @@
 
 package com.itsaky.androidide.lsp.java.compiler
 
+import android.util.Log
 import com.itsaky.androidide.javac.services.compiler.ReusableContext
 import com.itsaky.androidide.javac.services.compiler.ReusableJavaCompiler
+import com.itsaky.androidide.lsp.java.parser.ts.TSJavaParser
+import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner.prune
+import com.itsaky.androidide.projects.FileManager
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import jdkx.tools.JavaFileObject
+import jdkx.tools.JavaFileObject.Kind.SOURCE
+import kotlin.io.path.name
+import openjdk.tools.javac.api.ClientCodeWrapper
 import openjdk.tools.javac.tree.JCTree.JCCompilationUnit
 import openjdk.tools.javac.util.Context
 
 class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
 
+  private val _log = ILogger.newInstance("JavaCompilerImpl")
+
   override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
-    // TODO Prune unnecessary methods to speed up compilation
-    return super.parse(filename, content)
+    val file = ClientCodeWrapper.instance(context).unwrap(filename)
+    val compilerConfig = JavaCompilerConfig.instance(context)
+
+    // Preconditions
+    if (
+      content == null ||
+        compilerConfig.files == null ||
+        filename?.kind != SOURCE ||
+        compilerConfig.files?.contains(file) == false
+    ) {
+      return super.parse(filename, content)
+    }
+
+    // If the file is NOT being parsed for a completion request,
+    // we should not prune method bodies of active documents
+    if (compilerConfig.completionInfo == null && FileManager.isActive(filename.toUri())) {
+      return super.parse(filename, content)
+    }
+    
+    val pruned =
+      StopWatch("${if(file is SourceFileObject) "[${file.path.name}] " else ""}Prune method bodies")
+        .let {
+          val contentBuilder = StringBuilder(content)
+          val parseResult = TSJavaParser.parse(file)
+          prune(
+            contentBuilder,
+            parseResult.tree,
+            compilerConfig.completionInfo?.cursor?.index ?: -1
+          )
+          it.log()
+          Log.d("JavaMethodPruner", "Pruned contents for file: $file\n$contentBuilder")
+          return@let contentBuilder
+        }
+
+    return super.parse(filename, pruned)
   }
 
   companion object {

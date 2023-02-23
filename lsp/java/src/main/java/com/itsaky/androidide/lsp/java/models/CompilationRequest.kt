@@ -19,14 +19,16 @@ package com.itsaky.androidide.lsp.java.models
 
 import com.itsaky.androidide.lsp.java.compiler.CompilationTaskProcessor
 import com.itsaky.androidide.lsp.java.compiler.DefaultCompilationTaskProcessor
+import java.util.function.Consumer
 import jdkx.tools.JavaFileObject
+import openjdk.tools.javac.util.Context
 
 /**
  * Data sent to compiler to request a compilation.
  *
- * @author Akash Yadav
  * @param sources The source files to compile.
  * @param partialRequest Data that will be used to a partial reparse.
+ * @author Akash Yadav
  */
 data class CompilationRequest
 @JvmOverloads
@@ -34,5 +36,6 @@ constructor(
   @JvmField val sources: Collection<JavaFileObject>,
   @JvmField val partialRequest: PartialReparseRequest? = null,
   @JvmField
-  val compilationTaskProcessor: CompilationTaskProcessor = DefaultCompilationTaskProcessor()
+  val compilationTaskProcessor: CompilationTaskProcessor = DefaultCompilationTaskProcessor(),
+  @JvmField var configureContext: Consumer<Context>? = null
 )

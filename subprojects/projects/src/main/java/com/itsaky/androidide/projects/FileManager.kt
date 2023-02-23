@@ -35,6 +35,8 @@ import java.time.Instant
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.BACKGROUND
+import java.net.URI
+import java.nio.file.Paths
 
 /**
  * Manages active documents.
@@ -46,6 +48,10 @@ object FileManager : EventReceiver {
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val activeDocuments: MutableMap<Path, ActiveDocument> = mutableMapOf()
 
+  fun isActive(uri: URI): Boolean {
+    return isActive(Paths.get(uri))
+  }
+  
   fun isActive(file: Path): Boolean {
     return this.activeDocuments.containsKey(file.normalize())
   }

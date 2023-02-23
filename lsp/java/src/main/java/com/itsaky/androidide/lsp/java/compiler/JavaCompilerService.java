@@ -413,7 +413,7 @@ public class JavaCompilerService implements CompilerProvider {
       throw new RuntimeException("empty sources");
     }
 
-    CompileBatch firstAttempt = new CompileBatch(this, sources, request.compilationTaskProcessor);
+    CompileBatch firstAttempt = new CompileBatch(this, sources, request);
     Set<Path> addFiles = firstAttempt.needsAdditionalSources();
 
     if (addFiles.isEmpty()) {
@@ -430,7 +430,7 @@ public class JavaCompilerService implements CompilerProvider {
       moreSources.add(new SourceFileObject(add));
     }
 
-    return new CompileBatch(this, moreSources, request.compilationTaskProcessor);
+    return new CompileBatch(this, moreSources, request);
   }
 
   private boolean containsWord(Path file, String word) {
