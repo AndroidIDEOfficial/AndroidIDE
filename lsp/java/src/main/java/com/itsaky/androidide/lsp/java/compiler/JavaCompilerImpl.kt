@@ -35,14 +35,12 @@ import openjdk.tools.javac.util.Context
 
 class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
 
-  private val _log = ILogger.newInstance("JavaCompilerImpl")
+    override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
 
-  override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
-    
     if (VMUtils.isJvm()) {
       return super.parse(filename, content)
     }
-    
+
     val file = ClientCodeWrapper.instance(context).unwrap(filename)
     val compilerConfig = JavaCompilerConfig.instance(context)
 
@@ -61,7 +59,7 @@ class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
     if (compilerConfig.completionInfo == null && FileManager.isActive(filename.toUri())) {
       return super.parse(filename, content)
     }
-    
+
     val pruned =
       StopWatch("${if(file is SourceFileObject) "[${file.path.name}] " else ""}Prune method bodies")
         .let {

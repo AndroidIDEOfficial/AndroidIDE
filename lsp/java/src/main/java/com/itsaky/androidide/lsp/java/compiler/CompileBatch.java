@@ -39,13 +39,6 @@ import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.utils.ClassTrie;
 import com.itsaky.androidide.utils.SourceClassTrie;
 import com.itsaky.androidide.utils.StopWatch;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.source.util.TreePath;
-import openjdk.tools.javac.api.ClientCodeWrapper;
-import openjdk.tools.javac.api.JavacTaskImpl;
-import openjdk.tools.javac.code.Kinds;
-import openjdk.tools.javac.util.Context;
-import openjdk.tools.javac.util.JCDiagnostic;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -64,6 +57,12 @@ import java.util.function.Consumer;
 import jdkx.lang.model.SourceVersion;
 import jdkx.tools.Diagnostic;
 import jdkx.tools.JavaFileObject;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreePath;
+import openjdk.tools.javac.api.ClientCodeWrapper;
+import openjdk.tools.javac.api.JavacTaskImpl;
+import openjdk.tools.javac.code.Kinds;
+import openjdk.tools.javac.util.JCDiagnostic;
 
 public class CompileBatch implements AutoCloseable {
 
