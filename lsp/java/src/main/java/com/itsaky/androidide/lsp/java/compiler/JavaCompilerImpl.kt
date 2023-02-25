@@ -17,13 +17,11 @@
 
 package com.itsaky.androidide.lsp.java.compiler
 
-import android.util.Log
 import com.itsaky.androidide.javac.services.compiler.ReusableContext
 import com.itsaky.androidide.javac.services.compiler.ReusableJavaCompiler
 import com.itsaky.androidide.lsp.java.parser.ts.TSJavaParser
 import com.itsaky.androidide.lsp.java.parser.ts.TSMethodPruner.prune
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.androidide.utils.VMUtils
 import jdkx.tools.JavaFileObject
@@ -35,7 +33,7 @@ import openjdk.tools.javac.util.Context
 
 class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
 
-    override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
+  override fun parse(filename: JavaFileObject?, content: CharSequence?): JCCompilationUnit {
 
     if (VMUtils.isJvm()) {
       return super.parse(filename, content)
@@ -71,7 +69,6 @@ class JavaCompilerImpl(context: Context?) : ReusableJavaCompiler(context) {
             compilerConfig.completionInfo?.cursor?.index ?: -1
           )
           it.log()
-          Log.d("JavaMethodPruner", "Pruned contents for file: $file\n$contentBuilder")
           return@let contentBuilder
         }
 
