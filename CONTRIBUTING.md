@@ -6,7 +6,11 @@ agree to abide the terms specified in the [CODE OF CONDUCT](./CODE_OF_CONDUCT.md
 ## Requirements
 
 - Android Studio.
-- JDK 11 (prefer the one bundled with Android Studio). Newer versions are not recommended.
+- JDK 17 (prefer the one bundled with Android Studio).
+
+> NOTE:
+>
+> At the time of this writing, the stable version of Android Studio (Electric Eel) is bundled with JDK 11. Only Android Studio Flamingo and newer are bundled with JDK 17.
 
 ## Build the project
 
@@ -16,13 +20,10 @@ It is possible to build AndroidIDE in AndroidIDE itself. But, as it might be a t
 
 ## Source code format
 
-The source code must have `2-space` indentation (soft tab). Java source code is formatted
-using `google-java-format` with `GOOGLE` style formatting.
-
-You can
-execute `./gradlew formatJavaSources` in terminal to format all Java source files using Google Java
-Format.
-**This will commit the changes as well**.
+- Indents : 2-space
+- Java : `GoogleStyle`. Either use `google-java-format` or import [this](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml) code style.
+- Kotlin: Use [`ktfmt`](https://plugins.jetbrains.com/plugin/14912-ktfmt) IntelliJ Plugin and set the code style to `Google (internal)`. [`Learn more`](https://github.com/facebook/ktfmt#intellij-android-studio-and-other-jetbrains-ides).
+- XML : Default Android Studio formatter with 2-space indentations.
 
 ## Propose a change
 
