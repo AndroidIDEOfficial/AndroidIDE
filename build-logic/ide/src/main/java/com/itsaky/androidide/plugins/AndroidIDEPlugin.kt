@@ -39,9 +39,6 @@ class AndroidIDEPlugin : Plugin<Project> {
         // apply the translation checker plugin
         target.apply { plugin(TranslationCheckerPlugin::class.java) }
       }
-
-      // apply the Google Java Format plugin
-      target.apply { plugin(GoogleJavaFormatPlugin::class.java) }
     }
   }
 }
