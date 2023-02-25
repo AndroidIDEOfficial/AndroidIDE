@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 @Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("com.github.johnrengelman.shadow") version "8.0.0"
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
 }
