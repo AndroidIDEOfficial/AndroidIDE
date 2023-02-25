@@ -27,18 +27,6 @@ import org.gradle.api.Project
  */
 class AndroidIDEPlugin : Plugin<Project> {
 
-  companion object {
-    private const val APP_PLUGIN = "com.android.application"
-    private const val LIB_PLUGIN = "com.android.library"
-  }
-
   override fun apply(target: Project) {
-    target.afterEvaluate {
-      if (target.plugins.hasPlugin(APP_PLUGIN) || target.plugins.hasPlugin(LIB_PLUGIN)) {
-
-        // apply the translation checker plugin
-        target.apply { plugin(TranslationCheckerPlugin::class.java) }
-      }
-    }
   }
 }
