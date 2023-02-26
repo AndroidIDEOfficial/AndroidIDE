@@ -61,7 +61,7 @@ class JarFsClasspathReader : IClasspathReader {
 
             override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
               var name = file.pathString
-              if (!name.endsWith(".class")) {
+              if (name.endsWith("/package-info.class") || !name.endsWith(".class")) {
                 return CONTINUE
               }
 

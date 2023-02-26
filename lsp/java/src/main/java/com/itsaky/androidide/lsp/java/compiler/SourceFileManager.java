@@ -166,9 +166,9 @@ public class SourceFileManager extends ForwardingJavaFileManager<JavacFileManage
       String className = removeExtension(source.path.getFileName().toString());
       if (!packageName.isEmpty()) className = packageName + "." + className;
       return className;
-    } else {
-      return super.inferBinaryName(location, file);
     }
+
+    return super.inferBinaryName(location, file);
   }
 
   @Override

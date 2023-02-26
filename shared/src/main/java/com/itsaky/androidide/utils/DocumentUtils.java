@@ -31,7 +31,8 @@ public class DocumentUtils {
     return name.endsWith(".java")
         && Files.exists(file)
         && !Files.isDirectory(file)
-        && !name.equals("module-info.java");
+        && !name.equals("module-info.java")
+        && !name.equals("package-info.java");
   }
 
   public static boolean isXmlFile(Path file) {

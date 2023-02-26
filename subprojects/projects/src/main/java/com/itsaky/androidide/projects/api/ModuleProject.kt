@@ -55,10 +55,6 @@ abstract class ModuleProject(
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   companion object {
-    const val PROP_USAGE = "org.gradle.usage"
-    const val USAGE_API = "java-api"
-    const val USAGE_RUNTIME = "java-runtime"
-
     @JvmStatic val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
   }
 
@@ -102,7 +98,6 @@ abstract class ModuleProject(
   abstract fun getCompileModuleProjects(): List<ModuleProject>
 
   /** Finds the source files and classes from source directories and classpaths and indexes them. */
-  @Suppress("UnstableApiUsage")
   internal fun indexSourcesAndClasspaths() {
     log.info("Indexing sources and classpaths for project:", path)
     indexSources()
