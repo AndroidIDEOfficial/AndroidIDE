@@ -67,7 +67,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
         log.error("Invalid color scheme returned by color scheme provider", scheme)
         return@readScheme
       }
-      
+
       val langScheme = scheme.languages[type] ?: return@readScheme
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
     }
@@ -148,5 +148,16 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
 
   override fun destroy() {
     languageSpec.close()
+  }
+
+  /** A [Factory] creates instance of a specific [TreeSitterLanguage] implementation. */
+  fun interface Factory<T : TreeSitterLanguage> {
+
+    /**
+     * Create the instance of the [TreeSitterLanguage] implementation.
+     *
+     * @param context The current context.
+     */
+    fun create(context: Context): T
   }
 }

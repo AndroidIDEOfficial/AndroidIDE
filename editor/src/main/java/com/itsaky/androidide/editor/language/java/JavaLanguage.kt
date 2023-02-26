@@ -18,6 +18,7 @@
 package com.itsaky.androidide.editor.language.java
 
 import android.content.Context
+import com.itsaky.androidide.editor.language.json.JsonLanguage
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
@@ -39,6 +40,8 @@ class JavaLanguage(context: Context) :
 
   companion object {
     const val TS_TYPE = "java"
+
+    @JvmField val FACTORY = Factory { JavaLanguage(it) }
   }
 
   override fun getLanguageServer(): ILanguageServer? {

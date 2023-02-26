@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.language.json
 
 import android.content.Context
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
 import com.itsaky.androidide.treesitter.json.TSLanguageJson
 
 /**
@@ -26,12 +27,15 @@ import com.itsaky.androidide.treesitter.json.TSLanguageJson
  *
  * @author Akash Yadav
  */
-class JsonLanguage(context: Context) : TreeSitterLanguage(context, TSLanguageJson.newInstance(), EXT_JSON) {
-    companion object {
-        const val EXT_JSON = "json"
-    }
+class JsonLanguage(context: Context) :
+  TreeSitterLanguage(context, TSLanguageJson.newInstance(), TS_TYPE) {
+  companion object {
+    const val TS_TYPE = "json"
 
-    override fun getInterruptionLevel(): Int {
-        return INTERRUPTION_LEVEL_STRONG
-    }
+    @JvmField val FACTORY = Factory { JsonLanguage(it) }
+  }
+
+  override fun getInterruptionLevel(): Int {
+    return INTERRUPTION_LEVEL_STRONG
+  }
 }

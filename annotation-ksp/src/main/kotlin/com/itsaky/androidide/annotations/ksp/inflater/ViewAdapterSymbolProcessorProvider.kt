@@ -15,19 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.annotations.ksp
+package com.itsaky.androidide.annotations.ksp.inflater
 
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.itsaky.androidide.annotations.ksp.inflater.ViewAdapterSymbolProcessor
 
 /**
- * AndroidIDE [SymbolProcessorProvider] implementation.
+ * [SymbolProcessorProvider] implementation for
+ * [ViewAdapter][com.itsaky.androidide.annotations.inflater.ViewAdapter] annotation.
  *
  * @author Akash Yadav
  */
-class IDESymbolProcessorProvider : SymbolProcessorProvider {
+class ViewAdapterSymbolProcessorProvider : SymbolProcessorProvider {
 
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
     return ViewAdapterSymbolProcessor(environment.codeGenerator, environment.logger)

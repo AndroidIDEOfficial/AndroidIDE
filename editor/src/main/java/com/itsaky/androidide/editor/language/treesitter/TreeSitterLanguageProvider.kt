@@ -18,9 +18,6 @@
 package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.java.JavaLanguage
-import com.itsaky.androidide.editor.language.json.JsonLanguage
-import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.BASE_SPEC_PATH
 import java.io.File
 import java.io.IOException
@@ -34,19 +31,18 @@ object TreeSitterLanguageProvider {
 
   fun forFile(file: File, context: Context): TreeSitterLanguage? {
     val type = file.extension
-  
+
     try {
       // check if there is at least highlights.scm file for this file type
       context.assets.open("${BASE_SPEC_PATH}/${type}/highlights.scm").close()
     } catch (e: IOException) {
       return null
     }
-  
-    return when (type) {
-      "java" -> JavaLanguage(context)
-      "json" -> JsonLanguage(context)
-      "xml" -> XMLLanguage(context)
-      else -> return null
+
+    return try {
+      TSLanguageRegistry.instance.getFactory<TreeSitterLanguage>(type).create(context)
+    } catch (e: TSLanguageRegistry.NotRegisteredException) {
+      null
     }
   }
 }

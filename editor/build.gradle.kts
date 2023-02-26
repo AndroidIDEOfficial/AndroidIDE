@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("com.google.devtools.ksp") version libs.versions.ksp
 }
 
 android {
@@ -8,6 +9,7 @@ android {
 }
 
 dependencies {
+    ksp(projects.annotationKsp)
     
     api(libs.androidide.ts)
     api(libs.androidide.ts.java)
@@ -28,6 +30,7 @@ dependencies {
     implementation(libs.google.material)
     
     implementation(projects.actions)
+    implementation(projects.annotations)
     implementation(projects.common)
     implementation(projects.lexers)
     implementation(projects.shared)
