@@ -27,13 +27,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter;
 import com.itsaky.androidide.editor.api.IEditor;
@@ -61,12 +61,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.File;
-import java.util.concurrent.CompletableFuture;
-
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
@@ -74,8 +68,13 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
+import java.io.File;
+import java.util.concurrent.CompletableFuture;
+import org.greenrobot.eventbus.EventBus;
 
 public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
+
+  private static final long SELECTION_CHANGE_DELAY = 500;
 
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
   @Nullable
@@ -87,7 +86,24 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   private ILanguageServer languageServer;
   private SignatureHelpWindow signatureHelpWindow;
   private DiagnosticWindow diagnosticWindow;
-  @Nullable ILanguageClient languageClient;
+  @Nullable
+  ILanguageClient languageClient;
+
+  private final Handler selectionChangeHandler = new Handler(Looper.getMainLooper());
+
+  @Nullable
+  private Runnable selectionChangeRunner = () -> {
+    final var cursor = getCursor();
+    if (languageClient == null || cursor == null || cursor.isSelected()) {
+      return;
+    }
+
+    final var line = cursor.getLeftLine();
+    final var column = cursor.getLeftColumn();
+
+    // diagnostics are expected to be sorted, so, we do a binary search
+    getDiagnosticWindow().showDiagnostic(languageClient.getDiagnosticAt(getFile(), line, column));
+  };
 
   public IDEEditor(Context context) {
     this(context, null);
@@ -103,7 +119,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
-    
+
     this.isModified = false;
     this.actionsMenu = new EditorActionsMenu(this);
     this.actionsMenu.init();
@@ -122,17 +138,14 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   }
 
   private void handleSelectionChange(@NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
-    if (event.isSelected() || languageClient == null) {
-      // do not show diagnostics when text is selected
-      // or if we cannot get diagnostics
-      return;
+    if (getDiagnosticWindow().isShowing()) {
+      getDiagnosticWindow().dismiss();
     }
 
-    final var line = event.getLeft().line;
-    final var column = event.getLeft().column;
-
-    // diagnostics are expected to be sorted, so, we do a binary search
-    getDiagnosticWindow().showDiagnostic(languageClient.getDiagnosticAt(getFile(), line, column));
+    if (selectionChangeRunner != null) {
+      selectionChangeHandler.removeCallbacks(selectionChangeRunner);
+      selectionChangeHandler.postDelayed(selectionChangeRunner, SELECTION_CHANGE_DELAY);
+    }
   }
 
   private DiagnosticWindow getDiagnosticWindow() {
@@ -165,7 +178,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       dispatchDocumentOpenEvent();
     }
   }
-  
+
   @NonNull
   @Override
   public Bundle getExtraArguments() {
@@ -174,7 +187,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     args.putString(KEY_FILE, path);
     return args;
   }
-  
+
   protected void dispatchDocumentOpenEvent() {
     if (getFile() == null) {
       return;
@@ -220,12 +233,12 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
           });
     }
   }
-  
+
   @Override
   public int getTabWidth() {
     return getTabSize();
   }
-  
+
   /**
    * Shows the given signature help in the editor.
    *
@@ -307,10 +320,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var end = range.getEnd();
     final var text = getText();
     final var lineCount = text.getLineCount();
-    
+
     start.setLine(min(max(0, start.getLine()), lineCount - 1));
     start.setColumn(min(max(0, start.getColumn()), text.getColumnCount(start.getLine())));
-    
+
     end.setLine(min(max(0, end.getLine()), lineCount - 1));
     end.setColumn(min(max(0, end.getColumn()), text.getColumnCount(end.getLine())));
   }
@@ -365,7 +378,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   /**
    * Checks if the given column is valid for this editor's text.
    *
-   * @param line The line of the column to check.
+   * @param line   The line of the column to check.
    * @param column The column to check.
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
@@ -388,7 +401,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
    * it'll be set to {@link ILanguageClient} set in the language server.
    *
    * @param server The server to set. Provide <code>null</code> to disable all the language server
-   *     features.
+   *               features.
    */
   @Override
   public void setLanguageServer(ILanguageServer server) {
@@ -425,7 +438,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     return line;
   }
 
-  /** Set the selection of the editor's cursor to the last line of the it's content. */
+  /**
+   * Set the selection of the editor's cursor to the last line of the it's content.
+   */
   @Override
   public void goToEnd() {
     final var line = getText().getLineCount() - 1;
@@ -543,8 +558,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       return;
     }
 
-    @SuppressWarnings("deprecation")
-    final ProgressDialog pd =
+    @SuppressWarnings("deprecation") final ProgressDialog pd =
         ProgressDialog.show(
             getContext(), null, getContext().getString(string.msg_finding_references));
 
@@ -661,7 +675,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-  /** Ensures that all the windows are dismissed. */
+  /**
+   * Ensures that all the windows are dismissed.
+   */
   @Override
   public void ensureWindowsDismissed() {
     if (getDiagnosticWindow().isShowing()) {
@@ -671,7 +687,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     if (getSignatureHelpWindow().isShowing()) {
       getSignatureHelpWindow().dismiss();
     }
-  
+
     if (actionsMenu != null && actionsMenu.isShowing()) {
       actionsMenu.dismiss();
     }
@@ -782,7 +798,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-  /** Notify the language server that the file in this editor is about to be closed. */
+  /**
+   * Notify the language server that the file in this editor is about to be closed.
+   */
   public void notifyClose() {
     if (getFile() == null) {
       LOG.info("No language server is available for this file");
@@ -790,19 +808,25 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     dispatchDocumentCloseEvent();
-  
+
     if (actionsMenu != null) {
       actionsMenu.unsubscribeEvents();
     }
+
+    if (selectionChangeRunner != null) {
+      this.selectionChangeHandler.removeCallbacks(selectionChangeRunner);
+      this.selectionChangeRunner = null;
+    }
+
     ensureWindowsDismissed();
   }
-  
+
   @Override
   public void release() {
     super.release();
     this.actionsMenu = null;
   }
-  
+
   protected void dispatchDocumentCloseEvent() {
     if (getFile() == null) {
       return;
