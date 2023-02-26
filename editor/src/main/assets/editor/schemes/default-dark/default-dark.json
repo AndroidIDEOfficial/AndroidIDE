@@ -27,11 +27,15 @@
 
     "xml.tag": "#ff6060",
     "xml.ref": "#90caf9",
-    "ns_prefix": "#ce93d8"
+    "ns_prefix": "#ce93d8",
+
+    "json.key": "#ba68c8",
+    "json.escape": "#2196f3"
   },
   "editor": "@editor.json",
   "languages": [
     "@java.json",
+    "@json.json",
     "@xml.json"
   ]
 }

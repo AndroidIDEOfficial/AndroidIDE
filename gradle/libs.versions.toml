@@ -17,6 +17,8 @@ antlr4 = "4.12.0"
 androidide-javac = { module = "io.github.itsaky:nb-javac-android", version = "17.0.0.4-SNAPSHOT" }
 androidide-ts = { module = "io.github.itsaky:android-tree-sitter", version.ref = "tree-sitter" }
 androidide-ts-java = { module = "io.github.itsaky:tree-sitter-java", version.ref = "tree-sitter" }
+androidide-ts-json = { module = "io.github.itsaky:tree-sitter-json", version.ref = "tree-sitter" }
+androidide-ts-kotlin = { module = "io.github.itsaky:tree-sitter-kotlin", version.ref = "tree-sitter" }
 androidide-ts-xml = { module = "io.github.itsaky:tree-sitter-xml", version.ref = "tree-sitter" }
 
 # Common

@@ -1,0 +1,14 @@
+{
+  "types": ["json"],
+  "styles": {
+    "string.special.key": "@json.key",
+    "string" : "@string",
+    "number" : "@number",
+    "constant.builtin": "@keyword",
+    "escape": "@json.escape",
+    "comment" : {
+      "fg": "@comment",
+      "italic": true
+    }
+  }
+}

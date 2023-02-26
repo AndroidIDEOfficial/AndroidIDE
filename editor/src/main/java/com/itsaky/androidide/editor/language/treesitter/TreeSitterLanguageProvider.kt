@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
 import com.itsaky.androidide.editor.language.java.JavaLanguage
+import com.itsaky.androidide.editor.language.json.JsonLanguage
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.BASE_SPEC_PATH
 import java.io.File
@@ -43,6 +44,7 @@ object TreeSitterLanguageProvider {
   
     return when (type) {
       "java" -> JavaLanguage(context)
+      "json" -> JsonLanguage(context)
       "xml" -> XMLLanguage(context)
       else -> return null
     }

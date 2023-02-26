@@ -49,6 +49,8 @@ class IDEApplication : BaseApplication() {
     if (!VMUtils.isJvm()) {
       System.loadLibrary("android-tree-sitter")
       System.loadLibrary("tree-sitter-java")
+      System.loadLibrary("tree-sitter-json")
+      System.loadLibrary("tree-sitter-kotlin")
       System.loadLibrary("tree-sitter-xml")
     }
   }
