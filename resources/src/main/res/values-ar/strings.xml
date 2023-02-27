@@ -442,7 +442,7 @@
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
   <string name="msg_select_attr">حدد سمة من القائمة أدناه</string>
   <string name="action_show_hierarchy">عرض التسلسل الهرمي للتخطيط</string>
-  <string name="idepref_editor_colorScheme">تشكيلات الألوان</string>
+  <string name="idepref_editor_colorScheme">نظام الألوان</string>
   <string name="idepref_editor_colorScheme_summary">اختر مخطط الألوان لاستخدامه في المحرر</string>
   <string name="idepref_general_uiMode">نمط واجهة المستخدم</string>
   <string name="idepref_general_uiMode_summary">اختر وضع واجهة المستخدم لـ IDE</string>
