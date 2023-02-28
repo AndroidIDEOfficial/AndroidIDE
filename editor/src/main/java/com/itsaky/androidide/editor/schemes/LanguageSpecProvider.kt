@@ -20,6 +20,7 @@ package com.itsaky.androidide.editor.schemes
 import android.content.Context
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageSpec
 import com.itsaky.androidide.editor.language.treesitter.predicates.AnyOfPredicate
+import com.itsaky.androidide.editor.language.treesitter.predicates.EqualPredicate
 import com.itsaky.androidide.editor.language.treesitter.predicates.MatchPredicate
 import com.itsaky.androidide.editor.language.treesitter.predicates.NotMatchPredicate
 import com.itsaky.androidide.treesitter.TSLanguage
@@ -53,7 +54,8 @@ object LanguageSpecProvider {
         codeBlocksScmSource = readScheme(context, type, "blocks"),
         bracketsScmSource = readScheme(context, type, "brackets"),
         localsCaptureSpec = localsCaptureSpec,
-        predicates = listOf(MatchPredicate.INSTANCE, NotMatchPredicate, AnyOfPredicate)
+        predicates =
+          listOf(MatchPredicate.INSTANCE, NotMatchPredicate, EqualPredicate, AnyOfPredicate)
       )
     return TreeSitterLanguageSpec(
       spec = editorLangSpec,
