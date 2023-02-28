@@ -33,6 +33,7 @@ import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.editor.language.java.JavaLanguage
 import com.itsaky.androidide.editor.language.json.JsonLanguage
+import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage
 import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -113,6 +114,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     executeAsync {
       TSLanguageRegistry.instance.register(JavaLanguage.TS_TYPE, JavaLanguage.FACTORY)
+      TSLanguageRegistry.instance.register(KotlinLanguage.TS_TYPE_KT, KotlinLanguage.FACTORY)
+      TSLanguageRegistry.instance.register(KotlinLanguage.TS_TYPE_KTS, KotlinLanguage.FACTORY)
       TSLanguageRegistry.instance.register(JsonLanguage.TS_TYPE, JsonLanguage.FACTORY)
       TSLanguageRegistry.instance.register(XMLLanguage.TS_TYPE, XMLLanguage.FACTORY)
       IDEColorSchemeProvider.initIfNeeded()

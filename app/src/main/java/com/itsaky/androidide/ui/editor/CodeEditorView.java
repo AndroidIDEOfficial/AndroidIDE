@@ -53,11 +53,9 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry;
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.cpp.CppLanguage;
 import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
-import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
 import com.itsaky.androidide.editor.schemes.IDEColorScheme;
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
@@ -245,9 +243,6 @@ public class CodeEditorView extends LinearLayout {
     switch (ext) {
       case "gradle":
         return new GroovyLanguage();
-      case "kt":
-      case "kts":
-        return new KotlinLanguage();
       case "c":
       case "h":
       case "cc":

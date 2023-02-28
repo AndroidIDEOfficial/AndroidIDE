@@ -25,6 +25,12 @@
     "func.decl": "#64b5f6",
     "func.call": "#64b5f6",
 
+    "kt.preproc":  "#bdbdbd",
+    "kt.property":  "#f0be4b",
+    "kt.punctuation.special": "#ff6060",
+    "kt.constructor": "#64b5f6",
+    "kt.string.esc": "#2196f3",
+
     "xml.tag": "#ff6060",
     "xml.ref": "#90caf9",
     "ns_prefix": "#ce93d8",
@@ -36,6 +42,7 @@
   "languages": [
     "@java.json",
     "@json.json",
+    "@kotlin.json",
     "@xml.json"
   ]
 }
