@@ -20,8 +20,13 @@ package com.itsaky.androidide.editor.language.treesitter.predicates
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
 
 /**
- * [TsPredicate] implementation for '#not-match?' query predicates.
+ * [TsPredicate] implementation for '#not-eq?' query predicates.
+ *
+ * Syntax : `"#not-eq?" @capture @capture | "string" Done`
+ *
+ * Checks if the contents of the first capture is NOT equal to the given string or contents of the
+ * second capture.
  *
  * @author Akash Yadav
  */
-object NotMatchPredicate : InvertingPredicate("not-match", MatchPredicate)
+object NotEqualPredicate : InvertingPredicate("not-eq", EqualPredicate)

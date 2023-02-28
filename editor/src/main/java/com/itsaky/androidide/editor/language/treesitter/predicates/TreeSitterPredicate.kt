@@ -51,7 +51,7 @@ abstract class TreeSitterPredicate : TsPredicate {
    * @param predicate The predicate steps.
    * @return The result of the predicate check.
    */
-  abstract fun doPredicateInternal(
+  internal abstract fun doPredicateInternal(
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,

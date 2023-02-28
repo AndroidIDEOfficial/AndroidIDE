@@ -33,25 +33,19 @@ import java.util.regex.PatternSyntaxException
  *
  * @author Akash Yadav
  */
-open class MatchPredicate protected constructor() : TreeSitterPredicate() {
+object MatchPredicate : TreeSitterPredicate() {
 
   override val name: String
     get() = "match"
 
-  companion object {
-
-    @JvmField
-    val INSTANCE = MatchPredicate()
-
-    @JvmField
-    val PARAMETERS =
-      arrayOf(
-        TSQueryPredicateStep.Type.String,
-        TSQueryPredicateStep.Type.Capture,
-        TSQueryPredicateStep.Type.String,
-        TSQueryPredicateStep.Type.Done
-      )
-  }
+  @JvmField
+  val PARAMETERS =
+    arrayOf(
+      TSQueryPredicateStep.Type.String,
+      TSQueryPredicateStep.Type.Capture,
+      TSQueryPredicateStep.Type.String,
+      TSQueryPredicateStep.Type.Done
+    )
 
   private val cache = ConcurrentHashMap<String, Regex>()
 
