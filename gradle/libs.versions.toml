@@ -70,7 +70,7 @@ google-auto-service-annotations = { module = "com.google.auto.service:auto-servi
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.0.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.10.0" }
-google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.15.0" }
+google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.16.0" }
 
 # AAPT2
 aapt2-common = { module = "com.android.tools:common", version = "30.2.2" }
