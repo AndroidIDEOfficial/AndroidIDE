@@ -19,6 +19,9 @@ package com.itsaky.androidide.editor.schemes
 
 import android.content.Context
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageSpec
+import com.itsaky.androidide.editor.language.treesitter.predicates.AnyOfPredicate
+import com.itsaky.androidide.editor.language.treesitter.predicates.MatchPredicate
+import com.itsaky.androidide.editor.language.treesitter.predicates.NotMatchPredicate
 import com.itsaky.androidide.treesitter.TSLanguage
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
@@ -33,7 +36,7 @@ object LanguageSpecProvider {
 
   const val BASE_SPEC_PATH = "editor/treesitter"
   private val log = ILogger.newInstance("LanguageSpecProvider")
-  
+
   @JvmStatic
   @JvmOverloads
   fun getLanguageSpec(
@@ -42,15 +45,20 @@ object LanguageSpecProvider {
     lang: TSLanguage,
     localsCaptureSpec: LocalsCaptureSpec = LocalsCaptureSpec.DEFAULT
   ): TreeSitterLanguageSpec {
-    val editorLangSpec = TsLanguageSpec(
-      language = lang,
-      highlightScmSource = readScheme(context, type, "highlights"),
-      localsScmSource = readScheme(context, type, "locals"),
-      codeBlocksScmSource = readScheme(context, type, "blocks"),
-      bracketsScmSource = readScheme(context, type, "brackets"),
-      localsCaptureSpec = localsCaptureSpec
+    val editorLangSpec =
+      TsLanguageSpec(
+        language = lang,
+        highlightScmSource = readScheme(context, type, "highlights"),
+        localsScmSource = readScheme(context, type, "locals"),
+        codeBlocksScmSource = readScheme(context, type, "blocks"),
+        bracketsScmSource = readScheme(context, type, "brackets"),
+        localsCaptureSpec = localsCaptureSpec,
+        predicates = listOf(MatchPredicate.INSTANCE, NotMatchPredicate, AnyOfPredicate)
+      )
+    return TreeSitterLanguageSpec(
+      spec = editorLangSpec,
+      indentsQueryScm = readScheme(context, type, "indents")
     )
-    return TreeSitterLanguageSpec(spec = editorLangSpec, indentsQueryScm = readScheme(context, type, "indents"))
   }
 
   private fun readScheme(context: Context, type: String, name: String): String {
