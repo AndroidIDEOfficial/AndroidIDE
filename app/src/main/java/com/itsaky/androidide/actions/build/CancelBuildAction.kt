@@ -46,7 +46,7 @@ class CancelBuildAction(context: Context) : EditorActivityAction() {
       return
     }
 
-    val context = getActivity(data)
+    val context = data.getActivity()
     val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
     if (context == null || buildService == null) {
       markInvisible()

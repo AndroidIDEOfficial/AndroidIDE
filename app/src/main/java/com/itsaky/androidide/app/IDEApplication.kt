@@ -26,6 +26,7 @@ import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.events.AppEventsIndex
+import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
@@ -64,6 +65,7 @@ class IDEApplication : BaseApplication() {
 
     EventBus.builder()
       .addIndex(AppEventsIndex())
+      .addIndex(EditorEventsIndex())
       .addIndex(ProjectsApiEventsIndex())
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())

@@ -42,7 +42,7 @@ abstract class FileTabAction : EditorActivityAction() {
     }
 
     val activity =
-      getActivity(data)
+      data.getActivity()
         ?: run {
           markInvisible()
           return
@@ -53,7 +53,7 @@ abstract class FileTabAction : EditorActivityAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    val activity = getActivity(data) ?: return false
+    val activity = data.getActivity() ?: return false
     return activity.doAction(data)
   }
 

@@ -34,12 +34,20 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter;
 import com.itsaky.androidide.editor.api.IEditor;
 import com.itsaky.androidide.editor.api.ILspEditor;
 import com.itsaky.androidide.editor.language.IDELanguage;
+import com.itsaky.androidide.editor.language.cpp.CppLanguage;
+import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
+import com.itsaky.androidide.editor.schemes.IDEColorScheme;
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
+import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
@@ -57,6 +65,7 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
@@ -64,13 +73,18 @@ import com.itsaky.androidide.utils.ILogger;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
+import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
+import kotlin.io.FilesKt;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
@@ -135,6 +149,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     subscribeEvent(ContentChangeEvent.class, this::handleContentChange);
 
     setInputType(createInputFlags());
+
+    EventBus.getDefault().register(this);
   }
 
   private void handleSelectionChange(@NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
@@ -825,6 +841,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   public void release() {
     super.release();
     this.actionsMenu = null;
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().unregister(this);
+    }
   }
 
   protected void dispatchDocumentCloseEvent() {
@@ -899,5 +918,77 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     isModified = false;
     final var saveEvent = new DocumentSaveEvent(getFile().toPath());
     EventBus.getDefault().post(saveEvent);
+  }
+
+  @SuppressWarnings("unused")
+  @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+  public void onColorSchemeInvalidated(ColorSchemeInvalidatedEvent event) {
+    final var file = getFile();
+    if (file == null) {
+      return;
+    }
+
+    setupLanguage(file);
+  }
+
+  public void setupLanguage(File file) {
+    if (file == null) {
+      return;
+    }
+
+    final var language = createLanguage(file);
+    final var extension = FilesKt.getExtension(file);
+    if (language instanceof TreeSitterLanguage) {
+      IDEColorSchemeProvider.INSTANCE.readScheme(getContext(), scheme -> {
+        applyTreeSitterLang(language, extension, scheme);
+      });
+    } else {
+      setEditorLanguage(language);
+    }
+  }
+
+  private void applyTreeSitterLang(final Language language, final String extension, SchemeAndroidIDE scheme) {
+    if (scheme == null) {
+      LOG.error("Failed to read current color scheme");
+      scheme = SchemeAndroidIDE.newInstance(getContext());
+    }
+
+    if (scheme instanceof IDEColorScheme
+      && ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
+      LOG.warn("Color scheme does not support file type '" + extension + "'");
+      scheme = SchemeAndroidIDE.newInstance(getContext());
+    }
+
+    if (scheme instanceof DynamicColorScheme) {
+      ((DynamicColorScheme) scheme).apply(getContext());
+    }
+
+    setColorScheme(scheme);
+    setEditorLanguage(language);
+  }
+
+  private Language createLanguage(File file) {
+    if (!file.isFile()) {
+      return new EmptyLanguage();
+    }
+
+    final var tsLang = TreeSitterLanguageProvider.INSTANCE.forFile(file, getContext());
+    if (tsLang != null) {
+      return tsLang;
+    }
+
+    String ext = FileUtils.getFileExtension(file);
+    switch (ext) {
+      case "gradle":
+        return new GroovyLanguage();
+      case "c":
+      case "h":
+      case "cc":
+      case "cpp":
+      case "cxx":
+        return new CppLanguage();
+      default:
+        return new EmptyLanguage();
+    }
   }
 }

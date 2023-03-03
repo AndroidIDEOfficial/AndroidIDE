@@ -97,7 +97,7 @@ open class AssembleDebugAction() : BaseBuildAction() {
 
   private fun install(data: ActionData, apk: File) {
     val activity =
-      getActivity(data)
+      data.getActivity()
         ?: run {
           log.error("Cannot install APK. Unable to get activity instance.")
           return
@@ -110,7 +110,7 @@ open class AssembleDebugAction() : BaseBuildAction() {
         log.error("APK file does not exist!")
         return@runOnUiThread
       }
-      
+
       ApkInstaller.installApk(
         activity,
         InstallationResultHandler.createEditorActivitySender(activity),

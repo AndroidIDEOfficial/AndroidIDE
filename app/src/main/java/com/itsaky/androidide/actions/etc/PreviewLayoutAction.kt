@@ -46,7 +46,7 @@ class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    val viewModel = getActivity(data)!!.viewModel
+    val viewModel = data.getActivity()!!.viewModel
     if (viewModel.isInitializing) {
       visible = true
       enabled = false
@@ -79,7 +79,7 @@ class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
   }
 
   override fun getShowAsActionFlags(data: ActionData): Int {
-    val activity = getActivity(data) ?: return super.getShowAsActionFlags(data)
+    val activity = data.getActivity() ?: return super.getShowAsActionFlags(data)
     return if (KeyboardUtils.isSoftInputVisible(activity)) {
       MenuItem.SHOW_AS_ACTION_IF_ROOM
     } else {
@@ -88,7 +88,7 @@ class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
   }
 
   override fun execAction(data: ActionData): Boolean {
-    val activity = getActivity(data)!!
+    val activity = data.getActivity()!!
     activity.saveAll()
     activity.previewLayout(data.requireEditor().file!!)
     return true

@@ -164,15 +164,7 @@ public class CodeEditorView extends LinearLayout {
   }
 
   protected void postRead() {
-    final var language = createLanguage(file);
-    final var extension = FilesKt.getExtension(file);
-    if (language instanceof TreeSitterLanguage) {
-      IDEColorSchemeProvider.INSTANCE.readScheme(getContext(), scheme -> {
-        applyTreeSitterLang(language, extension, scheme);
-      });
-    } else {
-      binding.editor.setEditorLanguage(language);
-    }
+    binding.editor.setupLanguage(getFile());
     
     binding.editor.setLanguageServer(createLanguageServer(file));
 
@@ -187,25 +179,6 @@ public class CodeEditorView extends LinearLayout {
     if (getContext() instanceof Activity) {
       ((Activity) getContext()).invalidateOptionsMenu();
     }
-  }
-  
-  private void applyTreeSitterLang(final Language language, final String extension, SchemeAndroidIDE scheme) {
-    if (scheme == null) {
-      LOG.error("Failed to read current color scheme");
-      scheme = SchemeAndroidIDE.newInstance(getContext());
-    }
-
-    if (scheme instanceof IDEColorScheme && ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
-      LOG.warn("Color scheme does not support file type '" + extension + "'");
-      scheme = SchemeAndroidIDE.newInstance(getContext());
-    }
-
-    if (scheme instanceof DynamicColorScheme) {
-      ((DynamicColorScheme) scheme).apply(getContext());
-    }
-    
-    binding.editor.setColorScheme(scheme);
-    binding.editor.setEditorLanguage(language);
   }
   
   private ILanguageServer createLanguageServer(File file) {
@@ -227,31 +200,6 @@ public class CodeEditorView extends LinearLayout {
     }
 
     return ILanguageServerRegistry.getDefault().getServer(serverID);
-  }
-
-  private Language createLanguage(File file) {
-    if (!file.isFile()) {
-      return new EmptyLanguage();
-    }
-    
-    final var tsLang = TreeSitterLanguageProvider.INSTANCE.forFile(file, getContext());
-    if (tsLang != null) {
-      return tsLang;
-    }
-    
-    String ext = FileUtils.getFileExtension(file);
-    switch (ext) {
-      case "gradle":
-        return new GroovyLanguage();
-      case "c":
-      case "h":
-      case "cc":
-      case "cpp":
-      case "cxx":
-        return new CppLanguage();
-      default:
-        return new EmptyLanguage();
-    }
   }
 
   private void configureEditorIfNeeded() {

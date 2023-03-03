@@ -38,8 +38,10 @@ abstract class EditorActivityAction : ActionItem {
     }
   }
 
-  fun getActivity(data: ActionData): EditorHandlerActivity? {
-    val context = data.get(Context::class.java) ?: return null
-    return context as? EditorHandlerActivity
+  fun ActionData.getActivity() : EditorHandlerActivity? {
+    return this[Context::class.java] as? EditorHandlerActivity
+  }
+  fun ActionData.requireActivity() : EditorHandlerActivity {
+    return getActivity()!!
   }
 }

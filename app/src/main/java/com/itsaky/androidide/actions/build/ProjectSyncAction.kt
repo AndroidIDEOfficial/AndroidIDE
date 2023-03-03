@@ -40,6 +40,6 @@ class ProjectSyncAction(context: Context) : BaseBuildAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    return getActivity(data)!!.initializeProject()
+    return data.getActivity()!!.initializeProject()
   }
 }

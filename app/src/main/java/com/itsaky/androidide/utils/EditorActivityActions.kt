@@ -32,6 +32,7 @@ import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
 import com.itsaky.androidide.actions.etc.PreviewLayoutAction
+import com.itsaky.androidide.actions.etc.ReloadColorSchemesAction
 import com.itsaky.androidide.actions.file.CloseAllFilesAction
 import com.itsaky.androidide.actions.file.CloseFileAction
 import com.itsaky.androidide.actions.file.CloseOtherFilesAction
@@ -63,6 +64,7 @@ class EditorActivityActions {
       registry.registerAction(FileTreeAction(context))
       registry.registerAction(CancelBuildAction(context))
       registry.registerAction(ProjectSyncAction(context))
+      registry.registerAction(ReloadColorSchemesAction(context))
 
       // editor text actions
       registry.registerAction(ExpandSelectionAction(context))

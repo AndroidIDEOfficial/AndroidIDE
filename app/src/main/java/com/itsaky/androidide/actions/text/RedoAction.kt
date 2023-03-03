@@ -50,7 +50,7 @@ class RedoAction(context: Context) : EditorRelatedAction() {
   override fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data)!!
     editor.redo()
-    getActivity(data)?.invalidateOptionsMenu()
+    data.getActivity()?.invalidateOptionsMenu()
     return true
   }
 

@@ -17,49 +17,13 @@
 
 package com.itsaky.androidide.eventbus.events.editor
 
-import com.itsaky.androidide.models.Range
-import java.net.URI
-import java.nio.file.Path
-
-/** Base class for files that accept files as parameters. */
-open class DocumentEvent(var file: Path) {
-  fun asUri(): URI {
-    return file.toUri()
-  }
-}
-
-/** Dispatched when an editor is opened for the given file. */
-data class DocumentOpenEvent(var openedFile: Path, var text: String, var version: Int) :
-  DocumentEvent(openedFile)
-
-/** Dispatched when the given file is closed. Always dispatched after [DocumentOpenEvent]. */
-data class DocumentCloseEvent
-@JvmOverloads
-constructor(var closedFile: Path, val selectionRange: Range = Range.NONE) :
-  DocumentEvent(closedFile)
+import com.itsaky.androidide.eventbus.events.Event
 
 /**
- * Dispatched when the content of the given opened document changes. The change can be either
- * performed by the user or the IDE itself.
+ * Dispatched when the color schemes has been reloaded. Listeners should update any UI which use
+ * color schemes.
+ *
+ * For example, on receiving this event, the editors in AndroidIDE invalidate themselves to redraw
+ * the content with the updated color schemes.
  */
-data class DocumentChangeEvent(
-  var changedFile: Path,
-  var newText: String,
-  var version: Int,
-  var changeType: ChangeType,
-  var changeDelta: Int,
-  var changeRange: Range
-) : DocumentEvent(changedFile)
-
-/** Dispatched when the given document is saved to disk. */
-data class DocumentSaveEvent(var savedFile: Path) : DocumentEvent(savedFile)
-
-/** Dispatched when the given opened document is selected and it is visible to the user. */
-data class DocumentSelectedEvent(var selectedFile: Path) : DocumentEvent(selectedFile)
-
-/** The type of change in a [DocumentChangeEvent]. */
-enum class ChangeType {
-  INSERT,
-  DELETE,
-  NEW_TEXT
-}
+class ColorSchemeInvalidatedEvent : Event()

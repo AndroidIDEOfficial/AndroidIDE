@@ -38,7 +38,7 @@ class FindInProjectAction() : EditorActivityAction() {
   override val id: String = "editor_findInProject"
 
   override fun prepare(data: ActionData) {
-    getActivity(data)
+    data.getActivity()
       ?: run {
         markInvisible()
         return
@@ -55,7 +55,7 @@ class FindInProjectAction() : EditorActivityAction() {
   }
 
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
+    val context = data.getActivity() ?: return false
     val dialog = context.findInProjectDialog
 
     return run {

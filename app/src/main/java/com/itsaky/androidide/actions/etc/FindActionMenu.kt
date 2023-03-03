@@ -28,6 +28,9 @@ import com.itsaky.androidide.actions.EditorActivityAction
 /** @author Akash Yadav */
 class FindActionMenu(context: Context) : EditorActivityAction(), ActionMenu {
 
+  override val children: MutableSet<ActionItem> = mutableSetOf()
+  override val id: String = "editor_findActions"
+
   init {
     label = context.getString(R.string.menu_find)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_search)
@@ -35,9 +38,6 @@ class FindActionMenu(context: Context) : EditorActivityAction(), ActionMenu {
     addAction(FindInFileAction(context))
     addAction(FindInProjectAction(context))
   }
-
-  override val children: MutableSet<ActionItem> = mutableSetOf()
-  override val id: String = "editor_findActions"
 
   override fun prepare(data: ActionData) {
     visible = true

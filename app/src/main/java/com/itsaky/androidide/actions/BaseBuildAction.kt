@@ -36,7 +36,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
     get() = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
 
   override fun prepare(data: ActionData) {
-    val context = getActivity(data)
+    val context = data.getActivity()
     if (context == null) {
       visible = false
       return
@@ -70,7 +70,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
     }
 
     val activity =
-      getActivity(data)
+      data.getActivity()
         ?: run {
           resultHandler(TaskExecutionResult(false, UNKNOWN))
           return

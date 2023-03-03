@@ -41,7 +41,7 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
   override fun prepare(data: ActionData) {
 
     val context =
-      getActivity(data)
+      data.getActivity()
         ?: run {
           visible = false
           enabled = false
@@ -53,7 +53,7 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
   }
 
   override fun execAction(data: ActionData): Boolean {
-    val context = getActivity(data) ?: return false
+    val context = data.getActivity() ?: return false
 
     return try {
       // Cannot use context.saveAll() because this.execAction is called on non-UI thread

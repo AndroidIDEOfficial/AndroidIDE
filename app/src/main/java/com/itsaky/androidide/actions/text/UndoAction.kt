@@ -48,7 +48,7 @@ class UndoAction(context: Context) : EditorRelatedAction() {
     val editor = getEditor(data)
     return if (editor != null) {
       editor.undo()
-      getActivity(data)?.invalidateOptionsMenu()
+      data.getActivity()?.invalidateOptionsMenu()
       true
     } else {
       false

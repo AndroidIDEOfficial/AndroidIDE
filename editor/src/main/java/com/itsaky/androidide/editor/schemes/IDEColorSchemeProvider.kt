@@ -18,12 +18,14 @@
 package com.itsaky.androidide.editor.schemes
 
 import android.content.Context
+import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.isSystemInDarkMode
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.FileFilter
 import java.util.Properties
@@ -43,17 +45,25 @@ object IDEColorSchemeProvider {
   private const val SCHEME_IS_DARK = "scheme.isDark"
   private const val SCHEME_FILE = "scheme.file"
 
-  val currentScheme: IDEColorScheme? by lazy {
-    val scheme = this.schemes[colorScheme] ?: return@lazy null
-    return@lazy try {
-      scheme.load()
-      scheme.darkVariant?.load()
-      scheme
-    } catch (err: Exception) {
-      log.error("An error occurred while loading color scheme '$colorScheme'", err)
-      null
+  var currentScheme: IDEColorScheme? = null
+    get() {
+      if (field != null) {
+        return field
+      }
+
+      val scheme = this.schemes[colorScheme] ?: return null
+      field = try {
+        scheme.load()
+        scheme.darkVariant?.load()
+        scheme
+      } catch (err: Exception) {
+        log.error("An error occurred while loading color scheme '$colorScheme'", err)
+        null
+      }
+
+      return field
     }
-  }
+    private set
 
   @JvmStatic
   fun init() {
@@ -143,5 +153,13 @@ object IDEColorSchemeProvider {
   
   fun destroy() {
     this.schemes.clear()
+    this.currentScheme = null
+  }
+
+  fun reload() {
+    destroy()
+    init()
+    // notify editors
+    EventBus.getDefault().post(ColorSchemeInvalidatedEvent())
   }
 }

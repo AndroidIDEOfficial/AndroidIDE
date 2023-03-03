@@ -46,7 +46,7 @@ class RunTasksAction(context: Context) : BaseBuildAction() {
       return
     }
 
-    val activity = getActivity(data)!!
+    val activity = data.getActivity()!!
     result.show(activity.supportFragmentManager, this.id)
   }
   
