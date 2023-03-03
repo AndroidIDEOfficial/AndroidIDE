@@ -83,6 +83,9 @@
 
 ; Variables
 
+(field_access
+  field: (_) @variable.field)
+
 ((identifier) @constant
  (#match? @constant "^_*[A-Z][A-Z\\d_]+$"))
 
