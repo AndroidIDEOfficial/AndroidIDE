@@ -454,4 +454,5 @@
   <string name="msg_app_launch_failed">Ошибка запуска приложения. Обратитесь к логам IDE.</string>
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
+  <string name="title_reload_color_schemes">Reload color schemes</string>
 </resources>
