@@ -34,11 +34,11 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import java.io.File
 
 /** @author Akash Yadav */
-class PreviewLayoutAction() : EditorRelatedAction() {
+class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
 
   override val id: String = "editor_previewLayout"
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.title_preview_layout)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_preview_layout)
   }

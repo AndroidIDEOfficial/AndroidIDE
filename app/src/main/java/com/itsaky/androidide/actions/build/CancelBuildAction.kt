@@ -28,11 +28,11 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
-class CancelBuildAction() : EditorActivityAction() {
+class CancelBuildAction(context: Context) : EditorActivityAction() {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.title_cancel_build)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_stop_daemons)
   }

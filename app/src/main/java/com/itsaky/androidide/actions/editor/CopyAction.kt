@@ -23,9 +23,9 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
-class CopyAction() : BaseEditorAction() {
+class CopyAction(context: Context) : BaseEditorAction() {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.copy)
 
     val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCopyDrawable))

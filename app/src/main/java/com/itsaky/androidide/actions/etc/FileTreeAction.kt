@@ -25,11 +25,11 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
 
 /** @author Akash Yadav */
-class FileTreeAction() : EditorActivityAction() {
+class FileTreeAction(context: Context) : EditorActivityAction() {
 
   override val id: String = "editor_fileTree"
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.msg_file_tree)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_folder)
   }

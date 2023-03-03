@@ -27,13 +27,13 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashSuccess
 
 /** @author Akash Yadav */
-class SaveFileAction() : EditorRelatedAction() {
+class SaveFileAction(context: Context) : EditorRelatedAction() {
 
   private val log = ILogger.newInstance("SaveFileAction")
 
   override val id: String = "editor_saveFile"
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.save)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_save)
   }

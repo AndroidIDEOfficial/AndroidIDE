@@ -22,9 +22,9 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
-class CutAction() : BaseEditorAction() {
+class CutAction(context: Context) : BaseEditorAction() {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(android.R.string.cut)
 
     val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCutDrawable))

@@ -25,11 +25,11 @@ import com.itsaky.androidide.fragments.RunTasksDialogFragment
 import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
-class RunTasksAction() : BaseBuildAction() {
+class RunTasksAction(context: Context) : BaseBuildAction() {
   override val id: String = "ide.build.runTasks"
   private var dialog: RunTasksDialogFragment? = null
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.title_run_tasks)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_tasks)
   }

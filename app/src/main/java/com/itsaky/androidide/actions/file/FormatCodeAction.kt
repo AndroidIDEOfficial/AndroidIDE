@@ -29,11 +29,11 @@ import com.itsaky.androidide.actions.EditorRelatedAction
  *
  * @author Akash Yadav
  */
-class FormatCodeAction() : EditorRelatedAction() {
+class FormatCodeAction(context: Context) : EditorRelatedAction() {
   override val id: String = "editor_file_formatCode"
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.title_format_code)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_format_code)
   }

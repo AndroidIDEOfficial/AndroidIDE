@@ -28,9 +28,9 @@ import com.itsaky.androidide.actions.BaseBuildAction
  *
  * @author Akash Yadav
  */
-class QuickRunAction() : AssembleDebugAction() {
+class QuickRunAction(context: Context) : AssembleDebugAction() {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.quick_run_debug)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
   }

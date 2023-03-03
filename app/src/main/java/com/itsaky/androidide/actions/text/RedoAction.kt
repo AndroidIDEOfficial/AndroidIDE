@@ -27,9 +27,9 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 
 /** @author Akash Yadav */
-class RedoAction() : EditorRelatedAction() {
+class RedoAction(context: Context) : EditorRelatedAction() {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.redo)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_redo)
   }

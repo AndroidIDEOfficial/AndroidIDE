@@ -29,12 +29,12 @@ import com.itsaky.androidide.actions.BaseBuildAction
  *
  * @author Akash Yadav
  */
-class ProjectSyncAction() : BaseBuildAction() {
+class ProjectSyncAction(context: Context) : BaseBuildAction() {
 
   override val id: String = "action_editor_syncProject"
   override var requiresUIThread = true
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(string.title_sync_project)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_sync)
   }

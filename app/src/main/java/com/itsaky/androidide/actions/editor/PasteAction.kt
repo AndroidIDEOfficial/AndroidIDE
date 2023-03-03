@@ -22,9 +22,9 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
-class PasteAction() : BaseEditorAction() {
+class PasteAction(context: Context) : BaseEditorAction() {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(android.R.string.paste)
 
     val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModePasteDrawable))

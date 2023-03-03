@@ -29,11 +29,11 @@ import com.itsaky.androidide.actions.EditorRelatedAction
  *
  * @author Akash Yadav
  */
-class ExpandSelectionAction() : EditorRelatedAction() {
+class ExpandSelectionAction(context: Context) : EditorRelatedAction() {
   override val id: String = "editor_expandSelection"
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.action_expand_selection)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_expand_selection)
   }

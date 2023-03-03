@@ -26,9 +26,9 @@ import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.EditorActivityAction
 
 /** @author Akash Yadav */
-class FindActionMenu() : EditorActivityAction(), ActionMenu {
+class FindActionMenu(context: Context) : EditorActivityAction(), ActionMenu {
 
-  constructor(context: Context) : this() {
+  init {
     label = context.getString(R.string.menu_find)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_search)
 
