@@ -454,4 +454,5 @@
   <string name="msg_app_launch_failed">فشل في تشغيل التطبيق. راجع سجلات IDE لمزيد من المعلومات.</string>
   <string name="idepref_java_diagnosticEnabled_title">التشخيصات مفعلة</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(تجريبي) ما إذا ينبغي تحليل ملفات مصدر جافا بحثا عن أخطاء أم لا.</string>
+  <string name="title_reload_color_schemes">Reload color schemes</string>
 </resources>
