@@ -1,6 +1,30 @@
-; from https://github.com/tree-sitter/tree-sitter-java/blob/09d650def6cdf7f479f4b78f595e9ef5b58ce31e/queries/highlights.scm
-; Fields
+(package_declaration
+  name: (_) @package.decl)
 
+; import package.name.Type
+(single_type_import
+  (scoped_identifier
+    scope: (_) @import.package
+    name: (_) @import.type))
+
+; import package.name.*
+(type_import_on_demand
+  (scoped_identifier) @import.package
+  (asterisk) @import.member)
+
+; import static package.name.Type.MEMBER
+(single_static_import
+  (scoped_identifier
+    scope: (_) @import.package
+    name: (_) @import.type)
+  (identifier) @import.member .)
+
+; import static package.name.Type.*
+(static_import_on_demand
+  (scoped_identifier
+    scope: (_) @import.package
+    name: (_) @import.type)
+  (asterisk) @import.member)
 
 ; Methods and Fields
 
@@ -62,7 +86,7 @@
 ((identifier) @constant
  (#match? @constant "^_*[A-Z][A-Z\\d_]+$"))
 
-(identifier) @variable
+; (identifier) @variable
 
 (this) @variable.builtin
 

@@ -52,6 +52,12 @@
     "function.declaration": "@func.decl",
     "function.invocation": "@func.call",
     "variable.field": "@field",
-    "operator": "@operator"
+    "operator": "@operator",
+
+    "package.decl": "@java.package",
+
+    "import.package": "@java.package",
+    "import.type": "@type",
+    "import.member": "@field"
   }
 }

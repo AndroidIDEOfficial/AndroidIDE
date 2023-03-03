@@ -25,6 +25,8 @@
     "func.decl": "#64b5f6",
     "func.call": "#64b5f6",
 
+    "java.package": "#d8ab44",
+
     "kt.preproc":  "#bdbdbd",
     "kt.property":  "#f0be4b",
     "kt.punctuation.special": "#ff6060",
