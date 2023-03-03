@@ -455,4 +455,5 @@
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
+  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
 </resources>
