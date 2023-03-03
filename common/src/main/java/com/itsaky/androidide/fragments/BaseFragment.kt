@@ -39,6 +39,7 @@ import androidx.core.provider.DocumentsContractCompat.buildDocumentUriUsingTree
 import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.Fragment
+import com.itsaky.androidide.common.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.flashError
 import java.io.File
@@ -106,7 +107,11 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) :
 
   protected fun pickDirectory(dirCallback: OnDirectoryPickedCallback?) {
     this.callback = dirCallback
-    this.startForResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
+    try {
+      this.startForResult.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
+    } catch (e: Exception) {
+      requireActivity().flashError(getString(R.string.msg_dir_picker_failed, e.message))
+    }
   }
 
   fun interface OnDirectoryPickedCallback {
