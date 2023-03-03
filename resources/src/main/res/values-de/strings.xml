@@ -454,4 +454,5 @@
   <string name="msg_app_launch_failed">Fehler beim Starten der Anwendung. Siehe IDE-Logs für weitere Informationen.</string>
   <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
+  <string name="title_reload_color_schemes">Reload color schemes</string>
 </resources>
