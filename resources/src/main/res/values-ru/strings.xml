@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
-  <string name="title_open_source_licenses">Лицензирование открытого кода</string>
+  <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="msg_about_licensed_under">Лицензия: </string>
   <string name="about_option_email">Электронная почта</string>
   <string name="about_option_website">Вебсайт</string>
@@ -177,7 +177,7 @@
   <string name="redo">Повтор действия</string>
   <!-- Preferences -->
   <string name="title_change_text_size">Размер шрифта редактора</string>
-  <string name="idepref_about_title">О AndroidIDE</string>
+  <string name="idepref_about_title">Об AndroidIDE</string>
   <string name="idepref_build_clearCache_title">Очистить кэш Gradle</string>
   <string name="idepref_build_clearCache_summary">Очистить директорию кэша Gradle. Это удалит все зависимости, скачанные Gradle. Необходимые файлы будут вновь скачаны при следующей сборке.</string>
   <string name="idepref_build_customgradlecommands_title">Дополнительные команды Gradle</string>
