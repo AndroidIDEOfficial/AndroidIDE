@@ -455,4 +455,5 @@
   <string name="idepref_java_diagnosticEnabled_title">Diagnostics সক্রিয়</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) জাভা সোর্স ফাইলগুলি ত্রুটির জন্য বিশ্লেষণ করা হোক অথবা নয়।</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
+  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
 </resources>
