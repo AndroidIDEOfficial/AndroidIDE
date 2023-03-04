@@ -43,8 +43,6 @@ import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
-import openjdk.source.tree.Tree
-import openjdk.source.util.TreePath
 import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
@@ -67,6 +65,8 @@ import jdkx.lang.model.element.ElementKind.TYPE_PARAMETER
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.element.VariableElement
+import openjdk.source.tree.Tree
+import openjdk.source.util.TreePath
 
 /**
  * Completion provider for Java source code.
@@ -83,7 +83,6 @@ abstract class IJavaCompletionProvider(
   protected lateinit var filePackage: String
   protected lateinit var fileImports: Set<String>
 
-  @Suppress("Since15")
   open fun complete(
     task: CompileTask,
     path: TreePath,
@@ -102,11 +101,11 @@ abstract class IJavaCompletionProvider(
    * Provide completions with the given data.
    *
    * @param task The compilation task. Subclasses are expected to use this compile task instead of
-   * starting another compilation process.
+   *   starting another compilation process.
    * @param path The [TreePath] defining the [Tree] at the current position.
    * @param partial The partial identifier.
    * @param endsWithParen `true` if the statement at cursor ends with a parenthesis. `false`
-   * otherwise.
+   *   otherwise.
    */
   protected abstract fun doComplete(
     task: CompileTask,
@@ -337,13 +336,13 @@ abstract class IJavaCompletionProvider(
     val parameterTypes = Array(element.parameters.size) { "" }
     val erasedParameterTypes = Array(parameterTypes.size) { "" }
     val plusOverloads = overloads - 1
-    
+
     for (i in element.parameters.indices) {
       val p = element.parameters[i].asType()
       parameterTypes[i] = p.toString()
       erasedParameterTypes[i] = types.erasure(p).toString()
     }
-    
+
     return MethodCompletionData(
       element.simpleName.toString(),
       getClassCompletionData(type),
@@ -373,11 +372,11 @@ abstract class IJavaCompletionProvider(
 
     var element: TypeElement? = this
     while (true) {
-      if (element?.enclosingElement?.kind == PACKAGE) {
+      if (element == null || element.enclosingElement?.kind == PACKAGE) {
         break
       }
 
-      element = element?.enclosingElement as? TypeElement
+      element = element.enclosingElement as? TypeElement
     }
 
     return element!!

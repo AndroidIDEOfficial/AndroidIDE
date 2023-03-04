@@ -118,7 +118,15 @@ public class SynchronizedTask {
     this.task = task;
   }
 
-  public synchronized boolean isCompiling() {
-    return isCompiling || semaphore.hasQueuedThreads();
+  public synchronized boolean isBusy() {
+    return isCompiling || semaphore.availablePermits() == 0;
+  }
+
+  /**
+   * <b>FOR INTERNAL USE ONLY!</b>
+   */
+  public void logStats() {
+    LOG.warn("[SynchronizedTask] isCompiling =", isCompiling);
+    LOG.warn("[SynchronizedTask] queuedLength =", semaphore.getQueueLength());
   }
 }

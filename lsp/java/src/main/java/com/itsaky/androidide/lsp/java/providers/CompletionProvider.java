@@ -96,7 +96,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   @NonNull
   @Override
   public CompletionResult complete(@NonNull CompletionParams params) {
-    if (compiler.getSynchronizedTask().isCompiling()) {
+    final var synchronizedTask = compiler.getSynchronizedTask();
+    if (synchronizedTask.isBusy()) {
+      LOG.error("Cannot complete, a compilation task is already in progress");
+      synchronizedTask.logStats();
       return CompletionResult.EMPTY;
     }
 
