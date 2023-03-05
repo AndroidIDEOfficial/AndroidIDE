@@ -123,6 +123,7 @@ dependencies {
   implementation(projects.eventbusEvents)
   implementation(projects.subprojects.aaptcompiler)
   implementation(projects.subprojects.javacServices)
+  implementation(projects.subprojects.javapoet)
   implementation(projects.subprojects.xmlUtils)
   implementation(projects.subprojects.projects)
   implementation(projects.subprojects.toolingApi)

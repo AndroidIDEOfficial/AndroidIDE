@@ -53,6 +53,7 @@ dependencies {
     implementation(projects.lsp.api)
     implementation(projects.subprojects.javac)
     implementation(projects.subprojects.javacServices)
+    implementation(projects.subprojects.javapoet)
     implementation(projects.subprojects.googleJavaFormat)
     
     implementation(libs.androidx.ktx)
