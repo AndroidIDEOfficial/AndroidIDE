@@ -252,9 +252,12 @@ class FileTreeFragment :
   }
 
   private fun createTreeView(node: TreeNode?): AndroidTreeView? {
+    val root = TreeNode(File(""))
+    root.viewHolder = FileTreeViewHolder(requireContext())
+    root.addChild(node)
     return if (context == null) {
       null
-    } else AndroidTreeView(context, node, drawable.bg_ripple).also { mFileTreeView = it }
+    } else AndroidTreeView(context, root, drawable.bg_ripple).also { mFileTreeView = it }
   }
 
   private fun tryRestoreState(state: String? = mTreeState) {
