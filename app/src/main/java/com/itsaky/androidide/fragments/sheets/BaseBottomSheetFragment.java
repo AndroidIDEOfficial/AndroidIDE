@@ -23,9 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.databinding.LayoutSheetBinding;
 
@@ -47,11 +45,12 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     return mDialog;
   }
 
-  protected void onShow() {}
+  protected void onShow() {
+  }
 
   @Override
   public View onCreateView(
-      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = LayoutSheetBinding.inflate(inflater, container, false);
     return binding.getRoot();
   }

@@ -98,7 +98,13 @@ interface ActionItem {
     EDITOR_CODE_ACTIONS("ide.editor.codeActions"),
 
     /** Location marker for action items shown when file tabs are reselected. */
-    EDITOR_FILE_TABS("ide.editor.fileTabs");
+    EDITOR_FILE_TABS("ide.editor.fileTabs"),
+
+    /**
+     * Location marker for action items that are shown when the files in the editor activity's file
+     * tree are long clicked.
+     */
+    EDITOR_FILE_TREE("ide.editor.fileTree");
 
     override fun toString(): String {
       return id

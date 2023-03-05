@@ -17,22 +17,20 @@
  **************************************************************************************/
 package com.itsaky.androidide.models;
 
+import android.graphics.drawable.Drawable;
+import java.util.Objects;
+
 public final class SheetOption {
-  public int id;
-  public int iconRes;
-  public int titleRes;
+
+  public String id;
+  public Drawable icon;
+  public String title;
   public Object extra;
 
-  public SheetOption(int id, int iconRes, int titleRes) {
+  public SheetOption(String id, Drawable icon, String title, Object extra) {
     this.id = id;
-    this.iconRes = iconRes;
-    this.titleRes = titleRes;
-  }
-
-  public SheetOption(int id, int iconRes, int titleRes, Object extra) {
-    this.id = id;
-    this.iconRes = iconRes;
-    this.titleRes = titleRes;
+    this.icon = icon;
+    this.title = title;
     this.extra = extra;
   }
 
@@ -42,11 +40,21 @@ public final class SheetOption {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj != null && obj instanceof SheetOption) {
-      SheetOption that = (SheetOption) obj;
-      return this.iconRes == that.iconRes && this.titleRes == that.titleRes;
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-    return false;
+    if (!(o instanceof SheetOption)) {
+      return false;
+    }
+    SheetOption that = (SheetOption) o;
+    return Objects.equals(id, that.id) && Objects.equals(icon, that.icon)
+      && Objects.equals(title, that.title) && Objects.equals(extra, that.extra);
   }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, icon, title, extra);
+  }
+
 }

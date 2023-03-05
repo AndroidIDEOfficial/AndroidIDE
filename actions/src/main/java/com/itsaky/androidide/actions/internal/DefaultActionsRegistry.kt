@@ -162,32 +162,40 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
     if (action !is ActionMenu) {
       item.setOnMenuItemClickListener {
-        if (action.requiresUIThread) {
-          ThreadUtils.runOnUiThread {
-            val result = action.execAction(data)
-            action.postExec(data, result)
-            notifyActionExec(action, result)
-          }
-        } else {
-          execInBackground(action, data, it)
-        }
+        executeAction(action, data)
 
         true
       }
     }
   }
 
-  private fun execInBackground(action: ActionItem, data: ActionData, it: MenuItem) {
+  /**
+   * Executes the given action item with the given
+   */
+  fun executeAction(action: ActionItem,
+    data: ActionData) {
+    if (action.requiresUIThread) {
+      ThreadUtils.runOnUiThread {
+        val result = action.execAction(data)
+        action.postExec(data, result)
+        notifyActionExec(action, result)
+      }
+    } else {
+      execInBackground(action, data)
+    }
+  }
+
+  private fun execInBackground(action: ActionItem, data: ActionData) {
     val start = System.currentTimeMillis()
     CompletableFuture.supplyAsync { action.execAction(data) }
       .whenComplete { result, error ->
         if (result == null || (result is Boolean && !result) || error != null) {
           log.error(
-            "An error occurred when performing action '${it.title}'. Action failed in ${System.currentTimeMillis() - start}ms",
+            "An error occurred when performing action '${action.id}'. Action failed in ${System.currentTimeMillis() - start}ms",
             error
           )
         } else {
-          log.info("Action '${it.title}' completed in ${System.currentTimeMillis() - start}ms")
+          log.info("Action '${action.id}' completed in ${System.currentTimeMillis() - start}ms")
         }
 
         ThreadUtils.runOnUiThread {

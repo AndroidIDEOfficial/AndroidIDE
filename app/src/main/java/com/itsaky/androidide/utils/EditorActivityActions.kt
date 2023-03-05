@@ -18,6 +18,7 @@ package com.itsaky.androidide.utils
 
 import android.content.Context
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
+import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TREE
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.build.CancelBuildAction
@@ -38,6 +39,12 @@ import com.itsaky.androidide.actions.file.CloseFileAction
 import com.itsaky.androidide.actions.file.CloseOtherFilesAction
 import com.itsaky.androidide.actions.file.FormatCodeAction
 import com.itsaky.androidide.actions.file.SaveFileAction
+import com.itsaky.androidide.actions.filetree.CopyPathAction
+import com.itsaky.androidide.actions.filetree.DeleteAction
+import com.itsaky.androidide.actions.filetree.NewFileAction
+import com.itsaky.androidide.actions.filetree.NewFolderAction
+import com.itsaky.androidide.actions.filetree.OpenWithAction
+import com.itsaky.androidide.actions.filetree.RenameAction
 import com.itsaky.androidide.actions.text.RedoAction
 import com.itsaky.androidide.actions.text.UndoAction
 
@@ -78,13 +85,21 @@ class EditorActivityActions {
       registry.registerAction(CloseFileAction(context))
       registry.registerAction(CloseOtherFilesAction(context))
       registry.registerAction(CloseAllFilesAction(context))
+
+      // file tree actions
+      registry.registerAction(CopyPathAction(context))
+      registry.registerAction(DeleteAction(context))
+      registry.registerAction(NewFileAction(context))
+      registry.registerAction(NewFolderAction(context))
+      registry.registerAction(OpenWithAction(context))
+      registry.registerAction(RenameAction(context))
     }
 
     @JvmStatic
     fun clear() {
       // EDITOR_TEXT_ACTIONS should not be cleared as the language servers register actions there as
       // well
-      val locations = arrayOf(EDITOR_TOOLBAR, EDITOR_FILE_TABS)
+      val locations = arrayOf(EDITOR_TOOLBAR, EDITOR_FILE_TABS, EDITOR_FILE_TREE)
       val registry = ActionsRegistry.getInstance()
       locations.forEach(registry::clearActions)
     }

@@ -51,8 +51,8 @@ public class OptionsSheetAdapter extends RecyclerView.Adapter<OptionsSheetAdapte
     final LayoutOptionssheetItemBinding binding = p1.binding;
     final SheetOption option = options.get(p2);
 
-    binding.text.setText(option.titleRes);
-    binding.icon.setImageResource(option.iconRes);
+    binding.text.setText(option.title);
+    binding.icon.setImageDrawable(option.icon);
 
     binding
         .getRoot()
