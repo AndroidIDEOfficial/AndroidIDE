@@ -25,7 +25,6 @@ import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
-import com.itsaky.androidide.handlers.FileTreeActionHandler
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
@@ -36,11 +35,11 @@ import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import com.unnamed.b.atv.model.TreeNode
+import jdkx.lang.model.SourceVersion
+import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.Objects
 import java.util.regex.Pattern
-import jdkx.lang.model.SourceVersion
-import org.greenrobot.eventbus.EventBus
 
 /**
  * File tree action to create a new file.
@@ -55,6 +54,14 @@ class NewFileAction(context: Context) :
   ) {
 
   override val id: String = "ide.editor.fileTree.newFile"
+
+  companion object {
+    const val RES_PATH_REGEX = "/.*/src/.*/res"
+    const val LAYOUT_RES_PATH_REGEX = "/.*/src/.*/res/layout"
+    const val MENU_RES_PATH_REGEX = "/.*/src/.*/res/menu"
+    const val DRAWABLE_RES_PATH_REGEX = "/.*/src/.*/res/drawable"
+    const val JAVA_PATH_REGEX = "/.*/src/.*/java"
+  }
 
   override fun execAction(data: ActionData) {
     val context = data.requireActivity()
@@ -77,23 +84,19 @@ class NewFileAction(context: Context) :
     val projectDir = ProjectManager.getProjectDirPath()
     Objects.requireNonNull(projectDir)
     val isJava =
-      Pattern.compile(Pattern.quote(projectDir) + FileTreeActionHandler.JAVA_PATH_REGEX)
-        .matcher(file.absolutePath)
-        .find()
+      Pattern.compile(Pattern.quote(projectDir) + JAVA_PATH_REGEX).matcher(file.absolutePath).find()
     val isRes =
-      Pattern.compile(Pattern.quote(projectDir) + FileTreeActionHandler.RES_PATH_REGEX)
-        .matcher(file.absolutePath)
-        .find()
+      Pattern.compile(Pattern.quote(projectDir) + RES_PATH_REGEX).matcher(file.absolutePath).find()
     val isLayoutRes =
-      Pattern.compile(Pattern.quote(projectDir) + FileTreeActionHandler.LAYOUT_RES_PATH_REGEX)
+      Pattern.compile(Pattern.quote(projectDir) + LAYOUT_RES_PATH_REGEX)
         .matcher(file.absolutePath)
         .find()
     val isMenuRes =
-      Pattern.compile(Pattern.quote(projectDir) + FileTreeActionHandler.MENU_RES_PATH_REGEX)
+      Pattern.compile(Pattern.quote(projectDir) + MENU_RES_PATH_REGEX)
         .matcher(file.absolutePath)
         .find()
     val isDrawableRes =
-      Pattern.compile(Pattern.quote(projectDir) + FileTreeActionHandler.DRAWABLE_RES_PATH_REGEX)
+      Pattern.compile(Pattern.quote(projectDir) + DRAWABLE_RES_PATH_REGEX)
         .matcher(file.absolutePath)
         .find()
 

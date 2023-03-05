@@ -52,19 +52,6 @@ class FileTreeActionHandler : BaseEventHandler() {
 
   companion object {
     const val TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment"
-
-    const val RES_PATH_REGEX = "/.*/src/.*/res"
-    const val LAYOUT_RES_PATH_REGEX = "/.*/src/.*/res/layout"
-    const val MENU_RES_PATH_REGEX = "/.*/src/.*/res/menu"
-    const val DRAWABLE_RES_PATH_REGEX = "/.*/src/.*/res/drawable"
-    const val JAVA_PATH_REGEX = "/.*/src/.*/java"
-
-    const val ID_COPY_PATH = 0
-    const val ID_RENAME_FILE = 1
-    const val ID_DELETE_FILE = 2
-    const val ID_NEW_FILE = 3
-    const val ID_NEW_FOLDER = 4
-    const val ID_OPEN_WITH = 5
   }
 
   @Subscribe(threadMode = MAIN)
