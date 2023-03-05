@@ -51,7 +51,7 @@ class SimpleTagCompleter(provider: ICompletionProvider) : LayoutTagCompletionPro
     // Complete all tags which do not require fully qualified name
     for (widget in widgets) {
       val match = matchLevel(widget.simpleName, prefix)
-      result.add(createTagCompletionItem(widget.simpleName, widget.qualifiedName, match))
+      result.add(createTagCompletionItem(widget.simpleName, widget.qualifiedName, match, true))
     }
 
     // Complete the root package names if possible

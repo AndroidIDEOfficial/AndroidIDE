@@ -138,13 +138,14 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   protected open fun createTagCompletionItem(
     simpleName: String,
     qualifiedName: String,
-    matchLevel: MatchLevel
+    matchLevel: MatchLevel,
+    isPlatformWidget : Boolean = false
   ): CompletionItem =
     CompletionItem().apply {
       this.label = simpleName
       this.detail = qualifiedName
       this.ideSortText = label.toString()
-      this.insertText = qualifiedName
+      this.insertText = if (isPlatformWidget) simpleName else qualifiedName
       this.insertTextFormat = PLAIN_TEXT
       this.editHandler = TagEditHandler()
       this.matchLevel = matchLevel
