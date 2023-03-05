@@ -270,6 +270,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   protected fun onGradleBuildServiceConnected(service: GradleBuildService) {
     log.info("Connected to Gradle build service")
 
+    buildServiceConnection.onConnected = null
     viewModel.isBoundToBuildSerice = true
     Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
