@@ -168,15 +168,23 @@ public class EventBusBuilder {
     }
   }
 
+  public EventBus installDefaultEventBus() {
+    return installDefaultEventBus(false);
+  }
+
   /**
    * Installs the default EventBus returned by {@link EventBus#getDefault()} using this builders'
    * values. Must be done only once before the first usage of the default EventBus.
    *
    * @throws EventBusException if there's already a default EventBus instance in place
    */
-  public EventBus installDefaultEventBus() {
+  public EventBus installDefaultEventBus(boolean ignoreIfInstalled) {
     synchronized (EventBus.class) {
       if (EventBus.defaultInstance != null) {
+        if (ignoreIfInstalled) {
+          return EventBus.defaultInstance;
+        }
+
         throw new EventBusException(
             "Default instance already exists."
                 + " It may be only set once before it's used the first time to ensure consistent behavior.");

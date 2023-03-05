@@ -69,7 +69,7 @@ class IDEApplication : BaseApplication() {
       .addIndex(ProjectsApiEventsIndex())
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
-      .installDefaultEventBus()
+      .installDefaultEventBus(true)
 
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
