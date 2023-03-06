@@ -4,7 +4,9 @@
   <string name="license_jdk">AndroidIDE, GNU Genel Kamu Lisansı v2.0 kapsamında lisanslanan değiştirilmiş bir JDK yapısı kullanır. JDK\'nın kaynak kodu ve lisansı şu adreste mevcuttur: </string>
   <string name="title_open_source_licenses">Açık kaynak lisansları</string>
   <string name="msg_about_licensed_under">Altında lisanlı</string>
-  <string name="about_option_email">Email</string>
+  <string name="about_option_email">Anahtar: about_option_email
+about_option_email
+Dosya: strings. xml</string>
   <string name="about_option_website">Website</string>
   <string name="about_footer">AndroidIDE %1$s for %2$s</string>
   <string name="about_subtitle">Basitçe, Android için bir IDE</string>
