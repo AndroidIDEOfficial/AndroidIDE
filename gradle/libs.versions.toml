@@ -71,7 +71,7 @@ google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = 
 google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.0.1" }
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.0.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
-google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.10.0" }
+google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.22.1" }
 google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.16.0" }
 
 # AAPT2
