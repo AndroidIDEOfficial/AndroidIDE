@@ -23,9 +23,9 @@
   <string name="reset">রিসেট করুন</string>
   <string name="app_logs">App লগ</string>
   <string name="ide_logs">IDE লগ</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">স্প্ল্যাশ ইমেজ</string>
   <string name="get_started">শুরু করুন</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">দ্রুত সমাধান করতে অক্ষম</string>
   <string name="msg_performing_actions">কোড ক্রিয়া সম্পাদন করা হচ্ছে…</string>
   <string name="msg_api_info_since">API %d থেকে</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">রেফারেন্স খোঁজা হচ্ছে…</string>
   <string name="msg_finding_definition">সংজ্ঞা খোঁজা হচ্ছে…</string>
   <string name="msg_no_definition">সংজ্ঞা পাওয়া যায়নি</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">কোন রেফারেন্স পাওয়া যায়নি</string>
   <string name="view_diags">ডায়াগনস্টিকস</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">ইনস্টলেশন ব্যর্থ হয়ে</string>
   <string name="get_ready_for_something_awesome">অসাধারণ কিছুর জন্য প্রস্তুত হও!</string>
   <string name="msg_picked_isnt_dir">বাছাই করা ফাইলটি একটি ডিরেক্টরি নয়!</string>
   <string name="msg_pick_single_file">অনুগ্রহ করে শুধুমাত্র একটি ডিরেক্টরি নির্বাচন করুন</string>
   <string name="please_wait">অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন…</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">ডিভাইস সমর্থিত নয়</string>
   <string name="msg_device_not_supported">দুর্ভাগ্যবশত, আপনার ডিভাইসটি এই মুহূর্তে সমর্থিত নয়৷ অসুবিধার জন্য আমরা দুঃখিত৷\n\nসমর্থিত CPU ABIs: aarch64 এবং armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">লিন্ট</string>
   <string name="build">বিল্ড</string>
   <string name="build_output">বিল্ড আউটপুট</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">APK(গুলি) ইনস্টল করুন</string>
   <string name="title_clear_output">আউটপুট পরিস্কার করুন</string>
   <string name="run">চালান</string>
+  <!-- Project -->
   <string name="title_first_build">প্রথম বিল্ড</string>
   <string name="msg_first_build">আপনি AndroidIDE ইনস্টল করার পর এটিই প্রথমবার বিল্ড। প্রথম বিল্ডে সাধারণত সময় লাগে কারণ Gradle সমস্ত ডিপেনডেন্সি এবং প্লাগইন ডাউনলোড করে। এই প্রক্রিয়াটি প্রায় 10-15 মিনিট সময় নিতে পারে। কিন্তু এটি সম্পূর্ণরূপে আপনার নেটওয়ার্ক সংযোগের উপর নির্ভর করে।\n\nদয়া করে ধৈর্য ধরুন।…</string>
-  <!-- Project -->
   <string name="create_project">প্রকল্প তৈরি করুন</string>
   <string name="minimum_sdk">সর্বনিম্ন SDK</string>
   <string name="target_sdk">লক্ষ্য SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">নতুন প্রকল্প তৈরি করুন</string>
   <string name="msg_open_existing_project">বিদ্যমান প্রকল্প খুলুন</string>
   <string name="title_confirm_project_close">প্রকল্পটি বন্ধ করুন</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">আপনি কি এই প্রকল্পটি বন্ধ করার বিষয়ে নিশ্চিত? এই প্রকল্পটি বন্ধ হওয়ার পরে সমস্ত শুরু হওয়া গ্রেডল ডেমন বন্ধ হয়ে যাবে৷</string>
   <string name="project_exists">একই নামের একটি প্রকল্প ইতিমধ্যেই বিদ্যমান!</string>
-  <!-- Templates -->
   <string name="template_basic">মৌলিক প্রকল্প</string>
   <string name="template_description_basic">AppCompat টুলবার এবং একটি ফ্লোটিং অ্যাকশন বোতাম সহ একটি মৌলিক প্রকল্প</string>
   <string name="template_description_empty">ডিফল্ট টুলবার সহ একটি খালি প্রকল্প৷ আপনি যখন সমস্ত মৌলিক জিনিস নিজে করতে চান তখন উপযুক্ত৷</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">JNI ব্যবহার করার জন্য কনফিগার করা একটি খালি কার্যকলাপ সহ একটি নতুন প্রকল্প তৈরি করে</string>
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">AndroidX হীন</string>
   <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
-  <!-- Files -->
   <string name="save">সেভ</string>
   <string name="menu_find">খুঁজুন</string>
   <string name="menu_find_file">ফাইলে খুঁজুন</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">সঞ্চয়স্থানের অনুমতি পরীক্ষা করা হচ্ছে</string>
   <string name="msg_failed_list_files">প্রকল্প ফাইল তালিকাভুক্ত করতে ব্যর্থ!</string>
   <string name="msg_storage_denied">সঞ্চয়স্থানের অনুমতি ছাড়া এগোনো যাবে না</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">সঞ্চয়স্থানের অনুমতি দেওয়া হয়েছে!</string>
   <string name="open_with">অন্য অ্যাপ দিয়ে খুলুন...</string>
-  <!-- Code Editor -->
   <string name="undo">আনডু</string>
   <string name="redo">রিডু</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) জাভা সোর্স ফাইলগুলি ত্রুটির জন্য বিশ্লেষণ করা হোক অথবা নয়।</string>
   <string name="title_reload_color_schemes">Color Scheme পুনরায় লোড করুন</string>
   <string name="msg_dir_picker_failed">ডিরেক্টরি পিকার শুরু করতে ব্যর্থ হয়েছে : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
