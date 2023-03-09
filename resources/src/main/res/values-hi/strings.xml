@@ -23,9 +23,9 @@
   <string name="reset">रिसेट</string>
   <string name="app_logs">एप लॉग्स</string>
   <string name="ide_logs">IDE लॉग्स</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">स्प्लेश इमेज</string>
   <string name="get_started">प्रारंभ करें</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ</string>
   <string name="msg_performing_actions">सुधार कर रहे है…</string>
   <string name="msg_api_info_since">API %d से उपलब्ध है</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">सन्दर्भ ढूंढे जा रहे है…</string>
   <string name="msg_finding_definition">परिभासा ढूंढी जा रही है…</string>
   <string name="msg_no_definition">परिभाषा नहीं मिली</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">कोई सन्दर्भ नहीं मिला</string>
   <string name="view_diags">विश्लेषण</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">इंस्टॉल करने में विफल रहा</string>
   <string name="get_ready_for_something_awesome">कुछ कमाल के लिए तैयार हो जाओ!</string>
   <string name="msg_picked_isnt_dir">चुनी गई फ़ाइल एक डायरेक्टरी नहीं है!</string>
   <string name="msg_pick_single_file">कृपया केवल एक डायरेक्टरी चुनें</string>
   <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें…</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">डिवाइस समर्थित नहीं है</string>
   <string name="msg_device_not_supported">दुर्भाग्य से, आपका डिवाइस इस समय समर्थित नहीं है। असुविधा के लिए हमें खेद है.\n\nसमर्थित CPU ABIs: aarch64 और armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">लिंट</string>
   <string name="build">बिल्ड</string>
   <string name="build_output">बिल्ड आउटपुट</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">APK(s) इंस्टॉल करें</string>
   <string name="title_clear_output">आउटपुट हटाएँ</string>
   <string name="run">रन</string>
+  <!-- Project -->
   <string name="title_first_build">पहला निर्माण</string>
   <string name="msg_first_build">AndroidIDE इंस्टॉल करने के बाद यह पहली बार बिल्ड है। पहले निर्माण में आमतौर पर समय लगता है क्योंकि ग्रेडल सभी डिपेंडेंसीज और प्लगइन्स को डाउनलोड करता है। इस प्रक्रिया में लगभग 10–15 मिनट का समय लग सकता है। लेकिन यह पूरी तरह से आपके नेटवर्क कनेक्शन पर निर्भर करता है।\n\nकृपया धैर्य रखें…</string>
-  <!-- Project -->
   <string name="create_project">प्रोजेक्ट बनाएं</string>
   <string name="minimum_sdk">न्यूनतम SDK</string>
   <string name="target_sdk">टार्गेट SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">नया प्रोजेक्ट बनाएं</string>
   <string name="msg_open_existing_project">मौजूदा प्रोजेक्ट खोलें</string>
   <string name="title_confirm_project_close">प्रोजेक्ट बंद करें</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">क्या आप वाकई इस प्रोजेक्ट को बंद करना चाहते हैं? इस प्रोजेक्ट के बंद होने के बाद सभी शुरू किए गए ग्रेडल डेमॉन को रोक दिया जाएगा।</string>
   <string name="project_exists">इसी नाम का एक प्रोजेक्ट पहले से मौजूद है!</string>
-  <!-- Templates -->
   <string name="template_basic">बुनियादी प्रोजेक्ट</string>
   <string name="template_description_basic">AppCompat टूलबार और एक FAB के साथ एक बुनियादी प्रोजेक्ट</string>
   <string name="template_description_empty">डिफ़ॉल्ट टूलबार वाला एक खाली प्रोजेक्ट। उपयुक्त जब आप सभी बुनियादी चीजें स्वयं करना चाहते हैं।</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">JNI का उपयोग करने के लिए कॉन्फ़िगर की गई खाली एक्टिविटी के साथ एक नया प्रोजेक्ट बनाता है</string>
   <string name="template_no_activity">बिना किसी एक्टिविटी के</string>
   <string name="template_no_activity_description">एक्टिविटी के बिना एक नया प्रोजेक्ट बनाता है |</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">बिना AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX के बिना एक नया प्रोजेक्ट बनाता है |</string>
-  <!-- Files -->
   <string name="save">सेव</string>
   <string name="menu_find">खोजें</string>
   <string name="menu_find_file">फ़ाइल में खोजें</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">स्टोरेज अनुमति की जांच हो रही है</string>
   <string name="msg_failed_list_files">प्रोजेक्ट फ़ाइलें लिस्ट करने में विफल! </string>
   <string name="msg_storage_denied">स्टोरेज की अनुमति के बिना आगे नहीं बढ़ सकता</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">स्टोरेज की अनुमति दी गई!</string>
   <string name="open_with">बाहरी ऐप के साथ खोलें</string>
-  <!-- Code Editor -->
   <string name="undo">अनडू</string>
   <string name="redo">रीडू</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
