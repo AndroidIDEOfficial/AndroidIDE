@@ -23,9 +23,9 @@
   <string name="reset">Reiniciar</string>
   <string name="app_logs">Registros de la app</string>
   <string name="ide_logs">Registros del IDE</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">Imagen de bienvenida</string>
   <string name="get_started">Comenzar</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">No se puede realizar la corrección rápida</string>
   <string name="msg_performing_actions">Ejecutando acción de código…</string>
   <string name="msg_api_info_since">Desde la API %d</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">Buscando referencias…</string>
   <string name="msg_finding_definition">Buscando definición…</string>
   <string name="msg_no_definition">Definición no encontrada</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">No se encontraron referencias</string>
   <string name="view_diags">Diagnósticos</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">Instalación fallida</string>
   <string name="get_ready_for_something_awesome">¡Prepárate para algo increíble!</string>
   <string name="msg_picked_isnt_dir">¡El archivo elegido no es un directorio!</string>
   <string name="msg_pick_single_file">Por favor, elija un solo directorio</string>
   <string name="please_wait">Por favor, espere un momento…</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">Dispositivo no compatible</string>
   <string name="msg_device_not_supported">Desafortunadamente, su dispositivo no es compatible en este momento. Lamentamos las molestias. \n\nABI de CPU compatibles: aarch64 y armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Lint</string>
   <string name="build">Compilar</string>
   <string name="build_output">Salida de Compilación</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">Install APK(s)</string>
   <string name="title_clear_output">Clear output</string>
   <string name="run">Run</string>
+  <!-- Project -->
   <string name="title_first_build">First Build</string>
   <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10–15 minutes. But this totally depends on your network connection.\n\nPlease be patient …</string>
-  <!-- Project -->
   <string name="create_project">Create project</string>
   <string name="minimum_sdk">Minimum SDK</string>
   <string name="target_sdk">Target SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">Create new project</string>
   <string name="msg_open_existing_project">Open existing project</string>
   <string name="title_confirm_project_close">Close project</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">Are you sure you want to close this project? All started Gradle daemons will be stopped after this project is closed.</string>
   <string name="project_exists">A project with same name already exists!</string>
-  <!-- Templates -->
   <string name="template_basic">Basic Project</string>
   <string name="template_description_basic">A basic project with AppCompat Toolbar and a Floating Action Button</string>
   <string name="template_description_empty">An empty project with default toolbar. Suitable when you want to do all the basic things yourself.</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
   <string name="template_no_activity">No Activity</string>
   <string name="template_no_activity_description">Creates a new project without activity</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">NoAndroidX</string>
   <string name="template_description_noAndroidX">Crea un nuevo proyecto sin librería de AndroidX</string>
-  <!-- Files -->
   <string name="save">Guardar Cambios</string>
   <string name="menu_find">Find</string>
   <string name="menu_find_file">Find in file</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">Checking storage permissions</string>
   <string name="msg_failed_list_files">Failed to list project files!</string>
   <string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">Storage permissions granted!</string>
   <string name="open_with">Open with...</string>
-  <!-- Code Editor -->
   <string name="undo">Undo</string>
   <string name="redo">Redo</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
