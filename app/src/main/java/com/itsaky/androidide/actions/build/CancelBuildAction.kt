@@ -26,6 +26,7 @@ import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 
 /** @author Akash Yadav */
 class CancelBuildAction(context: Context) : EditorActivityAction() {
@@ -59,7 +60,13 @@ class CancelBuildAction(context: Context) : EditorActivityAction() {
 
   override fun execAction(data: ActionData): Boolean {
     log.info("Sending build cancellation request...")
-    Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)?.cancelCurrentBuild()?.whenComplete {
+    val builder = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    if (builder?.isToolingServerStarted() != true) {
+      flashError(com.itsaky.androidide.projects.R.string.msg_tooling_server_unavailable)
+      return false
+    }
+
+    builder.cancelCurrentBuild().whenComplete {
       result,
       error ->
       if (error != null) {

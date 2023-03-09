@@ -66,7 +66,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   protected var isFromSavedInstance = false
   protected var shouldInitialize = false
-  
+
   protected var initializingFuture: CompletableFuture<out InitializeResult?>? = null
 
   val findInProjectDialog: AlertDialog
@@ -135,27 +135,27 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun preDestroy() {
     if (isDestroying) {
-      
+
       this.initializingFuture?.cancel(true)
       this.initializingFuture = null
-      
+
       closeProject(false)
     }
 
     super.preDestroy()
-    
+
     if (isDestroying) {
-  
+
       if (IDELanguageClientImpl.isInitialized()) {
         IDELanguageClientImpl.shutdown()
       }
-      
+
       try {
         stopLanguageServers()
       } catch (err: Exception) {
         log.error("Failed to stop editor services.")
       }
-      
+
       try {
         unbindService(buildServiceConnection)
         buildServiceConnection.onConnected = {}
@@ -234,6 +234,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       return
     }
 
+    if (!buildService.isToolingServerStarted()) {
+      flashError(string.msg_tooling_server_unavailable)
+      return
+    }
+
     this.initializingFuture =
       if (shouldInitialize || (!isFromSavedInstance && !initialized)) {
         log.debug("Sending init request to tooling server..")
@@ -275,7 +280,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
 
-    if (!service.isToolingServerStarted) {
+    if (!service.isToolingServerStarted()) {
       service.startToolingServer { initializeProject() }
     } else {
       initializeProject()
@@ -432,7 +437,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   private fun closeProject(manualFinish: Boolean) {
-    
+
     // Make sure we close files
     // This will make sure that file contents are not erased.
     doCloseAll {

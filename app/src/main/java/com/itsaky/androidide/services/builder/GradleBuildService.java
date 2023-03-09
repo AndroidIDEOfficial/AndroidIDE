@@ -115,8 +115,9 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, this);
   }
 
+  @Override
   public boolean isToolingServerStarted() {
-    return isToolingServerStarted;
+    return isToolingServerStarted && server != null;
   }
 
   @SuppressWarnings("SameParameterValue")
@@ -392,6 +393,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
+    checkServerStarted();
     final var message = new InitializeProjectMessage(rootDir, getGradleInstallationDir());
     return performBuildTasks(server.initialize(message));
   }
@@ -399,6 +401,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
+    checkServerStarted();
     final var message =
         new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationDir());
     return performBuildTasks(server.executeTasks(message));
@@ -408,6 +411,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public CompletableFuture<TaskExecutionResult> executeProjectTasks(
       @NonNull String projectPath, @NonNull String... tasks) {
+    checkServerStarted();
     final var message =
         new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationDir());
     return performBuildTasks(server.executeTasks(message));
@@ -416,6 +420,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @NonNull
   @Override
   public CompletableFuture<BuildCancellationRequestResult> cancelCurrentBuild() {
+    checkServerStarted();
     return server.cancelCurrentBuild();
   }
 
@@ -444,8 +449,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     isBuildInProgress = true;
   }
 
-  private void checkServerStarted() {
-    if (!isToolingServerStarted) {
+  private void checkServerStarted() throws ToolingServerNotStartedException {
+    if (!isToolingServerStarted()) {
       throw new ToolingServerNotStartedException();
     }
   }

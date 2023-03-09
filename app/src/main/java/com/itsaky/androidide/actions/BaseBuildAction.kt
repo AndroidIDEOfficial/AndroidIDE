@@ -23,6 +23,7 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNKNOWN
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 
 /**
  * Marker class for actions that execute build related tasks.
@@ -51,7 +52,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
       enabled = true
     }
   }
-  
+
   fun shouldPrepare() = visible && enabled
 
   private fun isBuildInProgress(): Boolean {
@@ -65,7 +66,9 @@ abstract class BaseBuildAction : EditorActivityAction() {
     vararg tasks: String,
   ) {
 
-    if (buildService == null) {
+    val buildService = this.buildService ?: return
+    if (!buildService.isToolingServerStarted()) {
+      flashError(R.string.msg_tooling_server_unavailable)
       return
     }
 
@@ -81,7 +84,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
       activity.appendBuildOutput("Executing tasks: " + TextUtils.join(", ", tasks))
     }
 
-    buildService!!.executeTasks(tasks = tasks).whenComplete { result, err ->
+    buildService.executeTasks(tasks = tasks).whenComplete { result, err ->
       if (result == null || err != null) {
         log.error("Tasks failed to execute", TextUtils.join(", ", tasks))
       }

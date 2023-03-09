@@ -33,6 +33,7 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.extension
@@ -72,7 +73,7 @@ object ProjectManager : EventReceiver {
       }
     }
   }
-  
+
   fun destroy() {
     log.info("Destroying project manager")
     this.rootProject = null
@@ -98,17 +99,22 @@ object ProjectManager : EventReceiver {
       return
     }
 
+    if (!builder.isToolingServerStarted()) {
+      flashError(R.string.msg_tooling_server_unavailable)
+      return
+    }
+
     if (app == null) {
       log.warn("Cannot run resource and source generation task. No application module found.")
       return
     }
-  
+
     val debug = app!!.getVariant("debug")
     if (debug == null) {
       log.warn("No debug variant found in application project ${app!!.name}")
       return
     }
-  
+
     val mainArtifact = debug.mainArtifact
     val genResourcesTask = mainArtifact.resGenTaskName
     val genSourcesTask = mainArtifact.sourceGenTaskName
@@ -119,8 +125,13 @@ object ProjectManager : EventReceiver {
         ""
       }
     builder
-      .executeProjectTasks(app!!.path, genResourcesTask
-        ?: "", genSourcesTask, "processDebugResources", genDataBinding)
+      .executeProjectTasks(
+        app!!.path,
+        genResourcesTask ?: "",
+        genSourcesTask,
+        "processDebugResources",
+        genDataBinding
+      )
       .whenComplete { result, taskErr ->
         if (taskErr != null || !result.isSuccessful) {
           log.warn(
@@ -132,7 +143,7 @@ object ProjectManager : EventReceiver {
         }
       }
   }
-  
+
   fun getApplicationModule(): AndroidModule? {
     return app
   }

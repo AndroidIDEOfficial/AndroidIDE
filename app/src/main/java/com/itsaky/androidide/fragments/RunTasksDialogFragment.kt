@@ -51,6 +51,7 @@ import com.itsaky.androidide.tooling.api.model.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
+import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.utils.updateSystemBarColors
 import com.itsaky.androidide.viewmodel.RunTasksViewModel
@@ -161,6 +162,11 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
               log.error("Cannot find build service")
               return@setOnClickListener
             }
+
+        if (!buildService.isToolingServerStarted()) {
+          flashError(R.string.msg_tooling_server_unavailable)
+          return@setOnClickListener
+        }
 
         val toRun = viewModel.selected.toTypedArray()
         buildService.executeTasks(*toRun)
