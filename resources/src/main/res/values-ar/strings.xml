@@ -6,7 +6,7 @@
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
-  <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
+  <string name="about_footer">أندرويد %1$s لـ %2$s</string>
   <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
@@ -454,7 +454,7 @@
   <string name="msg_app_launch_failed">فشل في تشغيل التطبيق. راجع سجلات IDE لمزيد من المعلومات.</string>
   <string name="idepref_java_diagnosticEnabled_title">التشخيصات مفعلة</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(تجريبي) ما إذا ينبغي تحليل ملفات مصدر جافا بحثا عن أخطاء أم لا.</string>
-  <string name="title_reload_color_schemes">Reload color schemes</string>
-  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
-  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
+  <string name="title_reload_color_schemes">إعادة تحميل أنظمة الألوان</string>
+  <string name="msg_dir_picker_failed">فشل تشغيل مختار الملفات: %1$s</string>
+  <string name="msg_tooling_server_unavailable">أداة خادم API غير متوفرة. تحقق من إخراج البناء وسجلات IDE للأخطاء.</string>
 </resources>
