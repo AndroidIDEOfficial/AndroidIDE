@@ -23,9 +23,9 @@
   <string name="reset">Setel ulang</string>
   <string name="app_logs">Log App</string>
   <string name="ide_logs">Log IDE</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">Gambar Splash</string>
   <string name="get_started">Memulai</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">Tidak dapat menampilkan perbaikan cepat (QuickFix)</string>
   <string name="msg_performing_actions">Menampilkan perbaikan&#8230;</string>
   <string name="msg_api_info_since">Sejak API %d</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">Menemukan referensi&#8230;</string>
   <string name="msg_finding_definition">Menemukan definisi&#8230;</string>
   <string name="msg_no_definition">Definisi tidak ditemukan</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">Referensi tidak ditemukan</string>
   <string name="view_diags">Diagnosa</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">Instalasi gagal</string>
   <string name="get_ready_for_something_awesome">Bersiap untuk sesuatu yang menakjubkan !</string>
   <string name="msg_picked_isnt_dir">Jalur yang dipilih bukanlah direktori!</string>
   <string name="msg_pick_single_file">Mohon untuk hanya memilih satu direktori</string>
   <string name="please_wait">Mohon tunggu sebentar &#8230;</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">Perangkat tidak didukung</string>
   <string name="msg_device_not_supported">Sayang sekali, perangkat anda tidak didukung saat ini. Kami mohon maaf atas ketidaknyamanannya.\n\nCPU ABI yang didukung: aarch64 dan armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Lint</string>
   <string name="build">Build</string>
   <string name="build_output">Hasil Build</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">Instal Aplikasi</string>
   <string name="title_clear_output">Bersihkan hasil</string>
   <string name="run">Jalankan</string>
+  <!-- Project -->
   <string name="title_first_build">Build Pertama</string>
   <string name="msg_first_build">Ini adalah build pertama setelah anda memasang AndroidIDE. Build pertama biasanya memakan waktu selama Gradle mengunduh semua dependensi dan plugin. Proses ini diperkirakan sekitar 10&#8211;15 menit. Tetapi ini bergantung pada kecepatan koneksi internet anda.\n\nMohon bersabar &#8230;</string>
-  <!-- Project -->
   <string name="create_project">Buat projek</string>
   <string name="minimum_sdk">Minimum SDK</string>
   <string name="target_sdk">Target SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">Buat projek baru</string>
   <string name="msg_open_existing_project">Buka projek</string>
   <string name="title_confirm_project_close">Tutup projek</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">anda yakin ingin menutup projek ini? Semua Gradle daemon yang berjalan akan diberhentikan setelah projek ini ditutup.</string>
   <string name="project_exists">Sudah terdapat projek dengan nama yang sama!</string>
-  <!-- Templates -->
   <string name="template_basic">Projek Dasar</string>
   <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan Floating Action Button</string>
   <string name="template_description_empty">Sebuah projek kosong dengan toolbar bawaan. sangat cocok untuk melakukan semua hal mendasar anda sendiri.</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">Buat Proyek baru dengan Empty Activity yang dikonfigurasi untuk menggunakan JNI</string>
   <string name="template_no_activity">Tidak ada Activity</string>
   <string name="template_no_activity_description">Buat Proyek baru tanpa Activity</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">Tidak ada AndroidX</string>
   <string name="template_description_noAndroidX">Buat Proyek baru tanpa Library AndroidX</string>
-  <!-- Files -->
   <string name="save">Simpan</string>
   <string name="menu_find">Pencarian</string>
   <string name="menu_find_file">Cari di dalam file</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">Mengecek ijin penyimpanan</string>
   <string name="msg_failed_list_files">Gagal memuat file-file dalam projek!</string>
   <string name="msg_storage_denied">Tidak dapat melanjutkan tanpa ijin penyimpanan</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">Peizinan penyimpanan diberikan!</string>
   <string name="open_with">Buka dengan...</string>
-  <!-- Code Editor -->
   <string name="undo">Undo</string>
   <string name="redo">Redo</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EKSPERIMENTAL) Apakah file sumber Java harus dianalisis untuk kesalahan atau tidak.</string>
   <string name="title_reload_color_schemes">Muat ulang skema warna</string>
   <string name="msg_dir_picker_failed">Gagal memulai pemilih direktori : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
