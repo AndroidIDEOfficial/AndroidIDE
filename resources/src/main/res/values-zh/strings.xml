@@ -23,9 +23,9 @@
   <string name="reset">重置</string>
   <string name="app_logs">应用日志</string>
   <string name="ide_logs">IDE日志</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">启动图</string>
   <string name="get_started">开始使用</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">无法执行快速修复</string>
   <string name="msg_performing_actions">正在执行代码操作&#8230;</string>
   <string name="msg_api_info_since">在API %d 添加</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">查找引用&#8230;</string>
   <string name="msg_finding_definition">跳转定义&#8230;</string>
   <string name="msg_no_definition">没有找到定义</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">没有找到引用</string>
   <string name="view_diags">诊断信息</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">安装失败</string>
   <string name="get_ready_for_something_awesome">让我们准备迎接很棒的东西!</string>
   <string name="msg_picked_isnt_dir">选择的路径不是文件夹!</string>
   <string name="msg_pick_single_file">请只选择一个文件夹</string>
   <string name="please_wait">请稍等 &#8230;</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">设备不受支持</string>
   <string name="msg_device_not_supported">很不幸，您的设备当前不受我们支持。我们对其产生的不便很抱歉。\n\n支持的CPU架构: aarch64 与 armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Lint</string>
   <string name="build">Build</string>
   <string name="build_output">编译输出</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">安装APK</string>
   <string name="title_clear_output">清空输出</string>
   <string name="run">运行</string>
+  <!-- Project -->
   <string name="title_first_build">第一次编译</string>
   <string name="msg_first_build">这是您安装AndroidIDE后第一次编译项目，由于需要下载Gradle和各种依赖项目，第一次编译需要较长时间。这可能要花费10&#8211;15分钟，但这完全取决于您的网络连接。\n\n请耐心等待 &#8230;</string>
-  <!-- Project -->
   <string name="create_project">创建项目</string>
   <string name="minimum_sdk">最小SDK版本</string>
   <string name="target_sdk">目标SDK版本</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">创建新项目</string>
   <string name="msg_open_existing_project">打开项目</string>
   <string name="title_confirm_project_close">关闭项目</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">你确定要关闭项目吗？项目关闭后，已启动的Gradle守护进程将会被停止。</string>
   <string name="project_exists">已存在同名的项目!</string>
-  <!-- Templates -->
   <string name="template_basic">基本项目</string>
   <string name="template_description_basic">一个有AppCompat Toolbar 和 Floating Action Button的基本项目</string>
   <string name="template_description_empty">一个使用默认Toolbar的空项目。当您想要自己完成那些基本的工作时适合您。</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">创建一个使用 JNI 空白 Activity 的新项目</string>
   <string name="template_no_activity">无 Activity</string>
   <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">NoAndroidX</string>
   <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
-  <!-- Files -->
   <string name="save">保存</string>
   <string name="menu_find">查找</string>
   <string name="menu_find_file">在文件中查找</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">正在检查存储权限</string>
   <string name="msg_failed_list_files">无法列出项目文件列表!</string>
   <string name="msg_storage_denied">没有存储权限，无法继续</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">已授予存储权限!</string>
   <string name="open_with">打开方式&#8230;</string>
-  <!-- Code Editor -->
   <string name="undo">撤销</string>
   <string name="redo">重做</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
