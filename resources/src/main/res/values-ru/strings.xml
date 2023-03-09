@@ -23,9 +23,9 @@
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
   <string name="ide_logs">Логи IDE</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">Всплывающее изображение</string>
   <string name="get_started">Давайте начнём!</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">Невозможно применить быстрое решение</string>
   <string name="msg_performing_actions">Применение изменений&#8230;</string>
   <string name="msg_api_info_since">Начиная с API %d</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">Поиск ссылок&#8230;</string>
   <string name="msg_finding_definition">Поиск дефиниций&#8230;</string>
   <string name="msg_no_definition">Дефиниций не найдено</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">Ссылок не найдено</string>
   <string name="view_diags">Диагностика</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">Установка не удалась</string>
   <string name="get_ready_for_something_awesome">Приготовьтесь к чему-то замечательному!</string>
   <string name="msg_picked_isnt_dir">Выбранный файл не является директорией!</string>
   <string name="msg_pick_single_file">Пожалуйста, выберите только одну директорию</string>
   <string name="please_wait">Пожалуйста, подождите немного&#8230;</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">Устройство не поддерживается</string>
   <string name="msg_device_not_supported">К сожалению, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Lint</string>
   <string name="build">Сборка</string>
   <string name="build_output">Результат сборки</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">Установить APK файл(ы)</string>
   <string name="title_clear_output">Очистить выходные файлы</string>
   <string name="run">Запустить</string>
+  <!-- Project -->
   <string name="title_first_build">Первая сборка</string>
   <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, в зависимости от производительности вашего устройства.\n\nПожалуйста, подождите&#8230;</string>
-  <!-- Project -->
   <string name="create_project">Создать проект</string>
   <string name="minimum_sdk">Минимальный SDK</string>
   <string name="target_sdk">Целевой SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">Создать проект</string>
   <string name="msg_open_existing_project">Открыть проект</string>
   <string name="title_confirm_project_close">Закрыть проект</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">Уверены, что хотите закрыть этот проект? Все запущенные Daemon\'ы Gradle будут остановлены после закрытия этого проекта.</string>
   <string name="project_exists">Проект с таким именем уже существует!</string>
-  <!-- Templates -->
   <string name="template_basic">Базовый проект</string>
   <string name="template_description_basic">Базовый проект, включающий в себя AppCompat Toolbar и Floating Action Button</string>
   <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">Создаёт новый проект с Empty Activity, сконфигурированный для использования JNI</string>
   <string name="template_no_activity">Проект без активности</string>
   <string name="template_no_activity_description">Создаёт новый проект без активности</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">Без AndroidX</string>
   <string name="template_description_noAndroidX">Создаёт новый проект без библиотеки AndroidX</string>
-  <!-- Files -->
   <string name="save">Сохранить</string>
   <string name="menu_find">Найти</string>
   <string name="menu_find_file">Найти в файле</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
   <string name="msg_failed_list_files">Не удалось получить список проектов!</string>
   <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">Разрешение на взаимодействие с памятью получено!</string>
   <string name="open_with">Открыть с помощью...</string>
-  <!-- Code Editor -->
   <string name="undo">Отмена действия</string>
   <string name="redo">Повтор действия</string>
   <!-- Preferences -->
@@ -456,4 +456,5 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>
