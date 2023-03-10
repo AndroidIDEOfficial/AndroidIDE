@@ -34,6 +34,7 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment
 import com.itsaky.androidide.models.SheetOption
 import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.InstallationResultHandler
+import com.itsaky.androidide.utils.flashError
 import com.unnamed.b.atv.model.TreeNode
 import java.io.File
 import org.greenrobot.eventbus.EventBus
@@ -52,6 +53,7 @@ class FileTreeActionHandler : BaseEventHandler() {
 
   companion object {
     const val TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment"
+    const val MB_10: Long = 10 * 1024 * 1024
   }
 
   @Subscribe(threadMode = MAIN)
@@ -76,6 +78,13 @@ class FileTreeActionHandler : BaseEventHandler() {
       )
       return
     }
+
+    if (MB_10 < event.file.length()) {
+      flashError("File is too big!")
+      log.warn("Cannot open ${event.file.name} as it is too big. File size: ${event.file.length()} bytes")
+      return
+    }
+    
     context.openFile(event.file)
   }
 
