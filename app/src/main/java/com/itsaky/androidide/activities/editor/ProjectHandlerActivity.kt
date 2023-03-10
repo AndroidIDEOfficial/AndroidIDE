@@ -135,7 +135,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   override fun preDestroy() {
     if (isDestroying) {
-
+      releaseServerListener()
       this.initializingFuture?.cancel(true)
       this.initializingFuture = null
 
@@ -254,6 +254,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       }
 
     this.initializingFuture!!.whenCompleteAsync { result, error ->
+      releaseServerListener()
+
       if (result == null || error != null) {
         log.error("An error occurred initializing the project with Tooling API", error)
         setStatus(getString(string.msg_project_initialization_failed))
@@ -262,6 +264,12 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
       onProjectInitialized(result)
     }
+  }
+
+  private fun releaseServerListener() {
+    // Release reference to server listener in order to prevent memory leak
+    (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
+      ?.setServerListener(null)
   }
 
   override fun stopLanguageServers() {

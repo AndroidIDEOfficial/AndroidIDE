@@ -123,8 +123,12 @@ internal class ToolingServerRunner(
 
   override fun interrupt() {
     super.interrupt()
-    listener = null
-    observer = null
+    release()
+  }
+
+  internal fun release() {
+    this.listener = null
+    this.observer = null
   }
 
   interface Observer {

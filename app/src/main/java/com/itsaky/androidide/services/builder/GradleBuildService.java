@@ -343,6 +343,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     return gradlew.exists() && gradleWrapperJar.exists() && gradleWrapperProps.exists();
   }
 
+  public void setServerListener (@Nullable ToolingServerRunner.OnServerStartListener listener) {
+    if (this.toolingServerThread != null) {
+      this.toolingServerThread.setListener(listener);
+    }
+  }
+
   private CompletableFuture<GradleWrapperCheckResult> installWrapper() {
     if (eventListener != null) {
       eventListener.onOutput("-------------------- NOTE --------------------");
@@ -478,7 +484,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     if (toolingServerThread.isStarted() && listener != null) {
       listener.onServerStarted();
     } else {
-      toolingServerThread.setListener(listener);
+      setServerListener(listener);
     }
   }
 
