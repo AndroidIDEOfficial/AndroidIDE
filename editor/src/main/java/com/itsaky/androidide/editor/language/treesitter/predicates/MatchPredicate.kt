@@ -23,6 +23,7 @@ import com.itsaky.androidide.treesitter.TSQueryPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
+import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 import io.github.rosemoe.sora.editor.ts.predicate.builtin.getCaptureContent
 import io.github.rosemoe.sora.editor.ts.predicate.builtin.parametersMatch
 import java.util.concurrent.ConcurrentHashMap
@@ -53,14 +54,15 @@ object MatchPredicate : TreeSitterPredicate() {
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult {
-    val captured = getCaptureContent(tsQuery, match, predicate[1].content, text)
+    val captured = getCaptureContent(tsQuery, match, predicateSteps[1].content, text)
     try {
-      var regex = cache[predicate[2].content]
+      var regex = cache[predicateSteps[2].content]
       if (regex == null) {
-        regex = Regex(predicate[2].content)
-        cache[predicate[2].content] = regex
+        regex = Regex(predicateSteps[2].content)
+        cache[predicateSteps[2].content] = regex
       }
       for (str in captured) {
         if (regex.find(str) == null) {

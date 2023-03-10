@@ -23,6 +23,7 @@ import com.itsaky.androidide.treesitter.TSQueryPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
+import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 import io.github.rosemoe.sora.editor.ts.predicate.builtin.getCaptureContent
 
 /**
@@ -55,10 +56,11 @@ object AnyOfPredicate : TreeSitterPredicate() {
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult {
-    val captured = getCaptureContent(tsQuery, match, predicate[1].content, text)
-    val toMatch = predicate.subList(2, predicate.lastIndex - 1).map { it.content }
+    val captured = getCaptureContent(tsQuery, match, predicateSteps[1].content, text)
+    val toMatch = predicateSteps.subList(2, predicateSteps.lastIndex - 1).map { it.content }
     for (capture in captured) {
       if (capture !in toMatch) {
         return PredicateResult.REJECT

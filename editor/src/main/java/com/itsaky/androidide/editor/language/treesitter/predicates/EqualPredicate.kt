@@ -23,6 +23,7 @@ import com.itsaky.androidide.treesitter.TSQueryPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
+import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 import io.github.rosemoe.sora.editor.ts.predicate.builtin.getCaptureContent
 
 /**
@@ -54,11 +55,12 @@ object EqualPredicate : TreeSitterPredicate() {
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult {
-    val first = getCaptureContent(tsQuery, match, predicate[1].content, text)
+    val first = getCaptureContent(tsQuery, match, predicateSteps[1].content, text)
     val second =
-      predicate[2].let {
+      predicateSteps[2].let {
         check(
           it.predicateType == TSQueryPredicateStep.Type.String ||
             it.predicateType == TSQueryPredicateStep.Type.Capture

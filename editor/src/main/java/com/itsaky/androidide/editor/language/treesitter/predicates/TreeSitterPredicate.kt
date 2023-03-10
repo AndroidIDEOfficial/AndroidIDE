@@ -22,6 +22,7 @@ import com.itsaky.androidide.treesitter.TSQueryMatch
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
+import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 
 /**
  * Base class for tree-sitter predicate implementations.
@@ -48,27 +49,33 @@ abstract class TreeSitterPredicate : TsPredicate {
    * @param tsQuery The [TSQuery] for the predicate.
    * @param text The editor text.
    * @param match The [TSQueryMatch] object.
-   * @param predicate The predicate steps.
+   * @param predicateSteps The predicate steps.
    * @return The result of the predicate check.
    */
   internal abstract fun doPredicateInternal(
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult
 
   override fun doPredicate(
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult {
 
-    if (predicate.isEmpty() || predicate[0].content != "${name}?" || !canHandle(predicate)) {
+    if (
+      predicateSteps.isEmpty() ||
+        predicateSteps[0].content != "${name}?" ||
+        !canHandle(predicateSteps)
+    ) {
       return PredicateResult.UNHANDLED
     }
 
-    return doPredicateInternal(tsQuery, text, match, predicate)
+    return doPredicateInternal(tsQuery, text, match, predicateSteps, syntheticCaptures)
   }
 }

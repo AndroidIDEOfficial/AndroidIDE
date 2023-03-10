@@ -21,6 +21,7 @@ import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
+import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 
 /**
  * A [TreeSitterPredicate] which inverts the result of another predicate.
@@ -38,9 +39,11 @@ open class InvertingPredicate(override val name: String, private val predicate: 
     tsQuery: TSQuery,
     text: CharSequence,
     match: TSQueryMatch,
-    predicate: List<TsClientPredicateStep>
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
   ): PredicateResult {
-    return when (val result = this.predicate.doPredicateInternal(tsQuery, text, match, predicate)) {
+    return when (val result = this.predicate.doPredicateInternal(tsQuery, text, match,
+      predicateSteps, syntheticCaptures)) {
       PredicateResult.ACCEPT -> PredicateResult.REJECT
       PredicateResult.REJECT -> PredicateResult.ACCEPT
       else -> result
