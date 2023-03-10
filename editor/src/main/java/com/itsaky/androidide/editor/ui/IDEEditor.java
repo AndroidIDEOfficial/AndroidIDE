@@ -840,6 +840,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   @Override
   public void release() {
     super.release();
+    if (this.actionsMenu != null) {
+      this.actionsMenu.destroy();
+    }
     this.actionsMenu = null;
     if (EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().unregister(this);

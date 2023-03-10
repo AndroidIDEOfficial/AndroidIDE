@@ -42,7 +42,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   private val log = ILogger.newInstance("DefaultActionsRegistry")
   private val actions = ConcurrentHashMap<String, LinkedHashMap<String, ActionItem>>()
-  private val listeners = mutableSetOf<ActionExecListener>()
+  private val listeners = HashSet<ActionExecListener>()
 
   init {
     registerAction(CodeActionsMenu)
@@ -90,9 +90,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   override fun clearActions(location: ActionItem.Location) {
     val actions = getActions(location)
-    actions.forEach {
-      it.value.destroy()
-    }
+    actions.forEach { it.value.destroy() }
     actions.clear()
   }
 
@@ -169,11 +167,8 @@ class DefaultActionsRegistry : ActionsRegistry() {
     }
   }
 
-  /**
-   * Executes the given action item with the given
-   */
-  fun executeAction(action: ActionItem,
-    data: ActionData) {
+  /** Executes the given action item with the given */
+  fun executeAction(action: ActionItem, data: ActionData) {
     if (action.requiresUIThread) {
       ThreadUtils.runOnUiThread {
         val result = action.execAction(data)

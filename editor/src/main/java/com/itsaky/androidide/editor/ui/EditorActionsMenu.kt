@@ -44,12 +44,12 @@ import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.EditorActionItem
 import com.itsaky.androidide.editor.R.*
 import com.itsaky.androidide.editor.databinding.LayoutPopupMenuItemBinding
+import com.itsaky.androidide.editor.ui.EditorActionsMenu.ActionsListAdapter.VH
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.editor.ui.EditorActionsMenu.ActionsListAdapter.VH
 import com.itsaky.androidide.utils.resolveAttr
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
@@ -132,6 +132,14 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     for (receipt in receipts) {
       receipt.unsubscribe()
     }
+  }
+
+  fun destroy() {
+    if (this.receipts.isNotEmpty()) {
+      unsubscribeEvents()
+    }
+
+    getInstance().unregisterActionExecListener(this)
   }
 
   protected open fun onSelectionChanged(event: SelectionChangeEvent) {
