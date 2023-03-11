@@ -44,6 +44,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
   
   init {
     mAdapter = super.adapter
+    setLayout(EditorCompletionLayout())
   }
   
   override fun setLayout(layout: CompletionLayout) {

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.syntax.colorschemes
 
 import android.content.Context
+import com.google.android.material.elevation.SurfaceColors
 import com.itsaky.androidide.common.R.attr
 import com.itsaky.androidide.utils.isSystemInDarkMode
 import com.itsaky.androidide.utils.resolveAttr
@@ -33,8 +34,6 @@ open class DynamicColorScheme : SchemeAndroidIDE() {
 
   fun apply(context: Context) {
     this.isInDarkMode = context.isSystemInDarkMode()
-    val primaryContainer = context.resolveAttr(attr.colorPrimaryContainer)
-    val onPrimaryContainer = context.resolveAttr(attr.colorOnPrimaryContainer)
     val secondaryVariant = context.resolveAttr(attr.colorSecondaryVariant)
     val surface = context.resolveAttr(attr.colorSurface)
     val surfaceVariant = context.resolveAttr(attr.colorSurfaceVariant)
@@ -52,10 +51,10 @@ open class DynamicColorScheme : SchemeAndroidIDE() {
     setColor(BLOCK_LINE_CURRENT, outline)
     setColor(UNDERLINE, outline)
 
-    setColor(COMPLETION_WND_BACKGROUND, primaryContainer)
+    setColor(COMPLETION_WND_BACKGROUND, surface)
     setColor(COMPLETION_WND_BG_CURRENT_ITEM, surfaceVariant)
     setColor(COMPLETION_WND_CORNER, outline)
-    setColor(COMPLETION_WND_TEXT_LABEL, onPrimaryContainer)
+    setColor(COMPLETION_WND_TEXT_LABEL, onSurface)
     setColor(COMPLETION_WND_TEXT_DETAIL, secondaryVariant)
     setColor(COMPLETION_WND_TEXT_API, secondaryVariant)
     setColor(COMPLETION_WND_TEXT_TYPE, secondaryVariant)

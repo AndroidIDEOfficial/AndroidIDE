@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.ui;
 
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.blankj.utilcode.util.SizeUtils.dp2px;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -70,7 +71,7 @@ public abstract class BaseEditorWindow extends AbstractPopupWindow {
 
   protected TextView onCreateTextView(@NonNull IDEEditor editor) {
     final var context = editor.getContext();
-    final var dp4 = SizeUtils.dp2px(4);
+    final var dp4 = dp2px(4);
     final var dp8 = dp4 * 2;
 
     final var text = new TextView(context);
@@ -89,14 +90,14 @@ public abstract class BaseEditorWindow extends AbstractPopupWindow {
   protected Drawable createBackground(final Context context) {
     GradientDrawable background = new GradientDrawable();
     background.setShape(GradientDrawable.RECTANGLE);
-    background.setColor(ResourceUtilsKt.resolveAttr(context, R.attr.colorPrimaryContainer));
-    background.setStroke(1, ResourceUtilsKt.resolveAttr(context, R.attr.colorOutline));
+    background.setColor(ResourceUtilsKt.resolveAttr(context, R.attr.colorSurface));
+    background.setStroke(dp2px(1f), ResourceUtilsKt.resolveAttr(context, R.attr.colorOutline));
     background.setCornerRadius(8);
     return background;
   }
 
   public void displayWindow() {
-    final var dp16 = SizeUtils.dp2px(16f);
+    final var dp16 = dp2px(16f);
     final int width = getEditor().getWidth() - dp16;
     final int height = getEditor().getHeight() - dp16;
     final var widthMeasureSpec = makeMeasureSpec(width, AT_MOST);
