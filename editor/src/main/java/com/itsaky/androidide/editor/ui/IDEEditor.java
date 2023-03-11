@@ -108,7 +108,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   @Nullable
   private Runnable selectionChangeRunner = () -> {
     final var cursor = getCursor();
-    if (languageClient == null || cursor == null || cursor.isSelected()) {
+
+    // we do not use getSignatureHelpWindow() to avoid initializing the window unnecessarily
+    if (languageClient == null || cursor == null || cursor.isSelected()
+      || (signatureHelpWindow != null && signatureHelpWindow.isShowing())) {
       return;
     }
 
@@ -210,7 +213,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     final var openEvent =
-        new DocumentOpenEvent(getFile().toPath(), getText().toString(), fileVersion = 0);
+      new DocumentOpenEvent(getFile().toPath(), getText().toString(), fileVersion = 0);
     EventBus.getDefault().post(openEvent);
   }
 
@@ -227,26 +230,26 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   public void signatureHelp() {
     if (languageServer != null && getFile() != null) {
       final CompletableFuture<SignatureHelp> future =
-          CompletableFuture.supplyAsync(
-              () ->
-                  languageServer.signatureHelp(
-                      new SignatureHelpParams(
-                          getFile().toPath(),
-                          new Position(getCursor().getLeftLine(), getCursor().getLeftColumn()))));
+        CompletableFuture.supplyAsync(
+          () ->
+            languageServer.signatureHelp(
+              new SignatureHelpParams(
+                getFile().toPath(),
+                new Position(getCursor().getLeftLine(), getCursor().getLeftColumn()))));
 
       future.whenComplete(
-          (help, error) -> {
-            if (help == null
-                || languageClient == null
-                || future.isCancelled()
-                || future.isCompletedExceptionally()) {
-              LOG.error("An error occurred while finding signature help", error);
-              return;
-            }
+        (help, error) -> {
+          if (help == null
+            || languageClient == null
+            || future.isCancelled()
+            || future.isCompletedExceptionally()) {
+            LOG.error("An error occurred while finding signature help", error);
+            return;
+          }
 
-            //noinspection ConstantConditions
-            ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
-          });
+          //noinspection ConstantConditions
+          ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
+        });
     }
   }
 
@@ -292,10 +295,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   public void setSelection(@NonNull Range range) {
     if (isValidPosition(range.getStart(), true) && isValidPosition(range.getEnd(), true)) {
       setSelectionRegion(
-          range.getStart().getLine(),
-          range.getStart().getColumn(),
-          range.getEnd().getLine(),
-          range.getEnd().getColumn());
+        range.getStart().getLine(),
+        range.getStart().getColumn(),
+        range.getEnd().getLine(),
+        range.getEnd().getColumn());
     } else {
       LOG.warn("Selection range is invalid", range);
     }
@@ -360,8 +363,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var end = range.getEnd();
 
     return isValidPosition(start, allowColumnEqual)
-        && isValidPosition(end, allowColumnEqual)
-        && start.compareTo(end) < 0; // make sure start position is before end position
+      && isValidPosition(end, allowColumnEqual)
+      && start.compareTo(end) < 0; // make sure start position is before end position
   }
 
   /**
@@ -377,7 +380,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     return isValidLine(position.getLine())
-        && isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
+      && isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
   }
 
   /**
@@ -478,58 +481,58 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     final ProgressDialog pd =
-        ProgressDialog.show(
-            getContext(), null, getContext().getString(string.msg_finding_definition));
+      ProgressDialog.show(
+        getContext(), null, getContext().getString(string.msg_finding_definition));
 
     try {
       final CompletableFuture<DefinitionResult> future =
-          CompletableFuture.supplyAsync(
-              () -> {
-                final var params =
-                    new com.itsaky.androidide.lsp.models.DefinitionParams(
-                        getFile().toPath(),
-                        new com.itsaky.androidide.models.Position(
-                            getCursor().getLeftLine(), getCursor().getLeftColumn()));
+        CompletableFuture.supplyAsync(
+          () -> {
+            final var params =
+              new com.itsaky.androidide.lsp.models.DefinitionParams(
+                getFile().toPath(),
+                new com.itsaky.androidide.models.Position(
+                  getCursor().getLeftLine(), getCursor().getLeftColumn()));
 
-                return languageServer.findDefinition(params);
-              });
+            return languageServer.findDefinition(params);
+          });
 
       future.whenComplete(
-          (result, error) -> {
-            if (result == null
-                || languageClient == null
-                || future.isCancelled()
-                || future.isCompletedExceptionally()) {
-              LOG.error("An error occurred while finding definition", error);
-              showDefinitionNotFound(pd);
-              return;
-            }
+        (result, error) -> {
+          if (result == null
+            || languageClient == null
+            || future.isCancelled()
+            || future.isCompletedExceptionally()) {
+            LOG.error("An error occurred while finding definition", error);
+            showDefinitionNotFound(pd);
+            return;
+          }
 
-            final var locations = result.getLocations();
-            if (locations.size() == 0) {
-              LOG.error("No definitions found", "Size:", locations.size());
-              showDefinitionNotFound(pd);
-              return;
-            }
+          final var locations = result.getLocations();
+          if (locations.size() == 0) {
+            LOG.error("No definitions found", "Size:", locations.size());
+            showDefinitionNotFound(pd);
+            return;
+          }
 
-            //noinspection ConstantConditions
-            ThreadUtils.runOnUiThread(
-                () -> {
-                  if (locations.size() == 1) {
-                    var location = locations.get(0);
-                    if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
-                      setSelection(location.getRange());
-                      return;
-                    }
-                    languageClient.showDocument(
-                        new ShowDocumentParams(location.getFile(), location.getRange()));
-                  } else {
-                    languageClient.showLocations(locations);
-                  }
-                });
+          //noinspection ConstantConditions
+          ThreadUtils.runOnUiThread(
+            () -> {
+              if (locations.size() == 1) {
+                var location = locations.get(0);
+                if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
+                  setSelection(location.getRange());
+                  return;
+                }
+                languageClient.showDocument(
+                  new ShowDocumentParams(location.getFile(), location.getRange()));
+              } else {
+                languageClient.showLocations(locations);
+              }
+            });
 
-            dismissOnUiThread(pd);
-          });
+          dismissOnUiThread(pd);
+        });
     } catch (Throwable th) {
       LOG.error("An error occurred while finding definition", th);
       showDefinitionNotFound(pd);
@@ -545,10 +548,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   private void showDefinitionNotFound(final ProgressDialog pd) {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
-        () -> {
-          FlashbarUtilsKt.flashError(string.msg_no_definition);
-          pd.dismiss();
-        });
+      () -> {
+        FlashbarUtilsKt.flashError(string.msg_no_definition);
+        pd.dismiss();
+      });
   }
 
   /**
@@ -575,21 +578,21 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     @SuppressWarnings("deprecation") final ProgressDialog pd =
-        ProgressDialog.show(
-            getContext(), null, getContext().getString(string.msg_finding_references));
+      ProgressDialog.show(
+        getContext(), null, getContext().getString(string.msg_finding_references));
 
     try {
       final var future =
-          CompletableFuture.supplyAsync(
-              () -> {
-                final var referenceParams =
-                    new ReferenceParams(
-                        getFile().toPath(),
-                        new com.itsaky.androidide.models.Position(
-                            getCursor().getLeftLine(), getCursor().getLeftColumn()),
-                        true);
-                return languageServer.findReferences(referenceParams);
-              });
+        CompletableFuture.supplyAsync(
+          () -> {
+            final var referenceParams =
+              new ReferenceParams(
+                getFile().toPath(),
+                new com.itsaky.androidide.models.Position(
+                  getCursor().getLeftLine(), getCursor().getLeftColumn()),
+                true);
+            return languageServer.findReferences(referenceParams);
+          });
 
       future.whenComplete((result, error) -> onFindReferencesResult(pd, future, result, error));
     } catch (Throwable th) {
@@ -600,14 +603,14 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   @SuppressWarnings("deprecation")
   private void onFindReferencesResult(
-      final ProgressDialog pd,
-      final CompletableFuture<ReferenceResult> future,
-      final ReferenceResult result,
-      final Throwable error) {
+    final ProgressDialog pd,
+    final CompletableFuture<ReferenceResult> future,
+    final ReferenceResult result,
+    final Throwable error) {
     if (result == null
-        || languageClient == null
-        || future.isCancelled()
-        || future.isCompletedExceptionally()) {
+      || languageClient == null
+      || future.isCancelled()
+      || future.isCompletedExceptionally()) {
       LOG.error("An error occurred while finding references", error);
       showReferencesNotFound(pd);
       return;
@@ -641,10 +644,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   private void showReferencesNotFound(final ProgressDialog pd) {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread(
-        () -> {
-          FlashbarUtilsKt.flashError(string.msg_no_references);
-          pd.dismiss();
-        });
+      () -> {
+        FlashbarUtilsKt.flashError(string.msg_no_references);
+        pd.dismiss();
+      });
   }
 
   /**
@@ -660,31 +663,31 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
     //noinspection deprecation
     final var pd =
-        ProgressDialog.show(
-            getContext(), null, getContext().getString(string.please_wait), true, false);
+      ProgressDialog.show(
+        getContext(), null, getContext().getString(string.please_wait), true, false);
     final CompletableFuture<Range> future =
-        CompletableFuture.supplyAsync(
-            () ->
-                languageServer.expandSelection(
-                    new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
+      CompletableFuture.supplyAsync(
+        () ->
+          languageServer.expandSelection(
+            new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
 
     future.whenComplete(
-        ((range, throwable) -> {
-          pd.dismiss();
+      ((range, throwable) -> {
+        pd.dismiss();
 
-          if (throwable != null) {
-            LOG.error("Error computing expanded selection range", throwable);
-            return;
-          }
+        if (throwable != null) {
+          LOG.error("Error computing expanded selection range", throwable);
+          return;
+        }
 
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(() -> setSelection(range));
-        }));
+        //noinspection ConstantConditions
+        ThreadUtils.runOnUiThread(() -> setSelection(range));
+      }));
   }
 
   @Override
   protected void onFocusChanged(
-      final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+    final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (!gainFocus) {
       ensureWindowsDismissed();
@@ -722,10 +725,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       return;
     }
     CompletableFuture.runAsync(
-        () -> {
-          dispatchDocumentChangeEvent(event);
-          checkForSignatureHelp(event);
-        });
+      () -> {
+        dispatchDocumentChangeEvent(event);
+        checkForSignatureHelp(event);
+      });
   }
 
   /**
@@ -741,7 +744,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
    */
   private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
     if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-        || event.getChangedText().length() != 1) {
+      || event.getChangedText().length() != 1) {
       return;
     }
 
@@ -772,21 +775,21 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var start = event.getChangeStart();
     final var end = event.getChangeEnd();
     final var changeRange =
-        new Range(
-            new Position(start.line, start.column, start.index),
-            new Position(end.line, end.column, end.index));
+      new Range(
+        new Position(start.line, start.column, start.index),
+        new Position(end.line, end.column, end.index));
 
     final var changeEvent =
-        new DocumentChangeEvent(
-            file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
+      new DocumentChangeEvent(
+        file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
     EventBus.getDefault().post(changeEvent);
   }
 
   public static int createInputFlags() {
     var flags =
-        EditorInfo.TYPE_CLASS_TEXT
-            | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-            | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+      EditorInfo.TYPE_CLASS_TEXT
+        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
     if (getVisiblePasswordFlag()) {
       flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
@@ -805,12 +808,12 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   public void analyze() {
     if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
       CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
-          .whenComplete(
-              (diagnostics, throwable) -> {
-                if (languageClient != null) {
-                  languageClient.publishDiagnostics(diagnostics);
-                }
-              });
+        .whenComplete(
+          (diagnostics, throwable) -> {
+            if (languageClient != null) {
+              languageClient.publishDiagnostics(diagnostics);
+            }
+          });
     }
   }
 
@@ -910,7 +913,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   @Override
   public void beginSearchMode() {
     throw new UnsupportedOperationException(
-        "Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
+      "Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
   }
 
   public void dispatchDocumentSaveEvent() {
@@ -950,7 +953,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-  private void applyTreeSitterLang(final Language language, final String extension, SchemeAndroidIDE scheme) {
+  private void applyTreeSitterLang(final Language language, final String extension,
+    SchemeAndroidIDE scheme) {
     if (scheme == null) {
       LOG.error("Failed to read current color scheme");
       scheme = SchemeAndroidIDE.newInstance(getContext());
