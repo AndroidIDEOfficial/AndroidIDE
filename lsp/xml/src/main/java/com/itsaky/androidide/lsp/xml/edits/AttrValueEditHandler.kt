@@ -17,15 +17,13 @@
 
 package com.itsaky.androidide.lsp.xml.edits
 
-import com.itsaky.androidide.lsp.edits.DefaultEditHandler
-
 /**
  * Handles insertion of attribute values.
  *
  * @author Akash Yadav
  */
 class AttrValueEditHandler : QualifiedValueEditHandler() {
-  
+
   override fun isPartialPart(c: Char): Boolean {
     return super.isPartialPart(c) || c in charArrayOf('@', '.', ':', '/')
   }

@@ -124,7 +124,8 @@ open class CompletionItem(
   var kind: CompletionItemKind,
   var matchLevel: MatchLevel,
   var additionalTextEdits: List<TextEdit>?,
-  var data: ICompletionData?
+  var data: ICompletionData?,
+  var editHandler: IEditHandler = DefaultEditHandler()
 ) :
   io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail), Comparable<CompletionItem> {
 
@@ -147,7 +148,6 @@ open class CompletionItem(
     }
 
   var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
-  var editHandler: IEditHandler = DefaultEditHandler()
   var additionalEditHandler: IEditHandler? = null
   var snippetDescription: SnippetDescription? = null
   var overrideTypeText: String? = null
@@ -268,7 +268,8 @@ data class SnippetDescription
 constructor(
   val selectedLength: Int,
   val deleteSelected: Boolean = true,
-  val snippet: CodeSnippet? = null
+  val snippet: CodeSnippet? = null,
+  val allowCommandExecution: Boolean = false
 )
 
 data class Command(var title: String, var command: String) {

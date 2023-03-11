@@ -22,6 +22,7 @@ import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.MultipleClassImportEditHandler
+import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.EditHelper.repeatSpaces
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
@@ -172,7 +173,7 @@ class ScopeCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
 
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(methodSpec.name)
     item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method

@@ -53,7 +53,7 @@ open class DefaultEditHandler : IEditHandler {
     performEditsInternal(item, editor, text, line, column, index)
   }
 
-  private fun performEditsInternal(
+  protected open fun performEditsInternal(
     item: CompletionItem,
     editor: CodeEditor,
     text: Content,
@@ -89,23 +89,27 @@ open class DefaultEditHandler : IEditHandler {
     column: Int,
     index: Int
   ) {
-    item.snippetDescription!!
+    val snippetDescription = item.snippetDescription!!
     val snippet = CodeSnippetParser.parse(item.insertText)
-    val prefixLength = item.snippetDescription!!.selectedLength
+    val prefixLength = snippetDescription.selectedLength
     val selectedText = text.subSequence(index - prefixLength, index).toString()
     var actionIndex = index
-    if (item.snippetDescription!!.deleteSelected) {
+    if (snippetDescription.deleteSelected) {
       text.delete(index - prefixLength, index)
       actionIndex -= prefixLength
     }
     editor.snippetController.startSnippet(actionIndex, snippet, selectedText)
+
+    if (snippetDescription.allowCommandExecution) {
+      executeCommand(editor, item.command)
+    }
   }
 
   protected open fun executeCommand(editor: CodeEditor, command: Command?) {
     if (command == null) {
       return
     }
-    
+
     try {
       val klass = editor::class.java
       val method = klass.getMethod("executeCommand", Command::class.java)

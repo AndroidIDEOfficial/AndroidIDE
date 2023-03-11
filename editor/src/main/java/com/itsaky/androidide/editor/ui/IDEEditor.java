@@ -235,7 +235,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
             languageServer.signatureHelp(
               new SignatureHelpParams(
                 getFile().toPath(),
-                new Position(getCursor().getLeftLine(), getCursor().getLeftColumn()))));
+                getCursorLSPPosition())));
 
       future.whenComplete(
         (help, error) -> {
@@ -743,8 +743,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
    * @param event The content change event.
    */
   private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
+    final var changeLength = event.getChangedText().length();
     if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-      || event.getChangedText().length() != 1) {
+      || changeLength > 0
+      && changeLength <= 2) { // changeLength will be 2 as '(' and ')' are inserted at the same time
       return;
     }
 
@@ -880,7 +882,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
   @Override
   @SuppressWarnings("unused")
-  public void executeCommand(Command command) {
+  public void executeCommand(@Nullable Command command) {
     if (command == null) {
       LOG.warn("Cannot execute command in editor. Command is null.");
       return;

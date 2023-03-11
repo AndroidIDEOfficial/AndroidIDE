@@ -18,5 +18,12 @@
 package com.itsaky.androidide.lsp.api
 
 import com.itsaky.androidide.lsp.models.SnippetDescription
+import io.github.rosemoe.sora.lang.completion.snippet.CodeSnippet
 
-fun describeSnippet(prefix: String) = SnippetDescription(prefix.length)
+@JvmOverloads
+fun describeSnippet(
+  prefix: String,
+  deleteSelected: Boolean = true,
+  snippet: CodeSnippet? = null,
+  allowCommandExecution: Boolean = false
+) = SnippetDescription(prefix.length, deleteSelected, snippet, allowCommandExecution)

@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ICompletionCancelChecker
 import com.itsaky.androidide.lsp.api.describeSnippet
-import com.itsaky.androidide.lsp.java.parser.ParseTask
+import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.SNIPPET
 import com.itsaky.androidide.lsp.models.CompletionResult
@@ -83,7 +83,7 @@ class TopLevelSnippetsProvider {
   ): CompletionItem {
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(label)
     item.kind = SNIPPET
     item.insertText = snippet

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.lsp.java.edits
 
-import com.itsaky.androidide.lsp.edits.IEditHandler
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -31,13 +30,22 @@ import java.nio.file.Path
  *
  * @author Akash Yadav
  */
-abstract class IJavaEditHandler(protected val file: Path) : IEditHandler {
+abstract class AdvancedJavaEditHandler(protected val file: Path) : BaseJavaEditHandler() {
 
-  override fun performEdits(item: CompletionItem, editor: CodeEditor, text: Content, line: Int, column: Int, index: Int) {
+  override fun performEdits(
+    item: CompletionItem,
+    editor: CodeEditor,
+    text: Content,
+    line: Int,
+    column: Int,
+    index: Int
+  ) {
     val compiler = JavaCompilerProvider.get(ProjectManager.findModuleForFile(file) ?: return)
     if (compiler != null) {
       performEdits(compiler, editor, item)
     }
+
+    executeCommand(editor, item.command)
   }
 
   /**

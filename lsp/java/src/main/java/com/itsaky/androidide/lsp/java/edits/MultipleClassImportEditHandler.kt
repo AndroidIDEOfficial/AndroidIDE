@@ -34,7 +34,7 @@ class MultipleClassImportEditHandler(
   private val classes: Set<String>,
   private val imported: Set<String>,
   file: Path
-) : IJavaEditHandler(file) {
+) : AdvancedJavaEditHandler(file) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 

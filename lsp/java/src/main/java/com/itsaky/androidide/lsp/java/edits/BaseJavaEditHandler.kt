@@ -15,20 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.xml.edits
+package com.itsaky.androidide.lsp.java.edits
 
+import com.itsaky.androidide.editor.api.ILspEditor
 import com.itsaky.androidide.lsp.edits.DefaultEditHandler
-import com.itsaky.androidide.lsp.models.CompletionItem
+import com.itsaky.androidide.lsp.models.Command
+import io.github.rosemoe.sora.widget.CodeEditor
 
 /**
- * Handles edits for attribute values with qualified binary names. The default implementation in
- * [CompletionItem] cannot handle these type of edits.
+ * Implementation of [DefaultEditHandler] which avoids reflection in
+ * [DefaultEditHandler.executeCommand].
  *
  * @author Akash Yadav
  */
-open class QualifiedValueEditHandler : DefaultEditHandler() {
+open class BaseJavaEditHandler : DefaultEditHandler() {
 
-  override fun isPartialPart(c: Char): Boolean {
-    return super.isPartialPart(c) || c == '.' // Tags can contain '.' as well
+  override fun executeCommand(editor: CodeEditor, command: Command?) {
+    if (editor is ILspEditor) {
+      editor.executeCommand(command)
+      return
+    }
+    super.executeCommand(editor, command)
   }
 }

@@ -22,6 +22,7 @@ import com.itsaky.androidide.lsp.api.describeSnippet
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
+import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
 import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.ClassCompletionData
@@ -147,7 +148,7 @@ abstract class IJavaCompletionProvider(
   ): CompletionItem {
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(keyword)
     item.kind = KEYWORD
     item.detail = "keyword"
@@ -166,7 +167,7 @@ abstract class IJavaCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     val first = overloads[0]
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(first.simpleName.toString())
     item.kind = CompletionItemKind.METHOD
     item.detail = printMethodDetail(first)
@@ -186,7 +187,7 @@ abstract class IJavaCompletionProvider(
         item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
       }
       item.insertTextFormat = SNIPPET // Snippet
-      item.snippetDescription = describeSnippet(partial)
+      item.snippetDescription = describeSnippet(prefix = partial, allowCommandExecution = true)
     }
     return item
   }
@@ -217,7 +218,7 @@ abstract class IJavaCompletionProvider(
 
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(element.simpleName.toString())
     item.kind = kind(element)
     item.detail = element.toString()
@@ -247,7 +248,7 @@ abstract class IJavaCompletionProvider(
   ): CompletionItem {
     abortIfCancelled()
     abortCompletionIfCancelled()
-    val item = CompletionItem()
+    val item = JavaCompletionItem()
     item.setLabel(simpleName(className).toString())
     item.kind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
@@ -280,7 +281,7 @@ abstract class IJavaCompletionProvider(
     if (packageName == name) {
       packageName = " "
     }
-    return CompletionItem().apply {
+    return JavaCompletionItem().apply {
       setLabel(simpleName)
       this.detail = packageName
       this.insertText = simpleName
