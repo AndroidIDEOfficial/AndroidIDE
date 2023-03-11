@@ -47,7 +47,7 @@
   <string name="msg_device_not_supported">Malheureusement, votre appareil n\'est pas supporté pour le moment, nous sommes désolés pour le problème occasionné.\n\nCPU ABIs supportés: aarch64 et armeabi-v7a</string>
   <string name="lint">Lint</string>
   <string name="build">Compiler</string>
-  <string name="build_output">Build output</string>
+  <string name="build_output">Console</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Nettoyer et compiler</string>
   <string name="clean_project">Nettoyer</string>
