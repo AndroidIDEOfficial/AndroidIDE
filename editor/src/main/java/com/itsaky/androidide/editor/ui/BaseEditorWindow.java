@@ -28,13 +28,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
-import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.utils.ResourceUtilsKt;
-
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
 /**
@@ -82,8 +78,8 @@ public abstract class BaseEditorWindow extends AbstractPopupWindow {
     text.setFocusable(false);
     text.setPaddingRelative(dp8, dp4, dp8, dp4);
     text.setLayoutParams(
-        new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+      new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     return text;
   }
 

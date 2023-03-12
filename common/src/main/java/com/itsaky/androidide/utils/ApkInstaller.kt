@@ -19,12 +19,13 @@ package com.itsaky.androidide.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageInstaller.Session
 import android.content.pm.PackageInstaller.SessionCallback
 import android.text.TextUtils
-import com.blankj.utilcode.util.IntentUtils
+import androidx.core.content.FileProvider
 import com.itsaky.androidide.tasks.executeAsync
 import java.io.File
 import java.io.IOException
@@ -44,7 +45,7 @@ object ApkInstaller {
    *
    * @param context The context.
    * @param sender The componenent which is requesting the installation. This component receives the
-   * installation result.
+   *   installation result.
    * @param apk The APK file to install.
    */
   @JvmStatic
@@ -53,15 +54,26 @@ object ApkInstaller {
       log.error("File is not an APK:", apk)
       return
     }
-    
+
     log.info("Installing APK:", apk)
 
     if (isMiui() || DEBUG_FALLBACK_INSTALLER) {
       log.warn(
         "Cannot use session-based installer on this device. Falling back to intent-based installer."
       )
-      IntentUtils.getInstallAppIntent(apk)?.let { context.startActivity(it) }
-        ?: log.warn("Cannot start package installer intent. Unknown error occurred.")
+
+      @Suppress("DEPRECATION") val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
+      val authority = "${context.packageName}.providers.fileprovider"
+      val uri = FileProvider.getUriForFile(context, authority, apk)
+      intent.setDataAndType(uri, "application/vnd.android.package-archive")
+      intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+
+      try {
+        context.startActivity(intent)
+      } catch (e: Exception) {
+        log.warn("Failed to start installation intent", e.message)
+      }
+
       return
     }
 
