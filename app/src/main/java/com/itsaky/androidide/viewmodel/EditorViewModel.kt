@@ -137,6 +137,11 @@ class EditorViewModel : ViewModel() {
     mCurrentFile.value = index to file
   }
 
+  fun updateFile(index: Int, newFile: File) {
+    val files = files.value ?: return
+    files[index] = newFile
+  }
+
   /**
    * Get the opened file at the given index.
    *

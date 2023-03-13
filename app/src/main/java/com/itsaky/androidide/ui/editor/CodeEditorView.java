@@ -44,21 +44,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding;
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
-import com.itsaky.androidide.editor.language.cpp.CppLanguage;
-import com.itsaky.androidide.editor.language.groovy.GroovyLanguage;
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
-import com.itsaky.androidide.editor.schemes.IDEColorScheme;
-import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
 import com.itsaky.androidide.editor.ui.EditorSearchLayout;
 import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
@@ -69,25 +61,19 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer;
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
-import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
+import io.github.rosemoe.sora.text.LineSeparator;
+import io.github.rosemoe.sora.widget.component.Magnifier;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.LineSeparator;
-import io.github.rosemoe.sora.widget.component.Magnifier;
-import kotlin.io.FilesKt;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A view that handles opened code editors.
@@ -103,7 +89,7 @@ public class CodeEditorView extends LinearLayout {
   private final EditorSearchLayout searchLayout;
 
   public CodeEditorView(
-      @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
+    @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
 
@@ -124,21 +110,21 @@ public class CodeEditorView extends LinearLayout {
 
     addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
     addView(
-        this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+      this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
     CompletableFuture.runAsync(
-        () -> {
-          final var contents = FileIOUtils.readFile2String(file);
-          final var editor = getEditor();
-          editor.post(() -> {
-            editor.setText(contents, createEditorArgs());
-            postRead();
-            
-            selection.validate();
-            editor.validateRange(selection);
-            editor.setSelection(selection);
-          });
+      () -> {
+        final var contents = FileIOUtils.readFile2String(file);
+        final var editor = getEditor();
+        editor.post(() -> {
+          editor.setText(contents, createEditorArgs());
+          postRead();
+
+          selection.validate();
+          editor.validateRange(selection);
+          editor.setSelection(selection);
         });
+      });
 
     configureEditorIfNeeded();
   }
@@ -165,7 +151,7 @@ public class CodeEditorView extends LinearLayout {
 
   protected void postRead() {
     binding.editor.setupLanguage(getFile());
-    
+
     binding.editor.setLanguageServer(createLanguageServer(file));
 
     if (IDELanguageClientImpl.isInitialized()) {
@@ -180,7 +166,7 @@ public class CodeEditorView extends LinearLayout {
       ((Activity) getContext()).invalidateOptionsMenu();
     }
   }
-  
+
   private ILanguageServer createLanguageServer(File file) {
     if (!file.isFile()) {
       return null;
@@ -390,7 +376,9 @@ public class CodeEditorView extends LinearLayout {
     searchLayout.beginSearchMode();
   }
 
-  /** Mark this files as saved. Even if it not saved. */
+  /**
+   * Mark this files as saved. Even if it not saved.
+   */
   public void markAsSaved() {
     notifySaved();
   }
@@ -407,5 +395,14 @@ public class CodeEditorView extends LinearLayout {
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     EventBus.getDefault().unregister(this);
+  }
+
+  public void updateFile(@NotNull File file) {
+    final var editor = getEditor();
+    if (editor == null) {
+      return;
+    }
+
+    editor.updateFile(file);
   }
 }

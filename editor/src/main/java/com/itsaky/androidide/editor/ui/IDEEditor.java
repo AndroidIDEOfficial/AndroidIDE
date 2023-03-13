@@ -191,12 +191,16 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
    * @param file The file to set.
    */
   public void setFile(File file) {
-    this.file = file;
+    updateFile(file);
 
     if (file != null) {
       dispatchDocumentOpenEvent();
     }
   }
+
+public void updateFile(File file) {
+    this.file = file;
+}
 
   @NonNull
   @Override

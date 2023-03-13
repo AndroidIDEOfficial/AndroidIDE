@@ -75,10 +75,10 @@ class RenameAction(context: Context) :
         return@setPositiveButton
       }
 
-      notifyFileRenamed(file, context)
+      notifyFileRenamed(file, name, context)
 
       if (lastHeld != null) {
-        val parent = lastHeld!!.parent
+        val parent = lastHeld.parent
         parent.deleteChild(lastHeld)
         val node = TreeNode(File(file.parentFile, name))
         node.viewHolder = FileTreeViewHolder(context)
@@ -91,7 +91,7 @@ class RenameAction(context: Context) :
     builder.create().show()
   }
 
-  private fun notifyFileRenamed(file: File, context: Context) {
-    EventBus.getDefault().post(FileRenameEvent(file).apply { putData(context) })
+  private fun notifyFileRenamed(file: File, name: String, context: Context) {
+    EventBus.getDefault().post(FileRenameEvent(file, File(file.parent, name)).apply { putData(context) })
   }
 }

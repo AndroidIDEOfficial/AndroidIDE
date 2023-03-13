@@ -38,6 +38,7 @@ import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.interfaces.IEditorHandler
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
@@ -51,6 +52,8 @@ import com.itsaky.androidide.utils.IntentUtils.openImage
 import com.itsaky.androidide.utils.flashSuccess
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import java.io.File
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Base class for EditorActivity. Handles logic for working with file editors.
@@ -499,5 +502,20 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         invokeAfter.run()
       }
     builder.show()
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onFileRenamed(event: FileRenameEvent) {
+    val index = findIndexOfEditorByFile(event.file)
+    if (index < 0 || index >= binding.tabs.tabCount) {
+      return
+    }
+
+    val editor = getEditorAtIndex(index) ?: return
+    viewModel.updateFile(index, event.newFile)
+    editor.updateFile(event.newFile)
+
+    val tab = binding.tabs.getTabAt(index) ?: return
+    tab.text = event.newFile.name
   }
 }

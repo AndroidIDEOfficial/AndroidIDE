@@ -44,4 +44,4 @@ data class FileDeletionEvent(override val file: File) : FileEvent()
  *
  * @author Akash Yadav
  */
-class FileRenameEvent(override val file: File) : FileEvent()
+class FileRenameEvent(override val file: File, val newFile: File) : FileEvent()
