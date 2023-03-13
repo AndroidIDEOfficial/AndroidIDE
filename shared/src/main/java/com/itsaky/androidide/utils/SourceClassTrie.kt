@@ -29,7 +29,7 @@ import kotlin.io.path.nameWithoutExtension
  * @author Akash Yadav
  */
 open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : ClassTrie(root) {
-  
+
   companion object {
     @JvmStatic
     private val pkgNameMethod by lazy {
@@ -39,7 +39,9 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
 
     @JvmStatic
     private fun packageName(file: Path): String {
-      return try { pkgNameMethod.invoke(null, file) as String } catch (error: Throwable) {
+      return try {
+        pkgNameMethod.invoke(null, file) as String
+      } catch (error: Throwable) {
         throw RuntimeException(error)
       }
     }
@@ -66,7 +68,14 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
     node.isClass = false
 
     val name = path.nameWithoutExtension
-    val klass = SourceNode(path, packageName, modified, name)
+    val klass =
+      SourceNode(
+        file = path,
+        packageName = packageName,
+        modified = modified,
+        parent = node,
+        name = name
+      )
     klass.isClass = true
     node.children[name] = klass
     return klass
@@ -140,26 +149,32 @@ open class SourceClassTrie(root: SourcePackageNode = SourcePackageNode()) : Clas
     val file: Path,
     val packageName: String,
     val modified: Instant,
+    parent: SourcePackageNode? = null,
     name: String
-  ) : Node(name, "$packageName.$name") {
+  ) : Node(name = name, qualifiedName = "$packageName.$name", parent = parent) {
 
     override fun createChild(name: String, qualifiedName: String): Node {
       throw UnsupportedOperationException("Method not supported!")
     }
   }
 
-  open class SourcePackageNode(val dir: Path, name: String, qualifiedName: String) :
-    Node(name, qualifiedName) {
+  open class SourcePackageNode(
+    val dir: Path,
+    parent: SourcePackageNode? = null,
+    name: String,
+    qualifiedName: String
+  ) : Node(name, qualifiedName, parent) {
 
-    internal constructor() : this(Paths.get(""), "", "")
+    internal constructor() : this(Paths.get(""), null, "", "")
 
     override fun createChild(name: String, qualifiedName: String): Node {
       throw UnsupportedOperationException("Method not suported!")
     }
 
     open fun createChild(dir: Path, name: String, qualifiedName: String): SourcePackageNode {
-      return this.children.computeIfAbsent(name) { SourcePackageNode(dir, name, qualifiedName) }
-        as SourcePackageNode
+      return this.children.computeIfAbsent(name) {
+        SourcePackageNode(dir, this, name, qualifiedName)
+      } as SourcePackageNode
     }
   }
 }

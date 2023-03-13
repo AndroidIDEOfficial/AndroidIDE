@@ -209,7 +209,7 @@ open class ClassTrie(val root: Node = Node()) {
   }
 
   /** A Node can be a package segment or a class name in the package trie. */
-  open class Node(val name: String, val qualifiedName: String) {
+  open class Node(val name: String, val qualifiedName: String, val parent: Node? = null) {
 
     internal constructor() : this("", "")
 
@@ -217,7 +217,7 @@ open class ClassTrie(val root: Node = Node()) {
     var isClass = false
 
     open fun createChild(name: String, qualifiedName: String): Node {
-      return children.computeIfAbsent(name) { Node(it, qualifiedName) }
+      return children.computeIfAbsent(name) { Node(it, qualifiedName, this) }
     }
 
     open fun allClassNames(): Set<String> {
