@@ -46,14 +46,19 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.projects.ProjectManager.generateSources
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.utils.DialogUtils.newYesNoDialog
 import com.itsaky.androidide.utils.IntentUtils.openImage
+import com.itsaky.androidide.utils.UniqueNameBuilder
 import com.itsaky.androidide.utils.flashSuccess
 import io.github.rosemoe.sora.event.ContentChangeEvent
-import java.io.File
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.io.File
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 /**
  * Base class for EditorActivity. Handles logic for working with file editors.
@@ -251,10 +256,12 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     editor.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     binding.editorContainer.addView(editor)
-    binding.tabs.addTab(binding.tabs.newTab().setText(file.name))
+    binding.tabs.addTab(binding.tabs.newTab())
 
     viewModel.addFile(file)
     viewModel.setCurrentFile(position, file)
+
+    updateTabs()
 
     return position
   }
@@ -384,12 +391,12 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         tabs.removeTabAt(index)
         editorContainer.removeViewAt(index)
       }
+
+      updateTabs()
     } else {
       log.error("Invalid file index. Cannot close.")
       return
     }
-
-    binding.tabs.requestLayout()
   }
 
   override fun closeAll() {
@@ -515,7 +522,43 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     viewModel.updateFile(index, event.newFile)
     editor.updateFile(event.newFile)
 
-    val tab = binding.tabs.getTabAt(index) ?: return
-    tab.text = event.newFile.name
+    updateTabs()
+  }
+
+  private fun updateTabs() {
+    executeAsyncProvideError({
+      val files = viewModel.getOpenedFiles()
+      val dupliCount = mutableMapOf<String, Int>()
+      val names = mutableMapOf<Int, String>()
+      val nameBuilder = UniqueNameBuilder<File>("", File.separator)
+
+      files.forEach {
+        var count = dupliCount[it.name] ?: 0
+        dupliCount[it.name] = ++count
+        nameBuilder.addPath(it, it.path)
+      }
+
+      for (i in 0 until binding.tabs.tabCount) {
+        val file = files[i]
+        val count = dupliCount[file.name] ?: 0
+        val isModified = getEditorAtIndex(i)?.isModified ?: false
+        var name = if (count > 1) nameBuilder.getShortPath(file) else file.name
+        if (isModified) {
+          name = "*${name}"
+        }
+        names[i] = name
+      }
+
+      names
+    }) { result, error ->
+      if (result == null || error != null) {
+        log.error("Failed to compute names for file tabs", error)
+        return@executeAsyncProvideError
+      }
+
+      ThreadUtils.runOnUiThread {
+        result.forEach { (index, name) -> binding.tabs.getTabAt(index)?.text = name }
+      }
+    }
   }
 }

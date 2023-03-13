@@ -97,4 +97,4 @@ fun <R : Any?> executeAsyncProvideError(
   callable: () -> R?,
   callback: (R?, Throwable?) -> Unit
 ): CompletableFuture<R?> =
-  TaskExecutor.executeAsyncProvideError({ callable() }) { result, error -> callback(result, error) }
+  TaskExecutor.executeAsyncProvideError(callable, callback)
