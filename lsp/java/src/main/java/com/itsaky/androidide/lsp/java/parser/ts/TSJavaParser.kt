@@ -17,12 +17,17 @@
 
 package com.itsaky.androidide.lsp.java.parser.ts
 
+import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lsp.java.parser.IJavaParser
 import com.itsaky.androidide.treesitter.TSParser
 import com.itsaky.androidide.treesitter.java.TSLanguageJava
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import jdkx.tools.JavaFileObject
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * [IJavaParser] which uses tree sitter to parse source files.
@@ -40,6 +45,25 @@ object TSJavaParser : IJavaParser<TSParseResult> {
       check(!isClosed) { "${javaClass.simpleName} instance has been closed" }
       return field
     }
+
+  init {
+    EventBus.getDefault().register(this)
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  fun onFileDeleted(event: FileDeletionEvent) {
+    synchronized(this.cache) { this.cache.remove(event.file.toPath().toAbsolutePath().toUri()) }
+  }
+
+  @Subscribe(threadMode = ThreadMode.ASYNC)
+  fun onFileRenamed(event: FileRenameEvent) {
+    synchronized(this.cache) {
+      val existing = this.cache.remove(event.file.toPath().toAbsolutePath().toUri())
+      if (existing != null) {
+        this.cache.put(event.newFile.toPath().toAbsolutePath().toUri(), existing)
+      }
+    }
+  }
 
   override fun parse(file: JavaFileObject): TSParseResult {
     check(file.kind == JavaFileObject.Kind.SOURCE) { "File must a source file object" }
@@ -73,6 +97,7 @@ object TSJavaParser : IJavaParser<TSParseResult> {
   override fun close() {
     synchronized(this.cache) { this.cache.evictAll() }
     parser.close()
+    EventBus.getDefault().unregister(this)
     isClosed = true
   }
 }
