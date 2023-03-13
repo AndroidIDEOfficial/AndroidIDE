@@ -21,6 +21,8 @@ import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
+import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
@@ -28,15 +30,16 @@ import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.InputStream
+import java.net.URI
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
 import org.apache.commons.io.FileUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.BACKGROUND
-import java.net.URI
-import java.nio.file.Paths
 
 /**
  * Manages active documents.
@@ -46,12 +49,12 @@ import java.nio.file.Paths
 object FileManager : EventReceiver {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
-  private val activeDocuments: MutableMap<Path, ActiveDocument> = mutableMapOf()
+  private val activeDocuments = ConcurrentHashMap<Path, ActiveDocument>()
 
   fun isActive(uri: URI): Boolean {
     return isActive(Paths.get(uri))
   }
-  
+
   fun isActive(file: Path): Boolean {
     return this.activeDocuments.containsKey(file.normalize())
   }
@@ -116,6 +119,20 @@ object FileManager : EventReceiver {
   @Suppress("unused")
   fun onDocumentClose(event: DocumentCloseEvent) {
     activeDocuments.remove(event.closedFile.normalize())
+  }
+
+  @Subscribe(threadMode = BACKGROUND)
+  fun onFileRenamed(event: FileRenameEvent) {
+    val document = activeDocuments.remove(event.file.toPath().normalize())
+    if (document != null) {
+      activeDocuments[event.newFile.toPath().normalize()] = document
+    }
+  }
+
+  @Subscribe(threadMode = BACKGROUND)
+  fun onFileDeleted(event: FileDeletionEvent) {
+    // If the file was an active document, remove the document cache
+    activeDocuments.remove(event.file.toPath().normalize())
   }
 
   private fun createDocument(event: DocumentOpenEvent): ActiveDocument {
