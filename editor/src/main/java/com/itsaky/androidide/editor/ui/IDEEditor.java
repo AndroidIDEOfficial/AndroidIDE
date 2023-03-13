@@ -725,9 +725,11 @@ public void updateFile(File file) {
     if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
       isModified = true;
     }
-    if (getFile() == null || languageServer == null) {
+
+    if (getFile() == null) {
       return;
     }
+
     CompletableFuture.runAsync(
       () -> {
         dispatchDocumentChangeEvent(event);
@@ -747,6 +749,9 @@ public void updateFile(File file) {
    * @param event The content change event.
    */
   private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
+    if (languageServer == null) {
+      return;
+    }
     final var changeLength = event.getChangedText().length();
     if (event.getAction() != ContentChangeEvent.ACTION_INSERT
       || changeLength > 0

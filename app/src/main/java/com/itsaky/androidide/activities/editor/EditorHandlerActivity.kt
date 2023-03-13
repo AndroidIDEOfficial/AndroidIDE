@@ -38,6 +38,7 @@ import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.interfaces.IEditorHandler
 import com.itsaky.androidide.models.OpenedFile
@@ -53,12 +54,12 @@ import com.itsaky.androidide.utils.IntentUtils.openImage
 import com.itsaky.androidide.utils.UniqueNameBuilder
 import com.itsaky.androidide.utils.flashSuccess
 import io.github.rosemoe.sora.event.ContentChangeEvent
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Base class for EditorActivity. Handles logic for working with file editors.
@@ -353,7 +354,15 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val finalModified = modified
-    ThreadUtils.runOnUiThread { viewModel.setFilesModified(finalModified) }
+    ThreadUtils.runOnUiThread {
+      viewModel.setFilesModified(finalModified)
+
+      // set tab as unmodified
+      val tab = binding.tabs.getTabAt(index) ?: return@runOnUiThread
+      if (tab.text!!.startsWith('*')) {
+        tab.text = tab.text!!.substring(startIndex = 1)
+      }
+    }
   }
 
   private fun onEditorContentChanged(event: ContentChangeEvent) {
@@ -523,6 +532,22 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     editor.updateFile(event.newFile)
 
     updateTabs()
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onDocumentChange(event: DocumentChangeEvent) {
+    val index = findIndexOfEditorByFile(event.file.toFile())
+    if (index == -1) {
+      return
+    }
+
+    val tab = binding.tabs.getTabAt(index)!!
+    if (tab.text?.startsWith('*') == true) {
+      return
+    }
+    
+    // mark as modified
+    tab.text = "*${tab.text}"
   }
 
   private fun updateTabs() {
