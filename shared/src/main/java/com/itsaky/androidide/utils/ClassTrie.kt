@@ -220,6 +220,10 @@ open class ClassTrie(val root: Node = Node()) {
       return children.computeIfAbsent(name) { Node(it, qualifiedName, this) }
     }
 
+    open fun removeChild(child: Node) {
+      this.children.remove(child.name)
+    }
+
     open fun allClassNames(): Set<String> {
       return this.allClassNodes().map { it.qualifiedName }.toSet()
     }

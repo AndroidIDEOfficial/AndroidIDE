@@ -18,18 +18,23 @@
 package com.itsaky.androidide.projects.api
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
+import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
-import java.io.File
-import java.nio.file.Files
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import kotlin.io.path.writeText
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -40,9 +45,8 @@ class ModuleProjectTest {
   fun test() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
     server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
-    
+
     Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
-    ProjectManager.setupProject()
 
     verifyProjectManagerAPIs()
 
@@ -177,18 +181,35 @@ class ModuleProjectTest {
   }
 
   private fun verifyProjectManagerAPIs() {
+
+    val testCls =
+      Paths.get("../../tests/test-project/app/src/main/java/com/itsaky/test/app/Test.java")
+        .toAbsolutePath()
+        .normalize()
+    val testCls_renamed = testCls.parent!!.resolve("TestRenamed.java")
+
+    if (Files.exists(testCls)) {
+      Files.delete(testCls)
+    }
+
+    if (Files.exists(testCls_renamed)) {
+      Files.delete(testCls_renamed)
+    }
+
+    ProjectManager.setupProject()
+
     val root = ProjectManager.rootProject
     assertThat(root).isNotNull()
     assertThat(root!!.path).isEqualTo(":")
 
     val source =
       root.projectDir.toPath().resolve("app/src/main/java/com/itsaky/test/app/MainActivity.java")
-    val moduleForFile = root.findModuleForFile(source)
-    assertThat(moduleForFile).isNotNull()
-    assertThat(moduleForFile!!.path).isEqualTo(":app")
-    assertThat(moduleForFile.projectDir.path).isEqualTo(File(root.projectDir, "app").path)
+    val module = root.findModuleForFile(source)
+    assertThat(module).isNotNull()
+    assertThat(module!!.path).isEqualTo(":app")
+    assertThat(module.projectDir.path).isEqualTo(File(root.projectDir, "app").path)
 
-    val sourceNode = moduleForFile.compileJavaSourceClasses.findSource(source)
+    val sourceNode = module.compileJavaSourceClasses.findSource(source)
     assertThat(sourceNode).isNotNull()
     assertThat(sourceNode!!.isClass).isTrue()
     assertThat(sourceNode.name).isEqualTo("MainActivity")
@@ -196,5 +217,30 @@ class ModuleProjectTest {
     assertThat(sourceNode.qualifiedName).isEqualTo("com.itsaky.test.app.MainActivity")
     assertThat(sourceNode.children).isEmpty()
     assertThat(Files.isSameFile(source, sourceNode.file)).isTrue()
+
+    // make sure the files are not indexed
+    assertThat(ProjectManager.containsSourceFile(testCls)).isFalse()
+    assertThat(ProjectManager.containsSourceFile(testCls_renamed)).isFalse()
+
+    testCls.writeText("public class Test {  }")
+    ProjectManager.onFileCreated(FileCreationEvent(testCls.toFile()))
+    assertThat(ProjectManager.containsSourceFile(testCls)).isTrue()
+    assertThat(ProjectManager.containsSourceFile(testCls_renamed)).isFalse()
+    assertThat(ProjectManager.findModuleForFile(testCls, true)).isEqualTo(module)
+    assertThat(ProjectManager.findModuleForFile(testCls_renamed, true)).isNull()
+
+    Files.move(testCls, testCls_renamed)
+    ProjectManager.onFileRenamed(FileRenameEvent(testCls.toFile(), testCls_renamed.toFile()))
+    assertThat(ProjectManager.containsSourceFile(testCls)).isFalse()
+    assertThat(ProjectManager.containsSourceFile(testCls_renamed)).isTrue()
+    assertThat(ProjectManager.findModuleForFile(testCls, true)).isNull()
+    assertThat(ProjectManager.findModuleForFile(testCls_renamed, true)).isEqualTo(module)
+
+    Files.delete(testCls_renamed)
+    ProjectManager.onFileDeleted(FileDeletionEvent(testCls_renamed.toFile()))
+    assertThat(ProjectManager.containsSourceFile(testCls)).isFalse()
+    assertThat(ProjectManager.containsSourceFile(testCls_renamed)).isFalse()
+    assertThat(ProjectManager.findModuleForFile(testCls, true)).isNull()
+    assertThat(ProjectManager.findModuleForFile(testCls_renamed, true)).isNull()
   }
 }

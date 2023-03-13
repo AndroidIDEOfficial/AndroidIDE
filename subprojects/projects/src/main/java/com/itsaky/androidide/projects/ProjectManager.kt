@@ -32,9 +32,11 @@ import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
@@ -148,10 +150,6 @@ object ProjectManager : EventReceiver {
     return app
   }
 
-  fun getApplicationResDirectories(): Set<File> {
-    return getApplicationModule()?.getResourceDirectories() ?: emptySet()
-  }
-
   fun notifyProjectUpdate() {
 
     executeAsync {
@@ -170,20 +168,26 @@ object ProjectManager : EventReceiver {
     }
   }
 
-  fun findModuleForFile(file: File): ModuleProject? {
+  @JvmOverloads
+  fun findModuleForFile(file: File, checkExistance: Boolean = false): ModuleProject? {
     if (!checkInit()) {
       return null
     }
 
-    return this.rootProject!!.findModuleForFile(file)
+    return this.rootProject!!.findModuleForFile(file, checkExistance)
   }
 
-  fun findModuleForFile(file: Path): ModuleProject? {
-    return findModuleForFile(file.toFile())
+  @JvmOverloads
+  fun findModuleForFile(file: Path, checkExistance: Boolean = false): ModuleProject? {
+    return findModuleForFile(file.toFile(), checkExistance)
   }
 
   fun containsSourceFile(file: Path): Boolean {
     if (!checkInit()) {
+      return false
+    }
+
+    if (!Files.exists(file)) {
       return false
     }
 
@@ -245,18 +249,55 @@ object ProjectManager : EventReceiver {
   @Subscribe(threadMode = BACKGROUND)
   fun onFileCreated(event: FileCreationEvent) {
     generateSourcesIfNecessary(event)
+
+    if (DocumentUtils.isJavaFile(event.file.toPath())) {
+      findModuleForFile(event.file)?.let {
+        val sourceRoot = it.findSourceRoot(event.file) ?: return@let
+
+        // add the source node entry
+        it.compileJavaSourceClasses.append(event.file.toPath(), sourceRoot)
+      }
+    }
   }
 
   @Suppress("unused")
   @Subscribe(threadMode = BACKGROUND)
   fun onFileDeleted(event: FileDeletionEvent) {
     generateSourcesIfNecessary(event)
+
+    // Remove the source node entry
+    // Do not check for Java file DocumentUtils.isJavaFile(...) as it checks for file existence as
+    // well. As the file is already deleted, it will always return false
+    if (event.file.extension == "java") {
+      findModuleForFile(event.file)
+        ?.compileJavaSourceClasses
+        ?.findSource(event.file.toPath())
+        ?.let { it.parent?.removeChild(it) }
+    }
   }
 
   @Suppress("unused")
   @Subscribe(threadMode = BACKGROUND)
   fun onFileRenamed(event: FileRenameEvent) {
     generateSourcesIfNecessary(event)
+
+    // Do not check for Java file DocumentUtils.isJavaFile(...) as it checks for file existence as
+    // well. As the file is already renamed to another filename, it will always return false
+    if (event.file.extension == "java") {
+      // remove the source node entry
+      findModuleForFile(event.file)
+        ?.compileJavaSourceClasses
+        ?.findSource(event.file.toPath())
+        ?.let { it.parent?.removeChild(it) }
+    }
+
+    if (DocumentUtils.isJavaFile(event.newFile.toPath())) {
+      findModuleForFile(event.newFile)?.let {
+        val sourceRoot = it.findSourceRoot(event.newFile) ?: return@let
+        // add the new source node entry
+        it.compileJavaSourceClasses.append(event.newFile.toPath(), sourceRoot)
+      }
+    }
   }
 
   private fun generateSourcesIfNecessary(event: FileEvent) {
@@ -267,6 +308,10 @@ object ProjectManager : EventReceiver {
     }
 
     generateSources(builder)
+  }
+
+  private fun ModuleProject.findSourceRoot(file: File): Path? {
+    return getCompileSourceDirectories().find { file.path.startsWith(it.path) }?.toPath()
   }
 
   private fun isResource(file: File): Boolean {

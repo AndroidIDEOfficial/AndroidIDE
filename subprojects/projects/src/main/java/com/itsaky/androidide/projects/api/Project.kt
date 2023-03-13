@@ -33,7 +33,7 @@ import java.util.concurrent.*
  * @param name The display name of the project.
  * @param description The project description.
  * @param path The project path (same as Gradle project paths). For example, `:app`,
- * `:module:submodule`, etc. Root project is always represented by path `:`.
+ *   `:module:submodule`, etc. Root project is always represented by path `:`.
  * @param projectDir The project directory.
  * @param buildDir The build directory of the project.
  * @param buildScript The Gradle buildscript file of the project.
@@ -124,7 +124,13 @@ open class Project(
     return findModuleForFile(file.toFile())
   }
 
-  fun findModuleForFile(file: File): ModuleProject? {
+  @JvmOverloads
+  fun findModuleForFile(file: File, checkExistance: Boolean = false): ModuleProject? {
+
+    if (!file.exists() && checkExistance) {
+      return null
+    }
+
     val path = file.path
     var longestPath = ""
     var moduleWithLongestPath: ModuleProject? = null
