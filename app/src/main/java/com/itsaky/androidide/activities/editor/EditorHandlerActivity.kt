@@ -54,12 +54,12 @@ import com.itsaky.androidide.utils.IntentUtils.openImage
 import com.itsaky.androidide.utils.UniqueNameBuilder
 import com.itsaky.androidide.utils.flashSuccess
 import io.github.rosemoe.sora.event.ContentChangeEvent
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Base class for EditorActivity. Handles logic for working with file editors.
@@ -418,17 +418,23 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     if (unsavedFiles.isEmpty()) {
       val file = viewModel.getCurrentFile()
-      for (i in 0 until viewModel.getOpenedFileCount()) {
-        val editor = getEditorAtIndex(i)
+      var index = 0
+
+      // keep closing the file at index 0
+      // if openedFiles[0] == file, then keep closing files at index 1
+      while (viewModel.getOpenedFileCount() != 1) {
+        val editor = getEditorAtIndex(index)
 
         // Index of files changes as we keep close files
         // So we compare the files instead of index
         if (editor != null) {
           if (file != editor.file) {
-            closeFile(i)
+            closeFile(index)
+          } else {
+            index = 1
           }
         } else {
-          log.error("Unable to save file at index:", i)
+          log.error("Unable to save file at index:", index)
         }
       }
     } else {
@@ -545,7 +551,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     if (tab.text?.startsWith('*') == true) {
       return
     }
-    
+
     // mark as modified
     tab.text = "*${tab.text}"
   }
