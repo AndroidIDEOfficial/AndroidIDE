@@ -423,7 +423,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       closeAll()
       
       binding.editorContainer.addView(editor)
-      binding.tabs.addTab(binding.tabs.newTab().setText(file.name))
+      binding.tabs.addTab(binding.tabs.newTab().setText(file!!.name))
       
       viewModel.addFile(file)
     } else {
