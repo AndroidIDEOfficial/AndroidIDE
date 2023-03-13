@@ -418,19 +418,14 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     if (unsavedFiles.isEmpty()) {
       val file = viewModel.getCurrentFile()
-      for (i in 0 until viewModel.getOpenedFileCount()) {
-        val editor = getEditorAtIndex(i)
-
-        // Index of files changes as we keep close files
-        // So we compare the files instead of index
-        if (editor != null) {
-          if (file != editor.file) {
-            closeFile(i)
-          }
-        } else {
-          log.error("Unable to save file at index:", i)
-        }
-      }
+      val editor = getCurrentEditor()
+      
+      closeAll()
+      
+      binding.editorContainer.addView(editor)
+      binding.tabs.addTab(binding.tabs.newTab().setText(file.name))
+      
+      viewModel.addFile(file)
     } else {
       notifyFilesUnsaved(unsavedFiles) { closeOthers() }
     }
