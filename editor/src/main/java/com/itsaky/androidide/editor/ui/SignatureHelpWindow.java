@@ -138,14 +138,19 @@ public class SignatureHelpWindow extends BaseEditorWindow {
     String name = signature.getLabel();
     name = name.substring(0, name.indexOf("("));
 
+    final var foreground = ResourceUtilsKt.resolveAttr(getEditor().getContext(),
+      attr.colorOnSecondaryContainer);
+    final var paramSelected = 0xffff6060;
+    final var operators = 0xff4fc3f7;
+
     result.append(
-      name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+      name, new ForegroundColorSpan(foreground), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
     result.append(
-      "(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+      "(", new ForegroundColorSpan(operators), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
 
     var params = signature.getParameters();
     for (int i = 0; i < params.size(); i++) {
-      int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
+      int color = i == paramIndex ? paramSelected : foreground;
       final var info = params.get(i);
       if (i == params.size() - 1) {
         result.append(
@@ -159,7 +164,7 @@ public class SignatureHelpWindow extends BaseEditorWindow {
           SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         result.append(
           ",",
-          new ForegroundColorSpan(0xff4fc3f7),
+          new ForegroundColorSpan(operators),
           SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         result.append(" ");
       }
@@ -168,10 +173,9 @@ public class SignatureHelpWindow extends BaseEditorWindow {
       ")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
 
     if (isCurrentSignature) {
-      // set background span to little light color than the text's background
       result.setSpan(
         new BackgroundColorSpan(ResourceUtilsKt.resolveAttr(getEditor().getContext(),
-          attr.colorPrimaryContainer)),
+          attr.colorSecondaryContainer)),
         currentIndex,
         result.length(),
         SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
