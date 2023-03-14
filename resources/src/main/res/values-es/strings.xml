@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">Dispositivo no compatible</string>
   <string name="msg_device_not_supported">Desafortunadamente, su dispositivo no es compatible en este momento. Lamentamos las molestias. \n\nABI de CPU compatibles: aarch64 y armeabi-v7a</string>
-  <string name="lint">Lint</string>
   <string name="build">Compilar</string>
   <string name="build_output">Salida de Compilación</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Limpiar &amp; compilar</string>
   <string name="clean_project">Limpiar</string>
-  <string name="create_aab">Crear AAB</string>
-  <string name="build_tasks">Crear tareas</string>
   <string name="quick_run_debug">Quick run</string>
   <string name="msg_sync_needed">Los archivos Gradle han cambiado. Reconstruya su proyecto para sincronizar dependencias y configuraciones.</string>
   <string name="preparing">Preparando...</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">Preferencias</string>
   <string name="pref_changelog">Historial de cambios</string>
   <string name="msg_editor_font_size">Por favor, elija el tamaño de fuente predeterminado del editor:</string>
-  <string name="msg_clear_cache">Esto eliminará el directorio de cachés creado por Gradle. Si lo elimina, la próxima versión puede tardar un poco más de lo normal ya que Gradle descargará los archivos requeridos de nuevo.\nIMPORTANTE: Esto también eliminará AAPT2. Necesitará reinstalarlo de lo contrario acabará con un fallo de compilación.\n\n¿Seguro que quieres eliminar caché?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">No se puede inicializar la información del SDK</string>
   <string name="err_cannot_preview_layout">No se puede previsualizar el diseño</string>

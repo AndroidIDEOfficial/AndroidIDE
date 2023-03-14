@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">ডিভাইস সমর্থিত নয়</string>
   <string name="msg_device_not_supported">দুর্ভাগ্যবশত, আপনার ডিভাইসটি এই মুহূর্তে সমর্থিত নয়৷ অসুবিধার জন্য আমরা দুঃখিত৷\n\nসমর্থিত CPU ABIs: aarch64 এবং armeabi-v7a</string>
-  <string name="lint">লিন্ট</string>
   <string name="build">বিল্ড</string>
   <string name="build_output">বিল্ড আউটপুট</string>
   <string name="lint_tasks">লিন্ট প্রক্রিয়াগুলি</string>
   <string name="clean_amp_build">পরিষ্কার করে বিল্ড করুন</string>
   <string name="clean_project">পরিষ্কার করুন</string>
-  <string name="create_aab">AAB তৈরি করুন</string>
-  <string name="build_tasks">টাস্ক তৈরি করুন</string>
   <string name="quick_run_debug">দ্রুত চালান</string>
   <string name="msg_sync_needed">Gradle ফাইলগুলি পরিবর্তিত হয়েছে৷ ডিপেনডেন্সি এবং কনফিগারেশন সিঙ্ক করার জন্য অনুগ্রহ করে আপনার প্রকল্পটি পুনর্নির্মাণ করুন৷</string>
   <string name="preparing">প্রস্তুত হচ্ছে৷</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">পছন্দ</string>
   <string name="pref_changelog">চেঞ্জলগ</string>
   <string name="msg_editor_font_size">দয়া করে সম্পাদকের ডিফল্ট ফন্ট সাইজ বেছে নিন :</string>
-  <string name="msg_clear_cache">এটি Gradle দ্বারা তৈরি ক্যাশে ডিরেক্টরি মুছে ফেলবে৷ আপনি এটি মুছে ফেললে, পরবর্তী বিল্ডটি স্বাভাবিকের চেয়ে একটু বেশি সময় নিতে পারে কারণ Gradle প্রয়োজনীয় ফাইলগুলি আবার ডাউনলোড করবে৷\nগুরুত্বপূর্ণ: এটি AAPT2ও মুছে দেবে৷ আপনাকে এটি পুনরায় ইনস্টল করতে হবে অন্যথায় আপনি একটি বিল্ড ব্যর্থতার সাথে শেষ হবেন৷\n\nআপনি কি নিশ্চিত যে আপনি ক্যাশে মুছতে চান?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">SDK তথ্য আরম্ভ করতে অক্ষম</string>
   <string name="err_cannot_preview_layout">লেআউট দেখাতে অক্ষম</string>

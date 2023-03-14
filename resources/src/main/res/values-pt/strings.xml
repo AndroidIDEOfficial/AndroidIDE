@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">Dispositivo não suportado</string>
   <string name="msg_device_not_supported">Infelizmente, seu dispositivo não é compatível no momento. Lamentamos o inconveniente.\n\nABIs de CPU compatíveis: aarch64 e armeabi-v7a</string>
-  <string name="lint">Lint</string>
   <string name="build">Compilar</string>
   <string name="build_output">Logs de compilação</string>
   <string name="lint_tasks">Lint</string>
   <string name="clean_amp_build">Limpar &amp; construir</string>
   <string name="clean_project">Limpar</string>
-  <string name="create_aab">Criar AAB</string>
-  <string name="build_tasks">Compilar</string>
   <string name="quick_run_debug">Rápida execução</string>
   <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
   <string name="preparing">Preparando</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">Configurações</string>
   <string name="pref_changelog">Registro de alterações</string>
   <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
-  <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle. Se você excluí-lo, a próxima compilação pode demorar um pouco mais do que o normal, pois o Gradle fará o download dos arquivos necessários novamente.\nIMPORTANTE: Isso também excluirá o AAPT2. Você precisará reinstalá-lo, caso contrário, ocorrerá uma falha de compilação.\n\nTem certeza de que deseja excluir os caches?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Não foi possível inicializar as informações do SDK</string>
   <string name="err_cannot_preview_layout">Não foi possível visualizar o layout</string>

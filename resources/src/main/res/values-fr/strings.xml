@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">Appareil non compatible</string>
   <string name="msg_device_not_supported">Malheureusement, votre appareil n\'est pas supporté pour le moment, nous sommes désolés pour le problème occasionné.\n\nCPU ABIs supportés: aarch64 et armeabi-v7a</string>
-  <string name="lint">Lint</string>
   <string name="build">Compiler</string>
   <string name="build_output">Console</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Nettoyer et compiler</string>
   <string name="clean_project">Nettoyer</string>
-  <string name="create_aab">Créer un AAB</string>
-  <string name="build_tasks">Tâches de compilation</string>
   <string name="quick_run_debug">Compilation rapide</string>
   <string name="msg_sync_needed">Le fichier Gradle a été modifié. Recompilez le projet pour synchroniser les dépendances et les configurations.</string>
   <string name="preparing">Préparation</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">Paramètres</string>
   <string name="pref_changelog">Changelog</string>
   <string name="msg_editor_font_size">Veuillez choisir la taille des caractères par défaut de l\'éditeur :</string>
-  <string name="msg_clear_cache">Cela supprimera le cache des dossiers de Gradle. Si vous le supprimer, la prochaine compilation pourra prendre un peu plus de temps que la normale, Gradle téléchargera à nouveau les fichiers requis.\nIMPORTANT: cela supprimera également AAPT2. vous devrez donc le réinstaller, ou sinon vous obtiendrez une erreur de compilation.\n\Êtes vous sûres de vouloir supprimer le cache ?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Échec de l\'initialisation des informations du SDK</string>
   <string name="err_cannot_preview_layout">Impossible d\'afficher l\'aperçu du layout</string>

@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">Cihaz desteklemiyor</string>
   <string name="msg_device_not_supported">Üzgünüz ki cihazınız şu an desteklenmiyor. Rahatsızlık için üzgünüz.\n\nDesteklenen CPU\'lar: aarch64 ve armeabi-v7a</string>
-  <string name="lint">Fanila</string>
   <string name="build">İnşa et</string>
   <string name="build_output">Yapım İşi Çıktısı</string>
   <string name="lint_tasks">Lintleme</string>
   <string name="clean_amp_build">&amp; \'yi temizle ve inşa et</string>
   <string name="clean_project">Temizle</string>
-  <string name="create_aab">AAB oluştur</string>
-  <string name="build_tasks">Görevler oluşturun</string>
   <string name="quick_run_debug">Hızlı başlat</string>
   <string name="msg_sync_needed">Gradle dosyaları değişti. Lütfen projeni bağımlılıklar ve konfigürasyonlarla yeniden inşa et.</string>
   <string name="preparing">Hazırlanıyor</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">Preferences</string>
   <string name="pref_changelog">Changelog</string>
   <string name="msg_editor_font_size">Please choose default font size of editor :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
   <string name="err_cannot_preview_layout">Unable to preview layout</string>
