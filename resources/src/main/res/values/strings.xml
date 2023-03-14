@@ -54,18 +54,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">Device Not Supported</string>
   <string name="msg_device_not_supported">Unfortunately, your device is not supported at the moment. We are sorry for the inconvenience.\n\nSupported CPU ABIs: aarch64 and armeabi-v7a</string>
-  <string name="lint">Lint</string>
-  <string name="lint_debug" translatable="false">lintDebug</string>
-  <string name="lint_release" translatable="false">lintRelease</string>
-  <string name="build_debug" translatable="false">assembleDebug</string>
-  <string name="build_release" translatable="false">assembleRelease</string>
   <string name="build">Build</string>
   <string name="build_output">Build output</string>
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Clean &amp; build</string>
   <string name="clean_project">Clean</string>
-  <string name="create_aab">Create AAB</string>
-  <string name="build_tasks">Build tasks</string>
   <string name="quick_run_debug">Quick run</string>
   <string name="msg_sync_needed">Gradle files have changed. Please rebuild your project to sync dependencies and configurations.</string>
   <string name="preparing">Preparing</string>
@@ -228,7 +221,7 @@
   <string name="msg_preferences">Preferences</string>
   <string name="pref_changelog">Changelog</string>
   <string name="msg_editor_font_size">Please choose default font size of editor :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
 
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>

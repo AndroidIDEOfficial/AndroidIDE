@@ -19,22 +19,102 @@ package com.itsaky.androidide.actions.build
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
+import com.itsaky.androidide.models.ApkMetadata
+import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.utils.ApkInstaller
+import com.itsaky.androidide.utils.InstallationResultHandler
+import java.io.File
 
 /**
  * The 'Quick Run' action in the editor activity.
  *
  * @author Akash Yadav
  */
-class QuickRunAction(context: Context) : AssembleDebugAction() {
+class QuickRunAction(context: Context) : BaseBuildAction() {
 
   init {
     label = context.getString(R.string.quick_run_debug)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
   }
 
-  override val id: String = "editor_quick_run"
-  override var installApk: Boolean = true
+  override val id: String = "ide.editor.build.quickRun"
+
+  override fun execAction(data: ActionData): Boolean {
+    execTasks(
+      data,
+      resultHandler = { result ->
+        if (result == null || !result.isSuccessful) {
+          log.debug("Cannot install APK. Task execution result:", result)
+          return@execTasks
+        }
+
+        log.debug("Installing APK(s) for variant: debug")
+        // TODO Handle multiple application modules
+        val projectManager = ProjectManager
+        val app = projectManager.getApplicationModule()
+        if (app == null) {
+          log.warn("No application module found. Cannot install APKs")
+          return@execTasks
+        }
+
+        val foundVariant = app.variants.stream().filter { it.name == "debug" }.findFirst()
+
+        if (!foundVariant.isPresent) {
+          log.error("No debug variant found in application module", app.path)
+          return@execTasks
+        }
+
+        val (_, main) = foundVariant.get()
+        val outputListingFile = main.assembleTaskOutputListingFile
+        if (outputListingFile == null) {
+          log.error("No output listing file provided with project model")
+          return@execTasks
+        }
+
+        log.verbose("Parsing metadata")
+        val apkFile = ApkMetadata.findApkFile(outputListingFile)
+        if (apkFile == null) {
+          log.error("No apk file specified in output listing file:", outputListingFile)
+          return@execTasks
+        }
+
+        if (!apkFile.exists()) {
+          log.error("APK file specified in output listing file does not exist!", apkFile)
+          return@execTasks
+        }
+
+        install(data, apkFile)
+      },
+      "assembleDebug"
+    )
+    return true
+  }
+
+  private fun install(data: ActionData, apk: File) {
+    val activity =
+      data.getActivity()
+        ?: run {
+          log.error("Cannot install APK. Unable to get activity instance.")
+          return
+        }
+
+    activity.runOnUiThread {
+      log.debug("Installing APK:", apk)
+
+      if (!apk.exists()) {
+        log.error("APK file does not exist!")
+        return@runOnUiThread
+      }
+
+      ApkInstaller.installApk(
+        activity,
+        InstallationResultHandler.createEditorActivitySender(activity),
+        apk,
+        activity.installationSessionCallback()
+      )
+    }
+  }
 }
