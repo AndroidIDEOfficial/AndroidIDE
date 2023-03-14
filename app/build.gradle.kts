@@ -190,4 +190,6 @@ fun getEnvOrProp(key: String): String? {
 afterEvaluate {
   tasks.getByName("mergeDebugAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
   tasks.getByName("mergeReleaseAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+  tasks.getByName("lintAnalyzeDebug").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+  tasks.getByName("lintAnalyzeRelease").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
 }

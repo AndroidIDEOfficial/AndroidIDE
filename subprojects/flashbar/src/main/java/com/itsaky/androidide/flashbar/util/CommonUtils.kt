@@ -105,11 +105,7 @@ inline fun <T : View> T.afterMeasured(crossinline f: T.() -> Unit) {
     object : ViewTreeObserver.OnGlobalLayoutListener {
       override fun onGlobalLayout() {
         if (measuredWidth > 0 && measuredHeight > 0) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            viewTreeObserver.removeOnGlobalLayoutListener(this)
-          } else {
-            viewTreeObserver.removeGlobalOnLayoutListener(this)
-          }
+          viewTreeObserver.removeOnGlobalLayoutListener(this)
           f()
         }
       }

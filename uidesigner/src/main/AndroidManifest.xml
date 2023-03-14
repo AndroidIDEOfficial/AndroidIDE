@@ -17,7 +17,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <application android:theme="@style/Theme.AndroidIDE">
+  <application android:theme="@style/Theme.AndroidIDE" android:supportsRtl="true">
     <activity
       android:name=".UIDesignerActivity"
       android:configChanges="orientation|screenSize"
