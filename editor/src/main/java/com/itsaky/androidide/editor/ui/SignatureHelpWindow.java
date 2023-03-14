@@ -20,7 +20,6 @@ package com.itsaky.androidide.editor.ui;
 import static com.itsaky.androidide.editor.R.attr;
 
 import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -111,7 +110,7 @@ public class SignatureHelpWindow extends BaseEditorWindow {
     count = signatures.size();
     for (var i = 0; i < count; i++) {
       final var info = signatures.get(i);
-      formatSignature(info, activeParameter, i == activeSignature, sb);
+      formatSignature(info, activeParameter, sb);
       if (i != count - 1) {
         sb.append('\n');
       }
@@ -123,18 +122,15 @@ public class SignatureHelpWindow extends BaseEditorWindow {
   /**
    * Formats (highlights) a method signature
    *
-   * @param signature          Signature information
-   * @param paramIndex         Currently active parameter index
-   * @param isCurrentSignature <code>true</code> if the given signature is the active signature.
-   * @param result             The builder to append spanned text to.
+   * @param signature  Signature information
+   * @param paramIndex Currently active parameter index
+   * @param result     The builder to append spanned text to.
    */
   private void formatSignature(
     @NonNull SignatureInformation signature,
     int paramIndex,
-    boolean isCurrentSignature,
     SpannableStringBuilder result) {
 
-    final var currentIndex = Math.max(0, result.length() - 1);
     String name = signature.getLabel();
     name = name.substring(0, name.indexOf("("));
 
@@ -171,14 +167,5 @@ public class SignatureHelpWindow extends BaseEditorWindow {
     }
     result.append(
       ")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-    if (isCurrentSignature) {
-      result.setSpan(
-        new BackgroundColorSpan(ResourceUtilsKt.resolveAttr(getEditor().getContext(),
-          attr.colorSecondaryContainer)),
-        currentIndex,
-        result.length(),
-        SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-    }
   }
 }
