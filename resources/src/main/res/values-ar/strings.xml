@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">الجهاز غير مدعوم</string>
   <string name="msg_device_not_supported">لسوء الحظ، جهازك غير مدعوم في الوقت الراهن. نحن آسفون على الإزعاج.\n\nوحدة المعالجة المركزية المدعومة: aarch64 و Armeabi-v7a</string>
-  <string name="lint">Lint</string>
   <string name="build">بناء</string>
   <string name="build_output">مخرجات البناء</string>
   <string name="lint_tasks">مهام Lint</string>
   <string name="clean_amp_build">تنظيف &amp; بناء</string>
   <string name="clean_project">تنظيف</string>
-  <string name="create_aab">إنشاء AAB</string>
-  <string name="build_tasks">مهام البناء</string>
   <string name="quick_run_debug">تشغيل سريع</string>
   <string name="msg_sync_needed">تم تغيير ملفات Gradle. الرجاء إعادة بناء المشروع الخاص بك لمزامنة الاعتمادات والتهيئات.</string>
   <string name="preparing">جاري الإعداد</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">الإعدادات</string>
   <string name="pref_changelog">سِجل التغييرات</string>
   <string name="msg_editor_font_size">الرجاء اختيار حجم الخط الافتراضي للمحرر :</string>
-  <string name="msg_clear_cache">سيؤدي هذا إلى حذف دليل المخبآت الذي تم إنشاؤه بواسطة الدرجة. إذا قمت بحذفه، قد يستغرق البناء التالي وقتا أطول قليلا من المعتاد، لأن Gradle سيقوم بتنزيل الملفات المطلوبة مرة أخرى.\nهام: سيؤدي هذا أيضا إلى حذف AAPT2. سوف تحتاج إلى إعادة تثبيته لولا ذلك ستنتهي إلى فشل في البناء.\n\nهل أنت متأكد من أنك تريد حذف المخبآت؟</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">غير قادر على تهيئة معلومات SDK</string>
   <string name="err_cannot_preview_layout">غير قادر على معاينة التخطيط</string>
