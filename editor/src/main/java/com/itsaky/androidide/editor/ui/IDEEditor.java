@@ -853,11 +853,15 @@ public void updateFile(File file) {
 
   @Override
   public void release() {
+    ensureWindowsDismissed();
     super.release();
     if (this.actionsMenu != null) {
       this.actionsMenu.destroy();
     }
     this.actionsMenu = null;
+    this.file = null;
+    this.languageServer = null;
+    this.languageClient = null;
     if (EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().unregister(this);
     }
