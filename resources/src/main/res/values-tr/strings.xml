@@ -5,8 +5,8 @@
   <string name="title_open_source_licenses">Açık kaynak lisansları</string>
   <string name="msg_about_licensed_under">Altında lisanlı</string>
   <string name="about_option_email">Email</string>
-  <string name="about_option_website">Website</string>
-  <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+  <string name="about_option_website">Web Sitesi</string>
+  <string name="about_footer">AndroidIDE %1$s %2$s-için</string>
   <string name="about_subtitle">Basitçe, Android için bir IDE</string>
   <string name="msg_get_package_failed">Apk dosyası ayıklanamadı!</string>
   <string name="msg_share_app">AndroidIDE akıllı telefonunuzda Android uygulamaları oluşturmak içindir. Şunları destekler:\n1. Gradle \n2. OpenJDK 17.0-22.\n3. Gelişmiş Java otomatik tamamlama\n4. XML otomatik tamamlama \n5. Kotlin desteği ve daha fazlası.\n \nAndroidIDE\'yi indir: https://androidide.com</string>
@@ -23,9 +23,9 @@
   <string name="reset">Sıfırla</string>
   <string name="app_logs">Uygulama günlükleri</string>
   <string name="ide_logs">IDE günlükleri</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">Açılış resmi</string>
   <string name="get_started">Başla</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">Hızlı düzeltme gerçekleştirilemiyor</string>
   <string name="msg_performing_actions">Kod eylemi gerçekleştiriliyor…</string>
   <string name="msg_api_info_since">API %d \'den beri</string>
@@ -34,21 +34,21 @@
   <string name="msg_finding_references">Referanslar aranıyor…</string>
   <string name="msg_finding_definition">Tanım aranıyor…</string>
   <string name="msg_no_definition">Tanım bulunamadı</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">Referanslar bulunamadı</string>
   <string name="view_diags">Teşhisler</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">Kurulum başarısız</string>
   <string name="get_ready_for_something_awesome">Harika bir şeye hazır olun!</string>
   <string name="msg_picked_isnt_dir">Seçilen dosya bir dizin değil!</string>
   <string name="msg_pick_single_file">Lütfen sadece 1 dizin seç</string>
   <string name="please_wait">1 dakika bekleyin…</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">Cihaz desteklemiyor</string>
   <string name="msg_device_not_supported">Üzgünüz ki cihazınız şu an desteklenmiyor. Rahatsızlık için üzgünüz.\n\nDesteklenen CPU\'lar: aarch64 ve armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Fanila</string>
   <string name="build">İnşa et</string>
   <string name="build_output">Yapım İşi Çıktısı</string>
-  <string name="lint_tasks">Lint tasks</string>
+  <string name="lint_tasks">Lintleme</string>
   <string name="clean_amp_build">&amp; \'yi temizle ve inşa et</string>
   <string name="clean_project">Temizle</string>
   <string name="create_aab">AAB oluştur</string>
@@ -59,13 +59,13 @@
   <string name="preparing_first">Hazırlanıyor. İlk inşa 10-15 dakikanızı alabilir!</string>
   <string name="msg_installing_gradlew">Gradle Wrapper kullanılabilir değil!\nVarsayılan bir tanesi indiriliyor. Gradle v7.4 eğer gerekliyse indirilecek.</string>
   <string name="msg_getting_daemom_status">Daemon durumu getiriliyor, lütfen bekleyin…</string>
-  <string name="gradle_daemon_status">Gradle daemon status</string>
+  <string name="gradle_daemon_status">Gradle arka plan programı durumu</string>
   <string name="title_install_apks">Apk(lar)\'ı yükle</string>
   <string name="title_clear_output">Çıktıyı temizle</string>
   <string name="run">Çalıştır</string>
+  <!-- Project -->
   <string name="title_first_build">İlk İnşa</string>
   <string name="msg_first_build">Bu AndroidIDE\'yi yüklendikten sonra ilk inşa. İlk inşa bağımlılıkları ve eklentileri yükler bu yüzden biraz zaman alabilir. Bu işlem 10-15 dakika sürer. Ama genellikle internetine bağlı.\n\nLütfen sabırlı olun…</string>
-  <!-- Project -->
   <string name="create_project">Proje oluştur</string>
   <string name="minimum_sdk">Minimum SDK</string>
   <string name="target_sdk">Hedef SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">Yeni proje oluştur</string>
   <string name="msg_open_existing_project">Mevcut projeyi aç</string>
   <string name="title_confirm_project_close">Projeyi Kapat</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">Bu projeyi kapatmak istediğine emin misin? Tüm başlamış Gradle daemonlar proje kapandıktan sonra duracak.</string>
   <string name="project_exists">Aynı isimde bir proje zaten var!</string>
-  <!-- Templates -->
   <string name="template_basic">Temel proje</string>
   <string name="template_description_basic">AppCombat Toolbar ve Kayan işlem butonuyla basit bir proje</string>
   <string name="template_description_empty">Varsayılan araç çubuğuna sahip boş bir proje. Tüm temel şeyleri kendiniz yapmak istediğinizde uygundur.</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">JNI kullanacak şekilde yapılandırılmış bir Boş Etkinlik ile yeni bir proje oluşturur</string>
   <string name="template_no_activity">Etkinlik yok</string>
   <string name="template_no_activity_description">Etkinliksiz teni bir proje oluşturur</string>
-  <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">AndroidX kütüphanesi olmadan yeni bir proje oluşturur</string>
   <!-- Files -->
+  <string name="template_no_AndroidX">AndroidX olmadan</string>
+  <string name="template_description_noAndroidX">AndroidX kütüphanesi olmadan yeni bir proje oluşturur</string>
   <string name="save">Kaydet</string>
   <string name="menu_find">Bul</string>
   <string name="menu_find_file">Dosyada bul</string>
@@ -170,28 +170,28 @@
   <string name="msg_checking_storage_permissions">Depolama izni kontrol ediliyor</string>
   <string name="msg_failed_list_files">Proje dosyalarını listelerken hata!</string>
   <string name="msg_storage_denied">Depolama izni olmadan devam edilemez</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">Depolama izni verildi!</string>
   <string name="open_with">İle aç...</string>
-  <!-- Code Editor -->
   <string name="undo">Geri al</string>
   <string name="redo">Yinele</string>
   <!-- Preferences -->
   <string name="title_change_text_size">Editör yazı tipi boyutu</string>
   <string name="idepref_about_title">AndroidIDE Hakkında</string>
   <string name="idepref_build_clearCache_title">Gradle çöplerini temizle</string>
-  <string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
+  <string name="idepref_build_clearCache_summary">Gradle önbellek dizinini temizle. Bu, Gradle tarafından indirilen tüm bağımlılıkları siler. Gerekli dosyalar bir sonraki derlemede(build) tekrar indirilecektir.</string>
   <string name="idepref_build_customgradlecommands_title">Ek Gradle komutları</string>
-  <string name="idepref_build_customgradlecommands_summary">Choose additional commands that will be added while executing every task</string>
+  <string name="idepref_build_customgradlecommands_summary">Her görevi yürütürken(execute) eklenecek ek komutları seçin</string>
   <string name="idepref_editor_fontsize_title">Font büyüklüğü</string>
   <string name="idepref_editor_fontsize_summary">Editörün font büyüklüğü</string>
   <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
-  <string name="idepref_editor_paintingflags_summary">Choose what non-printable characters should be drawn by the editor</string>
+  <string name="idepref_editor_paintingflags_summary">Düzenleyici tarafından hangi yazdırılamayan karakterlerin çizilmesi gerektiğini seçin</string>
   <string name="idepref_editor_drawhexcolors_title">Onaltılık renkli dizeler çizin</string>
   <string name="idepref_editor_drawhexcolors_summary">Düzenleyici onaltılık renk dizisi çizmeli mi?</string>
   <string name="idepref_editor_word_wrap_title">Kelime kaydırma</string>
   <string name="idepref_editor_word_wrap_summary">Editörün yazı kaydırmasını kullan</string>
   <string name="idepref_editor_use_magnifier_title">Büyüteçi etkinleştir</string>
-  <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
+  <string name="idepref_editor_use_magnifier_summary">Düzenleyicide metin seçerken imleç konumundaki metni büyütün</string>
   <string name="idepref_editor_title">Editör</string>
   <string name="idepref_build_title">&amp; \'yi inşa et çalıştır</string>
   <string name="title_open_projects">Open last project</string>
@@ -452,4 +452,9 @@
   <string name="idepref_general_materialYou_summary">Enjoy an experience closer to your device (requires restart).</string>
   <string name="idepref_general_projectConfig">Project configuration</string>
   <string name="msg_app_launch_failed">Failed to launch application. See IDE logs for more info.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
+  <string name="title_reload_color_schemes">Reload color schemes</string>
+  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
 </resources>

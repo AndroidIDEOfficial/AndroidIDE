@@ -6,7 +6,7 @@
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
   <string name="about_option_website">الموقع الإلكتروني</string>
-  <string name="about_footer">AndroidIDE %1$s لـ %2$s</string>
+  <string name="about_footer">أندرويد %1$s لـ %2$s</string>
   <string name="about_subtitle">ببساطة، منصة بناء تطبيقات للاندرويد</string>
   <string name="msg_get_package_failed">فشل في استخراج اسم الحزمة!</string>
   <string name="msg_share_app">إن AndroidIDE هو بيئة تنمية متكاملة لبناء تطبيقات الأندرويد على هاتفك الذكي الخاص بك. إنه يدعم:\n1. Gradle \n2. OpenJDK 17.0–22.\n3. إكمال جافا تلقائي متقدم\n4. إكمال XML التلقائي \n5. دعم كوتلين وأكثر بكثير\n\nتحميل AndroidIDE على https://androidide.com</string>
@@ -23,9 +23,9 @@
   <string name="reset">إعادة تعيين</string>
   <string name="app_logs">سجلات التطبيق</string>
   <string name="ide_logs">سجلات IDE</string>
+  <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">صورة Splash</string>
   <string name="get_started">البدء</string>
-  <!-- LSP, Diagnostics & Completions -->
   <string name="msg_cannot_perform_fix">غير قادر على إجراء إصلاح سريع</string>
   <string name="msg_performing_actions">تنفيذ إجراء الكود…</string>
   <string name="msg_api_info_since">منذ API %d</string>
@@ -34,17 +34,17 @@
   <string name="msg_finding_references">العثور على مراجع…</string>
   <string name="msg_finding_definition">العثور على تعريف…</string>
   <string name="msg_no_definition">التعريف غير موجود</string>
+  <!-- Build Tools Installation -->
   <string name="msg_no_references">لم يتم العثور على مراجع</string>
   <string name="view_diags">التشخيصات</string>
-  <!-- Build Tools Installation -->
   <string name="title_installation_failed">فشل التثبيت</string>
   <string name="get_ready_for_something_awesome">كن مستعداً لشيء رائع!</string>
   <string name="msg_picked_isnt_dir">الملف المأخوذ ليس مجلدا!</string>
   <string name="msg_pick_single_file">الرجاء اختيار مجلد واحد فقط</string>
   <string name="please_wait">رجاءا انتظر لحظة…</string>
+  <!-- Project Builder -->
   <string name="title_device_not_supported">الجهاز غير مدعوم</string>
   <string name="msg_device_not_supported">لسوء الحظ، جهازك غير مدعوم في الوقت الراهن. نحن آسفون على الإزعاج.\n\nوحدة المعالجة المركزية المدعومة: aarch64 و Armeabi-v7a</string>
-  <!-- Project Builder -->
   <string name="lint">Lint</string>
   <string name="build">بناء</string>
   <string name="build_output">مخرجات البناء</string>
@@ -63,9 +63,9 @@
   <string name="title_install_apks">تثبيت ملفات APK</string>
   <string name="title_clear_output">مسح المخرجات</string>
   <string name="run">تشغيل</string>
+  <!-- Project -->
   <string name="title_first_build">أول بناء</string>
   <string name="msg_first_build">هذه هي المرة الأولى التي يتم فيها البناء بعد تثبيت AndroidIDE. يستغرق البناء الأول عادة وقتاً بينما يقوم تنزيل Gradle بتحميل جميع التبعيات والإضافات. قد تستغرق هذه العملية حوالي 10 - 15 دقيقة. لكن هذا يعتمد كلياً على اتصال الشبكة الخاصة بك.\n\nالرجاء التحلي بالصبر…</string>
-  <!-- Project -->
   <string name="create_project">إنشاء مشروع</string>
   <string name="minimum_sdk">الحد الأدنى من SDK</string>
   <string name="target_sdk">الهدف SDK</string>
@@ -81,9 +81,9 @@
   <string name="msg_create_new_project">إنشاء مشروع جديد</string>
   <string name="msg_open_existing_project">فتح مشروع موجود</string>
   <string name="title_confirm_project_close">إغلاق المشروع</string>
+  <!-- Templates -->
   <string name="msg_confirm_project_close">هل أنت متأكد من رغبتك في إغلاق هذا المشروع؟ سيتم إيقاف جميع ديمونات Gradle التي بدأت بعد إغلاق هذا المشروع.</string>
   <string name="project_exists">ثمّة مشروع بنفس الاسم بالفعل!</string>
-  <!-- Templates -->
   <string name="template_basic">المشروع الأساسي</string>
   <string name="template_description_basic">مشروع أساسي مع شريط أدوات AppCompat وزر العمل العائم</string>
   <string name="template_description_empty">مشروع فارغ مع شريط الأدوات الافتراضي. مناسب عندما تريد أن تفعل كل الأشياء الأساسية بنفسك.</string>
@@ -101,9 +101,9 @@
   <string name="template_cpp_description">إنشاء مشروع جديد مع نشاط فارغ مكون لاستخدام JNI</string>
   <string name="template_no_activity">لا يوجد نشاط</string>
   <string name="template_no_activity_description">إنشاء مشروع جديد بدون نشاط</string>
+  <!-- Files -->
   <string name="template_no_AndroidX">بلا AndroidX</string>
   <string name="template_description_noAndroidX">إنشاء مشروع جديد بدون مكتبة AndroidX</string>
-  <!-- Files -->
   <string name="save">حفظ</string>
   <string name="menu_find">البحث</string>
   <string name="menu_find_file">البحث في الملف</string>
@@ -170,9 +170,9 @@
   <string name="msg_checking_storage_permissions">التحقق من أذونات التخزين</string>
   <string name="msg_failed_list_files">فشل في إدراج ملفات المشروع!</string>
   <string name="msg_storage_denied">لا يمكن المتابعة بدون أذونات التخزين</string>
+  <!-- Code Editor -->
   <string name="msg_storage_granted">تم منح أذونات التخزين!</string>
   <string name="open_with">فتح بواسطة...</string>
-  <!-- Code Editor -->
   <string name="undo">تراجع</string>
   <string name="redo">إعادة</string>
   <!-- Preferences -->
@@ -442,7 +442,7 @@
   <string name="git_clone_failed">فشل في استنساخ مشروع git</string>
   <string name="msg_select_attr">حدد سمة من القائمة أدناه</string>
   <string name="action_show_hierarchy">عرض التسلسل الهرمي للتخطيط</string>
-  <string name="idepref_editor_colorScheme">تشكيلات الألوان</string>
+  <string name="idepref_editor_colorScheme">نظام الألوان</string>
   <string name="idepref_editor_colorScheme_summary">اختر مخطط الألوان لاستخدامه في المحرر</string>
   <string name="idepref_general_uiMode">نمط واجهة المستخدم</string>
   <string name="idepref_general_uiMode_summary">اختر وضع واجهة المستخدم لـ IDE</string>
@@ -452,4 +452,9 @@
   <string name="idepref_general_materialYou_summary">استمتع بتجربة أقرب إلى جهازك (يتطلب إعادة تشغيل).</string>
   <string name="idepref_general_projectConfig">تهيئة المشروع</string>
   <string name="msg_app_launch_failed">فشل في تشغيل التطبيق. راجع سجلات IDE لمزيد من المعلومات.</string>
+  <string name="idepref_java_diagnosticEnabled_title">التشخيصات مفعلة</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(تجريبي) ما إذا ينبغي تحليل ملفات مصدر جافا بحثا عن أخطاء أم لا.</string>
+  <string name="title_reload_color_schemes">إعادة تحميل أنظمة الألوان</string>
+  <string name="msg_dir_picker_failed">فشل تشغيل مختار الملفات: %1$s</string>
+  <string name="msg_tooling_server_unavailable">أداة خادم API غير متوفرة. تحقق من إخراج البناء وسجلات IDE للأخطاء.</string>
 </resources>
