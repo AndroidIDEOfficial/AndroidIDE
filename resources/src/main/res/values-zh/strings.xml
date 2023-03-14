@@ -45,14 +45,11 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">设备不受支持</string>
   <string name="msg_device_not_supported">很不幸，您的设备当前不受我们支持。我们对其产生的不便很抱歉。\n\n支持的CPU架构: aarch64 与 armeabi-v7a</string>
-  <string name="lint">Lint</string>
   <string name="build">Build</string>
   <string name="build_output">编译输出</string>
   <string name="lint_tasks">Lint 任务</string>
   <string name="clean_amp_build">清理 &amp; 构建</string>
   <string name="clean_project">清理缓存</string>
-  <string name="create_aab">创建AAB</string>
-  <string name="build_tasks">构建任务</string>
   <string name="quick_run_debug">快速运行</string>
   <string name="msg_sync_needed">Gradle文件已改变。请重新编译您的项目来同步依赖和配置项。</string>
   <string name="preparing">准备中</string>
@@ -206,7 +203,7 @@
   <string name="msg_preferences">偏好设置</string>
   <string name="pref_changelog">更新日志</string>
   <string name="msg_editor_font_size">请选择编辑器的默认字体大小 :</string>
-  <string name="msg_clear_cache">这将会删除Gradle创建的缓存文件夹。如果您删除它，由于需要下载文件，下一次构建可能需要花费更久的时间。\n注意: 这也会删除AAPT2。你需要重新安装它，否则你将会遇到编译错误。\n\n你真的要删除它们吗？</string>
+  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">无法获取SDK信息</string>
   <string name="err_cannot_preview_layout">无法预览布局</string>
