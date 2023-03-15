@@ -73,7 +73,6 @@ android {
 kapt { arguments { arg("eventBusIndex", "com.itsaky.androidide.events.AppEventsIndex") } }
 
 dependencies {
-  
   debugImplementation(libs.common.leakcanary)
 
   // Annotation processors
@@ -188,8 +187,15 @@ fun getEnvOrProp(key: String): String? {
 }
 
 afterEvaluate {
-  tasks.getByName("mergeDebugAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
-  tasks.getByName("mergeReleaseAssets").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
-  tasks.getByName("lintAnalyzeDebug").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
-  tasks.getByName("lintAnalyzeRelease").dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+  val dependents =
+    listOf(
+      "mergeDebugAssets",
+      "mergeReleaseAssets",
+      "lintAnalyzeDebug",
+      "lintAnalyzeRelease",
+      "lintVitalAnalyzeRelease"
+    )
+  for (dependent in dependents) {
+    tasks.getByName(dependent).dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+  }
 }
