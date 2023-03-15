@@ -203,7 +203,7 @@
   <string name="msg_preferences">Preferensi</string>
   <string name="pref_changelog">Log Perubahan</string>
   <string name="msg_editor_font_size">Mohon pilih ukuran huruf bawaan dari editor :</string>
-  <string name="msg_clear_cache">Ini akan menghapus direktori cache yang dibuat oleh Gradle. Jika Anda menghapusnya, build berikutnya mungkin memerlukan waktu sedikit lebih lama dari biasanya karena Gradle akan mendownload file yang diperlukan lagi.\n\nYakin ingin menghapus cache?</string>
+  <string name="msg_clear_cache">Ini akan menghapus direktori cache yang dibuat oleh Gradle. Jika Anda menghapusnya, build berikutnya mungkin akan memakan waktu lebih lama dari biasanya karena Gradle akan mengunduh file yang diperlukan lagi.\n\nApakah Anda yakin ingin menghapus cache?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Tidak dapat menginisialisasi informasi SDK</string>
   <string name="err_cannot_preview_layout">Tidak dapat melihat pratinjau layout</string>

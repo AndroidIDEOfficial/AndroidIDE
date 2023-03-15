@@ -203,7 +203,7 @@
   <string name="msg_preferences">प्रेफरेंसेस</string>
   <string name="pref_changelog">चैंजलॉग</string>
   <string name="msg_editor_font_size">कृपया एडिटर का डिफ़ॉल्ट फ़ॉन्ट साइज चुनें :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">यह ग्रेडल द्वारा बनाई गई कैश डायरेक्टरी को हटा देगा। यदि आप इसे हटाते हैं, तो अगली बिल्ड में सामान्य से थोड़ा अधिक समय लग सकता है क्योंकि ग्रेडल आवश्यक फ़ाइलों को फिर से डाउनलोड करेगा।\n\nक्या आप सुनिश्चित हैं कि आप कैश हटाना चाहते हैं?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">SDK जानकारी प्रारंभ करने में असमर्थ</string>
   <string name="err_cannot_preview_layout">लेआउट का प्रिव्यू करने में असमर्थ</string>
