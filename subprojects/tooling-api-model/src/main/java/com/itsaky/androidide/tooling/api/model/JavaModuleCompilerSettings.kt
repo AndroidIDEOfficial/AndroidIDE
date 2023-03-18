@@ -18,7 +18,6 @@
 package com.itsaky.androidide.tooling.api.model
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
-import javax.lang.model.SourceVersion
 
 /**
  * Compiler settings for [JavaModule].
@@ -29,8 +28,13 @@ class JavaModuleCompilerSettings(
   override val javaSourceVersion: String,
   override val javaBytecodeVersion: String
 ) : IJavaCompilerSettings(), java.io.Serializable {
-  
+
   private val serialVersionUID = 1L
 
-  internal constructor() : this(SourceVersion.RELEASE_11.name, SourceVersion.RELEASE_11.name)
+  // IMPORTANT
+  // Do not use javax.lang.model.SourceVersion reference here
+  // When running on Android, this class is preset as jdkx.lang.model.SourceVersion
+  // Using the 'javax' reference will result a 'ClassNotFoundException' while deserializing the
+  // JSONRpc data received from the Tooling API server
+  internal constructor() : this("RELEASE_11", "RELEASE_11")
 }
