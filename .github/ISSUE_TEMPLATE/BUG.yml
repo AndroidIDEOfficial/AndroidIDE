@@ -40,7 +40,8 @@ body:
       label: What version of AndroidIDE you're using?
       multiple: false
       options:
-        - v2.3.0 (debug builds)
+        - v2.4.0 (debug builds)
+        - v2.4.0
         - v2.3.0
         - v2.2.0
         - v2.1.4
