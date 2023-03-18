@@ -42,6 +42,9 @@ class ClassImportEditHandler(val imports: Set<String>, file: Path) : AdvancedJav
     val data = completionItem.data as? ClassCompletionData ?: return
     val className = data.className
     val edits = EditHelper.addImportIfNeeded(compiler, file, imports, className)
-    RewriteHelper.performEdits(edits, editor)
+
+    if (edits.isNotEmpty()) {
+      RewriteHelper.performEdits(edits, editor)
+    }
   }
 }

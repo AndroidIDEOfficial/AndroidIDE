@@ -24,6 +24,8 @@ import com.itsaky.androidide.lsp.java.rewrite.AddImport;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.projects.FileManager;
+import com.itsaky.androidide.projects.util.StringSearch;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
@@ -60,6 +62,11 @@ public class EditHelper {
         || imports.contains(className)
         || imports.contains(star)
         || file == null) {
+      return Collections.emptyList();
+    }
+
+    final var filePackage = StringSearch.packageName(file);
+    if (filePackage != null && filePackage.equals(pkgName)) {
       return Collections.emptyList();
     }
 
