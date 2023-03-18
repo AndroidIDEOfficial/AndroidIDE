@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 214,
-      "versionName": "2.1.4-beta",
+      "versionCode": 230,
+      "versionName": "v2.3.0-beta.internal.1+branch.main.commit.9ef92d5.timestamp.20230315180430",
       "outputFile": "app-release.apk"
     }
   ],
