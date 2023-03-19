@@ -50,6 +50,7 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
@@ -82,6 +83,11 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   private val list = RecyclerView(editor.context)
   private var mLastScroll: Long = 0
   private var mLastPosition: Int = 0
+
+  private val contentHeight by lazy {
+    // approximated size is around 56dp
+    SizeUtils.dp2px(56f)
+  }
 
   private val menu: MenuBuilder = MenuBuilder(editor.context)
   protected open var location = ActionItem.Location.EDITOR_TEXT_ACTIONS
@@ -226,6 +232,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
 
   private fun selectTop(rect: RectF): Int {
     val rowHeight = editor.rowHeight
+    // when the window is being shown for the first time, the height is 0
+    val height = if (this.height == 0) contentHeight else this.height
     return if (rect.top - rowHeight * 3 / 2f > height) {
       (rect.top - rowHeight * 3 / 2 - height).toInt()
     } else {
