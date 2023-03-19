@@ -50,7 +50,6 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.lsp.xml.XMLLanguageServer
 import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr
 import io.github.rosemoe.sora.event.HandleStateChangeEvent
 import io.github.rosemoe.sora.event.ScrollEvent
@@ -333,7 +332,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
 
   override fun show() {
 
-    if (editor.searcher.searching) {
+    if (editor.searcher.isSearching) {
       // Do not show if user is searching text
       return
     }

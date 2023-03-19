@@ -28,8 +28,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.PopupMenu
 import com.itsaky.androidide.editor.databinding.LayoutFindInFileBinding
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.editor.ui.ReplaceAction.doReplace
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.SingleTextWatcher
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 import java.util.regex.Pattern
@@ -46,6 +46,8 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
   private var searchOptions = SearchOptions(true, false)
   private val findInFileBinding: LayoutFindInFileBinding
   private val optionsMenu: PopupMenu
+
+  private var isSearching = false
 
   init {
     findInFileBinding = LayoutFindInFileBinding.inflate(LayoutInflater.from(context))
@@ -113,6 +115,7 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
       findInFileBinding.searchInput.removeTextChangedListener(this.searchInputTextWatcher)
       findInFileBinding.root.visibility = GONE
       this.searchInputTextWatcher = null
+      this.editor.searcher.onClose()
     }
     if (!searcher.hasQuery()) {
       return
