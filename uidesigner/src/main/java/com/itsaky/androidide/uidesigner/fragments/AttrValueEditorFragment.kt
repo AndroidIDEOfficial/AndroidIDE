@@ -76,7 +76,7 @@ class AttrValueEditorFragment : Fragment() {
     val header = this.header ?: return
     val view = this.viewModel.view ?: return
     val attr = this.viewModel.selectedAttr ?: return
-  
+
     val ns = attr.namespace?.prefix?.let { "${it}:" } ?: ""
     header.name.text = "${ns}${attr.name}"
     header.desc.text = attr.namespace?.uri ?: ""
@@ -90,10 +90,15 @@ class AttrValueEditorFragment : Fragment() {
           )
           textView.dropDownVerticalOffset = -binding.root.height
           textView.showDropDown()
-  
+
           val value = binding.attrValue.text.toString()
           attr.value = value
-          view.applyAttribute(attr.copyAttr(value = value))
+          try {
+            view.applyAttribute(attr.copyAttr(value = value))
+          } catch (e: Exception) {
+            // When the user is editing the attribute value, it is always invalid and cannot be
+            // resolved. Exceptions may be thrown while parsing the value which should be ignored
+          }
         }
 
       textView.setText(attr.value)
