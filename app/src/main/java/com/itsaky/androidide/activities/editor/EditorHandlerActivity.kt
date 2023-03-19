@@ -251,9 +251,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     log.info("Opening file at index:", position, "file: ", file)
 
     val editor = CodeEditorView(this, file, selection!!)
-    editor.editor.subscribeEvent(ContentChangeEvent::class.java) { event, _ ->
-      onEditorContentChanged(event)
-    }
     editor.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     binding.editorContainer.addView(editor)
@@ -365,11 +362,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
   }
 
-  private fun onEditorContentChanged(event: ContentChangeEvent) {
-    if (event.action != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      viewModel.setFilesModified(true)
-      invalidateOptionsMenu()
-    }
+  private fun onEditorContentChanged() {
+    viewModel.setFilesModified(true)
+    invalidateOptionsMenu()
   }
 
   override fun areFilesModified(): Boolean {
@@ -542,6 +537,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onDocumentChange(event: DocumentChangeEvent) {
+    // update content modification status
+    onEditorContentChanged()
+
     val index = findIndexOfEditorByFile(event.file.toFile())
     if (index == -1) {
       return

@@ -118,6 +118,12 @@ public class CodeEditorView extends LinearLayout {
         final var editor = getEditor();
         editor.post(() -> {
           editor.setText(contents, createEditorArgs());
+
+          // editor.setText(...) sets the modified flag to true
+          // but in this case, file is read from disk and hence the contents are not modified at all
+          // so the flag must be changed to unmodified
+          // TODO: Find a better way to check content modification status
+          editor.markUnmodified();
           postRead();
 
           selection.validate();

@@ -722,10 +722,7 @@ public void updateFile(File file) {
    * @param event The content change event.
    */
   private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      isModified = true;
-    }
-
+    isModified = true;
     if (getFile() == null) {
       return;
     }
