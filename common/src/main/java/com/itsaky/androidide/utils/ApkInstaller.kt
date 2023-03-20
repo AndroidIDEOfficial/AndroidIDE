@@ -62,7 +62,7 @@ object ApkInstaller {
         "Cannot use session-based installer on this device. Falling back to intent-based installer."
       )
 
-      @Suppress("DEPRECATION") val intent = Intent(Intent.ACTION_INSTALL_PACKAGE)
+      val intent = Intent(Intent.ACTION_VIEW)
       val authority = "${context.packageName}.providers.fileprovider"
       val uri = FileProvider.getUriForFile(context, authority, apk)
       intent.setDataAndType(uri, "application/vnd.android.package-archive")
