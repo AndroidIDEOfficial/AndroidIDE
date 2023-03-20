@@ -203,7 +203,7 @@
   <string name="msg_preferences">الإعدادات</string>
   <string name="pref_changelog">سِجل التغييرات</string>
   <string name="msg_editor_font_size">الرجاء اختيار حجم الخط الافتراضي للمحرر :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">هذا الأمر سيقوم بحذف مسار/مجلد البيانات المؤقتة الذي تم أنشاءه بواسطة Gradle. إذا حذفته، قد تتأخر عملية البناء نسبياً كما سيتم تنزيل الملفات المطلوبة بواسطة Gradle مرة أخرى.\n\nهل أنت متيقِّن من حذف التخزين المؤقت؟</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">غير قادر على تهيئة معلومات SDK</string>
   <string name="err_cannot_preview_layout">غير قادر على معاينة التخطيط</string>
