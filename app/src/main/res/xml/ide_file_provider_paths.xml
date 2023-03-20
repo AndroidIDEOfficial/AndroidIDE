@@ -16,9 +16,6 @@
   -->
 
 <paths>
-  <files-path
-    name="files_path"
-    path="." />
   <external-path
     name="external_path"
     path="."/>
