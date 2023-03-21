@@ -16,10 +16,8 @@
   -->
 
 <paths>
-  <files-path
-    name="files_path"
-    path="." />
-  <external-path
-    name="external_path"
-    path="."/>
+  <root-path name="root" path="." />
+  <external-path name="external" path="." />
+  <external-files-path name="external_files" path="." />
+  <files-path name="files" path="." />
 </paths>
