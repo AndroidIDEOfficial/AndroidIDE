@@ -26,8 +26,8 @@ import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
  *
  * @author Akash Yadav
  */
-open class KotlinLanguage(context: Context, type : String = TS_TYPE_KT) :
-  TreeSitterLanguage(context, TSLanguageKotlin.newInstance(), type) {
+open class KotlinLanguage(context: Context) :
+  TreeSitterLanguage(context, TSLanguageKotlin.newInstance(), TS_TYPE_KT) {
 
   companion object {
     val FACTORY = Factory { KotlinLanguage(it) }
