@@ -32,7 +32,7 @@ class TreeSitterLanguageSpec
 @JvmOverloads
 constructor(val spec: TsLanguageSpec, indentsQueryScm: String = "") : Closeable {
 
-  // <editor-fold desc="">
+  // <editor-fold desc="Proxy properties">
   val language: TSLanguage
     get() = spec.language
   // </editor-fold>
@@ -45,7 +45,7 @@ constructor(val spec: TsLanguageSpec, indentsQueryScm: String = "") : Closeable 
 
   override fun close() {
     indentsQuery.close()
-    spec.closed
+    spec.close()
   }
 }
 
