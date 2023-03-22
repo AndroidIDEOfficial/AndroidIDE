@@ -38,9 +38,9 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.greenrobot.eventbus.EventBus
 import java.lang.Thread.UncaughtExceptionHandler
 import kotlin.system.exitProcess
-import org.greenrobot.eventbus.EventBus
 
 class IDEApplication : BaseApplication() {
 
@@ -104,7 +104,11 @@ class IDEApplication : BaseApplication() {
 
   fun showChangelog() {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(GITHUB_URL + "/releases/tag/v" + BuildConfig.VERSION_NAME)
+    var version = BuildConfig.VERSION_NAME
+    if (!version.startsWith('v')) {
+      version = "v${version}"
+    }
+    intent.data = Uri.parse("${GITHUB_URL}/releases/tag/${version}")
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     try {
       startActivity(intent)
