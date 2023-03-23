@@ -37,14 +37,17 @@ constructor(val spec: TsLanguageSpec, indentsQueryScm: String = "") : Closeable 
     get() = spec.language
   // </editor-fold>
 
-  val indentsQuery = TSQuery(language, indentsQueryScm)
+  val indentsQuery: TSQuery? =
+    if (indentsQueryScm.isBlank()) {
+      TSQuery(language, indentsQueryScm)
+    } else null
 
   init {
-    indentsQuery.validateOrThrow(name = "indents")
+    indentsQuery?.validateOrThrow(name = "indents")
   }
 
   override fun close() {
-    indentsQuery.close()
+    indentsQuery?.close()
     spec.close()
   }
 }

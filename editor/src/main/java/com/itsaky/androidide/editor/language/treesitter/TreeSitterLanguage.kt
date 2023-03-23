@@ -108,12 +108,13 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     column: Int,
     decrementBy: Int = 0
   ): Int {
+    val indentsQuery = languageSpec.indentsQuery ?: return 0
     return TSParser().use { parser ->
       parser.language = languageSpec.language
       val tree = parser.parseString(content)
 
       return@use TSQueryCursor().use { cursor ->
-        cursor.exec(languageSpec.indentsQuery, tree.rootNode)
+        cursor.exec(indentsQuery, tree.rootNode)
 
         var indent = 0
         var match: TSQueryMatch? = cursor.nextMatch()
@@ -133,7 +134,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
             break
           }
 
-          val captureName = languageSpec.indentsQuery.getCaptureNameForId(capture.index)
+          val captureName = indentsQuery.getCaptureNameForId(capture.index)
           if (captureName == "indent") {
             ++indent
           } else if (captureName == "outdent") {
