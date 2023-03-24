@@ -17,20 +17,19 @@
 package com.itsaky.androidide.editor.language.groovy;
 
 import android.os.Bundle;
-
+import android.text.TextUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.itsaky.androidide.lsp.models.CompletionItem;
 import com.itsaky.androidide.lsp.models.CompletionItemKind;
 import com.itsaky.androidide.lsp.models.InsertTextFormat;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.util.MyCharacter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class GroovyAutoComplete {
 
@@ -344,29 +343,39 @@ public class GroovyAutoComplete {
   }
 
   public void complete(
-      ContentReference content,
-      CharPosition position,
-      CompletionPublisher publisher,
-      Bundle extraArguments) {
+    ContentReference content,
+    CharPosition position,
+    CompletionPublisher publisher,
+    Bundle extraArguments) {
     publisher.setUpdateThreshold(0);
     final var prefix =
-        CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
+      CompletionHelper.computePrefix(content, position,
+        c -> MyCharacter.isJavaIdentifierPart(c) || c == '.');
+    if (StringUtils.isTrimEmpty(prefix)) {
+      return;
+    }
     for (String artifact : ANDROIDX_ARTIFACTS) {
-      if (!artifact.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      if (!artifact.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) {
+        continue;
+      }
       final var completionItem = createCompletionItem(artifact);
       completionItem.setMatchLevel(CompletionItem.matchLevel(artifact, prefix));
       publisher.addItem(completionItem);
     }
 
     for (String config : CONFIGURATIONS) {
-      if (!config.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      if (!config.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) {
+        continue;
+      }
       final var completionItem = createCompletionItem(config);
       completionItem.setMatchLevel(CompletionItem.matchLevel(config, prefix));
       publisher.addItem(completionItem);
     }
 
     for (String other : OTHERS) {
-      if (!other.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      if (!other.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) {
+        continue;
+      }
       final var completionItem = createCompletionItem(other);
       completionItem.setMatchLevel(CompletionItem.matchLevel(other, prefix));
       publisher.addItem(completionItem);
