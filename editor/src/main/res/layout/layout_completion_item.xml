@@ -24,6 +24,7 @@
   android:layout_height="wrap_content"
   android:background="?attr/colorPrimaryContainer"
   android:gravity="center_vertical"
+  android:minHeight="40dp"
   tools:ignore="SmallSp">
 
   <TextView

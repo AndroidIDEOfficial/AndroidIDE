@@ -24,7 +24,10 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
+import android.view.ViewTreeObserver
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
 import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
@@ -56,6 +59,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import kotlin.math.max
 
 class CompletionListAdapter : EditorCompletionAdapter() {
 
@@ -106,7 +110,6 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionApiInfo.visibility = View.GONE
 
     applyColorScheme(binding, isCurrentCursorPosition)
-
     showApiInfoIfNeeded(item, binding.completionApiInfo)
     return binding.root
   }
