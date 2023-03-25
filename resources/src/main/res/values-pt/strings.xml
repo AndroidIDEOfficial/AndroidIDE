@@ -203,7 +203,7 @@
   <string name="msg_preferences">Configurações</string>
   <string name="pref_changelog">Registro de alterações</string>
   <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pela Gradle. Se você excluir, a próxima compilação pode demorar um pouco mais do que o normal, já que o Gradle baixará os arquivos necessários novamente.\n\nTem certeza que deseja excluir os caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Não foi possível inicializar as informações do SDK</string>
   <string name="err_cannot_preview_layout">Não foi possível visualizar o layout</string>
@@ -449,9 +449,9 @@
   <string name="idepref_general_materialYou_summary">Aproveite uma experiência mais próxima do seu dispositivo (requer reinicialização).</string>
   <string name="idepref_general_projectConfig">Configuração do projeto</string>
   <string name="msg_app_launch_failed">Falha ao iniciar a aplicação. Consulte os logs do IDE para obter mais informações.</string>
-  <string name="idepref_java_diagnosticEnabled_title">Diagnostics enabled</string>
-  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Whether the Java source files should be analyzed for errors or not.</string>
-  <string name="title_reload_color_schemes">Reload color schemes</string>
-  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
-  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
+  <string name="idepref_java_diagnosticEnabled_title">Diagnóstico habilitado</string>
+  <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) Se os arquivos de código fonte Java devem ser analisados por erros ou não.</string>
+  <string name="title_reload_color_schemes">Recarregar esquemas de cores</string>
+  <string name="msg_dir_picker_failed">Falha ao iniciar o seletor de diretório: %1$s</string>
+  <string name="msg_tooling_server_unavailable">Servidor de ferramentas da API indisponível. Verifique os logs de compilação e IDE para erros.</string>
 </resources>
