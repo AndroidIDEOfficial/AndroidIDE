@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE, GNU Genel Kamu Lisansı v2.0 kapsamında lisanslanan değiştirilmiş bir JDK yapısı kullanır. JDK\'nın kaynak kodu ve lisansı şu adreste mevcuttur: </string>
   <string name="title_open_source_licenses">Açık kaynak lisansları</string>
   <string name="msg_about_licensed_under">Altında lisanlı</string>
   <string name="about_option_email">Email</string>
