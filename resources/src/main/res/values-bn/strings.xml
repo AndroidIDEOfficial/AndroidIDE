@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE JDK-এর একটি পরিবর্তিত বিল্ড ব্যবহার করে যা GNU জেনারেল পাবলিক লাইসেন্স v2.0-এর অধীনে লাইসেন্সপ্রাপ্ত৷ সোর্স কোড এবং JDK এর লাইসেন্স এখানে পাওয়া যাবে : </string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>

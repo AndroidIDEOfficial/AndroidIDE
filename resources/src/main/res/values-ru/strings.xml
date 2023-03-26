@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
   <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="msg_about_licensed_under">Лицензия: </string>
   <string name="about_option_email">Электронная почта</string>

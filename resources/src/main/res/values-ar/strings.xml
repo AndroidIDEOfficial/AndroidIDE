@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي:</string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>

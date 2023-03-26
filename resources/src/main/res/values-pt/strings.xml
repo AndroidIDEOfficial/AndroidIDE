@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE usa uma construção modificada do JDK que é licenciada sob a GNU General Public License v2.0. O código fonte e a licença do JDK estão disponíveis em :</string>
   <string name="title_open_source_licenses">Licenças de código aberto</string>
   <string name="msg_about_licensed_under">Licenciado sob:</string>
   <string name="about_option_email">E-mail</string>
