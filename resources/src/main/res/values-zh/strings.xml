@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE使用了以GPL v2.0开源的JDK的修改版构建版本。你可以在此处找到它的源代码和许可证： </string>
   <string name="title_open_source_licenses">开源许可证</string>
   <string name="msg_about_licensed_under">许可证: </string>
   <string name="about_option_email">邮件</string>
