@@ -21,20 +21,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
 import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.PackageTree;
 import openjdk.source.tree.Tree;
 import openjdk.source.tree.TryTree;
 import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
-import openjdk.source.util.TreeScanner;
+import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
 
 /**
  * @author Akash Yadav
  */
-public class FindBiggerRange extends TreeScanner<Range, Range> {
+public class FindBiggerRange extends TreePathScanner<Range, Range> {
 
   private final SourcePositions positions;
   private final CompilationUnitTree root;
@@ -64,6 +66,30 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
   @Override
   public Range reduce(Range r1, Range r2) {
     return r1 == null ? r2 : r1;
+  }
+
+  @Override
+  public Range visitPackage(PackageTree node, Range range) {
+    final var packageRange = getRange(node);
+    if (range.equals(packageRange)) {
+      final var parentPath = getCurrentPath().getParentPath();
+      if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
+        return getRange(parentPath.getLeaf());
+      }
+    }
+    return super.visitPackage(node, range);
+  }
+
+  @Override
+  public Range visitClass(ClassTree node, Range range) {
+    final var classRange = getRange(node);
+    if (range.equals(classRange)) {
+      final var parentPath = getCurrentPath().getParentPath();
+      if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
+        return getRange(parentPath.getLeaf());
+      }
+    }
+    return super.visitClass(node, range);
   }
 
   @Override
