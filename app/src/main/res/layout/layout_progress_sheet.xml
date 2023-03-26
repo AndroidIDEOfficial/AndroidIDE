@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:gravity="start|center_vertical"
-  android:paddingTop="16dp">
+  android:padding="8dp">
 
   <com.google.android.material.progressindicator.CircularProgressIndicator
     android:id="@+id/progress"
     android:layout_width="48dp"
     android:layout_height="48dp"
     android:layout_marginEnd="16dp"
+    android:indeterminate="true"
     android:padding="10dp"
-    tools:progress="60" />
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
   <TextView
     android:id="@+id/message"
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    android:layout_toEndOf="@id/progress"
     android:ellipsize="end"
-    android:singleLine="true"
+    android:maxLines="1"
     android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toEndOf="@id/progress"
+    app:layout_constraintTop_toTopOf="@id/progress"
     tools:text="A long running task" />
 
   <TextView
     android:id="@+id/subMessage"
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_below="@id/message"
-    android:layout_marginEnd="8dp"
-    android:layout_toEndOf="@id/progress"
     android:ellipsize="end"
     android:gravity="center_vertical"
     android:maxLines="2"
     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
     android:textColor="?attr/colorOnBackground"
+    app:layout_constraintEnd_toEndOf="@id/message"
+    app:layout_constraintStart_toStartOf="@id/message"
+    app:layout_constraintTop_toBottomOf="@id/message"
     tools:text="@string/please_wait" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

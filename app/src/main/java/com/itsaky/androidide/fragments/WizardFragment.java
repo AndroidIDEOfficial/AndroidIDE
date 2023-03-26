@@ -508,7 +508,6 @@ public class WizardFragment extends BaseFragment {
 
   private void createProgressSheet() {
     mProgressSheet = new ProgressSheet();
-    mProgressSheet.setShowShadow(false);
   }
 
   private void setMessage(String msg) {

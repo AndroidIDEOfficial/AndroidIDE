@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
- **************************************************************************************/
+ */
 
 package com.itsaky.androidide.fragments.sheets;
 
@@ -24,11 +21,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
-
+import androidx.annotation.Nullable;
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -48,8 +44,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     if (subMessageEnabled) {
       binding.subMessage.setText(subMessage);
       binding.subMessage.setVisibility(View.VISIBLE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
+      RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
       try {
         p.removeRule(RelativeLayout.CENTER_VERTICAL);
       } catch (Throwable th) {
@@ -58,8 +53,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
       binding.message.setLayoutParams(p);
     } else {
       binding.subMessage.setVisibility(View.GONE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
+      RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
       try {
         p.addRule(RelativeLayout.CENTER_VERTICAL);
       } catch (Throwable th) {
@@ -69,15 +63,13 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     }
   }
 
+  @Nullable
   @Override
-  protected boolean shouldHideTitle() {
-    return true;
-  }
-
-  @Override
-  protected void bind(LinearLayout container) {
+  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                           @Nullable Bundle savedInstanceState
+  ) {
     binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
-    container.addView(binding.getRoot());
+    return binding.getRoot();
   }
 
   public void setSubMessageEnabled(boolean enabled) {
@@ -110,6 +102,8 @@ public class ProgressSheet extends BaseBottomSheetFragment {
 
   @Override
   public void dismiss() {
-    if (isShowing()) super.dismiss();
+    if (isShowing()) {
+      super.dismiss();
+    }
   }
 }
