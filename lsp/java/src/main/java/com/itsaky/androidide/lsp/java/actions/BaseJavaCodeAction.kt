@@ -31,6 +31,7 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import java.io.File
 
@@ -48,7 +49,6 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   protected abstract val titleTextRes: Int
   
   override fun prepare(data: ActionData) {
-
     if (
       !data.hasRequiredData(Context::class.java, JavaLanguageServer::class.java, File::class.java)
     ) {
@@ -76,10 +76,11 @@ abstract class BaseJavaCodeAction : EditorActionItem {
     val actions = try {
       result.asCodeActions(compiler, label)
     } catch (e: Exception) {
-      flashError(e.message)
+      flashError(e.cause?.message ?: e.message)
+      ILogger.instance().error(e)
       return
     }
-    
+
     client.performCodeAction(file, actions)
   }
 }
