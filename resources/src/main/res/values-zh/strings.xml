@@ -45,7 +45,7 @@
   <!-- Project Builder -->
   <string name="title_device_not_supported">设备不受支持</string>
   <string name="msg_device_not_supported">很不幸，您的设备当前不受我们支持。我们对其产生的不便很抱歉。\n\n支持的CPU架构: aarch64 与 armeabi-v7a</string>
-  <string name="build">编译</string>
+  <string name="build">构建</string>
   <string name="build_output">编译输出</string>
   <string name="lint_tasks">Lint 任务</string>
   <string name="clean_amp_build">清理 &amp; 构建</string>
