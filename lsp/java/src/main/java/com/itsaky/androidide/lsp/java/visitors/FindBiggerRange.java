@@ -19,8 +19,6 @@ package com.itsaky.androidide.lsp.java.visitors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import openjdk.source.tree.CompilationUnitTree;
@@ -57,8 +55,6 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
 
     final Range treeRange = getRange(tree);
     if (treeRange != null && range.isSmallerThan(treeRange)) {
-      ILogger.newInstance("FindBiggerRange")
-          .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
       return treeRange;
     }
 
