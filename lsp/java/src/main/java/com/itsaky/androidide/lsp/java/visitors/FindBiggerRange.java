@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.utils.ILogger;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
@@ -41,15 +42,23 @@ public class FindBiggerRange extends TreePathScanner<Range, Range> {
   private final SourcePositions positions;
   private final CompilationUnitTree root;
   private final LineMap lineMap;
+  private final Range rootRange;
 
   public FindBiggerRange(JavacTask task, @NonNull CompilationUnitTree root) {
     this.positions = Trees.instance(task).getSourcePositions();
     this.root = root;
     this.lineMap = root.getLineMap();
+
+    this.rootRange = getRange(root);
   }
 
   @Override
   public Range scan(Tree tree, Range range) {
+    if (range.equals(rootRange)) {
+      // if whole file content selected, no need to scan the tree
+      return null;
+    }
+
     final Range smallerThanThis = super.scan(tree, range);
     if (smallerThanThis != null) {
       return smallerThanThis;
@@ -74,7 +83,7 @@ public class FindBiggerRange extends TreePathScanner<Range, Range> {
     if (range.equals(packageRange)) {
       final var parentPath = getCurrentPath().getParentPath();
       if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
-        return getRange(parentPath.getLeaf());
+        return rootRange;
       }
     }
     return super.visitPackage(node, range);
@@ -86,7 +95,7 @@ public class FindBiggerRange extends TreePathScanner<Range, Range> {
     if (range.equals(classRange)) {
       final var parentPath = getCurrentPath().getParentPath();
       if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
-        return getRange(parentPath.getLeaf());
+        return rootRange;
       }
     }
     return super.visitClass(node, range);
