@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE folosește o versiune modificată a JDK-ului care este licențiată sub Licența publică generală GNU v2.0. Codul sursă și licența JDK sunt disponibile la:</string>
   <string name="title_open_source_licenses">Licențe open source</string>
   <string name="msg_about_licensed_under">Licențiat:</string>
   <string name="about_option_email">Email</string>
