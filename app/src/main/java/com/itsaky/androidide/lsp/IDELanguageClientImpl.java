@@ -209,7 +209,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   private Boolean performCodeActionAsync(final IDEEditor editor, final CodeActionItem action) {
-    LOG.debug("Performing code action:", action);
     final var changes = action.getChanges();
     if (changes.isEmpty()) {
       return Boolean.FALSE;
