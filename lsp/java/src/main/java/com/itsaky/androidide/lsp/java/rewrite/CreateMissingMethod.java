@@ -18,16 +18,24 @@
 package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
-
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.java.visitors.FindMethodCallAt;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.utils.ILogger;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Map;
+import java.util.StringJoiner;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.Name;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.TypeMirror;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.ExpressionTree;
@@ -40,18 +48,8 @@ import openjdk.source.tree.Tree;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Map;
-import java.util.StringJoiner;
-
-import jdkx.lang.model.element.Modifier;
-import jdkx.lang.model.element.Name;
-import jdkx.lang.model.type.DeclaredType;
-import jdkx.lang.model.type.TypeMirror;
-
 public class CreateMissingMethod extends Rewrite {
+
   private static final ILogger LOG = ILogger.newInstance("main");
   final Path file;
   final int position;
@@ -66,68 +64,66 @@ public class CreateMissingMethod extends Rewrite {
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
-        task -> {
-          final Trees trees = Trees.instance(task.task);
-          final FindMethodCallAt methodFinder = new FindMethodCallAt(task.task);
-          final MethodInvocationTree call = methodFinder.scan(task.root(), position);
-          if (call == null) {
-            return CANCELLED;
-          }
+      task -> {
+        final Trees trees = Trees.instance(task.task);
+        final FindMethodCallAt methodFinder = new FindMethodCallAt(task.task);
+        final MethodInvocationTree call = methodFinder.scan(task.root(), position);
+        if (call == null || file == null) {
+          return CANCELLED;
+        }
 
-          final TreePath path = trees.getPath(task.root(), call);
-          final String returnType = methodFinder.getReturnType();
-          Path sourceFile = file;
-          MethodTree currentMethod = surroundingMethod(path);
-          String insertText = "\n";
+        final TreePath path = trees.getPath(task.root(), call);
+        final String returnType = methodFinder.getReturnType();
+        Path sourceFile = file;
+        MethodTree currentMethod = surroundingMethod(path);
+        String insertText = "\n";
 
-          insertText +=
-              printMethodHeader(
-                      task,
-                      call,
-                      returnType,
-                      methodFinder.isMemberSelect(),
-                      (currentMethod.getModifiers().getFlags().contains(Modifier.STATIC)
-                          || methodFinder.isStaticAccess()))
-                  + " {\n"
-                  + "    // TODO: Implement this method\n"
-                  + "    "
-                  + createReturnStatement(returnType)
-                  + "\n"
-                  + "}";
+        insertText +=
+          printMethodHeader(
+            task,
+            call,
+            returnType,
+            methodFinder.isMemberSelect(),
+            (currentMethod.getModifiers().getFlags().contains(Modifier.STATIC)
+              || methodFinder.isStaticAccess()))
+            + " {\n"
+            + "    // TODO: Implement this method\n"
+            + "    "
+            + createReturnStatement(returnType)
+            + "\n"
+            + "}";
 
-          TextEdit[] edits;
-          if (methodFinder.isMemberSelect()) {
-            // Accessing method from another class
-            final CompilationUnitTree compilationUnit =
-                methodFinder.getEnclosingTreePath().getCompilationUnit();
-            final ClassTree enclosingClass = methodFinder.getEnclosingClass();
-            final int indent = EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
-            insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
-            insertText = insertText + "\n";
-            final Position insertPoint =
-                EditHelper.insertAtEndOfClass(task.task, compilationUnit, enclosingClass);
-            edits = new TextEdit[] {new TextEdit(new Range(insertPoint, insertPoint), insertText)};
-            sourceFile = Paths.get(compilationUnit.getSourceFile().toUri());
-          } else {
-            ClassTree surroundingClass = surroundingClass(path);
-            int indent = EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
-            insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
-            insertText = insertText + "\n";
-            Position insertPoint =
-                EditHelper.insertAfter(task.task, task.root(), surroundingMethod(path));
-            edits = new TextEdit[] {new TextEdit(new Range(insertPoint, insertPoint), insertText)};
-          }
+        TextEdit[] edits;
+        if (methodFinder.isMemberSelect()) {
+          // Accessing method from another class
+          final CompilationUnitTree compilationUnit =
+            methodFinder.getEnclosingTreePath().getCompilationUnit();
+          final ClassTree enclosingClass = methodFinder.getEnclosingClass();
+          final int indent = EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
+          insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+          insertText = insertText + "\n";
+          final Position insertPoint =
+            EditHelper.insertAtEndOfClass(task.task, compilationUnit, enclosingClass);
+          edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
+          sourceFile = Paths.get(compilationUnit.getSourceFile().toUri());
+        } else {
+          ClassTree surroundingClass = surroundingClass(path);
+          int indent = EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
+          insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+          insertText = insertText + "\n";
+          Position insertPoint =
+            EditHelper.insertAfter(task.task, task.root(), surroundingMethod(path));
+          edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
+        }
 
-          if (file != null) {
-            return Collections.singletonMap(sourceFile, edits);
-          } else {
-            return null;
-          }
-        });
+        return Collections.singletonMap(sourceFile, edits);
+      });
   }
 
   private String createReturnStatement(String returnType) {
-    if (returnType == null) return "";
+    if (returnType == null) {
+      return "";
+    }
     String value;
     switch (returnType) {
       case "int":
@@ -147,8 +143,8 @@ public class CreateMissingMethod extends Rewrite {
         value = "false";
         break;
 
-        // Finding type of variable declaration may result in an error
-        // We should then simply return empty return type
+      // Finding type of variable declaration may result in an error
+      // We should then simply return empty return type
       case "(ERROR)":
         return ""; // Directly return empty string
       default:
@@ -179,20 +175,19 @@ public class CreateMissingMethod extends Rewrite {
   }
 
   private String printMethodHeader(
-      CompileTask task,
-      MethodInvocationTree call,
-      String type,
-      boolean isMemberSelect,
-      boolean isStatic) {
+    CompileTask task,
+    MethodInvocationTree call,
+    String type,
+    boolean isMemberSelect,
+    boolean isStatic) {
     String methodName = extractMethodName(call.getMethodSelect());
     String returnType = type == null || "(ERROR)".equals(type) ? "void" : type;
-    LOG.info("Creating missing method with return type: " + returnType);
-    if (returnType.equals(methodName)) {
-      returnType = "_";
-    }
+    LOG.info("Creating missing method '" + methodName + "' with return type: " + returnType);
     String parameters = printParameters(task, call);
     String modifiers = isMemberSelect ? "public" : "private";
-    if (isStatic) modifiers += " static";
+    if (isStatic) {
+      modifiers += " static";
+    }
     return modifiers + " " + returnType + " " + methodName + "(" + parameters + ")";
   }
 
