@@ -453,4 +453,8 @@
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
+  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
+  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
 </resources>
