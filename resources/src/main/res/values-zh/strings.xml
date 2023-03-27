@@ -99,7 +99,7 @@
   <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
   <!-- Files -->
   <string name="template_no_AndroidX">NoAndroidX</string>
-  <string name="template_description_noAndroidX">创建一个不带AndroidX库的项目</string>
+  <string name="template_description_noAndroidX">创建一个没有 AndroidX 库的新项目</string>
   <string name="save">保存</string>
   <string name="menu_find">查找</string>
   <string name="menu_find_file">在文件中查找</string>
@@ -155,7 +155,7 @@
   <string name="action_closeThis">关闭当前</string>
   <string name="all_saved">所有文件已保存!</string>
   <string name="msg_newfile_dest">目标: %s/</string>
-  <string name="restype_drawable">Drawable</string>
+  <string name="restype_drawable">可绘制资源</string>
   <string name="restype_layout">布局</string>
   <string name="restype_menu">菜单</string>
   <string name="restype_other">其他</string>
@@ -210,7 +210,7 @@
   <!-- Layout preview and designer -->
   <string name="msg_cannot_preview_layout">无法预览布局!</string>
   <string name="title_preview_layout">预览布局</string>
-  <string name="label_ui_designer_content">主UI设计器内容</string>
+  <string name="label_ui_designer_content">主要 UI 设计器内容</string>
   <string name="msg_applicable_attrs">可用属性</string>
   <string name="msg_attr_editor_actions">操作</string>
   <string name="title_viewaction_delete">删除</string>
@@ -434,8 +434,8 @@
   <string name="git_clone_repo">克隆 git 仓库</string>
   <string name="git_clone_repo_url">存储库 URL</string>
   <string name="git_clone_in_progress">克隆库</string>
-  <string name="git_clone_success">git克隆成功</string>
-  <string name="git_clone_failed">克隆 git 存储库失败</string>
+  <string name="git_clone_success">git 克隆成功</string>
+  <string name="git_clone_failed">无法克隆 git 存储库</string>
   <string name="msg_select_attr">从下面的列表中选择一个属性</string>
   <string name="action_show_hierarchy">显示布局层次</string>
   <string name="idepref_editor_colorScheme">配色方案</string>
@@ -445,7 +445,7 @@
   <string name="uiMode_light">明亮</string>
   <string name="uiMode_dark">黑暗</string>
   <string name="uiMode_system">跟随系统</string>
-  <string name="idepref_general_materialYou_summary">享有更接近您的设备的体验（需要重启）。</string>
+  <string name="idepref_general_materialYou_summary">享有跟您设备一致的体验（需要重启）。</string>
   <string name="idepref_general_projectConfig">项目配置</string>
   <string name="msg_app_launch_failed">启动应用程序失败。请参阅 IDE 日志以获取详细信息。</string>
   <string name="idepref_java_diagnosticEnabled_title">启用诊断</string>
