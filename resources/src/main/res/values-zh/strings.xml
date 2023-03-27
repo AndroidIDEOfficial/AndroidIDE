@@ -453,4 +453,8 @@
   <string name="title_reload_color_schemes">重新加载配色方案</string>
   <string name="msg_dir_picker_failed">启动目录选择器失败： %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API 服务器不可用。 检查构建输出和 IDE 日志是否有错误。</string>
+  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
+  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
 </resources>
