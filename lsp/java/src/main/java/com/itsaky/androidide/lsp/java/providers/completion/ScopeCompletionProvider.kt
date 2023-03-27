@@ -23,8 +23,6 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.MultipleClassImportEditHandler
 import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
-import com.itsaky.androidide.lsp.java.utils.EditHelper
-import com.itsaky.androidide.lsp.java.utils.EditHelper.repeatSpaces
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
 import com.itsaky.androidide.lsp.java.utils.JavaPoetUtils.Companion.print
 import com.itsaky.androidide.lsp.java.utils.ScopeHelper
@@ -34,10 +32,7 @@ import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import com.itsaky.androidide.projects.FileManager
 import com.squareup.javapoet.MethodSpec.Builder
-import java.nio.file.Path
-import java.util.function.Predicate
 import jdkx.lang.model.element.ElementKind.METHOD
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.Modifier.FINAL
@@ -48,6 +43,8 @@ import openjdk.source.tree.ClassTree
 import openjdk.source.tree.Tree.Kind.CLASS
 import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
+import java.nio.file.Path
+import java.util.function.Predicate
 
 /**
  * Provides completions using [openjdk.source.tree.Scope].
@@ -156,7 +153,6 @@ class ScopeCompletionProvider(
 
     // Print the method details and the annotations
     // Print the method details and the annotations
-    val indent = EditHelper.indent(FileManager.getDocumentContents(file), cursor.toInt())
     val builder: Builder
     try {
       builder = buildMethod(method, types, type)

@@ -23,7 +23,6 @@ import com.itsaky.androidide.lsp.java.rewrite.AddImport;
 import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.projects.util.StringSearch;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -143,19 +142,6 @@ public class EditHelper {
     return (int) (startClass - startLine);
   }
 
-  public static int indent(final CharSequence contents, final int cursor) {
-    int indent = 0;
-    for (int i = 0; i <= cursor && i < contents.length(); i++) {
-      char c = contents.charAt(i);
-      if (c == '{') {
-        indent++;
-      } else if (c == '}') {
-        indent--;
-      }
-    }
-    return indent * EditorPreferencesKt.getTabSize();
-  }
-
   public static Position insertBefore(final JavacTask task, final CompilationUnitTree root,
                                       final Tree member
   ) {
@@ -176,8 +162,7 @@ public class EditHelper {
     return new Position(line, 0);
   }
 
-  public static Position insertAtEndOfClass(JavacTask task, CompilationUnitTree root,
-                                            ClassTree leaf
+  public static Position insertAtEndOfClass(JavacTask task, CompilationUnitTree root, ClassTree leaf
   ) {
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     LineMap lines = root.getLineMap();
@@ -185,14 +170,6 @@ public class EditHelper {
     int line = (int) lines.getLineNumber(end);
     int column = (int) lines.getColumnNumber(end);
     return new Position(line - 1, column - 2);
-  }
-
-  public static String repeatSpaces(int count) {
-    StringBuilder result = new StringBuilder();
-    for (int i = 0; i < count; i++) {
-      result.append(" ");
-    }
-    return result.toString();
   }
 
   private static String printParameters(final ExecutableType method, final MethodTree source) {

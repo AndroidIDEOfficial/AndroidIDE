@@ -30,6 +30,7 @@ import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.ShortTypePrinter.NO_PACKAGE
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
@@ -123,7 +124,7 @@ class GenerateConstructorAction : FieldBasedAction() {
     val insertAt = EditHelper.insertAfter(task.task, task.root(), paths.last().leaf)
     val indent = EditHelper.indent(task.task, task.root(), paths.last().leaf)
     var text = constructor.toString()
-    text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+    text = text.replace("\n", "\n${indentationString(indent)}")
     text += "\n"
 
     ThreadUtils.runOnUiThread {

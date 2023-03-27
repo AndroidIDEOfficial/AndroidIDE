@@ -35,17 +35,18 @@ import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import io.github.rosemoe.sora.widget.CodeEditor
+import jdkx.lang.model.element.Modifier.FINAL
+import jdkx.lang.model.element.VariableElement
 import openjdk.source.tree.ClassTree
 import openjdk.source.util.TreePath
 import openjdk.source.util.Trees
-import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.CompletableFuture
-import jdkx.lang.model.element.Modifier.FINAL
-import jdkx.lang.model.element.VariableElement
 
 /**
  * Allows the user to select fields from the current class, then generates setters and getters for
@@ -138,7 +139,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
         body.addStatement(createReturnStmt(name))
       }
     var text = "\n" + JavaParserUtils.prettyPrint(method) { false }
-    text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+    text = text.replace("\n", "\n${indentationString(indent)}")
 
     return text
   }
@@ -154,7 +155,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
       }
 
     var text = "\n" + JavaParserUtils.prettyPrint(method) { false }
-    text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+    text = text.replace("\n", "\n${indentationString(indent)}")
 
     return text
   }

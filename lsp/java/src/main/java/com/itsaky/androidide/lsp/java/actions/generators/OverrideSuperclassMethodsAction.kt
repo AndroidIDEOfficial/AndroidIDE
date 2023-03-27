@@ -36,14 +36,12 @@ import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.Arrays
-import java.util.Optional
-import java.util.concurrent.CompletableFuture
 import jdkx.lang.model.element.ElementKind
 import jdkx.lang.model.element.ExecutableElement
 import jdkx.lang.model.element.Modifier
@@ -53,6 +51,9 @@ import jdkx.lang.model.type.ExecutableType
 import jdkx.tools.JavaFileObject
 import openjdk.source.tree.MethodTree
 import openjdk.source.util.Trees
+import java.util.Arrays
+import java.util.Optional
+import java.util.concurrent.CompletableFuture
 
 /**
  * Allows the user to override multiple methods from superclass at once.
@@ -231,7 +232,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
         val newImports = JavaParserUtils.collectImports(executableType)
         sb.append("\n")
         sb.append(method.toString())
-        sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
+        sb.replace(Regex(Regex.escape("\n")), "\n${indentationString(indent)}")
         sb.append("\n")
 
         newImports.removeIf {

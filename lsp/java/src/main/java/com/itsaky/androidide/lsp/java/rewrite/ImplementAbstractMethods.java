@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
@@ -112,7 +113,7 @@ public class ImplementAbstractMethods extends Rewrite {
               ExecutableElement method = (ExecutableElement) member;
               final MethodSpec methodSpec = MethodSpec.overriding(method).build();
               String text = "\n" + JavaPoetUtils.print(methodSpec, imports, false);
-              text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+              text = text.replaceAll("\n", "\n" + EditorUtilKt.indentationString(indent));
               insertText.add(text);
             }
           }

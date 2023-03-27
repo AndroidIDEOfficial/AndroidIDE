@@ -30,11 +30,15 @@ import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import io.github.rosemoe.sora.widget.CodeEditor
+import java.util.concurrent.CompletableFuture
+import jdkx.lang.model.element.VariableElement
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.VariableTree
 import openjdk.source.util.TreePath
@@ -44,9 +48,6 @@ import openjdk.tools.javac.code.Symbol.MethodSymbol
 import openjdk.tools.javac.tree.JCTree
 import openjdk.tools.javac.tree.TreeInfo
 import openjdk.tools.javac.util.Names
-import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.concurrent.CompletableFuture
-import jdkx.lang.model.element.VariableElement
 
 /**
  * Generates the `toString()` method for the current class.
@@ -149,7 +150,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
     body.addStatement(createReturnStatement(string.toString()))
 
     var text = "\n" + method.toString()
-    text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+    text = text.replace("\n", "\n${indentationString(indent)}")
     text += "\n"
 
     ThreadUtils.runOnUiThread {

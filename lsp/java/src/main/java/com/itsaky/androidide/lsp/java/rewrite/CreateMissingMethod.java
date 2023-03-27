@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.rewrite;
 import static com.itsaky.androidide.lsp.java.utils.EditHelper.indent;
 import static com.itsaky.androidide.lsp.java.utils.EditHelper.insertAfter;
 import static com.itsaky.androidide.lsp.java.utils.EditHelper.insertAtEndOfClass;
-import static com.itsaky.androidide.lsp.java.utils.EditHelper.repeatSpaces;
 
 import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
@@ -32,6 +31,7 @@ import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import com.itsaky.androidide.utils.ILogger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -84,8 +84,7 @@ public class CreateMissingMethod extends Rewrite {
       MethodTree currentMethod = surroundingMethod(path);
       final var insertTextBuilder = new StringBuilder("\n");
 
-      final var tabWidth = EditorPreferencesKt.getTabSize();
-      final var tab = repeatSpaces(tabWidth);
+      final var indent = EditorUtilKt.getIndentationString();
 
       final var isStatic = currentMethod.getModifiers().getFlags().contains(Modifier.STATIC) ||
         methodFinder.isStaticAccess();
@@ -93,10 +92,10 @@ public class CreateMissingMethod extends Rewrite {
       insertTextBuilder.append(
           printMethodHeader(task, call, returnType, methodFinder.isMemberSelect(), isStatic))
         .append(" {\n")
-        .append(tab)
+        .append(indent)
         .append(TODO_COMMENT)
         .append("\n")
-        .append(tab)
+        .append(indent)
         .append(createReturnStatement(returnType))
         .append("\n")
         .append("}");
@@ -119,11 +118,13 @@ public class CreateMissingMethod extends Rewrite {
         insertPoint = insertAfter(task.task, compilationUnit, surroundingMethod(path));
       }
 
-      final int indent = indent(task.task, compilationUnit, enclosingClass) + tabWidth;
-      insertText = insertText.replaceAll("\n", "\n" + repeatSpaces(indent));
+      final int indentSpaces =
+        indent(task.task, compilationUnit, enclosingClass) + EditorPreferencesKt.getTabSize();
+      insertText = insertText.replaceAll("\n", "\n" + EditorUtilKt.indentationString(indentSpaces));
       insertText += "\n";
 
-      final var edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
+      final var edits = new TextEdit[]{
+        new TextEdit(new Range(insertPoint, insertPoint), insertText)};
       return Collections.singletonMap(sourceFile, edits);
     });
   }
