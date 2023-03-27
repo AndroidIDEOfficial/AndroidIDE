@@ -27,6 +27,8 @@ import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
 import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
+import com.itsaky.androidide.preferences.internal.DELETE_EMPTY_LINES
+import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
@@ -40,6 +42,8 @@ import com.itsaky.androidide.preferences.internal.WORD_WRAP
 import com.itsaky.androidide.preferences.internal.autoSave
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.preferences.internal.completionsMatchLower
+import com.itsaky.androidide.preferences.internal.deleteEmptyLines
+import com.itsaky.androidide.preferences.internal.deleteTabsOnBackspace
 import com.itsaky.androidide.preferences.internal.drawEmptyLineWs
 import com.itsaky.androidide.preferences.internal.drawInnerWs
 import com.itsaky.androidide.preferences.internal.drawLeadingWs
@@ -92,6 +96,8 @@ private class CommonConfigurations(
     addPreference(UseICU())
     addPreference(AutoSave())
     addPreference(VisibiblePasswordFlag())
+    addPreference(DeleteEmptyLines())
+    addPreference(DeleteTabs())
     addPreference(CompletionsMatchLower())
   }
 }
@@ -156,9 +162,8 @@ private class TabSize(
   override val summary: Int? = string.msg_tab_size,
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
-  
-  @IgnoredOnParcel
-  private val choices = arrayOf("2", "4", "6", "8")
+
+  @IgnoredOnParcel private val choices = arrayOf("2", "4", "6", "8")
 
   override fun getChoices(context: Context): Array<String> {
     return choices
@@ -303,3 +308,19 @@ private class UseCustomFont(
   override val summary: Int? = string.idepref_customFont_summary,
   override val icon: Int? = drawable.ic_custom_font,
 ) : SwitchPreference(setValue = ::useCustomFont::set, getValue = ::useCustomFont::get)
+
+@Parcelize
+private class DeleteEmptyLines(
+  override val key: String = DELETE_EMPTY_LINES,
+  override val title: Int = R.string.idepref_deleteEmptyLines_title,
+  override val summary: Int? = R.string.idepref_deleteEmptyLines_summary,
+  override val icon: Int? = drawable.ic_backspace
+) : SwitchPreference(setValue = ::deleteEmptyLines::set, getValue = ::deleteEmptyLines::get)
+
+@Parcelize
+private class DeleteTabs(
+  override val key: String = DELETE_TABS_ON_BACKSPACE,
+  override val title: Int = R.string.idepref_deleteTabs_title,
+  override val summary: Int? = R.string.idepref_deleteTabs_summary,
+  override val icon: Int? = drawable.ic_backspace
+) : SwitchPreference(setValue = ::deleteTabsOnBackspace::set, getValue = ::deleteTabsOnBackspace::get)

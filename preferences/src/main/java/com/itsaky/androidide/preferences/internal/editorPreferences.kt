@@ -35,6 +35,8 @@ const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
 const val USE_CUSTOM_FONT = "idepref_editor_useCustomFont"
+const val DELETE_EMPTY_LINES = "idepref_editor_deleteEmptyLines"
+const val DELETE_TABS_ON_BACKSPACE = "idepref_editor_deleteTab"
 
 const val COLOR_SCHEME = "idepref_editor_colorScheme"
 const val DEFAULT_COLOR_SCHEME = "default"
@@ -139,4 +141,16 @@ var colorScheme: String
   get() = prefManager.getString(COLOR_SCHEME, DEFAULT_COLOR_SCHEME)
   set(value) {
     prefManager.putString(COLOR_SCHEME, value)
+  }
+
+var deleteEmptyLines : Boolean
+  get() = prefManager.getBoolean(DELETE_EMPTY_LINES, true)
+  set(value) {
+    prefManager.putBoolean(DELETE_EMPTY_LINES, value)
+  }
+
+var deleteTabsOnBackspace : Boolean
+  get() = prefManager.getBoolean(DELETE_TABS_ON_BACKSPACE, true)
+  set(value) {
+    prefManager.putBoolean(DELETE_TABS_ON_BACKSPACE, value)
   }

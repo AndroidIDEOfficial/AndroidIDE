@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.ui.editor;
 
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.DELETE_EMPTY_LINES;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.DELETE_TABS_ON_BACKSPACE;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_LINE_BREAK;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_PASSWORD;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_EMPTY_LINE;
@@ -28,6 +30,8 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.WORD_WRAP;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDeleteEmptyLines;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDeleteTabsOnBackspace;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawEmptyLineWs;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawInnerWs;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawLeadingWs;
@@ -203,6 +207,8 @@ public class CodeEditorView extends LinearLayout {
     onWordwrapPrefChanged();
     onMagnifierPrefChanged();
     onUseIcuPrefChanged();
+    onDeleteEmptyLinesPrefChanged();
+    onDeleteTabsPrefChanged();
   }
 
   protected void onMagnifierPrefChanged() {
@@ -257,14 +263,22 @@ public class CodeEditorView extends LinearLayout {
     binding.editor.setTextSize(textSize);
   }
 
-  private void onUseIcuPrefChanged() {
+  protected void onUseIcuPrefChanged() {
     binding.editor.getProps().useICULibToSelectWords = getUseIcu();
   }
 
-  private void onCustomFontPrefChanged() {
+  protected void onCustomFontPrefChanged() {
     var state = EditorPreferencesKt.getUseCustomFont();
     binding.editor.setTypefaceText(TypefaceUtilsKt.customOrJBMono(state));
     binding.editor.setTypefaceLineNumber(TypefaceUtilsKt.customOrJBMono(state));
+  }
+
+  protected void onDeleteEmptyLinesPrefChanged() {
+    binding.editor.getProps().deleteEmptyLineFast = getDeleteEmptyLines();
+  }
+
+  protected void onDeleteTabsPrefChanged() {
+    binding.editor.getProps().deleteMultiSpaces = getDeleteTabsOnBackspace() ? -1 : 1;
   }
 
   /**
@@ -321,6 +335,12 @@ public class CodeEditorView extends LinearLayout {
         break;
       case USE_CUSTOM_FONT:
         onCustomFontPrefChanged();
+        break;
+      case DELETE_EMPTY_LINES:
+        onDeleteEmptyLinesPrefChanged();
+        break;
+      case DELETE_TABS_ON_BACKSPACE:
+        onDeleteTabsPrefChanged();
         break;
     }
   }
