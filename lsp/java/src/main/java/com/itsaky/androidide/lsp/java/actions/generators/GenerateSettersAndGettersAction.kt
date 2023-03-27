@@ -34,6 +34,7 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
+import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
@@ -117,7 +118,7 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
       }
 
       val leaf = path.leaf
-      val indent = EditHelper.indent(task.task, task.root(file), leaf) + 4
+      val indent = EditHelper.indent(task.task, task.root(file), leaf) + tabSize
       sb.append(createGetter(element, indent))
       if (!element.modifiers.contains(FINAL)) {
         sb.append(createSetter(element, indent))

@@ -18,14 +18,28 @@
 package com.itsaky.androidide.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.rewrite.AddImport;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.projects.FileManager;
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.projects.util.StringSearch;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
+import jdkx.lang.model.element.ExecutableElement;
+import jdkx.lang.model.element.Modifier;
+import jdkx.lang.model.element.Name;
+import jdkx.lang.model.element.TypeElement;
+import jdkx.lang.model.type.ArrayType;
+import jdkx.lang.model.type.DeclaredType;
+import jdkx.lang.model.type.ExecutableType;
+import jdkx.lang.model.type.TypeMirror;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
@@ -35,33 +49,15 @@ import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
 import openjdk.source.util.Trees;
 
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
-
-import jdkx.lang.model.element.ExecutableElement;
-import jdkx.lang.model.element.Modifier;
-import jdkx.lang.model.element.Name;
-import jdkx.lang.model.element.TypeElement;
-import jdkx.lang.model.type.ArrayType;
-import jdkx.lang.model.type.DeclaredType;
-import jdkx.lang.model.type.ExecutableType;
-import jdkx.lang.model.type.TypeMirror;
-
 public class EditHelper {
 
-  public static List<TextEdit> addImportIfNeeded(
-      CompilerProvider compiler, Path file, Set<String> imports, String className) {
+  public static List<TextEdit> addImportIfNeeded(CompilerProvider compiler, Path file,
+                                                 Set<String> imports, String className
+  ) {
     final String pkgName = Extractors.packageName(className);
     final String star = pkgName + ".*";
-    if ("java.lang".equals(pkgName)
-        || imports.contains(className)
-        || imports.contains(star)
-        || file == null) {
+    if ("java.lang".equals(pkgName) || imports.contains(className) || imports.contains(star) ||
+      file == null) {
       return Collections.emptyList();
     }
 
@@ -74,8 +70,9 @@ public class EditHelper {
     return Arrays.asList(Objects.requireNonNull(addImport.rewrite(compiler).get(file)));
   }
 
-  public static TextEdit removeTree(
-      final JavacTask task, final CompilationUnitTree root, final Tree remove) {
+  public static TextEdit removeTree(final JavacTask task, final CompilationUnitTree root,
+                                    final Tree remove
+  ) {
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     LineMap lines = root.getLineMap();
     long start = pos.getStartPosition(root, remove);
@@ -90,8 +87,9 @@ public class EditHelper {
     return new TextEdit(range, "");
   }
 
-  public static String printMethod(
-      final ExecutableElement method, final ExecutableType parameterizedType, MethodTree source) {
+  public static String printMethod(final ExecutableElement method,
+                                   final ExecutableType parameterizedType, MethodTree source
+  ) {
     final StringBuilder buf = new StringBuilder();
     // TODO leading \n is extra, but needed for indent replaceAll trick
     buf.append("\n@Override\n");
@@ -136,8 +134,9 @@ public class EditHelper {
     return indent(root, leaf, pos);
   }
 
-  private static int indent(
-      @NonNull CompilationUnitTree root, Tree leaf, @NonNull SourcePositions pos) {
+  private static int indent(@NonNull CompilationUnitTree root, Tree leaf,
+                            @NonNull SourcePositions pos
+  ) {
     LineMap lines = root.getLineMap();
     long startClass = pos.getStartPosition(root, leaf);
     long startLine = lines.getStartPosition(lines.getLineNumber(startClass));
@@ -154,11 +153,12 @@ public class EditHelper {
         indent--;
       }
     }
-    return indent * 4;
+    return indent * EditorPreferencesKt.getTabSize();
   }
 
-  public static Position insertBefore(
-      final JavacTask task, final CompilationUnitTree root, final Tree member) {
+  public static Position insertBefore(final JavacTask task, final CompilationUnitTree root,
+                                      final Tree member
+  ) {
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     LineMap lines = root.getLineMap();
     long start = pos.getStartPosition(root, member);
@@ -166,8 +166,9 @@ public class EditHelper {
     return new Position(line - 1, 0);
   }
 
-  public static Position insertAfter(
-      final JavacTask task, final CompilationUnitTree root, final Tree member) {
+  public static Position insertAfter(final JavacTask task, final CompilationUnitTree root,
+                                     final Tree member
+  ) {
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     LineMap lines = root.getLineMap();
     long end = pos.getEndPosition(root, member);
@@ -175,8 +176,9 @@ public class EditHelper {
     return new Position(line, 0);
   }
 
-  public static Position insertAtEndOfClass(
-      JavacTask task, CompilationUnitTree root, ClassTree leaf) {
+  public static Position insertAtEndOfClass(JavacTask task, CompilationUnitTree root,
+                                            ClassTree leaf
+  ) {
     SourcePositions pos = Trees.instance(task).getSourcePositions();
     LineMap lines = root.getLineMap();
     long end = pos.getEndPosition(root, leaf);

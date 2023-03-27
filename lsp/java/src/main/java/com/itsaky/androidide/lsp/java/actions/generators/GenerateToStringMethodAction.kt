@@ -29,6 +29,7 @@ import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.actions.FieldBasedAction
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
+import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
@@ -113,7 +114,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
     val file = data.requirePath()
     val editor = data[CodeEditor::class.java]!!
     val trees = JavacTrees.instance(task.task)
-    val indent = EditHelper.indent(task.task, task.root(), type) + 4
+    val indent = EditHelper.indent(task.task, task.root(), type) + tabSize
     val insert = EditHelper.insertAtEndOfClass(task.task, task.root(file), type)
     val string = StringBuilder()
     var isFirst = true

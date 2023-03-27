@@ -19,6 +19,7 @@ package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
@@ -87,7 +88,7 @@ public class GenerateRecordConstructor extends Rewrite {
               .append(initializers)
               .append("\n}");
           String string = buf.toString();
-          int indent = EditHelper.indent(task.task, task.root(), typeTree) + 4;
+          int indent = EditHelper.indent(task.task, task.root(), typeTree) + EditorPreferencesKt.getTabSize();
           string = string.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
           string = string + "\n\n";
           Position insert = insertPoint(task, typeTree);

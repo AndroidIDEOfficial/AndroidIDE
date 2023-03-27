@@ -35,12 +35,11 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
+import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
-import openjdk.source.tree.MethodTree
-import openjdk.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.Arrays
 import java.util.Optional
@@ -52,6 +51,8 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.type.DeclaredType
 import jdkx.lang.model.type.ExecutableType
 import jdkx.tools.JavaFileObject
+import openjdk.source.tree.MethodTree
+import openjdk.source.util.Trees
 
 /**
  * Allows the user to override multiple methods from superclass at once.
@@ -190,7 +191,6 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     builder.show()
   }
 
-  @Suppress("Since15")
   private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
     val compiler =
       JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
@@ -205,7 +205,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
       val typeFinder = FindTypeDeclarationAt(task.task)
       val classTree = typeFinder.scan(task.root(), position)
       val thisClass = trees.getElement(typeFinder.path) as TypeElement
-      val indent = EditHelper.indent(task.task, task.root(), classTree) + 4
+      val indent = EditHelper.indent(task.task, task.root(), classTree) + tabSize
       val fileImports = task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
       val filePackage = task.root(file).`package`.packageName.toString()
 
