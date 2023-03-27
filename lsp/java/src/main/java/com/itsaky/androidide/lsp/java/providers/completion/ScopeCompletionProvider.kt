@@ -167,8 +167,7 @@ class ScopeCompletionProvider(
 
     val imports = mutableSetOf<String>()
     val methodSpec = builder.build()
-    var insertText = print(methodSpec, imports, false)
-    insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
+    val insertText = print(methodSpec, imports, false)
 
     abortIfCancelled()
     abortCompletionIfCancelled()
