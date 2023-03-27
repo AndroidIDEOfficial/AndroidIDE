@@ -202,7 +202,7 @@
   <string name="msg_preferences">পছন্দ</string>
   <string name="pref_changelog">চেঞ্জলগ</string>
   <string name="msg_editor_font_size">দয়া করে সম্পাদকের ডিফল্ট ফন্ট সাইজ বেছে নিন :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">এটি Gradle দ্বারা তৈরি ক্যাশে ডিরেক্টরি মুছে ফেলবে। আপনি এটি মুছে ফেললে, পরবর্তী বিল্ডটি স্বাভাবিকের চেয়ে কিছুটা বেশি সময় নিতে পারে কারণ Gradle প্রয়োজনীয় ফাইলগুলি আবার ডাউনলোড করবে।\n\nআপনি কি ক্যাশে মুছে ফেলার বিষয়ে নিশ্চিত?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">SDK তথ্য আরম্ভ করতে অক্ষম</string>
   <string name="err_cannot_preview_layout">লেআউট দেখাতে অক্ষম</string>
@@ -452,9 +452,9 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(EXPERIMENTAL) জাভা সোর্স ফাইলগুলি ত্রুটির জন্য বিশ্লেষণ করা হোক অথবা নয়।</string>
   <string name="title_reload_color_schemes">Color Scheme পুনরায় লোড করুন</string>
   <string name="msg_dir_picker_failed">ডিরেক্টরি পিকার শুরু করতে ব্যর্থ হয়েছে : %1$s</string>
-  <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+  <string name="msg_tooling_server_unavailable">টুলিং API সার্ভার অনুপলব্ধ৷ ত্রুটির জন্য বিল্ড আউটপুট এবং IDE লগ পরীক্ষা করুন।</string>
+  <string name="idepref_deleteEmptyLines_title">ব্যাকস্পেসে খালি লাইন মুছুন</string>
+  <string name="idepref_deleteEmptyLines_summary">সম্পাদকের একটি ব্যাকস্পেস কী ইভেন্টে খালি লাইন মুছে ফেলা উচিত কিনা।</string>
+  <string name="idepref_deleteTabs_title">ব্যাকস্পেসে ট্যাব মুছুন</string>
+  <string name="idepref_deleteTabs_summary">সক্রিয় থাকা অবস্থায়, ব্যাকস্পেস কী চাপলে সম্পাদক ট্যাবের প্রস্থের সমান স্পেস মুছে ফেলবে।</string>
 </resources>
