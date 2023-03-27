@@ -453,7 +453,7 @@
   <string name="title_reload_color_schemes">Recarregar esquemas de cores</string>
   <string name="msg_dir_picker_failed">Falha ao iniciar o seletor de diretório: %1$s</string>
   <string name="msg_tooling_server_unavailable">Servidor de ferramentas da API indisponível. Verifique os logs de compilação e IDE para erros.</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_title">Excluir linhas vazias no backspace</string>
   <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
   <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
   <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
