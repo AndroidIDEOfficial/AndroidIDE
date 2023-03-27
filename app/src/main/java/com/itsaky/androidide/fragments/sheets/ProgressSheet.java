@@ -22,15 +22,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
-import com.itsaky.androidide.utils.ILogger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
-  private final ILogger LOG = ILogger.newInstance("ProgressSheet");
   private LayoutProgressSheetBinding binding;
   private String message = "";
   private String subMessage = "";
@@ -41,25 +40,15 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     super.onViewCreated(view, savedInstanceState);
 
     binding.message.setText(message);
+
+    final var params = (ConstraintLayout.LayoutParams) binding.message.getLayoutParams();
     if (subMessageEnabled) {
       binding.subMessage.setText(subMessage);
       binding.subMessage.setVisibility(View.VISIBLE);
-      RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.removeRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
+      params.bottomToBottom = View.NO_ID;
     } else {
       binding.subMessage.setVisibility(View.GONE);
-      RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.addRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
+      params.bottomToBottom = LayoutParams.PARENT_ID;
     }
   }
 
@@ -96,7 +85,6 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     if (isShowing()) {
       binding.progress.setIndeterminateDrawable(drawable);
     }
-
     return this;
   }
 
