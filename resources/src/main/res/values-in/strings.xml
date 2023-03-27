@@ -453,8 +453,8 @@
   <string name="title_reload_color_schemes">Muat ulang skema warna</string>
   <string name="msg_dir_picker_failed">Gagal memulai pemilih direktori : %1$s</string>
   <string name="msg_tooling_server_unavailable">Server API perkakas tidak tersedia. Periksa keluaran build dan log IDE untuk kesalahan.</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+  <string name="idepref_deleteEmptyLines_title">Hapus baris kosong di backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Apakah editor harus menghapus baris kosong pada peristiwa kunci backspace tunggal.</string>
+  <string name="idepref_deleteTabs_title">Hapus tab di backspace</string>
+  <string name="idepref_deleteTabs_summary">Saat diaktifkan, editor akan menghapus spasi yang sama dengan lebar tab saat tombol backspace ditekan.</string>
 </resources>
