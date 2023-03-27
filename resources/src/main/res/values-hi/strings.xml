@@ -453,4 +453,8 @@
   <string name="title_reload_color_schemes">कलर स्कीम्स को पुनः लोड करें</string>
   <string name="msg_dir_picker_failed">डायरेक्टरी पिकर प्रारंभ करने में विफल : %1$s</string>
   <string name="msg_tooling_server_unavailable">टूलिंग एपीआई सर्वर अनुपलब्ध है। एरर के लिए बिल्ड आउटपुट और IDE लॉग जांचें।</string>
+  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
+  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
 </resources>
