@@ -460,4 +460,7 @@
   <string name="idepref_deleteTabs_summary">Saat diaktifkan, editor akan menghapus spasi yang sama dengan lebar tab saat tombol backspace ditekan.</string>
   <string name="btn_sync">Sync</string>
   <string name="btn_ignore_changes">Ignore these changes</string>
+  <string name="title_fix_imports">Fix imports</string>
+  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
+  <string name="title_class_chooser">Which %1$s?</string>
 </resources>
