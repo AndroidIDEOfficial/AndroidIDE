@@ -454,13 +454,13 @@
   <string name="title_reload_color_schemes">重新加载配色方案</string>
   <string name="msg_dir_picker_failed">启动目录选择器失败： %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API 服务器不可用。 检查构建输出和 IDE 日志是否有错误。</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
-  <string name="btn_sync">Sync</string>
-  <string name="btn_ignore_changes">Ignore these changes</string>
-  <string name="title_fix_imports">Fix imports</string>
-  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
-  <string name="title_class_chooser">Which %1$s?</string>
+  <string name="idepref_deleteEmptyLines_title">退格键删除空行</string>
+  <string name="idepref_deleteEmptyLines_summary">编辑器是否应在单个退格键事件中删除空行。</string>
+  <string name="idepref_deleteTabs_title">退格键删除制表符</string>
+  <string name="idepref_deleteTabs_summary">启用后，编辑器将在按下退格键时删除等于制表符宽度的空格。</string>
+  <string name="btn_sync">同步</string>
+  <string name="btn_ignore_changes">忽略修改</string>
+  <string name="title_fix_imports">修复导入</string>
+  <string name="msg_no_unresolved_classes">找不到未解析的类名</string>
+  <string name="title_class_chooser">哪个 %1$s？</string>
 </resources>
