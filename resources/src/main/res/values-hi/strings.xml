@@ -154,6 +154,7 @@
   <string name="action_closeOthers">अन्यो को बंद करें</string>
   <string name="action_closeThis">इसे बंद करें</string>
   <string name="all_saved">सभी फ़ाइलें सेव की गईं!</string>
+  <string name="save_failed">Failed to save files</string>
   <string name="msg_newfile_dest">डेस्टिनेशन: %s/</string>
   <string name="restype_drawable">ड्रावेबल</string>
   <string name="restype_layout">लेआउट</string>
@@ -457,4 +458,6 @@
   <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
   <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
   <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+  <string name="btn_sync">Sync</string>
+  <string name="btn_ignore_changes">Ignore these changes</string>
 </resources>
