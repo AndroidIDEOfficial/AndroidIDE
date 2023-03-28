@@ -49,6 +49,7 @@ public class AddSuppressWarningAnnotation extends Rewrite {
     this.erasedParameterTypes = erasedParameterTypes;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);

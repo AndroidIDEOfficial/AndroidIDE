@@ -57,6 +57,7 @@ public class GenerateRecordConstructor extends Rewrite {
     this.className = className;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     LOG.info("Generate default constructor for " + className + "...");

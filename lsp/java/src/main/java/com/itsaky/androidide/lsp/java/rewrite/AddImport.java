@@ -47,6 +47,7 @@ public class AddImport extends Rewrite {
     this.className = className;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final ParseTask task = compiler.parse(file);

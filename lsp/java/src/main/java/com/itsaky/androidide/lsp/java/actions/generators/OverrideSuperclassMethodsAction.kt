@@ -272,7 +272,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     for (name in imports) {
       val rewrite = AddImport(file, name)
       val edits = rewrite.rewrite(compiler)[file]
-      if (edits == null || edits.isEmpty()) {
+      if (edits.isNullOrEmpty()) {
         continue
       }
 

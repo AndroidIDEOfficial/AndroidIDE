@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
@@ -40,6 +41,7 @@ public class RemoveMethod extends Rewrite {
     this.erasedParameterTypes = erasedParameterTypes;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);

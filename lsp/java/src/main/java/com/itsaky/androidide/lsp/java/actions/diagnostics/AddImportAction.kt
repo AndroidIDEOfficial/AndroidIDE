@@ -169,8 +169,7 @@ class AddImportAction : BaseJavaCodeAction() {
     for (index in rewrites.indices) {
       val name = titles[index]
       val rewrite = rewrites[index]
-      val action = rewrite.asCodeActions(compiler, name)
-      actions.add(action)
+      rewrite.asCodeActions(compiler, name)?.let { actions.add(it) }
     }
 
     when (actions.size) {
