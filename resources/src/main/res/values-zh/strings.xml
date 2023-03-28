@@ -154,7 +154,7 @@
   <string name="action_closeOthers">关闭其他</string>
   <string name="action_closeThis">关闭当前</string>
   <string name="all_saved">所有文件已保存!</string>
-  <string name="save_failed">Failed to save files</string>
+  <string name="save_failed">保存文件失败</string>
   <string name="msg_newfile_dest">目标: %s/</string>
   <string name="restype_drawable">可绘制资源</string>
   <string name="restype_layout">布局</string>
