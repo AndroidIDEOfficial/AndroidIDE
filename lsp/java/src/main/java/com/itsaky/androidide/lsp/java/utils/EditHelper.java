@@ -53,20 +53,27 @@ public class EditHelper {
   public static List<TextEdit> addImportIfNeeded(CompilerProvider compiler, Path file,
                                                  Set<String> imports, String className
   ) {
-    final String pkgName = Extractors.packageName(className);
-    final String star = pkgName + ".*";
-    if ("java.lang".equals(pkgName) || imports.contains(className) || imports.contains(star) ||
-      file == null) {
-      return Collections.emptyList();
-    }
-
-    final var filePackage = StringSearch.packageName(file);
-    if (filePackage != null && filePackage.equals(pkgName)) {
+    if (file == null || containsImport(file, imports, className)) {
       return Collections.emptyList();
     }
 
     AddImport addImport = new AddImport(file, className);
     return Arrays.asList(Objects.requireNonNull(addImport.rewrite(compiler).get(file)));
+  }
+
+  public static boolean containsImport(@NonNull Path file, Set<String> imports, String className) {
+    if (imports == null || imports.isEmpty()) {
+      return false;
+    }
+
+    final String pkgName = Extractors.packageName(className);
+    final String star = pkgName + ".*";
+    if ("java.lang".equals(pkgName) || imports.contains(className) || imports.contains(star)) {
+      return true;
+    }
+
+    final var filePackage = StringSearch.packageName(file);
+    return filePackage != null && filePackage.equals(pkgName);
   }
 
   public static TextEdit removeTree(final JavacTask task, final CompilationUnitTree root,

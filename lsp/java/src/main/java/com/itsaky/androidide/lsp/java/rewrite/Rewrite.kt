@@ -37,7 +37,7 @@ abstract class Rewrite {
    * @param title The title for the code action.
    * @return The code action item.
    */
-  fun asCodeActions(compiler: CompilerProvider, title: String?): CodeActionItem? {
+  fun asCodeActions(compiler: CompilerProvider, title: String): CodeActionItem? {
     val edits = rewrite(compiler)
     if (edits.isEmpty()) {
       return null
@@ -52,7 +52,7 @@ abstract class Rewrite {
       changes.add(change)
     }
     val action = CodeActionItem()
-    action.title = title!!
+    action.title = title
     action.kind = CodeActionKind.QuickFix
     action.changes = changes
     finalizeCodeAction(action)

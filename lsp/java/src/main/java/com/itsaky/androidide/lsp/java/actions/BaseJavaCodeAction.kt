@@ -25,9 +25,11 @@ import com.itsaky.androidide.actions.EditorActionItem
 import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireFile
+import com.itsaky.androidide.lsp.api.ILanguageClient
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
+import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.DocumentUtils
@@ -37,6 +39,7 @@ import java.io.File
 
 /**
  * Base class for java code actions
+ *
  * @author Akash Yadav
  */
 abstract class BaseJavaCodeAction : EditorActionItem {
@@ -47,7 +50,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
 
   protected abstract val titleTextRes: Int
-  
+
   override fun prepare(data: ActionData) {
     if (
       !data.hasRequiredData(Context::class.java, JavaLanguageServer::class.java, File::class.java)
@@ -67,20 +70,37 @@ abstract class BaseJavaCodeAction : EditorActionItem {
 
   fun performCodeAction(data: ActionData, result: Rewrite) {
     val server = ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)!!
-    val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
+    val compiler = data.requireCompiler()
     val client = server.client!!
 
     val file = data.requireFile()
 
-    val actions = try {
-      result.asCodeActions(compiler, label)
-    } catch (e: Exception) {
-      flashError(e.cause?.message ?: e.message)
-      ILogger.instance().error(e)
-      return
-    }
+    val actions =
+      try {
+        result.asCodeActions(compiler, label)
+      } catch (e: Exception) {
+        flashError(e.cause?.message ?: e.message)
+        ILogger.instance().error(e)
+        return
+      }
 
     client.performCodeAction(file, actions)
+  }
+
+  protected fun ActionData.requireLanguageServer(): JavaLanguageServer {
+    return ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
+      as JavaLanguageServer
+  }
+
+  protected fun ActionData.getLanguageClient() : ILanguageClient? {
+    return requireLanguageServer().client
+  }
+
+  protected fun ActionData.requireCompiler(): JavaCompilerService {
+    val module = ProjectManager.findModuleForFile(requireFile())
+    requireNotNull(module) {
+      "Cannot get compiler instance. Unable to find module for file: ${requireFile().name}"
+    }
+    return JavaCompilerProvider.get(module)
   }
 }
