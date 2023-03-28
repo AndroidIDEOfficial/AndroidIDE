@@ -152,9 +152,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
       return
     }
     if (event.isSelected) {
-      if (!isShowing) {
-        editor.post(::displayWindow)
-      }
+      editor.post { displayWindow(isShowing) }
       mLastPosition = -1
     } else {
       var show = false
@@ -240,7 +238,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     }
   }
 
-  open fun displayWindow() {
+  @JvmOverloads
+  open fun displayWindow(update: Boolean = false) {
     var top: Int
     val cursor = editor.cursor
     top =
@@ -258,7 +257,9 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     val handleRightX = editor.getOffset(editor.cursor.rightLine, editor.cursor.rightColumn)
     val panelX = computePanelX(cursor, handleLeftX, handleRightX)
     setLocationAbsolutely(panelX, top)
-    show()
+    if (!update) {
+      show()
+    }
   }
 
   private fun computePanelX(cursor: Cursor, handleLeftX: Float, handleRightX: Float): Int {
@@ -331,12 +332,6 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   }
 
   override fun show() {
-
-    if (editor.searcher.isSearching) {
-      // Do not show if user is searching text
-      return
-    }
-
     if (list.parent != null) {
       (list.parent as ViewGroup).removeView(list)
     }
