@@ -154,6 +154,7 @@
   <string name="action_closeOthers">Tutup lainnya</string>
   <string name="action_closeThis">Tutup ini</string>
   <string name="all_saved">Semua file tersimpan!</string>
+  <string name="save_failed">Failed to save files</string>
   <string name="msg_newfile_dest">Tujuan: %s/</string>
   <string name="restype_drawable">Drawable</string>
   <string name="restype_layout">Layout</string>
@@ -457,4 +458,6 @@
   <string name="idepref_deleteEmptyLines_summary">Apakah editor harus menghapus baris kosong pada peristiwa kunci backspace tunggal.</string>
   <string name="idepref_deleteTabs_title">Hapus tab di backspace</string>
   <string name="idepref_deleteTabs_summary">Saat diaktifkan, editor akan menghapus spasi yang sama dengan lebar tab saat tombol backspace ditekan.</string>
+  <string name="btn_sync">Sync</string>
+  <string name="btn_ignore_changes">Ignore these changes</string>
 </resources>
