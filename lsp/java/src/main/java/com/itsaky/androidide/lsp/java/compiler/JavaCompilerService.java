@@ -229,7 +229,7 @@ public class JavaCompilerService implements CompilerProvider {
         name = name.replace('/', '.');
       }
 
-      if (name.endsWith(".$simpleName")) {
+      if (name.endsWith("." + simpleName)) {
         names.add(name);
         if (onlyOne) {
           break;
