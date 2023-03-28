@@ -154,6 +154,7 @@
   <string name="action_closeOthers">অন্যদের বন্ধ করুন</string>
   <string name="action_closeThis">এটি বন্ধ করুন</string>
   <string name="all_saved">সমস্ত ফাইল সংরক্ষিত!</string>
+  <string name="save_failed">Failed to save files</string>
   <string name="msg_newfile_dest">গন্তব্য: %s/</string>
   <string name="restype_drawable">ড্রয়েবল</string>
   <string name="restype_layout">লেআউট</string>
@@ -457,4 +458,6 @@
   <string name="idepref_deleteEmptyLines_summary">সম্পাদকের একটি ব্যাকস্পেস কী ইভেন্টে খালি লাইন মুছে ফেলা উচিত কিনা।</string>
   <string name="idepref_deleteTabs_title">ব্যাকস্পেসে ট্যাব মুছুন</string>
   <string name="idepref_deleteTabs_summary">সক্রিয় থাকা অবস্থায়, ব্যাকস্পেস কী চাপলে সম্পাদক ট্যাবের প্রস্থের সমান স্পেস মুছে ফেলবে।</string>
+  <string name="btn_sync">Sync</string>
+  <string name="btn_ignore_changes">Ignore these changes</string>
 </resources>
