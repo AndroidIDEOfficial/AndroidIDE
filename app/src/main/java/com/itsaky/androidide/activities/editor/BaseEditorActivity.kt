@@ -80,16 +80,19 @@ import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.LogReceiver
-import com.itsaky.androidide.ui.MaterialBanner
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
+import com.itsaky.androidide.utils.DURATION_INDEFINITE
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashbarBuilder
 import com.itsaky.androidide.utils.resolveAttr
+import com.itsaky.androidide.utils.showOnUiThread
+import com.itsaky.androidide.utils.withIcon
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -191,13 +194,11 @@ abstract class BaseEditorActivity :
     val packageName = onResult(this, intent)
     if (packageName != null) {
       Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-        .setAction(string.yes) {
-          tryLaunchApp(packageName)
-        }
+        .setAction(string.yes) { tryLaunchApp(packageName) }
         .show()
     }
   }
-  
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -385,13 +386,23 @@ abstract class BaseEditorActivity :
 
   fun notifySyncNeeded(onConfirm: () -> Unit) {
     val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
-    if (buildService != null && !buildService.isBuildInProgress) {
-      getSyncBanner()?.apply {
-        setNegative(android.R.string.cancel, null)
-        setPositive(android.R.string.ok) { onConfirm() }
-        show()
+    if (buildService == null || buildService.isBuildInProgress) return
+
+    flashbarBuilder(
+        duration = DURATION_INDEFINITE,
+        backgroundColor = resolveAttr(attr.colorSecondaryContainer),
+        messageColor = resolveAttr(attr.colorOnSecondaryContainer)
+      )
+      .withIcon(drawable.ic_sync, colorFilter = resolveAttr(attr.colorOnSecondaryContainer))
+      .message(string.msg_sync_needed)
+      .positiveActionText(string.btn_sync)
+      .positiveActionTapListener {
+        onConfirm()
+        it.dismiss()
       }
-    }
+      .negativeActionText(string.btn_ignore_changes)
+      .negativeActionTapListener { it.dismiss() }
+      .showOnUiThread()
   }
 
   open fun getFileTreeFragment(): FileTreeFragment? {
@@ -406,7 +417,7 @@ abstract class BaseEditorActivity :
     viewModel.statusText = text
     viewModel.statusGravity = gravity
   }
-  
+
   private fun tryLaunchApp(packageName: String) {
     val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
     launchIntent?.let {
@@ -627,17 +638,6 @@ abstract class BaseEditorActivity :
     builder.setMessage(string.msg_need_help)
     builder.setPositiveButton(string.ok, null)
     builder.create().show()
-  }
-
-  private fun getSyncBanner(): MaterialBanner? {
-    return binding.run {
-      return@run syncBanner
-        .setContentTextColor(resolveAttr(attr.colorOnPrimaryContainer))
-        .setBannerBackgroundColor(resolveAttr(attr.colorPrimaryContainer))
-        .setButtonTextColor(resolveAttr(attr.colorOnPrimaryContainer))
-        .setIcon(drawable.ic_sync)
-        .setContentText(string.msg_sync_needed)
-    }
   }
 
   open fun installationSessionCallback(): SessionCallback {

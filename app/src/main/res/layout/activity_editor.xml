@@ -32,12 +32,6 @@
         android:layout_height="wrap_content"
         android:indeterminate="true" />
 
-      <com.itsaky.androidide.ui.MaterialBanner
-        android:id="@+id/syncBanner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
       <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         style="@style/AppTheme.TabLayout"

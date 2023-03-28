@@ -652,7 +652,7 @@ class Flashbar private constructor(private var builder: Builder) {
     RIGHT
   }
 
-  interface OnActionTapListener {
+  fun interface OnActionTapListener {
     fun onActionTapped(bar: Flashbar)
   }
 

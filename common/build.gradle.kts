@@ -25,10 +25,10 @@ dependencies {
     implementation(projects.eventbusEvents)
     implementation(projects.lexers)
     implementation(projects.resources)
-    implementation(projects.subprojects.flashbar)
     
     api(projects.shared)
     api(projects.logger)
+    api(projects.subprojects.flashbar)
     
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)
