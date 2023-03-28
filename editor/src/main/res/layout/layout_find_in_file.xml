@@ -20,7 +20,16 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:background="?attr/colorPrimaryContainer">
+  android:background="?attr/colorSurface">
+
+  <View
+    android:id="@+id/top_border"
+    android:layout_width="0dp"
+    android:layout_height="0.5dp"
+    android:background="?attr/colorOutline"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
   <EditText
     android:id="@+id/search_input"
@@ -36,7 +45,7 @@
     android:maxLines="1"
     app:layout_constraintEnd_toStartOf="@id/more_options"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/top_border"
     tools:text="AndroidIDE" />
 
   <androidx.appcompat.widget.AppCompatImageButton
