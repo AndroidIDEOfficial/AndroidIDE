@@ -460,4 +460,7 @@
   <string name="idepref_deleteTabs_summary">সক্রিয় থাকা অবস্থায়, ব্যাকস্পেস কী চাপলে সম্পাদক ট্যাবের প্রস্থের সমান স্পেস মুছে ফেলবে।</string>
   <string name="btn_sync">Sync</string>
   <string name="btn_ignore_changes">এই পরিবর্তনগুলি উপেক্ষা করুন</string>
+  <string name="title_fix_imports">Fix imports</string>
+  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
+  <string name="title_class_chooser">Which %1$s?</string>
 </resources>
