@@ -81,22 +81,9 @@ class AddImportAction : BaseJavaCodeAction() {
       return
     }
 
-    var found = false
-    val simpleName = jcDiagnostic.args[1]
-    for (name in compiler.publicTopLevelTypes()) {
-      var klass = name
-
-      // This will be true in a test environment
-      if (klass.contains("/")) {
-        klass = name.replace('/', '.')
-      }
-
-      if (klass.endsWith(".$simpleName")) {
-        found = true
-        // There is at least one class to import
-        break
-      }
-    }
+    val found =
+      jcDiagnostic.args[1]?.toString()?.let { compiler.findQualifiedNames(it, true).isNotEmpty() }
+        ?: false
 
     visible = found
     enabled = found

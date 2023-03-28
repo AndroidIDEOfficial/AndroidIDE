@@ -221,6 +221,25 @@ public class JavaCompilerService implements CompilerProvider {
   }
 
   @Override
+  public List<String> findQualifiedNames(String simpleName, boolean onlyOne) {
+    final var names = new ArrayList<String>();
+    for (var name : publicTopLevelTypes()) {
+      // This will be true in a test environment
+      if (name.contains("/")) {
+        name = name.replace('/', '.');
+      }
+
+      if (name.endsWith(".$simpleName")) {
+        names.add(name);
+        if (onlyOne) {
+          break;
+        }
+      }
+    }
+    return names;
+  }
+
+  @Override
   public ParseTask parse(Path file) {
     Parser parser = Parser.parseFile(file);
     return new ParseTask(parser.task, parser.root);
