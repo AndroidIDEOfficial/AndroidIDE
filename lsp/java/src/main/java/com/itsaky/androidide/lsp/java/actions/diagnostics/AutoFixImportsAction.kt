@@ -163,7 +163,7 @@ class AutoFixImportsAction : BaseJavaCodeAction() {
     action.title = data.requireContext().getString(R.string.title_fix_imports)
     action.kind = CodeActionKind.QuickFix
     action.changes = listOf(change)
-    client.performCodeAction(data.requireFile(), action)
+    client.performCodeAction(action)
   }
 
   /**

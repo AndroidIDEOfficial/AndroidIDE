@@ -44,10 +44,10 @@ abstract class Rewrite {
     }
 
     val changes: MutableList<DocumentChange> = ArrayList(0)
-    for (key in edits.keys) {
-      val textEdits = edits[key] ?: continue
+    for (file in edits.keys) {
+      val textEdits = edits[file] ?: continue
       val change = DocumentChange()
-      change.file = key
+      change.file = file
       change.edits = textEdits.asList()
       changes.add(change)
     }

@@ -159,14 +159,14 @@ class AddImportAction : BaseJavaCodeAction() {
         log.warn("No rewrites found. Cannot perform action")
       }
       1 -> {
-        client.performCodeAction(file, actions[0])
+        client.performCodeAction(actions[0])
       }
       else -> {
         val builder = newDialogBuilder(data)
         builder.setTitle(label)
         builder.setItems(toArray(titles, String::class.java)) { d, w ->
           d.dismiss()
-          client.performCodeAction(file, actions[w])
+          client.performCodeAction(actions[w])
         }
         builder.show()
       }

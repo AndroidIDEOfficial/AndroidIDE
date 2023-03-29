@@ -84,7 +84,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
         return
       }
 
-    client.performCodeAction(file, actions)
+    client.performCodeAction(actions)
   }
 
   protected fun ActionData.requireLanguageServer(): JavaLanguageServer {

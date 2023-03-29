@@ -49,11 +49,6 @@ open class ActiveDocument(
     val start = event.changeRange.start.requireIndex()
     val end = event.changeRange.end.requireIndex()
 
-    log.debug("----------------------")
-    log.logThis()
-    log.debug(event)
-    log.debug("----------------------")
-
     when (event.changeType) {
       ChangeType.DELETE -> _content.delete(start, end)
       ChangeType.INSERT -> _content.insert(start, text)
