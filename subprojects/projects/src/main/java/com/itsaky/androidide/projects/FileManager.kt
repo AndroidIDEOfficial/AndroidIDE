@@ -121,6 +121,9 @@ object FileManager : EventReceiver {
       return
     }
 
+    document.version = event.version
+    document.modified = Instant.now()
+
     // document is already open
     // patch the changes
     document.patch(event)

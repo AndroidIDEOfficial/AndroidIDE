@@ -33,8 +33,8 @@ import java.time.Instant
  */
 open class ActiveDocument(
   val file: Path,
-  val version: Int,
-  val modified: Instant,
+  var version: Int,
+  var modified: Instant,
   content: String = ""
 ) : Closeable {
 
