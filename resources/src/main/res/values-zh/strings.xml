@@ -422,7 +422,7 @@
   <string name="replace">替换</string>
   <string name="replaceAll">全部替换</string>
   <string name="title_run_tasks">运行任务</string>
-  <string name="hint_search_tasks">搜索任务…</string>
+  <string name="hint_search_tasks">搜索任务...</string>
   <string name="title_selected_tasks">选定的任务</string>
   <string name="msg_err_select_tasks">请选择要运行的任务</string>
   <string name="title_confirmation">确认</string>
@@ -451,9 +451,9 @@
   <string name="msg_app_launch_failed">启动应用程序失败。请参阅 IDE 日志以获取详细信息。</string>
   <string name="idepref_java_diagnosticEnabled_title">启用诊断</string>
   <string name="idepref_java_diagnosticsEnabled_summary">（实验性）是否应该分析 Java 源文件的错误。</string>
-  <string name="title_reload_color_schemes">重新加载配色方案</string>
-  <string name="msg_dir_picker_failed">启动目录选择器失败： %1$s</string>
-  <string name="msg_tooling_server_unavailable">Tooling API 服务器不可用。 检查构建输出和 IDE 日志是否有错误。</string>
+  <string name="title_reload_color_schemes">重载配色方案</string>
+  <string name="msg_dir_picker_failed">无法启动目录选取器：%1$s</string>
+  <string name="msg_tooling_server_unavailable">Tooling API 服务器不可用。检查构建输出和 IDE 日志是否有错误。</string>
   <string name="idepref_deleteEmptyLines_title">退格键删除空行</string>
   <string name="idepref_deleteEmptyLines_summary">编辑器是否应在单个退格键事件中删除空行。</string>
   <string name="idepref_deleteTabs_title">退格键删除制表符</string>
