@@ -366,7 +366,7 @@
   <string name="idepref_customFont_title">使用自定义字体</string>
   <string name="idepref_customFont_summary">如果启用，位于“/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf”的文件将用作编辑器字体。</string>
   <string name="idepref_chooseFont_title">选择自定义字体</string>
-  <string name="idepref_chooseFont_summary">选择要在终端中使用的字体(也可以是编辑器中)</string>
+  <string name="idepref_chooseFont_summary">选择要在终端中（或者，在编辑器中）使用的字体。</string>
   <string name="msg_installing_apk">正在安装 APK...</string>
   <string name="msg_installed_successfully">安装成功</string>
   <string name="msg_action_open_application">您要打开应用程序吗？</string>
