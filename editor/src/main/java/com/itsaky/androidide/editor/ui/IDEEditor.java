@@ -110,8 +110,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var cursor = getCursor();
 
     // we do not use getSignatureHelpWindow() to avoid initializing the window unnecessarily
-    if (languageClient == null || cursor == null || cursor.isSelected()
-      || (signatureHelpWindow != null && signatureHelpWindow.isShowing())) {
+    if (languageClient == null || cursor == null || cursor.isSelected() ||
+      (signatureHelpWindow != null && signatureHelpWindow.isShowing())) {
       return;
     }
 
@@ -198,9 +198,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-public void updateFile(File file) {
+  public void updateFile(File file) {
     this.file = file;
-}
+  }
 
   @NonNull
   @Override
@@ -216,8 +216,8 @@ public void updateFile(File file) {
       return;
     }
 
-    final var openEvent =
-      new DocumentOpenEvent(getFile().toPath(), getText().toString(), fileVersion = 0);
+    final var openEvent = new DocumentOpenEvent(getFile().toPath(), getText().toString(),
+      fileVersion = 0);
     EventBus.getDefault().post(openEvent);
   }
 
@@ -233,27 +233,20 @@ public void updateFile(File file) {
   @Override
   public void signatureHelp() {
     if (languageServer != null && getFile() != null) {
-      final CompletableFuture<SignatureHelp> future =
-        CompletableFuture.supplyAsync(
-          () ->
-            languageServer.signatureHelp(
-              new SignatureHelpParams(
-                getFile().toPath(),
-                getCursorLSPPosition())));
+      final CompletableFuture<SignatureHelp> future = CompletableFuture.supplyAsync(
+        () -> languageServer.signatureHelp(
+          new SignatureHelpParams(getFile().toPath(), getCursorLSPPosition())));
 
-      future.whenComplete(
-        (help, error) -> {
-          if (help == null
-            || languageClient == null
-            || future.isCancelled()
-            || future.isCompletedExceptionally()) {
-            LOG.error("An error occurred while finding signature help", error);
-            return;
-          }
+      future.whenComplete((help, error) -> {
+        if (help == null || languageClient == null || future.isCancelled() ||
+          future.isCompletedExceptionally()) {
+          LOG.error("An error occurred while finding signature help", error);
+          return;
+        }
 
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
-        });
+        //noinspection ConstantConditions
+        ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
+      });
     }
   }
 
@@ -298,11 +291,8 @@ public void updateFile(File file) {
   @Override
   public void setSelection(@NonNull Range range) {
     if (isValidPosition(range.getStart(), true) && isValidPosition(range.getEnd(), true)) {
-      setSelectionRegion(
-        range.getStart().getLine(),
-        range.getStart().getColumn(),
-        range.getEnd().getLine(),
-        range.getEnd().getColumn());
+      setSelectionRegion(range.getStart().getLine(), range.getStart().getColumn(),
+        range.getEnd().getLine(), range.getEnd().getColumn());
     } else {
       LOG.warn("Selection range is invalid", range);
     }
@@ -366,9 +356,8 @@ public void updateFile(File file) {
     final var start = range.getStart();
     final var end = range.getEnd();
 
-    return isValidPosition(start, allowColumnEqual)
-      && isValidPosition(end, allowColumnEqual)
-      && start.compareTo(end) < 0; // make sure start position is before end position
+    return isValidPosition(start, allowColumnEqual) && isValidPosition(end, allowColumnEqual) &&
+      start.compareTo(end) < 0; // make sure start position is before end position
   }
 
   /**
@@ -383,8 +372,8 @@ public void updateFile(File file) {
       return false;
     }
 
-    return isValidLine(position.getLine())
-      && isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
+    return isValidLine(position.getLine()) &&
+      isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
   }
 
   /**
@@ -484,59 +473,50 @@ public void updateFile(File file) {
       return;
     }
 
-    final ProgressDialog pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.msg_finding_definition));
+    final ProgressDialog pd = ProgressDialog.show(getContext(), null,
+      getContext().getString(string.msg_finding_definition));
 
     try {
-      final CompletableFuture<DefinitionResult> future =
-        CompletableFuture.supplyAsync(
-          () -> {
-            final var params =
-              new com.itsaky.androidide.lsp.models.DefinitionParams(
-                getFile().toPath(),
-                new com.itsaky.androidide.models.Position(
-                  getCursor().getLeftLine(), getCursor().getLeftColumn()));
+      final CompletableFuture<DefinitionResult> future = CompletableFuture.supplyAsync(() -> {
+        final var params = new com.itsaky.androidide.lsp.models.DefinitionParams(getFile().toPath(),
+          new com.itsaky.androidide.models.Position(getCursor().getLeftLine(),
+            getCursor().getLeftColumn()));
 
-            return languageServer.findDefinition(params);
-          });
+        return languageServer.findDefinition(params);
+      });
 
-      future.whenComplete(
-        (result, error) -> {
-          if (result == null
-            || languageClient == null
-            || future.isCancelled()
-            || future.isCompletedExceptionally()) {
-            LOG.error("An error occurred while finding definition", error);
-            showDefinitionNotFound(pd);
-            return;
+      future.whenComplete((result, error) -> {
+        if (result == null || languageClient == null || future.isCancelled() ||
+          future.isCompletedExceptionally()) {
+          LOG.error("An error occurred while finding definition", error);
+          showDefinitionNotFound(pd);
+          return;
+        }
+
+        final var locations = result.getLocations();
+        if (locations.size() == 0) {
+          LOG.error("No definitions found", "Size:", locations.size());
+          showDefinitionNotFound(pd);
+          return;
+        }
+
+        //noinspection ConstantConditions
+        ThreadUtils.runOnUiThread(() -> {
+          if (locations.size() == 1) {
+            var location = locations.get(0);
+            if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
+              setSelection(location.getRange());
+              return;
+            }
+            languageClient.showDocument(
+              new ShowDocumentParams(location.getFile(), location.getRange()));
+          } else {
+            languageClient.showLocations(locations);
           }
-
-          final var locations = result.getLocations();
-          if (locations.size() == 0) {
-            LOG.error("No definitions found", "Size:", locations.size());
-            showDefinitionNotFound(pd);
-            return;
-          }
-
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(
-            () -> {
-              if (locations.size() == 1) {
-                var location = locations.get(0);
-                if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
-                  setSelection(location.getRange());
-                  return;
-                }
-                languageClient.showDocument(
-                  new ShowDocumentParams(location.getFile(), location.getRange()));
-              } else {
-                languageClient.showLocations(locations);
-              }
-            });
-
-          dismissOnUiThread(pd);
         });
+
+        dismissOnUiThread(pd);
+      });
     } catch (Throwable th) {
       LOG.error("An error occurred while finding definition", th);
       showDefinitionNotFound(pd);
@@ -551,11 +531,10 @@ public void updateFile(File file) {
   @SuppressWarnings("deprecation")
   private void showDefinitionNotFound(final ProgressDialog pd) {
     //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(
-      () -> {
-        FlashbarUtilsKt.flashError(string.msg_no_definition);
-        pd.dismiss();
-      });
+    ThreadUtils.runOnUiThread(() -> {
+      FlashbarUtilsKt.flashError(string.msg_no_definition);
+      pd.dismiss();
+    });
   }
 
   /**
@@ -581,22 +560,16 @@ public void updateFile(File file) {
       return;
     }
 
-    @SuppressWarnings("deprecation") final ProgressDialog pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.msg_finding_references));
+    @SuppressWarnings("deprecation") final ProgressDialog pd = ProgressDialog.show(getContext(),
+      null, getContext().getString(string.msg_finding_references));
 
     try {
-      final var future =
-        CompletableFuture.supplyAsync(
-          () -> {
-            final var referenceParams =
-              new ReferenceParams(
-                getFile().toPath(),
-                new com.itsaky.androidide.models.Position(
-                  getCursor().getLeftLine(), getCursor().getLeftColumn()),
-                true);
-            return languageServer.findReferences(referenceParams);
-          });
+      final var future = CompletableFuture.supplyAsync(() -> {
+        final var referenceParams = new ReferenceParams(getFile().toPath(),
+          new com.itsaky.androidide.models.Position(getCursor().getLeftLine(),
+            getCursor().getLeftColumn()), true);
+        return languageServer.findReferences(referenceParams);
+      });
 
       future.whenComplete((result, error) -> onFindReferencesResult(pd, future, result, error));
     } catch (Throwable th) {
@@ -606,15 +579,12 @@ public void updateFile(File file) {
   }
 
   @SuppressWarnings("deprecation")
-  private void onFindReferencesResult(
-    final ProgressDialog pd,
-    final CompletableFuture<ReferenceResult> future,
-    final ReferenceResult result,
-    final Throwable error) {
-    if (result == null
-      || languageClient == null
-      || future.isCancelled()
-      || future.isCompletedExceptionally()) {
+  private void onFindReferencesResult(final ProgressDialog pd,
+                                      final CompletableFuture<ReferenceResult> future,
+                                      final ReferenceResult result, final Throwable error
+  ) {
+    if (result == null || languageClient == null || future.isCancelled() ||
+      future.isCompletedExceptionally()) {
       LOG.error("An error occurred while finding references", error);
       showReferencesNotFound(pd);
       return;
@@ -647,11 +617,10 @@ public void updateFile(File file) {
   @SuppressWarnings("deprecation")
   private void showReferencesNotFound(final ProgressDialog pd) {
     //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(
-      () -> {
-        FlashbarUtilsKt.flashError(string.msg_no_references);
-        pd.dismiss();
-      });
+    ThreadUtils.runOnUiThread(() -> {
+      FlashbarUtilsKt.flashError(string.msg_no_references);
+      pd.dismiss();
+    });
   }
 
   /**
@@ -666,32 +635,29 @@ public void updateFile(File file) {
     }
 
     //noinspection deprecation
-    final var pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.please_wait), true, false);
-    final CompletableFuture<Range> future =
-      CompletableFuture.supplyAsync(
-        () ->
-          languageServer.expandSelection(
-            new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
+    final var pd = ProgressDialog.show(getContext(), null,
+      getContext().getString(string.please_wait), true, false);
+    final CompletableFuture<Range> future = CompletableFuture.supplyAsync(
+      () -> languageServer.expandSelection(
+        new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
 
-    future.whenComplete(
-      ((range, throwable) -> {
-        pd.dismiss();
+    future.whenComplete(((range, throwable) -> {
+      pd.dismiss();
 
-        if (throwable != null) {
-          LOG.error("Error computing expanded selection range", throwable);
-          return;
-        }
+      if (throwable != null) {
+        LOG.error("Error computing expanded selection range", throwable);
+        return;
+      }
 
-        //noinspection ConstantConditions
-        ThreadUtils.runOnUiThread(() -> setSelection(range));
-      }));
+      //noinspection ConstantConditions
+      ThreadUtils.runOnUiThread(() -> setSelection(range));
+    }));
   }
 
   @Override
-  protected void onFocusChanged(
-    final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+  protected void onFocusChanged(final boolean gainFocus, final int direction,
+                                @Nullable final Rect previouslyFocusedRect
+  ) {
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (!gainFocus) {
       ensureWindowsDismissed();
@@ -727,11 +693,10 @@ public void updateFile(File file) {
       return;
     }
 
-    CompletableFuture.runAsync(
-      () -> {
-        dispatchDocumentChangeEvent(event);
-        checkForSignatureHelp(event);
-      });
+    CompletableFuture.runAsync(() -> {
+      dispatchDocumentChangeEvent(event);
+      checkForSignatureHelp(event);
+    });
   }
 
   /**
@@ -750,9 +715,8 @@ public void updateFile(File file) {
       return;
     }
     final var changeLength = event.getChangedText().length();
-    if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-      || changeLength > 0
-      && changeLength <= 2) { // changeLength will be 2 as '(' and ')' are inserted at the same time
+    if (event.getAction() != ContentChangeEvent.ACTION_INSERT || changeLength > 0 &&
+      changeLength <= 2) { // changeLength will be 2 as '(' and ')' are inserted at the same time
       return;
     }
 
@@ -782,22 +746,18 @@ public void updateFile(File file) {
 
     final var start = event.getChangeStart();
     final var end = event.getChangeEnd();
-    final var changeRange =
-      new Range(
-        new Position(start.line, start.column, start.index),
-        new Position(end.line, end.column, end.index));
+    final var changeRange = new Range(new Position(start.line, start.column, start.index),
+      new Position(end.line, end.column, end.index));
 
-    final var changeEvent =
-      new DocumentChangeEvent(
-        file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
+    final var changedText = event.getChangedText().toString();
+    final var changeEvent = new DocumentChangeEvent(file, changedText, ++fileVersion, type,
+      changeDelta, changeRange);
     EventBus.getDefault().post(changeEvent);
   }
 
   public static int createInputFlags() {
-    var flags =
-      EditorInfo.TYPE_CLASS_TEXT
-        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    var flags = EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE |
+      EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
     if (getVisiblePasswordFlag()) {
       flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
@@ -816,12 +776,11 @@ public void updateFile(File file) {
   public void analyze() {
     if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
       CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
-        .whenComplete(
-          (diagnostics, throwable) -> {
-            if (languageClient != null) {
-              languageClient.publishDiagnostics(diagnostics);
-            }
-          });
+        .whenComplete((diagnostics, throwable) -> {
+          if (languageClient != null) {
+            languageClient.publishDiagnostics(diagnostics);
+          }
+        });
     }
   }
 
@@ -966,14 +925,15 @@ public void updateFile(File file) {
   }
 
   private void applyTreeSitterLang(final Language language, final String extension,
-    SchemeAndroidIDE scheme) {
+                                   SchemeAndroidIDE scheme
+  ) {
     if (scheme == null) {
       LOG.error("Failed to read current color scheme");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }
 
-    if (scheme instanceof IDEColorScheme
-      && ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
+    if (scheme instanceof IDEColorScheme &&
+      ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
       LOG.warn("Color scheme does not support file type '" + extension + "'");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }

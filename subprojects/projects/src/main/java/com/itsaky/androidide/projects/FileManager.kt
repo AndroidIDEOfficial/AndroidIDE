@@ -23,7 +23,6 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.projects.models.ActiveDocument
@@ -112,13 +111,25 @@ object FileManager : EventReceiver {
   @Subscribe(threadMode = BACKGROUND)
   @Suppress("unused")
   fun onDocumentContentChange(event: DocumentChangeEvent) {
-    activeDocuments[event.changedFile.normalize()] = createDocument(event)
+    val document = activeDocuments[event.changedFile.normalize()]
+
+    if (document == null) {
+      // create document if not already created
+      // this should not happen under normal circumstances
+      activeDocuments[event.changedFile.normalize()] = createDocument(event)
+      log.warn("Document change event received before open event for file ${event.changedFile}")
+      return
+    }
+
+    // document is already open
+    // patch the changes
+    document.patch(event)
   }
 
   @Subscribe(threadMode = BACKGROUND)
   @Suppress("unused")
   fun onDocumentClose(event: DocumentCloseEvent) {
-    activeDocuments.remove(event.closedFile.normalize())
+    activeDocuments.remove(event.closedFile.normalize())?.close()
   }
 
   @Subscribe(threadMode = BACKGROUND)
@@ -132,28 +143,24 @@ object FileManager : EventReceiver {
   @Subscribe(threadMode = BACKGROUND)
   fun onFileDeleted(event: FileDeletionEvent) {
     // If the file was an active document, remove the document cache
-    activeDocuments.remove(event.file.toPath().normalize())
+    activeDocuments.remove(event.file.toPath().normalize())?.close()
   }
 
   private fun createDocument(event: DocumentOpenEvent): ActiveDocument {
     return ActiveDocument(
       file = event.openedFile,
-      content = event.text,
-      changeRange = Range.NONE,
       version = event.version,
-      changDelta = 0,
-      modified = Instant.now()
+      modified = Instant.now(),
+      content = event.text
     )
   }
 
   private fun createDocument(event: DocumentChangeEvent): ActiveDocument {
     return ActiveDocument(
       file = event.changedFile,
-      content = event.newText,
-      changeRange = event.changeRange,
       version = event.version,
-      changDelta = event.changeDelta,
-      modified = Instant.now()
+      modified = Instant.now(),
+      content = event.changedText
     )
   }
 

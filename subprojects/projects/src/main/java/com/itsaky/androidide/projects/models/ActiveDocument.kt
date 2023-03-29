@@ -17,10 +17,12 @@
 
 package com.itsaky.androidide.projects.models
 
-import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.eventbus.events.editor.ChangeType
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
+import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedInputStream
 import java.io.BufferedReader
+import java.io.Closeable
 import java.nio.file.Path
 import java.time.Instant
 
@@ -31,30 +33,39 @@ import java.time.Instant
  */
 open class ActiveDocument(
   val file: Path,
-  val content: String,
-  val changeRange: Range,
-  var changDelta: Int,
   val version: Int,
-  val modified: Instant
-) {
+  val modified: Instant,
+  content: String = ""
+) : Closeable {
 
-  companion object {
+  private val _content = StringBuilder(content)
+  private val log = ILogger.newInstance("ActiveDocument")
 
-    @JvmStatic
-    fun create(
-      file: Path,
-      content: String,
-      changeRange: Range,
-      changDelta: Int,
-      version: Int,
-      modified: Instant
-    ): ActiveDocument {
-      if (DocumentUtils.isJavaFile(file)) {
-        return ActiveJavaDocument(file, content, changeRange, changDelta, version, modified)
+  val content: String
+    get() = _content.toString()
+
+  fun patch(event: DocumentChangeEvent) {
+    val text = event.changedText
+    val start = event.changeRange.start.requireIndex()
+    val end = event.changeRange.end.requireIndex()
+
+    log.debug("----------------------")
+    log.logThis()
+    log.debug(event)
+    log.debug("----------------------")
+
+    when (event.changeType) {
+      ChangeType.DELETE -> _content.delete(start, end)
+      ChangeType.INSERT -> _content.insert(start, text)
+      else -> {
+        _content.clear()
+        _content.append(text)
       }
-
-      return ActiveDocument(file, content, changeRange, changDelta, version, modified)
     }
+  }
+
+  override fun close() {
+    _content.clear()
   }
 
   fun inputStream(): BufferedInputStream {
