@@ -6,11 +6,11 @@
 
 (empty_element
   tag_name: (name) @indent
-  "/>" @outdent)
+  ">" @outdent)
 
 (end_tag_element
   (tag_start
     tag_name: (name) @indent)
   (tag_end
-    "</" @outdent)
+    "<" @outdent)
   )
