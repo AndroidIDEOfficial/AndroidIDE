@@ -38,7 +38,7 @@ dependencies {
   annotationProcessor(libs.google.auto.service)
 
   // Generates the required META-INF descriptor to make the processor incremental.
-  val incap = "0.2"
+  val incap = "0.3"
   compileOnly("net.ltgt.gradle.incap:incap:$incap")
   annotationProcessor("net.ltgt.gradle.incap:incap-processor:$incap")
 }
