@@ -17,7 +17,7 @@ kapt {
 
 dependencies {
     ksp(projects.annotationProcessorsKsp)
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     api(libs.androidide.ts)
     api(libs.androidide.ts.java)

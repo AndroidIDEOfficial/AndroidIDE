@@ -33,7 +33,7 @@ kapt {
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     implementation(libs.common.editor)
     implementation(projects.subprojects.fuzzysearch)

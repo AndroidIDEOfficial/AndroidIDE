@@ -77,8 +77,8 @@ dependencies {
 
   // Annotation processors
   kapt(libs.common.glide.ap)
-  kapt(libs.common.eventbus.ap)
   kapt(libs.google.auto.service)
+  kapt(projects.annotationProcessors)
 
   implementation(libs.common.editor)
   implementation(libs.common.utilcode)

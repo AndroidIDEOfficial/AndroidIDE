@@ -2,6 +2,9 @@
 
 import com.mooltiverse.oss.nyx.gradle.NyxExtension
 
+include(":annotation-processors")
+
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

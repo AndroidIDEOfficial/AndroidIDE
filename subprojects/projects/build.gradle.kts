@@ -17,7 +17,7 @@ kapt {
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     api(projects.eventbus)
     api(projects.eventbusEvents)

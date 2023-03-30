@@ -9,14 +9,32 @@
         </processorPath>
         <module name="AndroidIDE.subprojects.google-java-format.main" />
       </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.0.1/c9779f7372192a96c957a3df1faeeabd07881085/auto-service-1.0.1.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.ltgt.gradle.incap/incap-processor/0.2/408ba7e6d0e70fc9f2765809560ea7d4c9ad35cf/incap-processor-0.2.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service-annotations/1.0.1/ac86dacc0eb9285ea9d42eee6aad8629ca3a7432/auto-service-annotations-1.0.1.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto/auto-common/1.2/ca270191fd7d2a7297da7c8f29184206df10c67d/auto-common-1.2.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/31.0.1-jre/119ea2b2bc205b138974d351777b20f02b92704b/guava-31.0.1-jre.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.ltgt.gradle.incap/incap/0.2/c73e3db9bee414d6ee27995d951fcdbee09acad/incap-0.2.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/failureaccess/1.0.1/1dcf1de382a0bf95a3d8b0849546c88bac1292c9/failureaccess-1.0.1.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.2/25ea2e8b0c338a877313bd4672d3fe056ea78f0d/jsr305-3.0.2.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.checkerframework/checker-qual/3.12.0/d5692f0526415fcc6de94bb5bfbd3afd9dd3b3e5/checker-qual-3.12.0.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.7.1/458d9042f7aa6fa9a634df902b37f544e15aacac/error_prone_annotations-2.7.1.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar" />
+        </processorPath>
+        <module name="AndroidIDE.annotation-processors.main" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="AndroidIDE.annotation-processors" target="11" />
+      <module name="AndroidIDE.annotation-ksp" target="17" />
+      <module name="AndroidIDE.annotation-ksp.main" target="17" />
+      <module name="AndroidIDE.annotation-ksp.test" target="17" />
       <module name="AndroidIDE.annotation-processors-java" target="11" />
       <module name="AndroidIDE.annotation-processors-java.main" target="11" />
       <module name="AndroidIDE.annotation-processors-java.test" target="11" />
-      <module name="AndroidIDE.annotation-processors.main" target="11" />
-      <module name="AndroidIDE.annotation-processors.test" target="11" />
       <module name="AndroidIDE.build-tools.aaptcompiler" target="11" />
       <module name="AndroidIDE.build-tools.aaptcompiler.test" target="11" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />

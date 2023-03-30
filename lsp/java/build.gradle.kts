@@ -32,7 +32,7 @@ kapt {
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     implementation(libs.androidide.ts)
     implementation(libs.androidide.ts.java)
