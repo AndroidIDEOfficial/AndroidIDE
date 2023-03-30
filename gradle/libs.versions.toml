@@ -2,7 +2,7 @@
 agp = "7.4.2"
 agp-tooling = "7.4.2"
 gradle-tooling = "7.6.1"
-kotlin = "1.8.10"
+kotlin = "1.8.20"
 tree-sitter = "1.4.3"
 editor = "0.21.1"
 glide = "4.15.1"
