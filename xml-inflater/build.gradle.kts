@@ -27,7 +27,7 @@ plugins {
 android { namespace = "com.itsaky.androidide.inflater" }
 
 dependencies {
-  ksp(projects.annotationKsp)
+  ksp(projects.annotationProcessorsKsp)
 
   implementation(libs.androidx.appcompat)
   implementation(libs.common.kotlin)
