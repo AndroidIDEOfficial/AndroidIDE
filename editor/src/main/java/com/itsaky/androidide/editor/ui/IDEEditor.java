@@ -65,6 +65,7 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
@@ -218,6 +219,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
     final var openEvent = new DocumentOpenEvent(getFile().toPath(), getText().toString(),
       fileVersion = 0);
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentOpen(openEvent);
+
     EventBus.getDefault().post(openEvent);
   }
 
@@ -752,6 +757,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var changedText = event.getChangedText().toString();
     final var changeEvent = new DocumentChangeEvent(file, changedText, ++fileVersion, type,
       changeDelta, changeRange);
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentContentChange(changeEvent);
     EventBus.getDefault().post(changeEvent);
   }
 
@@ -829,6 +837,10 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     final var closeEvent = new DocumentCloseEvent(getFile().toPath(), getCursorLSPRange());
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentClose(closeEvent);
+
     EventBus.getDefault().post(closeEvent);
   }
 

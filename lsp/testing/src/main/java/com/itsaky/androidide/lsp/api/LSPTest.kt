@@ -89,7 +89,6 @@ abstract class LSPTest {
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
     Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
     registerServer()
-    FileManager.register()
     ProjectManager.register()
     ProjectManager.setupProject()
 

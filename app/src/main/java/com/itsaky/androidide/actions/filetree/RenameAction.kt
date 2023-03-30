@@ -26,6 +26,7 @@ import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.FlashType
 import com.itsaky.androidide.utils.flashMessage
@@ -92,6 +93,11 @@ class RenameAction(context: Context) :
   }
 
   private fun notifyFileRenamed(file: File, name: String, context: Context) {
-    EventBus.getDefault().post(FileRenameEvent(file, File(file.parent, name)).apply { putData(context) })
+    val renameEvent = FileRenameEvent(file, File(file.parent, name))
+
+    // Notify FileManager first
+    FileManager.onFileRenamed(renameEvent)
+
+    EventBus.getDefault().post(renameEvent.apply { putData(context) })
   }
 }

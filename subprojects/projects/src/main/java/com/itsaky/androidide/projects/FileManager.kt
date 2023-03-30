@@ -45,7 +45,7 @@ import org.greenrobot.eventbus.ThreadMode.BACKGROUND
  *
  * @author Akash Yadav
  */
-object FileManager : EventReceiver {
+object FileManager {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val activeDocuments = ConcurrentHashMap<Path, ActiveDocument>()
@@ -102,14 +102,10 @@ object FileManager : EventReceiver {
     return createFileInputStream(file)
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentOpen(event: DocumentOpenEvent) {
     activeDocuments[event.openedFile.normalize()] = createDocument(event)
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentContentChange(event: DocumentChangeEvent) {
     val document = activeDocuments[event.changedFile.normalize()]
 
@@ -129,13 +125,10 @@ object FileManager : EventReceiver {
     document.patch(event)
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentClose(event: DocumentCloseEvent) {
     activeDocuments.remove(event.closedFile.normalize())?.close()
   }
 
-  @Subscribe(threadMode = BACKGROUND)
   fun onFileRenamed(event: FileRenameEvent) {
     val document = activeDocuments.remove(event.file.toPath().normalize())
     if (document != null) {
@@ -143,7 +136,6 @@ object FileManager : EventReceiver {
     }
   }
 
-  @Subscribe(threadMode = BACKGROUND)
   fun onFileDeleted(event: FileDeletionEvent) {
     // If the file was an active document, remove the document cache
     activeDocuments.remove(event.file.toPath().normalize())?.close()
