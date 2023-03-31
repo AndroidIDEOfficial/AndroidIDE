@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">राइटिंग प्रोसेस शुरू करना</string>
   <string name="msg_folder_creation_failed">फ़ोल्डर बनाने में विफल रहे!</string>
   <string name="msg_file_creation_failed">फ़ाइल बनाने में विफल रहे!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">फ़ोल्डर सफलतापूर्वक बनाया गया है!</string>
   <string name="msg_file_created">फ़ाइल सफलतापूर्वक बनाया गया है!</string>
   <string name="msg_folder_exists">फ़ोल्डर पहले से ही मौजूद है!</string>
   <string name="msg_file_exists">फ़ाइल पहले से ही मौजूद है!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">अमान्य नाम!</string>
   <string name="text_create">बनाए</string>
   <string name="msg_can_contain_slashes">यदि पथ में फ़ाइल विभाजक (\'/\') है, तो आवश्यक (पैरेंट) डायरेक्टरीज बनाई जाएंगी यदि वे मौजूद नहीं हैं।</string>
@@ -134,7 +136,7 @@
   <string name="file_name">फ़ाइल का नाम</string>
   <string name="new_name">नया नाम</string>
   <string name="new_file">नई फ़ाइल</string>
-  <string name="create_auto_layout">ऑटोमेटिकली लेआउट फ़ाइल बनाएँ</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">नया जावा क्लास</string>
   <string name="new_xml_resource">नया एक्सएमएल रिसोर्स</string>
   <string name="new_folder">नया फ़ोल्डर</string>
