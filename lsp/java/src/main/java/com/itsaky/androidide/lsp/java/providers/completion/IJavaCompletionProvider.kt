@@ -46,7 +46,6 @@ import com.itsaky.androidide.lsp.models.MethodCompletionData
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
 import jdkx.lang.model.element.ElementKind.CLASS
@@ -70,6 +69,7 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.element.VariableElement
 import openjdk.source.tree.Tree
 import openjdk.source.util.TreePath
+import java.nio.file.Path
 
 /**
  * Completion provider for Java source code.
@@ -293,20 +293,26 @@ abstract class IJavaCompletionProvider(
     }
   }
 
-  protected open fun snippetItem(snippet: JavaSnippet, matchLevel: MatchLevel, partial: String, indent: Int) : CompletionItem {
+  protected open fun snippetItem(
+    snippet: JavaSnippet,
+    matchLevel: MatchLevel,
+    partial: String,
+    indent: Int
+  ): CompletionItem {
     return JavaCompletionItem().apply {
       this.label = snippet.prefix
       this.detail = snippet.description
       this.completionKind = CompletionItemKind.SNIPPET
       this.matchLevel = matchLevel
       this.ideSortText = "00000${snippet.prefix}"
-      this.snippetDescription = describeSnippet(snippet.prefix)
+      this.snippetDescription = describeSnippet(partial)
 
       val indentation = indentationString(indent)
       this.insertTextFormat = SNIPPET
-      this.insertText = snippet.content.joinToString(separator = "\n") {
-        indentation + it.replace("\t", indentationString)
-      }
+      this.insertText =
+        snippet.content.joinToString(separator = "\n").also {
+          it.replace("\t", indentationString).replace("\n", "\n${indentation}")
+        }
     }
   }
 

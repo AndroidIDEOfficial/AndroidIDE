@@ -23,11 +23,11 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippet
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetRepository
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetScope
-import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.preferences.internal.tabSize
+import io.github.rosemoe.sora.text.TextUtils
 import java.nio.file.Path
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -53,12 +53,26 @@ class SnippetCompletionProvider(
     endsWithParen: Boolean
   ): CompletionResult {
     val scope = findSnippetScope(path) ?: return CompletionResult.EMPTY
+    val indent = spacesBeforeCursor(task.root().sourceFile.getCharContent(true))
     return when (scope.leaf) {
       is CompilationUnitTree -> completeTopLevelSnippets(task, path, partial)
       is ClassTree -> completeMemberSnippets(task, path, partial)
-      is MethodTree -> completeLocalSnippets(task, path, partial)
+      is MethodTree -> completeLocalSnippets(task, path, partial, indent)
       else -> CompletionResult.EMPTY
     }
+  }
+
+  private fun spacesBeforeCursor(charContent: CharSequence?): Int {
+    charContent ?: return 0
+    var start = cursor.toInt()
+    while (start >= 0) {
+      val c = charContent[start]
+      if (c == '\n' || !c.isWhitespace()) {
+        break
+      }
+      --start
+    }
+    return TextUtils.countLeadingSpaceCount(charContent.substring(start, cursor.toInt()), tabSize)
   }
 
   private fun completeTopLevelSnippets(
@@ -80,7 +94,8 @@ class SnippetCompletionProvider(
   private fun completeLocalSnippets(
     task: CompileTask,
     path: TreePath,
-    partial: String
+    partial: String,
+    indent: Int
   ): CompletionResult {
     val items = mutableListOf<CompletionItem>()
     val snippets =
@@ -89,7 +104,6 @@ class SnippetCompletionProvider(
         JavaSnippetRepository.snippets[JavaSnippetScope.GLOBAL]?.let { addAll(it) }
       }
 
-    val indent = EditHelper.indent(task.task, task.root(), path.leaf) - tabSize
     for (snippet in snippets) {
       val matchLevel = matchLevel(snippet.prefix, partial)
       if (matchLevel == MatchLevel.NO_MATCH) {
@@ -103,12 +117,12 @@ class SnippetCompletionProvider(
   }
 
   private fun findSnippetScope(path: TreePath?): TreePath? {
-    var treePath = path
-    while (treePath != null) {
-      if (treePath.leaf.let { it is CompilationUnitTree || it is ClassTree || it is MethodTree }) {
-        return treePath
+    var scope = path
+    while (scope != null) {
+      if (scope.leaf.let { it is CompilationUnitTree || it is ClassTree || it is MethodTree }) {
+        return scope
       }
-      treePath = treePath.parentPath
+      scope = scope.parentPath
     }
     return null
   }
