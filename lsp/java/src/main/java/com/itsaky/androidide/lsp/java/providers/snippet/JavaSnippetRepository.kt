@@ -49,10 +49,10 @@ object JavaSnippetRepository {
 
   private fun createLocalSnippets(): List<JavaSnippet> {
     return listOf(
-      JavaSnippet("for", "Indexed for loop", "0 -> count") {
+      JavaSnippet("for", "Indexed for loop") {
         arrayOf("for (int \${1:i} = 0; \$1 < \${2:count}; ++\$1) {", "\t\$0", "}")
       },
-      JavaSnippet("forr", "Reverse-indexed for loop", "count-1 -> 0") {
+      JavaSnippet("forr", "Reverse-indexed for loop") {
         arrayOf("for (int \${1:i} = \${2:count} - 1; \$1 >= 0; --\$1) {", "\t\$0", "}")
       }
     )

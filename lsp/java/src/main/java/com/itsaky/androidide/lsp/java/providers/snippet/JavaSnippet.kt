@@ -24,23 +24,20 @@ package com.itsaky.androidide.lsp.java.providers.snippet
  */
 data class JavaSnippet(
   val prefix: String,
-  val label: String,
   val description: String,
   val content: Array<String>
 ) {
 
   constructor(
     prefix: String,
-    label: String,
     description: String,
     content: () -> Array<String>
-  ) : this(prefix, label, description, content())
+  ) : this(prefix, description, content())
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is JavaSnippet) return false
 
-    if (label != other.label) return false
     if (description != other.description) return false
     if (prefix != other.prefix) return false
     if (!content.contentEquals(other.content)) return false
@@ -49,9 +46,8 @@ data class JavaSnippet(
   }
 
   override fun hashCode(): Int {
-    var result = label.hashCode()
+    var result = prefix.hashCode()
     result = 31 * result + description.hashCode()
-    result = 31 * result + prefix.hashCode()
     result = 31 * result + content.contentHashCode()
     return result
   }

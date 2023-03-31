@@ -295,11 +295,11 @@ abstract class IJavaCompletionProvider(
 
   protected open fun snippetItem(snippet: JavaSnippet, matchLevel: MatchLevel, partial: String, indent: Int) : CompletionItem {
     return JavaCompletionItem().apply {
-      this.label = snippet.label
+      this.label = snippet.prefix
       this.detail = snippet.description
       this.completionKind = CompletionItemKind.SNIPPET
       this.matchLevel = matchLevel
-      this.ideSortText = snippet.prefix
+      this.ideSortText = "00000${snippet.prefix}"
       this.snippetDescription = describeSnippet(snippet.prefix)
 
       val indentation = indentationString(indent)
