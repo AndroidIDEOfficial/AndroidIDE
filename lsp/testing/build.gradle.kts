@@ -37,5 +37,6 @@ dependencies {
     implementation(libs.tests.junit)
     implementation(libs.tests.google.truth)
     implementation(libs.tests.robolectric)
+    implementation(libs.tests.mockk)
     implementation(projects.actions)
 }

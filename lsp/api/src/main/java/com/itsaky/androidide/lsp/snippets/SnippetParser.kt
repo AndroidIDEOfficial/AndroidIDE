@@ -22,6 +22,7 @@ import com.google.gson.stream.JsonReader
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.VMUtils
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 
@@ -41,6 +42,12 @@ object SnippetParser {
       DefaultSnippet(prefix, desc, body.toTypedArray())
     }
   ): Map<S, List<ISnippet>> {
+
+    // not supported for tests as assets cannot be accessed
+    if (VMUtils.isJvm()) {
+      return emptyMap()
+    }
+
     return ConcurrentHashMap<S, List<ISnippet>>().apply {
       for (scope in scopes) {
         this[scope] =
@@ -62,7 +69,7 @@ object SnippetParser {
         try {
           BaseApplication.getBaseInstance()
             .assets
-            .open("data/editor/${lang}/snippets.${type}.json")
+            .open(assetsPath(lang, type))
             .reader()
         } catch (e: IOException) {
           // snippet file probably does not exist
@@ -83,6 +90,9 @@ object SnippetParser {
       }
     }
   }
+
+  fun assetsPath(lang: String, type: String) =
+    "data/editor/${lang}/snippets.${type}.json"
 
   private fun readSnippet(
     prefix: String,

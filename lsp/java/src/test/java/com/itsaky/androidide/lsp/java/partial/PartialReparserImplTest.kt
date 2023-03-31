@@ -79,6 +79,7 @@ class PartialReparserImplTest {
         DocumentChangeEvent(
           file!!,
           contents!!.insert(192, "trim().").toString(),
+          null,
           2,
           INSERT,
           "trim().".length,

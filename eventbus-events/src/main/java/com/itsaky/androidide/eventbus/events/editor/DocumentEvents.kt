@@ -45,7 +45,7 @@ constructor(var closedFile: Path, val selectionRange: Range = Range.NONE) :
 data class DocumentChangeEvent(
   var changedFile: Path,
   var changedText: String,
-  var newText: String?,
+  var newText: String? = null,
   var version: Int,
   var changeType: ChangeType,
   var changeDelta: Int,
