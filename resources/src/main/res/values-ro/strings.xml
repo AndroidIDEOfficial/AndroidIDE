@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Începe procesul de scriere</string>
   <string name="msg_folder_creation_failed">Nu s-a putut crea folderul!</string>
   <string name="msg_file_creation_failed">Esuare in crearea fisierului!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Dosar creat cu succes!</string>
   <string name="msg_file_created">Fișier creat cu succes!</string>
   <string name="msg_folder_exists">Dosarul există deja!</string>
   <string name="msg_file_exists">Fisierul există deja!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Nume invalid!</string>
   <string name="text_create">crează</string>
   <string name="msg_can_contain_slashes">Dacă calea conține Separator de fișiere (\'/\'), atunci directoarele necesare (părinte) vor fi create dacă nu există.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Nume de fișier</string>
   <string name="new_name">Nume nou</string>
   <string name="new_file">Fișier nou</string>
-  <string name="create_auto_layout">Creați automat fișierul de aspect (layout)</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Noua clasă Java</string>
   <string name="new_xml_resource">Nouă resursă XML</string>
   <string name="new_folder">Dosar nou</string>
