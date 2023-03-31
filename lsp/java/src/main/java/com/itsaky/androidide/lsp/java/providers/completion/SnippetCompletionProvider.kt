@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.lsp.snippets.DefaultSnippet
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetRepository
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetScope
 import com.itsaky.androidide.lsp.models.CompletionItem
@@ -55,12 +54,34 @@ class SnippetCompletionProvider(
   ): CompletionResult {
     val scope = findSnippetScope(path) ?: return CompletionResult.EMPTY
     val indent = spacesBeforeCursor(task.root().sourceFile.getCharContent(true))
-    return when (scope.leaf) {
-      is CompilationUnitTree -> completeTopLevelSnippets(task, path, partial)
-      is ClassTree -> completeMemberSnippets(task, path, partial)
-      is MethodTree -> completeLocalSnippets(task, path, partial, indent)
-      else -> CompletionResult.EMPTY
+    val snippets = mutableListOf<ISnippet>()
+
+    // add global snippets, if any
+    JavaSnippetRepository.snippets[JavaSnippetScope.GLOBAL]?.let { snippets.addAll(it) }
+
+    val snippetScope =
+      when (scope.leaf) {
+        is CompilationUnitTree -> JavaSnippetScope.TOP_LEVEL
+        is ClassTree -> JavaSnippetScope.MEMBER
+        is MethodTree -> JavaSnippetScope.LOCAL
+        else -> null
+      }
+
+    // add snippets for the current scope
+    snippetScope?.let { JavaSnippetRepository.snippets[it]?.let { list -> snippets.addAll(list) } }
+
+    val items = mutableListOf<CompletionItem>()
+
+    for (snippet in snippets) {
+      val matchLevel = matchLevel(snippet.prefix, partial)
+      if (matchLevel == MatchLevel.NO_MATCH) {
+        continue
+      }
+
+      items.add(snippetItem(snippet, matchLevel, partial, indent))
     }
+
+    return CompletionResult(items)
   }
 
   private fun spacesBeforeCursor(charContent: CharSequence?): Int {
@@ -74,47 +95,6 @@ class SnippetCompletionProvider(
       --start
     }
     return TextUtils.countLeadingSpaceCount(charContent.substring(start, cursor.toInt()), tabSize)
-  }
-
-  private fun completeTopLevelSnippets(
-    task: CompileTask,
-    path: TreePath,
-    partial: String
-  ): CompletionResult {
-    return CompletionResult.EMPTY
-  }
-
-  private fun completeMemberSnippets(
-    task: CompileTask,
-    path: TreePath,
-    partial: String
-  ): CompletionResult {
-    return CompletionResult.EMPTY
-  }
-
-  private fun completeLocalSnippets(
-    task: CompileTask,
-    path: TreePath,
-    partial: String,
-    indent: Int
-  ): CompletionResult {
-    val items = mutableListOf<CompletionItem>()
-    val snippets =
-      mutableListOf<ISnippet>().apply {
-        JavaSnippetRepository.snippets[JavaSnippetScope.LOCAL]?.let { addAll(it) }
-        JavaSnippetRepository.snippets[JavaSnippetScope.GLOBAL]?.let { addAll(it) }
-      }
-
-    for (snippet in snippets) {
-      val matchLevel = matchLevel(snippet.prefix, partial)
-      if (matchLevel == MatchLevel.NO_MATCH) {
-        continue
-      }
-
-      items.add(snippetItem(snippet, matchLevel, partial, indent))
-    }
-
-    return CompletionResult(items)
   }
 
   private fun findSnippetScope(path: TreePath?): TreePath? {
