@@ -27,6 +27,7 @@ import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.preferences.internal.tabSize
 import java.nio.file.Path
 import openjdk.source.tree.ClassTree
 import openjdk.source.tree.CompilationUnitTree
@@ -88,7 +89,7 @@ class SnippetCompletionProvider(
         JavaSnippetRepository.snippets[JavaSnippetScope.GLOBAL]?.let { addAll(it) }
       }
 
-    val indent = EditHelper.indent(task.task, task.root(), path.leaf)
+    val indent = EditHelper.indent(task.task, task.root(), path.leaf) - tabSize
     for (snippet in snippets) {
       val matchLevel = matchLevel(snippet.prefix, partial)
       if (matchLevel == MatchLevel.NO_MATCH) {
