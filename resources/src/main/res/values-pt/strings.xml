@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Iniciando o processo de escrita</string>
   <string name="msg_folder_creation_failed">Falha ao criar pasta!</string>
   <string name="msg_file_creation_failed">Falha ao criar arquivo!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Pasta criada com sucesso!</string>
   <string name="msg_file_created">Arquivo criado com sucesso!</string>
   <string name="msg_folder_exists">A pasta já existe!</string>
   <string name="msg_file_exists">O arquivo já existe!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Nome inválido!</string>
   <string name="text_create">Criar</string>
   <string name="msg_can_contain_slashes">Se o caminho contiver o Separador de Arquivos (\'/\'), então os diretórios necessários (pai) serão criados se eles não existirem.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Nome do arquivo</string>
   <string name="new_name">Novo nome</string>
   <string name="new_file">Novo arquivo</string>
-  <string name="create_auto_layout">Criar arquivo de layout automaticamente</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Nova classe Java</string>
   <string name="new_xml_resource">Novo recurso XML</string>
   <string name="new_folder">Nova pasta</string>
