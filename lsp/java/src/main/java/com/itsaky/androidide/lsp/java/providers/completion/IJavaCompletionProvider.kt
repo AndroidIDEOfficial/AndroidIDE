@@ -24,6 +24,7 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
 import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
 import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
+import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippet
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.Command
@@ -42,6 +43,7 @@ import com.itsaky.androidide.lsp.models.ICompletionData
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MethodCompletionData
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
@@ -288,6 +290,23 @@ abstract class IJavaCompletionProvider(
       this.completionKind = MODULE
       this.ideSortText = name
       this.matchLevel = matchLevel
+    }
+  }
+
+  protected open fun snippetItem(snippet: JavaSnippet, matchLevel: MatchLevel, partial: String, indent: Int) : CompletionItem {
+    return JavaCompletionItem().apply {
+      this.label = snippet.label
+      this.detail = snippet.description
+      this.completionKind = CompletionItemKind.SNIPPET
+      this.matchLevel = matchLevel
+      this.ideSortText = snippet.prefix
+      this.snippetDescription = describeSnippet(snippet.prefix)
+
+      val indentation = indentationString(indent)
+      this.insertTextFormat = SNIPPET
+      this.insertText = snippet.content.joinToString(separator = "\n") {
+        indentation + it.replace("\t", indentationString)
+      }
     }
   }
 
