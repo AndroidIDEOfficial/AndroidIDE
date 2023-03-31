@@ -75,11 +75,12 @@ class PartialReparserImplTest {
           )
         )
         .run { PrintingVisitor().scan(it.root() as JCCompilationUnit) }
+      val changedText = contents!!.insert(192, "trim().").toString()
       dispatchEvent(
         DocumentChangeEvent(
           file!!,
-          contents!!.insert(192, "trim().").toString(),
-          null,
+          changedText,
+          changedText,
           2,
           INSERT,
           "trim().".length,

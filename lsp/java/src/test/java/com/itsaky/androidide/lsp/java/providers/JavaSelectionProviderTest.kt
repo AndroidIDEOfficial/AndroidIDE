@@ -41,7 +41,7 @@ class JavaSelectionProviderTest {
       openFile("selection/SimpleSelectionExpansionTest")
       cursor = requireCursor()
       deleteCursorText()
-      dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), null,1, NEW_TEXT, 0, Range.NONE))
+      dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), contents.toString(),1, NEW_TEXT, 0, Range.NONE))
 
       val range = findRange()
       val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))

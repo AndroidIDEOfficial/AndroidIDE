@@ -20,15 +20,17 @@ package com.itsaky.androidide.lsp.api
 import android.content.Context
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.eventbus.events.editor.ChangeType.DELETE
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
+import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
+import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.lsp.snippets.SnippetParser
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
@@ -41,16 +43,15 @@ import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.mockk.every
 import io.mockk.mockkStatic
-import org.greenrobot.eventbus.EventBus
-import org.junit.Before
-import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.pathString
+import org.greenrobot.eventbus.EventBus
+import org.junit.Before
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 /**
  * Runs tests for a language server.
@@ -129,7 +130,7 @@ abstract class LSPTest {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), null, 1, DELETE, 0, Range.NONE))
+    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), contents.toString(), 1, DELETE, 0, Range.NONE))
   }
 
   @JvmOverloads
@@ -152,6 +153,13 @@ abstract class LSPTest {
   }
 
   open fun dispatchEvent(event: Any) {
+    when (event) {
+      is DocumentOpenEvent -> FileManager.onDocumentOpen(event)
+      is DocumentChangeEvent -> FileManager.onDocumentContentChange(event)
+      is DocumentCloseEvent -> FileManager.onDocumentClose(event)
+      is FileRenameEvent -> FileManager.onFileRenamed(event)
+      is FileDeletionEvent -> FileManager.onFileDeleted(event)
+    }
     EventBus.getDefault().post(event)
   }
 
