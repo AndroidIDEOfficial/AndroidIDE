@@ -72,5 +72,32 @@
       "\t$0",
       "}"
     ]
+  },
+  "new_object": {
+    "desc": "Create a new object",
+    "body": [
+      "${1:Object} ${2:foo} = new $1($3);",
+      "$0"
+    ]
+  },
+  "trycatch": {
+    "desc": "A try-catch statement",
+    "body": [
+      "try {",
+      "\t$0",
+      "} catch(${1:Exception} ${2:err}) {",
+      "\t",
+      "}"
+    ]
+  },
+  "tryresources": {
+    "desc": "A try-with-resources statement",
+    "body": [
+      "try ($1) {",
+      "\t$0",
+      "} catch(${2:Exception} ${3:err}) {",
+      "\t",
+      "}"
+    ]
   }
 }
