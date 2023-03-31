@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">正在启动写入进程</string>
   <string name="msg_folder_creation_failed">创建文件夹失败!</string>
   <string name="msg_file_creation_failed">创建文件失败!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">文件夹创建成功!</string>
   <string name="msg_file_created">文件创建成功!</string>
   <string name="msg_folder_exists">文件夹已存在!</string>
   <string name="msg_file_exists">文件已存在!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">非法名称!</string>
   <string name="text_create">创建</string>
   <string name="msg_can_contain_slashes">如果路径中包含路径分隔符(\'/\'), 必要的父文件夹会被创建。</string>
@@ -134,7 +136,7 @@
   <string name="file_name">文件名称</string>
   <string name="new_name">新名称</string>
   <string name="new_file">新文件</string>
-  <string name="create_auto_layout">自动创建布局文件</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">新Java类</string>
   <string name="new_xml_resource">新XML资源文件</string>
   <string name="new_folder">新文件夹</string>
