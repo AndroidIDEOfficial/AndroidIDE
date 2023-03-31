@@ -13,7 +13,7 @@
   "text.matched.bg": "#FF8F00",
   "text.selected.bg": "@primaryLight",
   "snippet.bg.editing": "#cccccc",
-  "snippet.bg.related": "#aadddddd",
+  "snippet.bg.related": "#cccccc",
   "snippet.bg.inactive": "#66dddddd",
 
   "scrollbar.thumb": "@surface",
