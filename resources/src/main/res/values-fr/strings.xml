@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Lancement du processus de création</string>
   <string name="msg_folder_creation_failed">Échec lors de la création du dossier</string>
   <string name="msg_file_creation_failed">Échec de la création du fichier</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Dossier crée avec succés</string>
   <string name="msg_file_created">Fichier crée avec succés</string>
   <string name="msg_folder_exists">Ce dossier existe déjà</string>
   <string name="msg_file_exists">Ce fichier existe déjà</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Nom invalide</string>
   <string name="text_create">Créer</string>
   <string name="msg_can_contain_slashes">Si le chemin contient des séparateurs (\'/\'), alors les répertoires (parents) requis seront créés s\'ils n\'existent pas.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Nom du fichier</string>
   <string name="new_name">Nouveau nom</string>
   <string name="new_file">Nouveau fichier</string>
-  <string name="create_auto_layout">Créer un fichier layout automatiquement </string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Nouvelle class java</string>
   <string name="new_xml_resource">Nouvelle ressource XML</string>
   <string name="new_folder">Nouveau dossier</string>
