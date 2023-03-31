@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">লেখার প্রক্রিয়া শুরু হচ্ছে</string>
   <string name="msg_folder_creation_failed">ফোল্ডার তৈরি করতে ব্যর্থ হয়েছে!</string>
   <string name="msg_file_creation_failed">ফাইল তৈরি করতে ব্যর্থ!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">ফোল্ডার সফলভাবে তৈরি হয়েছে!</string>
   <string name="msg_file_created">ফাইল সফলভাবে তৈরি হয়েছে!</string>
   <string name="msg_folder_exists">ফোল্ডার আগে থেকেই আছে!</string>
   <string name="msg_file_exists">ফাইল আগে থেকেই আছে!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">অবৈধ নাম!</string>
   <string name="text_create">তৈরি করুন</string>
   <string name="msg_can_contain_slashes">যদি পাথটিতে ফাইল বিভাজক (\'/\') থাকে, তাহলে প্রয়োজনীয় (অভিভাবক) ডিরেক্টরিগুলি তৈরি করা হবে যদি সেগুলি বিদ্যমান না থাকে৷</string>
@@ -134,7 +136,7 @@
   <string name="file_name">ফাইলের নাম</string>
   <string name="new_name">নতুন নাম</string>
   <string name="new_file">নতুন ফাইল</string>
-  <string name="create_auto_layout">স্বয়ংক্রিয়ভাবে লেআউট ফাইল তৈরি করুন</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">নতুন জাভা ক্লাস</string>
   <string name="new_xml_resource">নতুন XML resource</string>
   <string name="new_folder">নতুন ফোল্ডার</string>
