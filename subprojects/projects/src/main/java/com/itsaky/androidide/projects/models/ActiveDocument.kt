@@ -25,6 +25,7 @@ import java.io.BufferedReader
 import java.io.Closeable
 import java.nio.file.Path
 import java.time.Instant
+import java.util.concurrent.Semaphore
 
 /**
  * A document that is opened in the editor.
@@ -39,23 +40,37 @@ open class ActiveDocument(
 ) : Closeable {
 
   private val _content = StringBuilder(content)
+  private val semaphore = Semaphore(1)
   private val log = ILogger.newInstance("ActiveDocument")
 
   val content: String
     get() = _content.toString()
 
   fun patch(event: DocumentChangeEvent) {
-    val text = event.changedText
-    val start = event.changeRange.start.requireIndex()
-    val end = event.changeRange.end.requireIndex()
+    try {
+      semaphore.acquire()
+    } catch (e: Exception) {
+      log.error("Failed to acquire", e)
+      throw RuntimeException(e)
+    }
 
-    when (event.changeType) {
-      ChangeType.DELETE -> _content.delete(start, end)
-      ChangeType.INSERT -> _content.insert(start, text)
-      else -> {
-        _content.clear()
-        _content.append(text)
+    try {
+      val text = event.changedText
+      val start = event.changeRange.start.requireIndex()
+      val end = event.changeRange.end.requireIndex()
+
+      when (event.changeType) {
+        ChangeType.DELETE -> _content.delete(start, end)
+        ChangeType.INSERT -> _content.insert(start, text)
+        else -> {
+          _content.clear()
+          _content.append(text)
+        }
       }
+    } catch (err: Throwable) {
+      throw RuntimeException(err)
+    } finally {
+      semaphore.release()
     }
   }
 
