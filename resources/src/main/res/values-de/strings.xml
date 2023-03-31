@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Schreibprozess starten</string>
   <string name="msg_folder_creation_failed">Ordner konnte nicht erstellt werden!</string>
   <string name="msg_file_creation_failed">Erstellen der Datei fehlgeschlagen!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Ordner erfolgreich erstellt!</string>
   <string name="msg_file_created">Datei erfolgreich erstellt!</string>
   <string name="msg_folder_exists">Ordner existiert bereits!</string>
   <string name="msg_file_exists">Die Datei existiert bereits!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Ung&#xFC;ltiger Name!</string>
   <string name="text_create">Erstellen</string>
   <string name="msg_can_contain_slashes">Wenn der Pfad Dateitrennzeichen (\'/\') enth&#xE4;lt, werden die erforderlichen (&#xFC;bergeordneten) Verzeichnisse erstellt, falls sie nicht vorhanden sind.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Dateinamen</string>
   <string name="new_name">Neuer Name</string>
   <string name="new_file">Neue Datei</string>
-  <string name="create_auto_layout">Layout Datei automatisch erstellen</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Neue Java-Klasse</string>
   <string name="new_xml_resource">Neue XML-Ressource</string>
   <string name="new_folder">Neuer Ordner</string>
