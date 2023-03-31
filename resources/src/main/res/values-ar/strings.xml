@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">بدء عملية الكتابة</string>
   <string name="msg_folder_creation_failed">فشل في إنشاء المجلد</string>
   <string name="msg_file_creation_failed">فشل في إنشاء ملف</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">تم إنشاء المجلد بنجاح</string>
   <string name="msg_file_created">تم إنشاء الملف بنجاح</string>
   <string name="msg_folder_exists">المجلد موجود بالفعل</string>
   <string name="msg_file_exists">الملف موجود بالفعل!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">اسم غير صحيح!</string>
   <string name="text_create">إنشاء</string>
   <string name="msg_can_contain_slashes">إذا كان المسار يحتوي على فاصل الملفات (\'/\')، فسيتم إنشاء الدلائل المطلوبة (الأم) إذا لم تكن موجودة.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">إسم الملف</string>
   <string name="new_name">اسم جديد</string>
   <string name="new_file">ملف جديد</string>
-  <string name="create_auto_layout">إنشاء ملف تخطيط تلقائي</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">كلاس جافا جديد</string>
   <string name="new_xml_resource">مصدر XML جديد</string>
   <string name="new_folder">مجلد جديد</string>
