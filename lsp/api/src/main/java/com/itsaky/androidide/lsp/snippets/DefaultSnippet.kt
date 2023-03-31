@@ -15,18 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.providers.snippet
+package com.itsaky.androidide.lsp.snippets
 
 /**
  * Java snippet.
  *
  * @author Akash Yadav
  */
-data class JavaSnippet(
-  val prefix: String,
-  val description: String,
-  val content: Array<String>
-) {
+data class DefaultSnippet(
+  override val prefix: String,
+  override val description: String,
+  override val body: Array<String>
+) : ISnippet {
 
   constructor(
     prefix: String,
@@ -36,11 +36,11 @@ data class JavaSnippet(
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (other !is JavaSnippet) return false
+    if (other !is DefaultSnippet) return false
 
     if (description != other.description) return false
     if (prefix != other.prefix) return false
-    if (!content.contentEquals(other.content)) return false
+    if (!body.contentEquals(other.body)) return false
 
     return true
   }
@@ -48,7 +48,7 @@ data class JavaSnippet(
   override fun hashCode(): Int {
     var result = prefix.hashCode()
     result = 31 * result + description.hashCode()
-    result = 31 * result + content.contentHashCode()
+    result = 31 * result + body.contentHashCode()
     return result
   }
 }

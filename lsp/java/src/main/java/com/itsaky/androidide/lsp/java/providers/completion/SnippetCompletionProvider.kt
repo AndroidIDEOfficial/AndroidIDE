@@ -20,12 +20,13 @@ package com.itsaky.androidide.lsp.java.providers.completion
 import com.itsaky.androidide.lsp.api.IServerSettings
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippet
+import com.itsaky.androidide.lsp.snippets.DefaultSnippet
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetRepository
 import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetScope
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.lsp.models.MatchLevel
+import com.itsaky.androidide.lsp.snippets.ISnippet
 import com.itsaky.androidide.preferences.internal.tabSize
 import io.github.rosemoe.sora.text.TextUtils
 import java.nio.file.Path
@@ -99,7 +100,7 @@ class SnippetCompletionProvider(
   ): CompletionResult {
     val items = mutableListOf<CompletionItem>()
     val snippets =
-      mutableListOf<JavaSnippet>().apply {
+      mutableListOf<ISnippet>().apply {
         JavaSnippetRepository.snippets[JavaSnippetScope.LOCAL]?.let { addAll(it) }
         JavaSnippetRepository.snippets[JavaSnippetScope.GLOBAL]?.let { addAll(it) }
       }

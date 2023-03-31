@@ -15,22 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.providers.snippet
-
-import com.itsaky.androidide.lsp.snippets.ISnippet
-import com.itsaky.androidide.lsp.snippets.SnippetParser
+package com.itsaky.androidide.lsp.snippets
 
 /**
- * Repository to store various snippets for Java.
+ * Marker interface for snippet scopes.
  *
  * @author Akash Yadav
  */
-object JavaSnippetRepository {
+interface ISnippetScope {
 
-  lateinit var snippets: Map<JavaSnippetScope, List<ISnippet>>
-    private set
-
-  fun init() {
-    this.snippets = SnippetParser.parse("java", JavaSnippetScope.values())
-  }
+  /**
+   * The filename for the snippet. This is used to resolve the snippet file stored at location
+   * `'data/editor/<lang>/snippets.<filename>.json'`
+   */
+  val filename: String
 }

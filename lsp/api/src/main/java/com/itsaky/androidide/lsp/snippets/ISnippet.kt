@@ -15,22 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.java.providers.snippet
-
-import com.itsaky.androidide.lsp.snippets.ISnippet
-import com.itsaky.androidide.lsp.snippets.SnippetParser
+package com.itsaky.androidide.lsp.snippets
 
 /**
- * Repository to store various snippets for Java.
+ * A snippet item.
  *
  * @author Akash Yadav
  */
-object JavaSnippetRepository {
+interface ISnippet {
 
-  lateinit var snippets: Map<JavaSnippetScope, List<ISnippet>>
-    private set
+  /** The prefix for the snippet. */
+  val prefix: String
 
-  fun init() {
-    this.snippets = SnippetParser.parse("java", JavaSnippetScope.values())
-  }
+  /** A short description about the snippet. */
+  val description: String
+
+  /**
+   * The snippet body. Each element in this array represents a line of code. The lines are joined
+   * and indented before inserting the text.
+   */
+  val body: Array<String>
 }

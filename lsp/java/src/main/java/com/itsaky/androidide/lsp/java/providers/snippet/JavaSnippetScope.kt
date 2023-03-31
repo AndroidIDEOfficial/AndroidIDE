@@ -17,25 +17,27 @@
 
 package com.itsaky.androidide.lsp.java.providers.snippet
 
+import com.itsaky.androidide.lsp.snippets.ISnippetScope
+
 /**
  * Scope for [JavaSnippet].
  *
  * @author Akash Yadav
  */
-enum class JavaSnippetScope {
+enum class JavaSnippetScope(override val filename: String) : ISnippetScope {
 
   /**
    * Snippets that can be used at the top level. This includes snippes such as class, interface,
    * enum templates.
    */
-  TOP_LEVEL,
+  TOP_LEVEL("top-level"),
 
   /** Snippets that can be used at the member level i.e. inside a class tree. */
-  MEMBER,
+  MEMBER("member"),
 
   /** Snippets that can be used at a local level. E.g. inside a method or constructor. */
-  LOCAL,
+  LOCAL("local"),
 
   /** Snippets that can be used anywhere in the code, irrespective of the current scope. */
-  GLOBAL
+  GLOBAL("global")
 }

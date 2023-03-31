@@ -24,7 +24,6 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.edits.ClassImportEditHandler
 import com.itsaky.androidide.lsp.java.models.JavaCompletionItem
 import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
-import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippet
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.lsp.models.ClassCompletionData
 import com.itsaky.androidide.lsp.models.Command
@@ -43,9 +42,11 @@ import com.itsaky.androidide.lsp.models.ICompletionData
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MethodCompletionData
+import com.itsaky.androidide.lsp.snippets.ISnippet
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
+import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.lang.model.element.ElementKind.ANNOTATION_TYPE
 import jdkx.lang.model.element.ElementKind.CLASS
@@ -69,7 +70,6 @@ import jdkx.lang.model.element.TypeElement
 import jdkx.lang.model.element.VariableElement
 import openjdk.source.tree.Tree
 import openjdk.source.util.TreePath
-import java.nio.file.Path
 
 /**
  * Completion provider for Java source code.
@@ -188,7 +188,7 @@ abstract class IJavaCompletionProvider(
         item.insertText = first.simpleName.toString() + "($0)"
         item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
       }
-      item.insertTextFormat = SNIPPET // Snippet
+      item.insertTextFormat = SNIPPET // DefaultSnippet
       item.snippetDescription = describeSnippet(prefix = partial, allowCommandExecution = true)
     }
     return item
@@ -294,7 +294,7 @@ abstract class IJavaCompletionProvider(
   }
 
   protected open fun snippetItem(
-    snippet: JavaSnippet,
+    snippet: ISnippet,
     matchLevel: MatchLevel,
     partial: String,
     indent: Int
@@ -310,7 +310,7 @@ abstract class IJavaCompletionProvider(
       val indentation = indentationString(indent)
       this.insertTextFormat = SNIPPET
       this.insertText =
-        snippet.content.joinToString(separator = "\n").also {
+        snippet.body.joinToString(separator = "\n").also {
           it.replace("\t", indentationString).replace("\n", "\n${indentation}")
         }
     }
