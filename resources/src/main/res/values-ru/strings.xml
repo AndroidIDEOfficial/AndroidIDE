@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Запуск процесса записи</string>
   <string name="msg_folder_creation_failed">Не удалось создать папку!</string>
   <string name="msg_file_creation_failed">Не удалось создать файл!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Папка создана успешно!</string>
   <string name="msg_file_created">Файл создан успешно!</string>
   <string name="msg_folder_exists">Папка уже существует!</string>
   <string name="msg_file_exists">Файл уже существует!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Неверное имя!</string>
   <string name="text_create">Создать</string>
   <string name="msg_can_contain_slashes">Если путь содержит разделительные символы (\'/\'), необходимые (родительские) директории будут созданы, если их ещё не существует.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Имя файла</string>
   <string name="new_name">Новое имя</string>
   <string name="new_file">Новый файл</string>
-  <string name="create_auto_layout">Создать файл макета автоматически</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Новый Java класс</string>
   <string name="new_xml_resource">Новый XML ресурс</string>
   <string name="new_folder">Новая папка</string>
