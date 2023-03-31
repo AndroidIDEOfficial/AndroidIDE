@@ -170,7 +170,7 @@ class ScopeCompletionProvider(
 
     val item = JavaCompletionItem()
     item.setLabel(methodSpec.name)
-    item.kind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
+    item.completionKind = com.itsaky.androidide.lsp.models.CompletionItemKind.METHOD
     item.detail = method.returnType.toString() + " " + method
     item.ideSortText = item.label.toString()
     item.insertText = insertText

@@ -17,7 +17,6 @@
 package com.itsaky.androidide.editor.language.groovy;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.itsaky.androidide.lsp.models.CompletionItem;
 import com.itsaky.androidide.lsp.models.CompletionItemKind;
@@ -389,7 +388,7 @@ public class GroovyAutoComplete {
     item.setInsertText(itemLabel);
     item.setIdeSortText("0" + itemLabel);
     item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
-    item.setKind(CompletionItemKind.SNIPPET);
+    item.setCompletionKind(CompletionItemKind.NONE);
     return item;
   }
 }

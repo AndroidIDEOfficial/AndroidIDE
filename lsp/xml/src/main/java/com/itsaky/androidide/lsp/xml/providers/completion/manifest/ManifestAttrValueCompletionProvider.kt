@@ -95,7 +95,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       item.overrideTypeText = "Permission"
 
       // Show API information
-      item.kind = FIELD
+      item.completionKind = FIELD
       item.data =
         FieldCompletionData(
           memberName = value.name,

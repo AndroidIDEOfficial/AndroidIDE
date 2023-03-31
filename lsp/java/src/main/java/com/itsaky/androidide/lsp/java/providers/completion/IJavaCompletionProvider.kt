@@ -150,7 +150,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(keyword)
-    item.kind = KEYWORD
+    item.completionKind = KEYWORD
     item.detail = "keyword"
     item.ideSortText = keyword
     item.matchLevel = matchLevel
@@ -169,7 +169,7 @@ abstract class IJavaCompletionProvider(
     val first = overloads[0]
     val item = JavaCompletionItem()
     item.setLabel(first.simpleName.toString())
-    item.kind = CompletionItemKind.METHOD
+    item.completionKind = CompletionItemKind.METHOD
     item.detail = printMethodDetail(first)
     item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
@@ -220,7 +220,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(element.simpleName.toString())
-    item.kind = kind(element)
+    item.completionKind = kind(element)
     item.detail = element.toString()
     item.data = data(task, element, 1)
     item.ideSortText = item.label.toString()
@@ -250,7 +250,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(simpleName(className).toString())
-    item.kind = CompletionItemKind.CLASS
+    item.completionKind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
     item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
@@ -285,7 +285,7 @@ abstract class IJavaCompletionProvider(
       setLabel(simpleName)
       this.detail = packageName
       this.insertText = simpleName
-      this.kind = MODULE
+      this.completionKind = MODULE
       this.ideSortText = name
       this.matchLevel = matchLevel
     }

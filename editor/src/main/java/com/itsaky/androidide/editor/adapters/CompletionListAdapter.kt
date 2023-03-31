@@ -24,10 +24,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewTreeObserver
 import android.widget.TextView
-import androidx.core.view.updateLayoutParams
 import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
@@ -59,7 +56,6 @@ import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import kotlin.math.max
 
 class CompletionListAdapter : EditorCompletionAdapter() {
 
@@ -88,7 +84,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     val item = getItem(position) as LspCompletionItem
     val label = item.getLabel()
     val desc = item.detail
-    var type: String? = item.kind.toString()
+    var type: String? = item.completionKind.toString()
     val header = if (type!!.isEmpty()) "O" else type[0].toString()
     if (item.overrideTypeText != null) {
       type = item.overrideTypeText
@@ -160,7 +156,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
           is MemberCompletionData -> data.classInfo.className
           else -> return@executeAsync null
         }
-      val kind = item.kind
+      val kind = item.completionKind
 
       val clazz = versions.getClass(className) ?: return@executeAsync null
       var info: Info? = clazz
@@ -212,7 +208,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     if (item == null) {
       return false
     }
-    val type = item.kind
+    val type = item.completionKind
     val data = item.data
     return if ( // These represent a class type
       (type === CLASS ||
