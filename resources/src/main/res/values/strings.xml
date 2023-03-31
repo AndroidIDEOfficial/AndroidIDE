@@ -138,10 +138,12 @@
   <string name="msg_begin_project_write">Starting writing process</string>
   <string name="msg_folder_creation_failed">Failed to create folder!</string>
   <string name="msg_file_creation_failed">Failed to create file!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Folder created successfully!</string>
   <string name="msg_file_created">File created successfully!</string>
   <string name="msg_folder_exists">Folder already exists!</string>
   <string name="msg_file_exists">File already exists!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Invalid Name!</string>
   <string name="text_create">Create</string>
   <string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
@@ -149,7 +151,7 @@
   <string name="file_name">File Name</string>
   <string name="new_name">New name</string>
   <string name="new_file">New file</string>
-  <string name="create_auto_layout">Create layout file automatically</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">New Java class</string>
   <string name="new_xml_resource">New XML resource</string>
   <string name="new_folder">New folder</string>
