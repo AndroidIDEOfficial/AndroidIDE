@@ -37,46 +37,9 @@ open class ActiveDocument(
   var version: Int,
   var modified: Instant,
   content: String = ""
-) : Closeable {
-
-  private val _content = StringBuilder(content)
-  private val semaphore = Semaphore(1)
-  private val log = ILogger.newInstance("ActiveDocument")
-
-  val content: String
-    get() = _content.toString()
-
-  fun patch(event: DocumentChangeEvent) {
-    try {
-      semaphore.acquire()
-    } catch (e: Exception) {
-      log.error("Failed to acquire", e)
-      throw RuntimeException(e)
-    }
-
-    try {
-      val text = event.changedText
-      val start = event.changeRange.start.requireIndex()
-      val end = event.changeRange.end.requireIndex()
-
-      when (event.changeType) {
-        ChangeType.DELETE -> _content.delete(start, end)
-        ChangeType.INSERT -> _content.insert(start, text)
-        else -> {
-          _content.clear()
-          _content.append(text)
-        }
-      }
-    } catch (err: Throwable) {
-      throw RuntimeException(err)
-    } finally {
-      semaphore.release()
-    }
-  }
-
-  override fun close() {
-    _content.clear()
-  }
+) {
+  var content: String = content
+    internal set
 
   fun inputStream(): BufferedInputStream {
     return content.byteInputStream().buffered()

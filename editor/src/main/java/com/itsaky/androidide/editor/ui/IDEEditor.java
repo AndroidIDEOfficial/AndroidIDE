@@ -755,7 +755,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       new Position(end.line, end.column, end.index));
 
     final var changedText = event.getChangedText().toString();
-    final var changeEvent = new DocumentChangeEvent(file, changedText, ++fileVersion, type,
+    final var changeEvent = new DocumentChangeEvent(file, changedText, getText().toString(), ++fileVersion, type,
       changeDelta, changeRange);
 
     // Notify FileManager first

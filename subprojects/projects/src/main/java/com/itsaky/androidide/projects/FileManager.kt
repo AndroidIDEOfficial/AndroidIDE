@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.projects
 
-import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
@@ -27,6 +26,7 @@ import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.utils.ILogger
+import org.apache.commons.io.FileUtils
 import java.io.BufferedReader
 import java.io.InputStream
 import java.net.URI
@@ -36,9 +36,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
-import org.apache.commons.io.FileUtils
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages active documents.
@@ -119,14 +116,12 @@ object FileManager {
 
     document.version = event.version
     document.modified = Instant.now()
-
-    // document is already open
-    // patch the changes
-    document.patch(event)
+    document.content = event.newText!!
+    event.newText = null
   }
 
   fun onDocumentClose(event: DocumentCloseEvent) {
-    activeDocuments.remove(event.closedFile.normalize())?.close()
+    activeDocuments.remove(event.closedFile.normalize())
   }
 
   fun onFileRenamed(event: FileRenameEvent) {
@@ -138,7 +133,7 @@ object FileManager {
 
   fun onFileDeleted(event: FileDeletionEvent) {
     // If the file was an active document, remove the document cache
-    activeDocuments.remove(event.file.toPath().normalize())?.close()
+    activeDocuments.remove(event.file.toPath().normalize())
   }
 
   private fun createDocument(event: DocumentOpenEvent): ActiveDocument {
