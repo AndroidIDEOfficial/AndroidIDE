@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Yazma işlemi başlatılıyor</string>
   <string name="msg_folder_creation_failed">Klasö oluşturulamadı!</string>
   <string name="msg_file_creation_failed">Dosya oluşturma başarısız!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Klasör başarıyla oluşturuldu!</string>
   <string name="msg_file_created">Dosya başarıyla oluşturuldu!</string>
   <string name="msg_folder_exists">Klasör zaten var!</string>
   <string name="msg_file_exists">Dosya zaten mevcut!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Geçersiz Ad!</string>
   <string name="text_create">Oluştur</string>
   <string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Dosya Adı</string>
   <string name="new_name">Yeni ad</string>
   <string name="new_file">Yeni dosya</string>
-  <string name="create_auto_layout">Katman dosyasını otomatik olarak oluştur</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Yeni Java class</string>
   <string name="new_xml_resource">Yeni XML kaynağı</string>
   <string name="new_folder">Yeni klasör</string>
