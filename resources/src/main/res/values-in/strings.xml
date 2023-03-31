@@ -123,10 +123,12 @@
   <string name="msg_begin_project_write">Memulai proses penulisan</string>
   <string name="msg_folder_creation_failed">Gagal membuat folder!</string>
   <string name="msg_file_creation_failed">Gagal membuat file!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Folder sukses dibuat!</string>
   <string name="msg_file_created">File sukses dibuat!</string>
   <string name="msg_folder_exists">Folder sudah ada!</string>
   <string name="msg_file_exists">File sudah ada!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Nama Tidak Valid!</string>
   <string name="text_create">Buat</string>
   <string name="msg_can_contain_slashes">Jika jalur terdapat pemisah File (\'/\'), maka direktori (awal) yang diperlukan akan dibuat jika mereka tidak ada.</string>
@@ -134,7 +136,7 @@
   <string name="file_name">Nama File</string>
   <string name="new_name">Nama baru</string>
   <string name="new_file">File baru</string>
-  <string name="create_auto_layout">Buat File Layout secara otomatis</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">Class Java baru</string>
   <string name="new_xml_resource">File XML baru</string>
   <string name="new_folder">Folder baru</string>
