@@ -123,12 +123,12 @@
   <string name="msg_begin_project_write">Запуск процесса записи</string>
   <string name="msg_folder_creation_failed">Не удалось создать папку!</string>
   <string name="msg_file_creation_failed">Не удалось создать файл!</string>
-  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
+  <string name="msg_layout_file_creation_failed">Не удалось создать файл макета!</string>
   <string name="msg_folder_created">Папка создана успешно!</string>
   <string name="msg_file_created">Файл создан успешно!</string>
   <string name="msg_folder_exists">Папка уже существует!</string>
   <string name="msg_file_exists">Файл уже существует!</string>
-  <string name="msg_layout_file_exists">Layout file already exists!</string>
+  <string name="msg_layout_file_exists">Файл макета уже существует!</string>
   <string name="msg_invalid_name">Неверное имя!</string>
   <string name="text_create">Создать</string>
   <string name="msg_can_contain_slashes">Если путь содержит разделительные символы (\'/\'), необходимые (родительские) директории будут созданы, если их ещё не существует.</string>
@@ -136,7 +136,7 @@
   <string name="file_name">Имя файла</string>
   <string name="new_name">Новое имя</string>
   <string name="new_file">Новый файл</string>
-  <string name="create_auto_layout">Create layout file</string>
+  <string name="create_auto_layout">Создать файл макета</string>
   <string name="new_java_class">Новый Java класс</string>
   <string name="new_xml_resource">Новый XML ресурс</string>
   <string name="new_folder">Новая папка</string>
@@ -156,7 +156,7 @@
   <string name="action_closeOthers">Закрыть остальные</string>
   <string name="action_closeThis">Закрыть этот</string>
   <string name="all_saved">Все файлы сохранены!</string>
-  <string name="save_failed">Failed to save files</string>
+  <string name="save_failed">Не удалось сохранить файл</string>
   <string name="msg_newfile_dest">Место расположения: %s/</string>
   <string name="restype_drawable">Рисунок</string>
   <string name="restype_layout">Разметка</string>
@@ -205,7 +205,7 @@
   <string name="msg_preferences">Настройки</string>
   <string name="pref_changelog">Список изменений</string>
   <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора:</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, то следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы заново.\n\nВы уверены, что хотите удалить кэш?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Ошибка инициализации информации о SDK</string>
   <string name="err_cannot_preview_layout">Предпросмотр разметки невозможен</string>
@@ -464,5 +464,5 @@
   <string name="btn_ignore_changes">Ignore these changes</string>
   <string name="title_fix_imports">Fix imports</string>
   <string name="msg_no_unresolved_classes">No unresolved class names found</string>
-  <string name="title_class_chooser">Which %1$s?</string>
+  <string name="title_class_chooser">Который %1$s?</string>
 </resources>
