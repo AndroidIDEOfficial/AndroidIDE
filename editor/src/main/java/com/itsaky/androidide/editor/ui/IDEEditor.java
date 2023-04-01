@@ -46,6 +46,9 @@ import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
 import com.itsaky.androidide.editor.schemes.IDEColorScheme;
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
+import com.itsaky.androidide.editor.snippets.AbstractSnippetVariableResolver;
+import com.itsaky.androidide.editor.snippets.FileVariableResolver;
+import com.itsaky.androidide.editor.snippets.WorkspaceVariableResolver;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
@@ -80,6 +83,7 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
+import io.github.rosemoe.sora.widget.snippet.variable.ISnippetVariableResolver;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import kotlin.io.FilesKt;
@@ -426,6 +430,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
 
     if (server != null) {
       this.languageClient = server.getClient();
+      getSnippetController().setFileVariableResolver(new FileVariableResolver(this));
+      getSnippetController().setWorkspaceVariableResolver(new WorkspaceVariableResolver());
     }
   }
 
@@ -755,8 +761,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       new Position(end.line, end.column, end.index));
 
     final var changedText = event.getChangedText().toString();
-    final var changeEvent = new DocumentChangeEvent(file, changedText, getText().toString(), ++fileVersion, type,
-      changeDelta, changeRange);
+    final var changeEvent = new DocumentChangeEvent(file, changedText, getText().toString(),
+      ++fileVersion, type, changeDelta, changeRange);
 
     // Notify FileManager first
     FileManager.INSTANCE.onDocumentContentChange(changeEvent);
@@ -819,6 +825,19 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   public void release() {
     ensureWindowsDismissed();
     super.release();
+    ISnippetVariableResolver resolver = getSnippetController().getFileVariableResolver();
+    if (resolver instanceof AbstractSnippetVariableResolver) {
+      ((AbstractSnippetVariableResolver) resolver).close();
+    }
+
+    resolver = getSnippetController().getWorkspaceVariableResolver();
+    if (resolver instanceof AbstractSnippetVariableResolver) {
+      ((AbstractSnippetVariableResolver) resolver).close();
+    }
+
+    getSnippetController().setFileVariableResolver(null);
+    getSnippetController().setWorkspaceVariableResolver(null);
+
     if (this.actionsMenu != null) {
       this.actionsMenu.destroy();
     }
