@@ -456,13 +456,13 @@
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
-  <string name="btn_sync">Sync</string>
-  <string name="btn_ignore_changes">Ignore these changes</string>
+  <string name="idepref_deleteEmptyLines_title">Удалять пустые строки при нажатии клавиши \"backspace\"</string>
+  <string name="idepref_deleteEmptyLines_summary">Должен ли редактор удалять пустые строки при одиночном нажатии клавиши \"backspace\".</string>
+  <string name="idepref_deleteTabs_title">Удалять табуляцию при нажатии клавиши \"backspace\"</string>
+  <string name="idepref_deleteTabs_summary">Когда включено, редактор удалит пробелы, равные ширине табуляции при нажатии клавиши \"backspace\".</string>
+  <string name="btn_sync">Синхронизация</string>
+  <string name="btn_ignore_changes">Игнорировать эти изменения</string>
   <string name="title_fix_imports">Fix imports</string>
-  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
+  <string name="msg_no_unresolved_classes">Неразрешенные имена классов не найдены</string>
   <string name="title_class_chooser">Который %1$s?</string>
 </resources>
