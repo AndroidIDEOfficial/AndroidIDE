@@ -8,7 +8,9 @@
   "ctor": {
     "desc": "Public constructor",
     "body": [
-      "public "
+      "public ${1:$TM_FILENAME_BASE}($2) {",
+      "\t${3:super();}$0",
+      "}"
     ]
   },
   "public_method": {
