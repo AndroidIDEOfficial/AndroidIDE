@@ -457,12 +457,12 @@
   <string name="msg_dir_picker_failed">فشل تشغيل مختار الملفات: %1$s</string>
   <string name="msg_tooling_server_unavailable">أداة خادم API غير متوفرة. تحقق من إخراج البناء وسجلات IDE للأخطاء.</string>
   <string name="idepref_deleteEmptyLines_title">حذف الأسطر الفارغة عند المسح</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
-  <string name="btn_sync">Sync</string>
-  <string name="btn_ignore_changes">Ignore these changes</string>
-  <string name="title_fix_imports">Fix imports</string>
-  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
-  <string name="title_class_chooser">Which %1$s?</string>
+  <string name="idepref_deleteEmptyLines_summary">ما إذا كان على المحرر حذف الأسطر الفارغة عند المسح للخلف بضغطة واحدة أم لا.</string>
+  <string name="idepref_deleteTabs_title">حذف التاب عند المسح</string>
+  <string name="idepref_deleteTabs_summary">عند تفعيلها، المحرر سيحذف الفراغات المساوية لعرض التاب (غالبا 4 فراغ) عند الضغط على مسح النص.</string>
+  <string name="btn_sync">مزامنة</string>
+  <string name="btn_ignore_changes">تجاهل التغييرات</string>
+  <string name="title_fix_imports">أصلح الواردات (إمبورت)</string>
+  <string name="msg_no_unresolved_classes">لم يتم العثور على أسماء الكلاس</string>
+  <string name="title_class_chooser">أي %1$s؟</string>
 </resources>
