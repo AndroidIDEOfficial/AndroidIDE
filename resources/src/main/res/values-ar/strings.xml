@@ -123,12 +123,12 @@
   <string name="msg_begin_project_write">بدء عملية الكتابة</string>
   <string name="msg_folder_creation_failed">فشل في إنشاء المجلد</string>
   <string name="msg_file_creation_failed">فشل في إنشاء ملف</string>
-  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
+  <string name="msg_layout_file_creation_failed">فشل إنشاء ملف التخطيط</string>
   <string name="msg_folder_created">تم إنشاء المجلد بنجاح</string>
   <string name="msg_file_created">تم إنشاء الملف بنجاح</string>
   <string name="msg_folder_exists">المجلد موجود بالفعل</string>
   <string name="msg_file_exists">الملف موجود بالفعل!</string>
-  <string name="msg_layout_file_exists">Layout file already exists!</string>
+  <string name="msg_layout_file_exists">ملف التخطيط موجود فعلًا!</string>
   <string name="msg_invalid_name">اسم غير صحيح!</string>
   <string name="text_create">إنشاء</string>
   <string name="msg_can_contain_slashes">إذا كان المسار يحتوي على فاصل الملفات (\'/\')، فسيتم إنشاء الدلائل المطلوبة (الأم) إذا لم تكن موجودة.</string>
@@ -136,7 +136,7 @@
   <string name="file_name">إسم الملف</string>
   <string name="new_name">اسم جديد</string>
   <string name="new_file">ملف جديد</string>
-  <string name="create_auto_layout">Create layout file</string>
+  <string name="create_auto_layout">إنشاء ملف تخطيط</string>
   <string name="new_java_class">كلاس جافا جديد</string>
   <string name="new_xml_resource">مصدر XML جديد</string>
   <string name="new_folder">مجلد جديد</string>
@@ -156,7 +156,7 @@
   <string name="action_closeOthers">إغلاق الأخرى</string>
   <string name="action_closeThis">أغلق هذا التبويب</string>
   <string name="all_saved">تم حفظ جميع الملفات.</string>
-  <string name="save_failed">Failed to save files</string>
+  <string name="save_failed">فشل حفظ الملفات</string>
   <string name="msg_newfile_dest">الوجهة: %s/</string>
   <string name="restype_drawable">مورد رسم</string>
   <string name="restype_layout">الواجهة</string>
@@ -456,7 +456,7 @@
   <string name="title_reload_color_schemes">إعادة تحميل أنظمة الألوان</string>
   <string name="msg_dir_picker_failed">فشل تشغيل مختار الملفات: %1$s</string>
   <string name="msg_tooling_server_unavailable">أداة خادم API غير متوفرة. تحقق من إخراج البناء وسجلات IDE للأخطاء.</string>
-  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_title">حذف الأسطر الفارغة عند المسح</string>
   <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
   <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
   <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
