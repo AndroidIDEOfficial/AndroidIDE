@@ -454,7 +454,7 @@
   <string name="idepref_java_diagnosticEnabled_title">Активировать анализ</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Reload color schemes</string>
-  <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
+  <string name="msg_dir_picker_failed">Не удалось открыть файловый менеджер: %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
   <string name="idepref_deleteEmptyLines_title">Удалять пустые строки при нажатии клавиши \"backspace\"</string>
   <string name="idepref_deleteEmptyLines_summary">Должен ли редактор удалять пустые строки при одиночном нажатии клавиши \"backspace\".</string>
