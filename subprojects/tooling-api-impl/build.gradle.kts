@@ -31,16 +31,26 @@ tasks.register<Copy>("copyJarToAssets") {
   into(project.rootProject.file("app/src/main/assets/data/common/"))
 }
 
-tasks.register<Copy>("copyJar") {
+tasks.register("deleteExistingJarFiles") { delete { delete(project.buildDir.resolve("libs")) } }
+
+tasks.register("copyJar") {
   finalizedBy("copyJarToAssets")
-  val libsDir = project.buildDir.resolve("libs")
-  from(libsDir)
-  into(libsDir)
-  include("*-all.jar")
-  rename { "tooling-api-all.jar" }
+  doLast {
+    val libsDir = project.buildDir.resolve("libs")
+
+    copy {
+      from(libsDir)
+      into(libsDir)
+      include("*-all.jar")
+      rename { "tooling-api-all.jar" }
+    }
+  }
 }
 
-project.tasks.getByName("jar") { finalizedBy("shadowJar") }
+project.tasks.getByName("jar") {
+  dependsOn("deleteExistingJarFiles")
+  finalizedBy("shadowJar")
+}
 
 project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
 
