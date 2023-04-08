@@ -15,17 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
-
 @Suppress("JavaPluginLanguageLevel")
 plugins {
   id("com.github.johnrengelman.shadow") version "8.1.1"
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
 }
-
-shadow { archivesName.set("tooling-api") }
 
 tasks.withType<Jar> {
   manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
@@ -36,21 +31,18 @@ tasks.register<Copy>("copyJarToAssets") {
   into(project.rootProject.file("app/src/main/assets/data/common/"))
 }
 
-tasks.register("renameJar") {
+tasks.register<Copy>("copyJar") {
   finalizedBy("copyJarToAssets")
-
-  doLast {
-    val jar = project.file("${project.buildDir}/libs/tooling-api-${project.version}-all.jar")
-    val destJar = jar.parentFile.resolve("tooling-api-all.jar")
-    destJar.exists().ifTrue { destJar.delete() }
-
-    jar.renameTo(destJar)
-  }
+  val libsDir = project.buildDir.resolve("libs")
+  from(libsDir)
+  into(libsDir)
+  include("*-all.jar")
+  rename { "tooling-api-all.jar" }
 }
 
 project.tasks.getByName("jar") { finalizedBy("shadowJar") }
 
-project.tasks.getByName("shadowJar") { finalizedBy("renameJar") }
+project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
 
 dependencies {
   implementation(projects.subprojects.toolingApi)
