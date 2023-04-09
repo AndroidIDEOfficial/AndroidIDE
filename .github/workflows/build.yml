@@ -150,7 +150,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run Tooling API tests
-        run: ./gradlew :subprojects:tooling-api-impl:test --continue
+        run: ./gradlew clean :subprojects:tooling-api-impl:build
         env:
           TEST_TOOLING_API_IMPL: "true"
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
