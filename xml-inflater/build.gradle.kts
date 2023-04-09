@@ -42,6 +42,7 @@ dependencies {
 
   testImplementation(projects.subprojects.projects)
   testImplementation(projects.subprojects.toolingApiTesting)
+  testImplementation(projects.shared)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.robolectric)

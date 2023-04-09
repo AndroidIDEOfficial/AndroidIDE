@@ -26,6 +26,7 @@ import com.android.aaptcompiler.compileResource
 import com.android.aaptcompiler.extractPathData
 import com.android.utils.StdLogger
 import com.android.utils.StdLogger.Level.VERBOSE
+import com.itsaky.androidide.utils.FileProvider
 import java.nio.file.Paths
 import kotlin.io.path.absolute
 import org.junit.Test
@@ -39,7 +40,7 @@ class CompilerTest {
   @Test
   fun `test simple compilatation`() {
     val input =
-      Paths.get("../../app/src/main/res/layout/activity_editor.xml").absolute().normalize().toFile()
+      FileProvider.projectRoot().resolve("app/src/main/res/layout/activity_editor.xml").toFile()
     val output = Paths.get("./build").absolute().normalize().toFile()
     println(input)
     println(output)

@@ -63,6 +63,7 @@ dependencies {
   implementation(libs.tooling.gradleApi)
 
   testImplementation(projects.subprojects.toolingApiTesting)
+  testImplementation(projects.shared)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
 

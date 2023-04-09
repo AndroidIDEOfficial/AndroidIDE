@@ -39,19 +39,20 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.mockk.every
 import io.mockk.mockkStatic
-import java.io.File
-import java.nio.file.Path
-import kotlin.io.path.pathString
 import org.greenrobot.eventbus.EventBus
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.pathString
 
 /**
  * Runs tests for a language server.
@@ -87,7 +88,6 @@ abstract class LSPTest {
     val (server, project) =
       ToolingApiTestLauncher()
         .launchServer(
-          implDir = FileProvider.implModule().pathString,
           client = MultiVersionTestClient()
         )
     this.toolingProject = project
@@ -96,7 +96,7 @@ abstract class LSPTest {
     Lookup.DEFAULT.update(BuildService.KEY_PROJECT_PROXY, project)
 
     server
-      .initialize(InitializeProjectMessage(FileProvider.projectRoot().toFile().absolutePath))
+      .initialize(InitializeProjectMessage(FileProvider.testProjectRoot().toFile().absolutePath))
       .get()
 
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
@@ -130,7 +130,17 @@ abstract class LSPTest {
 
     // As the content has been changed, we have to
     // Update the content in language server
-    dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), contents.toString(), 1, DELETE, 0, Range.NONE))
+    dispatchEvent(
+      DocumentChangeEvent(
+        file!!,
+        contents.toString(),
+        contents.toString(),
+        1,
+        DELETE,
+        0,
+        Range.NONE
+      )
+    )
   }
 
   @JvmOverloads

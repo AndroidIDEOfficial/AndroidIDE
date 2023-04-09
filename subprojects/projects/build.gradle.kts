@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.google.guava)
     
     testImplementation(projects.subprojects.toolingApiTesting)
+    testImplementation(projects.shared)
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)
     testImplementation(libs.tests.robolectric)

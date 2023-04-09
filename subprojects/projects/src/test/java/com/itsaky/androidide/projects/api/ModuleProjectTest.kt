@@ -26,15 +26,16 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
+import java.io.File
+import java.nio.file.Files
+import kotlin.io.path.pathString
+import kotlin.io.path.writeText
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
-import kotlin.io.path.writeText
 
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
@@ -44,7 +45,7 @@ class ModuleProjectTest {
   @Test
   fun test() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
+    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
 
     Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
 
@@ -56,8 +57,7 @@ class ModuleProjectTest {
 
     val rootDir = root.projectDir
     assertThat(rootDir).isNotNull()
-    assertThat(Files.isSameFile(rootDir.toPath(), File("../../tests/test-project").toPath()))
-      .isTrue()
+    assertThat(Files.isSameFile(rootDir.toPath(), FileProvider.testProjectRoot())).isTrue()
 
     val app = root.findByPath(":app")
     assertThat(app).isNotNull()
@@ -183,7 +183,8 @@ class ModuleProjectTest {
   private fun verifyProjectManagerAPIs() {
 
     val testCls =
-      Paths.get("../../tests/test-project/app/src/main/java/com/itsaky/test/app/Test.java")
+      FileProvider.testProjectRoot()
+        .resolve("app/src/main/java/com/itsaky/test/app/Test.java")
         .toAbsolutePath()
         .normalize()
     val testCls_renamed = testCls.parent!!.resolve("TestRenamed.java")
