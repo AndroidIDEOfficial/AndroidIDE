@@ -145,7 +145,7 @@ class MultiModuleAndroidProjectTest {
   @Throws(CIOnlyException::class)
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
     ciOnlyTest {
-      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0", "7.4.0")
+      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0", "7.4.0", "8.0")
       val client = MultiVersionTestClient()
       for (version in versions) {
         client.version = version
