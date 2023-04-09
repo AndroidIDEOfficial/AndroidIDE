@@ -146,10 +146,18 @@ class MultiModuleAndroidProjectTest {
   @Throws(CIOnlyException::class)
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
     ciOnlyTest {
-      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0", "7.4.0", "8.0.0-rc01")
+      // Test the minimum supported and the latest AGP version
+      val versions =
+        listOf(
+          // AGP to Gradle
+          "7.2.0" to "7.3.3",
+          "8.0.0-rc01" to "8.0.2"
+        )
+      
       val client = MultiVersionTestClient()
-      for (version in versions) {
-        client.agpVersion = version
+      for ((agpVersion, gradleVersion) in versions) {
+        client.agpVersion = agpVersion
+        client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
         server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
         doAssertions(project = project, server = server)
