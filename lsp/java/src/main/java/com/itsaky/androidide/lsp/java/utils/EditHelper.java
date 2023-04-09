@@ -62,8 +62,8 @@ public class EditHelper {
   }
 
   public static boolean containsImport(@NonNull Path file, Set<String> imports, String className) {
-    if (imports == null || imports.isEmpty()) {
-      return false;
+    if (imports == null) {
+      imports = Collections.emptySet();
     }
 
     final String pkgName = Extractors.packageName(className);
