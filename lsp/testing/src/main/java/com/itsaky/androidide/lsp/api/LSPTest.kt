@@ -87,9 +87,7 @@ abstract class LSPTest {
 
     val (server, project) =
       ToolingApiTestLauncher()
-        .launchServer(
-          client = MultiVersionTestClient()
-        )
+        .launchServer()
     this.toolingProject = project
     this.toolingServer = server
 
