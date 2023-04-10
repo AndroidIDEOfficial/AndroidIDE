@@ -153,7 +153,7 @@ class MultiModuleAndroidProjectTest {
           "7.2.0" to "7.3.3",
           "8.0.0-rc01" to "8.0.2"
         )
-      
+
       val client = MultiVersionTestClient()
       for ((agpVersion, gradleVersion) in versions) {
         client.agpVersion = agpVersion
