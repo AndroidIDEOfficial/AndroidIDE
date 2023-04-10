@@ -68,6 +68,7 @@ fun Project.configureBaseExtension() {
     testOptions { unitTests.isIncludeAndroidResources = true }
 
     buildFeatures.viewBinding = true
+    buildFeatures.buildConfig = true
   }
 }
 
