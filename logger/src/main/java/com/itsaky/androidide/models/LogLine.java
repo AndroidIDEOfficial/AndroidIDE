@@ -79,6 +79,9 @@ public class LogLine {
   }
 
   public static LogLine forLogString(final String log) {
+    if (log == null) {
+      return null;
+    }
     try {
       final var split = log.split("\\s", 7);
       return new LogLine(

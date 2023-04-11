@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools">
 
+  <permission
+    android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE"
+    android:description="@string/permdesc_bind_logger_service"
+    android:label="@string/permlab_bind_logger_service"
+    android:protectionLevel="normal" />
+
+  <uses-permission android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE" />
+
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -46,8 +54,8 @@
     </activity>
     <activity
       android:name=".activities.editor.EditorActivityKt"
-      android:launchMode="singleTop"
       android:configChanges="orientation|screenSize"
+      android:launchMode="singleTop"
       android:windowSoftInputMode="adjustResize" />
     <activity
       android:name=".activities.PreferencesActivity"
@@ -63,6 +71,14 @@
     <service
       android:name=".services.builder.GradleBuildService"
       android:exported="false" />
+    <service
+      android:name=".services.log.LogReceiverService"
+      android:exported="true"
+      android:permission="com.itsaky.androidide.permission.BIND_LOG_SERVICE">
+      <intent-filter>
+        <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION"/>
+      </intent-filter>
+    </service>
 
     <provider
       android:name=".provider.IDEDocumentsProvider"
@@ -84,15 +100,6 @@
         android:resource="@xml/ide_file_provider_paths" />
     </provider>
 
-    <receiver
-      android:name=".services.LogReceiver"
-      android:enabled="true"
-      android:exported="true"
-      tools:ignore="ExportedReceiver">
-      <intent-filter>
-        <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
-      </intent-filter>
-    </receiver>
     <receiver
       android:name=".services.InstallationResultReceiver"
       android:enabled="true"

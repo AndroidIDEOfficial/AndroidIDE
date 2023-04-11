@@ -54,6 +54,8 @@ include(
   ":eventbus-events",
   ":lexers",
   ":logger",
+  ":logsender-api",
+  ":logsender-sample",
   ":lookup",
   ":preferences",
   ":resources",

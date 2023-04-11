@@ -18,7 +18,6 @@
 package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -69,6 +68,7 @@ import com.itsaky.androidide.fragments.SearchResultFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
 import com.itsaky.androidide.interfaces.DiagnosticClickListener
+import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.models.DiagnosticGroup
@@ -79,7 +79,9 @@ import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.services.LogReceiver
+import com.itsaky.androidide.services.log.LogReceiverService
+import com.itsaky.androidide.services.log.LogReceiverServiceConnection
+import com.itsaky.androidide.services.log.lookupLogService
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
@@ -121,7 +123,9 @@ abstract class BaseEditorActivity :
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
-  protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
+  protected val logServiceConnection = LogReceiverServiceConnection {
+    lookupLogService()?.setConsumer(this::appendApkLog)
+  }
 
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
@@ -162,10 +166,13 @@ abstract class BaseEditorActivity :
   protected open fun preDestroy() {
     installationCallback?.destroy()
     installationCallback = null
+
     try {
-      unregisterReceiver(logReceiver)
-    } catch (th: Throwable) {
-      log.error("Failed to release resources", th)
+      lookupLogService()?.setConsumer(null)
+      logServiceConnection.onConnected = null
+      unbindService(logServiceConnection)
+    } catch (e: Exception) {
+      log.error("Failed to unbind LogReceiver service")
     }
   }
 
@@ -225,7 +232,7 @@ abstract class BaseEditorActivity :
     setupViews()
 
     KeyboardUtils.registerSoftInputChangedListener(this) { onSoftInputChanged() }
-    registerLogReceiver()
+    startLogReceiver()
     setupContainers()
     setupDiagnosticInfo()
 
@@ -626,10 +633,14 @@ abstract class BaseEditorActivity :
     startActivity(intent)
   }
 
-  private fun registerLogReceiver() {
-    val filter = IntentFilter()
-    filter.addAction(LogReceiver.APPEND_LOG)
-    registerReceiver(logReceiver, filter)
+  private fun startLogReceiver() {
+    try {
+      val intent = Intent(this, LogReceiverService::class.java).setAction(LogSender.SERVICE_ACTION)
+      check(bindService(intent, logServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT))
+      log.info("LogReceiver service is being started")
+    } catch (err: Throwable) {
+      log.error("Failed to start LogReceiver service", err)
+    }
   }
 
   private fun showNeedHelpDialog() {
