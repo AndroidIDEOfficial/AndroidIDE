@@ -15,8 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
+import org.gradle.kotlin.dsl.provideDelegate
 
 /**
  * Information about the CI build.
@@ -38,6 +38,9 @@ object CI {
 
   /** Whether the current build is a CI build. */
   val isCiBuild by lazy { "true" == System.getenv("CI") }
+
+  /** Whether the current build is for tests. This is set ONLY in CI builds. */
+  val isTestEnv by lazy { "true" == System.getenv("ANDROIDIDE_TEST") }
 
   private fun shortSha(sha: String): String {
     return ProcessBuilder("git", "rev-parse", "--short", sha)

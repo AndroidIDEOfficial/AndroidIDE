@@ -110,6 +110,7 @@ jobs:
       - name: Run debug tests
         run: ./gradlew testDebug --continue
         env:
+          ANDROIDIDE_TEST: true
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
           IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
@@ -148,6 +149,7 @@ jobs:
       - name: Run Tooling API tests
         run: ./gradlew clean :subprojects:tooling-api-impl:build
         env:
+          ANDROIDIDE_TEST: true
           TEST_TOOLING_API_IMPL: "true"
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
           IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}

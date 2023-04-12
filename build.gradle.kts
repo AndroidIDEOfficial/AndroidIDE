@@ -51,9 +51,15 @@ val Project.simpleVersionName: String by lazy {
   return@lazy regex.find(version)?.value?.substring(1)?.also {
     logger.warn("Simple version name is '$it' (from version $version)")
   }
-    ?: throw IllegalStateException(
-      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-    )
+    ?: run {
+      if (CI.isTestEnv) {
+        return@run "1.0.0-beta"
+      }
+
+      throw IllegalStateException(
+        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+      )
+    }
 }
 
 val Project.projectVersionCode: Int by lazy {
@@ -64,7 +70,7 @@ val Project.projectVersionCode: Int by lazy {
     logger.warn("Version code is '$it' (from version ${version}).")
   }
     ?: throw IllegalStateException(
-      "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
+      "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
     )
 }
 
