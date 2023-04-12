@@ -465,6 +465,6 @@
   <string name="title_fix_imports">修复导入</string>
   <string name="msg_no_unresolved_classes">找不到未解析的类名</string>
   <string name="title_class_chooser">哪个 %1$s？</string>
-  <string name="permlab_bind_logger_service">bind to log service</string>
-  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="permlab_bind_logger_service">绑定日志服务</string>
+  <string name="permdesc_bind_logger_service">允许此应用程序绑定到 AndroidIDE 的日志记录服务。  AndroidIDE 需要此权限才能读取此应用程序的日志。</string>
 </resources>
