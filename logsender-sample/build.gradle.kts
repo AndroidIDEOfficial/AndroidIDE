@@ -31,7 +31,7 @@ android {
 
 dependencies {
 
-  implementation(projects.logsenderApi)
+  implementation(projects.logsender)
 
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.constraintlayout)

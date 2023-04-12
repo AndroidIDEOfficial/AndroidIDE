@@ -126,7 +126,7 @@ dependencies {
   implementation(projects.subprojects.xmlUtils)
   implementation(projects.subprojects.projects)
   implementation(projects.subprojects.toolingApi)
-  implementation(projects.logsenderApi)
+  implementation(projects.logsender)
   implementation(projects.lsp.api)
   implementation(projects.lsp.java)
   implementation(projects.lsp.xml)
