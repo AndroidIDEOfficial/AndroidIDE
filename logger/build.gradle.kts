@@ -18,6 +18,7 @@
 @Suppress("JavaPluginLanguageLevel")
 plugins {
     id("java-library")
+    id("com.vanniktech.maven.publish.base")
 }
 
 dependencies {

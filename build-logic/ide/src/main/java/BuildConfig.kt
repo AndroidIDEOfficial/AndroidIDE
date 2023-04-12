@@ -42,5 +42,4 @@ object BuildConfig {
 
   /** The source and target Java compatibility. */
   val javaVersion = JavaVersion.VERSION_11
-  val javaVersionMajor = 11
 }

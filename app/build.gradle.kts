@@ -45,7 +45,7 @@ android {
 
   buildTypes { release { isShrinkResources = true } }
 
-  packagingOptions {
+  packaging {
     resources.excludes.addAll(
       arrayOf(
         "META-INF/eclipse.inf",
