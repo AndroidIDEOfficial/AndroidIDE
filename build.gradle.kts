@@ -70,8 +70,8 @@ val Project.projectVersionCode: Int by lazy {
 
 val Project.publishingVersion by lazy {
   var version = simpleVersionName
-  if (CI.isCiBuild) {
-    version += "-SNAPSHOT"
+  if (CI.isCiBuild && CI.branchName != "main") {
+    version += "-${CI.commitHash}-SNAPSHOT"
   }
   return@lazy version
 }
