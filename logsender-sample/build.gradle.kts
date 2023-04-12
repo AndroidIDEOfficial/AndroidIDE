@@ -17,7 +17,6 @@
 
 plugins {
   id("com.android.application")
-  id("kotlin-android")
 }
 
 android {
@@ -34,7 +33,6 @@ dependencies {
 
   implementation(projects.logsenderApi)
 
-  implementation(libs.androidx.ktx)
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.constraintlayout)
   implementation(libs.google.material)

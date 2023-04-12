@@ -34,8 +34,7 @@ class LogReceiverService : Service() {
   private val binder = LogReceiverImpl()
 
   companion object {
-    @JvmStatic
-    internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
+    @JvmStatic internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
   }
 
   override fun onCreate() {
@@ -60,6 +59,6 @@ class LogReceiverService : Service() {
   }
 }
 
-fun lookupLogService() : LogReceiverService? {
+fun lookupLogService(): LogReceiverService? {
   return Lookup.DEFAULT.lookup(LogReceiverService.LOOKUP_KEY)
 }

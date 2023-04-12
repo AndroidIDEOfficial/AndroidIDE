@@ -15,14 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.logsender.utils
+package com.itsaky.androidide.logsender.utils;
 
-import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.ILogger;
 
-private val log = ILogger.newInstance("LogSender")
+/**
+ * Static methods for logging messages.
+ *
+ * @author Akash Yadav
+ */
+public class Logger {
+  private static final ILogger LOG = ILogger.newInstance("LogSender");
 
-fun error(vararg messages: Any?) = log.error(*messages)
-fun warn(vararg messages: Any?) = log.warn(*messages)
-fun info(vararg messages: Any?) = log.info(*messages)
-fun debug(vararg messages: Any?) = log.debug(*messages)
-fun verbose(vararg messages: Any?) = log.verbose(*messages)
+  public static void error(Object... messages) {
+    LOG.error(messages);
+  }
+
+  public static void warn(Object... messages) {
+    LOG.warn(messages);
+  }
+
+  public static void info(Object... messages) {
+    LOG.info(messages);
+  }
+
+  public static void debug(Object... messages) {
+    LOG.debug(messages);
+  }
+}

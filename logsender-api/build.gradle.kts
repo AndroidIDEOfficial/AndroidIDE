@@ -17,7 +17,6 @@
 
 plugins {
   id("com.android.library")
-  id("kotlin-android")
 }
 
 android {
@@ -28,7 +27,6 @@ android {
 dependencies {
   implementation(projects.logger)
 
-  implementation(libs.androidx.ktx)
   implementation(libs.google.material)
   implementation(libs.androidx.appcompat)
 
