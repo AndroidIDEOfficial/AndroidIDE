@@ -28,7 +28,6 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.file.Path
@@ -131,7 +130,7 @@ class ToolingApiTestLauncher {
     companion object {
       const val buildFile = "build.gradle"
       const val buildFileIn = "$buildFile.in"
-      
+
       const val gradlewProps = "gradle/wrapper/gradle-wrapper.properties"
       const val gradlewPropsIn = "$gradlewProps.in"
 
@@ -151,8 +150,9 @@ class ToolingApiTestLauncher {
     }
 
     override fun prepareBuild() {
-      log.debug("-----------------------------------")
       log.debug("---------- PREPARE BUILD ----------")
+      log.debug("AGP Version : ${this.agpVersion}")
+      log.debug("Gradle Version : ${this.gradleVersion}")
       log.debug("-----------------------------------")
 
       projectDir
