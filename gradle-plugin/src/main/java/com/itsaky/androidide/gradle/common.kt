@@ -14,23 +14,11 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.gradle
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-
 /**
- * Gradle Plugin for projects built in AndroidIDE.
- *
  * @author Akash Yadav
  */
-class AndroidIDEGradlePlugin : Plugin<Project> {
 
-  override fun apply(target: Project) {
-    target.run {
-      if (plugins.hasPlugin("com.android.application")) {
-        plugins.apply(LogSenderPlugin::class.java)
-      }
-    }
-  }
-}
+const val APP_PLUGIN = "com.android.application"

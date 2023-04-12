@@ -55,7 +55,7 @@ include(
   ":gradle-plugin",
   ":lexers",
   ":logger",
-  ":logsender-api",
+  ":logsender",
   ":logsender-sample",
   ":lookup",
   ":preferences",

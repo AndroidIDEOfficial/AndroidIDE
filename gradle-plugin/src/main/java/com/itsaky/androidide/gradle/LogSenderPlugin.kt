@@ -14,23 +14,37 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.gradle
 
+import AndroidIDEBuildInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 /**
- * Gradle Plugin for projects built in AndroidIDE.
+ * Plugin to manage LogSender in Android applications.
  *
  * @author Akash Yadav
  */
-class AndroidIDEGradlePlugin : Plugin<Project> {
+class LogSenderPlugin : Plugin<Project> {
+
+  companion object {
+    const val LOGSENDER_DEPENDENCY =
+      "com.itsaky.androidide:logsender:${AndroidIDEBuildInfo.BUILD_VERSION}"
+  }
 
   override fun apply(target: Project) {
     target.run {
-      if (plugins.hasPlugin("com.android.application")) {
-        plugins.apply(LogSenderPlugin::class.java)
+      check(plugins.hasPlugin(APP_PLUGIN)) {
+        "${javaClass.simpleName} can only be applied to Android application projects."
       }
+
+      val extension = extensions.create("logsender", LogSenderPluginExtension::class.java)
+      
+      configurations
+        .getByName("${extension.variant}RuntimeOnly")
+        .dependencies
+        .add(dependencies.create(LOGSENDER_DEPENDENCY))
     }
   }
 }

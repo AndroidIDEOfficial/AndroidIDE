@@ -14,23 +14,18 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.gradle
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-
 /**
- * Gradle Plugin for projects built in AndroidIDE.
+ * Extension for [LogSenderPlugin].
  *
  * @author Akash Yadav
  */
-class AndroidIDEGradlePlugin : Plugin<Project> {
+class LogSenderPluginExtension {
 
-  override fun apply(target: Project) {
-    target.run {
-      if (plugins.hasPlugin("com.android.application")) {
-        plugins.apply(LogSenderPlugin::class.java)
-      }
-    }
-  }
+  /**
+   * The name of the variant to which LogSender dependency should be added.
+   */
+  var variant: String = "debug"
 }

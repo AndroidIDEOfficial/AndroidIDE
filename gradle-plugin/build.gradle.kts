@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+
 /*
  *  This file is part of AndroidIDE.
  *
@@ -19,6 +21,50 @@ plugins {
   id("java-gradle-plugin")
   id("org.jetbrains.kotlin.jvm")
   id("com.gradle.plugin-publish")
+}
+
+tasks.create("generateBuildInfo") {
+
+  val buildInfoFile = "src/main/java/AndroidIDEBuildInfo.kt"
+  val buildInfoFileIn = "${buildInfoFile}.in"
+
+  project
+    .file(buildInfoFileIn)
+    .replaceContents(
+      dest = project.file(buildInfoFile),
+      candidates = arrayOf("@@BUILD_VERSION@@" to project.version.toString())
+    )
+}
+
+val generatedWarning = "DO NOT EDIT - Automatically generated file"
+fun File.replaceContents(
+  dest: File,
+  comment: String = "//",
+  vararg candidates: Pair<String, String>
+) {
+  val contents =
+    StringBuilder()
+      .append(comment)
+      .append(" ")
+      .append(generatedWarning)
+      .append(System.getProperty("line.separator").repeat(2))
+
+  bufferedReader().use { reader ->
+    reader.readText().also { text ->
+      var t = text
+      for ((old, new) in candidates) {
+        t = t.replace(old, new)
+      }
+      contents.append(t)
+    }
+  }
+
+  dest.exists().ifTrue { dest.delete() }
+
+  dest.bufferedWriter().use { writer ->
+    writer.write(contents.toString())
+    writer.flush()
+  }
 }
 
 gradlePlugin {
