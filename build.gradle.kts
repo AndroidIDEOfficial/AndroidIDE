@@ -20,6 +20,7 @@
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
@@ -65,6 +66,14 @@ val Project.projectVersionCode: Int by lazy {
     ?: throw IllegalStateException(
       "Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
     )
+}
+
+val Project.publishingVersion by lazy {
+  var version = simpleVersionName
+  if (CI.isCiBuild) {
+    version += "-SNAPSHOT"
+  }
+  return@lazy version
 }
 
 fun Project.configureBaseExtension() {
@@ -143,17 +152,14 @@ subprojects {
         }
       }
 
-      var versionName = project.simpleVersionName
-      if (CI.isCiBuild) {
-        versionName += "-SNAPSHOT"
-      }
-
-      coordinates(project.group.toString(), project.name, versionName)
+      coordinates(project.group.toString(), project.name, project.publishingVersion)
       publishToMavenCentral(host = S01)
       signAllPublications()
 
       if (plugins.hasPlugin("com.android.library")) {
         configure(AndroidSingleVariantLibrary())
+      } else if (plugins.hasPlugin("java-gradle-plugin")) {
+        configure(GradlePlugin(javadocJar = JavadocJar.Javadoc()))
       } else if (plugins.hasPlugin("java-library")) {
         configure(JavaLibrary(javadocJar = JavadocJar.Javadoc()))
       }
@@ -162,7 +168,7 @@ subprojects {
 
   plugins.withId("com.gradle.plugin-publish") {
     configure<GradlePluginDevelopmentExtension> {
-      version = project.simpleVersionName
+      version = project.publishingVersion
     }
   }
 

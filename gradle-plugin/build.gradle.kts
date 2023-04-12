@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -17,10 +15,12 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+
 plugins {
   id("java-gradle-plugin")
   id("org.jetbrains.kotlin.jvm")
-  id("com.gradle.plugin-publish")
+  id("com.vanniktech.maven.publish.base")
 }
 
 tasks.create("generateBuildInfo") {
