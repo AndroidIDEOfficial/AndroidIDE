@@ -20,17 +20,31 @@ package com.itsaky.androidide.services.log
 import com.itsaky.androidide.logsender.ILogReceiver
 import com.itsaky.androidide.logsender.ILogSender
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * @author Akash Yadav
  */
 class LogReceiverImpl(internal var consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub(), AutoCloseable {
 
-  private var sender: ILogSender? = null
+  private val log = ILogger.newInstance("LogReceiverImpl")
+  private val senders = ConcurrentHashMap<Int, ILogSender>()
 
   override fun connect(sender: ILogSender?) {
-    this.sender = sender
-    this.sender?.startReader()
+    sender?.let {
+      if (senders.containsKey(it.pid)) {
+        log.warn("Rejecting duplicate connection request from client '${it.pid}'")
+        return
+      }
+
+      log.info("Connecting to client ${it.pid}")
+
+      this.senders[it.pid] = it
+      it.startReader()
+
+      log.info("Total clients connected: ${senders.size}")
+    }
   }
 
   override fun onLog(line: String?) {
@@ -41,5 +55,6 @@ class LogReceiverImpl(internal var consumer: ((LogLine) -> Unit)? = null) : ILog
 
   override fun close() {
     consumer = null
+    senders.clear()
   }
 }
