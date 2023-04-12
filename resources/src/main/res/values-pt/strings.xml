@@ -98,7 +98,7 @@
   <string name="template_no_activity">Sem Activity</string>
   <string name="template_no_activity_description">Cria um novo projeto sem activity</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">Sem AndroidX</string>
   <string name="template_description_noAndroidX">Cria um novo projeto sem a biblioteca AndroidX</string>
   <string name="save">Salvar</string>
   <string name="menu_find">Encontrar</string>
@@ -123,12 +123,12 @@
   <string name="msg_begin_project_write">Iniciando o processo de escrita</string>
   <string name="msg_folder_creation_failed">Falha ao criar pasta!</string>
   <string name="msg_file_creation_failed">Falha ao criar arquivo!</string>
-  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
+  <string name="msg_layout_file_creation_failed">Falha ao criar arquivo de layout!</string>
   <string name="msg_folder_created">Pasta criada com sucesso!</string>
   <string name="msg_file_created">Arquivo criado com sucesso!</string>
   <string name="msg_folder_exists">A pasta já existe!</string>
   <string name="msg_file_exists">O arquivo já existe!</string>
-  <string name="msg_layout_file_exists">Layout file already exists!</string>
+  <string name="msg_layout_file_exists">O arquivo de layout já existe!</string>
   <string name="msg_invalid_name">Nome inválido!</string>
   <string name="text_create">Criar</string>
   <string name="msg_can_contain_slashes">Se o caminho contiver o Separador de Arquivos (\'/\'), então os diretórios necessários (pai) serão criados se eles não existirem.</string>
@@ -136,7 +136,7 @@
   <string name="file_name">Nome do arquivo</string>
   <string name="new_name">Novo nome</string>
   <string name="new_file">Novo arquivo</string>
-  <string name="create_auto_layout">Create layout file</string>
+  <string name="create_auto_layout">Criar arquivo de layout</string>
   <string name="new_java_class">Nova classe Java</string>
   <string name="new_xml_resource">Novo recurso XML</string>
   <string name="new_folder">Nova pasta</string>
@@ -156,7 +156,7 @@
   <string name="action_closeOthers">Fechar outros</string>
   <string name="action_closeThis">Fechar</string>
   <string name="all_saved">Todos os arquivos foram salvos!</string>
-  <string name="save_failed">Failed to save files</string>
+  <string name="save_failed">Falha ao salvar arquivos</string>
   <string name="msg_newfile_dest">Destino: %s/</string>
   <string name="restype_drawable">Desenhável</string>
   <string name="restype_layout">Disposição</string>
@@ -205,7 +205,7 @@
   <string name="msg_preferences">Configurações</string>
   <string name="pref_changelog">Registro de alterações</string>
   <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
-  <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pela Gradle. Se você excluir, a próxima compilação pode demorar um pouco mais do que o normal, já que o Gradle baixará os arquivos necessários novamente.\n\nTem certeza que deseja excluir os caches?</string>
+  <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle. Se você excluir, a próxima compilação pode demorar um pouco mais do que o normal, já que o Gradle baixará os arquivos necessários novamente.\n\nTem certeza que deseja excluir os caches?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Não foi possível inicializar as informações do SDK</string>
   <string name="err_cannot_preview_layout">Não foi possível visualizar o layout</string>
@@ -457,14 +457,14 @@
   <string name="msg_dir_picker_failed">Falha ao iniciar o seletor de diretório: %1$s</string>
   <string name="msg_tooling_server_unavailable">Servidor de ferramentas da API indisponível. Verifique os logs de compilação e IDE para erros.</string>
   <string name="idepref_deleteEmptyLines_title">Excluir linhas vazias no backspace</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
-  <string name="btn_sync">Sync</string>
-  <string name="btn_ignore_changes">Ignore these changes</string>
-  <string name="title_fix_imports">Fix imports</string>
-  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
-  <string name="title_class_chooser">Which %1$s?</string>
-  <string name="permlab_bind_logger_service">bind to log service</string>
-  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="idepref_deleteEmptyLines_summary">Se ativado, o editor irá apagar linhas vazias em um único evento de tecla backspace.</string>
+  <string name="idepref_deleteTabs_title">Apagar tabulação com Backspace</string>
+  <string name="idepref_deleteTabs_summary">Quando ativado, o editor excluirá espaços iguais à largura da tabulação quando a tecla backspace for pressionada.</string>
+  <string name="btn_sync">Sincronizar</string>
+  <string name="btn_ignore_changes">Ignorar alterações</string>
+  <string name="title_fix_imports">Corrigir importações</string>
+  <string name="msg_no_unresolved_classes">Não há nomes de classes não resolvidos</string>
+  <string name="title_class_chooser">Qual %1$s?</string>
+  <string name="permlab_bind_logger_service">vincular ao serviço de log</string>
+  <string name="permdesc_bind_logger_service">Permite que este aplicativo vincule ao serviço de log do AndroidIDE. Esta permissão é necessária para o AndroidIDE ler os logs deste aplicativo.</string>
 </resources>
