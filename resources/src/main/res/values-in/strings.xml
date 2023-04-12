@@ -465,4 +465,6 @@
   <string name="title_fix_imports">Perbaiki impor</string>
   <string name="msg_no_unresolved_classes">Tidak ditemukan nama kelas yang belum terselesaikan</string>
   <string name="title_class_chooser">%1$s yang mana?</string>
+  <string name="permlab_bind_logger_service">bind to log service</string>
+  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
 </resources>
