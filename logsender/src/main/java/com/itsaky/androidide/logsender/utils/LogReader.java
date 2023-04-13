@@ -19,8 +19,6 @@ package com.itsaky.androidide.logsender.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
-import java.util.function.Consumer;
 
 /**
  * Reads application logs with `logcat`.
@@ -30,13 +28,13 @@ import java.util.function.Consumer;
 public class LogReader extends Thread {
 
   private final ProcessBuilder processBuilder;
-  private final Consumer<String> logConsumer;
+  private final ILogConsumer logConsumer;
 
-  public LogReader(Consumer<String> logConsumer) {
+  public LogReader(ILogConsumer logConsumer) {
     this(defaultCmd(), logConsumer);
   }
 
-  public LogReader(String[] cmd, Consumer<String> logConsumer) {
+  public LogReader(String[] cmd, ILogConsumer logConsumer) {
     super("AndroidIDE-LogReader");
     this.logConsumer = logConsumer;
 
@@ -46,7 +44,7 @@ public class LogReader extends Thread {
   }
 
   public static String[] defaultCmd() {
-    return new String[] { "logcat", "-v", "threadtime" };
+    return new String[]{"logcat", "-v", "threadtime"};
   }
 
   @Override
@@ -58,7 +56,7 @@ public class LogReader extends Thread {
         String line;
         while ((line = reader.readLine()) != null) {
           if (logConsumer != null) {
-            logConsumer.accept(line);
+            logConsumer.onLog(line);
           }
         }
       }

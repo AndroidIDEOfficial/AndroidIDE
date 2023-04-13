@@ -15,27 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-  id("com.android.library")
-  id("com.vanniktech.maven.publish.base")
-}
+package com.itsaky.androidide.logsender.utils;
 
-android {
-  namespace = "com.itsaky.androidide.logsender"
-  buildFeatures.aidl = true
-
-  defaultConfig {
-    minSdk = 16
-  }
-}
-
-dependencies {
-  implementation(projects.logger)
-
-  implementation(libs.google.material)
-  implementation(libs.androidx.appcompat)
-
-  testImplementation(libs.tests.junit)
-  testImplementation(libs.tests.robolectric)
-  testImplementation(libs.tests.google.truth)
+/**
+ * Consumer for log lines.
+ *
+ * @author Akash Yadav
+ */
+public interface ILogConsumer {
+  void onLog(String line);
 }
