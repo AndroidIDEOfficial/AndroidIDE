@@ -40,8 +40,16 @@ class LogSenderPlugin : Plugin<Project> {
         "${javaClass.simpleName} can only be applied to Android application projects."
       }
 
+      repositories.apply {
+        // For release builds
+        add(mavenCentral())
+
+        // For CI builds
+        add(maven { it.url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") })
+      }
+
       val extension = extensions.create("logsender", LogSenderPluginExtension::class.java)
-      
+
       configurations
         .getByName("${extension.variant}RuntimeOnly")
         .dependencies
