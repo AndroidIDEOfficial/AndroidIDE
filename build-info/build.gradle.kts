@@ -17,6 +17,7 @@
 
 plugins {
   id("java-library")
+  id("com.vanniktech.maven.publish.base")
 }
 
 tasks.create("generateBuildInfo") {
