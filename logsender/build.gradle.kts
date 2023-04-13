@@ -32,9 +32,6 @@ android {
 dependencies {
   implementation(projects.logger)
 
-  implementation(libs.google.material)
-  implementation(libs.androidx.appcompat)
-
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.robolectric)
   testImplementation(libs.tests.google.truth)

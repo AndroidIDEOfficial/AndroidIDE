@@ -24,8 +24,6 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.itsaky.androidide.logsender.utils.LogReader;
 import com.itsaky.androidide.logsender.utils.Logger;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,16 +35,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class LogSender extends ILogSender.Stub implements ServiceConnection {
 
-  @NonNull
   private final AtomicBoolean installed = new AtomicBoolean(false);
 
-  @Nullable
   private LogReader reader;
 
-  @Nullable
   private ILogReceiver receiver;
 
-  @Nullable
   private String packageName;
 
   public static final LogSender INSTANCE = new LogSender();
