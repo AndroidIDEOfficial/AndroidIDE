@@ -1,44 +1,22 @@
-/*
- *  This file is part of AndroidIDE.
- *
- *  AndroidIDE is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  AndroidIDE is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- */
-/**
- * Init script used by AndroidIDE for gradle builds.
- *
- * DO NOT MODIFY
- * Unless you know what this does.
- */
-//noinspection GrPackage
 initscript {
-    
-    repositories {
-        maven {
-            url file ("${System.getenv ("HOME")}/.androidide/repo")
-        }
+  repositories {
+    maven {
+      mavenCentral()
+      
+      // Add snapshots repository for AndroidIDE CI builds
+      url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
     }
-    
-    dependencies {
-        classpath 'com.itsaky.androidide:gradle-plugin:1.0.0'
-    }
+  }
+
+  dependencies {
+    classpath 'com.itsaky.androidide:gradle-plugin:2.4.1-beta'
+  }
 }
 
-// Source code for the plugin is available in :gradle-plugin module
 gradle.projectsLoaded {
-    rootProject.subprojects.forEach {sub ->
-        sub.afterEvaluate {
-            sub.apply plugin: com.itsaky.androidide.gradle.plugin.AndroidIDEPlugin
-        }
+  rootProject.subprojects.forEach {sub ->
+    sub.afterEvaluate {
+      sub.apply plugin: com.itsaky.androidide.gradle.AndroidIDEGradlePlugin
     }
+  }
 }

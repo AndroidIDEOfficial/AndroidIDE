@@ -188,6 +188,44 @@ fun getEnvOrProp(key: String): String? {
   return value
 }
 
+tasks.create("generateInitScript") {
+  val out = file("src/main/assets/data/common/androidide.init.gradle")
+  outputs.file(out)
+
+  doLast {
+    out.bufferedWriter().use {
+      it.write(
+        """
+      initscript {
+        repositories {
+          maven {
+            mavenCentral()
+            
+            // Add snapshots repository for AndroidIDE CI builds
+            url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+          }
+        }
+    
+        dependencies {
+          classpath '${BuildConfig.packageName}:gradle-plugin:${publishingVersion}'
+        }
+      }
+      
+      gradle.projectsLoaded {
+        rootProject.subprojects.forEach {sub ->
+          sub.afterEvaluate {
+            sub.apply plugin: com.itsaky.androidide.gradle.AndroidIDEGradlePlugin
+          }
+        }
+      }
+      
+    """
+          .trimIndent()
+      )
+    }
+  }
+}
+
 afterEvaluate {
   val dependents =
     listOf(
@@ -198,6 +236,9 @@ afterEvaluate {
       "lintVitalAnalyzeRelease"
     )
   for (dependent in dependents) {
-    tasks.getByName(dependent).dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+    tasks.getByName(dependent).apply {
+      dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+      dependsOn("generateInitScript")
+    }
   }
 }
