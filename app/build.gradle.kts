@@ -190,7 +190,10 @@ fun getEnvOrProp(key: String): String? {
 
 tasks.create("generateInitScript") {
   val out = file("src/main/assets/data/common/androidide.init.gradle")
-  outputs.file(out)
+
+  if (out.exists()) {
+    out.delete()
+  }
 
   doLast {
     out.bufferedWriter().use {
@@ -208,6 +211,16 @@ tasks.create("generateInitScript") {
     
         dependencies {
           classpath '${BuildConfig.packageName}:gradle-plugin:${publishingVersion}'
+        }
+      }
+      
+      gradle.settingsEvaluated { settings ->
+        settings.dependencyResolutionManagement.repositories {
+          // For release builds
+          mavenCentral()
+          
+          // For AndroidIDE CI builds
+          maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
         }
       }
       
