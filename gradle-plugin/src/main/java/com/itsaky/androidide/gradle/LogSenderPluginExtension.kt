@@ -22,7 +22,7 @@ package com.itsaky.androidide.gradle
  *
  * @author Akash Yadav
  */
-class LogSenderPluginExtension {
+open class LogSenderPluginExtension {
 
   /**
    * The name of the variant to which LogSender dependency should be added.
