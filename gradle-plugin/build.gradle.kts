@@ -32,7 +32,7 @@ tasks.create("generateBuildInfo") {
     .file(buildInfoFileIn)
     .replaceContents(
       dest = project.file(buildInfoFile),
-      candidates = arrayOf("@@BUILD_VERSION@@" to project.version.toString())
+      candidates = arrayOf("@@BUILD_VERSION@@" to project.publishingVersion)
     )
 }
 

@@ -44,44 +44,6 @@ buildscript {
   }
 }
 
-val Project.simpleVersionName: String by lazy {
-  val version = rootProject.version.toString()
-  val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
-
-  return@lazy regex.find(version)?.value?.substring(1)?.also {
-    logger.warn("Simple version name is '$it' (from version $version)")
-  }
-    ?: run {
-      if (CI.isTestEnv) {
-        return@run "1.0.0-beta"
-      }
-
-      throw IllegalStateException(
-        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-      )
-    }
-}
-
-val Project.projectVersionCode: Int by lazy {
-  val version = simpleVersionName
-  val regex = Regex("^\\d+\\.?\\d+\\.?\\d+")
-
-  return@lazy regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
-    logger.warn("Version code is '$it' (from version ${version}).")
-  }
-    ?: throw IllegalStateException(
-      "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-    )
-}
-
-val Project.publishingVersion by lazy {
-  var version = simpleVersionName
-  if (CI.isCiBuild && CI.branchName != "main") {
-    version += "-${CI.commitHash}-SNAPSHOT"
-  }
-  return@lazy version
-}
-
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(BuildConfig.compileSdk)
