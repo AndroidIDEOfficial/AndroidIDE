@@ -51,8 +51,8 @@ public class LogReader extends Thread {
   public void run() {
     Logger.info("Starting to read logs...");
     try {
-      final var process = processBuilder.start();
-      try (final var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+      final Process process = processBuilder.start();
+      try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line;
         while ((line = reader.readLine()) != null) {
           if (logConsumer != null) {

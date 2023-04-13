@@ -78,7 +78,7 @@ public class LogSender extends ILogSender.Stub implements ServiceConnection {
       return;
     }
 
-    final var intent = new Intent(SERVICE_ACTION);
+    final Intent intent = new Intent(SERVICE_ACTION);
     intent.setPackage(PACKAGE_ANDROIDIDE);
     if (app.bindService(intent, this, 0)) {
       Logger.info("Binding to log receiver");

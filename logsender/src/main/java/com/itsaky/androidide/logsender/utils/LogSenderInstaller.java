@@ -39,7 +39,7 @@ public class LogSenderInstaller extends ContentProvider {
 
   @Override
   public boolean onCreate() {
-    final var application = ((Application) getContext());
+    final Application application = ((Application) getContext());
     LogSender.install(application);
     return true;
   }
