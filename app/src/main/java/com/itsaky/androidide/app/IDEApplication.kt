@@ -24,6 +24,7 @@ import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
+import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.EditorEventsIndex
@@ -108,7 +109,7 @@ class IDEApplication : BaseApplication() {
     if (!version.startsWith('v')) {
       version = "v${version}"
     }
-    intent.data = Uri.parse("${GITHUB_URL}/releases/tag/${version}")
+    intent.data = Uri.parse("${BuildInfo.REPO_URL}/releases/tag/${version}")
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     try {
       startActivity(intent)

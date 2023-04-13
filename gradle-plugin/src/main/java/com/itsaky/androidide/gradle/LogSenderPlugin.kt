@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.gradle
 
-import AndroidIDEBuildInfo
+import com.itsaky.androidide.buildinfo.BuildInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -29,8 +29,9 @@ import org.gradle.api.Project
 class LogSenderPlugin : Plugin<Project> {
 
   companion object {
-    const val LOGSENDER_DEPENDENCY =
-      "com.itsaky.androidide:logsender:${AndroidIDEBuildInfo.BUILD_VERSION}"
+    private const val LOGSENDER_DEPENDENCY_ARTIFACT = "logsender"
+    private const val LOGSENDER_DEPENDENCY =
+      "${BuildInfo.MVN_GROUP_ID}:${LOGSENDER_DEPENDENCY_ARTIFACT}:${BuildInfo.VERSION_NAME_PUBLISHING}"
   }
 
   override fun apply(target: Project) {

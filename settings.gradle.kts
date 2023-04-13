@@ -45,6 +45,7 @@ include(
   ":annotations",
   ":actions",
   ":app",
+  ":build-info",
   ":common",
   ":editor",
   ":editor-api",

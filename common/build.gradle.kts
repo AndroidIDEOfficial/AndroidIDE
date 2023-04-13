@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.androidx.ktx)
     implementation(libs.common.kotlin)
     
+    implementation(projects.buildInfo)
     implementation(projects.eventbusEvents)
     implementation(projects.lexers)
     implementation(projects.resources)

@@ -114,6 +114,7 @@ dependencies {
 
   // Local projects here
   implementation(projects.actions)
+  implementation(projects.buildInfo)
   implementation(projects.common)
   implementation(projects.editor)
   implementation(projects.emulatorview)

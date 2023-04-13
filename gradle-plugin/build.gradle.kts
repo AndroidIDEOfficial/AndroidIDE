@@ -15,61 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
-
 plugins {
   id("java-gradle-plugin")
   id("org.jetbrains.kotlin.jvm")
   id("com.vanniktech.maven.publish.base")
 }
 
-tasks.create("generateBuildInfo") {
-
-  val buildInfoFile = "src/main/java/AndroidIDEBuildInfo.kt"
-  val buildInfoFileIn = "${buildInfoFile}.in"
-
-  project
-    .file(buildInfoFileIn)
-    .replaceContents(
-      dest = project.file(buildInfoFile),
-      candidates = arrayOf("@@BUILD_VERSION@@" to project.publishingVersion)
-    )
-}
-
-val generatedWarning = "DO NOT EDIT - Automatically generated file"
-fun File.replaceContents(
-  dest: File,
-  comment: String = "//",
-  vararg candidates: Pair<String, String>
-) {
-  val contents =
-    StringBuilder()
-      .append(comment)
-      .append(" ")
-      .append(generatedWarning)
-      .append(System.getProperty("line.separator").repeat(2))
-
-  bufferedReader().use { reader ->
-    reader.readText().also { text ->
-      var t = text
-      for ((old, new) in candidates) {
-        t = t.replace(old, new)
-      }
-      contents.append(t)
-    }
-  }
-
-  dest.exists().ifTrue { dest.delete() }
-
-  dest.bufferedWriter().use { writer ->
-    writer.write(contents.toString())
-    writer.flush()
-  }
+dependencies {
+  implementation(projects.buildInfo)
 }
 
 gradlePlugin {
-  website.set(ProjectConfig.GITHUB_URL)
-  vcsUrl.set(ProjectConfig.GITHUB_URL)
+  website.set(ProjectConfig.REPO_URL)
+  vcsUrl.set(ProjectConfig.REPO_URL)
 
   plugins {
     create("gradlePlugin") {

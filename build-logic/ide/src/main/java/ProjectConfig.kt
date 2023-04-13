@@ -20,23 +20,14 @@ import org.gradle.api.Project
 /** @author Akash Yadav */
 object ProjectConfig {
 
-  /** The GitHub organization for this project. */
-  const val GITHUB_ORGANIZATION = "AndroidIDEOfficial"
+  const val REPO_HOST = "github.com"
+  const val REPO_OWNER = "AndroidIDEOfficial"
+  const val REPO_NAME = "AndroidIDE"
+  const val REPO_URL = "https://${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}"
+  const val SCM_GIT = "scm:git:git://${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
+  const val SCM_SSH = "scm:git:ssh://git@${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
 
-  /** The GitHub repsitory for this project. */
-  const val GITHUB_REPOSITORY = "AndroidIDE"
-
-  /** The GitHub repository URL for this project. */
-  const val GITHUB_URL = "https://github.com/${GITHUB_ORGANIZATION}/${GITHUB_REPOSITORY}"
-
-  /** The Project website. */
   const val PROJECT_SITE = "https://androidide.com"
-
-  /** The GIT SCM URL. */
-  const val SCM_GIT = "scm:git:git://github.com/${GITHUB_ORGANIZATION}/${GITHUB_REPOSITORY}.git"
-
-  /** The SSH SCM URL. */
-  const val SCM_SSH = "scm:git:ssh://git@github.com/${GITHUB_ORGANIZATION}/${GITHUB_REPOSITORY}.git"
 }
 
 private var simpleVersion: String? = null

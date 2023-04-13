@@ -23,11 +23,10 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
@@ -35,7 +34,6 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
-
 import java.io.File;
 import java.util.Arrays;
 
@@ -44,13 +42,10 @@ public abstract class BaseApplication extends Application {
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
-  public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
-  public static final String WEBSITE = "https://androidide.com";
-  public static final String SPONSOR_URL = "https://androidide.com/donate.php";
+  public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate.php";
 
   // TODO Replace when available on website
-  public static final String DOCS_URL =
-      "https://github.com/AndroidIDEOfficial/AndroidIDE/tree/main/docs";
+  public static final String DOCS_URL = BuildInfo.REPO_URL + "/tree/main/docs";
   public static final String EMAIL = "contact@androidide.com";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
@@ -96,14 +91,13 @@ public abstract class BaseApplication extends Application {
   }
 
   private void createNotificationChannels() {
-    NotificationChannel buildNotificationChannel =
-        new NotificationChannel(
-            NOTIFICATION_GRADLE_BUILD_SERVICE,
-            getString(R.string.title_gradle_service_notification_channel),
-            NotificationManager.IMPORTANCE_LOW);
+    NotificationChannel buildNotificationChannel = new NotificationChannel(
+      NOTIFICATION_GRADLE_BUILD_SERVICE,
+      getString(R.string.title_gradle_service_notification_channel),
+      NotificationManager.IMPORTANCE_LOW);
     NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
-  
+
   public File getRootDir() {
     return new File(getIDEDataDir(), "home");
   }
@@ -114,9 +108,8 @@ public abstract class BaseApplication extends Application {
   }
 
   public void writeException(Throwable th) {
-    FileUtil.writeFile(
-        new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
-        ThrowableUtils.getFullStackTrace(th));
+    FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
+      ThrowableUtils.getFullStackTrace(th));
   }
 
   public final File getTempProjectDir() {
@@ -140,11 +133,11 @@ public abstract class BaseApplication extends Application {
   }
 
   public void openGitHub() {
-    openUrl(GITHUB_URL);
+    openUrl(BuildInfo.REPO_URL);
   }
 
   public void openWebsite() {
-    openUrl(WEBSITE);
+    openUrl(BuildInfo.PROJECT_SITE);
   }
 
   public void openSponsors() {

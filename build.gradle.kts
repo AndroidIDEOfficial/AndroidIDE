@@ -77,7 +77,7 @@ fun Project.configureBaseExtension() {
 subprojects {
   apply { plugin(AndroidIDEPlugin::class.java) }
 
-  project.group = "com.itsaky.androidide"
+  project.group = BuildConfig.packageName
   project.version = rootProject.version
   plugins.withId("com.android.application") { configureBaseExtension() }
   plugins.withId("com.android.library") { configureBaseExtension() }
@@ -96,7 +96,7 @@ subprojects {
         name.set(project.name)
         description.set(project.description)
         inceptionYear.set("2021")
-        url.set(ProjectConfig.GITHUB_URL)
+        url.set(ProjectConfig.REPO_URL)
         licenses {
           license {
             name.set("The GNU General Public License, v3.0")
@@ -114,7 +114,7 @@ subprojects {
         }
 
         scm {
-          url.set(ProjectConfig.GITHUB_URL)
+          url.set(ProjectConfig.REPO_URL)
           connection.set(ProjectConfig.SCM_GIT)
           developerConnection.set(ProjectConfig.SCM_SSH)
         }
