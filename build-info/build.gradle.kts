@@ -31,9 +31,6 @@ tasks.create("generateBuildInfo") {
   val buildInfo = buildInfoGenDir.resolve(buildInfoPath)
   val buildInfoIn = project.file("src/main/java/${buildInfoPath}.in")
 
-  inputs.file(buildInfoIn)
-  outputs.file(buildInfo)
-
   doLast {
     buildInfoIn.replaceContents(
       dest = buildInfo,
