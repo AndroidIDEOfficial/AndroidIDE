@@ -21,7 +21,7 @@ plugins {
   kotlin("jvm")
 }
 
-group = "com.itsaky.androidide.annotations"
+group = "${BuildConfig.packageName}.annotations"
 
 dependencies {
   implementation(kotlin("stdlib"))

@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.projects"
+    namespace = "${BuildConfig.packageName}.projects"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.ProjectsApiEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.ProjectsApiEventsIndex")
     }
 }
 

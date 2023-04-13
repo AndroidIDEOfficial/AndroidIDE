@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.layoutlib"
+    namespace = "${BuildConfig.packageName}.layoutlib"
     
     buildTypes {
         release {

@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.editor"
+    namespace = "${BuildConfig.packageName}.editor"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.EditorEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.EditorEventsIndex")
     }
 }
 

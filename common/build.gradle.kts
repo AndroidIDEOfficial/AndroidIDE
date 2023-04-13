@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.common"
+    namespace = "${BuildConfig.packageName}.common"
 }
 
 dependencies {

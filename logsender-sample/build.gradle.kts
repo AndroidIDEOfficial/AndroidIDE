@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.logsender.sample"
+  namespace = "${BuildConfig.packageName}.logsender.sample"
 
   defaultConfig {
     vectorDrawables {

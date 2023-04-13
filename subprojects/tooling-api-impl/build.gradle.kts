@@ -23,7 +23,7 @@ plugins {
 }
 
 tasks.withType<Jar> {
-  manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
+  manifest { attributes("Main-Class" to "${BuildConfig.packageName}.tooling.impl.Main") }
 }
 
 tasks.register<Copy>("copyJarToAssets") {

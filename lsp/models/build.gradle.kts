@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.lsp.models"
+    namespace = "${BuildConfig.packageName}.lsp.models"
 }
 
 dependencies {

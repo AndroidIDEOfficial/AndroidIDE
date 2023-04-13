@@ -4,7 +4,7 @@ plugins{
 }
 
 android {
-    namespace = "com.itsaky.androidide.actions"
+    namespace = "${BuildConfig.packageName}.actions"
 }
 
 dependencies {

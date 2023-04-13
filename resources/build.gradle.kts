@@ -20,7 +20,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.resources"
+  namespace = "${BuildConfig.packageName}.resources"
 }
 
 dependencies {

@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.xml"
+    namespace = "${BuildConfig.packageName}.xml"
 }
 
 dependencies {

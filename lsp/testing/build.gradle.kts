@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.lsp.testing"
+    namespace = "${BuildConfig.packageName}.lsp.testing"
 }
 
 dependencies {

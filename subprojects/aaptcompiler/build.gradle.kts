@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.aaptcompiler"
+    namespace = "${BuildConfig.packageName}.aaptcompiler"
     
     buildTypes {
         release {

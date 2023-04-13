@@ -31,8 +31,8 @@ gradlePlugin {
 
   plugins {
     create("gradlePlugin") {
-      id = "com.itsaky.androidide.gradle"
-      implementationClass = "com.itsaky.androidide.gradle.AndroidIDEGradlePlugin"
+      id = "${BuildConfig.packageName}.gradle"
+      implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEGradlePlugin"
       displayName = "AndroidIDE Gradle Plugin"
       description = "Gradle plugin for projects that are built with AndroidIDE"
       tags.set(setOf("androidide"))

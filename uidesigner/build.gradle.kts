@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.uidesigner"
+  namespace = "${BuildConfig.packageName}.uidesigner"
 }
 
 dependencies {

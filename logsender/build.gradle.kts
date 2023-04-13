@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.logsender"
+  namespace = "${BuildConfig.packageName}.logsender"
   buildFeatures.aidl = true
 
   defaultConfig {

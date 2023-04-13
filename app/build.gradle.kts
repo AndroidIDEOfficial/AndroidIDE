@@ -70,7 +70,7 @@ android {
   }
 }
 
-kapt { arguments { arg("eventBusIndex", "com.itsaky.androidide.events.AppEventsIndex") } }
+kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex") } }
 
 dependencies {
   debugImplementation(libs.common.leakcanary)
