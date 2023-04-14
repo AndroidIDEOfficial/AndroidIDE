@@ -56,6 +56,12 @@ fun File.replaceContents(
     dest.delete()
   }
 
+  dest.parentFile.let {
+    if (!it.exists()) {
+      it.mkdirs()
+    }
+  }
+  
   dest.bufferedWriter().use { writer ->
     writer.write(contents.toString())
     writer.flush()
