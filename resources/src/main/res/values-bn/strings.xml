@@ -465,6 +465,6 @@
   <string name="title_fix_imports">ইমপোর্টগুলি ঠিক করুন</string>
   <string name="msg_no_unresolved_classes">কোনো অমীমাংসিত ক্লাসের নাম পাওয়া যায়নি</string>
   <string name="title_class_chooser">কোন %1$sটি?</string>
-  <string name="permlab_bind_logger_service">bind to log service</string>
-  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="permlab_bind_logger_service">লগ সার্ভিসে আবদ্ধ করুন</string>
+  <string name="permdesc_bind_logger_service">এই অ্যাপ্লিকেশানটিকে AndroidIDE-এর লগিং পরিষেবার সাথে আবদ্ধ হওয়ার অনুমতি দেয়৷ এই অ্যাপ্লিকেশনটির লগ পড়ার জন্য AndroidIDE-এর এই অনুমতি প্রয়োজন৷</string>
 </resources>
