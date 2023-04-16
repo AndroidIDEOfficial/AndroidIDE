@@ -18,6 +18,8 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,22 +31,69 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.jetbrainsMono
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
+import kotlin.math.min
 
 /**
  * Fragment to show logs.
+ *
  * @author Akash Yadav
  */
 abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
 
+  companion object {
+
+    /** The maximum number of characters to append to the editor in case of huge log texts. */
+    const val MAX_CHUNK_SIZE = 10000
+
+    /**
+     * The time duration, in milliseconds which is used to determine whether logs are too frequent
+     * or not. If the logs are produced within this time duration, they are considered as too
+     * frequent. In this case, the logs are cached and appended in chunks of [MAX_CHUNK_SIZE]
+     * characters in size.
+     */
+    const val LOG_FREQUENCY = 50L
+
+    /**
+     * The time duration, in milliseconds we wait before appending the logs. This must be greater
+     * than [LOG_FREQUENCY].
+     */
+    const val LOG_DELAY = 100L
+  }
+
   var binding: FragmentLogBinding? = null
 
-  fun appendLog(line: LogLine) {
-    val binding =
-      this.binding
-        ?: run {
-          System.err.println("Cannot append log line. Binding is null.")
-          return
+  private var lastLog = -1L
+
+  private val cacheLock = ReentrantLock()
+  private val cache = StringBuilder()
+
+  private val logHandler = Handler(Looper.getMainLooper())
+  private val logRunnable =
+    object : Runnable {
+      override fun run() {
+        cacheLock.withLock {
+          if (cache.length < MAX_CHUNK_SIZE) {
+            append(cache)
+            cache.clear()
+          } else {
+            // Append the lines in chunks to avoid UI lags
+            val length = min(cache.length, MAX_CHUNK_SIZE)
+            append(cache.subSequence(0, length))
+            cache.delete(0, length)
+          }
+
+          if (cache.isNotEmpty()) {
+            // if we still have data left to append, resechedule this
+            logHandler.removeCallbacks(this)
+            logHandler.postDelayed(this, LOG_DELAY)
+          }
         }
+      }
+    }
+
+  fun appendLog(line: LogLine) {
 
     var lineString =
       if (isSimpleFormattingEnabled()) {
@@ -57,7 +106,26 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
       lineString += "\n"
     }
 
-    ThreadUtils.runOnUiThread { binding.editor.append(lineString) }
+    if (cache.isNotEmpty() || System.currentTimeMillis() - lastLog <= LOG_FREQUENCY) {
+      cacheLock.withLock {
+        logHandler.removeCallbacks(logRunnable)
+
+        // If the log lines are too frequent, cache the lines to log them later at once
+        cache.append(lineString)
+        logHandler.postDelayed(logRunnable, LOG_DELAY)
+
+        lastLog = System.currentTimeMillis()
+      }
+      return
+    }
+
+    lastLog = System.currentTimeMillis()
+
+    append(lineString)
+  }
+
+  private fun append(chars: CharSequence?) {
+    chars?.let { ThreadUtils.runOnUiThread { binding?.editor?.append(chars) } }
   }
 
   abstract fun isSimpleFormattingEnabled(): Boolean
@@ -90,7 +158,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.colorScheme = SchemeAndroidIDE.newInstance(requireContext())
     editor.setEditorLanguage(LogLanguage())
   }
-  
+
   override fun onDestroyView() {
     binding?.editor?.release()
     super.onDestroyView()

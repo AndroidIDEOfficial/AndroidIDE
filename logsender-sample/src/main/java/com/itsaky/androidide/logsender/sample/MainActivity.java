@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity {
     handler.postDelayed(logger, 1000);
 
     new Thread(() -> {
-      for (int i = 0; i < 20000; i++) {
+
+      // Test with 100K lines at once
+      for (int i = 0; i < 100000; i++) {
         Log.d("SomeLogs", "Log #" + i);
       }
     }).start();
