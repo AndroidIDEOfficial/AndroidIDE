@@ -116,13 +116,13 @@ public class LogSender extends ILogSender.Stub implements ServiceConnection {
   }
 
   @Override
-  public void startReader() {
+  public void startReader(int port) {
     if (reader != null && reader.isAlive()) {
       Logger.warn("LogReader has already been started");
       return;
     }
 
-    reader = new LogReader(this::doLog);
+    reader = new LogReader(port);
     reader.start();
   }
 
@@ -138,15 +138,5 @@ public class LogSender extends ILogSender.Stub implements ServiceConnection {
     }
 
     return this.packageName;
-  }
-
-  private void doLog(String line) {
-    try {
-      if (line != null && receiver != null) {
-        receiver.onLog(line);
-      }
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
   }
 }

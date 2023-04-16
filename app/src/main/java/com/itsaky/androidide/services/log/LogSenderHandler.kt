@@ -15,13 +15,35 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.logsender.utils;
+package com.itsaky.androidide.services.log
+
+import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.utils.ILogger
+import java.net.Socket
 
 /**
- * Consumer for log lines.
+ * Handles a single log sender.
  *
  * @author Akash Yadav
  */
-public interface ILogConsumer {
-  void onLog(String line);
+class LogSenderHandler(
+  private val socket: Socket,
+  internal var consumer: ((LogLine) -> Unit)? = null
+) : Thread("LogSenderHandler"), AutoCloseable {
+
+  private val log = ILogger.newInstance("LogSenderHandler")
+
+  override fun run() {
+    socket.getInputStream().bufferedReader().forEachLine {
+      LogLine.forLogString(it)?.let { line -> consumer?.invoke(line) }
+    }
+  }
+
+  override fun close() {
+    try {
+      socket.close()
+    } catch (err: Throwable) {
+      log.error("Failed to close socket", err)
+    }
+  }
 }

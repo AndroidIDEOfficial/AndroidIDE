@@ -19,6 +19,7 @@
   <queries>
     <package android:name="com.itsaky.androidide"/>
   </queries>
+  <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="com.itsaky.androidide.permission.BIND_LOG_SERVICE"/>
   <application>
     <provider

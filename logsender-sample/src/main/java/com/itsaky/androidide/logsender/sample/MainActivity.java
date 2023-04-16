@@ -50,5 +50,11 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     handler.postDelayed(logger, 1000);
+
+    new Thread(() -> {
+      for (int i = 0; i < 20000; i++) {
+        Log.d("SomeLogs", "Log #" + i);
+      }
+    }).start();
   }
 }

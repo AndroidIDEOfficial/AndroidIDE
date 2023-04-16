@@ -8,7 +8,7 @@ interface ILogSender {
   /**
    * Asks the sender to start reading the logs.
    */
-  void startReader();
+  void startReader(int port);
 
   /**
    * Get the process ID.

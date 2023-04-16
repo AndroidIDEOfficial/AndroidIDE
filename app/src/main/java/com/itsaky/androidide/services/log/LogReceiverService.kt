@@ -23,6 +23,7 @@ import android.os.IBinder
 import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Service for handling log lines that are sent by the client applications.
@@ -32,6 +33,7 @@ import com.itsaky.androidide.models.LogLine
 class LogReceiverService : Service() {
 
   private val binder = LogReceiverImpl()
+  private val started = AtomicBoolean(false)
 
   companion object {
     @JvmStatic internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
@@ -46,11 +48,17 @@ class LogReceiverService : Service() {
     if (intent?.action != LogSender.SERVICE_ACTION) {
       return null
     }
-    return binder
+
+    return binder.also { binder ->
+      if (!started.getAndSet(true)) {
+        binder.acceptSenders()
+      }
+    }
   }
 
   override fun onDestroy() {
     super.onDestroy()
+    binder.close()
     Lookup.DEFAULT.unregister(LOOKUP_KEY)
   }
 

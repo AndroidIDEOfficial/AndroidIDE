@@ -19,6 +19,8 @@ package com.itsaky.androidide.logsender.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.Socket;
 
 /**
  * Reads application logs with `logcat`.
@@ -27,20 +29,19 @@ import java.io.InputStreamReader;
  */
 public class LogReader extends Thread {
 
+  private final int port;
   private final ProcessBuilder processBuilder;
-  private final ILogConsumer logConsumer;
 
-  public LogReader(ILogConsumer logConsumer) {
-    this(defaultCmd(), logConsumer);
+  public LogReader(int port) {
+    this(port, defaultCmd());
   }
 
-  public LogReader(String[] cmd, ILogConsumer logConsumer) {
+  public LogReader(int port, String[] cmd) {
     super("AndroidIDE-LogReader");
-    this.logConsumer = logConsumer;
+    this.port = port;
 
     this.processBuilder = new ProcessBuilder(cmd);
     this.processBuilder.redirectErrorStream(true);
-
   }
 
   public static String[] defaultCmd() {
@@ -50,14 +51,13 @@ public class LogReader extends Thread {
   @Override
   public void run() {
     Logger.info("Starting to read logs...");
-    try {
+    try (final Socket socket = new Socket(InetAddress.getLocalHost(), port)) {
       final Process process = processBuilder.start();
       try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         String line;
         while ((line = reader.readLine()) != null) {
-          if (logConsumer != null) {
-            logConsumer.onLog(line);
-          }
+          line += "\n";
+          socket.getOutputStream().write(line.getBytes());
         }
       }
     } catch (Throwable err) {
