@@ -123,12 +123,12 @@
   <string name="msg_begin_project_write">Iniciando proceso de escritura</string>
   <string name="msg_folder_creation_failed">¡Error al crear la carpeta!</string>
   <string name="msg_file_creation_failed">¡Error al crear el archivo!</string>
-  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
+  <string name="msg_layout_file_creation_failed">¡Error al crear el archivo de diseño!</string>
   <string name="msg_folder_created">¡Carpeta creada con éxito!</string>
   <string name="msg_file_created">¡Archivo creado con éxito!</string>
   <string name="msg_folder_exists">¡La carpeta ya existe!</string>
   <string name="msg_file_exists">¡El archivo ya existe!</string>
-  <string name="msg_layout_file_exists">Layout file already exists!</string>
+  <string name="msg_layout_file_exists">¡El archivo de diseño ya existe!</string>
   <string name="msg_invalid_name">¡Nombre no válido!</string>
   <string name="text_create">Crear</string>
   <string name="msg_can_contain_slashes">Si la ruta contiene un separador de archivos (\'/\'), se crearán los directorios (principales) necesarios si no existen.</string>
@@ -136,7 +136,7 @@
   <string name="file_name">Nombre del archivo</string>
   <string name="new_name">Nuevo nombre</string>
   <string name="new_file">Nuevo archivo</string>
-  <string name="create_auto_layout">Create layout file</string>
+  <string name="create_auto_layout">Crear archivo de diseño</string>
   <string name="new_java_class">Nueva clase Java</string>
   <string name="new_xml_resource">Nuevo recurso XML</string>
   <string name="new_folder">Nueva carpeta</string>
@@ -156,9 +156,9 @@
   <string name="action_closeOthers">Cerrar otros</string>
   <string name="action_closeThis">Cerrar esta pestaña</string>
   <string name="all_saved">¡Todos los archivos guardados!</string>
-  <string name="save_failed">Failed to save files</string>
+  <string name="save_failed">Error al guardar los archivos</string>
   <string name="msg_newfile_dest">Destino: %s/</string>
-  <string name="restype_drawable">Drawable</string>
+  <string name="restype_drawable">Dibujables</string>
   <string name="restype_layout">Layout</string>
   <string name="restype_menu">Menu</string>
   <string name="restype_other">Otro</string>
@@ -205,7 +205,7 @@
   <string name="msg_preferences">Preferencias</string>
   <string name="pref_changelog">Historial de cambios</string>
   <string name="msg_editor_font_size">Por favor, elija el tamaño de fuente predeterminado del editor:</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">Esto eliminará el directorio de cachés creado por Gradle. Si lo elimina, la próxima versión puede tardar un poco más de lo normal, ya que Gradle descargará los archivos requeridos de nuevo.\n\n¿Seguro que quieres eliminar caché?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">No se puede inicializar la información del SDK</string>
   <string name="err_cannot_preview_layout">No se puede previsualizar el diseño</string>
@@ -275,7 +275,7 @@
   <string name="msg_replacing">Reemplazando…</string>
   <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
   <string name="title_gradle_service_notification">Gradle build service</string>
-  <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
+  <string name="msg_gradle_service_notification">El servicio de compilación de Gradle de Android se está ejecutando en segundo plano.</string>
   <string name="title_cancel_build">Cancelar compilación</string>
   <string name="title_warning">Advertencia</string>
   <string name="msg_ndk_currently_unsupported">NDK no está oficialmente soportado. Esta plantilla funciona solo después de configurar NDK</string>
