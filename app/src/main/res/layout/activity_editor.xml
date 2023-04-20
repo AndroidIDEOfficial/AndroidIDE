@@ -110,7 +110,7 @@
     android:id="@+id/startNav"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_gravity="start"
+    android:layout_gravity="end"
     app:headerLayout="@layout/layout_nav_header"
     app:menu="@menu/menu_editor_nav" />
 
@@ -118,7 +118,7 @@
     android:id="@+id/endNav"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_gravity="end"
+    android:layout_gravity="start"
     android:fitsSystemWindows="false">
 
     <!-- When changing android:tag here, also change it in FileTreeFragment.kt -->
