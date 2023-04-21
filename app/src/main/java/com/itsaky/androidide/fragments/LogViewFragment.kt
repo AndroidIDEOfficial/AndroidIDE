@@ -29,8 +29,10 @@ import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.editor.language.log.LogLanguage
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.jetbrainsMono
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.min
@@ -60,6 +62,9 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
      * than [LOG_FREQUENCY].
      */
     const val LOG_DELAY = 100L
+
+    /** The maximum number of lines that are shown in the log view. */
+    const val MAX_LINE_COUNT = 5000
   }
 
   var binding: FragmentLogBinding? = null
@@ -68,12 +73,22 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
 
   private val cacheLock = ReentrantLock()
   private val cache = StringBuilder()
+  private var cacheLineTrack = ArrayBlockingQueue<Int>(MAX_LINE_COUNT, true)
+
+  private val log = ILogger.newInstance("LogViewFragment")
 
   private val logHandler = Handler(Looper.getMainLooper())
   private val logRunnable =
     object : Runnable {
       override fun run() {
         cacheLock.withLock {
+
+          if (cacheLineTrack.size == MAX_LINE_COUNT) {
+            cache.delete(0, cacheLineTrack.poll()!!)
+          }
+
+          cacheLineTrack.clear()
+
           if (cache.length < MAX_CHUNK_SIZE) {
             append(cache)
             cache.clear()
@@ -88,6 +103,9 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
             // if we still have data left to append, resechedule this
             logHandler.removeCallbacks(this)
             logHandler.postDelayed(this, LOG_DELAY)
+          } else {
+            log.debug("Cache has become empty, trimming lines at start")
+            trimLinesAtStart()
           }
         }
       }
@@ -115,6 +133,12 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
         logHandler.postDelayed(logRunnable, LOG_DELAY)
 
         lastLog = System.currentTimeMillis()
+
+        val length = cache.length + 1
+        if (!cacheLineTrack.offer(length)) {
+          cacheLineTrack.poll()
+          cacheLineTrack.offer(length)
+        }
       }
       return
     }
@@ -122,10 +146,25 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     lastLog = System.currentTimeMillis()
 
     append(lineString)
+    trimLinesAtStart()
   }
 
   private fun append(chars: CharSequence?) {
     chars?.let { ThreadUtils.runOnUiThread { binding?.editor?.append(chars) } }
+  }
+
+  private fun trimLinesAtStart() {
+    ThreadUtils.runOnUiThread {
+      binding?.editor?.text?.apply {
+        if (lineCount <= MAX_LINE_COUNT) {
+          return@apply
+        }
+
+        val lastLine = lineCount - MAX_LINE_COUNT
+        log.debug("Deleting log text till line $lastLine")
+        delete(0, 0, lastLine, getColumnCount(lastLine))
+      }
+    }
   }
 
   abstract fun isSimpleFormattingEnabled(): Boolean
