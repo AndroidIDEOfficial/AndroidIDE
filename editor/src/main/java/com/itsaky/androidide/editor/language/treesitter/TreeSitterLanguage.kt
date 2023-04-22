@@ -93,6 +93,10 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     return newlineHandlersLazy
   }
 
+  override fun getInterruptionLevel(): Int {
+    return INTERRUPTION_LEVEL_STRONG
+  }
+
   override fun getIndentAdvance(content: ContentReference, line: Int, column: Int): Int {
     return computeIndent(
       content.toString(),

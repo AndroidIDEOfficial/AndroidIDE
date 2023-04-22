@@ -27,8 +27,8 @@ import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.editor.language.log.LogLanguage
+import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.models.LogLine
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.jetbrainsMono
@@ -82,7 +82,6 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     object : Runnable {
       override fun run() {
         cacheLock.withLock {
-
           if (cacheLineTrack.size == MAX_LINE_COUNT) {
             cache.delete(0, cacheLineTrack.poll()!!)
           }
@@ -194,8 +193,10 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.typefaceLineNumber = jetbrainsMono()
     editor.setTextSize(12f)
     editor.typefaceText = jetbrainsMono()
-    editor.colorScheme = SchemeAndroidIDE.newInstance(requireContext())
-    editor.setEditorLanguage(LogLanguage())
+
+    IDEColorSchemeProvider.readScheme(requireContext()) { scheme ->
+      editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)
+    }
   }
 
   override fun onDestroyView() {

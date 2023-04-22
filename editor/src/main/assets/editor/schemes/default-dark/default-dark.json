@@ -38,13 +38,34 @@
     "ns_prefix": "#ce93d8",
 
     "json.key": "#ba68c8",
-    "json.escape": "#2196f3"
+    "json.escape": "#2196f3",
+
+    "log.err.text": "#f44336",
+    "log.err.pr.fg" : "#000000",
+    "log.err.pr.bg" : "#f44336",
+
+    "log.warn.text": "#FFEB3B",
+    "log.warn.pr.fg" : "#000000",
+    "log.warn.pr.bg" : "#FFEB3B",
+
+    "log.info.text": "#4CAF50",
+    "log.info.pr.fg" : "#ffffff",
+    "log.info.pr.bg" : "#1f65c0",
+
+    "log.debug.text": "#f5f5f5",
+    "log.debug.pr.fg" : "#ffffff",
+    "log.debug.pr.bg" : "#9e9d24",
+
+    "log.verbose.text": "#4fc3f7",
+    "log.verbose.pr.fg" : "#000000",
+    "log.verbose.pr.bg" : "#ffffff"
   },
   "editor": "@editor.json",
   "languages": [
     "@java.json",
     "@json.json",
     "@kotlin.json",
-    "@xml.json"
+    "@xml.json",
+    "@log.json"
   ]
 }

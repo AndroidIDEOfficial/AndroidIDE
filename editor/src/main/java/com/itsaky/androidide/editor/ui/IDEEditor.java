@@ -955,8 +955,14 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-  private void applyTreeSitterLang(final Language language, final String extension,
-                                   SchemeAndroidIDE scheme
+  public void applyTreeSitterLang(final TreeSitterLanguage language, final String type,
+                                  @Nullable SchemeAndroidIDE scheme
+  ) {
+    applyTreeSitterLang(((Language) language), type, scheme);
+  }
+
+  private void applyTreeSitterLang(final Language language, final String type,
+                                   @Nullable SchemeAndroidIDE scheme
   ) {
     if (scheme == null) {
       LOG.error("Failed to read current color scheme");
@@ -964,8 +970,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     if (scheme instanceof IDEColorScheme &&
-      ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
-      LOG.warn("Color scheme does not support file type '" + extension + "'");
+      ((IDEColorScheme) scheme).getLanguageScheme(type) == null) {
+      LOG.warn("Color scheme does not support file type '" + type + "'");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }
 

@@ -56,7 +56,13 @@ object LanguageSpecProvider {
         bracketsScmSource = readScheme(context, type, "brackets"),
         localsCaptureSpec = localsCaptureSpec,
         predicates =
-          listOf(MatchPredicate, NotMatchPredicate, EqualPredicate, NotEqualPredicate, AnyOfPredicate)
+          listOf(
+            MatchPredicate,
+            NotMatchPredicate,
+            EqualPredicate,
+            NotEqualPredicate,
+            AnyOfPredicate
+          )
       )
     return TreeSitterLanguageSpec(
       spec = editorLangSpec,
@@ -73,5 +79,16 @@ object LanguageSpecProvider {
       }
       ""
     }
+<<<<<<< HEAD
+=======
+    if (assests.list("$BASE_SPEC_PATH/$type")?.contains("$name.scm") == false) {
+      if (type != "log" || name == "highlights") {
+        log.warn("Scheme file '$name' for type '$type' not found")
+      }
+      return ""
+    }
+
+    return assests.open("${BASE_SPEC_PATH}/${type}/${name}.scm").reader().readText()
+>>>>>>> c75ab30e3 (feat: use tree-sitter for log highlighting)
   }
 }

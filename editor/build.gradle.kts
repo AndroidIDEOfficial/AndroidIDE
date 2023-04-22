@@ -23,6 +23,7 @@ dependencies {
     api(libs.androidide.ts.java)
     api(libs.androidide.ts.json)
     api(libs.androidide.ts.kotlin)
+    api(libs.androidide.ts.log)
     api(libs.androidide.ts.xml)
     api(libs.common.editor)
     api(libs.common.editor.ts)
