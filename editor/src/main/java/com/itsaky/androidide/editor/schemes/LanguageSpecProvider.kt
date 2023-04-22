@@ -79,16 +79,5 @@ object LanguageSpecProvider {
       }
       ""
     }
-<<<<<<< HEAD
-=======
-    if (assests.list("$BASE_SPEC_PATH/$type")?.contains("$name.scm") == false) {
-      if (type != "log" || name == "highlights") {
-        log.warn("Scheme file '$name' for type '$type' not found")
-      }
-      return ""
-    }
-
-    return assests.open("${BASE_SPEC_PATH}/${type}/${name}.scm").reader().readText()
->>>>>>> c75ab30e3 (feat: use tree-sitter for log highlighting)
   }
 }
