@@ -27,11 +27,10 @@ import static com.itsaky.androidide.lexers.log.LogToken.TID;
 import static com.itsaky.androidide.lexers.log.LogToken.TIME;
 import static com.itsaky.androidide.lexers.log.LogToken.WS;
 
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.util.stream.Collectors;
 
 /**
  * @author Akash Yadav
@@ -39,10 +38,8 @@ import java.util.stream.Collectors;
 @RunWith(JUnit4.class)
 public class LogLineTokenizerTest {
 
-  private static final String FULL =
-      "07-23 09:14:07.656 25903/25903 ..mizeRestrictionManager_ E sInstance is null, start a new sInstance";
-  private static final String SIMPLE =
-      "ToolingApiServer          D   ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ";
+  private static final String FULL = "07-23 09:14:07.656 25903/25903 ..mizeRestrictionManager_ E sInstance is null, start a new sInstance";
+  private static final String SIMPLE = "ToolingApiServer          D   ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ";
 
   @Test
   public void testFullLineWithWs() {
@@ -50,27 +47,14 @@ public class LogLineTokenizerTest {
     final var tokenizer = new LogLineTokenizer(line, false);
     final var tokens = tokenizer.allTokens();
     final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
-    final var texts =
-        tokens.stream()
-            .map(token -> line.substring(token.startIndex, token.endIndex + 1))
-            .collect(Collectors.toList());
+    final var texts = tokens.stream()
+      .map(token -> line.substring(token.startIndex, token.endIndex + 1))
+      .collect(Collectors.toList());
 
-    assertThat(types)
-        .containsExactly(DATE, WS, TIME, WS, PID, TID, WS, TAG, WS, PRIORITY, WS, MESSAGE);
-    assertThat(texts)
-        .containsExactly(
-            "07-23",
-            " ",
-            "09:14:07.656",
-            " ",
-            "25903",
-            "25903",
-            " ",
-            "..mizeRestrictionManager_",
-            " ",
-            "E",
-            " ",
-            "sInstance is null, start a new sInstance");
+    assertThat(types).containsExactly(DATE, WS, TIME, WS, PID, TID, WS, TAG, WS, PRIORITY, WS,
+      MESSAGE);
+    assertThat(texts).containsExactly("07-23", " ", "09:14:07.656", " ", "25903", "25903", " ",
+      "..mizeRestrictionManager_", " ", "E", " ", "sInstance is null, start a new sInstance");
   }
 
   @Test
@@ -79,62 +63,83 @@ public class LogLineTokenizerTest {
     final var tokenizer = new LogLineTokenizer(line);
     final var tokens = tokenizer.allTokens();
     final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
-    final var texts =
-        tokens.stream()
-            .map(token -> line.substring(token.startIndex, token.endIndex + 1))
-            .collect(Collectors.toList());
+    final var texts = tokens.stream()
+      .map(token -> line.substring(token.startIndex, token.endIndex + 1))
+      .collect(Collectors.toList());
 
     assertThat(types).containsExactly(DATE, TIME, PID, TID, TAG, PRIORITY, MESSAGE);
-    assertThat(texts)
-        .containsExactly(
-            "07-23",
-            "09:14:07.656",
-            "25903",
-            "25903",
-            "..mizeRestrictionManager_",
-            "E",
-            "sInstance is null, start a new sInstance");
+    assertThat(texts).containsExactly("07-23", "09:14:07.656", "25903", "25903",
+      "..mizeRestrictionManager_", "E", "sInstance is null, start a new sInstance");
   }
 
   @Test
   public void testSimpleLineWithWs() {
     final var line = SIMPLE;
     final var tokenizer = new LogLineTokenizer(line, false);
-    tokenizer.setParseSimple(true);
     final var tokens = tokenizer.allTokens();
     final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
-    final var texts =
-        tokens.stream()
-            .map(token -> line.substring(token.startIndex, token.endIndex + 1))
-            .collect(Collectors.toList());
+    final var texts = tokens.stream()
+      .map(token -> line.substring(token.startIndex, token.endIndex + 1))
+      .collect(Collectors.toList());
 
     assertThat(types).containsExactly(TAG, WS, PRIORITY, WS, MESSAGE);
-    assertThat(texts)
-        .containsExactly(
-            "ToolingApiServer",
-            "          ",
-            "D",
-            "   ",
-            "ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ");
+    assertThat(texts).containsExactly("ToolingApiServer", "          ", "D", "   ",
+      "ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ");
   }
 
   @Test
   public void testSimpleLineWithoutWs() {
     final var line = SIMPLE;
     final var tokenizer = new LogLineTokenizer(line);
-    tokenizer.setParseSimple(true);
     final var tokens = tokenizer.allTokens();
     final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
-    final var texts =
-        tokens.stream()
-            .map(token -> line.substring(token.startIndex, token.endIndex + 1))
-            .collect(Collectors.toList());
+    final var texts = tokens.stream()
+      .map(token -> line.substring(token.startIndex, token.endIndex + 1))
+      .collect(Collectors.toList());
 
     assertThat(types).containsExactly(TAG, PRIORITY, MESSAGE);
-    assertThat(texts)
-        .containsExactly(
-            "ToolingApiServer",
-            "D",
-            "ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ");
+    assertThat(texts).containsExactly("ToolingApiServer", "D",
+      "ToolingApiServerImpl       Got initialize request  InitializeProjectMessage(directory=/storage/emulated/0/AndroidIDEProjects/sora-editor, gradleInstallation=/data/data/com.itsaky.androidide/files/home/gradle-7.5)  ");
+  }
+
+  @Test
+  public void testMultilineLFLogTokenization() {
+    final var line = SIMPLE + "\n" + SIMPLE;
+    final var tokenizer = new LogLineTokenizer(line);
+    final var tokens = tokenizer.allTokens();
+    final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
+    assertThat(types).hasSize(6);
+    assertThat(types).containsExactly(TAG, PRIORITY, MESSAGE, TAG, PRIORITY, MESSAGE);
+  }
+
+  @Test
+  public void testMultilineCRLogTokenization() {
+    final var line = SIMPLE + "\r" + SIMPLE;
+    final var tokenizer = new LogLineTokenizer(line);
+    final var tokens = tokenizer.allTokens();
+    final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
+    assertThat(types).hasSize(6);
+    assertThat(types).containsExactly(TAG, PRIORITY, MESSAGE, TAG, PRIORITY, MESSAGE);
+  }
+
+  @Test
+  public void testMultilineCRLFLogTokenization() {
+    final var line = SIMPLE + "\r\n" + SIMPLE;
+    final var tokenizer = new LogLineTokenizer(line);
+    final var tokens = tokenizer.allTokens();
+    final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
+    assertThat(types).hasSize(6);
+    assertThat(types).containsExactly(TAG, PRIORITY, MESSAGE, TAG, PRIORITY, MESSAGE);
+  }
+
+  @Test
+  public void testCombinedLogLines() {
+    final var line = SIMPLE + "\n" + FULL;
+    final var tokenizer = new LogLineTokenizer(line);
+    final var tokens = tokenizer.allTokens();
+    final var types = tokens.stream().map(token -> token.type).collect(Collectors.toList());
+    assertThat(types).hasSize(10);
+    assertThat(types).containsExactly(TAG, PRIORITY, MESSAGE, DATE, TIME, PID, TID, TAG, PRIORITY,
+      MESSAGE);
   }
 }
