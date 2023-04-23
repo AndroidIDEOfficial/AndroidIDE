@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Tokenizer for tokenizing a log line. The tokenizer does not expect multiline input.
+ * Tokenizer for tokenizing a log line.
  *
  * @author Akash Yadav
  */
