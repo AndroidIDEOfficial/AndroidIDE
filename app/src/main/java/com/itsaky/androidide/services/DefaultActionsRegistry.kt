@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.actions
+package com.itsaky.androidide.services
 
 import android.content.Context
 import android.graphics.PorterDuff.Mode.SRC_ATOP
@@ -23,6 +23,11 @@ import android.view.Menu
 import android.view.MenuItem
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.auto.service.AutoService
+import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.ActionItem
+import com.itsaky.androidide.actions.ActionMenu
+import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.R
 import com.itsaky.androidide.actions.locations.CodeActionsMenu
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.resolveAttr

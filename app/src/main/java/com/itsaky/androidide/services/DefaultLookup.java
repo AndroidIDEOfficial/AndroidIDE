@@ -15,9 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lookup;
+package com.itsaky.androidide.services;
 
 import com.google.auto.service.AutoService;
+import com.itsaky.androidide.lookup.Lookup;
+import com.itsaky.androidide.lookup.ServiceRegisteredException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
