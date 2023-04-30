@@ -98,7 +98,7 @@ tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
 tests-androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
 tests-androidx-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
 tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "4.1.0" }
-tests-mockk = { module = "io.mockk:mockk", version = "1.13.4" }
+tests-mockk = { module = "io.mockk:mockk", version = "1.13.5" }
 
 # Tooling
 tooling-builderModel = { module="com.android.tools.build:builder-model", version.ref = "agp-tooling" }
