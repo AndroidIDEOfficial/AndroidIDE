@@ -23,7 +23,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TREE
 import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.ActionsRegistry
-import com.itsaky.androidide.actions.internal.DefaultActionsRegistry
+import com.itsaky.androidide.actions.DefaultActionsRegistry
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.eventbus.events.filetree.FileClickEvent
 import com.itsaky.androidide.eventbus.events.filetree.FileLongClickEvent

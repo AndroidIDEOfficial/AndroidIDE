@@ -17,7 +17,7 @@
 package com.itsaky.androidide.actions
 
 import android.view.Menu
-import com.itsaky.androidide.actions.internal.DefaultActionsRegistry
+import com.itsaky.androidide.utils.ServiceLoader
 
 /** @author Akash Yadav */
 abstract class ActionsRegistry {
@@ -29,7 +29,7 @@ abstract class ActionsRegistry {
     @JvmStatic
     fun getInstance(): ActionsRegistry {
       if (instance == null) {
-        instance = DefaultActionsRegistry()
+        instance = ServiceLoader.load(ActionsRegistry::class.java).findFirstOrThrow()
       }
 
       return instance as ActionsRegistry
@@ -77,6 +77,7 @@ abstract class ActionsRegistry {
 
   /** Get all the registered actions at the given location. */
   abstract fun getActions(location: ActionItem.Location): Map<String, ActionItem>
+
   /** Clear all the registered actions. */
   abstract fun clearActions(location: ActionItem.Location)
 
