@@ -162,9 +162,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       } catch (err: Throwable) {
         log.error("Unable to unbind service")
       } finally {
-        (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
+        (Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
           ?.setEventListener(null)
-        Lookup.DEFAULT.unregister(BuildService.KEY_BUILD_SERVICE)
+        Lookup.getDefault().unregister(BuildService.KEY_BUILD_SERVICE)
         viewModel.isBoundToBuildSerice = false
       }
     }
@@ -183,7 +183,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   override fun startServices() {
-    val service = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
+    val service = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
     if (viewModel.isBoundToBuildSerice && service != null) {
       log.info("Reusing already started Gradle build service")
       onGradleBuildServiceConnected(service)
@@ -228,7 +228,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     //noinspection ConstantConditions
     ThreadUtils.runOnUiThread { preProjectInit() }
 
-    val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
     if (buildService == null) {
       log.error("No build service found. Cannot initialize project.")
       return
@@ -268,7 +268,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   private fun releaseServerListener() {
     // Release reference to server listener in order to prevent memory leak
-    (Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
+    (Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
       ?.setServerListener(null)
   }
 
@@ -285,7 +285,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     buildServiceConnection.onConnected = null
     viewModel.isBoundToBuildSerice = true
-    Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, service)
+    Lookup.getDefault().update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
 
     if (!service.isToolingServerStarted()) {

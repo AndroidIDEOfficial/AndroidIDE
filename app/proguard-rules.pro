@@ -28,6 +28,8 @@
 -keep class org.xml.** { *; }
 
 # Services
+-keep @com.google.auto.service.AutoService class ** {
+}
 -keepclassmembers class ** {
     @com.google.auto.service.AutoService <methods>;
 }

@@ -178,7 +178,7 @@ abstract class BaseEditorActivity :
 
   protected open fun postDestroy() {
     if (isDestroying) {
-      Lookup.DEFAULT.unregisterAll()
+      Lookup.getDefault().unregisterAll()
       ApiVersionsRegistry.getInstance().clear()
       ResourceTableRegistry.getInstance().clear()
       WidgetTableRegistry.getInstance().clear()
@@ -392,7 +392,7 @@ abstract class BaseEditorActivity :
   }
 
   fun notifySyncNeeded(onConfirm: () -> Unit) {
-    val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
     if (buildService == null || buildService.isBuildInProgress) return
 
     flashbarBuilder(

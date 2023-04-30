@@ -47,7 +47,7 @@ object XmlInflaterTest {
       ToolingApiTestLauncher().launchServer()
     server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
 
-    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
     ProjectManager.setupProject()
     init = true
   }

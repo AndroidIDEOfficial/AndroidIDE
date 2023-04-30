@@ -62,7 +62,7 @@ object ProjectManager : EventReceiver {
   var cachedInitResult: InitializeResult? = null
 
   @JvmOverloads
-  fun setupProject(project: IProject = Lookup.DEFAULT.lookup(BuildService.KEY_PROJECT_PROXY)!!) {
+  fun setupProject(project: IProject = Lookup.getDefault().lookup(BuildService.KEY_PROJECT_PROXY)!!) {
     val caching = CachingProject(project)
     this.rootProject = ProjectTransformer().transform(caching)
     if (this.rootProject != null) {
@@ -94,7 +94,7 @@ object ProjectManager : EventReceiver {
 
   @JvmOverloads
   fun generateSources(
-    builder: BuildService? = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    builder: BuildService? = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
   ) {
     if (builder == null) {
       log.warn("Cannot generate sources. BuildService is null.")
@@ -301,7 +301,7 @@ object ProjectManager : EventReceiver {
   }
 
   private fun generateSourcesIfNecessary(event: FileEvent) {
-    val builder = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE) ?: return
+    val builder = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) ?: return
     val file = event.file
     if (!isResource(file)) {
       return

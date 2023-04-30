@@ -112,7 +112,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     showNotification(getString(R.string.build_status_idle), false);
 
-    Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, this);
+    Lookup.getDefault().update(BuildService.KEY_BUILD_SERVICE, this);
   }
 
   @Override
@@ -215,7 +215,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public void onListenerStarted(@NotNull final IToolingApiServer server, @NotNull IProject projectProxy, @NotNull final ProcessStreamsHolder streams) {
     startServerOutputReader(streams.err);
     this.server = server;
-    Lookup.DEFAULT.update(BuildService.KEY_PROJECT_PROXY, projectProxy);
+    Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy);
     this.isToolingServerStarted = true;
     ProjectManager.INSTANCE.setupProject(projectProxy);
   }

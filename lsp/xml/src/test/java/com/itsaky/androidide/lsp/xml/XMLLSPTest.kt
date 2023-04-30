@@ -39,7 +39,7 @@ object XMLLSPTest : LSPTest() {
     super.initProjectIfNeeded()
     try {
       val module = ProjectManager.app!!
-      val lookup = Lookup.DEFAULT
+      val lookup = Lookup.getDefault()
       
       lookup.update(ModuleProject.COMPLETION_MODULE_KEY, module)
       

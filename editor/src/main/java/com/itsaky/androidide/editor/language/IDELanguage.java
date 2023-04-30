@@ -56,10 +56,10 @@ public abstract class IDELanguage implements Language {
       throws CompletionCancelledException {
     try {
       final var cancelChecker = new CompletionCancelChecker(publisher);
-      Lookup.DEFAULT.register(ICompletionCancelChecker.class, cancelChecker);
+      Lookup.getDefault().register(ICompletionCancelChecker.class, cancelChecker);
       doComplete(content, position, publisher, extraArguments);
     } finally {
-      Lookup.DEFAULT.unregister(ICompletionCancelChecker.class);
+      Lookup.getDefault().unregister(ICompletionCancelChecker.class);
     }
   }
 

@@ -47,7 +47,7 @@ class ModuleProjectTest {
     val (server, project) = ToolingApiTestLauncher().launchServer()
     server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
 
-    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
 
     verifyProjectManagerAPIs()
 

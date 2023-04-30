@@ -263,7 +263,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
 
     if (pck == ResourceTableRegistry.PCK_ANDROID) {
       val platformResTable =
-        Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
+        Lookup.getDefault().lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
           ?: run {
             log.debug("No platform resource table is set")
             return emptySet()
@@ -283,7 +283,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   }
 
   protected open fun findAllModuleResourceTables(): Set<ResourceTable> {
-    val lookup = Lookup.DEFAULT
+    val lookup = Lookup.getDefault()
     val sourceResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_MODULE_RES) ?: emptySet()
     val depResTables = lookup.lookup(ResourceTableRegistry.COMPLETION_DEP_RES) ?: emptySet()
     return mutableSetOf<ResourceTable>().also {

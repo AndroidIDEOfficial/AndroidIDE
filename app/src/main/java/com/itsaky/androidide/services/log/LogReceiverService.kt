@@ -41,7 +41,7 @@ class LogReceiverService : Service() {
 
   override fun onCreate() {
     super.onCreate()
-    Lookup.DEFAULT.update(LOOKUP_KEY, this)
+    Lookup.getDefault().update(LOOKUP_KEY, this)
   }
 
   override fun onBind(intent: Intent?): IBinder? {
@@ -59,7 +59,7 @@ class LogReceiverService : Service() {
   override fun onDestroy() {
     super.onDestroy()
     binder.close()
-    Lookup.DEFAULT.unregister(LOOKUP_KEY)
+    Lookup.getDefault().unregister(LOOKUP_KEY)
   }
 
   fun setConsumer(consumer: ((LogLine) -> Unit)?) {
@@ -68,5 +68,5 @@ class LogReceiverService : Service() {
 }
 
 fun lookupLogService(): LogReceiverService? {
-  return Lookup.DEFAULT.lookup(LogReceiverService.LOOKUP_KEY)
+  return Lookup.getDefault().lookup(LogReceiverService.LOOKUP_KEY)
 }

@@ -15,28 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.logsender
+package com.itsaky.androidide.lookup;
 
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.ext.junit.runners.AndroidJUnit4
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
-import org.junit.Assert.*
+import com.itsaky.androidide.utils.ServiceLoader;
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Provides instance of {@link Lookup}.
  *
- * See [testing documentation](http://d.android.com/tools/testing).
+ * @author Akash Yadav
  */
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class LookupProvider {
 
-  @Test
-  fun useAppContext() {
-    // Context of the app under test.
-    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    assertEquals("com.itsaky.androidide.logsender.test", appContext.packageName)
+  private static Lookup sLookup;
+  private static final Object lock = new Object();
+
+  static synchronized Lookup lookupService() {
+    synchronized (lock) {
+      if (sLookup != null) {
+        return sLookup;
+      }
+      return sLookup = ServiceLoader.load(Lookup.class).findFirstOrThrow();
+    }
   }
 }

@@ -186,7 +186,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   private fun getModule(): ModuleProject {
-    return Lookup.DEFAULT.lookup(ModuleProject.COMPLETION_MODULE_KEY)
+    return Lookup.getDefault().lookup(ModuleProject.COMPLETION_MODULE_KEY)
       ?: throw IllegalStateException("No module project provided")
   }
 

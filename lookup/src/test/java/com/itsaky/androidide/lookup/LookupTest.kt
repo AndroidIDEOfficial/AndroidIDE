@@ -28,7 +28,7 @@ class LookupTest {
 
   @Test
   fun `test with class`() {
-    val lookup = Lookup.DEFAULT
+    val lookup = Lookup.getDefault()
 
     // Test register
     var service = TestServiceImpl()
@@ -53,7 +53,7 @@ class LookupTest {
 
   @Test
   fun `test with key`() {
-    val lookup = Lookup.DEFAULT
+    val lookup = Lookup.getDefault()
     val key = Key<TestService>()
 
     // Test register

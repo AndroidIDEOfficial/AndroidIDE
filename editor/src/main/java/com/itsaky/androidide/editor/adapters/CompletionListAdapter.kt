@@ -149,7 +149,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
 
       val data = item.data
       val versions =
-        Lookup.DEFAULT.lookup(ApiVersions.COMPLETION_LOOKUP_KEY) ?: return@executeAsync null
+        Lookup.getDefault().lookup(ApiVersions.COMPLETION_LOOKUP_KEY) ?: return@executeAsync null
       val className =
         when (data) {
           is ClassCompletionData -> data.className
