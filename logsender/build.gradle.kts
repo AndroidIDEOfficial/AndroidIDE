@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-  implementation(projects.logger)
+  api(projects.logger)
 
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.robolectric)
