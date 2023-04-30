@@ -20,28 +20,38 @@ package com.itsaky.androidide.services.log
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
 import java.net.Socket
+import java.net.SocketException
 
 /**
  * Handles a single log sender.
  *
  * @author Akash Yadav
  */
-class LogSenderHandler(
-  private val socket: Socket,
-  internal var consumer: ((LogLine) -> Unit)? = null
+class LogSenderHandler(private val socket: Socket,
+                       internal var consumer: ((LogLine) -> Unit)? = null
 ) : Thread("LogSenderHandler"), AutoCloseable {
 
   private val log = ILogger.newInstance("LogSenderHandler")
 
   override fun run() {
-    socket.getInputStream().bufferedReader().forEachLine {
-      LogLine.forLogString(it)?.let { line -> consumer?.invoke(line) }
+    socket.getInputStream().bufferedReader().use { reader ->
+      try {
+        while (!socket.isClosed) {
+          LogLine.forLogString(reader.readLine())?.let { line -> consumer?.invoke(line) }
+        }
+      } catch (err: SocketException) {
+        // ignored
+      } finally {
+        close()
+      }
     }
   }
 
   override fun close() {
     try {
-      socket.close()
+      if (!socket.isClosed) {
+        socket.close()
+      }
     } catch (err: Throwable) {
       log.error("Failed to close socket", err)
     }
