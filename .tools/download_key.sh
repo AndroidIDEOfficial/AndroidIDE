@@ -33,4 +33,4 @@ if [ -f "$dest" ]; then
 fi
 
 # Download silently to prevent URL/user/pass being exposed
-curl -s -u "$user:$pass" --output "$dest" $url 
+curl -Lsu "$user:$pass" --output "$dest" $url --http1.1
