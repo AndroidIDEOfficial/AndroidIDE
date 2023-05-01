@@ -52,7 +52,9 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("Mul
         log.info("Starting log receiver server socket at port ${getPort()}")
 
         while(keepAlive.get()) {
-          val handler = LogSenderHandler(it.accept(), consumer)
+          val handler = LogSenderHandler(it.accept(), consumer) { handler ->
+            clients.remove(handler)
+          }
 
           log.info("A log sender has been connected")
 

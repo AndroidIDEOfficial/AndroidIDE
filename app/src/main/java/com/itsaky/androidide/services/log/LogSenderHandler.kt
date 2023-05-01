@@ -28,7 +28,8 @@ import java.net.SocketException
  * @author Akash Yadav
  */
 class LogSenderHandler(private val socket: Socket,
-                       internal var consumer: ((LogLine) -> Unit)? = null
+                       internal var consumer: ((LogLine) -> Unit)? = null,
+                       internal var onClose: (LogSenderHandler) -> Unit = {}
 ) : Thread("LogSenderHandler"), AutoCloseable {
 
   private val log = ILogger.newInstance("LogSenderHandler")
@@ -54,6 +55,8 @@ class LogSenderHandler(private val socket: Socket,
       }
     } catch (err: Throwable) {
       log.error("Failed to close socket", err)
+    } finally {
+      onClose(this)
     }
   }
 }
