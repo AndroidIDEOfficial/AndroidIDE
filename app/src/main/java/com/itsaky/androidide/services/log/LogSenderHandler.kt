@@ -34,16 +34,16 @@ class LogSenderHandler(private val socket: Socket,
   private val log = ILogger.newInstance("LogSenderHandler")
 
   override fun run() {
-    socket.getInputStream().bufferedReader().use { reader ->
-      try {
+    try {
+      socket.getInputStream().bufferedReader().use { reader ->
         while (!socket.isClosed) {
           LogLine.forLogString(reader.readLine())?.let { line -> consumer?.invoke(line) }
         }
-      } catch (err: SocketException) {
-        // ignored
-      } finally {
-        close()
       }
+    } catch (err: SocketException) {
+      // ignored
+    } finally {
+      close()
     }
   }
 
