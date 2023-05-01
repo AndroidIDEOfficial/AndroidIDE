@@ -14,7 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.services
+package com.itsaky.androidide.actions.internal
 
 import android.content.Context
 import android.graphics.PorterDuff.Mode.SRC_ATOP

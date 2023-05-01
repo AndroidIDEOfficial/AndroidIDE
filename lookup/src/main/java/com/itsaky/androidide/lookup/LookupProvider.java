@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.lookup;
 
+import com.itsaky.androidide.lookup.internal.DefaultLookup;
 import com.itsaky.androidide.utils.ServiceLoader;
+import com.itsaky.androidide.utils.VMUtils;
 
 /**
  * Provides instance of {@link Lookup}.
@@ -34,6 +36,12 @@ class LookupProvider {
       if (sLookup != null) {
         return sLookup;
       }
+
+      if (VMUtils.isJvm()) {
+        // When in a test environment, load the default lookup
+        return sLookup = new DefaultLookup();
+      }
+
       return sLookup = ServiceLoader.load(Lookup.class).findFirstOrThrow();
     }
   }

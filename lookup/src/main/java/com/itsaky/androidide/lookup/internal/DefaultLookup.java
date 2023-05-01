@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.services;
+package com.itsaky.androidide.lookup.internal;
 
 import com.google.auto.service.AutoService;
 import com.itsaky.androidide.lookup.Lookup;
