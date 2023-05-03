@@ -123,12 +123,12 @@
   <string name="msg_begin_project_write">بدء عملية الكتابة</string>
   <string name="msg_folder_creation_failed">فشل في إنشاء المجلد</string>
   <string name="msg_file_creation_failed">فشل في إنشاء ملف</string>
-  <string name="msg_layout_file_creation_failed">أخفق في إنشاء ملَف النسخة الاحتياطية!</string>
+  <string name="msg_layout_file_creation_failed">فشل إنشاء ملف التخطيط!</string>
   <string name="msg_folder_created">تم إنشاء المجلد بنجاح</string>
   <string name="msg_file_created">تم إنشاء الملف بنجاح</string>
   <string name="msg_folder_exists">المجلد موجود بالفعل</string>
   <string name="msg_file_exists">الملف موجود بالفعل!</string>
-  <string name="msg_layout_file_exists">ملَف التخطيط موجود فعلًا!</string>
+  <string name="msg_layout_file_exists">مِلَفّ التخطيط موجود فعلًا!</string>
   <string name="msg_invalid_name">اسم غير صحيح!</string>
   <string name="text_create">إنشاء</string>
   <string name="msg_can_contain_slashes">إذا كان المسار يحتوي على فاصل الملفات (\'/\')، فسيتم إنشاء الدلائل المطلوبة (الأم) إذا لم تكن موجودة.</string>
@@ -136,7 +136,7 @@
   <string name="file_name">إسم الملف</string>
   <string name="new_name">اسم جديد</string>
   <string name="new_file">ملف جديد</string>
-  <string name="create_auto_layout">إنشاء ملَف تخطيط</string>
+  <string name="create_auto_layout">إنشاء مِلَفّ تخطيط</string>
   <string name="new_java_class">كلاس جافا جديد</string>
   <string name="new_xml_resource">مصدر XML جديد</string>
   <string name="new_folder">مجلد جديد</string>
@@ -465,6 +465,6 @@
   <string name="title_fix_imports">أصلح الواردات (إمبورت)</string>
   <string name="msg_no_unresolved_classes">لم يتم العثور على أسماء الكلاس</string>
   <string name="title_class_chooser">أي %1$s؟</string>
-  <string name="permlab_bind_logger_service">bind to log service</string>
-  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="permlab_bind_logger_service">ربط بخدمة التسجيل</string>
+  <string name="permdesc_bind_logger_service">السماح لهذا التطبيق بربطه مع خدمة تسجيل اللوغ لـ AndroidIDE. هذا الامر مطلوب لـ AndroidIDE لقراءة السجلات (اللوغ) لهذا التطبيق.</string>
 </resources>
