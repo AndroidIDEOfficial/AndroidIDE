@@ -20,9 +20,9 @@ package com.itsaky.androidide.templates.base
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
+import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.base.modules.android.AndroidManifestBuilder
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
-import com.itsaky.androidide.templates.base.modules.buildGradleFile
 import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
@@ -33,7 +33,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    * Return the file path to `AndroidManifest.xml`.
    */
   fun manifestFile(): File {
-    return File(data.projectDir, "src/main/$ANDROID_MANIFEST_XML").also { it.parentFile!!.mkdirs() }
+    return File(srcFolder(SrcSet.Main), ANDROID_MANIFEST_XML).also { it.parentFile!!.mkdirs() }
   }
 
   /**

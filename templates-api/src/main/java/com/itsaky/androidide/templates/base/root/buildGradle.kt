@@ -18,16 +18,9 @@
 package com.itsaky.androidide.templates.base.root
 
 import com.itsaky.androidide.templates.Language
-import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
-import com.itsaky.androidide.templates.base.buildGradleFile
-import java.io.File
 
-fun ProjectTemplateBuilder.buildGradleSrc(): String {
-  return if (data.useKts) buildGradleSrcKts() else buildGradleSrcGroovy()
-}
-
-private fun ProjectTemplateBuilder.buildGradleSrcKts(): String {
+internal fun ProjectTemplateBuilder.buildGradleSrcKts(): String {
   return """
     // Top-level build file where you can add configuration options common to all sub-projects/modules.
     plugins {
@@ -42,7 +35,7 @@ private fun ProjectTemplateBuilder.buildGradleSrcKts(): String {
   """.trimIndent()
 }
 
-private fun ProjectTemplateBuilder.buildGradleSrcGroovy(): String {
+internal fun ProjectTemplateBuilder.buildGradleSrcGroovy(): String {
   return """
     // Top-level build file where you can add configuration options common to all sub-projects/modules.
     plugins {

@@ -76,7 +76,7 @@ enum class ModuleType(val typeName: String) {
  *
  * @property folder The name of the folder.
  */
-enum class SrcFolder(val folder: String) {
+enum class SrcSet(val folder: String) {
 
   /**
    * `src/main`.
@@ -153,10 +153,10 @@ class ModuleTemplateData(name: String, val packageName: String, projectDir: File
                          minSdk: Sdk, val versions: ModuleVersionData = ModuleVersionData(minSdk)
 ) : BaseTemplateData(name, projectDir, language, useKts) {
 
-  private val srcDirs = mutableMapOf<SrcFolder, File>()
+  private val srcDirs = mutableMapOf<SrcSet, File>()
 
-  fun srcFolder(type: SrcFolder): File {
-    return srcDirs.computeIfAbsent(type) { File(projectDir, "src/${it.folder}") }
+  fun srcFolder(srcSet: SrcSet): File {
+    return srcDirs.computeIfAbsent(srcSet) { File(projectDir, "src/${it.folder}") }
       .also { it.mkdirs() }
   }
 }

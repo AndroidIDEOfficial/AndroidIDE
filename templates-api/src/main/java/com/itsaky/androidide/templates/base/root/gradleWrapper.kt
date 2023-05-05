@@ -21,21 +21,7 @@ import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.baseAsset
 import java.io.File
 
-/**
- * Writes/copies the Gradle Wrapper related files in the project directory.
- *
- * @param data The projecte template data.
- */
-fun ProjectTemplateBuilder.gradleWrapper() {
-  val gradlew = File(data.projectDir, "gradlew")
-  val gradlewBat = File(data.projectDir, "${gradlew.name}.bat")
-  executor.copyAsset(baseAsset(gradlew.name), gradlew)
-  executor.copyAsset(baseAsset(gradlewBat.name), gradlewBat)
-  gradleWrapperJar()
-  gradleWrapperProps()
-}
-
-fun ProjectTemplateBuilder.gradleWrapperJar() {
+internal fun ProjectTemplateBuilder.gradleWrapperJar() {
   val name = "gradle-wrapper.jar"
   val wrapperJar = File(data.projectDir, "gradle/wrapper/${name}")
   wrapperJar.parentFile!!.mkdirs()
@@ -43,7 +29,7 @@ fun ProjectTemplateBuilder.gradleWrapperJar() {
   executor.copyAsset(baseAsset(name), wrapperJar)
 }
 
-fun ProjectTemplateBuilder.gradleWrapperProps() {
+internal fun ProjectTemplateBuilder.gradleWrapperProps() {
   val name = "gradle-wrapper.properties"
   val wrapperProps = File(data.projectDir, "gradle/wrapper/${name}")
   wrapperProps.parentFile!!.mkdirs()
@@ -51,7 +37,7 @@ fun ProjectTemplateBuilder.gradleWrapperProps() {
   executor.save(gradleWrapperPropsSrc(), wrapperProps)
 }
 
-private fun ProjectTemplateBuilder.gradleWrapperPropsSrc(): String {
+internal fun ProjectTemplateBuilder.gradleWrapperPropsSrc(): String {
   return """
     distributionBase=GRADLE_USER_HOME
     distributionPath=wrapper/dists

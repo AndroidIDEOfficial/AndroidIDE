@@ -25,6 +25,8 @@ android {
 }
 
 dependencies {
+  api(projects.subprojects.javapoet)
+
   implementation(projects.common)
   implementation(projects.logger)
   implementation(projects.resources)

@@ -21,14 +21,6 @@ import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.optonallyKts
 import java.io.File
 
-fun ProjectTemplateBuilder.settingsGradleFile(): File {
-  return File(data.projectDir, data.optonallyKts("settings.gradle"))
-}
-
-fun ProjectTemplateBuilder.settingsGradleSrc(): String {
-  return if (data.useKts) settingsGradleSrcKts() else return settingsGradleSrcGroovy()
-}
-
 internal fun ProjectTemplateBuilder.settingsGradleSrcKts(): String {
   return """
     pluginManagement {

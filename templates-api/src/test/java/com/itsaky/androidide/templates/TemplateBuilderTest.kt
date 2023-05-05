@@ -19,7 +19,13 @@ package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
+import com.itsaky.androidide.templates.base.modules.createMethod
 import com.itsaky.androidide.xml.permissions.Permission
+import com.squareup.javapoet.ArrayTypeName
+import com.squareup.javapoet.ParameterSpec
+import com.squareup.javapoet.TypeName
+import jdkx.lang.model.element.Modifier.PUBLIC
+import jdkx.lang.model.element.Modifier.STATIC
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -86,8 +92,21 @@ class TemplateBuilderTest {
       defaultModule {
         manifest {
           addPermission(Permission.INTERNET)
+          addActivity(
+            ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
 
-          addActivity(ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
+          java {
+            createClass("com.itsaky", "TestClass") {
+              createMethod("main") {
+                addModifiers(PUBLIC, STATIC)
+                returns(TypeName.VOID)
+                addParameter(
+                  ParameterSpec.builder(ArrayTypeName.get(java.lang.String::class.java), "args")
+                    .build())
+                addStatement("System.out.println(\"Hello world!\")")
+              }
+            }
+          }
         }
       }
     }
