@@ -15,11 +15,30 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+plugins {
+  id("com.android.library")
+  id("org.jetbrains.kotlin.android")
+  id("kotlin-kapt")
+}
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+android {
+  namespace = "${BuildConfig.packageName}.templates.impl"
+}
+
+dependencies {
+  kapt(libs.google.auto.service)
+
+  api(projects.templatesApi)
+
+  implementation(projects.shared)
+  implementation(projects.common)
+  implementation(projects.preferences)
+  implementation(libs.androidx.annotation)
+  implementation(libs.androidx.ktx)
+  implementation(libs.google.auto.service.annotations)
+
+  testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.google.truth)
+}

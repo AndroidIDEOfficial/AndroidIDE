@@ -28,6 +28,19 @@ import java.io.InputStream
 interface RecipeExecutor {
 
   /**
+   * Get the project template data. This is available only while creating modules in an existing project.
+   *
+   * @return The project template data or `null` if the not available.
+   */
+  fun projectData(): ProjectTemplateData? = null
+
+  /**
+   * @return The [ProjectTemplateData] if available, throws [IllegalStateException] otherwise.
+   * @see projectData
+   */
+  fun requireProjectData(): ProjectTemplateData = checkNotNull(projectData())
+
+  /**
    * Copy the [source] file to [dest].
    */
   fun copy(source: File, dest: File)
@@ -43,4 +56,12 @@ interface RecipeExecutor {
    * @return The [InputStream] for the asset.
    */
   fun openAsset(path: String): InputStream
+
+  /**
+   * Copies the asset at the given path to the specified destination.
+   *
+   * @param path The path of the asset.
+   * @param dest The destination path.
+   */
+  fun copyAsset(path: String, dest: File)
 }

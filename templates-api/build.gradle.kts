@@ -25,6 +25,20 @@ android {
 }
 
 dependencies {
+  implementation(projects.common)
   implementation(projects.logger)
+  implementation(projects.resources)
+  implementation(projects.subprojects.xmlUtils)
+
   implementation(libs.androidx.annotation)
+  implementation(libs.aapt2.common)
+
+  testImplementation(projects.lsp.api)
+  testImplementation(projects.preferences)
+  testImplementation(projects.shared)
+  testImplementation(libs.tests.androidx.test.core)
+  testImplementation(libs.tests.google.truth)
+  testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.mockk)
+  testImplementation(libs.tests.robolectric)
 }

@@ -124,6 +124,7 @@
       <module name="AndroidIDE.subprojects.jsonrpc.test" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.main" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.test" target="11" />
+      <module name="AndroidIDE.testing-android" target="17" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

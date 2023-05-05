@@ -15,11 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+package templates.base.module
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.baseAsset
+import java.io.File
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+/**
+ * @return The `proguard-rules.pro` file in the module directory.
+ */
+fun ModuleTemplateBuilder.proguardRulesFile(): File {
+  return File(data.projectDir, "proguard-rules.pro")
+}
+
+/**
+ * Creates the `proguard-rules.pro` file in the module directory.
+ */
+fun ModuleTemplateBuilder.proguardRules() {
+  val file = proguardRulesFile()
+  executor.copyAsset(baseAsset(file.name), file)
+}

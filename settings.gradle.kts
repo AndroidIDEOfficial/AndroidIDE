@@ -63,6 +63,7 @@ include(
   ":resources",
   ":shared",
   ":templates-api",
+  ":templates-impl",
   ":treeview",
   ":uidesigner",
   ":xml-inflater",

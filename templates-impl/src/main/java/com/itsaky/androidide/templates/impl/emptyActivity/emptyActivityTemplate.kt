@@ -15,11 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+package com.itsaky.androidide.templates.impl.emptyActivity
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+import com.itsaky.androidide.templates.ModuleTemplateData
+import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.templates.RecipeExecutor
+import com.itsaky.androidide.templates.base.baseProject
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+fun emptyActivityProject(): ProjectTemplate = baseProject {
+//  createModule(":app") {
+//  }
+}
+
+//fun emptyProjectModule() : ModuleTemplate =
+
+fun RecipeExecutor.emptyActivityTemplate(data: ModuleTemplateData) {
+
+}

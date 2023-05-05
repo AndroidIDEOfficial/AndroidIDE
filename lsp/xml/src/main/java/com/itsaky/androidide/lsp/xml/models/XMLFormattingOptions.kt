@@ -26,38 +26,38 @@ import org.eclipse.lemminx.dom.DOMElement
  *
  * @author Akash Yadav
  */
-class XMLFormattingOptions {
-  val trimFinalNewLine: Boolean
+open class XMLFormattingOptions {
+  open val trimFinalNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.trimFinalNewLine
-  val insertFinalNewLine: Boolean
+  open val insertFinalNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.insertFinalNewLine
-  val splitAttributes: Boolean
+  open val splitAttributes: Boolean
     get() = com.itsaky.androidide.preferences.internal.splitAttributes
-  val joinCDataLines: Boolean
+  open val joinCDataLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinCDataLines
-  val joinCommentLines: Boolean
+  open val joinCommentLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinCommentLines
-  val joinContentLines: Boolean
+  open val joinContentLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinContentLines
-  val spaceBeforeEmptyCloseTag: Boolean
+  open val spaceBeforeEmptyCloseTag: Boolean
     get() = com.itsaky.androidide.preferences.internal.spaceBeforeEmptyCloseTag
-  val preserveEmptyContent: Boolean
+  open val preserveEmptyContent: Boolean
     get() = com.itsaky.androidide.preferences.internal.preserveEmptyContent
-  val preserveAttributeLineBreaks: Boolean
+  open val preserveAttributeLineBreaks: Boolean
     get() = com.itsaky.androidide.preferences.internal.preserveAttributeLineBreaks
-  val closingBracketNewLine: Boolean
+  open val closingBracketNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.closingBracketNewLine
-  val trimTrailingWhitespace: Boolean
+  open val trimTrailingWhitespace: Boolean
     get() = com.itsaky.androidide.preferences.internal.trimTrailingWhitespace
 
-  val maxLineWidth: Int
+  open val maxLineWidth: Int
     get() = com.itsaky.androidide.preferences.internal.maxLineWidth
-  val preservedNewLines: Int
+  open val preservedNewLines: Int
     get() = com.itsaky.androidide.preferences.internal.preservedNewLines
-  val splitAttributesIndentSize: Int
+  open val splitAttributesIndentSize: Int
     get() = com.itsaky.androidide.preferences.internal.splitAttributesIndentSize
 
-  val emptyElementsBehavior: EmptyElements
+  open val emptyElementsBehavior: EmptyElements
     get() = EmptyElements.valueOf(com.itsaky.androidide.preferences.internal.emptyElementsBehavior)
 
   private val preserveSpace =

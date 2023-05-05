@@ -19,10 +19,12 @@ package com.itsaky.androidide.templates
 
 import androidx.annotation.StringRes
 
-enum class ParameterConstraint { /**
- * Value must be unique.
- */
-UNIQUE,
+enum class ParameterConstraint {
+
+  /**
+   * Value must be unique.
+   */
+  UNIQUE,
 
   /**
    * Value must be a valid Java package name.
@@ -40,6 +42,11 @@ UNIQUE,
   CLASS_NAME,
 
   /**
+   * Value must be a valid Gradle module name.
+   */
+  MODULE_NAME,
+
+  /**
    * Value must not be empty or blank.
    */
   NONEMPTY,
@@ -47,12 +54,29 @@ UNIQUE,
   /**
    * Value must be a valid layout file name.
    */
-  LAYOUT
+  LAYOUT,
+
+  /**
+   * Value must path to a file.
+   */
+  FILE,
+
+  /**
+   * Value must path to a directory.
+   */
+  DIRECTORY,
+
+  /**
+   * Used with [FILE] and [DIRECTORY]. Asserts that the file/directory at the given path exists.
+   */
+  EXISTS
 }
+
+typealias ValueSuggestion<T> = Parameter<T>.() -> T?
 
 abstract class Parameter<T>(@StringRes val name: Int, @StringRes val description: Int?,
                             val default: T, var constraints: List<ParameterConstraint>,
-                            var suggest: () -> T?
+                            var suggest: ValueSuggestion<T>
 ) {
 
   var value: T? = null
@@ -70,7 +94,7 @@ abstract class ParameterBuilder<T>() {
 
   var constraints: List<ParameterConstraint> = emptyList()
 
-  var suggest: () -> T? = { null }
+  var suggest: ValueSuggestion<T> = { null }
 
   protected open fun validate() {
     checkNotNull(name) { "Parameter must have a name" }
@@ -81,7 +105,7 @@ abstract class ParameterBuilder<T>() {
 }
 
 class StringParameter(@StringRes name: Int, @StringRes description: Int?, default: String,
-                      constraints: List<ParameterConstraint>, suggest: () -> String?
+                      constraints: List<ParameterConstraint>, suggest: ValueSuggestion<String>
 ) : Parameter<String>(name, description, default, constraints, suggest)
 
 class StringParameterBuilder : ParameterBuilder<String>() {
@@ -92,13 +116,24 @@ class StringParameterBuilder : ParameterBuilder<String>() {
 }
 
 class BooleanParameter(@StringRes name: Int, @StringRes description: Int?, default: Boolean,
-                       constraints: List<ParameterConstraint>, suggest: () -> Boolean?
+                       constraints: List<ParameterConstraint>, suggest: ValueSuggestion<Boolean>
 ) : Parameter<Boolean>(name, description, default, constraints, suggest)
 
 class BooleanParameterBuilder : ParameterBuilder<Boolean>() {
 
   override fun build(): BooleanParameter {
     return BooleanParameter(name!!, description, default!!, constraints, suggest)
+  }
+}
+
+class EnumParameter<T : Enum<*>>(@StringRes name: Int, @StringRes description: Int?, default: T,
+                                 constraints: List<ParameterConstraint>, suggest: ValueSuggestion<T>
+) : Parameter<T>(name, description, default, constraints, suggest)
+
+class EnumParameterBuilder<T : Enum<*>> : ParameterBuilder<T>() {
+
+  override fun build(): EnumParameter<T> {
+    return EnumParameter(name!!, description, default!!, constraints, suggest)
   }
 }
 
@@ -113,3 +148,6 @@ fun stringParameter(block: StringParameterBuilder.() -> Unit
  */
 fun booleanParameter(block: BooleanParameterBuilder.() -> Unit
 ): BooleanParameter = BooleanParameterBuilder().apply(block).build()
+
+fun <T : Enum<*>> enumParameter(block: EnumParameterBuilder<T>.() -> Unit): EnumParameter<T> =
+  EnumParameterBuilder<T>().apply(block).build()

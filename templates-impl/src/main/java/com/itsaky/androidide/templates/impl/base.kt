@@ -15,11 +15,4 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
-
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
-
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+package com.itsaky.androidide.templates.impl

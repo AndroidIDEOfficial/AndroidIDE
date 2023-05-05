@@ -551,5 +551,7 @@
 
   <string name="permlab_bind_logger_service">bind to log service</string>
   <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
 
 </resources>

@@ -15,11 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+package com.itsaky.androidide.templates.base.modules.android
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import java.io.File
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+/**
+ * Model for activities declared in [AndroidManifestBuilder].
+ *
+ * @author Akash Yadav
+ */
+data class ManifestActivity(val name: String, val exported: Boolean, val isLauncher: Boolean = false
+)
+
+/**
+ * Model for icon values in [AndroidManifestBuilder].
+ *
+ * @author Akash Yadav
+ */
+data class ManifestIcon(val name: String, val type: String) {
+  fun value(): String = "@${type}/${name}"
+}

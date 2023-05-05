@@ -26,28 +26,33 @@ package com.itsaky.androidide.lsp.xml.utils;
  *
  * <p>Contributors: Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
  */
+
 import static org.eclipse.lemminx.utils.StringUtils.normalizeSpace;
 
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
-
 import org.eclipse.lemminx.dom.DOMAttr;
 import org.eclipse.lemminx.dom.DOMComment;
 import org.eclipse.lemminx.dom.DTDDeclNode;
 
-import java.util.logging.Logger;
-
-/** XML content builder utilities. */
+/**
+ * XML content builder utilities.
+ */
 public class XMLBuilder {
 
-  private final XMLServerSettings sharedSettings = XMLServerSettings.INSTANCE;
+  private final XMLServerSettings sharedSettings;
   private final String lineDelimiter;
   private final StringBuilder xml;
   private final String whitespacesIndent;
-  
+
   public XMLBuilder(String whitespacesIndent, String lineDelimiter) {
+    this(whitespacesIndent, lineDelimiter, XMLServerSettings.INSTANCE);
+  }
+
+  public XMLBuilder(String whitespacesIndent, String lineDelimiter, XMLServerSettings settings) {
     this.whitespacesIndent = whitespacesIndent;
     this.lineDelimiter = lineDelimiter;
+    this.sharedSettings = settings;
     this.xml = new StringBuilder();
   }
 
@@ -117,10 +122,11 @@ public class XMLBuilder {
     return addSingleAttribute(attr, false, true);
   }
 
-  public XMLBuilder addSingleAttribute(
-      DOMAttr attr, boolean surroundWithQuotes, boolean prependSpace) {
-    return addSingleAttribute(
-        attr.getName(), attr.getOriginalValue(), surroundWithQuotes, prependSpace);
+  public XMLBuilder addSingleAttribute(DOMAttr attr, boolean surroundWithQuotes,
+                                       boolean prependSpace
+  ) {
+    return addSingleAttribute(attr.getName(), attr.getOriginalValue(), surroundWithQuotes,
+      prependSpace);
   }
 
   public XMLBuilder addSingleAttribute(String name, String value, boolean surroundWithQuotes) {
@@ -132,13 +138,14 @@ public class XMLBuilder {
    *
    * <p>It will not perform any linefeeds and only basic indentation.
    *
-   * @param name attribute name
-   * @param value attribute value
+   * @param name               attribute name
+   * @param value              attribute value
    * @param surroundWithQuotes true if quotes should be added around originalValue
    * @return this XML Builder
    */
-  private XMLBuilder addSingleAttribute(
-      String name, String value, boolean surroundWithQuotes, boolean prependSpace) {
+  private XMLBuilder addSingleAttribute(String name, String value, boolean surroundWithQuotes,
+                                        boolean prependSpace
+  ) {
     if (prependSpace) {
       appendSpace();
     }
@@ -194,8 +201,8 @@ public class XMLBuilder {
       appendSpace();
     }
 
-    addAttributeContents(
-        attr.getName(), attr.hasDelimiter(), attr.getOriginalValue(), surroundWithQuotes);
+    addAttributeContents(attr.getName(), attr.hasDelimiter(), attr.getOriginalValue(),
+      surroundWithQuotes);
     return this;
   }
 
@@ -204,13 +211,14 @@ public class XMLBuilder {
    *
    * <p>Never puts quotes around unquoted values unless indicated to by 'surroundWithQuotes'
    *
-   * @param name name of the attribute
-   * @param equalsSign true if equals sign exists, false otherwise
-   * @param originalValue value of the attribute
+   * @param name               name of the attribute
+   * @param equalsSign         true if equals sign exists, false otherwise
+   * @param originalValue      value of the attribute
    * @param surroundWithQuotes true if quotes should be added around originalValue, false otherwise
    */
-  private void addAttributeContents(
-      String name, boolean equalsSign, String originalValue, boolean surroundWithQuotes) {
+  private void addAttributeContents(String name, boolean equalsSign, String originalValue,
+                                    boolean surroundWithQuotes
+  ) {
     if (name != null) {
       append(name);
     }
@@ -275,15 +283,16 @@ public class XMLBuilder {
    * Returns this XMLBuilder with <code>text</code> added depending on <code>isWhitespaceContent
    * </code>, <code>hasSiblings</code> and <code>delimiter</code>
    *
-   * @param text the proposed text to add
+   * @param text                the proposed text to add
    * @param isWhitespaceContent whether or not the text contains only whitespace content
-   * @param hasSiblings whether or not the corresponding text node has siblings
-   * @param delimiter line delimiter
+   * @param hasSiblings         whether or not the corresponding text node has siblings
+   * @param delimiter           line delimiter
    * @return this XMLBuilder with <code>text</code> added depending on <code>isWhitespaceContent
-   *     </code>, <code>hasSiblings</code> and <code>delimiter</code>
+   * </code>, <code>hasSiblings</code> and <code>delimiter</code>
    */
-  public XMLBuilder addContent(
-      String text, boolean isWhitespaceContent, boolean hasSiblings, String delimiter) {
+  public XMLBuilder addContent(String text, boolean isWhitespaceContent, boolean hasSiblings,
+                               String delimiter
+  ) {
     if (!isWhitespaceContent) {
       if (isJoinContentLines()) {
         text = StringUtils.normalizeSpace(text);
@@ -299,12 +308,10 @@ public class XMLBuilder {
     } else if (hasSiblings) {
       int preservedNewLines = getPreservedNewlines();
       if (preservedNewLines > 0) {
-        int newLineCount =
-            StringUtils.getNumberOfNewLines(
-                text, isWhitespaceContent, delimiter, preservedNewLines);
-        for (int i = 0;
-            i < newLineCount - 1;
-            i++) { // - 1 because the node after will insert a delimiter
+        int newLineCount = StringUtils.getNumberOfNewLines(text, isWhitespaceContent, delimiter,
+          preservedNewLines);
+        for (int i = 0; i < newLineCount - 1;
+          i++) { // - 1 because the node after will insert a delimiter
           append(delimiter);
         }
       }
@@ -347,7 +354,9 @@ public class XMLBuilder {
     return xml.toString();
   }
 
-  /** Trims the trailing newlines for the current XML StringBuilder */
+  /**
+   * Trims the trailing newlines for the current XML StringBuilder
+   */
   public void trimFinalNewlines() {
     int i = xml.length() - 1;
     while (i >= 0 && (xml.charAt(i) == '\r' || xml.charAt(i) == '\n')) {

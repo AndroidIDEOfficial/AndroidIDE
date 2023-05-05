@@ -15,11 +15,37 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+package com.itsaky.androidide.templates
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+import java.io.File
+import java.io.InputStream
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+/**
+ * [RecipeExecutor] implementation for tests.
+ *
+ * @author Akash Yadav
+ */
+class TestRecipeExecutor : RecipeExecutor {
+
+  private val assets by lazy {
+    File("./src/main/assets")
+  }
+
+  override fun copy(source: File, dest: File) {
+    source.copyTo(dest)
+  }
+
+  override fun save(source: String, dest: File) {
+    dest.writeText(source)
+  }
+
+  override fun openAsset(path: String): InputStream {
+    return File(this.assets, path).inputStream().buffered()
+  }
+
+  override fun copyAsset(path: String, dest: File) {
+    openAsset(path).use {
+      it.copyTo(dest.outputStream())
+    }
+  }
+}

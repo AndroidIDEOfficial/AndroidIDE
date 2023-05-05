@@ -15,11 +15,25 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences.internal
+package com.itsaky.androidide.templates
 
-import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.managers.PreferenceManager
+import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.templates.base.moduleNameToDirName
+import org.junit.Test
 
-/** @author Akash Yadav */
-val prefManager: PreferenceManager
-  get() = BaseApplication.getBaseInstance().prefManager
+/**
+ * @author Akash Yadav
+ */
+class UtilTest {
+
+  @Test
+  fun `test module name conversion`() {
+    val tests = mapOf("2app" to "app", "app2" to "app2", "2app2" to "app2", "2 app2" to "app2",
+      "app name" to "app-name", "app  name" to "app-name", "app-name" to "app-name",
+      "app--name" to "app-name")
+
+    tests.forEach { (input, expected) ->
+      assertThat(moduleNameToDirName(input)).isEqualTo(expected)
+    }
+  }
+}
