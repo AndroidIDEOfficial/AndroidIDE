@@ -23,10 +23,6 @@ import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.buildGradleFile
 import java.io.File
 
-fun ProjectTemplateBuilder.buildGradleFile(): File {
-  return data.buildGradleFile()
-}
-
 fun ProjectTemplateBuilder.buildGradleSrc(): String {
   return if (data.useKts) buildGradleSrcKts() else buildGradleSrcGroovy()
 }

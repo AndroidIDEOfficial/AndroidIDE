@@ -17,23 +17,9 @@
 
 package com.itsaky.androidide.templates.base.modules
 
-import com.itsaky.androidide.templates.ModuleType
-import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.buildGradleFile
-import com.itsaky.androidide.templates.base.root.buildGradleFile
-import com.itsaky.androidide.templates.base.root.buildGradleSrc
 import java.io.File
-
-/**
- * Writes the `build.gradle[.kts]` file in the module root directory.
- *
- * @param data The projecte template data.
- */
-fun ProjectTemplateBuilder.buildGradle() {
-  executor.save(buildGradleSrc(), buildGradleFile())
-}
 
 internal fun ModuleTemplateBuilder.buildGradleFile(): File {
   return data.buildGradleFile()

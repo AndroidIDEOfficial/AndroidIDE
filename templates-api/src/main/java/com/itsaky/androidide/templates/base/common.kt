@@ -27,11 +27,13 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
 /**
  * Get the asset path for base root project template.
  */
+@Suppress("UnusedReceiverParameter")
 internal fun ProjectTemplateBuilder.baseAsset(path: String) = baseAsset("root", path)
 
 /**
  * Get the asset path for base module project template.
  */
+@Suppress("UnusedReceiverParameter")
 internal fun ModuleTemplateBuilder.baseAsset(path: String) = baseAsset("module", path)
 
 /**
@@ -39,10 +41,6 @@ internal fun ModuleTemplateBuilder.baseAsset(path: String) = baseAsset("module",
  */
 internal fun baseAsset(type: String, path: String): String {
   return "templates/base/${type}/${path}"
-}
-
-internal fun BaseTemplateData.buildGradleFile(): File {
-  return File(projectDir, optonallyKts("build.gradle"))
 }
 
 internal fun BaseTemplateData.optonallyKts(file: String): String {

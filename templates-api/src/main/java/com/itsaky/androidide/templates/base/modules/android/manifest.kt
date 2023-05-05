@@ -22,8 +22,7 @@ package com.itsaky.androidide.templates.base.modules.android
  *
  * @author Akash Yadav
  */
-data class ManifestActivity(val name: String, val isExported: Boolean, val isLauncher: Boolean = false
-)
+data class ManifestActivity(val name: String, val isExported: Boolean, val isLauncher: Boolean = false)
 
 /**
  * Model for icon values in [AndroidManifestBuilder].

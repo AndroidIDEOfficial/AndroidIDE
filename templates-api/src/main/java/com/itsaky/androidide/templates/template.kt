@@ -19,6 +19,7 @@ package com.itsaky.androidide.templates
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.itsaky.androidide.templates.base.optonallyKts
 import java.io.File
 
 /**
@@ -36,7 +37,15 @@ sealed class TemplateData
  */
 abstract class BaseTemplateData(val name: String, val projectDir: File, val language: Language,
                                 val useKts: Boolean
-) : TemplateData()
+) : TemplateData() {
+
+  /**
+   * Get the `build.gradle[.kts]` file for the project.
+   */
+  fun buildGradleFile(): File {
+    return File(projectDir, optonallyKts("build.gradle"))
+  }
+}
 
 /**
  * Recipe for creating the project/module.
@@ -60,6 +69,29 @@ enum class ModuleType(val typeName: String) {
 
   AndroidApp("Android zzApplication"), AndroidLibrary("Android Library"), JavaLibrary(
     "Java library")
+}
+
+/**
+ * Type of source folder that can be in a module.
+ *
+ * @property folder The name of the folder.
+ */
+enum class SrcFolder(val folder: String) {
+
+  /**
+   * `src/main`.
+   */
+  Main("main"),
+
+  /**
+   * `src/test`.
+   */
+  Test("test"),
+
+  /**
+   * `src/androidTest`.
+   */
+  AndroidTest("androidTest")
 }
 
 /**
@@ -119,7 +151,15 @@ class ProjectTemplateData(name: String, projectDir: File, val version: ProjectVe
 class ModuleTemplateData(name: String, val packageName: String, projectDir: File,
                          val type: ModuleType, language: Language, useKts: Boolean = true,
                          minSdk: Sdk, val versions: ModuleVersionData = ModuleVersionData(minSdk)
-) : BaseTemplateData(name, projectDir, language, useKts)
+) : BaseTemplateData(name, projectDir, language, useKts) {
+
+  private val srcDirs = mutableMapOf<SrcFolder, File>()
+
+  fun srcFolder(type: SrcFolder): File {
+    return srcDirs.computeIfAbsent(type) { File(projectDir, "src/${it.folder}") }
+      .also { it.mkdirs() }
+  }
+}
 
 /**
  * Model for a template.

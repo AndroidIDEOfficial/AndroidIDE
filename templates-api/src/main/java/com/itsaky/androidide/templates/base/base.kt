@@ -36,15 +36,16 @@ import com.itsaky.androidide.templates.R
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
+import com.itsaky.androidide.templates.SrcFolder
 import com.itsaky.androidide.templates.Template
 import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateData
 import com.itsaky.androidide.templates.TemplateRecipe
 import com.itsaky.androidide.templates.TextFieldWidget
-import com.itsaky.androidide.templates.base.root.buildGradle
-import com.itsaky.androidide.templates.base.root.gradleProps
+import com.itsaky.androidide.templates.base.root.buildGradleSrc
 import com.itsaky.androidide.templates.base.root.gradleWrapper
-import com.itsaky.androidide.templates.base.root.settingsGradle
+import com.itsaky.androidide.templates.base.root.settingsGradleFile
+import com.itsaky.androidide.templates.base.root.settingsGradleSrc
 import com.itsaky.androidide.templates.enumParameter
 import com.itsaky.androidide.templates.stringParameter
 import com.itsaky.androidide.utils.AndroidUtils
@@ -104,6 +105,36 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
   }
 
   /**
+   * Writes the `settings.gradle[.kts]` file in the project root directory.
+   */
+  fun settingsGradle() {
+    executor.save(settingsGradleSrc(), settingsGradleFile())
+  }
+
+  /**
+   * Writes the `build.gradle[.kts]` file in the project root directory.
+   */
+  fun buildGradle() {
+    executor.save(buildGradleSrc(), buildGradleFile())
+  }
+
+  /**
+   * Get the `build.gradle[.kts] file for the project.l
+   */
+  fun buildGradleFile(): File {
+    return data.buildGradleFile()
+  }
+
+  /**
+   * Writes the `gradle.properties` file in the root project.
+   */
+  fun gradleProps() {
+    val name = "gradle.properties"
+    val gradleProps = File(data.projectDir, name)
+    executor.copyAsset(baseAsset(name), gradleProps)
+  }
+
+  /**
    * Configure the default template for the project.
    *
    * @param name The name of the module (gradle format, e.g. ':app').
@@ -152,6 +183,16 @@ abstract class ModuleTemplateBuilder :
   protected open fun RecipeExecutor.postConfig() {}
 
   /**
+   * Creates the source directory for the given [type].
+   *
+   * @param type The type of the source directory.
+   * @param block Function to configure the source folder.
+   */
+  fun srcFolder(type: SrcFolder, block: (File) -> Unit = {}) {
+    data.srcFolder(type).apply(block)
+  }
+
+  /**
    * Common pre-recipe configuration.
    *
    * @param moduleData  Called after the base configuration is setup and before the [recipe] is executed. Caller can perform its own
@@ -167,6 +208,9 @@ abstract class ModuleTemplateBuilder :
     this@ModuleTemplateBuilder._executor = this
 
     data.projectDir.mkdirs()
+
+    // Create the main source directory
+    srcFolder(SrcFolder.Main)
 
     preConfig()
     extraConfig()
