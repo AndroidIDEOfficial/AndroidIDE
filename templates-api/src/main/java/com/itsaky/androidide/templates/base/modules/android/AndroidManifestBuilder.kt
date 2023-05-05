@@ -149,8 +149,10 @@ class AndroidManifestBuilder {
     for (activity in activities) {
       startTag(TAG_ACTIVITY)
       androidAttr("name", activity.name(packageName))
-      if (activity.isLauncher) {
+      if (activity.isLauncher || activity.isExported) {
         androidAttr("exported", "true")
+      }
+      if (activity.isLauncher) {
         intentFilter()
       }
       endTag(TAG_ACTIVITY)

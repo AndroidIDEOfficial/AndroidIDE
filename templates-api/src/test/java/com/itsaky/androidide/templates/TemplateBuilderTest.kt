@@ -18,6 +18,7 @@
 package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.xml.permissions.Permission
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,7 +84,11 @@ class TemplateBuilderTest {
   fun `test project with module`() {
     val template = testTemplate {
       defaultModule {
-        manifestBuilder.addPermission(Permission.INTERNET)
+        manifest {
+          addPermission(Permission.INTERNET)
+
+          addActivity(ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
+        }
       }
     }
 

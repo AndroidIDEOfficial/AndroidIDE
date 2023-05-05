@@ -17,15 +17,12 @@
 
 package com.itsaky.androidide.templates.base.modules.android
 
-import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
-import java.io.File
-
 /**
  * Model for activities declared in [AndroidManifestBuilder].
  *
  * @author Akash Yadav
  */
-data class ManifestActivity(val name: String, val exported: Boolean, val isLauncher: Boolean = false
+data class ManifestActivity(val name: String, val isExported: Boolean, val isLauncher: Boolean = false
 )
 
 /**
@@ -34,5 +31,6 @@ data class ManifestActivity(val name: String, val exported: Boolean, val isLaunc
  * @author Akash Yadav
  */
 data class ManifestIcon(val name: String, val type: String) {
+
   fun value(): String = "@${type}/${name}"
 }

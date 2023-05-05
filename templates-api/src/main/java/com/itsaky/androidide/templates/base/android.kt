@@ -36,6 +36,13 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
     return File(data.projectDir, "src/main/$ANDROID_MANIFEST_XML").also { it.parentFile!!.mkdirs() }
   }
 
+  /**
+   * Configure the properties for `AndroidManifest.xml` file.
+   */
+  fun manifest(block: AndroidManifestBuilder.() -> Unit) {
+    manifestBuilder.apply(block)
+  }
+
   override fun RecipeExecutor.preConfig() {
     manifestBuilder.apply {
       packageName = data.packageName
