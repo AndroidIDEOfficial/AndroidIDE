@@ -467,4 +467,6 @@
   <string name="title_class_chooser">أي %1$s؟</string>
   <string name="permlab_bind_logger_service">ربط بخدمة التسجيل</string>
   <string name="permdesc_bind_logger_service">السماح لهذا التطبيق بربطه مع خدمة تسجيل اللوغ لـ AndroidIDE. هذا الامر مطلوب لـ AndroidIDE لقراءة السجلات (اللوغ) لهذا التطبيق.</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
 </resources>
