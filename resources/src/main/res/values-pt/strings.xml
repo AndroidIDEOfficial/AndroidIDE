@@ -467,4 +467,6 @@
   <string name="title_class_chooser">Qual %1$s?</string>
   <string name="permlab_bind_logger_service">vincular ao serviço de log</string>
   <string name="permdesc_bind_logger_service">Permite que este aplicativo vincule ao serviço de log do AndroidIDE. Esta permissão é necessária para o AndroidIDE ler os logs deste aplicativo.</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
 </resources>
