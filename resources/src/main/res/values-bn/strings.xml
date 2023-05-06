@@ -467,4 +467,6 @@
   <string name="title_class_chooser">কোন %1$sটি?</string>
   <string name="permlab_bind_logger_service">লগ সার্ভিসে আবদ্ধ করুন</string>
   <string name="permdesc_bind_logger_service">এই অ্যাপ্লিকেশানটিকে AndroidIDE-এর লগিং পরিষেবার সাথে আবদ্ধ হওয়ার অনুমতি দেয়৷ এই অ্যাপ্লিকেশনটির লগ পড়ার জন্য AndroidIDE-এর এই অনুমতি প্রয়োজন৷</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
 </resources>
