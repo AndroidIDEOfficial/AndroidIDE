@@ -467,6 +467,6 @@
   <string name="title_class_chooser">%1$s yang mana?</string>
   <string name="permlab_bind_logger_service">ikat ke layanan log</string>
   <string name="permdesc_bind_logger_service">Mengizinkan aplikasi ini mengikat ke layanan logging AndroidIDE. Izin ini diperlukan untuk AndroidIDE untuk membaca log aplikasi ini.</string>
-  <string name="wizard_module_name">Module name</string>
-  <string name="wizard_module_type">Module type</string>
+  <string name="wizard_module_name">Nama modul</string>
+  <string name="wizard_module_type">Jenis modul</string>
 </resources>
