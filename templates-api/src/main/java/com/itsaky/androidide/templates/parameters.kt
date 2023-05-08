@@ -127,13 +127,17 @@ class BooleanParameterBuilder : ParameterBuilder<Boolean>() {
 }
 
 class EnumParameter<T : Enum<*>>(@StringRes name: Int, @StringRes description: Int?, default: T,
-                                 constraints: List<ParameterConstraint>, suggest: ValueSuggestion<T>
+                                 constraints: List<ParameterConstraint>,
+                                 suggest: ValueSuggestion<T>, val displayName: ((T) -> String)? = null
 ) : Parameter<T>(name, description, default, constraints, suggest)
 
 class EnumParameterBuilder<T : Enum<*>> : ParameterBuilder<T>() {
 
+  var displayName: ((T) -> String)? = null
+
   override fun build(): EnumParameter<T> {
-    return EnumParameter(name!!, description, default!!, constraints, suggest)
+    return EnumParameter(name = name!!, description = description, default = default!!,
+      constraints = constraints, suggest = suggest, displayName = displayName)
   }
 }
 

@@ -28,6 +28,12 @@ import java.io.File
 sealed class TemplateData
 
 /**
+ * Recipe for creating the project/module.
+ */
+typealias TemplateRecipe = RecipeExecutor.() -> Unit
+
+
+/**
  * Base class for [TemplateData] implementations.
  *
  * @property name The name of the module.
@@ -48,16 +54,11 @@ abstract class BaseTemplateData(val name: String, val projectDir: File, val lang
 }
 
 /**
- * Recipe for creating the project/module.
- */
-typealias TemplateRecipe = RecipeExecutor.() -> Unit
-
-/**
  * Language for source files.
  */
 enum class Language(val lang: String, val ext: String) {
 
-  Java("Java", "java"), Kotlin("Kotlin", "kt")
+  Java("Java", "java"), Kotlin("Kotlin", "kt");
 }
 
 /**
@@ -67,7 +68,7 @@ enum class Language(val lang: String, val ext: String) {
  */
 enum class ModuleType(val typeName: String) {
 
-  AndroidApp("Android zzApplication"), AndroidLibrary("Android Library"), JavaLibrary(
+  AndroidApp("Android Application"), AndroidLibrary("Android Library"), JavaLibrary(
     "Java library")
 }
 

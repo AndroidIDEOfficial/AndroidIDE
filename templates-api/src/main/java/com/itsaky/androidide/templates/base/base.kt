@@ -85,11 +85,13 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
     val language = enumParameter<Language> {
       name = R.string.wizard_language
       default = Java
+      displayName = Language::lang
     }
 
     val minSdk = enumParameter<Sdk> {
       name = R.string.minimum_sdk
       default = Sdk.Lollipop
+      displayName = Sdk::displayName
     }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
@@ -157,16 +159,19 @@ fun baseAndroidModule(block: AndroidModuleTemplateConfigurator): ModuleTemplate 
     val minSdk = enumParameter<Sdk> {
       name = R.string.minimum_sdk
       default = Sdk.Lollipop
+      displayName = Sdk::displayName
     }
 
     val type = enumParameter<ModuleType> {
       name = R.string.wizard_module_type
       default = AndroidLibrary
+      displayName = ModuleType::typeName
     }
 
     val language = enumParameter<Language> {
       name = R.string.wizard_language
       default = Java
+      displayName = Language::lang
     }
 
     widgets(TextFieldWidget(moduleName), TextFieldWidget(packageName), SpinnerWidget(minSdk),

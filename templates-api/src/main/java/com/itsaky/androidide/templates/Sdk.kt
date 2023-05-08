@@ -41,5 +41,12 @@ enum class Sdk(val codename: String, val version: String, val api: Int) {
   SnowCone("SnowCone", "12", 31),
   SnowCodeV2("SnowCone", "12L", 32),
   Tiramisu("Tiramisu", "13", 33),
-  UpsideDownCake("UpsideDownCake", "14", 34),
+  UpsideDownCake("UpsideDownCake", "14", 34);
+
+  /**
+   * Get the display name for this Sdk version.
+   *
+   * @return The display name.
+   */
+  fun displayName() : String = "API ${api}: Android $version (${codename})"
 }
