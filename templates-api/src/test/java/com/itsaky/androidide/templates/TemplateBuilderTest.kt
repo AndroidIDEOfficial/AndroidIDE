@@ -109,7 +109,7 @@ class TemplateBuilderTest {
           }
         }
 
-        addDependency()
+        addDependency("androidx.appcompat", "appcompat", "1.5.0")
       }
     }
 

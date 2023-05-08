@@ -24,6 +24,7 @@ import com.android.SdkConstants.TAG_ACTIVITY
 import com.android.SdkConstants.TAG_APPLICATION
 import com.android.SdkConstants.TAG_CATEGORY
 import com.android.SdkConstants.TAG_INTENT_FILTER
+import com.android.SdkConstants.TAG_MANIFEST
 import com.android.SdkConstants.TAG_USES_PERMISSION
 import com.android.SdkConstants.XMLNS
 import com.itsaky.androidide.templates.RecipeExecutor
@@ -107,25 +108,24 @@ class AndroidManifestBuilder {
   }
 
   private fun XMLBuilder.buildManifest() {
-    startTag("manifest")
-    attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
+    createElement(TAG_MANIFEST) {
+      attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
 
-    if (!isLibrary) {
-      attr("package",
-        checkNotNull(packageName) { "Package name not specified for application module" })
+      if (!isLibrary) {
+        attr("package",
+          checkNotNull(packageName) { "Package name not specified for application module" })
+      }
+
+      permissions()
+      application()
     }
-
-    permissions()
-    application()
-
-    endTag("manifest")
   }
 
   private fun XMLBuilder.permissions() {
     for (permission in permissions) {
-      startTag(TAG_USES_PERMISSION)
-      androidAttr("name", permission.constant)
-      endTag(TAG_USES_PERMISSION)
+      createElement(TAG_USES_PERMISSION) {
+        androidAttr("name", permission.constant)
+      }
     }
   }
 
@@ -134,47 +134,44 @@ class AndroidManifestBuilder {
       return
     }
 
-    startTag(TAG_APPLICATION)
-    androidAttr("allowBackup", "true")
-    androidAttr("icon", icon.value())
-    androidAttr("roundIcon", (roundIcon ?: icon).value())
-    androidAttr("label", appLabelRes)
-    androidAttr("supportsRtl", rtl.toString())
-    androidAttr("theme", "@style/${themeRes}")
+    createElement(TAG_APPLICATION) {
+      androidAttr("allowBackup", "true")
+      androidAttr("icon", icon.value())
+      androidAttr("roundIcon", (roundIcon ?: icon).value())
+      androidAttr("label", appLabelRes)
+      androidAttr("supportsRtl", rtl.toString())
+      androidAttr("theme", "@style/${themeRes}")
 
-    activities()
-
-    endTag(TAG_APPLICATION)
+      activities()
+    }
   }
 
   private fun XMLBuilder.activities() {
     for (activity in activities) {
-      startTag(TAG_ACTIVITY)
-      androidAttr("name", activity.name(packageName))
-      if (activity.isLauncher || activity.isExported) {
-        androidAttr("exported", "true")
+      createElement(TAG_ACTIVITY) {
+        androidAttr("name", activity.name(packageName))
+        if (activity.isLauncher || activity.isExported) {
+          androidAttr("exported", "true")
+        }
+        if (activity.isLauncher) {
+          intentFilter()
+        }
       }
-      if (activity.isLauncher) {
-        intentFilter()
-      }
-      endTag(TAG_ACTIVITY)
     }
   }
 
   private fun XMLBuilder.intentFilter() {
-    startTag(TAG_INTENT_FILTER)
+    createElement(TAG_INTENT_FILTER) {
+      // action
+      createElement(TAG_ACTION) {
+        androidAttr("name", "android.intent.action.MAIN")
+      }
 
-    // action
-    startTag(TAG_ACTION)
-    androidAttr("name", "android.intent.action.MAIN")
-    endTag(TAG_ACTION)
-
-    // category
-    startTag(TAG_CATEGORY)
-    androidAttr("name", "android.intent.category.LAUNCHER")
-    endTag(TAG_CATEGORY)
-
-    endTag(TAG_INTENT_FILTER)
+      // category
+      createElement(TAG_CATEGORY) {
+        androidAttr("name", "android.intent.category.LAUNCHER")
+      }
+    }
   }
 
   private fun XMLBuilder.androidAttr(name: String, value: String) {

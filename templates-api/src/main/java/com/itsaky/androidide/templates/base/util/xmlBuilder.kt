@@ -19,6 +19,13 @@ package com.itsaky.androidide.templates.base.util
 
 import com.android.xml.XmlBuilder
 
-fun XmlBuilder.startElement(name: String) {
-
+/**
+ * Creates a new element in the [XmlBuilder] with the given [name].
+ * The [configure] function is used to configure everything inside the element and then
+ * the element is automatically closed.
+ */
+fun XmlBuilder.createElement(name: String, configure: XmlBuilder.() -> Unit) {
+  startTag(name)
+  apply(configure)
+  endTag(name)
 }
