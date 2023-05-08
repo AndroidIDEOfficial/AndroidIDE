@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.templates.FileTemplate
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.Language.Java
 import com.itsaky.androidide.templates.ModuleTemplate
@@ -36,8 +37,6 @@ import com.itsaky.androidide.templates.R
 import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.TextFieldWidget
-import com.itsaky.androidide.templates.base.util.AndroidModuleTemplateConfigurator
-import com.itsaky.androidide.templates.base.util.ProjectTemplateConfigurator
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
 import com.itsaky.androidide.templates.enumParameter
 import com.itsaky.androidide.templates.stringParameter
@@ -45,6 +44,10 @@ import com.itsaky.androidide.utils.AndroidUtils
 import com.itsaky.androidide.utils.Environment
 import java.io.File
 
+typealias ProjectTemplateConfigurator = ProjectTemplateBuilder.() -> Unit
+typealias ModuleTemplateConfigurator = ModuleTemplateBuilder.() -> Unit
+typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
+typealias FileTemplateConfigurator = FileTemplateBuilder.() -> Unit
 
 /**
  * Setup base files for project templates.
@@ -186,4 +189,15 @@ fun baseAndroidModule(block: AndroidModuleTemplateConfigurator): ModuleTemplate 
 
     block()
   }.build()
+}
+
+/**
+ * Creates a template for a file.
+ *
+ * @param dir The directory in which the file will be created.
+ * @param configurator The configurator to configure the template.
+ * @return The [FileTemplate].
+ */
+fun baseFile(dir: File, configurator: FileTemplateConfigurator): FileTemplate {
+  return FileTemplateBuilder(dir).apply(configurator).build()
 }

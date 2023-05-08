@@ -68,8 +68,7 @@ enum class Language(val lang: String, val ext: String) {
  */
 enum class ModuleType(val typeName: String) {
 
-  AndroidApp("Android Application"), AndroidLibrary("Android Library"), JavaLibrary(
-    "Java library")
+  AndroidApp("Android Application"), AndroidLibrary("Android Library"), JavaLibrary("Java library")
 }
 
 /**
@@ -208,6 +207,13 @@ open class ProjectTemplate(val moduleTemplates: List<Template>, @StringRes templ
 open class ModuleTemplate(val name: String, @StringRes templateName: Int, @DrawableRes thumb: Int,
                           widgets: List<Widget<*>>, recipe: TemplateRecipe
 ) : Template(templateName, thumb, widgets, recipe)
+
+/**
+ * Template for creating a file.
+ */
+open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int, widgets: List<Widget<*>>,
+                        recipe: TemplateRecipe
+) : Template(name, thumb, widgets, recipe)
 
 /**
  * Base class for template builders.

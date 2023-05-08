@@ -24,10 +24,6 @@ import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import java.io.File
 
-typealias ProjectTemplateConfigurator = ProjectTemplateBuilder.() -> Unit
-typealias ModuleTemplateConfigurator = ModuleTemplateBuilder.() -> Unit
-typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
-
 /**
  * Get the asset path for base template.
  */
