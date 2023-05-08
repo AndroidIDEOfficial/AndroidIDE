@@ -444,9 +444,9 @@
   <string name="idepref_editor_colorScheme">配色方案</string>
   <string name="idepref_editor_colorScheme_summary">选择要在编辑器中使用的配色方案</string>
   <string name="idepref_general_uiMode">界面模式</string>
-  <string name="idepref_general_uiMode_summary">为 IDE 选择 UI 模式</string>
-  <string name="uiMode_light">明亮</string>
-  <string name="uiMode_dark">黑暗</string>
+  <string name="idepref_general_uiMode_summary">为应用选择界面模式</string>
+  <string name="uiMode_light">浅色</string>
+  <string name="uiMode_dark">深色</string>
   <string name="uiMode_system">跟随系统</string>
   <string name="idepref_general_materialYou_summary">享有跟您设备一致的体验（需要重启）。</string>
   <string name="idepref_general_projectConfig">项目配置</string>
