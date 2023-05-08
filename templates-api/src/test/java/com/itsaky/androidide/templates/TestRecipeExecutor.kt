@@ -36,6 +36,7 @@ class TestRecipeExecutor : RecipeExecutor {
   }
 
   override fun save(source: String, dest: File) {
+    dest.createNewFile()
     dest.writeText(source)
   }
 
