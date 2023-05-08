@@ -94,20 +94,22 @@ class TemplateBuilderTest {
           addPermission(Permission.INTERNET)
           addActivity(
             ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
+        }
 
-          java {
-            createClass("com.itsaky", "TestClass") {
-              createMethod("main") {
-                addModifiers(PUBLIC, STATIC)
-                returns(TypeName.VOID)
-                addParameter(
-                  ParameterSpec.builder(ArrayTypeName.get(java.lang.String::class.java), "args")
-                    .build())
-                addStatement("System.out.println(\"Hello world!\")")
-              }
+        java {
+          createClass("com.itsaky", "TestClass") {
+            createMethod("main") {
+              addModifiers(PUBLIC, STATIC)
+              returns(TypeName.VOID)
+              addParameter(
+                ParameterSpec.builder(ArrayTypeName.get(java.lang.String::class.java), "args")
+                  .build())
+              addStatement("System.out.println(\"Hello world!\")")
             }
           }
         }
+
+        addDependency()
       }
     }
 

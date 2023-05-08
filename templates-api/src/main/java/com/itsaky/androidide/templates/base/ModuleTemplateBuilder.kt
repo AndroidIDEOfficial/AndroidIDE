@@ -150,7 +150,20 @@ abstract class ModuleTemplateBuilder :
   }
 
   /**
+   * Add the dependency with the given maven coordinates to this module with the [DependencyConfiguration.Implementation] configuration.
+   *
+   * @param group The group ID of the dependency.
+   * @param artifact The artifact of the dependency.
+   * @param version The version of the dependency.
+   */
+  fun addDependency(group: String, artifact: String, version: String) {
+    addDependency(Dependency(DependencyConfiguration.Implementation, group, artifact, version))
+  }
+
+  /**
    * Adds the given dependency to the `build.gradle[.kts]` file for this module.
+   *
+   * @param dependency The dependency to add.
    */
   fun addDependency(dependency: Dependency) {
     this.dependencies.add(dependency)
