@@ -34,7 +34,7 @@ import java.io.File
 abstract class ModuleTemplateBuilder :
   ExecutorDataTemplateBuilder<ModuleTemplate, ModuleTemplateData>() {
 
-  protected val dependencies = hashSetOf<Dependency>()
+  internal val dependencies = hashSetOf<Dependency>()
   protected val javaSourceBuilder = JavaSourceBuilder()
   internal var _name: String? = null
 

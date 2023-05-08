@@ -17,11 +17,26 @@
 
 package com.itsaky.androidide.templates.base.modules
 
+import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.squareup.javapoet.FieldSpec
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import jdkx.lang.model.element.Modifier
+
+internal fun ModuleTemplateBuilder.dependencies(): String {
+  if (dependencies.isEmpty()) {
+    return ""
+  }
+
+  return StringBuilder().apply {
+    append("dependencies {")
+    for (dep in dependencies) {
+      append("    ${dep.configuration.configName}(\"${dep.group}:${dep.artifact}:${dep.version}\")")
+    }
+    append("}")
+  }.toString()
+}
 
 /**
  * Creates a new [FieldSpec] for a static constant and adds it to this [TypeSpec].

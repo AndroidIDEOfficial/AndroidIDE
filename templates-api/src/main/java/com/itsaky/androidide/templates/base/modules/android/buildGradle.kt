@@ -19,6 +19,7 @@ package com.itsaky.androidide.templates.base.modules.android
 
 import com.itsaky.androidide.templates.ModuleType
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.modules.dependencies
 
 private val AndroidModuleTemplateBuilder.androidPlugin: String
   get() {
@@ -65,9 +66,7 @@ plugins {
         }
     }
 
-    dependencies {
-        
-    }
+    ${dependencies()}
 
   """.trimIndent()
 }
