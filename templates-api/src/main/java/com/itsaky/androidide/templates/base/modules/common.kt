@@ -32,7 +32,7 @@ internal fun ModuleTemplateBuilder.dependencies(): String {
   return StringBuilder().apply {
     append("dependencies {")
     for (dep in dependencies) {
-      append("    ${dep.configuration.configName}(\"${dep.group}:${dep.artifact}:${dep.version}\")")
+      append("    ${dep.value()}")
     }
     append("}")
   }.toString()

@@ -23,8 +23,9 @@ import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateRecipe
+import com.itsaky.androidide.templates.base.models.Dependency
+import com.itsaky.androidide.templates.base.models.defaultDependency
 import com.itsaky.androidide.templates.base.util.JavaSourceBuilder
-import com.itsaky.androidide.templates.base.util.ModuleTemplateConfigurator
 import java.io.File
 
 /**

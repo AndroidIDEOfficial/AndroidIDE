@@ -15,25 +15,9 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.base
+package com.itsaky.androidide.templates.base.models
 
-import com.itsaky.androidide.templates.base.DependencyConfiguration.Implementation
-
-enum class DependencyConfiguration(val configName: String) { Api("api"), ApiOnly(
-  "apiOnly"),
-  Implementation("implementation"), Runtime("runtime"), RuntimeOnly("runtimeOnly")
-}
-
-class Dependency(val configuration: DependencyConfiguration, val group: String,
-                 val artifact: String, val version: String
-) {
-
-  fun value(): String {
-    return """
-      ${configuration.configName}("${group}:${artifact}:${version}")
-    """.trimIndent()
-  }
-}
+import com.itsaky.androidide.templates.base.models.DependencyConfiguration.Implementation
 
 fun defaultDependency(group: String, artifact: String, version: String): Dependency {
   return Dependency(Implementation, group, artifact, version)
