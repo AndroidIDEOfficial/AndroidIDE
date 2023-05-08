@@ -15,22 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package templates.base.module
+package com.itsaky.androidide.templates.base
 
-import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
-import java.io.File
-
-/**
- * @return The `proguard-rules.pro` file in the module directory.
- */
-fun ModuleTemplateBuilder.proguardRulesFile(): File {
-  return File(data.projectDir, "proguard-rules.pro")
-}
+import com.itsaky.androidide.templates.base.models.Dependency
 
 /**
- * Creates the `proguard-rules.pro` file in the module directory.
+ * Configures the template to use AndroidX and Material Design Components dependencies.
  */
-fun ModuleTemplateBuilder.proguardRules() {
-  val file = proguardRulesFile()
-  executor.copyAsset(baseAsset(file.name), file)
+fun AndroidModuleTemplateBuilder.baseAndroidXDependencies() {
+  addDependency(Dependency.AndroidX.AppCompat)
+  addDependency(Dependency.AndroidX.ConstraintLayout)
+  addDependency(Dependency.Google.Material)
 }

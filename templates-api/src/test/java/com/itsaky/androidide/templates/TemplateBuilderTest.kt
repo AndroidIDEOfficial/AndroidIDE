@@ -19,6 +19,7 @@ package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
+import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
 import com.itsaky.androidide.xml.permissions.Permission
@@ -91,7 +92,7 @@ class TemplateBuilderTest {
   @Test
   fun `test project with module`() {
     val template = testTemplate {
-      defaultModule {
+      defaultAppModule {
         manifest {
           addPermission(Permission.INTERNET)
           addActivity(

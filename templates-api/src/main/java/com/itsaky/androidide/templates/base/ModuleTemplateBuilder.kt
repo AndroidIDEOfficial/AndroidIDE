@@ -25,6 +25,7 @@ import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateRecipe
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.models.defaultDependency
+import com.itsaky.androidide.templates.base.modules.android.proguardRules
 import com.itsaky.androidide.templates.base.util.JavaSourceBuilder
 import java.io.File
 
@@ -53,7 +54,7 @@ abstract class ModuleTemplateBuilder :
    * @param path The path for the asset.
    * @see com.itsaky.androidide.templates.base.baseAsset
    */
-  fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("module", path)
+  open fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("module", path)
 
   /**
    * Get the `build.gradle[.kts]` file for this module.l
@@ -114,7 +115,7 @@ abstract class ModuleTemplateBuilder :
    * @param moduleData  Called after the base configuration is setup and before the [recipe] is executed. Caller can perform its own
    * pre-recipe configuration here. Returns the [ModuleTemplateData] instance.
    */
-  fun commonPreRecipe(extraConfig: ModuleTemplateConfigurator = {},
+  fun commonPreRecipe(extraConfig: TemplateRecipe = {},
                       moduleData: RecipeExecutor.() -> ModuleTemplateData
   ): TemplateRecipe = {
     val data = moduleData()
@@ -138,7 +139,7 @@ abstract class ModuleTemplateBuilder :
    * @param extraConfig Called after the [recipe] is executed. Caller can perform its own
    * post-recipe configuration here.
    */
-  fun commonPostRecipe(extraConfig: ModuleTemplateConfigurator = {}): TemplateRecipe = {
+  fun commonPostRecipe(extraConfig: TemplateRecipe = {}): TemplateRecipe = {
 
     // Write the java source files
     javaSourceBuilder.apply {

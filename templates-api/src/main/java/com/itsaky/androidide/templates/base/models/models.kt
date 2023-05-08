@@ -19,6 +19,28 @@ package com.itsaky.androidide.templates.base.models
 
 import com.itsaky.androidide.templates.base.models.DependencyConfiguration.Implementation
 
+/**
+ * Creates a [Dependency] object from the given maven coordinates.
+ *
+ * @param group The Maven group ID.
+ * @param artifact The dependency artifact ID.
+ * @param version The dependency version.
+ * @return The [Dependency] artifact.
+ */
 fun defaultDependency(group: String, artifact: String, version: String): Dependency {
   return Dependency(Implementation, group, artifact, version)
+}
+
+/**
+ * Parse the given maven dependency coordinates to a [Dependency] object.
+ *
+ * @param coordinates The maven dependency coordinates in the form 'group:artifact:version'.
+ * @param configuration The dependency configuration.
+ * @return The [Dependency] artifact.s
+ */
+fun parseDependency(coordinates: String, configuration: DependencyConfiguration = Implementation
+): Dependency {
+  val split = coordinates.split(':')
+  check(split.size == 3) { "Maven coordinates must be in the form 'group:artifact:version'" }
+  return Dependency(configuration, split[0], split[1], split[2])
 }

@@ -27,7 +27,6 @@ import com.itsaky.androidide.templates.base.root.gradleWrapperJar
 import com.itsaky.androidide.templates.base.root.gradleWrapperProps
 import com.itsaky.androidide.templates.base.root.settingsGradleSrcGroovy
 import com.itsaky.androidide.templates.base.root.settingsGradleSrcKts
-import com.itsaky.androidide.templates.base.util.AndroidModuleTemplateConfigurator
 import com.itsaky.androidide.templates.base.util.optonallyKts
 import java.io.File
 
@@ -39,11 +38,11 @@ import java.io.File
 class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, ProjectTemplateData>() {
 
   private var _defModule: ModuleTemplateData? = null
-  private val defModuleTemplate: ModuleTemplate? = null
+  internal val defModuleTemplate: ModuleTemplate? = null
 
   internal val modules = mutableListOf<ModuleTemplate>()
 
-  private val defModule: ModuleTemplateData
+  internal val defModule: ModuleTemplateData
     get() = checkNotNull(_defModule) { "Module template data not set" }
 
   /**
@@ -124,32 +123,6 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
     executor.copyAsset(baseAsset(gradlewBat.name), gradlewBat)
     gradleWrapperJar()
     gradleWrapperProps()
-  }
-
-  /**
-   * Configure the default template for the project.
-   *
-   * @param name The name of the module (gradle format, e.g. ':app').
-   * @param block The module configurator.
-   */
-  fun defaultModule(name: String = ":app", block: AndroidModuleTemplateConfigurator) {
-    check(defModuleTemplate == null) { "Default module has been already configured" }
-
-    val module = AndroidModuleTemplateBuilder().apply {
-      _name = name
-      templateName = 0
-      thumb = 0
-
-      preRecipe = commonPreRecipe {
-        return@commonPreRecipe defModule
-      }
-
-      postRecipe = commonPostRecipe()
-
-      block()
-    }.build()
-
-    modules.add(module)
   }
 
   override fun buildInternal(): ProjectTemplate {

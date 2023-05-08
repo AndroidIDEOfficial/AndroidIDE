@@ -64,4 +64,12 @@ interface RecipeExecutor {
    * @param dest The destination path.
    */
   fun copyAsset(path: String, dest: File)
+
+  /**
+   * Copies the asset directory path to the specified destination directory.
+   *
+   * @param path The asset path.
+   * @param destDir The destination directory.
+   */
+  fun copyAssetsRecursively(path: String, destDir: File)
 }

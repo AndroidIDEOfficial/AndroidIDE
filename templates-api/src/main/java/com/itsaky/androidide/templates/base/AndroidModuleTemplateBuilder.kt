@@ -21,8 +21,9 @@ import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
-import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
+import com.itsaky.androidide.templates.base.modules.android.proguardRules
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
 import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
@@ -43,11 +44,43 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
     manifestBuilder.apply(block)
   }
 
+  /**
+   * Get the Android `res` directory for [main][SrcSet.Main] source set in this module.
+   *
+   * @return The `res` directory for the [main][SrcSet.Main] source set.
+   */
+  fun mainResDir(): File {
+    return resDir(SrcSet.Main)
+  }
+
+  /**
+   * Get the Android `res` directory for the given [source set][srcSet] in this module.
+   *
+   * @return The `res` directory.
+   */
+  fun resDir(srcSet: SrcSet): File {
+    return File(srcFolder(srcSet), "res").also { it.mkdirs() }
+  }
+
+  /**
+   * Copy the default resources (without `values` directory) to this module.
+   */
+  fun RecipeExecutor.copyDefaultRes() {
+    copyAssetsRecursively(baseAsset("res"), mainResDir())
+  }
+
+  override fun baseAsset(path: String): String {
+    return super.baseAsset("android/${path}")
+  }
+
   override fun RecipeExecutor.preConfig() {
     manifestBuilder.apply {
       packageName = data.packageName
       isLibrary = data.type == AndroidLibrary
     }
+
+    // Copy the proguard-rules.pro file
+    proguardRules()
   }
 
   override fun RecipeExecutor.postConfig() {

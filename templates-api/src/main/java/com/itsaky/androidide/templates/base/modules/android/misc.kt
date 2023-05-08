@@ -15,14 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.impl.emptyActivity
+package com.itsaky.androidide.templates.base.modules.android
 
-import com.itsaky.androidide.templates.ProjectTemplate
-import com.itsaky.androidide.templates.base.baseProject
-import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import java.io.File
 
-fun emptyActivityProject(): ProjectTemplate = baseProject {
-  defaultAppModule {
+/**
+ * @return The `proguard-rules.pro` file in the module directory.
+ */
+fun AndroidModuleTemplateBuilder.proguardRulesFile(): File {
+  return File(data.projectDir, "proguard-rules.pro")
+}
 
-  }
+/**
+ * Creates the `proguard-rules.pro` file in the module directory.
+ */
+fun AndroidModuleTemplateBuilder.proguardRules() {
+  val file = proguardRulesFile()
+  executor.copyAsset(baseAsset(file.name), file)
 }

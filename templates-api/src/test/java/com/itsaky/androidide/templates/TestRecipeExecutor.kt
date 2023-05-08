@@ -36,7 +36,7 @@ class TestRecipeExecutor : RecipeExecutor {
   }
 
   override fun save(source: String, dest: File) {
-    dest.createNewFile()
+    dest.parentFile?.mkdirs()
     dest.writeText(source)
   }
 
@@ -48,5 +48,9 @@ class TestRecipeExecutor : RecipeExecutor {
     openAsset(path).use {
       it.copyTo(dest.outputStream())
     }
+  }
+
+  override fun copyAssetsRecursively(path: String, destDir: File) {
+    File(this.assets, path).copyRecursively(destDir)
   }
 }

@@ -17,13 +17,28 @@
 
 package com.itsaky.androidide.templates.base.models
 
-class Dependency(val configuration: DependencyConfiguration, val group: String,
-                 val artifact: String, val version: String
+data class Dependency(val configuration: DependencyConfiguration, val group: String,
+                      val artifact: String, val version: String
 ) {
 
   fun value(): String {
     return """
       ${configuration.configName}("${group}:${artifact}:${version}")
     """.trimIndent()
+  }
+
+  object AndroidX {
+
+    @JvmStatic
+    val AppCompat = parseDependency("androidx.appcompat:appcompat:1.6.1")
+
+    @JvmStatic
+    val ConstraintLayout = parseDependency("androidx.constraintlayout:constraintlayout:2.1.4")
+  }
+
+  object Google {
+
+    @JvmStatic
+    val Material = parseDependency("com.google.android.material:material:1.9.0")
   }
 }
