@@ -21,6 +21,7 @@ import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.TypeSpec
+import jdkx.lang.model.element.Modifier
 
 /**
  * Utility for building Java source files.
@@ -142,7 +143,11 @@ class JavaSourceBuilder {
                      configure: TypeSpec.Builder.() -> Unit
   ) {
     val klass = ClassName.get(packageName, className)
-    val builder = type.builder(klass).apply(configure)
+    val builder = type.builder(klass).apply(configure).also {
+      if (!it.modifiers.contains(Modifier.PUBLIC)) {
+        it.addModifiers(Modifier.PUBLIC)
+      }
+    }
     val file = JavaFile.builder(packageName, builder.build())
     file.skipJavaLangImports(true)
     files.add(file.build())
