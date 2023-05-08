@@ -18,7 +18,6 @@
 package com.itsaky.androidide.templates.base.root
 
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
-import com.itsaky.androidide.templates.base.baseAsset
 import java.io.File
 
 internal fun ProjectTemplateBuilder.gradleWrapperJar() {

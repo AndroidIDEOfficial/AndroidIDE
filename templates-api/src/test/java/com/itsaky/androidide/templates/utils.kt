@@ -21,13 +21,11 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.templates.base.ProjectTemplateConfigurator
+import com.itsaky.androidide.templates.base.util.ProjectTemplateConfigurator
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import java.io.File
 import kotlin.reflect.KClass

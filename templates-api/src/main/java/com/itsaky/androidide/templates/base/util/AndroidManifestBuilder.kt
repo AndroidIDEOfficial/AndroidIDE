@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.base.modules.android
+package com.itsaky.androidide.templates.base.util
 
 import com.android.SdkConstants.ANDROID_NS_NAME
 import com.android.SdkConstants.ANDROID_URI
@@ -27,6 +27,8 @@ import com.android.SdkConstants.TAG_INTENT_FILTER
 import com.android.SdkConstants.TAG_USES_PERMISSION
 import com.android.SdkConstants.XMLNS
 import com.itsaky.androidide.templates.RecipeExecutor
+import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
+import com.itsaky.androidide.templates.base.modules.android.ManifestIcon
 import com.itsaky.androidide.xml.permissions.Permission
 import java.io.File
 import com.android.xml.XmlBuilder as XMLBuilder

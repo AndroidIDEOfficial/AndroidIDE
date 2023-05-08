@@ -27,6 +27,8 @@ import com.itsaky.androidide.templates.base.root.gradleWrapperJar
 import com.itsaky.androidide.templates.base.root.gradleWrapperProps
 import com.itsaky.androidide.templates.base.root.settingsGradleSrcGroovy
 import com.itsaky.androidide.templates.base.root.settingsGradleSrcKts
+import com.itsaky.androidide.templates.base.util.AndroidModuleTemplateConfigurator
+import com.itsaky.androidide.templates.base.util.optonallyKts
 import java.io.File
 
 /**
@@ -59,7 +61,7 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
    * @param path The path to the asset.
    * @see com.itsaky.androidide.templates.base.baseAsset
    */
-  fun baseAsset(path: String) = baseAsset("root", path)
+  fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("root", path)
 
   /**
    * Get the `build.gradle[.kts] file for the project.

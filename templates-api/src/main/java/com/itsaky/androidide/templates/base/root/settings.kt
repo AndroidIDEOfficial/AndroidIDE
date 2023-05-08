@@ -18,8 +18,6 @@
 package com.itsaky.androidide.templates.base.root
 
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
-import com.itsaky.androidide.templates.base.optonallyKts
-import java.io.File
 
 internal fun ProjectTemplateBuilder.settingsGradleSrcKts(): String {
   return """

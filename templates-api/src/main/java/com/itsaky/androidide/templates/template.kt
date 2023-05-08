@@ -19,7 +19,7 @@ package com.itsaky.androidide.templates
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.itsaky.androidide.templates.base.optonallyKts
+import com.itsaky.androidide.templates.base.util.optonallyKts
 import java.io.File
 
 /**

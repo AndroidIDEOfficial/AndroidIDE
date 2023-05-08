@@ -23,6 +23,8 @@ import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateRecipe
+import com.itsaky.androidide.templates.base.util.JavaSourceBuilder
+import com.itsaky.androidide.templates.base.util.ModuleTemplateConfigurator
 import java.io.File
 
 /**
@@ -50,7 +52,7 @@ abstract class ModuleTemplateBuilder :
    * @param path The path for the asset.
    * @see com.itsaky.androidide.templates.base.baseAsset
    */
-  fun baseAsset(path: String) = baseAsset("module", path)
+  fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("module", path)
 
   /**
    * Get the `build.gradle[.kts]` file for this module.l
@@ -157,7 +159,7 @@ abstract class ModuleTemplateBuilder :
    * @param version The version of the dependency.
    */
   fun addDependency(group: String, artifact: String, version: String) {
-    addDependency(Dependency(DependencyConfiguration.Implementation, group, artifact, version))
+    addDependency(defaultDependency(group, artifact, version))
   }
 
   /**

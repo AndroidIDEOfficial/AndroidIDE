@@ -15,10 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.base
+package com.itsaky.androidide.templates.base.util
 
 import com.itsaky.androidide.templates.BaseTemplateData
 import com.itsaky.androidide.templates.ProjectTemplateData
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import java.io.File
 
 typealias ProjectTemplateConfigurator = ProjectTemplateBuilder.() -> Unit

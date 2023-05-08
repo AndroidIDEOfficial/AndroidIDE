@@ -21,7 +21,7 @@ import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
-import com.itsaky.androidide.templates.base.modules.android.AndroidManifestBuilder
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
 import java.io.File
 

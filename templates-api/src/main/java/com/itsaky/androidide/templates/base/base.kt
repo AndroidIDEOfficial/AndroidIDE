@@ -36,6 +36,9 @@ import com.itsaky.androidide.templates.R
 import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.TextFieldWidget
+import com.itsaky.androidide.templates.base.util.AndroidModuleTemplateConfigurator
+import com.itsaky.androidide.templates.base.util.ProjectTemplateConfigurator
+import com.itsaky.androidide.templates.base.util.moduleNameToDir
 import com.itsaky.androidide.templates.enumParameter
 import com.itsaky.androidide.templates.stringParameter
 import com.itsaky.androidide.utils.AndroidUtils

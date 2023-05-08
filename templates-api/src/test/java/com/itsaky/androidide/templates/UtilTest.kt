@@ -18,7 +18,7 @@
 package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.templates.base.moduleNameToDirName
+import com.itsaky.androidide.templates.base.util.moduleNameToDirName
 import org.junit.Test
 
 /**

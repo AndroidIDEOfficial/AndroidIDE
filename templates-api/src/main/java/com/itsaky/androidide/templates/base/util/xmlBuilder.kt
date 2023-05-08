@@ -15,22 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package templates.base.module
+package com.itsaky.androidide.templates.base.util
 
-import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
-import java.io.File
+import com.android.xml.XmlBuilder
 
-/**
- * @return The `proguard-rules.pro` file in the module directory.
- */
-fun ModuleTemplateBuilder.proguardRulesFile(): File {
-  return File(data.projectDir, "proguard-rules.pro")
-}
+fun XmlBuilder.startElement(name: String) {
 
-/**
- * Creates the `proguard-rules.pro` file in the module directory.
- */
-fun ModuleTemplateBuilder.proguardRules() {
-  val file = proguardRulesFile()
-  executor.copyAsset(baseAsset(file.name), file)
 }
