@@ -31,9 +31,12 @@ internal fun ModuleTemplateBuilder.dependencies(): String {
 
   return StringBuilder().apply {
     append("dependencies {")
+    append(System.lineSeparator())
     for (dep in dependencies) {
+      append(System.lineSeparator())
       append("    ${dep.value()}")
     }
+    append(System.lineSeparator())
     append("}")
   }.toString()
 }

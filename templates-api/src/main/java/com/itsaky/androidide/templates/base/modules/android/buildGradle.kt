@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.templates.base.modules.android
 
+import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ModuleType
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.modules.dependencies
@@ -34,81 +35,95 @@ fun AndroidModuleTemplateBuilder.buildGradleSrc(): String {
 private fun AndroidModuleTemplateBuilder.buildGradleSrcKts(): String {
   return """
 plugins {
-      id("$androidPlugin")
-    }
+    id("$androidPlugin")
+    ${ktPlugin()}
+}
 
-    android {
-        compileSdkVersion(${data.versions.compileSdk.api})
-        buildToolsVersion = "${data.versions.buildTools}"
+android {
+    compileSdkVersion(${data.versions.compileSdk.api})
+    buildToolsVersion = "${data.versions.buildTools}"
+
+    defaultConfig {
+        applicationId = "${data.packageName}"
+        minSdk = ${data.versions.minSdk.api}
+        targetSdk = ${data.versions.targetSdk.api}
+        versionCode = 1
+        versionName = "1.0"
+    }
     
-        defaultConfig {
-            applicationId = "${data.packageName}"
-            minSdk = ${data.versions.minSdk.api}
-            targetSdk = ${data.versions.targetSdk.api}
-            versionCode = 1
-            versionName = "1.0"
-        }
-        
-        compileOptions {
-  	        sourceCompatibility ${data.versions.javaSource()}
-  	        targetCompatibility ${data.versions.javaTarget()}
-  	    }
-  
-        buildTypes {
-            release {
-                isMinifyEnabled = true
-                proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            }
-        }
-	
-        buildFeatures {
-            viewBinding true
+    compileOptions {
+        sourceCompatibility ${data.versions.javaSource()}
+        targetCompatibility ${data.versions.javaTarget()}
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
-    ${dependencies()}
+    buildFeatures {
+        viewBinding true
+    }
+}
 
-  """.trimIndent()
+${dependencies()}
+"""
 }
 
 private fun AndroidModuleTemplateBuilder.buildGradleSrcGroovy(): String {
   return """
-    plugins {
-      id '$androidPlugin'
+plugins {
+    id '$androidPlugin'
+    ${ktPlugin()}
+}
+
+android {
+    compileSdk ${data.versions.compileSdk.api}
+    buildToolsVersion "${data.versions.buildTools}"
+
+    defaultConfig {
+        applicationId "com.itsaky.myapplication"
+        minSdk ${data.versions.minSdk.api}
+        targetSdk ${data.versions.targetSdk.api}
+        versionCode 1
+        versionName "1.0"
     }
 
-    android {
-        compileSdk ${data.versions.compileSdk.api}
-        buildToolsVersion "${data.versions.buildTools}"
-    
-        defaultConfig {
-            applicationId "com.itsaky.myapplication"
-            minSdk ${data.versions.minSdk.api}
-            targetSdk ${data.versions.targetSdk.api}
-            versionCode 1
-            versionName "1.0"
-        }
-  
-        buildTypes {
-            release {
-                minifyEnabled true
-                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            }
-        }
-    
-        compileOptions {
-  	        sourceCompatibility ${data.versions.javaSource()}
-  	        targetCompatibility ${data.versions.javaTarget()}
-  	    }
-	
-        buildFeatures {
-            viewBinding true
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    dependencies {
-        
+    compileOptions {
+        sourceCompatibility ${data.versions.javaSource()}
+        targetCompatibility ${data.versions.javaTarget()}
     }
 
-  """.trimIndent()
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+${dependencies()}
+"""
+}
+
+private fun AndroidModuleTemplateBuilder.ktPlugin(): String {
+  if (data.language != Language.Kotlin) {
+    return ""
+  }
+
+  return if (data.useKts) ktPluginKts() else ktPluginGroovy()
+}
+
+private fun ktPluginKts(): String {
+  return """id("kotlin-android")"""
+}
+
+private fun ktPluginGroovy(): String {
+  return "id 'kotlin-android'"
 }

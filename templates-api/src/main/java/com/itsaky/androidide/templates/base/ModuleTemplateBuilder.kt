@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.RecipeExecutor
@@ -25,8 +26,7 @@ import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateRecipe
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.models.defaultDependency
-import com.itsaky.androidide.templates.base.modules.android.proguardRules
-import com.itsaky.androidide.templates.base.util.JavaSourceBuilder
+import com.itsaky.androidide.templates.base.util.SourceWriter
 import java.io.File
 
 /**
@@ -39,7 +39,7 @@ abstract class ModuleTemplateBuilder :
   ExecutorDataTemplateBuilder<ModuleTemplate, ModuleTemplateData>() {
 
   internal val dependencies = hashSetOf<Dependency>()
-  protected val javaSourceBuilder = JavaSourceBuilder()
+  protected val sourceWriter = SourceWriter()
   internal var _name: String? = null
 
   val name: String
@@ -54,13 +54,26 @@ abstract class ModuleTemplateBuilder :
    * @param path The path for the asset.
    * @see com.itsaky.androidide.templates.base.baseAsset
    */
-  open fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("module", path)
+  open fun baseAsset(path: String) =
+    com.itsaky.androidide.templates.base.util.baseAsset("module", path)
 
   /**
    * Get the `build.gradle[.kts]` file for this module.l
    */
   fun buildGradleFile(): File {
     return data.buildGradleFile()
+  }
+
+  /**
+   * Get the path to the Java source file in the given [source set][srcSet] with the
+   * given [packageName] and the [simple name][name].
+   */
+  fun srcFilePath(srcSet: SrcSet, packageName: String, name: String, language: Language): File {
+    var path = packageName.replace('.', '/')
+    path += "/${name}"
+    path += ".${language.ext}"
+
+    return File(javaSrc(srcSet), path)
   }
 
   /**
@@ -101,12 +114,12 @@ abstract class ModuleTemplateBuilder :
   }
 
   /**
-   * Configure the Java source files for this module.
+   * Configure the source files for this module.
    *
-   * @param configure Function for configuring the Java source files.
+   * @param configure Function for configuring the source files.
    */
-  fun java(configure: JavaSourceBuilder.() -> Unit) {
-    javaSourceBuilder.apply(configure)
+  fun sources(configure: SourceWriter.() -> Unit) {
+    sourceWriter.apply(configure)
   }
 
   /**
@@ -140,11 +153,6 @@ abstract class ModuleTemplateBuilder :
    * post-recipe configuration here.
    */
   fun commonPostRecipe(extraConfig: TemplateRecipe = {}): TemplateRecipe = {
-
-    // Write the java source files
-    javaSourceBuilder.apply {
-      write()
-    }
 
     // Write build.gradle[.kts]
     buildGradle()

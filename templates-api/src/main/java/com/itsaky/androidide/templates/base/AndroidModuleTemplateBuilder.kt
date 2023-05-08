@@ -24,6 +24,7 @@ import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
 import com.itsaky.androidide.templates.base.modules.android.proguardRules
 import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
+import com.squareup.javapoet.TypeSpec
 import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
@@ -67,6 +68,22 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    */
   fun RecipeExecutor.copyDefaultRes() {
     copyAssetsRecursively(baseAsset("res"), mainResDir())
+  }
+
+  /**
+   * Creates a new activity class in the application/library package.
+   *
+   * @param name The name of the class.
+   */
+  fun RecipeExecutor.createActivity(name: String = "MainActivity",
+                                    configure: TypeSpec.Builder.() -> Unit
+  ) {
+    sources {
+      createClass(data.packageName, name) {
+
+        configure()
+      }
+    }
   }
 
   override fun baseAsset(path: String): String {

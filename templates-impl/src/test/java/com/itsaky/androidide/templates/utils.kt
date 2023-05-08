@@ -21,8 +21,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.ProjectTemplateConfigurator
+import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import io.mockk.every
@@ -62,16 +62,19 @@ fun testTemplate(block: ProjectTemplateConfigurator): Template {
   }
 }
 
-fun Template.setupRootProjectParams() {
+fun Template.setupRootProjectParams(name: String = "TestTemplate",
+                                    packageName: String = "com.itsaky.androidide.template",
+                                    language: Language = Language.Kotlin, minSdk: Sdk = Sdk.Lollipop
+) {
   val iterator = parameters.iterator()
 
   // name
   var param = iterator.next()
-  (param as StringParameter).value = "TestTemplate"
+  (param as StringParameter).value = name
 
   // package
   param = iterator.next()
-  (param as StringParameter).value = "com.itsaky.androidide.template"
+  (param as StringParameter).value = packageName
 
   // save location
   param = iterator.next()
@@ -79,11 +82,11 @@ fun Template.setupRootProjectParams() {
 
   // language
   param = iterator.next()
-  (param as EnumParameter<Language>).value = Language.Kotlin
+  (param as EnumParameter<Language>).value = language
 
   // Min SDK
   param = iterator.next()
-  (param as EnumParameter<Sdk>).value = Sdk.Lollipop
+  (param as EnumParameter<Sdk>).value = minSdk
 }
 
 fun Template.executeRecipe() {

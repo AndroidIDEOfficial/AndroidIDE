@@ -22,6 +22,7 @@ import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
+import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivityModule
 import com.itsaky.androidide.xml.permissions.Permission
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
@@ -32,6 +33,7 @@ import jdkx.lang.model.element.Modifier.STATIC
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.lang.String
 
 /**
  * Test template builder.
@@ -99,7 +101,7 @@ class TemplateBuilderTest {
             ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
         }
 
-        java {
+        sources {
           createClass("com.itsaky", "TestClass") {
             createConstructor {
               addModifiers(PRIVATE)
@@ -109,8 +111,7 @@ class TemplateBuilderTest {
               addModifiers(PUBLIC, STATIC)
               returns(TypeName.VOID)
               addParameter(
-                ParameterSpec.builder(ArrayTypeName.get(java.lang.String::class.java), "args")
-                  .build())
+                ParameterSpec.builder(ArrayTypeName.get(String::class.java), "args").build())
               addStatement("System.out.println(\"Hello world!\")")
             }
           }
@@ -121,6 +122,25 @@ class TemplateBuilderTest {
     }
 
     template.setupRootProjectParams()
+    template.executeRecipe()
+  }
+
+  @Test
+  fun `test empty activity template`() {
+    val template = testTemplate {
+      defaultAppModule {
+        recipe = {
+          writeEmptyActivityModule()
+        }
+      }
+    }
+
+    // Write the Java version of the project
+    template.setupRootProjectParams("EmptyActivityProjectJava", language = Language.Java)
+    template.executeRecipe()
+
+    // Write the Kotlin version of the project
+    template.setupRootProjectParams("EmptyActivityProjectKt", language = Language.Kotlin)
     template.executeRecipe()
   }
 }

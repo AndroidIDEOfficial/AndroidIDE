@@ -17,12 +17,78 @@
 
 package com.itsaky.androidide.templates.impl.emptyActivity
 
+import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 
 fun emptyActivityProject(): ProjectTemplate = baseProject {
   defaultAppModule {
-
+    recipe = {
+      writeEmptyActivityModule()
+    }
   }
+}
+
+internal fun AndroidModuleTemplateBuilder.writeEmptyActivityModule() {
+  sources {
+    if (data.language == Language.Kotlin) {
+      writeKtSrc(data.packageName, "MainActivity",
+        source = this@writeEmptyActivityModule::emptyActivityKtSrc)
+    } else {
+      writeJavaSrc(packageName = data.packageName, className = "MainActivity",
+        source = this@writeEmptyActivityModule::emptyActivityJavaSrc)
+    }
+  }
+}
+
+private fun AndroidModuleTemplateBuilder.emptyActivityKtSrc(): String {
+  return """
+package ${data.packageName}
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import ${data.packageName}.databinding.ActivityMainBinding
+
+public class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Inflate and get instance of binding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        // set content view to binding's root
+        setContentView(binding.root)
+    }
+}
+"""
+}
+
+private fun AndroidModuleTemplateBuilder.emptyActivityJavaSrc(): String {
+  return """
+package ${data.packageName};
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import ${data.packageName}.databinding.ActivityMainBinding;
+
+public class MainActivity extends AppCompatActivity {
+    private ActivityMainBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Inflate and get instance of binding
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+
+        // set content view to binding's root
+        setContentView(binding.getRoot());
+    }
+}
+"""
 }

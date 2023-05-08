@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.templates
 
+import com.itsaky.androidide.utils.FileProvider
 import java.io.File
 import java.io.InputStream
 
@@ -28,7 +29,7 @@ import java.io.InputStream
 class TestRecipeExecutor : RecipeExecutor {
 
   private val assets by lazy {
-    File("./src/main/assets")
+    File(FileProvider.projectRoot().toFile(), "templates-api/src/main/assets")
   }
 
   override fun copy(source: File, dest: File) {
@@ -51,6 +52,6 @@ class TestRecipeExecutor : RecipeExecutor {
   }
 
   override fun copyAssetsRecursively(path: String, destDir: File) {
-    File(this.assets, path).copyRecursively(destDir)
+    File(this.assets, path).copyRecursively(destDir, true)
   }
 }

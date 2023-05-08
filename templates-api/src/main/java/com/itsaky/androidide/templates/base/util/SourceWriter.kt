@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.templates.base.util
 
+import com.itsaky.androidide.templates.Language
+import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.JavaFile
@@ -24,11 +26,11 @@ import com.squareup.javapoet.TypeSpec
 import jdkx.lang.model.element.Modifier
 
 /**
- * Utility for building Java source files.
+ * Utility for building/writing source files.
  *
  * @author Akash Yadav
  */
-class JavaSourceBuilder {
+class SourceWriter {
 
   /**
    * The type of Java source. A [SourceType] creates a [TypeSpec.Builder] and optionally
@@ -82,8 +84,6 @@ class JavaSourceBuilder {
     }
   }
 
-  private val files = hashSetOf<JavaFile>()
-
   /**
    * Creates a new Java class.
    *
@@ -91,7 +91,9 @@ class JavaSourceBuilder {
    * @param className The name of the class.
    * @param configure Function to configure the [TypeSpec.Builder].
    */
-  fun createClass(packageName: String, className: String, configure: TypeSpec.Builder.() -> Unit) {
+  fun ModuleTemplateBuilder.createClass(packageName: String, className: String,
+                                        configure: TypeSpec.Builder.() -> Unit
+  ) {
     return createJavaFile(packageName, className, ClassType(), configure)
   }
 
@@ -102,7 +104,9 @@ class JavaSourceBuilder {
    * @param className The name of the class.
    * @param configure Function to configure the [TypeSpec.Builder].
    */
-  fun createEnum(packageName: String, className: String, configure: TypeSpec.Builder.() -> Unit) {
+  fun ModuleTemplateBuilder.createEnum(packageName: String, className: String,
+                                       configure: TypeSpec.Builder.() -> Unit
+  ) {
     return createJavaFile(packageName, className, EnumType(), configure)
   }
 
@@ -113,7 +117,8 @@ class JavaSourceBuilder {
    * @param className The name of the interface.
    * @param configure Function to configure the [TypeSpec.Builder].
    */
-  fun createInterface(packageName: String, className: String, configure: TypeSpec.Builder.() -> Unit
+  fun ModuleTemplateBuilder.createInterface(packageName: String, className: String,
+                                            configure: TypeSpec.Builder.() -> Unit
   ) {
     return createJavaFile(packageName, className, InterfaceType(), configure)
   }
@@ -125,8 +130,8 @@ class JavaSourceBuilder {
    * @param className The name of the interface.
    * @param configure Function to configure the [TypeSpec.Builder].
    */
-  fun createAnnotation(packageName: String, className: String,
-                       configure: TypeSpec.Builder.() -> Unit
+  fun ModuleTemplateBuilder.createAnnotation(packageName: String, className: String,
+                                             configure: TypeSpec.Builder.() -> Unit
   ) {
     return createJavaFile(packageName, className, AnnotationType(), configure)
   }
@@ -139,8 +144,8 @@ class JavaSourceBuilder {
    * @param type The type of the class.
    * @param configure Function to configure the [TypeSpec.Builder].
    */
-  fun createJavaFile(packageName: String, className: String, type: SourceType,
-                     configure: TypeSpec.Builder.() -> Unit
+  fun ModuleTemplateBuilder.createJavaFile(packageName: String, className: String, type: SourceType,
+                                           configure: TypeSpec.Builder.() -> Unit
   ) {
     val klass = ClassName.get(packageName, className)
     val builder = type.builder(klass).apply(configure).also {
@@ -150,12 +155,62 @@ class JavaSourceBuilder {
     }
     val file = JavaFile.builder(packageName, builder.build())
     file.skipJavaLangImports(true)
-    files.add(file.build())
+    write(file.build())
   }
 
-  internal fun ModuleTemplateBuilder.write() {
-    for (file in files) {
-      file.writeTo(mainJavaSrc())
-    }
+  /**
+   * Writes the contents to a new Java file.
+   *
+   * @param packageName The package name of the class.
+   * @param className The name of the class.
+   * @param source The source code for the file.
+   */
+  fun ModuleTemplateBuilder.writeJavaSrc(packageName: String, className: String,
+                                         srcSet: SrcSet = SrcSet.Main, source: String
+  ) {
+    executor.save(source, srcFilePath(srcSet, packageName, className, Language.Java))
+  }
+
+  /**
+   * Writes the contents to a new Kotlin file.
+   *
+   * @param packageName The package name of the class.
+   * @param className The name of the class.
+   * @param source The source code for the file.
+   */
+  fun ModuleTemplateBuilder.writeKtSrc(packageName: String, className: String,
+                                       srcSet: SrcSet = SrcSet.Main, source: String
+  ) {
+    executor.save(source, srcFilePath(srcSet, packageName, className, Language.Kotlin))
+  }
+
+  /**
+   * Writes the contents to a new Java file.
+   *
+   * @param packageName The package name of the class.
+   * @param className The name of the class.
+   * @param source A function which returns the source code for the file.
+   */
+  fun ModuleTemplateBuilder.writeJavaSrc(packageName: String, className: String,
+                                         srcSet: SrcSet = SrcSet.Main, source: () -> String
+  ) {
+    writeJavaSrc(packageName, className, srcSet, source())
+  }
+
+  /**
+   * Writes the contents to a new Kotlin file.
+   *
+   * @param packageName The package name of the class.
+   * @param className The name of the class.
+   * @param source A function which returns the source code for the file.
+   */
+  fun ModuleTemplateBuilder.writeKtSrc(packageName: String, className: String,
+                                       srcSet: SrcSet = SrcSet.Main, source: () -> String
+  ) {
+    writeKtSrc(packageName, className, srcSet, source())
+  }
+
+  private fun ModuleTemplateBuilder.write(file: JavaFile) {
+    file.writeTo(mainJavaSrc())
   }
 }

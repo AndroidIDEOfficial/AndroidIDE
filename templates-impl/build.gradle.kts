@@ -15,8 +15,6 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("com.android.library")
   id("org.jetbrains.kotlin.android")
@@ -39,6 +37,14 @@ dependencies {
   implementation(libs.androidx.ktx)
   implementation(libs.google.auto.service.annotations)
 
-  testImplementation(libs.tests.junit)
+  testImplementation(projects.common)
+  testImplementation(projects.templatesApi)
+  testImplementation(projects.lsp.api)
+  testImplementation(projects.preferences)
+  testImplementation(projects.shared)
+  testImplementation(libs.tests.androidx.test.core)
   testImplementation(libs.tests.google.truth)
+  testImplementation(libs.tests.junit)
+  testImplementation(libs.tests.mockk)
+  testImplementation(libs.tests.robolectric)
 }

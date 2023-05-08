@@ -19,9 +19,6 @@ package com.itsaky.androidide.templates.base.util
 
 import com.itsaky.androidide.templates.BaseTemplateData
 import com.itsaky.androidide.templates.ProjectTemplateData
-import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import java.io.File
 
 /**
@@ -39,7 +36,13 @@ internal fun ProjectTemplateData.moduleNameToDir(name: String): File {
   return File(this.projectDir, moduleNameToDirName(name).replace(':', '/').trim { it == '/' })
 }
 
-internal fun moduleNameToDirName(name: String): String {
+/**
+ * Converts a Gradle module name to a directory name.
+ *
+ * @param name The module name.
+ * @return The directory name.
+ */
+fun moduleNameToDirName(name: String): String {
   val result = StringBuilder()
   var prev: Char? = null
   for (i in name.indices) {
