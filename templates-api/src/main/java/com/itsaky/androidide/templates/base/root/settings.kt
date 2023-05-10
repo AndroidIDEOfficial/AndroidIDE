@@ -19,48 +19,25 @@ package com.itsaky.androidide.templates.base.root
 
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 
-internal fun ProjectTemplateBuilder.settingsGradleSrcKts(): String {
+internal fun ProjectTemplateBuilder.settingsGradleSrcStr(): String {
   return """
-    pluginManagement {
-        repositories {
-            gradlePluginPortal()
-            google()
-            mavenCentral()
-        }
-    }
-    
-    dependencyResolutionManagement {
-        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-        repositories {
-            google()
-            mavenCentral()
-        }
-    }
-    
-    rootProject.name = "${data.name}"
-    ${modules.joinToString(separator = "\n") { "include '${it}'" }} 
-  """.trimIndent()
+pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+  }
 }
 
-internal fun ProjectTemplateBuilder.settingsGradleSrcGroovy(): String {
-  return """
-    pluginManagement {
-      repositories {
-        google()
-        mavenCentral()
-      }
-    }
-    
-    dependencyResolutionManagement {
-      repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-      repositories {
-        google()
-        mavenCentral()
-      }
-    }
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositories {
+    google()
+    mavenCentral()
+  }
+}
 
-    rootProject.name = "${data.name}"
-    include(${modules.joinToString(separator = ", ") { "\"${it}\"" }})
-    
-  """.trimIndent()
+rootProject.name = "${data.name}"
+
+${modules.joinToString(separator = ", ") { "include(\"${it.name}\")" }}    
+  """.trim()
 }

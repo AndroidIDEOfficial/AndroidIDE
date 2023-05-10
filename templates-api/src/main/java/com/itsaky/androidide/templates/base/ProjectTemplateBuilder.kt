@@ -25,8 +25,7 @@ import com.itsaky.androidide.templates.base.root.buildGradleSrcGroovy
 import com.itsaky.androidide.templates.base.root.buildGradleSrcKts
 import com.itsaky.androidide.templates.base.root.gradleWrapperJar
 import com.itsaky.androidide.templates.base.root.gradleWrapperProps
-import com.itsaky.androidide.templates.base.root.settingsGradleSrcGroovy
-import com.itsaky.androidide.templates.base.root.settingsGradleSrcKts
+import com.itsaky.androidide.templates.base.root.settingsGradleSrcStr
 import com.itsaky.androidide.templates.base.util.optonallyKts
 import java.io.File
 
@@ -35,7 +34,8 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, ProjectTemplateData>() {
+class ProjectTemplateBuilder :
+  ExecutorDataTemplateBuilder<ProjectTemplate, ProjectTemplateData>() {
 
   private var _defModule: ModuleTemplateData? = null
   internal val defModuleTemplate: ModuleTemplate? = null
@@ -60,7 +60,8 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
    * @param path The path to the asset.
    * @see com.itsaky.androidide.templates.base.baseAsset
    */
-  fun baseAsset(path: String) = com.itsaky.androidide.templates.base.util.baseAsset("root", path)
+  fun baseAsset(path: String) =
+    com.itsaky.androidide.templates.base.util.baseAsset("root", path)
 
   /**
    * Get the `build.gradle[.kts] file for the project.
@@ -101,7 +102,7 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
    * Get the source for `settings.gradle[.kts]`.
    */
   fun settingsGradleSrc(): String {
-    return if (data.useKts) settingsGradleSrcKts() else return settingsGradleSrcGroovy()
+    return settingsGradleSrcStr()
   }
 
   /**
@@ -126,6 +127,7 @@ class ProjectTemplateBuilder : ExecutorDataTemplateBuilder<ProjectTemplate, Proj
   }
 
   override fun buildInternal(): ProjectTemplate {
-    return ProjectTemplate(modules, templateName!!, thumb!!, widgets!!, recipe!!)
+    return ProjectTemplate(modules, templateName!!, thumb!!, widgets!!,
+      recipe!!)
   }
 }
