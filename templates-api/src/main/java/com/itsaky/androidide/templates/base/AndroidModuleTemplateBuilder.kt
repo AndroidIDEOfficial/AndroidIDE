@@ -24,18 +24,21 @@ import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
 import com.itsaky.androidide.templates.base.modules.android.proguardRules
 import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.squareup.javapoet.TypeSpec
 import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
 
   val manifestBuilder = AndroidManifestBuilder()
+  val resManager = AndroidModuleResManager()
 
   /**
    * Return the file path to `AndroidManifest.xml`.
    */
   fun manifestFile(): File {
-    return File(srcFolder(SrcSet.Main), ANDROID_MANIFEST_XML).also { it.parentFile!!.mkdirs() }
+    return File(srcFolder(SrcSet.Main),
+      ANDROID_MANIFEST_XML).also { it.parentFile!!.mkdirs() }
   }
 
   /**
@@ -61,6 +64,15 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    */
   fun resDir(srcSet: SrcSet): File {
     return File(srcFolder(srcSet), "res").also { it.mkdirs() }
+  }
+
+  /**
+   * Configure the resources in the module.
+   *
+   * @param configure Function to configure the resources.
+   */
+  fun RecipeExecutor.res(configure: AndroidModuleResManager.() -> Unit) {
+    resManager.apply(configure)
   }
 
   /**

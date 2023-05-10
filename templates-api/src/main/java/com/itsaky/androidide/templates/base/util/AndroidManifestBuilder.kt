@@ -104,7 +104,7 @@ class AndroidManifestBuilder {
   private fun manifestSrc(): String {
     return XMLBuilder().apply {
       buildManifest()
-    }.let { "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n${it}" }
+    }.withXmlDecl()
   }
 
   private fun XMLBuilder.buildManifest() {

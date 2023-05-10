@@ -22,23 +22,26 @@ import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
+import com.itsaky.androidide.templates.base.util.SourceWriter
 
 fun emptyActivityProject(): ProjectTemplate = baseProject {
   defaultAppModule {
     recipe = {
-      writeEmptyActivityModule()
+      sources {
+        writeEmptyActivity(this)
+      }
     }
   }
 }
 
-internal fun AndroidModuleTemplateBuilder.writeEmptyActivityModule() {
-  sources {
+internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(writer: SourceWriter) {
+  writer.apply {
     if (data.language == Language.Kotlin) {
       writeKtSrc(data.packageName, "MainActivity",
-        source = this@writeEmptyActivityModule::emptyActivityKtSrc)
+        source = this@writeEmptyActivity::emptyActivityKtSrc)
     } else {
       writeJavaSrc(packageName = data.packageName, className = "MainActivity",
-        source = this@writeEmptyActivityModule::emptyActivityJavaSrc)
+        source = this@writeEmptyActivity::emptyActivityJavaSrc)
     }
   }
 }

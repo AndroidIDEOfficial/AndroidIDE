@@ -22,7 +22,8 @@ import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
-import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivityModule
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
+import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivity
 import com.itsaky.androidide.xml.permissions.Permission
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
@@ -132,7 +133,13 @@ class TemplateBuilderTest {
     val template = testTemplate {
       defaultAppModule {
         recipe = {
-          writeEmptyActivityModule()
+          sources {
+            writeEmptyActivity(this)
+          }
+
+          res {
+            createXmlResource("activity_main", AndroidModuleResManager.ResourceType.LAYOUT) {}
+          }
         }
       }
     }

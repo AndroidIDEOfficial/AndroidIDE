@@ -118,7 +118,7 @@ abstract class ModuleTemplateBuilder :
    *
    * @param configure Function for configuring the source files.
    */
-  fun sources(configure: SourceWriter.() -> Unit) {
+  fun RecipeExecutor.sources(configure: SourceWriter.() -> Unit) {
     sourceWriter.apply(configure)
   }
 

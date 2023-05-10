@@ -29,3 +29,10 @@ fun XmlBuilder.createElement(name: String, configure: XmlBuilder.() -> Unit) {
   apply(configure)
   endTag(name)
 }
+
+/**
+ * Get the generated XML string from the [XmlBuilder] with XML declaration prepended.
+ */
+fun XmlBuilder.withXmlDecl() : String {
+  return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n${toString()}"
+}
