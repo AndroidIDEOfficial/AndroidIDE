@@ -22,6 +22,8 @@ import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
 import com.itsaky.androidide.templates.base.util.SourceWriter
 
 fun emptyActivityProject(): ProjectTemplate = baseProject {
@@ -30,11 +32,44 @@ fun emptyActivityProject(): ProjectTemplate = baseProject {
       sources {
         writeEmptyActivity(this)
       }
+
+      res {
+        writeEmptyActivity(this)
+      }
     }
   }
 }
 
-internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(writer: SourceWriter) {
+internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
+  resManager: AndroidModuleResManager
+) {
+  resManager.apply {
+    writeXmlResource("activity_main", LAYOUT) {
+      """
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Hello user!"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+      """.trim()
+    }
+  }
+}
+
+internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
+  writer: SourceWriter
+) {
   writer.apply {
     if (data.language == Language.Kotlin) {
       writeKtSrc(data.packageName, "MainActivity",

@@ -27,13 +27,13 @@ android {
 dependencies {
   api(projects.subprojects.javapoet)
 
-  implementation(projects.common)
-  implementation(projects.logger)
-  implementation(projects.resources)
-  implementation(projects.subprojects.xmlUtils)
+  api(projects.common)
+  api(projects.logger)
+  api(projects.resources)
+  api(projects.subprojects.xmlUtils)
 
-  implementation(libs.aapt2.common)
-  implementation(libs.androidx.annotation)
-  implementation(libs.androidx.appcompat)
-  implementation(libs.google.material)
+  api(libs.aapt2.common)
+  api(libs.androidx.annotation)
+  api(libs.androidx.appcompat)
+  api(libs.google.material)
 }

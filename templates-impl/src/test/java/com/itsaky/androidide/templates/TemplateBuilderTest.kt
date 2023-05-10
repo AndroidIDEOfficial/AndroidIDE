@@ -138,7 +138,7 @@ class TemplateBuilderTest {
           }
 
           res {
-            createXmlResource("activity_main", AndroidModuleResManager.ResourceType.LAYOUT) {}
+            writeEmptyActivity(this)
           }
         }
       }
