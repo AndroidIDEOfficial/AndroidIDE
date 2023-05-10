@@ -52,8 +52,8 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility ${data.versions.javaSource()}
-        targetCompatibility ${data.versions.javaTarget()}
+        sourceCompatibility = ${data.versions.javaSource()}
+        targetCompatibility = ${data.versions.javaTarget()}
     }
 
     buildTypes {
@@ -64,7 +64,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 }
 
