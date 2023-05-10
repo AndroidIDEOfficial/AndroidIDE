@@ -40,7 +40,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion(${data.versions.compileSdk.api})
+    namespace = "${data.packageName}"
+    compileSdk = (${data.versions.compileSdk.api})
     buildToolsVersion = "${data.versions.buildTools}"
 
     defaultConfig {
@@ -80,6 +81,7 @@ plugins {
 }
 
 android {
+    namespace '${data.packageName}'
     compileSdk ${data.versions.compileSdk.api}
     buildToolsVersion "${data.versions.buildTools}"
 

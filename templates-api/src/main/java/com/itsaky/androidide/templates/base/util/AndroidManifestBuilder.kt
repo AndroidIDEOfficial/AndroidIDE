@@ -111,11 +111,6 @@ class AndroidManifestBuilder {
     createElement(TAG_MANIFEST) {
       attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
 
-      if (!isLibrary) {
-        attr("package",
-          checkNotNull(packageName) { "Package name not specified for application module" })
-      }
-
       permissions()
       application()
     }
