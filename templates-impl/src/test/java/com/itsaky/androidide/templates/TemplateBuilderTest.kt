@@ -138,11 +138,11 @@ class TemplateBuilderTest {
     }
 
     // Write the Java version of the project
-    template.setupRootProjectParams("EmptyActivityProjectJava", language = Language.Java)
+    template.setupRootProjectParams(name = "EmptyActivityProjectJava", language = Language.Java)
     template.executeRecipe()
 
     // Write the Kotlin version of the project
-    template.setupRootProjectParams("EmptyActivityProjectKt", language = Language.Kotlin)
+    template.setupRootProjectParams(name = "EmptyActivityProjectKt", language = Language.Kotlin)
     template.executeRecipe()
   }
 }

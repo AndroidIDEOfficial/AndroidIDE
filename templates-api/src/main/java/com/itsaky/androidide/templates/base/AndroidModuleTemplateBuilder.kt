@@ -79,10 +79,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
                                     configure: TypeSpec.Builder.() -> Unit
   ) {
     sources {
-      createClass(data.packageName, name) {
-
-        configure()
-      }
+      createClass(data.packageName, name, configure)
     }
   }
 
