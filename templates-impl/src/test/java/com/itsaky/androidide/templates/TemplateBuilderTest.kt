@@ -101,18 +101,20 @@ class TemplateBuilderTest {
             ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
         }
 
-        sources {
-          createClass("com.itsaky", "TestClass") {
-            createConstructor {
-              addModifiers(PRIVATE)
-              addStatement("throw \$T()", TypeName.get(UnsupportedOperationException::class.java))
-            }
-            createMethod("main") {
-              addModifiers(PUBLIC, STATIC)
-              returns(TypeName.VOID)
-              addParameter(
-                ParameterSpec.builder(ArrayTypeName.get(String::class.java), "args").build())
-              addStatement("System.out.println(\"Hello world!\")")
+        recipe = {
+          sources {
+            createClass("com.itsaky", "TestClass") {
+              createConstructor {
+                addModifiers(PRIVATE)
+                addStatement("throw \$T()", TypeName.get(UnsupportedOperationException::class.java))
+              }
+              createMethod("main") {
+                addModifiers(PUBLIC, STATIC)
+                returns(TypeName.VOID)
+                addParameter(
+                  ParameterSpec.builder(ArrayTypeName.get(String::class.java), "args").build())
+                addStatement("System.out.println(\"Hello world!\")")
+              }
             }
           }
         }
