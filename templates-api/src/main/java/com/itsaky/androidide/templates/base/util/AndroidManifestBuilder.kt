@@ -138,7 +138,7 @@ class AndroidManifestBuilder {
       androidAttr("allowBackup", "true")
       androidAttr("icon", icon.value())
       androidAttr("roundIcon", (roundIcon ?: icon).value())
-      androidAttr("label", appLabelRes)
+      androidAttr("label", "@string/${appLabelRes}")
       androidAttr("supportsRtl", rtl.toString())
       androidAttr("theme", "@style/${themeRes}")
       closeStartElement()
