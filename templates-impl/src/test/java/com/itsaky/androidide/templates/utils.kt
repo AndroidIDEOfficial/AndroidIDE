@@ -21,12 +21,16 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.templates.base.ProjectTemplateConfigurator
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import io.mockk.every
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import io.mockk.unmockkConstructor
 import java.io.File
 import kotlin.reflect.KClass
 
@@ -42,8 +46,52 @@ fun mockPrefManager(configure: PreferenceManager.() -> Unit = {}) {
   manager.configure()
 }
 
-fun testTemplate(block: ProjectTemplateConfigurator): Template {
+fun mockTemplateBuilders() {
+  mockTemplateBuilderConstructor(TemplateBuilder::class)
+  mockTemplateBuilderConstructor(ProjectTemplateBuilder::class)
+  mockTemplateBuilderConstructor(ModuleTemplateBuilder::class)
+  mockTemplateBuilderConstructor(AndroidModuleTemplateBuilder::class)
+}
+
+private inline fun <reified T : TemplateBuilder<*>> mockTemplateBuilderConstructor(
+  klass: KClass<T>
+) {
+  mockConstructors(klass) {
+    every { anyConstructed<T>().templateName } returns -123
+    every { anyConstructed<T>().thumb } returns -123
+  }
+}
+
+fun mockTemplateDatas(useKts: Boolean) {
+  mockTemplateDataConstructor(BaseTemplateData::class, useKts)
+  mockTemplateDataConstructor(ProjectTemplateData::class, useKts)
+  mockTemplateDataConstructor(ModuleTemplateData::class, useKts)
+}
+
+fun unmockTemplateDatas() {
+  unmockkConstructor(BaseTemplateData::class)
+  unmockkConstructor(ProjectTemplateData::class)
+  unmockkConstructor(ModuleTemplateData::class)
+}
+
+private inline fun <reified T : BaseTemplateData> mockTemplateDataConstructor(
+  kClass: KClass<T>, useKts: Boolean
+) {
+  mockConstructors(klass = kClass) {
+    every { anyConstructed<T>().useKts } returns useKts
+  }
+}
+
+private fun <T : Any> mockConstructors(klass: KClass<T>,
+                                       configure: () -> Unit = {}
+) {
+  mockkConstructor(klass)
+  configure()
+}
+
+fun testTemplate(name: String, builder: () -> Template): Template {
   mockPrefManager()
+  mockTemplateBuilders()
   testProjectsDir.apply {
     if (exists()) {
       delete()
@@ -53,18 +101,35 @@ fun testTemplate(block: ProjectTemplateConfigurator): Template {
 
   Environment.PROJECTS_DIR = testProjectsDir
 
-  return baseProject {
-    templateName = -123
-    thumb = -123
-    block()
-  }.also {
-    testProjectsDir.delete()
+  val template = builder()
+
+  for (language in Language.values()) {
+    run {
+      // Test with language + Kotlin Script
+      mockTemplateDatas(true)
+      template.setupRootProjectParams(
+        name = "${name}Project${language.name}WithKts", language = language)
+      template.executeRecipe()
+      unmockTemplateDatas()
+    }
+
+    run {
+      // Test with language without Kotlin Script
+      mockTemplateDatas(false)
+      template.setupRootProjectParams(
+        name = "${name}Project${language.name}WithoutKts", language = language)
+      template.executeRecipe()
+      unmockTemplateDatas()
+    }
   }
+
+  return template
 }
 
 fun Template.setupRootProjectParams(name: String = "TestTemplate",
                                     packageName: String = "com.itsaky.androidide.template",
-                                    language: Language = Language.Kotlin, minSdk: Sdk = Sdk.Lollipop
+                                    language: Language = Language.Kotlin,
+                                    minSdk: Sdk = Sdk.Lollipop
 ) {
   val iterator = parameters.iterator()
 
@@ -93,10 +158,12 @@ fun Template.executeRecipe() {
   TestRecipeExecutor().apply(recipe)
 }
 
-fun Collection<Parameter<*>>.assertParameterTypes(checker: (Int) -> KClass<out Parameter<*>>
+fun Collection<Parameter<*>>.assertParameterTypes(
+  checker: (Int) -> KClass<out Parameter<*>>
 ) = assertTypes(checker)
 
-fun Collection<Widget<*>>.assertWidgetTypes(checker: (Int) -> KClass<out Widget<*>>
+fun Collection<Widget<*>>.assertWidgetTypes(
+  checker: (Int) -> KClass<out Widget<*>>
 ) = assertTypes(checker)
 
 

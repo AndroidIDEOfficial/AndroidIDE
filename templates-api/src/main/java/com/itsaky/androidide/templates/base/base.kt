@@ -50,6 +50,12 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
 typealias FileTemplateConfigurator = FileTemplateBuilder.() -> Unit
 
 /**
+ * TODO : Allow the user to choose if he/she wants to use Kotlin script for the project.
+ *        Currently, the 'useKts' property is always set to 'true'. We only need to implement
+ *        it as a parameter/widget while creating the projects.
+ */
+
+/**
  * Setup base files for project templates.
  *
  * @param block Function to configure the template.

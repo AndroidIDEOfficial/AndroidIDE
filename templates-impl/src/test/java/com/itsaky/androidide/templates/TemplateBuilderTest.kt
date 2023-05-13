@@ -18,13 +18,12 @@
 package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivity
-import com.itsaky.androidide.xml.permissions.Permission
 import com.itsaky.androidide.xml.permissions.Permission.INTERNET
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
@@ -35,7 +34,6 @@ import jdkx.lang.model.element.Modifier.STATIC
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.String
 
 /**
  * Test template builder.
@@ -48,8 +46,8 @@ class TemplateBuilderTest {
 
   @Test
   fun `root project generator test`() {
-    val template = testTemplate {
-
+    val template = testTemplate("Root") {
+      baseProject { }
     }
 
     template.apply {
@@ -88,74 +86,68 @@ class TemplateBuilderTest {
         }
       }
     }
-
-    template.setupRootProjectParams()
-    template.executeRecipe()
   }
 
   @Test
   fun `test project with module`() {
-    val template = testTemplate {
-      defaultAppModule {
-        manifest {
-          addPermission(Permission.INTERNET)
-          addActivity(
-            ManifestActivity(name = ".MainActivity", isExported = true, isLauncher = true))
-        }
+    testTemplate("Test") {
+      baseProject {
 
-        recipe = {
-          sources {
-            createClass("com.itsaky", "TestClass") {
-              createConstructor {
-                addModifiers(PRIVATE)
-                addStatement("throw \$T()", TypeName.get(UnsupportedOperationException::class.java))
-              }
-              createMethod("main") {
-                addModifiers(PUBLIC, STATIC)
-                returns(TypeName.VOID)
-                addParameter(
-                  ParameterSpec.builder(ArrayTypeName.get(String::class.java), "args").build())
-                addStatement("System.out.println(\"Hello world!\")")
+        defaultAppModule {
+          manifest {
+            addPermission(INTERNET)
+            addActivity(
+              ManifestActivity(name = ".MainActivity", isExported = true,
+                isLauncher = true))
+          }
+
+          recipe = {
+            sources {
+              createClass("com.itsaky", "TestClass") {
+                createConstructor {
+                  addModifiers(PRIVATE)
+                  addStatement("throw \$T()",
+                    TypeName.get(UnsupportedOperationException::class.java))
+                }
+                createMethod("main") {
+                  addModifiers(PUBLIC, STATIC)
+                  returns(TypeName.VOID)
+                  addParameter(
+                    ParameterSpec.builder(ArrayTypeName.get(String::class.java),
+                      "args").build())
+                  addStatement("System.out.println(\"Hello world!\")")
+                }
               }
             }
           }
-        }
 
-        addDependency("androidx.appcompat", "appcompat", "1.5.0")
+          addDependency("androidx.appcompat", "appcompat", "1.5.0")
+        }
       }
     }
-
-    template.setupRootProjectParams()
-    template.executeRecipe()
   }
 
   @Test
   fun `test empty activity template`() {
-    val template = testTemplate {
-      defaultAppModule {
+    testTemplate("EmptyActivity") {
+      baseProject {
+        defaultAppModule {
 
-        recipe = {
-          manifest {
-            addPermission(INTERNET)
-          }
+          recipe = {
+            manifest {
+              addPermission(INTERNET)
+            }
 
-          sources {
-            writeEmptyActivity(this)
-          }
+            sources {
+              writeEmptyActivity(this)
+            }
 
-          res {
-            writeEmptyActivity(this)
+            res {
+              writeEmptyActivity(this)
+            }
           }
         }
       }
     }
-
-    // Write the Java version of the project
-    template.setupRootProjectParams(name = "EmptyActivityProjectJava", language = Language.Java)
-    template.executeRecipe()
-
-    // Write the Kotlin version of the project
-    template.setupRootProjectParams(name = "EmptyActivityProjectKt", language = Language.Kotlin)
-    template.executeRecipe()
   }
 }
