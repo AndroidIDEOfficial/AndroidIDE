@@ -25,6 +25,7 @@ import com.itsaky.androidide.templates.base.modules.createMethod
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivity
 import com.itsaky.androidide.xml.permissions.Permission
+import com.itsaky.androidide.xml.permissions.Permission.INTERNET
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
 import com.squareup.javapoet.TypeName
@@ -132,7 +133,12 @@ class TemplateBuilderTest {
   fun `test empty activity template`() {
     val template = testTemplate {
       defaultAppModule {
+
         recipe = {
+          manifest {
+            addPermission(INTERNET)
+          }
+
           sources {
             writeEmptyActivity(this)
           }

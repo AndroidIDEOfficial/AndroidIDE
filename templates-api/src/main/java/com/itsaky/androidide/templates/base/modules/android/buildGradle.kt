@@ -17,9 +17,10 @@
 
 package com.itsaky.androidide.templates.base.modules.android
 
-import com.itsaky.androidide.templates.Language
+import com.itsaky.androidide.templates.Language.Kotlin
 import com.itsaky.androidide.templates.ModuleType
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.modules.dependencies
 
 private val AndroidModuleTemplateBuilder.androidPlugin: String
@@ -68,7 +69,7 @@ android {
         viewBinding = true
     }
 }
-
+${ktJvmTarget()}
 ${dependencies()}
 """
 }
@@ -109,13 +110,39 @@ android {
         viewBinding true
     }
 }
-
+${ktJvmTarget()}
 ${dependencies()}
 """
 }
 
+private fun ModuleTemplateBuilder.ktJvmTarget(): String {
+  if (data.language != Kotlin) {
+    return ""
+  }
+
+  return if (data.useKts) ktJvmTargetKts() else ktJvmTargetGroovy()
+}
+
+private fun ModuleTemplateBuilder.ktJvmTargetKts(): String {
+  return """
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "${data.versions.javaTarget}"
+}
+"""
+}
+
+private fun ModuleTemplateBuilder.ktJvmTargetGroovy(): String {
+  return """
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions {
+    jvmTarget = "${data.versions.javaTarget}"
+  }
+}
+"""
+}
+
 private fun AndroidModuleTemplateBuilder.ktPlugin(): String {
-  if (data.language != Language.Kotlin) {
+  if (data.language != Kotlin) {
     return ""
   }
 
