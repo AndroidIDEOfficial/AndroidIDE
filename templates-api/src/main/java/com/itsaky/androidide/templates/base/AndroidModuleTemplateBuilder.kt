@@ -30,8 +30,8 @@ import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
 
-  val manifestBuilder = AndroidManifestBuilder()
-  val resManager = AndroidModuleResManager()
+  val manifest = AndroidManifestBuilder()
+  val res = AndroidModuleResManager()
 
   /**
    * Return the file path to `AndroidManifest.xml`.
@@ -45,7 +45,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    * Configure the properties for `AndroidManifest.xml` file.
    */
   fun manifest(block: AndroidManifestBuilder.() -> Unit) {
-    manifestBuilder.apply(block)
+    manifest.apply(block)
   }
 
   /**
@@ -72,7 +72,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
    * @param configure Function to configure the resources.
    */
   fun RecipeExecutor.res(configure: AndroidModuleResManager.() -> Unit) {
-    resManager.apply(configure)
+    res.apply(configure)
   }
 
   /**
@@ -100,7 +100,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
   }
 
   override fun RecipeExecutor.preConfig() {
-    manifestBuilder.apply {
+    manifest.apply {
       packageName = data.packageName
       isLibrary = data.type == AndroidLibrary
     }
@@ -110,7 +110,7 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
   }
 
   override fun RecipeExecutor.postConfig() {
-    manifestBuilder.apply {
+    manifest.apply {
       generate(manifestFile())
     }
   }

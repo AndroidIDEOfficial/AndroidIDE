@@ -29,11 +29,13 @@ import com.itsaky.androidide.templates.base.baseAndroidXDependencies
  * @param copyDefAssets Whether to copy the default Android assets (except `values` directory) to this module.
  * @param block The module configurator.
  */
-fun ProjectTemplateBuilder.defaultAppModule(name: String = ":app", addAndroidX: Boolean = true,
+fun ProjectTemplateBuilder.defaultAppModule(name: String = ":app",
+                                            addAndroidX: Boolean = true,
                                             copyDefAssets: Boolean = true,
                                             block: AndroidModuleTemplateConfigurator
 ) {
-  check(defModuleTemplate == null) { "Default module has been already configured" }
+  check(
+    defModuleTemplate == null) { "Default module has been already configured" }
 
   val module = AndroidModuleTemplateBuilder().apply {
     _name = name

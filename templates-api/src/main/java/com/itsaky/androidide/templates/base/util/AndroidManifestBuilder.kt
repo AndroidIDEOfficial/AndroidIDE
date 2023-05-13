@@ -31,8 +31,8 @@ import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.ManifestIcon
 import com.itsaky.androidide.xml.permissions.Permission
+import com.itsaky.androidide.xml.utils.XmlBuilder
 import java.io.File
-import com.android.xml.XmlBuilder as XMLBuilder
 
 /**
  * Builder for building `AndroidManifest.xml` file for an Android module.
@@ -102,12 +102,12 @@ class AndroidManifestBuilder {
   }
 
   private fun manifestSrc(): String {
-    return XMLBuilder().apply {
+    return XmlBuilder().apply {
       buildManifest()
     }.withXmlDecl()
   }
 
-  private fun XMLBuilder.buildManifest() {
+  private fun XmlBuilder.buildManifest() {
     createElement(TAG_MANIFEST) {
       attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
 
@@ -116,7 +116,7 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XMLBuilder.permissions() {
+  private fun XmlBuilder.permissions() {
     for (permission in permissions) {
       createElement(TAG_USES_PERMISSION) {
         androidAttr("name", permission.constant)
@@ -124,7 +124,7 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XMLBuilder.application() {
+  private fun XmlBuilder.application() {
     if (isLibrary) {
       return
     }
@@ -141,7 +141,7 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XMLBuilder.activities() {
+  private fun XmlBuilder.activities() {
     for (activity in activities) {
       createElement(TAG_ACTIVITY) {
         androidAttr("name", activity.name(packageName))
@@ -155,7 +155,7 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XMLBuilder.intentFilter() {
+  private fun XmlBuilder.intentFilter() {
     createElement(TAG_INTENT_FILTER) {
       // action
       createElement(TAG_ACTION) {
@@ -169,11 +169,11 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XMLBuilder.androidAttr(name: String, value: String) {
+  private fun XmlBuilder.androidAttr(name: String, value: String) {
     androidAttribute(name, value)
   }
 
-  private fun XMLBuilder.attr(name: String, value: String, ns: String = "") {
+  private fun XmlBuilder.attr(name: String, value: String, ns: String = "") {
     attribute(ns, name, value)
   }
 

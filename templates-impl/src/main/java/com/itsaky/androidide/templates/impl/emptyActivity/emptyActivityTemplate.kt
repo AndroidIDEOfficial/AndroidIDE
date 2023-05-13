@@ -17,14 +17,20 @@
 
 package com.itsaky.androidide.templates.impl.emptyActivity
 
+import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.android.ResTableConfig
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
+import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
 import com.itsaky.androidide.templates.base.util.SourceWriter
+import com.itsaky.androidide.templates.impl.base.emptyValuesFile
+import com.itsaky.androidide.templates.impl.base.simpleMaterial3Theme
 
 fun emptyActivityProject(): ProjectTemplate = baseProject {
   defaultAppModule {
@@ -44,103 +50,41 @@ internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
   resManager: AndroidModuleResManager
 ) {
   resManager.apply {
-    writeXmlResource("activity_main", LAYOUT) {
-      """
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Hello user!"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-      """.trim()
+    val configNight = ConfigDescription().apply {
+      uiMode = ResTableConfig.UI_MODE.NIGHT_YES
     }
+
+    // layout/activity_main.xml
+    writeXmlResource("activity_main", LAYOUT, source = ::emptyLayoutSrc)
+
+    // values
+    writeXmlResource("themes", VALUES,
+      source = simpleMaterial3Theme(manifest.themeRes))
+    writeXmlResource("colors", VALUES, source = emptyValuesFile())
+
+    // values-night
+    writeXmlResource("themes", VALUES, config = configNight,
+      source = simpleMaterial3Theme(manifest.themeRes))
+    writeXmlResource("colors", VALUES, config = configNight,
+      source = emptyValuesFile())
   }
 }
 
 internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
   writer: SourceWriter
 ) {
+  val className = "MainActivity"
   writer.apply {
     if (data.language == Language.Kotlin) {
-      writeKtSrc(data.packageName, "MainActivity",
-        source = this@writeEmptyActivity::emptyActivityKtSrc)
+      writeKtSrc(data.packageName, className,
+        source = ::emptyActivityKtSrc)
     } else {
-      writeJavaSrc(packageName = data.packageName, className = "MainActivity",
-        source = this@writeEmptyActivity::emptyActivityJavaSrc)
+      writeJavaSrc(packageName = data.packageName, className = className,
+        source = ::emptyActivityJavaSrc)
     }
   }
-}
 
-private fun AndroidModuleTemplateBuilder.emptyActivityKtSrc(): String {
-  return """
-package ${data.packageName}
-
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import ${data.packageName}.databinding.ActivityMainBinding
-
-public class MainActivity : AppCompatActivity() {
-
-    private var _binding: ActivityMainBinding? = null
-    
-    private val binding: ActivityMainBinding
-      get() = checkNotNull(_binding) { "Activity has been destroyed" }
-    
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Inflate and get instance of binding
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-
-        // set content view to binding's root
-        setContentView(binding.root)
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-}
-"""
-}
-
-private fun AndroidModuleTemplateBuilder.emptyActivityJavaSrc(): String {
-  return """
-package ${data.packageName};
-
-import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
-import ${data.packageName}.databinding.ActivityMainBinding;
-
-public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Inflate and get instance of binding
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-
-        // set content view to binding's root
-        setContentView(binding.getRoot());
-    }
-    
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        this.binding = null;
-    }
-}
-"""
+  manifest {
+    addActivity(ManifestActivity(name = className, isExported = true, isLauncher = true))
+  }
 }

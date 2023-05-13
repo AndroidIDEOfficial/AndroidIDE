@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.templates.base.util
 
-import com.android.xml.XmlBuilder
+import com.itsaky.androidide.xml.utils.XmlBuilder
 
 /**
  * Creates a new element in the [XmlBuilder] with the given [name].
@@ -31,8 +31,28 @@ fun XmlBuilder.createElement(name: String, configure: XmlBuilder.() -> Unit) {
 }
 
 /**
+ * Adds a new `<string>` resource entry to this [XmlBuilder].
+ *
+ * @param name The name of the string resource.
+ * @param value The value of the XML resource.
+ */
+fun XmlBuilder.addStringRes(name: String, value: String) {
+  createElement("string") {
+    attribute("name", name)
+    text(value)
+  }
+}
+
+/**
  * Get the generated XML string from the [XmlBuilder] with XML declaration prepended.
  */
-fun XmlBuilder.withXmlDecl() : String {
-  return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n${toString()}"
+fun XmlBuilder.withXmlDecl(): String {
+  return toString().withXmlDecl()
+}
+
+/**
+ * Prepends XML declaration to this string.
+ */
+fun String.withXmlDecl(): String {
+  return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n${this}"
 }

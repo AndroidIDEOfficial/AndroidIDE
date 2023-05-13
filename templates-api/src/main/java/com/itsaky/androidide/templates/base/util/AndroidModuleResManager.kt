@@ -18,8 +18,9 @@
 package com.itsaky.androidide.templates.base.util
 
 import com.android.aaptcompiler.ConfigDescription
-import com.android.xml.XmlBuilder
+import com.itsaky.androidide.xml.utils.XmlBuilder
 import com.itsaky.androidide.templates.SrcSet
+import com.itsaky.androidide.templates.SrcSet.Main
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import java.io.File
 
@@ -55,10 +56,31 @@ class AndroidModuleResManager {
     var name = type.dirName
     config.toString().also {
       if (it != "DEFAULT") {
-        name += it
+        name += "-${it}"
       }
     }
     return File(resDir(srcSet), name).also { it.mkdirs() }
+  }
+
+  /**
+   * Create a new XML values resource file for the given [resource type][type] and
+   * the [configuration][config]. The `<resources>` tag is already appended
+   * to the [XmlBuilder].
+   *
+   * @param name The name of the resource without the `.xml` extension.
+   * @param type The resource type.
+   * @param srcSet The source set.
+   * @param config The configuration for the resource type.
+   */
+  fun AndroidModuleTemplateBuilder.createValuesResource(name: String,
+                                                        type: ResourceType,
+                                                        srcSet: SrcSet = Main,
+                                                        config: ConfigDescription = ConfigDescription(),
+                                                        configure: XmlBuilder.() -> Unit
+  ) {
+    return createXmlResource(name, type, srcSet, config) {
+      createElement("resources", configure)
+    }
   }
 
   /**
