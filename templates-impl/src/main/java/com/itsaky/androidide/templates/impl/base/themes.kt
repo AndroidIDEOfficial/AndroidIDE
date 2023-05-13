@@ -22,7 +22,7 @@ internal fun simpleMaterial3Theme(themeName: String) : String {
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Base application theme. -->
   <style name="Base.${themeName}" parent="Theme.Material3.DayNight.NoActionBar">
-    <!-- Customize your light theme here. -->
+    <!-- Customize your theme here. -->
     <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
   </style>
 

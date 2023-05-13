@@ -78,7 +78,7 @@
 }
 
 # Used in preferences
--keep enum com.itsaky.androidide.lsp.xml.models.EmptyElements { *; }
+-keep enum org.eclipse.lemminx.dom.builder.EmptyElements { *; }
 -keep enum com.itsaky.androidide.xml.permissions.Permission { *; }
 
 # Lots of native methods in tree-sitter

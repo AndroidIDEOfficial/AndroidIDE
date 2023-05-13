@@ -31,7 +31,7 @@ import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.ManifestIcon
 import com.itsaky.androidide.xml.permissions.Permission
-import com.itsaky.androidide.xml.utils.XmlBuilder
+import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
 import java.io.File
 
 /**
@@ -102,29 +102,34 @@ class AndroidManifestBuilder {
   }
 
   private fun manifestSrc(): String {
-    return XmlBuilder().apply {
+    return IndentedXmlBuilder(autoIndent = true).apply {
       buildManifest()
     }.withXmlDecl()
   }
 
-  private fun XmlBuilder.buildManifest() {
+  private fun IndentedXmlBuilder.buildManifest() {
     createElement(TAG_MANIFEST) {
       attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
+      closeStartElement()
 
       permissions()
       application()
     }
   }
 
-  private fun XmlBuilder.permissions() {
+  private fun IndentedXmlBuilder.permissions() {
+    if (permissions.isEmpty()) {
+      return
+    }
+
     for (permission in permissions) {
-      createElement(TAG_USES_PERMISSION) {
+      createElement(TAG_USES_PERMISSION, selfClose = true) {
         androidAttr("name", permission.constant)
       }
     }
   }
 
-  private fun XmlBuilder.application() {
+  private fun IndentedXmlBuilder.application() {
     if (isLibrary) {
       return
     }
@@ -136,18 +141,25 @@ class AndroidManifestBuilder {
       androidAttr("label", appLabelRes)
       androidAttr("supportsRtl", rtl.toString())
       androidAttr("theme", "@style/${themeRes}")
+      closeStartElement()
 
       activities()
     }
   }
 
-  private fun XmlBuilder.activities() {
+  private fun IndentedXmlBuilder.activities() {
+    if (activities.isEmpty()) {
+      return
+    }
+
     for (activity in activities) {
       createElement(TAG_ACTIVITY) {
         androidAttr("name", activity.name(packageName))
         if (activity.isLauncher || activity.isExported) {
           androidAttr("exported", "true")
         }
+
+        closeStartElement()
         if (activity.isLauncher) {
           intentFilter()
         }
@@ -155,26 +167,31 @@ class AndroidManifestBuilder {
     }
   }
 
-  private fun XmlBuilder.intentFilter() {
-    createElement(TAG_INTENT_FILTER) {
+  private fun IndentedXmlBuilder.intentFilter() {
+    createElement(TAG_INTENT_FILTER, closeStartTag = true) {
       // action
-      createElement(TAG_ACTION) {
+      createElement(TAG_ACTION, selfClose = true) {
         androidAttr("name", "android.intent.action.MAIN")
       }
-
       // category
-      createElement(TAG_CATEGORY) {
+      createElement(TAG_CATEGORY, selfClose = true) {
         androidAttr("name", "android.intent.category.LAUNCHER")
       }
     }
   }
 
-  private fun XmlBuilder.androidAttr(name: String, value: String) {
+  private fun IndentedXmlBuilder.androidAttr(name: String, value: String) {
     androidAttribute(name, value)
   }
 
-  private fun XmlBuilder.attr(name: String, value: String, ns: String = "") {
-    attribute(ns, name, value)
+  private fun IndentedXmlBuilder.attr(name: String, value: String,
+                                      ns: String = ""
+  ) {
+    if (ns.isNotEmpty()) {
+      addSingleAttribute("${ns}:${name}", value)
+    } else {
+      addSingleAttribute(name, value)
+    }
   }
 
   private fun ManifestActivity.name(packageName: String?): String {

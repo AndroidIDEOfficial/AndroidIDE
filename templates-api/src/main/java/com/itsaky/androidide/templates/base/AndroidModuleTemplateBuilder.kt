@@ -25,7 +25,9 @@ import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
 import com.itsaky.androidide.templates.base.modules.android.proguardRules
 import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
+import com.itsaky.androidide.templates.base.util.stringRes
 import com.squareup.javapoet.TypeSpec
+import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
 import java.io.File
 
 class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
@@ -112,6 +114,20 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
   override fun RecipeExecutor.postConfig() {
     manifest.apply {
       generate(manifestFile())
+    }
+
+    res {
+      data.appName?.let { putStringRes(manifest.appLabelRes, it) }
+
+      if (strings.isNotEmpty()) {
+        createValuesResource("strings") {
+          linefeed()
+          strings.forEach { (name, value) ->
+            stringRes(name, value)
+          }
+          linefeed()
+        }
+      }
     }
   }
 

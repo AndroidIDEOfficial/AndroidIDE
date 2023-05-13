@@ -17,17 +17,22 @@
 
 package com.itsaky.androidide.templates.base.util
 
-import com.itsaky.androidide.xml.utils.XmlBuilder
+import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
+import org.eclipse.lemminx.dom.builder.XmlBuilder
 
 /**
  * Creates a new element in the [XmlBuilder] with the given [name].
  * The [configure] function is used to configure everything inside the element and then
  * the element is automatically closed.
  */
-fun XmlBuilder.createElement(name: String, configure: XmlBuilder.() -> Unit) {
-  startTag(name)
-  apply(configure)
-  endTag(name)
+fun XmlBuilder.createElement(name: String, closeStartTag: Boolean = false, selfClose: Boolean = false, configure: XmlBuilder.() -> Unit) {
+  startElement(name, closeStartTag)
+  configure()
+  if (selfClose) {
+    selfCloseElement()
+  } else {
+    endElement(name)
+  }
 }
 
 /**
@@ -36,11 +41,14 @@ fun XmlBuilder.createElement(name: String, configure: XmlBuilder.() -> Unit) {
  * @param name The name of the string resource.
  * @param value The value of the XML resource.
  */
-fun XmlBuilder.addStringRes(name: String, value: String) {
+fun XmlBuilder.stringRes(name: String, value: String, indent: Boolean = true) {
+  indent(1)
   createElement("string") {
-    attribute("name", name)
-    text(value)
+    addSingleAttribute("name", name)
+    closeStartElement()
+    append(value)
   }
+  linefeed()
 }
 
 /**

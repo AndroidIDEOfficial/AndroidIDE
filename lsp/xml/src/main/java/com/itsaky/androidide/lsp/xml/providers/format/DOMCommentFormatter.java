@@ -109,7 +109,7 @@ public class DOMCommentFormatter {
   }
 
   private boolean isJoinCommentLines() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getJoinCommentLines();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isJoinCommentLines();
   }
 
   private int getTabSize() {

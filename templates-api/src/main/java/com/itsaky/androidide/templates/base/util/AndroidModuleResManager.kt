@@ -18,10 +18,12 @@
 package com.itsaky.androidide.templates.base.util
 
 import com.android.aaptcompiler.ConfigDescription
-import com.itsaky.androidide.xml.utils.XmlBuilder
 import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.SrcSet.Main
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
+import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
+import org.eclipse.lemminx.dom.builder.XmlBuilder
 import java.io.File
 
 /**
@@ -41,6 +43,18 @@ class AndroidModuleResManager {
     MIPMAP("mipmap"),
     NAVIGATION("navigation"),
     VALUES("values"),
+  }
+
+  internal val strings = mutableMapOf<String, String>()
+
+  /**
+   * Adds a string resource entry in the `strings.xml` file.
+   *
+   * @param name The name of the string.
+   * @param value The value of the string.
+   */
+  fun putStringRes(name: String, value: String) {
+    strings[name] = value
   }
 
   /**
@@ -73,13 +87,15 @@ class AndroidModuleResManager {
    * @param config The configuration for the resource type.
    */
   fun AndroidModuleTemplateBuilder.createValuesResource(name: String,
-                                                        type: ResourceType,
+                                                        type: ResourceType = VALUES,
                                                         srcSet: SrcSet = Main,
                                                         config: ConfigDescription = ConfigDescription(),
+                                                        selfClose: Boolean = false,
                                                         configure: XmlBuilder.() -> Unit
   ) {
     return createXmlResource(name, type, srcSet, config) {
-      createElement("resources", configure)
+      createElement(name = "resources", closeStartTag = true,
+        selfClose = selfClose, configure = configure)
     }
   }
 
@@ -98,7 +114,7 @@ class AndroidModuleResManager {
                                                      configure: XmlBuilder.() -> Unit = {}
   ) {
     val file = File(resDir(type, srcSet, config), "${name}.xml")
-    val builder = XmlBuilder().apply(configure)
+    val builder = IndentedXmlBuilder().apply(configure)
     executor.save(builder.withXmlDecl(), file)
   }
 

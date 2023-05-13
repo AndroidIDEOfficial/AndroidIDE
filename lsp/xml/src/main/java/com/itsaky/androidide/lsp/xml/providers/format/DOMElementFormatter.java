@@ -29,8 +29,8 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.lsp.xml.models.EmptyElements;
 
+import org.eclipse.lemminx.dom.builder.EmptyElements;
 import org.eclipse.lemminx.commons.BadLocationException;
 import org.eclipse.lemminx.dom.DOMAttr;
 import org.eclipse.lemminx.dom.DOMElement;
@@ -435,7 +435,7 @@ public class DOMElementFormatter {
   private boolean shouldFormatClosingBracketNewLine(DOMElement element) {
     boolean isSingleAttribute =
         element.getAttributeNodes() == null || element.getAttributeNodes().size() == 1;
-    return (formatterDocument.getSharedSettings().getFormattingOptions().getClosingBracketNewLine()
+    return (formatterDocument.getSharedSettings().getFormattingOptions().isClosingBracketNewLine()
         && isSplitAttributes()
         && !isSingleAttribute);
   }
@@ -500,11 +500,11 @@ public class DOMElementFormatter {
     return formatterDocument
         .getSharedSettings()
         .getFormattingOptions()
-        .getPreserveAttributeLineBreaks();
+        .isPreserveAttributeLineBreaks();
   }
 
   private boolean isSplitAttributes() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getSplitAttributes();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isSplitAttributes();
   }
 
   private int getSplitAttributesIndentSize() {
@@ -518,7 +518,7 @@ public class DOMElementFormatter {
     return formatterDocument
         .getSharedSettings()
         .getFormattingOptions()
-        .getSpaceBeforeEmptyCloseTag();
+        .isSpaceBeforeEmptyCloseTag();
   }
 
   private EmptyElements getEmptyElements() {
@@ -526,7 +526,7 @@ public class DOMElementFormatter {
   }
 
   private boolean isPreserveEmptyContent() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getPreserveEmptyContent();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isPreserveEmptyContent();
   }
 
   private void formatChildren(

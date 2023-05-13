@@ -109,7 +109,7 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
         language = language.value!!, useKts = true)
 
       setDefaultModuleData(
-        ModuleTemplateData(":app", packageName.value!!, data.moduleNameToDir(":app"),
+        ModuleTemplateData(":app", appName = data.name, packageName.value!!, data.moduleNameToDir(":app"),
           type = AndroidApp, language = language.value!!, minSdk = minSdk.value!!,
           useKts = data.useKts))
     }
@@ -144,13 +144,19 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
  *
  * @param block The module configurator.
  */
-fun baseAndroidModule(block: AndroidModuleTemplateConfigurator): ModuleTemplate {
+fun baseAndroidModule(isLibrary: Boolean = false, block: AndroidModuleTemplateConfigurator): ModuleTemplate {
   return AndroidModuleTemplateBuilder().apply {
 
     val moduleName = stringParameter {
       name = R.string.wizard_module_name
       default = ":app"
       constraints = listOf(NONEMPTY, MODULE_NAME)
+    }
+
+    val appName = if (isLibrary) null else stringParameter {
+      name = R.string.project_app_name
+      default = "My Application"
+      constraints = listOf(NONEMPTY)
     }
 
     val packageName = stringParameter {
@@ -177,11 +183,17 @@ fun baseAndroidModule(block: AndroidModuleTemplateConfigurator): ModuleTemplate 
       displayName = Language::lang
     }
 
-    widgets(TextFieldWidget(moduleName), TextFieldWidget(packageName), SpinnerWidget(minSdk),
+    widgets(TextFieldWidget(moduleName))
+
+    appName?.let {
+      widgets(TextFieldWidget(it))
+    }
+
+    widgets(TextFieldWidget(packageName), SpinnerWidget(minSdk),
       SpinnerWidget(type), SpinnerWidget(language))
 
     preRecipe = commonPreRecipe {
-      ModuleTemplateData(name = moduleName.value!!, packageName = packageName.value!!,
+      ModuleTemplateData(name = moduleName.value!!, appName = appName?.value, packageName = packageName.value!!,
         projectDir = requireProjectData().moduleNameToDir(moduleName.value!!), type = type.value!!,
         language = language.value!!, minSdk = minSdk.value!!)
     }

@@ -15,20 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.utils
-
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+package org.eclipse.lemminx.dom.builder
 
 /**
+ * Behavior for empty elements.
+ *
  * @author Akash Yadav
  */
-@RunWith(RobolectricTestRunner::class)
-class XmlBuilderTest {
-
-  @Test
-  fun `test values res build`() {
-
-  }
+enum class EmptyElements {
+  Expand,
+  Collapse,
+  Ignore
 }

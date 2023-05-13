@@ -148,7 +148,7 @@ class ProjectTemplateData(name: String, projectDir: File, val version: ProjectVe
  * @property type The type of module.
  * @property versions Version information for the module.
  */
-class ModuleTemplateData(name: String, val packageName: String, projectDir: File,
+class ModuleTemplateData(name: String, val appName: String?, val packageName: String, projectDir: File,
                          val type: ModuleType, language: Language, useKts: Boolean = true,
                          minSdk: Sdk, val versions: ModuleVersionData = ModuleVersionData(minSdk)
 ) : BaseTemplateData(name, projectDir, language, useKts) {

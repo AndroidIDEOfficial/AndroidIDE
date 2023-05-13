@@ -113,7 +113,7 @@ public class DOMCDATAFormatter {
   }
 
   private boolean isJoinCDATALines() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getJoinCDataLines();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isJoinCDataLines();
   }
 
   private int getTabSize() {

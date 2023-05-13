@@ -144,7 +144,7 @@ public class DOMAttributeFormatter {
   }
 
   private boolean isSplitAttributes() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getSplitAttributes();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isSplitAttributes();
   }
 
   private int getSplitAttributesIndentSize() {
@@ -158,7 +158,7 @@ public class DOMAttributeFormatter {
     return formatterDocument
         .getSharedSettings()
         .getFormattingOptions()
-        .getPreserveAttributeLineBreaks();
+        .isPreserveAttributeLineBreaks();
   }
 
   private boolean hasLineBreak(int prevOffset, int start) {

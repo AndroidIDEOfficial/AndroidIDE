@@ -30,6 +30,7 @@ dependencies {
   api(projects.common)
   api(projects.logger)
   api(projects.resources)
+  api(projects.subprojects.xmlDom)
   api(projects.subprojects.xmlUtils)
 
   api(libs.aapt2.common)

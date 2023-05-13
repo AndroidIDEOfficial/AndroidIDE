@@ -683,11 +683,11 @@ public class XMLFormatterDocumentNew {
   }
 
   private boolean isTrimFinalNewlines() {
-    return getFormattingSettings().getTrimFinalNewLine();
+    return getFormattingSettings().isTrimFinalNewLine();
   }
 
   private boolean isInsertFinalNewline() {
-    return getFormattingSettings().getInsertFinalNewLine();
+    return getFormattingSettings().isInsertFinalNewLine();
   }
 
   private String getQuotationAsString() {
