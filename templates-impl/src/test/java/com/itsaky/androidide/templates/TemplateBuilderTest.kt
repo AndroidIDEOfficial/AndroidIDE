@@ -25,6 +25,7 @@ import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
 import com.itsaky.androidide.templates.impl.basicActivity.basicActivityProject
 import com.itsaky.androidide.templates.impl.emptyActivity.emptyActivityProject
+import com.itsaky.androidide.templates.impl.navDrawerActivity.navigationDrawerActivityProject
 import com.itsaky.androidide.xml.permissions.Permission.INTERNET
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
@@ -138,6 +139,13 @@ class TemplateBuilderTest {
   fun `test basic activity template`() {
     testTemplate("BasicActivity") {
       basicActivityProject()
+    }
+  }
+
+  @Test
+  fun `test navigation drawer activity template`() {
+    testTemplate("NavigationDrawerActivity") {
+      navigationDrawerActivityProject()
     }
   }
 }

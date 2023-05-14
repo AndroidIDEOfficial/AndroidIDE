@@ -17,8 +17,9 @@
 
 package com.itsaky.androidide.templates.base.models
 
-data class Dependency(val configuration: DependencyConfiguration, val group: String,
-                      val artifact: String, val version: String
+data class Dependency(val configuration: DependencyConfiguration,
+                      val group: String, val artifact: String,
+                      val version: String
 ) {
 
   fun value(): String {
@@ -29,11 +30,49 @@ data class Dependency(val configuration: DependencyConfiguration, val group: Str
 
   object AndroidX {
 
+    // Version 2.6.1 results in 'duplicate classes' build issue
+    private const val lifecycleVersion = "2.5.1"
+
+    private const val navigationVersion = "2.5.3"
+
     @JvmStatic
     val AppCompat = parseDependency("androidx.appcompat:appcompat:1.6.1")
 
     @JvmStatic
-    val ConstraintLayout = parseDependency("androidx.constraintlayout:constraintlayout:2.1.4")
+    val ConstraintLayout =
+      parseDependency("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    @JvmStatic
+    val LifeCycle_LiveData = parseDependency(
+      "androidx.lifecycle:lifecycle-livedata:${lifecycleVersion}")
+
+    @JvmStatic
+    val LifeCycle_LiveData_Ktx = parseDependency(
+      "androidx.lifecycle:lifecycle-livedata-ktx:${lifecycleVersion}")
+
+    @JvmStatic
+    val LifeCycle_ViewModel = parseDependency(
+      "androidx.lifecycle:lifecycle-viewmodel:${lifecycleVersion}")
+
+    @JvmStatic
+    val LifeCycle_ViewModel_Ktx = parseDependency(
+      "androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycleVersion}")
+
+    @JvmStatic
+    val Navigation_Fragment = parseDependency(
+      "androidx.navigation:navigation-fragment:${navigationVersion}")
+
+    @JvmStatic
+    val Navigation_Ui =
+      parseDependency("androidx.navigation:navigation-ui:${navigationVersion}")
+
+    @JvmStatic
+    val Navigation_Fragment_Ktx = parseDependency(
+      "androidx.navigation:navigation-fragment-ktx:${navigationVersion}")
+
+    @JvmStatic
+    val Navigation_Ui_Ktx = parseDependency(
+      "androidx.navigation:navigation-ui-ktx:${navigationVersion}")
   }
 
   object Google {

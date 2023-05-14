@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.templates.impl
 
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+
 /**
  * Indents the given string for the given [indentation level][level].
  */
@@ -28,4 +30,9 @@ fun String.indent(level: Int): String {
       append(" ".repeat(level * 4))
     }
   }.toString()
+}
+
+internal fun AndroidModuleTemplateBuilder.templateAsset(name: String, path: String
+): String {
+  return "templates/${name}/${path}"
 }
