@@ -23,7 +23,8 @@ import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
-import com.itsaky.androidide.templates.impl.emptyActivity.writeEmptyActivity
+import com.itsaky.androidide.templates.impl.basicActivity.basicActivityProject
+import com.itsaky.androidide.templates.impl.emptyActivity.emptyActivityProject
 import com.itsaky.androidide.xml.permissions.Permission.INTERNET
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ParameterSpec
@@ -40,7 +41,6 @@ import org.robolectric.RobolectricTestRunner
  *
  * @author Akash Yadav
  */
-
 @RunWith(RobolectricTestRunner::class)
 class TemplateBuilderTest {
 
@@ -130,24 +130,14 @@ class TemplateBuilderTest {
   @Test
   fun `test empty activity template`() {
     testTemplate("EmptyActivity") {
-      baseProject {
-        defaultAppModule {
+      emptyActivityProject()
+    }
+  }
 
-          recipe = {
-            manifest {
-              addPermission(INTERNET)
-            }
-
-            sources {
-              writeEmptyActivity(this)
-            }
-
-            res {
-              writeEmptyActivity(this)
-            }
-          }
-        }
-      }
+  @Test
+  fun `test basic activity template`() {
+    testTemplate("BasicActivity") {
+      basicActivityProject()
     }
   }
 }

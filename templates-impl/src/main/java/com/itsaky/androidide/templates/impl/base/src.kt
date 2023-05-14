@@ -17,7 +17,30 @@
 
 package com.itsaky.androidide.templates.impl.base
 
+import com.itsaky.androidide.templates.Language
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
+import com.itsaky.androidide.templates.base.util.SourceWriter
 import com.itsaky.androidide.templates.base.util.withXmlDecl
+
+internal fun AndroidModuleTemplateBuilder.writeMainActivity(
+  writer: SourceWriter, ktSrc: () -> String, javaSrc: () -> String
+) {
+  val className = "MainActivity"
+  writer.apply {
+    if (data.language == Language.Kotlin) {
+      writeKtSrc(data.packageName, className, source = ktSrc)
+    } else {
+      writeJavaSrc(packageName = data.packageName, className = className,
+        source = javaSrc)
+    }
+  }
+
+  manifest {
+    addActivity(
+      ManifestActivity(name = className, isExported = true, isLauncher = true))
+  }
+}
 
 internal fun emptyValuesFile(): String {
   return """

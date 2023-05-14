@@ -17,7 +17,12 @@
 
 package com.itsaky.androidide.templates.impl.base
 
-internal fun simpleMaterial3Theme(themeName: String) : String {
+import com.android.aaptcompiler.ConfigDescription
+import com.android.aaptcompiler.android.ResTableConfig
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
+
+internal fun simpleMaterial3Theme(themeName: String): String {
   return """
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Base application theme. -->
@@ -29,4 +34,24 @@ internal fun simpleMaterial3Theme(themeName: String) : String {
   <style name="$themeName" parent="Base.${themeName}" />
 </resources>
   """.trim()
+}
+
+internal fun AndroidModuleTemplateBuilder.emptyThemesAndColors() {
+  val configNight = ConfigDescription().apply {
+    uiMode = ResTableConfig.UI_MODE.NIGHT_YES
+  }
+
+  res.apply {
+    // values
+    writeXmlResource("themes", VALUES,
+      source = simpleMaterial3Theme(manifest.themeRes))
+    writeXmlResource("colors", VALUES, source = emptyValuesFile())
+
+    // values-night
+    writeXmlResource("themes", VALUES, config = configNight,
+      source = simpleMaterial3Theme(manifest.themeRes))
+    writeXmlResource("colors", VALUES, config = configNight,
+      source = emptyValuesFile())
+  }
+
 }

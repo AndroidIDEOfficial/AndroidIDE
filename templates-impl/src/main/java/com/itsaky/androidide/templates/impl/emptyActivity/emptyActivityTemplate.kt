@@ -17,20 +17,14 @@
 
 package com.itsaky.androidide.templates.impl.emptyActivity
 
-import com.android.aaptcompiler.ConfigDescription
-import com.android.aaptcompiler.android.ResTableConfig
-import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
-import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
 import com.itsaky.androidide.templates.base.util.SourceWriter
-import com.itsaky.androidide.templates.impl.base.emptyValuesFile
-import com.itsaky.androidide.templates.impl.base.simpleMaterial3Theme
+import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
+import com.itsaky.androidide.templates.impl.base.writeMainActivity
 
 fun emptyActivityProject(): ProjectTemplate = baseProject {
   defaultAppModule {
@@ -40,51 +34,22 @@ fun emptyActivityProject(): ProjectTemplate = baseProject {
       }
 
       res {
-        writeEmptyActivity(this)
+        writeEmptyActivity()
       }
     }
   }
 }
 
-internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
-  resManager: AndroidModuleResManager
-) {
-  resManager.apply {
-    val configNight = ConfigDescription().apply {
-      uiMode = ResTableConfig.UI_MODE.NIGHT_YES
-    }
-
+internal fun AndroidModuleTemplateBuilder.writeEmptyActivity() {
+  res.apply {
     // layout/activity_main.xml
     writeXmlResource("activity_main", LAYOUT, source = ::emptyLayoutSrc)
-
-    // values
-    writeXmlResource("themes", VALUES,
-      source = simpleMaterial3Theme(manifest.themeRes))
-    writeXmlResource("colors", VALUES, source = emptyValuesFile())
-
-    // values-night
-    writeXmlResource("themes", VALUES, config = configNight,
-      source = simpleMaterial3Theme(manifest.themeRes))
-    writeXmlResource("colors", VALUES, config = configNight,
-      source = emptyValuesFile())
+    emptyThemesAndColors()
   }
 }
 
 internal fun AndroidModuleTemplateBuilder.writeEmptyActivity(
   writer: SourceWriter
 ) {
-  val className = "MainActivity"
-  writer.apply {
-    if (data.language == Language.Kotlin) {
-      writeKtSrc(data.packageName, className,
-        source = ::emptyActivityKtSrc)
-    } else {
-      writeJavaSrc(packageName = data.packageName, className = className,
-        source = ::emptyActivityJavaSrc)
-    }
-  }
-
-  manifest {
-    addActivity(ManifestActivity(name = className, isExported = true, isLauncher = true))
-  }
+  writeMainActivity(writer, ::emptyActivitySrcKt, ::emptyActivitySrcJava)
 }

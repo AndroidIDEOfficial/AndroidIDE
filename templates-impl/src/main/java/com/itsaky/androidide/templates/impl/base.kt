@@ -16,3 +16,16 @@
  */
 
 package com.itsaky.androidide.templates.impl
+
+/**
+ * Indents the given string for the given [indentation level][level].
+ */
+fun String.indent(level: Int): String {
+  val lines = split(Regex("[\r\n]"))
+  return StringBuilder().apply {
+    for (line in lines) {
+      append(line)
+      append(" ".repeat(level * 4))
+    }
+  }.toString()
+}
