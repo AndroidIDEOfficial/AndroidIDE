@@ -101,26 +101,6 @@ class ToolingApiTestLauncher {
     return cmd
   }
 
-  private fun findAndroidHome(): String {
-    var androidHome = System.getenv("ANDROID_HOME")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    androidHome = System.getenv("ANDROID_SDK_ROOT")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    val os = System.getProperty("os.name")
-    val home = System.getProperty("user.home")
-    return if (os.contains("Linux")) {
-      "$home/Android/Sdk"
-    } else {
-      "$home\\AppData\\Local\\Android\\Sdk"
-    }
-  }
-
   class MultiVersionTestClient(
     private val projectDir: Path = FileProvider.testProjectRoot(),
     var agpVersion: String = DEFAULT_AGP_VERSION,
