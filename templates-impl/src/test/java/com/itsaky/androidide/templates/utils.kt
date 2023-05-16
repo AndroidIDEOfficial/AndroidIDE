@@ -103,20 +103,24 @@ fun testTemplate(name: String, builder: () -> Template): Template {
   val template = builder()
 
   for (language in Language.values()) {
+    val packageName = "com.itsaky.androidide.template.${language.lang}"
     run {
-      // Test with language + Kotlin Script
-      mockTemplateDatas(true)
-      template.setupRootProjectParams(
-        name = "${name}Project${language.name}WithKts", language = language)
+      val projectName = "${name}Project${language.name}WithoutKts"
+
+      // Test with language without Kotlin Script
+      mockTemplateDatas(useKts = false)
+      template.setupRootProjectParams(name = projectName,
+        packageName = packageName, language = language)
       template.executeRecipe()
       unmockTemplateDatas()
     }
 
     run {
-      // Test with language without Kotlin Script
-      mockTemplateDatas(false)
-      template.setupRootProjectParams(
-        name = "${name}Project${language.name}WithoutKts", language = language)
+      val projectName = "${name}Project${language.name}WithKts"
+      // Test with language + Kotlin Script
+      mockTemplateDatas(useKts = true)
+      template.setupRootProjectParams(name = projectName,
+        packageName = "${packageName}.kts", language = language)
       template.executeRecipe()
       unmockTemplateDatas()
     }
