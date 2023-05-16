@@ -122,6 +122,10 @@ class ProjectTemplateBuilder :
     val gradlewBat = File(data.projectDir, "${gradlew.name}.bat")
     executor.copyAsset(baseAsset(gradlew.name), gradlew)
     executor.copyAsset(baseAsset(gradlewBat.name), gradlewBat)
+
+    gradlew.setExecutable(true)
+    gradlewBat.setExecutable(true)
+
     gradleWrapperJar()
     gradleWrapperProps()
   }
