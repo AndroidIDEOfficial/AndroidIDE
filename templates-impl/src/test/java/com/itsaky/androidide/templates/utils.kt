@@ -185,9 +185,9 @@ fun Template.executeRecipe(projectName: String) {
     }
 
     val gradlew = File(projectDir, name)
-    val process = wrapperProcess(gradlew)
 
-    // Wait for the build process to finish
+    // Start the build process
+    val process = wrapperProcess(gradlew, "assembleDebug")
     check(
       process.waitFor() == 0) { "Failed to build template project '$projectName' at location '$projectDir'" }
 
@@ -196,8 +196,15 @@ fun Template.executeRecipe(projectName: String) {
     val dest = FileProvider.projectRoot()
       .resolve("build/templates/$projectName.apk")
       .toFile()
+    if (dest.exists()) {
+      dest.delete()
+    }
+
     dest.parentFile!!.mkdirs()
     apk.copyTo(dest)
+
+    // Stop the daemon
+    wrapperProcess(gradlew, "--stop").waitFor()
   }
 }
 
@@ -216,16 +223,19 @@ fun <T : Any> Collection<T>.assertTypes(checker: (Int) -> KClass<out T>) {
   }
 }
 
-private fun wrapperProcess(gradlew: File) = ProcessBuilder(cmd(gradlew)).apply {
-  environment().apply {
-    put("JAVA_HOME", System.getProperty("java.home"))
-    put("ANDROID_HOME", findAndroidHome())
-  }
-}.start()
+private fun wrapperProcess(gradlew: File, vararg args: String) =
+  ProcessBuilder(cmd(gradlew, *args)).apply {
+    inheritIO()
+    directory(gradlew.parentFile)
+    environment().apply {
+      put("JAVA_HOME", System.getProperty("java.home"))
+      put("ANDROID_HOME", findAndroidHome())
+    }
+  }.start()
 
-private fun cmd(gradlew: File) =
-  if (isWindows()) listOf("cmd", "/c", gradlew.absolutePath, "assembleDebug")
-  else listOf("bash", gradlew.absolutePath, "assembleDebug")
+private fun cmd(gradlew: File, vararg args: String) =
+  (if (isWindows()) mutableListOf("cmd", "/c", gradlew.absolutePath)
+  else mutableListOf("bash", gradlew.absolutePath)).apply { addAll(args) }
 
 private fun isWindows() =
   System.getProperty("os.name")?.contains("windows", ignoreCase = true) == true
