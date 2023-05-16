@@ -47,7 +47,7 @@ class TemplateBuilderTest {
 
   @Test
   fun `root project generator test`() {
-    val template = testTemplate("Root") {
+    val template = testTemplate("Root", generate = false) {
       baseProject { }
     }
 
@@ -91,7 +91,7 @@ class TemplateBuilderTest {
 
   @Test
   fun `test project with module`() {
-    testTemplate("Test") {
+    testTemplate("Test", generate = false) {
       baseProject {
 
         defaultAppModule {

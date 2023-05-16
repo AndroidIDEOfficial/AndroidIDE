@@ -24,6 +24,7 @@ import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
+import com.itsaky.androidide.tooling.testing.findAndroidHome
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import io.mockk.every
@@ -35,6 +36,10 @@ import kotlin.reflect.KClass
 
 val testProjectsDir: File by lazy {
   FileProvider.currentDir().resolve("build/templateTest").toFile()
+}
+
+val isBuildTemplates by lazy {
+  System.getenv("ANDROIDIDE_TEMPLATES_BUILD").toBoolean()
 }
 
 fun mockPrefManager(configure: PreferenceManager.() -> Unit = {}) {
@@ -88,7 +93,8 @@ private fun <T : Any> mockConstructors(klass: KClass<T>,
   configure()
 }
 
-fun testTemplate(name: String, builder: () -> Template): Template {
+fun testTemplate(name: String, generate: Boolean = true, builder: () -> Template
+): Template {
   mockPrefManager()
   mockTemplateBuilders()
   testProjectsDir.apply {
@@ -102,6 +108,15 @@ fun testTemplate(name: String, builder: () -> Template): Template {
 
   val template = builder()
 
+  if (generate) {
+    generateTemplateProject(name, template)
+  }
+
+  return template
+}
+
+private fun generateTemplateProject(name: String, template: Template
+) {
   for (language in Language.values()) {
     val packageName = "com.itsaky.androidide.template.${language.lang}"
     run {
@@ -111,7 +126,7 @@ fun testTemplate(name: String, builder: () -> Template): Template {
       mockTemplateDatas(useKts = false)
       template.setupRootProjectParams(name = projectName,
         packageName = packageName, language = language)
-      template.executeRecipe()
+      template.executeRecipe(projectName)
       unmockTemplateDatas()
     }
 
@@ -121,12 +136,10 @@ fun testTemplate(name: String, builder: () -> Template): Template {
       mockTemplateDatas(useKts = true)
       template.setupRootProjectParams(name = projectName,
         packageName = "${packageName}.kts", language = language)
-      template.executeRecipe()
+      template.executeRecipe(projectName)
       unmockTemplateDatas()
     }
   }
-
-  return template
 }
 
 fun Template.setupRootProjectParams(name: String = "TestTemplate",
@@ -157,8 +170,35 @@ fun Template.setupRootProjectParams(name: String = "TestTemplate",
   (param as EnumParameter<Sdk>).value = minSdk
 }
 
-fun Template.executeRecipe() {
+fun Template.executeRecipe(projectName: String) {
   TestRecipeExecutor().apply(recipe)
+
+  if (isBuildTemplates) {
+    val projectDir = File(testProjectsDir, projectName)
+    if (!projectDir.isDirectory) {
+      return
+    }
+
+    var name = "gradlew"
+    if (isWindows()) {
+      name += ".bat"
+    }
+
+    val gradlew = File(projectDir, name)
+    val process = wrapperProcess(gradlew)
+
+    // Wait for the build process to finish
+    check(
+      process.waitFor() == 0) { "Failed to build template project '$projectName' at location '$projectDir'" }
+
+    // if the build process is successful, copy the apk to a common location
+    val apk = File(projectDir, "app/build/outputs/apk/debug/app-debug.apk")
+    val dest = FileProvider.projectRoot()
+      .resolve("build/templates/$projectName.apk")
+      .toFile()
+    dest.parentFile!!.mkdirs()
+    apk.copyTo(dest)
+  }
 }
 
 fun Collection<Parameter<*>>.assertParameterTypes(
@@ -175,3 +215,17 @@ fun <T : Any> Collection<T>.assertTypes(checker: (Int) -> KClass<out T>) {
     assertThat(element).isInstanceOf(checker(index).java)
   }
 }
+
+private fun wrapperProcess(gradlew: File) = ProcessBuilder(cmd(gradlew)).apply {
+  environment().apply {
+    put("JAVA_HOME", System.getProperty("java.home"))
+    put("ANDROID_HOME", findAndroidHome())
+  }
+}.start()
+
+private fun cmd(gradlew: File) =
+  if (isWindows()) listOf("cmd", "/c", gradlew.absolutePath, "assembleDebug")
+  else listOf("bash", gradlew.absolutePath, "assembleDebug")
+
+private fun isWindows() =
+  System.getProperty("os.name")?.contains("windows", ignoreCase = true) == true

@@ -42,6 +42,7 @@ dependencies {
   testImplementation(projects.lsp.api)
   testImplementation(projects.preferences)
   testImplementation(projects.shared)
+  testImplementation(projects.subprojects.toolingApiTesting)
   testImplementation(libs.tests.androidx.test.core)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.junit)

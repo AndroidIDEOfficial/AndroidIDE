@@ -124,6 +124,52 @@ jobs:
           name: test-reports
           path: '**/build/reports/tests/'
 
+  build_templates:
+    name: Build templates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Change Gradle wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Restore cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build debug templates
+        run: ./gradlew :templates-impl:testDebug --continue
+        env:
+          ANDROIDIDE_TEST: true
+          ANDROIDIDE_TEMPLATES_BUILD: true
+          IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}
+          IDE_SIGNING_AUTH_PASS: ${{ secrets.IDE_SIGNING_AUTH_PASS }}
+          IDE_SIGNING_AUTH_USER: ${{ secrets.IDE_SIGNING_AUTH_USER }}
+          IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
+          IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
+          IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: templates-test-reports
+          path: 'templates-impl/build/reports/tests/'
+      - name: Upload template APKs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: templates-apks
+          path: 'build/templates/'
+
   test_tooling_api:
     name: Test Tooling API implementation
     runs-on: ubuntu-latest
