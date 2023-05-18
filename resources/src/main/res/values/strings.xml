@@ -81,7 +81,7 @@
   <string name="project_app_name">App name</string>
   <string name="msg_create_new_project_greeting">Start your new awesome project!</string>
   <string name="title_confirm_open_project">Open last project?</string>
-  <string name="msg_confirm_open_project">Do you want me to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
   <string name="group_project">Project</string>
   <string name="title_close_project">Close this project</string>
   <string name="msg_opened_project_does_not_exist">Last opened project doesn\'t exist!</string>
