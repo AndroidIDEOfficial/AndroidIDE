@@ -18,16 +18,11 @@
 package com.itsaky.androidide.templates.impl.navDrawerActivity
 
 import com.itsaky.androidide.templates.Language.Kotlin
-import com.itsaky.androidide.templates.SrcSet.Main
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.DRAWABLE
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.MENU
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.NAVIGATION
-import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.VALUES
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.templateAsset
@@ -41,14 +36,7 @@ fun navigationDrawerActivityProject() = baseProject {
       }
 
       res {
-        copyAssetsRecursively(templateAsset("navDrawer", "res/layout"),
-          resDir(LAYOUT, Main))
-        copyAssetsRecursively(templateAsset("navDrawer", "res/drawable"),
-          resDir(DRAWABLE, Main))
-        copyAssetsRecursively(templateAsset("navDrawer", "res/menu"),
-          resDir(MENU, Main))
-        copyAssetsRecursively(templateAsset("navDrawer", "res/values"),
-          resDir(VALUES, Main))
+        copyAssetsRecursively(templateAsset("navDrawer", "res"), mainResDir())
 
         writeXmlResource("mobile_navigation", NAVIGATION,
           source = ::navDrawerNavigationXmlSrc)
