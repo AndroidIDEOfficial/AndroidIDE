@@ -51,7 +51,10 @@ class TemplateBuilderTest {
   @Test
   fun `root project generator test`() {
     val template = testTemplate("Root", generate = false) {
-      baseProject { }
+      baseProject {
+        templateName = -123
+        thumb = -123
+      }
     }
 
     template.apply {
@@ -96,6 +99,9 @@ class TemplateBuilderTest {
   fun `test project with module`() {
     testTemplate("Test", generate = false) {
       baseProject {
+
+        templateName = -123
+        thumb = -123
 
         defaultAppModule {
           manifest {

@@ -21,9 +21,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.tooling.testing.findAndroidHome
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
@@ -44,22 +41,6 @@ fun mockPrefManager(configure: PreferenceManager.() -> Unit = {}) {
   val manager = PreferenceManager(ApplicationProvider.getApplicationContext())
   every { prefManager } answers { manager }
   manager.configure()
-}
-
-fun mockTemplateBuilders() {
-  mockTemplateBuilderConstructor(TemplateBuilder::class)
-  mockTemplateBuilderConstructor(ProjectTemplateBuilder::class)
-  mockTemplateBuilderConstructor(ModuleTemplateBuilder::class)
-  mockTemplateBuilderConstructor(AndroidModuleTemplateBuilder::class)
-}
-
-private inline fun <reified T : TemplateBuilder<*>> mockTemplateBuilderConstructor(
-  klass: KClass<T>
-) {
-  mockConstructors(klass) {
-    every { anyConstructed<T>().templateName } returns -123
-    every { anyConstructed<T>().thumb } returns -123
-  }
 }
 
 fun mockTemplateDatas(useKts: Boolean) {
@@ -92,7 +73,6 @@ private fun <T : Any> mockConstructors(klass: KClass<T>,
 fun testTemplate(name: String, generate: Boolean = true, builder: () -> Template
 ): Template {
   mockPrefManager()
-  mockTemplateBuilders()
   testProjectsDir.apply {
     if (exists()) {
       delete()

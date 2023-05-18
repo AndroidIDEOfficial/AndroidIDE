@@ -23,11 +23,14 @@ import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
 import com.itsaky.androidide.templates.base.util.SourceWriter
+import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 
 fun basicActivityProject(): Template {
   return baseProject {
+    templateName = R.string.template_basic
+    thumb = R.drawable.template_basic_activity
     defaultAppModule {
       recipe = {
         sources {
