@@ -187,6 +187,6 @@ abstract class ModuleTemplateBuilder :
   abstract fun RecipeExecutor.buildGradle()
 
   override fun buildInternal(): ModuleTemplate {
-    return ModuleTemplate(name, templateName!!, thumb!!, widgets!!, recipe!!)
+    return ModuleTemplate(name, templateName!!, thumb!!, description, widgets!!, recipe!!)
   }
 }

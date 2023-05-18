@@ -41,8 +41,8 @@ typealias TemplateRecipe = RecipeExecutor.() -> Unit
  * @property language The source language for the module.
  * @property useKts Whether to use Kotlin DSL for Gradle build scripts.
  */
-abstract class BaseTemplateData(val name: String, val projectDir: File, val language: Language,
-                                val useKts: Boolean
+abstract class BaseTemplateData(val name: String, val projectDir: File,
+                                val language: Language, val useKts: Boolean
 ) : TemplateData() {
 
   /**
@@ -58,7 +58,8 @@ abstract class BaseTemplateData(val name: String, val projectDir: File, val lang
  */
 enum class Language(val lang: String, val ext: String) {
 
-  Java("Java", "java"), Kotlin("Kotlin", "kt");
+  Java("Java", "java"),
+  Kotlin("Kotlin", "kt");
 }
 
 /**
@@ -68,7 +69,9 @@ enum class Language(val lang: String, val ext: String) {
  */
 enum class ModuleType(val typeName: String) {
 
-  AndroidApp("Android Application"), AndroidLibrary("Android Library"), JavaLibrary("Java library")
+  AndroidApp("Android Application"),
+  AndroidLibrary("Android Library"),
+  JavaLibrary("Java library")
 }
 
 /**
@@ -101,9 +104,10 @@ enum class SrcSet(val folder: String) {
  * @property gradle The Gradle version.
  * @property kotlin The Kotlin Plugin version.
  */
-data class ProjectVersionData(val gradlePlugin: String = ANDROID_GRADLE_PLUGIN_VERSION,
-                              val gradle: String = GRADLE_DISTRIBUTION_VERSION,
-                              val kotlin: String = KOTLIN_VERSION
+data class ProjectVersionData(
+  val gradlePlugin: String = ANDROID_GRADLE_PLUGIN_VERSION,
+  val gradle: String = GRADLE_DISTRIBUTION_VERSION,
+  val kotlin: String = KOTLIN_VERSION
 )
 
 /**
@@ -112,7 +116,8 @@ data class ProjectVersionData(val gradlePlugin: String = ANDROID_GRADLE_PLUGIN_V
  * @property targetSdk The target SDK version for modules.
  * @property buildTools The build tools version for modules.
  */
-data class ModuleVersionData(val minSdk: Sdk, val targetSdk: Sdk = TARGET_SDK_VERSION,
+data class ModuleVersionData(val minSdk: Sdk,
+                             val targetSdk: Sdk = TARGET_SDK_VERSION,
                              val compileSdk: Sdk = COMPILE_SDK_VERSION,
                              val buildTools: String = BUILD_TOOLS_VERSION,
                              val javaSource: String = JAVA_SOURCE_VERSION,
@@ -129,7 +134,8 @@ data class ModuleVersionData(val minSdk: Sdk, val targetSdk: Sdk = TARGET_SDK_VE
    */
   fun javaTarget() = javaVersionPrefix(javaTarget)
 
-  private fun javaVersionPrefix(version: String): String = "JavaVersion.VERSION_${version}"
+  private fun javaVersionPrefix(version: String): String =
+    "JavaVersion.VERSION_${version}"
 }
 
 /**
@@ -137,8 +143,9 @@ data class ModuleVersionData(val minSdk: Sdk, val targetSdk: Sdk = TARGET_SDK_VE
  *
  * @property version The version information for this project.
  */
-class ProjectTemplateData(name: String, projectDir: File, val version: ProjectVersionData,
-                          language: Language, useKts: Boolean
+class ProjectTemplateData(name: String, projectDir: File,
+                          val version: ProjectVersionData, language: Language,
+                          useKts: Boolean
 ) : BaseTemplateData(name, projectDir, language, useKts)
 
 /**
@@ -148,16 +155,20 @@ class ProjectTemplateData(name: String, projectDir: File, val version: ProjectVe
  * @property type The type of module.
  * @property versions Version information for the module.
  */
-class ModuleTemplateData(name: String, val appName: String?, val packageName: String, projectDir: File,
-                         val type: ModuleType, language: Language, useKts: Boolean = true,
-                         minSdk: Sdk, val versions: ModuleVersionData = ModuleVersionData(minSdk)
+class ModuleTemplateData(name: String, val appName: String?,
+                         val packageName: String, projectDir: File,
+                         val type: ModuleType, language: Language,
+                         useKts: Boolean = true, minSdk: Sdk,
+                         val versions: ModuleVersionData = ModuleVersionData(
+                           minSdk)
 ) : BaseTemplateData(name, projectDir, language, useKts) {
 
   private val srcDirs = mutableMapOf<SrcSet, File>()
 
   fun srcFolder(srcSet: SrcSet): File {
-    return srcDirs.computeIfAbsent(srcSet) { File(projectDir, "src/${it.folder}") }
-      .also { it.mkdirs() }
+    return srcDirs.computeIfAbsent(srcSet) {
+      File(projectDir, "src/${it.folder}")
+    }.also { it.mkdirs() }
   }
 }
 
@@ -167,17 +178,23 @@ class ModuleTemplateData(name: String, val appName: String?, val packageName: St
  * @property templateName The name of the template.
  * @property thumb The thumbnail for the template.
  */
-open class Template(@StringRes open val templateName: Int, @DrawableRes open val thumb: Int,
-                    open val widgets: List<Widget<*>>, open val recipe: TemplateRecipe
+open class Template(@StringRes open val templateName: Int,
+                    @DrawableRes open val thumb: Int,
+                    @StringRes open val description: Int?,
+                    open val widgets: List<Widget<*>>,
+                    open val recipe: TemplateRecipe
 ) {
 
   open val parameters: Collection<Parameter<*>>
     get() = widgets.filterIsInstance<ParameterWidget<*>>().map { it.parameter }
 }
 
-open class ProjectTemplate(val moduleTemplates: List<Template>, @StringRes templateName: Int,
-                           @DrawableRes thumb: Int, widgets: List<Widget<*>>, recipe: TemplateRecipe
-) : Template(templateName, thumb, widgets, recipe) {
+open class ProjectTemplate(val moduleTemplates: List<Template>,
+                           @StringRes templateName: Int,
+                           @DrawableRes thumb: Int,
+                           @StringRes description: Int?,
+                           widgets: List<Widget<*>>, recipe: TemplateRecipe
+) : Template(templateName, thumb, description, widgets, recipe) {
 
   override val parameters: Collection<Parameter<*>>
     get() = if (moduleTemplates.isEmpty()) super.parameters else super.parameters.toMutableList()
@@ -186,9 +203,10 @@ open class ProjectTemplate(val moduleTemplates: List<Template>, @StringRes templ
       }
 
   override val widgets: List<Widget<*>>
-    get() = if (moduleTemplates.isEmpty()) super.widgets else super.widgets.toMutableList().apply {
-      addAll(moduleTemplates.flatMap { it.widgets })
-    }
+    get() = if (moduleTemplates.isEmpty()) super.widgets else super.widgets.toMutableList()
+      .apply {
+        addAll(moduleTemplates.flatMap { it.widgets })
+      }
 
   override val recipe: TemplateRecipe
     get() = if (moduleTemplates.isEmpty()) super.recipe else super.recipe.let { projectRecipe ->
@@ -204,16 +222,18 @@ open class ProjectTemplate(val moduleTemplates: List<Template>, @StringRes templ
  *
  * @property name The mdoule name (gradle format, e.g. ':app').
  */
-open class ModuleTemplate(val name: String, @StringRes templateName: Int, @DrawableRes thumb: Int,
+open class ModuleTemplate(val name: String, @StringRes templateName: Int,
+                          @DrawableRes thumb: Int, @StringRes description: Int?,
                           widgets: List<Widget<*>>, recipe: TemplateRecipe
-) : Template(templateName, thumb, widgets, recipe)
+) : Template(templateName, thumb, description, widgets, recipe)
 
 /**
  * Template for creating a file.
  */
-open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int, widgets: List<Widget<*>>,
+open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int,
+                        @StringRes description: Int?, widgets: List<Widget<*>>,
                         recipe: TemplateRecipe
-) : Template(name, thumb, widgets, recipe)
+) : Template(name, thumb, description, widgets, recipe)
 
 /**
  * Base class for template builders.
@@ -223,10 +243,12 @@ open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int, widgets: 
  * @property widgets The widgets that will be rendered while creating this template.
  * @property recipe The recipe for building the template.
  */
-abstract class TemplateBuilder<T : Template>(@StringRes open var templateName: Int? = null,
-                                             @DrawableRes open var thumb: Int? = null,
-                                             open var widgets: List<Widget<*>>? = null,
-                                             open var recipe: TemplateRecipe? = null
+abstract class TemplateBuilder<T : Template>(
+  @StringRes open var templateName: Int? = null,
+  @DrawableRes open var thumb: Int? = null,
+  @StringRes open var description: Int? = null,
+  open var widgets: List<Widget<*>>? = null,
+  open var recipe: TemplateRecipe? = null
 ) {
 
   /**

@@ -45,7 +45,6 @@ import com.itsaky.androidide.utils.Environment
 import java.io.File
 
 typealias ProjectTemplateConfigurator = ProjectTemplateBuilder.() -> Unit
-typealias ModuleTemplateConfigurator = ModuleTemplateBuilder.() -> Unit
 typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
 typealias FileTemplateConfigurator = FileTemplateBuilder.() -> Unit
 
