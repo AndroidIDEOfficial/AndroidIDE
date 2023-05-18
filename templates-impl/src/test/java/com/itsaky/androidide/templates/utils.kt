@@ -38,10 +38,6 @@ val testProjectsDir: File by lazy {
   FileProvider.currentDir().resolve("build/templateTest").toFile()
 }
 
-val isBuildTemplates by lazy {
-  System.getenv("ANDROIDIDE_TEMPLATES_BUILD").toBoolean()
-}
-
 fun mockPrefManager(configure: PreferenceManager.() -> Unit = {}) {
   mockkStatic(::prefManager)
 
@@ -126,7 +122,7 @@ private fun generateTemplateProject(name: String, template: Template
       mockTemplateDatas(useKts = false)
       template.setupRootProjectParams(name = projectName,
         packageName = packageName, language = language)
-      template.executeRecipe(projectName)
+      template.executeRecipe()
       unmockTemplateDatas()
     }
 
@@ -136,7 +132,7 @@ private fun generateTemplateProject(name: String, template: Template
       mockTemplateDatas(useKts = true)
       template.setupRootProjectParams(name = projectName,
         packageName = "${packageName}.kts", language = language)
-      template.executeRecipe(projectName)
+      template.executeRecipe()
       unmockTemplateDatas()
     }
   }
@@ -170,42 +166,8 @@ fun Template.setupRootProjectParams(name: String = "TestTemplate",
   (param as EnumParameter<Sdk>).value = minSdk
 }
 
-fun Template.executeRecipe(projectName: String) {
+fun Template.executeRecipe() {
   TestRecipeExecutor().apply(recipe)
-
-  if (isBuildTemplates) {
-    val projectDir = File(testProjectsDir, projectName)
-    if (!projectDir.isDirectory) {
-      return
-    }
-
-    var name = "gradlew"
-    if (isWindows()) {
-      name += ".bat"
-    }
-
-    val gradlew = File(projectDir, name)
-
-    // Start the build process
-    val process = wrapperProcess(gradlew, "assembleDebug")
-    check(
-      process.waitFor() == 0) { "Failed to build template project '$projectName' at location '$projectDir'" }
-
-    // if the build process is successful, copy the apk to a common location
-    val apk = File(projectDir, "app/build/outputs/apk/debug/app-debug.apk")
-    val dest = FileProvider.projectRoot()
-      .resolve("build/templates/$projectName.apk")
-      .toFile()
-    if (dest.exists()) {
-      dest.delete()
-    }
-
-    dest.parentFile!!.mkdirs()
-    apk.copyTo(dest)
-
-    // Stop the daemon
-    wrapperProcess(gradlew, "--stop").waitFor()
-  }
 }
 
 fun Collection<Parameter<*>>.assertParameterTypes(
