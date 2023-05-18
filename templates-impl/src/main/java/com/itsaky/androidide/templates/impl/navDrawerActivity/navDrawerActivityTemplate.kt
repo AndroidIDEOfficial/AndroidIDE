@@ -27,7 +27,7 @@ import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.templateAsset
 
-fun navigationDrawerActivityProject() = baseProject {
+fun navDrawerActivityProject() = baseProject {
   defaultAppModule {
     recipe = {
       sources {

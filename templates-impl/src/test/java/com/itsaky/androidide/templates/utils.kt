@@ -118,6 +118,10 @@ private fun generateTemplateProject(name: String, template: Template
     run {
       val projectName = "${name}Project${language.name}WithoutKts"
 
+      File(testProjectsDir, projectName).apply {
+        if (exists()) delete()
+      }
+
       // Test with language without Kotlin Script
       mockTemplateDatas(useKts = false)
       template.setupRootProjectParams(name = projectName,
@@ -128,6 +132,11 @@ private fun generateTemplateProject(name: String, template: Template
 
     run {
       val projectName = "${name}Project${language.name}WithKts"
+
+      File(testProjectsDir, projectName).apply {
+        if (exists()) delete()
+      }
+
       // Test with language + Kotlin Script
       mockTemplateDatas(useKts = true)
       template.setupRootProjectParams(name = projectName,
