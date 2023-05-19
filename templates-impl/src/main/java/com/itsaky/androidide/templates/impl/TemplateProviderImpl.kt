@@ -33,16 +33,34 @@ import com.itsaky.androidide.templates.impl.tabbedActivity.tabbedActivityProject
  *
  * @author Akash Yadav
  */
-@AutoService(ITemplateProvider::class)
+@Suppress("unused")
+@AutoService(ITemplateProvider::class) //
 class TemplateProviderImpl : ITemplateProvider {
 
-  private val templates =
-    mutableListOf(noActivityProjectTemplate(), emptyActivityProject(),
-      basicActivityProject(), navDrawerActivityProject(),
-      bottomNavActivityProject(), tabbedActivityProject())
+  private val templates = mutableMapOf<String, Template>().apply {
+    templates().forEach { template ->
+      this[template.templateId] = template
+    }
+  }
+
+  private fun templates() =
+    //@formatter:off
+    arrayOf(
+      noActivityProjectTemplate(),
+      emptyActivityProject(),
+      basicActivityProject(),
+      navDrawerActivityProject(),
+      bottomNavActivityProject(),
+      tabbedActivityProject()
+    )
+  //@formatter:on
 
   override fun getTemplates(): List<Template> {
-    return ImmutableList.copyOf(templates)
+    return ImmutableList.copyOf(templates.values)
+  }
+
+  override fun getTemplate(templateId: String): Template? {
+    return templates[templateId]
   }
 
   override fun clear() {

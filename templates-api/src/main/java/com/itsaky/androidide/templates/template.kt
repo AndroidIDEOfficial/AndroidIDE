@@ -21,6 +21,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.itsaky.androidide.templates.base.util.optonallyKts
 import java.io.File
+import java.util.UUID
 
 /**
  * Data that is used to create templates.
@@ -184,6 +185,13 @@ open class Template(@StringRes open val templateName: Int,
                     open val widgets: List<Widget<*>>,
                     open val recipe: TemplateRecipe
 ) {
+
+  /**
+   * The ID for this template.
+   */
+  val templateId: String by lazy {
+    UUID.randomUUID().toString()
+  }
 
   open val parameters: Collection<Parameter<*>>
     get() = widgets.filterIsInstance<ParameterWidget<*>>().map { it.parameter }

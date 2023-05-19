@@ -58,6 +58,14 @@ interface ITemplateProvider {
   fun getTemplates(): List<Template>
 
   /**
+   * Get the template with the given id.
+   *
+   * @param templateId The ID for the template.
+   * @return The [Template] with the given [templateId] if any, or `null`.
+   */
+  fun getTemplate(templateId: String) : Template?
+
+  /**
    * Clear all the templates stored in the provider.
    */
   fun clear()
