@@ -314,7 +314,7 @@
   <string name="msg_swipe_for_output">Desliza hacia arriba para ver el @@Registro@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar pestaña flexible</string>
   <string name="idepref_editor_useSoftTabs_summary">Elija si desea utilizar espacios en lugar del carácter de pestaña (\\t).</string>
-  <string name="btn_sponsor">Patrocinadores</string>
+  <string name="btn_donate">Patrocinadores</string>
   <string name="btn_docs">Documentación</string>
   <string name="btn_close">Cerrar</string>
   <string name="msg_ignore_case">Ignorar Mayúscula/minúscula</string>

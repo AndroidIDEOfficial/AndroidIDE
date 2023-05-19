@@ -46,6 +46,7 @@ import com.itsaky.androidide.utils.flashInfo
 import java.io.File
 
 class MainActivity : IDEActivity() {
+
   private var binding: ActivityMainBinding? = null
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -58,8 +59,7 @@ class MainActivity : IDEActivity() {
     } else {
       openLastProject()
     }
-    supportFragmentManager
-      .beginTransaction()
+    supportFragmentManager.beginTransaction()
       .replace(id.container, MainFragment(), MainFragment.TAG)
       .commit()
   }
@@ -88,11 +88,9 @@ class MainActivity : IDEActivity() {
     builder.setTitle(string.title_warning)
     val view = TextView(this)
     view.setPaddingRelative(dp24, dp24, dp24, dp24)
-    view.text =
-      HtmlCompat.fromHtml(
-        getString(string.msg_require_install_jdk_and_android_sdk),
-        HtmlCompat.FROM_HTML_MODE_COMPACT
-      )
+    view.text = HtmlCompat.fromHtml(
+      getString(string.msg_require_install_jdk_and_android_sdk),
+      HtmlCompat.FROM_HTML_MODE_COMPACT)
     view.movementMethod = LinkMovementMethod.getInstance()
     builder.setView(view)
     builder.setCancelable(false)
@@ -147,7 +145,8 @@ class MainActivity : IDEActivity() {
   private fun askProjectOpenPermission(root: File) {
     val builder = DialogUtils.newMaterialDialogBuilder(this)
     builder.setTitle(string.title_confirm_open_project)
-    builder.setMessage(getString(string.msg_confirm_open_project, root.absolutePath))
+    builder.setMessage(
+      getString(string.msg_confirm_open_project, root.absolutePath))
     builder.setCancelable(false)
     builder.setPositiveButton(string.yes) { _, _ -> openProject(root) }
     builder.setNegativeButton(string.no, null)

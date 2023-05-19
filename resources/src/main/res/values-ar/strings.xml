@@ -314,7 +314,7 @@
   <string name="msg_swipe_for_output">مرر لأعلى لعرض @@مخرجات البناء@@</string>
   <string name="idepref_editor_useSoftTabs_title">استخدام علامة التبويب الناعمة</string>
   <string name="idepref_editor_useSoftTabs_summary">اختر ما إذا كان سيتم استخدام المسافات بدلاً من حرف التبويب (\\t).</string>
-  <string name="btn_sponsor">دعم المشروع</string>
+  <string name="btn_donate">دعم المشروع</string>
   <string name="btn_docs">إرشادات الإستخدام</string>
   <string name="btn_close">إغلاق</string>
   <string name="msg_ignore_case">تجاهل الحالة</string>

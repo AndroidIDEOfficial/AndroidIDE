@@ -314,7 +314,7 @@
   <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Pilih apakah akan menggunakan spasi alih-alih karakter tab (\\t).</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_donate">Sponsor</string>
   <string name="btn_docs">Dokumentasi</string>
   <string name="btn_close">Tutup</string>
   <string name="msg_ignore_case">Abaikan kasus</string>

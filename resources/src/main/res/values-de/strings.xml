@@ -314,7 +314,7 @@
   <string name="msg_swipe_for_output">Swipe nach oben für @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Soft tab benutzen</string>
   <string name="idepref_editor_useSoftTabs_summary">Wählen Sie, ob Leerzeichen anstelle von Tab verwendet werden sollen (\\t).</string>
-  <string name="btn_sponsor">Spenden</string>
+  <string name="btn_donate">Spenden</string>
   <string name="btn_docs">Dokumentation</string>
   <string name="btn_close">Schließen</string>
   <string name="msg_ignore_case">Groß-/Kleinschreibung ignorieren</string>

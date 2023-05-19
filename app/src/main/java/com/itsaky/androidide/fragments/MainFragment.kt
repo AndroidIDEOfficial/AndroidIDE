@@ -60,7 +60,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     val preferences =
       MainScreenAction(string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
     val sponsor =
-      MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) {
+      MainScreenAction(string.btn_donate, R.drawable.ic_donate) {
         BaseApplication.getBaseInstance().openSponsors()
       }
     val docs =
