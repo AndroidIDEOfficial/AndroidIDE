@@ -70,7 +70,7 @@
   <string name="project_app_name">应用名称</string>
   <string name="msg_create_new_project_greeting">创建您令人惊讶的新项目!</string>
   <string name="title_confirm_open_project">打开上一次的项目?</string>
-  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">您要打开上次打开的项目吗？ 打开的项目是：\n%s</string>
   <string name="group_project">项目</string>
   <string name="title_close_project">关闭项目</string>
   <string name="msg_opened_project_does_not_exist">上一次打开的项目已不存在！</string>
@@ -317,7 +317,7 @@
   <string name="msg_swipe_for_output">上滑查看 @@构建输出@@</string>
   <string name="idepref_editor_useSoftTabs_title">使用空格</string>
   <string name="idepref_editor_useSoftTabs_summary">设置是否使用多个空格代替制表符 (\\t)</string>
-  <string name="btn_donate">Donate</string>
+  <string name="btn_donate">捐助</string>
   <string name="btn_docs">文档</string>
   <string name="btn_close">关闭</string>
   <string name="msg_ignore_case">忽略大小写</string>
@@ -469,12 +469,12 @@
   <string name="permdesc_bind_logger_service">允许此应用程序绑定到 AndroidIDE 的日志记录服务。  AndroidIDE 需要此权限才能读取此应用程序的日志。</string>
   <string name="wizard_module_name">模块名称</string>
   <string name="wizard_module_type">模块类型</string>
-  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
-  <string name="msg_invalid_class_name">Invalid class name</string>
-  <string name="msg_value_empty">Value is empty</string>
-  <string name="msg_file_not_exist">File does not exist</string>
-  <string name="msg_path_must_be_file">Must be path to a file</string>
-  <string name="msg_classname_with_keywords">Class name contains keywords</string>
-  <string name="msg_path_must_be_dir">Must be path to a directory</string>
-  <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_module_name">无效的 Gradle 模块名称</string>
+  <string name="msg_invalid_class_name">类名无效</string>
+  <string name="msg_value_empty">值为空</string>
+  <string name="msg_file_not_exist">文件不存在</string>
+  <string name="msg_path_must_be_file">必须是文件路径</string>
+  <string name="msg_classname_with_keywords">类名包含关键字</string>
+  <string name="msg_path_must_be_dir">必须是目录路径</string>
+  <string name="msg_invalid_layout_name">布局文件名无效</string>
 </resources>
