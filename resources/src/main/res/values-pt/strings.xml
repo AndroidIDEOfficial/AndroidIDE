@@ -70,7 +70,7 @@
   <string name="project_app_name">Nome do aplicativo</string>
   <string name="msg_create_new_project_greeting">Comece seu novo projeto fantástico!</string>
   <string name="title_confirm_open_project">Abrir último projeto?</string>
-  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">Você quer abrir o último projeto aberto? O projeto aberto foi:\n%s</string>
   <string name="group_project">Projeto</string>
   <string name="title_close_project">Fechar este projeto</string>
   <string name="msg_opened_project_does_not_exist">O último projeto aberto não existe!</string>
@@ -317,7 +317,7 @@
   <string name="msg_swipe_for_output">Deslize à cima para @@logs de compilação@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\\t).</string>
-  <string name="btn_donate">Donate</string>
+  <string name="btn_donate">Doar</string>
   <string name="btn_docs">Documentação</string>
   <string name="btn_close">Fechar</string>
   <string name="msg_ignore_case">Ignorar o caso</string>
@@ -467,14 +467,14 @@
   <string name="title_class_chooser">Qual %1$s?</string>
   <string name="permlab_bind_logger_service">vincular ao serviço de log</string>
   <string name="permdesc_bind_logger_service">Permite que este aplicativo vincule ao serviço de log do AndroidIDE. Esta permissão é necessária para o AndroidIDE ler os logs deste aplicativo.</string>
-  <string name="wizard_module_name">Module name</string>
-  <string name="wizard_module_type">Module type</string>
-  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
-  <string name="msg_invalid_class_name">Invalid class name</string>
-  <string name="msg_value_empty">Value is empty</string>
-  <string name="msg_file_not_exist">File does not exist</string>
-  <string name="msg_path_must_be_file">Must be path to a file</string>
-  <string name="msg_classname_with_keywords">Class name contains keywords</string>
-  <string name="msg_path_must_be_dir">Must be path to a directory</string>
-  <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="wizard_module_name">Nome do Módulo</string>
+  <string name="wizard_module_type">Tipo de Módulo</string>
+  <string name="msg_invalid_module_name">Nome do módulo Gradle inválido</string>
+  <string name="msg_invalid_class_name">Nome da classe inválido</string>
+  <string name="msg_value_empty">O Valor está vazio</string>
+  <string name="msg_file_not_exist">O arquivo não existe</string>
+  <string name="msg_path_must_be_file">Deve ter um caminho para um arquivo</string>
+  <string name="msg_classname_with_keywords">Nome da classe contém palavras-chave</string>
+  <string name="msg_path_must_be_dir">Deve ter um caminho para um arquivo</string>
+  <string name="msg_invalid_layout_name">Nome do arquivo de layout inválido</string>
 </resources>
