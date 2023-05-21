@@ -70,7 +70,7 @@
   <string name="project_app_name">Nama aplikasi</string>
   <string name="msg_create_new_project_greeting">Mulailah membuat projek hebat anda!</string>
   <string name="title_confirm_open_project">Buka projek yang terakhir dibuka?</string>
-  <string name="msg_confirm_open_project">Apakah anda ingin membuka projek yang terakhir kali dibuka? Projek terakhir yang dibuka:\n%s</string>
+  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
   <string name="group_project">Projek</string>
   <string name="title_close_project">Tutup projek ini</string>
   <string name="msg_opened_project_does_not_exist">Projek yang terakhir dibuka tidak ada!</string>
@@ -317,7 +317,7 @@
   <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Pilih apakah akan menggunakan spasi alih-alih karakter tab (\\t).</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_donate">Donate</string>
   <string name="btn_docs">Dokumentasi</string>
   <string name="btn_close">Tutup</string>
   <string name="msg_ignore_case">Abaikan kasus</string>
@@ -469,4 +469,12 @@
   <string name="permdesc_bind_logger_service">Mengizinkan aplikasi ini mengikat ke layanan logging AndroidIDE. Izin ini diperlukan untuk AndroidIDE untuk membaca log aplikasi ini.</string>
   <string name="wizard_module_name">Nama modul</string>
   <string name="wizard_module_type">Jenis modul</string>
+  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
+  <string name="msg_invalid_class_name">Invalid class name</string>
+  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_file_not_exist">File does not exist</string>
+  <string name="msg_path_must_be_file">Must be path to a file</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
 </resources>
