@@ -17,8 +17,10 @@
 
 package com.itsaky.androidide.viewmodel
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.templates.Template
 import java.util.concurrent.atomic.AtomicInteger
@@ -40,6 +42,7 @@ class MainViewModel : ViewModel() {
 
   private val _currentScreen = MutableLiveData(-1)
   private val _previousScreen = AtomicInteger(-1)
+  private val _isTransitionInProgress = MutableLiveData(false)
 
   internal val template = MutableLiveData<Template>(null)
 
@@ -47,8 +50,25 @@ class MainViewModel : ViewModel() {
   val previousScreen: Int
     get() = _previousScreen.get()
 
+  var isTransitionInProgress: Boolean
+    get() = _isTransitionInProgress.value ?: false
+    set(value) {
+      _isTransitionInProgress.value = value
+    }
+
   fun setScreen(screen: Int) {
     _previousScreen.set(_currentScreen.value ?: SCREEN_MAIN)
     _currentScreen.value = screen
+  }
+
+  fun postTransition(owner: LifecycleOwner, action: Runnable) {
+    if (isTransitionInProgress) {
+      _isTransitionInProgress.observe(owner, object : Observer<Boolean> {
+        override fun onChanged(t: Boolean?) {
+          _isTransitionInProgress.removeObserver(this)
+          action.run()
+        }
+      })
+    } else action.run()
   }
 }

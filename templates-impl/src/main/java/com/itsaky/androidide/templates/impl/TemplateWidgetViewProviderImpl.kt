@@ -108,7 +108,6 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
       val items = mutableMapOf<String, Enum<*>>()
       param.default.javaClass.enumConstants?.forEach {
-        println("Enum constant: $it")
         val displayName = param.displayName?.invoke(it) ?: it.name
         items[displayName] = it
       }
@@ -117,8 +116,6 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         items.isNotEmpty()) { "Cannot retrive values for enum parameter $param with default value ${param.default}" }
 
       val array = items.keys.toTypedArray()
-
-      println("EnumParam entries : ${array.joinToString(", ")}")
 
       input.setAdapter(ArrayAdapter(context,
         androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,

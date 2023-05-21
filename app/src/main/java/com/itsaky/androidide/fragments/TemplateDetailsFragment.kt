@@ -19,7 +19,6 @@ package com.itsaky.androidide.fragments
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.itsaky.androidide.R
@@ -40,31 +39,25 @@ class TemplateDetailsFragment :
   private val viewModel by viewModels<MainViewModel>(
     ownerProducer = { requireActivity() })
 
-  private val template: Template
-    get() = checkNotNull(
-      viewModel.template.value) { "Invalid template data stored in view model" }
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
     viewModel.template.observe(viewLifecycleOwner) {
-      it ?: return@observe
-
-      binding.widgets.layoutManager = LinearLayoutManager(requireContext())
-      binding.widgets.adapter = TemplateWidgetsListAdapter(template.widgets)
-
-      binding.title.setText(template.templateName)
-      binding.previous.setOnClickListener {
-        viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
-      }
-
-      binding.widgets.viewTreeObserver.addOnGlobalLayoutListener(object :
-        OnGlobalLayoutListener {
-        override fun onGlobalLayout() {
-          binding.widgets.viewTreeObserver.removeOnGlobalLayoutListener(this)
-          startPostponedEnterTransition()
-        }
-      })
+      binding.widgets.adapter = null
+      viewModel.postTransition(viewLifecycleOwner) { bindWithTemplate(it) }
     }
+
+    binding.previous.setOnClickListener {
+      viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
+    }
+
+    binding.widgets.layoutManager = LinearLayoutManager(requireContext())
+  }
+
+  private fun bindWithTemplate(template: Template?) {
+    template ?: return
+
+    binding.widgets.adapter = TemplateWidgetsListAdapter(template.widgets)
+    binding.title.setText(template.templateName)
   }
 }

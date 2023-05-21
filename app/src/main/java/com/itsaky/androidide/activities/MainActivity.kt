@@ -126,14 +126,16 @@ class MainActivity : IDEActivity() {
 
       val transition = MaterialSharedAxis(axis, isForward)
       transition.doOnEnd {
+        viewModel.isTransitionInProgress = false
         onBackPressedCallback.isEnabled =
           viewModel.currentScreen.value != SCREEN_MAIN
       }
 
+      viewModel.isTransitionInProgress = true
       TransitionManager.beginDelayedTransition(binding.root, transition)
     }
 
-    val view = when (screen) {
+    val currentFragment = when (screen) {
       SCREEN_MAIN -> binding.main
       SCREEN_TEMPLATE_LIST -> binding.templateList
       SCREEN_TEMPLATE_DETAILS -> binding.templateDetails
@@ -142,7 +144,7 @@ class MainActivity : IDEActivity() {
 
     for (fragment in arrayOf(binding.main, binding.templateList,
       binding.templateDetails)) {
-      fragment.isVisible = fragment == view
+      fragment.isVisible = fragment == currentFragment
     }
   }
 
