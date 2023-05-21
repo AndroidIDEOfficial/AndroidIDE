@@ -70,7 +70,7 @@
   <string name="project_app_name">اسم التطبيق</string>
   <string name="msg_create_new_project_greeting">ابدأ مشروعك الرائع الجديد!</string>
   <string name="title_confirm_open_project">فتح آخر مشروع؟</string>
-  <string name="msg_confirm_open_project">هل تريدني أن أفتح آخر مشروع مفتوح؟ المشروع المفتوح كان:\n%s</string>
+  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
   <string name="group_project">مشروع</string>
   <string name="title_close_project">غلق هذا المشروع</string>
   <string name="msg_opened_project_does_not_exist">آخر مشروع فتح غير موجود!</string>
@@ -317,7 +317,7 @@
   <string name="msg_swipe_for_output">مرر لأعلى لعرض @@مخرجات البناء@@</string>
   <string name="idepref_editor_useSoftTabs_title">استخدام علامة التبويب الناعمة</string>
   <string name="idepref_editor_useSoftTabs_summary">اختر ما إذا كان سيتم استخدام المسافات بدلاً من حرف التبويب (\\t).</string>
-  <string name="btn_sponsor">دعم المشروع</string>
+  <string name="btn_donate">Donate</string>
   <string name="btn_docs">إرشادات الإستخدام</string>
   <string name="btn_close">إغلاق</string>
   <string name="msg_ignore_case">تجاهل الحالة</string>
@@ -469,4 +469,12 @@
   <string name="permdesc_bind_logger_service">السماح لهذا التطبيق بربطه مع خدمة تسجيل اللوغ لـ AndroidIDE. هذا الامر مطلوب لـ AndroidIDE لقراءة السجلات (اللوغ) لهذا التطبيق.</string>
   <string name="wizard_module_name">Module name</string>
   <string name="wizard_module_type">Module type</string>
+  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
+  <string name="msg_invalid_class_name">Invalid class name</string>
+  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_file_not_exist">File does not exist</string>
+  <string name="msg_path_must_be_file">Must be path to a file</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
 </resources>
