@@ -70,7 +70,7 @@
   <string name="project_app_name">Имя приложения</string>
   <string name="msg_create_new_project_greeting">Начните свой новый замечательный проект!</string>
   <string name="title_confirm_open_project">Открыть последний проект?</string>
-  <string name="msg_confirm_open_project">Хотите открыть последний проект? Последний раз вы работали над:\n%s</string>
+  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
   <string name="group_project">Проект</string>
   <string name="title_close_project">Закрыть этот проект</string>
   <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
@@ -317,7 +317,7 @@
   <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
-  <string name="btn_sponsor">Спонсировать</string>
+  <string name="btn_donate">Donate</string>
   <string name="btn_docs">Документация</string>
   <string name="btn_close">Закрыть</string>
   <string name="msg_ignore_case">Игнорировать регистр</string>
@@ -469,4 +469,12 @@
   <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
   <string name="wizard_module_name">Module name</string>
   <string name="wizard_module_type">Module type</string>
+  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
+  <string name="msg_invalid_class_name">Invalid class name</string>
+  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_file_not_exist">File does not exist</string>
+  <string name="msg_path_must_be_file">Must be path to a file</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
 </resources>
