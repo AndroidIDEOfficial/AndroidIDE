@@ -34,10 +34,11 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
+import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
 import java.util.Arrays;
 
-public abstract class BaseApplication extends Application {
+public  class BaseApplication extends Application {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
@@ -85,7 +86,10 @@ public abstract class BaseApplication extends Application {
 
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
-    ToolsManager.init(this, null);
+
+    if (!VMUtils.isJvm()) {
+      ToolsManager.init(this, null);
+    }
 
     createNotificationChannels();
   }

@@ -553,5 +553,12 @@
   <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
   <string name="wizard_module_name">Module name</string>
   <string name="wizard_module_type">Module type</string>
-
+  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
+  <string name="msg_invalid_class_name">Invalid class name</string>
+  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_file_not_exist">File does not exist</string>
+  <string name="msg_path_must_be_file">Must be path to a file</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
 </resources>

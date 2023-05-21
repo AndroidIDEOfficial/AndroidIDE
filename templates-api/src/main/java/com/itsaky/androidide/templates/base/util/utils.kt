@@ -36,6 +36,15 @@ internal fun ProjectTemplateData.moduleNameToDir(name: String): File {
   return File(this.projectDir, moduleNameToDirName(name).replace(':', '/').trim { it == '/' })
 }
 
+fun isValidModuleName(name: String): Boolean {
+  if (name.length < 2 || name.isBlank() || name[0] != ':') {
+    return false
+  }
+
+  val moduleName = name.substring(1)
+  return moduleNameToDirName(moduleName) == moduleName
+}
+
 /**
  * Converts a Gradle module name to a directory name.
  *
@@ -56,8 +65,8 @@ fun moduleNameToDirName(name: String): String {
     // the first character must be a letter
       (i == 0 && !c.isLetter())
 
-      // chars at other indices must be a letter or digit or
-      || !(c.isDigit() || c.isLetter() || c == '-')
+      // chars at other indices must be a letter, digit, hyphen or an underscore
+      || !(c.isDigit() || c.isLetter() || c == '-' || c =='_')
 
       // must not include consecutive '-'
       || (prev == '-' && c == '-')

@@ -195,6 +195,15 @@ open class Template(@StringRes open val templateName: Int,
 
   open val parameters: Collection<Parameter<*>>
     get() = widgets.filterIsInstance<ParameterWidget<*>>().map { it.parameter }
+
+  companion object {
+
+    @JvmStatic
+    private val EMPTY_RECIPE: TemplateRecipe = {}
+
+    @JvmStatic
+    val EMPTY = Template(-1, -1, -1, emptyList(), EMPTY_RECIPE)
+  }
 }
 
 open class ProjectTemplate(val moduleTemplates: List<Template>,

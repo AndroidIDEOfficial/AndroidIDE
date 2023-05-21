@@ -64,6 +64,7 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
     val projectName = stringParameter {
       name = R.string.project_app_name
       default = "My Application"
+      startIcon = R.drawable.ic_android
       constraints = listOf(NONEMPTY)
     }
 

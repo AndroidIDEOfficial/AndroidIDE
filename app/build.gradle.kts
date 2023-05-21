@@ -6,6 +6,7 @@ plugins {
   id("kotlin-kapt")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
+  id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -101,11 +102,15 @@ dependencies {
   implementation(libs.androidx.coordinatorlayout)
   implementation(libs.androidx.drawer)
   implementation(libs.androidx.grid)
+  implementation(libs.androidx.nav.fragment)
+  implementation(libs.androidx.nav.ui)
   implementation(libs.androidx.preference)
   implementation(libs.androidx.recyclerview)
+  implementation(libs.androidx.transition)
   implementation(libs.androidx.vectors)
   implementation(libs.androidx.animated.vectors)
   implementation(libs.google.material)
+  implementation(libs.google.flexbox)
   implementation(libs.google.oss.licenses)
 
   // Kotlin
@@ -136,6 +141,8 @@ dependencies {
   implementation(projects.preferences)
   implementation(projects.resources)
   implementation(projects.treeview)
+  implementation(projects.templatesApi)
+  implementation(projects.templatesImpl)
   implementation(projects.uidesigner)
   implementation(projects.xmlInflater)
 

@@ -33,6 +33,7 @@ dependencies {
   implementation(projects.shared)
   implementation(projects.common)
   implementation(projects.preferences)
+  implementation(projects.subprojects.projects)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.ktx)
   implementation(libs.google.auto.service.annotations)

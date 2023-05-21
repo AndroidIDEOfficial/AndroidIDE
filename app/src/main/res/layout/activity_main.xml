@@ -36,13 +36,33 @@
   </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.fragment.app.FragmentContainerView
-    android:id="@+id/container"
+    android:id="@+id/main"
+    android:name="com.itsaky.androidide.fragments.MainFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:name="com.itsaky.androidide.fragments.MainFragment" />
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <androidx.fragment.app.FragmentContainerView
+    android:id="@+id/template_list"
+    android:name="com.itsaky.androidide.fragments.TemplateListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <androidx.fragment.app.FragmentContainerView
+    android:id="@+id/template_details"
+    android:name="com.itsaky.androidide.fragments.TemplateDetailsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
 </LinearLayout>

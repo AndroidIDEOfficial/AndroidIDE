@@ -23,6 +23,7 @@
     android:name=".app.IDEApplication"
     android:allowBackup="false"
     android:allowNativeHeapPointerTagging="false"
+    android:enableOnBackInvokedCallback="true"
     android:hardwareAccelerated="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
@@ -76,7 +77,7 @@
       android:exported="true"
       android:permission="com.itsaky.androidide.permission.BIND_LOG_SERVICE">
       <intent-filter>
-        <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION"/>
+        <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION" />
       </intent-filter>
     </service>
 
