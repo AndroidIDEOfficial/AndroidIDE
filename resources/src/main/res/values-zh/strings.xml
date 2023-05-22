@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">复制模板到存储空间失败!</string>
   <string name="cannot_create_temp">创建临时项目目录失败!</string>
   <string name="project_created_successfully">项目创建成功!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">正在启动写入进程</string>
   <string name="msg_folder_creation_failed">创建文件夹失败!</string>
   <string name="msg_file_creation_failed">创建文件失败!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">类名包含关键字</string>
   <string name="msg_path_must_be_dir">必须是目录路径</string>
   <string name="msg_invalid_layout_name">布局文件名无效</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
