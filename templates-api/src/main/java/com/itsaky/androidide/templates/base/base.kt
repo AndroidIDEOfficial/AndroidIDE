@@ -71,6 +71,7 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     val packageName = stringParameter {
       name = R.string.package_name
       default = "com.example.myapplication"
+      startIcon = R.drawable.ic_package
       constraints = listOf(NONEMPTY, PACKAGE)
 
       suggest = {
@@ -83,6 +84,7 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     val saveLocation = stringParameter {
       name = R.string.wizard_save_location
       default = Environment.PROJECTS_DIR.absolutePath
+      endIcon = R.drawable.ic_folder
       constraints = listOf(NONEMPTY, DIRECTORY, EXISTS)
 
       suggest = {
@@ -96,12 +98,14 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
       name = R.string.wizard_language
       default = Java
       displayName = Language::lang
+      startIcon = R.drawable.ic_language_java
     }
 
     val minSdk = enumParameter<Sdk> {
       name = R.string.minimum_sdk
       default = Sdk.Lollipop
       displayName = Sdk::displayName
+      startIcon = R.drawable.ic_min_sdk
     }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
@@ -167,30 +171,35 @@ fun baseAndroidModule(isLibrary: Boolean = false,
     val appName = if (isLibrary) null else stringParameter {
       name = R.string.project_app_name
       default = "My Application"
+      startIcon = R.drawable.ic_android
       constraints = listOf(NONEMPTY)
     }
 
     val packageName = stringParameter {
       name = R.string.package_name
       default = "com.example.myapplication"
+      startIcon = R.drawable.ic_package
       constraints = listOf(NONEMPTY, PACKAGE)
     }
 
     val minSdk = enumParameter<Sdk> {
       name = R.string.minimum_sdk
       default = Sdk.Lollipop
+      startIcon = R.drawable.ic_min_sdk
       displayName = Sdk::displayName
     }
 
     val type = enumParameter<ModuleType> {
       name = R.string.wizard_module_type
       default = AndroidLibrary
+      startIcon = R.drawable.ic_android
       displayName = ModuleType::typeName
     }
 
     val language = enumParameter<Language> {
       name = R.string.wizard_language
       default = Java
+      startIcon = R.drawable.ic_language_java
       displayName = Language::lang
     }
 
