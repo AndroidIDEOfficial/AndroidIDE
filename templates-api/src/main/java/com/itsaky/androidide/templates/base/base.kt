@@ -120,6 +120,12 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
         File(saveLocation.value!!, projectName.value!!), ProjectVersionData(),
         language = language.value!!, useKts = true)
 
+      if (data.projectDir.exists() && data.projectDir.listFiles()
+          ?.isNotEmpty() == true
+      ) {
+        throw IllegalArgumentException("Project directory already exists")
+      }
+
       setDefaultModuleData(
         ModuleTemplateData(":app", appName = data.name, packageName.value!!,
           data.moduleNameToDir(":app"), type = AndroidApp,
