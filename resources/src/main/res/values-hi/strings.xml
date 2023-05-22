@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">टेम्पलेट को स्टोरेज में कॉपी करने में विफल!</string>
   <string name="cannot_create_temp">अस्थायी प्रोजेक्ट डायरेक्ट्री बनाने में विफल!</string>
   <string name="project_created_successfully">प्रोजेक्ट सफलतापूर्वक बनाया गया!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">राइटिंग प्रोसेस शुरू करना</string>
   <string name="msg_folder_creation_failed">फ़ोल्डर बनाने में विफल रहे!</string>
   <string name="msg_file_creation_failed">फ़ाइल बनाने में विफल रहे!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">Class name contains keywords</string>
   <string name="msg_path_must_be_dir">Must be path to a directory</string>
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
