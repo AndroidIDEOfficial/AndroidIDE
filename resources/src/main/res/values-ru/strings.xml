@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">Ошибка копирования проекта в память!</string>
   <string name="cannot_create_temp">Не удалось создать временную директорию проекта!</string>
   <string name="project_created_successfully">Проект создан успешно!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">Запуск процесса записи</string>
   <string name="msg_folder_creation_failed">Не удалось создать папку!</string>
   <string name="msg_file_creation_failed">Не удалось создать файл!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">Class name contains keywords</string>
   <string name="msg_path_must_be_dir">Must be path to a directory</string>
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
