@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">Falha ao copiar template para o armazenamento!</string>
   <string name="cannot_create_temp">Falha ao criar diretório de projeto temporário!</string>
   <string name="project_created_successfully">Projeto criado com sucesso!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">Iniciando o processo de escrita</string>
   <string name="msg_folder_creation_failed">Falha ao criar pasta!</string>
   <string name="msg_file_creation_failed">Falha ao criar arquivo!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">Nome da classe contém palavras-chave</string>
   <string name="msg_path_must_be_dir">Deve ter um caminho para um arquivo</string>
   <string name="msg_invalid_layout_name">Nome do arquivo de layout inválido</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
