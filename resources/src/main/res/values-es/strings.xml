@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">¡No se pudo copiar la plantilla al almacenamiento!</string>
   <string name="cannot_create_temp">¡No se pudo crear el directorio del proyecto temporal!</string>
   <string name="project_created_successfully">¡Proyecto creado con éxito!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">Iniciando proceso de escritura</string>
   <string name="msg_folder_creation_failed">¡Error al crear la carpeta!</string>
   <string name="msg_file_creation_failed">¡Error al crear el archivo!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">Class name contains keywords</string>
   <string name="msg_path_must_be_dir">Must be path to a directory</string>
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
