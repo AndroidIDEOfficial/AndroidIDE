@@ -120,6 +120,7 @@
   <string name="asset_copy_failed">Nu s-a copiat șablonul în spațiu de stocare!</string>
   <string name="cannot_create_temp">Nu s-a putut crea directorul temporar al proiectului!</string>
   <string name="project_created_successfully">Proiect creat cu succes!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">Începe procesul de scriere</string>
   <string name="msg_folder_creation_failed">Nu s-a putut crea folderul!</string>
   <string name="msg_file_creation_failed">Esuare in crearea fisierului!</string>
@@ -477,4 +478,5 @@
   <string name="msg_classname_with_keywords">Class name contains keywords</string>
   <string name="msg_path_must_be_dir">Must be path to a directory</string>
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
 </resources>
