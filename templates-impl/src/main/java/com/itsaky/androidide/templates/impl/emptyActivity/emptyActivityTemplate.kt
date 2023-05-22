@@ -19,17 +19,16 @@ package com.itsaky.androidide.templates.impl.emptyActivity
 
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.LAYOUT
 import com.itsaky.androidide.templates.base.util.SourceWriter
 import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
-import com.itsaky.androidide.templates.impl.base.recipeResult
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
+import com.itsaky.androidide.templates.impl.baseProjectImpl
 
-fun emptyActivityProject(): ProjectTemplate = baseProject {
+fun emptyActivityProject(): ProjectTemplate = baseProjectImpl {
   templateName = R.string.template_empty
   thumb = R.drawable.template_empty_activity
   defaultAppModule {
@@ -41,8 +40,6 @@ fun emptyActivityProject(): ProjectTemplate = baseProject {
       res {
         writeEmptyActivity()
       }
-
-      recipeResult()
     }
   }
 }

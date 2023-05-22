@@ -17,7 +17,11 @@
 
 package com.itsaky.androidide.templates.impl
 
+import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
+import com.itsaky.androidide.templates.base.baseProject
+import com.itsaky.androidide.templates.impl.base.createRecipe
 
 /**
  * Indents the given string for the given [indentation level][level].
@@ -32,7 +36,19 @@ fun String.indent(level: Int): String {
   }.toString()
 }
 
-internal fun AndroidModuleTemplateBuilder.templateAsset(name: String, path: String
+@Suppress("UnusedReceiverParameter")
+internal fun AndroidModuleTemplateBuilder.templateAsset(name: String,
+                                                        path: String
 ): String {
   return "templates/${name}/${path}"
+}
+
+internal fun baseProjectImpl(block: ProjectTemplateBuilder.() -> Unit
+): ProjectTemplate = baseProject {
+  block()
+
+  // make sure we return a proper result
+  if (!isRecipeSet) {
+    recipe = createRecipe {}
+  }
 }

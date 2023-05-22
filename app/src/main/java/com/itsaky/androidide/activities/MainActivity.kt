@@ -252,7 +252,7 @@ class MainActivity : IDEActivity() {
     builder.show()
   }
 
-  private fun openProject(root: File) {
+  internal fun openProject(root: File) {
     projectPath = root.absolutePath
     startActivity(Intent(this, EditorActivityKt::class.java))
   }

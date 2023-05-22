@@ -9,9 +9,9 @@ import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.activities.PreferencesActivity
 import com.itsaky.androidide.activities.TerminalActivity
-import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
@@ -19,7 +19,6 @@ import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
-import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsyncProvideError
@@ -88,8 +87,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
   }
 
   override fun openProject(root: File) {
-    projectPath = root.absolutePath
-    startActivity(Intent(requireActivity(), EditorActivityKt::class.java))
+    (requireActivity() as MainActivity).openProject(root)
   }
 
   private fun cloneGitRepo() {

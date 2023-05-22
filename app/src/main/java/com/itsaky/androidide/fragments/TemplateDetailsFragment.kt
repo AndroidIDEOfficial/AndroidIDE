@@ -25,12 +25,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.TransitionManager
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
+import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.adapters.TemplateWidgetsListAdapter
 import com.itsaky.androidide.databinding.FragmentTemplateDetailsBinding
 import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.Template
 import com.itsaky.androidide.templates.impl.ConstraintVerifier
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.TemplateRecipeExecutor
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
@@ -45,6 +48,7 @@ class TemplateDetailsFragment :
   FragmentWithBinding<FragmentTemplateDetailsBinding>(
     R.layout.fragment_template_details, FragmentTemplateDetailsBinding::bind) {
 
+  private val log = ILogger.newInstance("TemplateDetailsFragment")
   private val viewModel by viewModels<MainViewModel>(
     ownerProducer = { requireActivity() })
 
@@ -88,18 +92,24 @@ class TemplateDetailsFragment :
       viewModel.creatingProject.value = true
       executeAsyncProvideError({
         template.recipe.execute(TemplateRecipeExecutor())
-        true
       }) { result, err ->
 
         viewModel.creatingProject.value = false
-        if (result == false || err != null) {
+        if (result == null || err != null || result !is ProjectTemplateRecipeResult) {
           err?.printStackTrace()
+          log.error(
+            "Failed to create project. result=$result, err=${err?.message}")
           flashError(string.project_creation_failed)
           return@executeAsyncProvideError
         }
 
         viewModel.setScreen(MainViewModel.SCREEN_MAIN)
         flashSuccess(string.project_created_successfully)
+
+        viewModel.postTransition(viewLifecycleOwner) {
+          // open the project
+          (requireActivity() as MainActivity).openProject(result.data.projectDir)
+        }
       }
     }
 

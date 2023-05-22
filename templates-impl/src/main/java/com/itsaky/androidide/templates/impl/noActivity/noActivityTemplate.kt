@@ -17,14 +17,13 @@
 
 package com.itsaky.androidide.templates.impl.noActivity
 
-import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
-import com.itsaky.androidide.templates.impl.base.recipeResult
+import com.itsaky.androidide.templates.impl.baseProjectImpl
 
-fun noActivityProjectTemplate() = baseProject {
+fun noActivityProjectTemplate() = baseProjectImpl {
   templateName = R.string.template_no_activity
   thumb = R.drawable.template_no_activity
   defaultAppModule {
@@ -32,8 +31,6 @@ fun noActivityProjectTemplate() = baseProject {
       res {
         emptyThemesAndColors(actionBar = true)
       }
-
-      recipeResult()
     }
   }
 }

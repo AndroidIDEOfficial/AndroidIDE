@@ -28,6 +28,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.TemplateListAdapter
 import com.itsaky.androidide.databinding.FragmentTemplateListBinding
 import com.itsaky.androidide.templates.ITemplateProvider
+import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.viewmodel.MainViewModel
 import kotlin.math.ceil
 
@@ -48,7 +49,11 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    val templates = ITemplateProvider.getInstance().getTemplates()
+    // Show only project templates
+    val templates = ITemplateProvider.getInstance()
+      .getTemplates()
+      .filterIsInstance<ProjectTemplate>()
+
     layoutManager =
       FlexboxLayoutManager(requireContext(), FlexDirection.ROW).apply {
         justifyContent = JustifyContent.SPACE_EVENLY

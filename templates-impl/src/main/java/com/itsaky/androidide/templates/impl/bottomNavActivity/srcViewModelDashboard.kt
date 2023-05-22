@@ -19,8 +19,7 @@ package com.itsaky.androidide.templates.impl.bottomNavActivity
 
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 
-internal fun AndroidModuleTemplateBuilder.bottomNavModelDashSrcKt()
-  = """
+internal fun AndroidModuleTemplateBuilder.bottomNavModelDashSrcKt() = """
 package ${data.packageName}.ui.dashboard
 
 import androidx.lifecycle.LiveData
@@ -36,8 +35,7 @@ class DashboardViewModel : ViewModel() {
 }
 """.trim()
 
-internal fun AndroidModuleTemplateBuilder.bottomNavModelDashSrcJava()
-  = """
+internal fun AndroidModuleTemplateBuilder.bottomNavModelDashSrcJava() = """
 package ${data.packageName}.ui.dashboard;
 
 import androidx.lifecycle.LiveData;

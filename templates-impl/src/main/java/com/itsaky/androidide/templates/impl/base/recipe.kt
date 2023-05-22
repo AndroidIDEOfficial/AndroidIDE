@@ -17,15 +17,37 @@
 
 package com.itsaky.androidide.templates.impl.base
 
+import com.itsaky.androidide.templates.ModuleTemplateRecipeResult
+import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.TemplateRecipe
 import com.itsaky.androidide.templates.TemplateRecipeResult
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ExecutorDataTemplateBuilder
+import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 
 internal fun <R : TemplateRecipeResult> ExecutorDataTemplateBuilder<*, *>.createRecipe(
   action: RecipeExecutor.() -> R
 ): TemplateRecipe<R> {
   return TemplateRecipe {
     return@TemplateRecipe executor.run(action)
+  }
+}
+
+internal fun AndroidModuleTemplateBuilder.createRecipe(
+  action: RecipeExecutor.() -> Unit
+): TemplateRecipe<ModuleTemplateRecipeResult> {
+  return TemplateRecipe {
+    executor.run(action)
+    recipeResult()
+  }
+}
+
+internal fun ProjectTemplateBuilder.createRecipe(
+  action: RecipeExecutor.() -> Unit
+): TemplateRecipe<ProjectTemplateRecipeResult> {
+  return TemplateRecipe {
+    executor.run(action)
+    recipeResult()
   }
 }

@@ -19,18 +19,17 @@ package com.itsaky.androidide.templates.impl.navDrawerActivity
 
 import com.itsaky.androidide.templates.Language.Kotlin
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
-import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.NAVIGATION
 import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
-import com.itsaky.androidide.templates.impl.base.recipeResult
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
+import com.itsaky.androidide.templates.impl.baseProjectImpl
 import com.itsaky.androidide.templates.impl.templateAsset
 
-fun navDrawerActivityProject() = baseProject {
+fun navDrawerActivityProject() = baseProjectImpl {
   templateName = R.string.template_navigation_drawer
   thumb = R.drawable.template_blank_activity_drawer
   defaultAppModule {
@@ -64,8 +63,6 @@ fun navDrawerActivityProject() = baseProject {
       } else {
         navDrawerActivityProjectJava()
       }
-
-      recipeResult()
     }
   }
 }

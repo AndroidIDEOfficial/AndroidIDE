@@ -19,7 +19,6 @@ package com.itsaky.androidide.templates.base
 
 import com.itsaky.androidide.templates.EMPTY_RECIPE
 import com.itsaky.androidide.templates.RecipeExecutor
-import com.itsaky.androidide.templates.Template
 import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateData
 import com.itsaky.androidide.templates.TemplateRecipe
@@ -27,17 +26,26 @@ import com.itsaky.androidide.templates.TemplateRecipeConfigurator
 import com.itsaky.androidide.templates.TemplateRecipeFinalizer
 import com.itsaky.androidide.templates.TemplateRecipeResult
 
-sealed class PrePostRecipeTemplateBuilder<R : TemplateRecipeResult> : TemplateBuilder<R>() {
+sealed class PrePostRecipeTemplateBuilder<R : TemplateRecipeResult> :
+  TemplateBuilder<R>() {
 
   internal var preRecipe: TemplateRecipeConfigurator = {}
   internal var postRecipe: TemplateRecipeFinalizer = {}
 
-  override var recipe: TemplateRecipe<R>? = null
+  private var _recipe: TemplateRecipe<R>? = null
+
+  val isRecipeSet: Boolean
+    get() = _recipe != null
+
+  override var recipe: TemplateRecipe<R>?
     get() = TemplateRecipe {
       preRecipe(it)
-      val result = (field ?: EMPTY_RECIPE).execute(it)
+      val result = (_recipe ?: EMPTY_RECIPE).execute(it)
       postRecipe(it)
       result
+    }
+    set(value) {
+      _recipe = value
     }
 }
 
