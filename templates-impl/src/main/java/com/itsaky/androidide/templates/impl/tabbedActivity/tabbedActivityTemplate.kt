@@ -23,7 +23,9 @@ import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.impl.R
+import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
+import com.itsaky.androidide.templates.impl.base.recipeResult
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.templateAsset
 
@@ -31,7 +33,7 @@ fun tabbedActivityProject() = baseProject {
   templateName = R.string.template_tabs
   thumb = R.drawable.template_blank_activity_tabs
   defaultAppModule {
-    recipe = {
+    recipe = createRecipe {
       sources {
         writeMainActivity(this, ktSrc = ::tabbedActivitySrcKt,
           javaSrc = ::tabbedActivitySrcJava)
@@ -52,6 +54,8 @@ fun tabbedActivityProject() = baseProject {
       } else {
         tabbedActivityProjectJava()
       }
+
+      recipeResult()
     }
   }
 }

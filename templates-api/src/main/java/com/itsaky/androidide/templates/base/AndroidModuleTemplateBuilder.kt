@@ -18,6 +18,7 @@
 package com.itsaky.androidide.templates.base
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
+import com.itsaky.androidide.templates.ModuleTemplateRecipeResult
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
@@ -27,10 +28,10 @@ import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager
 import com.itsaky.androidide.templates.base.util.stringRes
 import com.squareup.javapoet.TypeSpec
-import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
 import java.io.File
 
-class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
+class AndroidModuleTemplateBuilder :
+  ModuleTemplateBuilder() {
 
   val manifest = AndroidManifestBuilder()
   val res = AndroidModuleResManager()

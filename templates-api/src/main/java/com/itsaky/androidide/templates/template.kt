@@ -24,15 +24,73 @@ import java.io.File
 import java.util.UUID
 
 /**
+ * Empty template recipe (no-op).
+ */
+val EMPTY_RECIPE = TemplateRecipe { null }
+
+/**
  * Data that is used to create templates.
  */
 sealed class TemplateData
 
 /**
+ * Result obtained after the execution of [TemplateRecipe].
+ */
+interface TemplateRecipeResult
+
+interface TemplateRecipeResultWithData<D : TemplateData> :
+  TemplateRecipeResult {
+
+  /**
+   * The data used to create the template.
+   */
+  val data: D
+}
+
+/**
+ * Result of recipe execution for a [ProjectTemplate].
+ */
+interface ProjectTemplateRecipeResult :
+  TemplateRecipeResultWithData<ProjectTemplateData>
+
+/**
+ * Result of recipe execution for a [ModuleTemplate].
+ */
+interface ModuleTemplateRecipeResult :
+  TemplateRecipeResultWithData<ModuleTemplateData>
+
+/**
+ * Result of recipe execution for a [FileTemplate].
+ */
+interface FileTemplateRecipeResult : TemplateRecipeResult
+
+/**
+ * Recipe used to configure the execution of [TemplateRecipe].
+ *
+ * A [TemplateRecipeConfigurator] is called just before the [TemplateRecipe] is executed.
+ */
+typealias TemplateRecipeConfigurator = RecipeExecutor.() -> Unit
+
+/**
  * Recipe for creating the project/module.
  */
-typealias TemplateRecipe = RecipeExecutor.() -> Unit
+fun interface TemplateRecipe<T : TemplateRecipeResult> {
 
+  /**
+   * Execute the recipe and return the [result][TemplateRecipeResult].
+   *
+   * @param executor The [RecipeExecutor].
+   * @return The result of the execution.
+   */
+  fun execute(executor: RecipeExecutor): T?
+}
+
+/**
+ * Recipe used to finalize the execution of [TemplateRecipe].
+ *
+ * A [TemplateRecipeFinalizer] is called just after the [TemplateRecipe] is executed.
+ */
+typealias TemplateRecipeFinalizer = RecipeExecutor.() -> Unit
 
 /**
  * Base class for [TemplateData] implementations.
@@ -156,12 +214,12 @@ class ProjectTemplateData(name: String, projectDir: File,
  * @property type The type of module.
  * @property versions Version information for the module.
  */
-class ModuleTemplateData(name: String, val appName: String?,
-                         val packageName: String, projectDir: File,
-                         val type: ModuleType, language: Language,
-                         useKts: Boolean = true, minSdk: Sdk,
-                         val versions: ModuleVersionData = ModuleVersionData(
-                           minSdk)
+open class ModuleTemplateData(name: String, val appName: String?,
+                              val packageName: String, projectDir: File,
+                              val type: ModuleType, language: Language,
+                              useKts: Boolean = true, minSdk: Sdk,
+                              val versions: ModuleVersionData = ModuleVersionData(
+                                minSdk)
 ) : BaseTemplateData(name, projectDir, language, useKts) {
 
   private val srcDirs = mutableMapOf<SrcSet, File>()
@@ -179,11 +237,10 @@ class ModuleTemplateData(name: String, val appName: String?,
  * @property templateName The name of the template.
  * @property thumb The thumbnail for the template.
  */
-open class Template(@StringRes open val templateName: Int,
-                    @DrawableRes open val thumb: Int,
-                    @StringRes open val description: Int?,
-                    open val widgets: List<Widget<*>>,
-                    open val recipe: TemplateRecipe
+open class Template<R : TemplateRecipeResult>(
+  @StringRes open val templateName: Int, @DrawableRes open val thumb: Int,
+  @StringRes open val description: Int?, open val widgets: List<Widget<*>>,
+  open val recipe: TemplateRecipe<R>
 ) {
 
   /**
@@ -199,19 +256,15 @@ open class Template(@StringRes open val templateName: Int,
   companion object {
 
     @JvmStatic
-    private val EMPTY_RECIPE: TemplateRecipe = {}
-
-    @JvmStatic
     val EMPTY = Template(-1, -1, -1, emptyList(), EMPTY_RECIPE)
   }
 }
 
-open class ProjectTemplate(val moduleTemplates: List<Template>,
-                           @StringRes templateName: Int,
-                           @DrawableRes thumb: Int,
-                           @StringRes description: Int?,
-                           widgets: List<Widget<*>>, recipe: TemplateRecipe
-) : Template(templateName, thumb, description, widgets, recipe) {
+open class ProjectTemplate(
+  val moduleTemplates: List<Template<*>>, @StringRes templateName: Int,
+  @DrawableRes thumb: Int, @StringRes description: Int?,
+  widgets: List<Widget<*>>, recipe: TemplateRecipe<ProjectTemplateRecipeResult>
+) : Template<ProjectTemplateRecipeResult>(templateName, thumb, description, widgets, recipe) {
 
   override val parameters: Collection<Parameter<*>>
     get() = if (moduleTemplates.isEmpty()) super.parameters else super.parameters.toMutableList()
@@ -225,11 +278,12 @@ open class ProjectTemplate(val moduleTemplates: List<Template>,
         addAll(moduleTemplates.flatMap { it.widgets })
       }
 
-  override val recipe: TemplateRecipe
+  override val recipe: TemplateRecipe<ProjectTemplateRecipeResult>
     get() = if (moduleTemplates.isEmpty()) super.recipe else super.recipe.let { projectRecipe ->
-      {
-        projectRecipe()
-        moduleTemplates.forEach { module -> apply(module.recipe) }
+      TemplateRecipe {
+        val result = projectRecipe.execute(it)
+        moduleTemplates.forEach { module -> module.recipe.execute(it) }
+        result
       }
     }
 }
@@ -239,18 +293,25 @@ open class ProjectTemplate(val moduleTemplates: List<Template>,
  *
  * @property name The mdoule name (gradle format, e.g. ':app').
  */
-open class ModuleTemplate(val name: String, @StringRes templateName: Int,
-                          @DrawableRes thumb: Int, @StringRes description: Int?,
-                          widgets: List<Widget<*>>, recipe: TemplateRecipe
-) : Template(templateName, thumb, description, widgets, recipe)
+open class ModuleTemplate(val name: String,
+                                                          @StringRes
+                                                          templateName: Int,
+                                                          @DrawableRes
+                                                          thumb: Int, @StringRes
+                                                          description: Int?,
+                                                          widgets: List<Widget<*>>,
+                                                          recipe: TemplateRecipe<ModuleTemplateRecipeResult>
+) : Template<ModuleTemplateRecipeResult>(templateName, thumb, description, widgets, recipe)
 
 /**
  * Template for creating a file.
  */
-open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int,
-                        @StringRes description: Int?, widgets: List<Widget<*>>,
-                        recipe: TemplateRecipe
-) : Template(name, thumb, description, widgets, recipe)
+open class FileTemplate<R : FileTemplateRecipeResult>(@StringRes name: Int,
+                                                  @DrawableRes thumb: Int,
+                                                  @StringRes description: Int?,
+                                                  widgets: List<Widget<*>>,
+                                                  recipe: TemplateRecipe<R>
+) : Template<R>(name, thumb, description, widgets, recipe)
 
 /**
  * Base class for template builders.
@@ -260,12 +321,12 @@ open class FileTemplate(@StringRes name: Int, @DrawableRes thumb: Int,
  * @property widgets The widgets that will be rendered while creating this template.
  * @property recipe The recipe for building the template.
  */
-abstract class TemplateBuilder<T : Template>(
+abstract class TemplateBuilder<R : TemplateRecipeResult>(
   @StringRes open var templateName: Int? = null,
   @DrawableRes open var thumb: Int? = null,
   @StringRes open var description: Int? = null,
   open var widgets: List<Widget<*>>? = null,
-  open var recipe: TemplateRecipe? = null
+  open var recipe: TemplateRecipe<R>? = null
 ) {
 
   /**
@@ -284,7 +345,7 @@ abstract class TemplateBuilder<T : Template>(
     this.widgets = new
   }
 
-  fun build(): T {
+  fun build(): Template<R> {
     checkNotNull(templateName) { "Template must have a name" }
     checkNotNull(thumb) { "Template must have a thumbnail" }
     checkNotNull(recipe) { "Template must have a recipe" }
@@ -294,5 +355,5 @@ abstract class TemplateBuilder<T : Template>(
     return buildInternal()
   }
 
-  protected abstract fun buildInternal(): T
+  protected abstract fun buildInternal(): Template<R>
 }

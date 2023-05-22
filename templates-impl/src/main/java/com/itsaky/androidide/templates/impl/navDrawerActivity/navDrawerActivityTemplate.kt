@@ -24,7 +24,9 @@ import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.NAVIGATION
 import com.itsaky.androidide.templates.impl.R
+import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
+import com.itsaky.androidide.templates.impl.base.recipeResult
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.templateAsset
 
@@ -32,7 +34,7 @@ fun navDrawerActivityProject() = baseProject {
   templateName = R.string.template_navigation_drawer
   thumb = R.drawable.template_blank_activity_drawer
   defaultAppModule {
-    recipe = {
+    recipe = createRecipe {
       sources {
         writeMainActivity(this, ktSrc = ::navDrawerActivitySrcKt,
           javaSrc = ::navDrawerActivitySrcJava)
@@ -62,6 +64,8 @@ fun navDrawerActivityProject() = baseProject {
       } else {
         navDrawerActivityProjectJava()
       }
+
+      recipeResult()
     }
   }
 }

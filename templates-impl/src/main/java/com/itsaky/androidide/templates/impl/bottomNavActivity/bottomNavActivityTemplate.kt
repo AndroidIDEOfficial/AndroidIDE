@@ -24,7 +24,9 @@ import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.util.AndroidModuleResManager.ResourceType.NAVIGATION
 import com.itsaky.androidide.templates.impl.R
+import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.emptyThemesAndColors
+import com.itsaky.androidide.templates.impl.base.recipeResult
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.templateAsset
 
@@ -32,7 +34,7 @@ fun bottomNavActivityProject() = baseProject {
   templateName = R.string.template_navigation_tabs
   thumb = R.drawable.template_bottom_navigation_activity
   defaultAppModule {
-    recipe = {
+    recipe = createRecipe {
       sources {
         writeMainActivity(this, ktSrc = ::bottomNavActivitySrcKt,
           javaSrc = ::bottomNavActivitySrcJava)
@@ -56,6 +58,8 @@ fun bottomNavActivityProject() = baseProject {
       } else {
         bottomNavActivityProjectJava()
       }
+
+      recipeResult()
     }
   }
 }
@@ -78,10 +82,10 @@ fun AndroidModuleTemplateBuilder.bottomNavActivityProjectKt() {
       writeKtSrc("${data.packageName}.ui.home", "HomeViewModel",
         source = ::bottomNavModelHomeSrcKt)
 
-      writeKtSrc("${data.packageName}.ui.notifications", "NotificationsFragment",
-        source = ::bottomNavFragmentNotificationsSrcKt)
-      writeKtSrc("${data.packageName}.ui.notifications", "NotificationsViewModel",
-        source = ::bottomNavModelNotificationsSrcKt)
+      writeKtSrc("${data.packageName}.ui.notifications",
+        "NotificationsFragment", source = ::bottomNavFragmentNotificationsSrcKt)
+      writeKtSrc("${data.packageName}.ui.notifications",
+        "NotificationsViewModel", source = ::bottomNavModelNotificationsSrcKt)
 
     }
   }
@@ -105,10 +109,11 @@ private fun AndroidModuleTemplateBuilder.bottomNavActivityProjectJava() {
       writeJavaSrc("${data.packageName}.ui.home", "HomeViewModel",
         source = ::bottomNavModelHomeSrcJava)
 
-      writeJavaSrc("${data.packageName}.ui.notifications", "NotificationsFragment",
+      writeJavaSrc("${data.packageName}.ui.notifications",
+        "NotificationsFragment",
         source = ::bottomNavFragmentNotificationsSrcJava)
-      writeJavaSrc("${data.packageName}.ui.notifications", "NotificationsViewModel",
-        source = ::bottomNavModelNotificationsSrcJava)
+      writeJavaSrc("${data.packageName}.ui.notifications",
+        "NotificationsViewModel", source = ::bottomNavModelNotificationsSrcJava)
 
     }
   }

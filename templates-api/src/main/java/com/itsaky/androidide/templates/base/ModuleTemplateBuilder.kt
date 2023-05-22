@@ -20,10 +20,12 @@ package com.itsaky.androidide.templates.base
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
+import com.itsaky.androidide.templates.ModuleTemplateRecipeResult
+import com.itsaky.androidide.templates.TemplateRecipeConfigurator
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.TemplateBuilder
-import com.itsaky.androidide.templates.TemplateRecipe
+import com.itsaky.androidide.templates.TemplateRecipeFinalizer
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.models.defaultDependency
 import com.itsaky.androidide.templates.base.util.SourceWriter
@@ -36,7 +38,7 @@ import java.io.File
  * @author Akash Yadav
  */
 abstract class ModuleTemplateBuilder :
-  ExecutorDataTemplateBuilder<ModuleTemplate, ModuleTemplateData>() {
+  ExecutorDataTemplateBuilder<ModuleTemplateRecipeResult, ModuleTemplateData>() {
 
   internal val dependencies = hashSetOf<Dependency>()
   protected val sourceWriter = SourceWriter()
@@ -128,9 +130,9 @@ abstract class ModuleTemplateBuilder :
    * @param moduleData  Called after the base configuration is setup and before the [recipe] is executed. Caller can perform its own
    * pre-recipe configuration here. Returns the [ModuleTemplateData] instance.
    */
-  fun commonPreRecipe(extraConfig: TemplateRecipe = {},
+  fun commonPreRecipe(extraConfig: TemplateRecipeConfigurator = {},
                       moduleData: RecipeExecutor.() -> ModuleTemplateData
-  ): TemplateRecipe = {
+  ): TemplateRecipeConfigurator = {
     val data = moduleData()
 
     this@ModuleTemplateBuilder._data = data
@@ -152,7 +154,7 @@ abstract class ModuleTemplateBuilder :
    * @param extraConfig Called after the [recipe] is executed. Caller can perform its own
    * post-recipe configuration here.
    */
-  fun commonPostRecipe(extraConfig: TemplateRecipe = {}): TemplateRecipe = {
+  fun commonPostRecipe(extraConfig: TemplateRecipeFinalizer = {}): TemplateRecipeFinalizer = {
 
     // Write build.gradle[.kts]
     buildGradle()

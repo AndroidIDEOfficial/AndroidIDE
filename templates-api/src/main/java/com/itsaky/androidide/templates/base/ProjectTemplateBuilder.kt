@@ -21,6 +21,7 @@ import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.ProjectTemplateData
+import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.base.root.buildGradleSrcGroovy
 import com.itsaky.androidide.templates.base.root.buildGradleSrcKts
 import com.itsaky.androidide.templates.base.root.gradleWrapperJar
@@ -35,7 +36,7 @@ import java.io.File
  * @author Akash Yadav
  */
 class ProjectTemplateBuilder :
-  ExecutorDataTemplateBuilder<ProjectTemplate, ProjectTemplateData>() {
+  ExecutorDataTemplateBuilder<ProjectTemplateRecipeResult, ProjectTemplateData>() {
 
   private var _defModule: ModuleTemplateData? = null
   internal val defModuleTemplate: ModuleTemplate? = null
@@ -131,7 +132,7 @@ class ProjectTemplateBuilder :
   }
 
   override fun buildInternal(): ProjectTemplate {
-    return ProjectTemplate(modules, templateName!!, thumb!!, description, widgets!!,
-      recipe!!)
+    return ProjectTemplate(modules, templateName!!, thumb!!, description,
+      widgets!!, recipe!!)
   }
 }

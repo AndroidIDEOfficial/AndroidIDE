@@ -87,7 +87,7 @@ class TemplateDetailsFragment :
 
       viewModel.creatingProject.value = true
       executeAsyncProvideError({
-        template.recipe.invoke(TemplateRecipeExecutor())
+        template.recipe.execute(TemplateRecipeExecutor())
         true
       }) { result, err ->
 
@@ -106,7 +106,7 @@ class TemplateDetailsFragment :
     binding.widgets.layoutManager = LinearLayoutManager(requireContext())
   }
 
-  private fun bindWithTemplate(template: Template?) {
+  private fun bindWithTemplate(template: Template<*>?) {
     template ?: return
 
     binding.widgets.adapter = TemplateWidgetsListAdapter(template.widgets)

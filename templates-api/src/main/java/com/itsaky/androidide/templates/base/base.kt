@@ -18,6 +18,7 @@
 package com.itsaky.androidide.templates.base
 
 import com.itsaky.androidide.templates.FileTemplate
+import com.itsaky.androidide.templates.FileTemplateRecipeResult
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.Language.Java
 import com.itsaky.androidide.templates.ModuleTemplate
@@ -44,9 +45,7 @@ import com.itsaky.androidide.utils.AndroidUtils
 import com.itsaky.androidide.utils.Environment
 import java.io.File
 
-typealias ProjectTemplateConfigurator = ProjectTemplateBuilder.() -> Unit
 typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
-typealias FileTemplateConfigurator = FileTemplateBuilder.() -> Unit
 
 /**
  * TODO : Allow the user to choose if he/she wants to use Kotlin script for the project.
@@ -59,7 +58,8 @@ typealias FileTemplateConfigurator = FileTemplateBuilder.() -> Unit
  *
  * @param block Function to configure the template.
  */
-fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
+fun baseProject(block: ProjectTemplateBuilder.() -> Unit
+): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
     val projectName = stringParameter {
       name = R.string.project_app_name
@@ -74,7 +74,8 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
       constraints = listOf(NONEMPTY, PACKAGE)
 
       suggest = {
-        AndroidUtils.appNameToPackageName(/* appName = */ projectName.value, /* packageName = */
+        AndroidUtils.appNameToPackageName(/* appName = */
+          projectName.value, /* packageName = */
           this.value ?: "")
       }
     }
@@ -104,7 +105,8 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
     }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
-      TextFieldWidget(saveLocation), SpinnerWidget(language), SpinnerWidget(minSdk))
+      TextFieldWidget(saveLocation), SpinnerWidget(language),
+      SpinnerWidget(minSdk))
 
     // Setup the required properties before executing the recipe
     preRecipe = {
@@ -115,8 +117,9 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
         language = language.value!!, useKts = true)
 
       setDefaultModuleData(
-        ModuleTemplateData(":app", appName = data.name, packageName.value!!, data.moduleNameToDir(":app"),
-          type = AndroidApp, language = language.value!!, minSdk = minSdk.value!!,
+        ModuleTemplateData(":app", appName = data.name, packageName.value!!,
+          data.moduleNameToDir(":app"), type = AndroidApp,
+          language = language.value!!, minSdk = minSdk.value!!,
           useKts = data.useKts))
     }
 
@@ -142,7 +145,7 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
 
     block()
 
-  }.build()
+  }.build() as ProjectTemplate
 }
 
 /**
@@ -150,7 +153,9 @@ fun baseProject(block: ProjectTemplateConfigurator): ProjectTemplate {
  *
  * @param block The module configurator.
  */
-fun baseAndroidModule(isLibrary: Boolean = false, block: AndroidModuleTemplateConfigurator): ModuleTemplate {
+fun baseAndroidModule(isLibrary: Boolean = false,
+                      block: AndroidModuleTemplateConfigurator
+): ModuleTemplate {
   return AndroidModuleTemplateBuilder().apply {
 
     val moduleName = stringParameter {
@@ -199,14 +204,16 @@ fun baseAndroidModule(isLibrary: Boolean = false, block: AndroidModuleTemplateCo
       SpinnerWidget(type), SpinnerWidget(language))
 
     preRecipe = commonPreRecipe {
-      ModuleTemplateData(name = moduleName.value!!, appName = appName?.value, packageName = packageName.value!!,
-        projectDir = requireProjectData().moduleNameToDir(moduleName.value!!), type = type.value!!,
-        language = language.value!!, minSdk = minSdk.value!!)
+      ModuleTemplateData(name = moduleName.value!!, appName = appName?.value,
+        packageName = packageName.value!!,
+        projectDir = requireProjectData().moduleNameToDir(moduleName.value!!),
+        type = type.value!!, language = language.value!!,
+        minSdk = minSdk.value!!)
     }
     postRecipe = commonPostRecipe()
 
     block()
-  }.build()
+  }.build() as ModuleTemplate
 }
 
 /**
@@ -216,6 +223,9 @@ fun baseAndroidModule(isLibrary: Boolean = false, block: AndroidModuleTemplateCo
  * @param configurator The configurator to configure the template.
  * @return The [FileTemplate].
  */
-fun baseFile(dir: File, configurator: FileTemplateConfigurator): FileTemplate {
-  return FileTemplateBuilder(dir).apply(configurator).build()
+fun <R : FileTemplateRecipeResult> baseFile(dir: File,
+                                            configurator: FileTemplateBuilder<R>.() -> Unit
+): FileTemplate<R> {
+  return FileTemplateBuilder<R>(dir).apply(configurator)
+    .build() as FileTemplate<R>
 }

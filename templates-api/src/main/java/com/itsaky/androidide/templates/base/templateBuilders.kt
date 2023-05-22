@@ -17,22 +17,27 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.templates.EMPTY_RECIPE
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.Template
 import com.itsaky.androidide.templates.TemplateBuilder
 import com.itsaky.androidide.templates.TemplateData
 import com.itsaky.androidide.templates.TemplateRecipe
+import com.itsaky.androidide.templates.TemplateRecipeConfigurator
+import com.itsaky.androidide.templates.TemplateRecipeFinalizer
+import com.itsaky.androidide.templates.TemplateRecipeResult
 
-sealed class PrePostRecipeTemplateBuilder<T : Template> : TemplateBuilder<T>() {
+sealed class PrePostRecipeTemplateBuilder<R : TemplateRecipeResult> : TemplateBuilder<R>() {
 
-  internal var preRecipe: TemplateRecipe = {}
-  internal var postRecipe: TemplateRecipe = {}
+  internal var preRecipe: TemplateRecipeConfigurator = {}
+  internal var postRecipe: TemplateRecipeFinalizer = {}
 
-  override var recipe: TemplateRecipe? = null
-    get() = {
-      preRecipe()
-      field?.let { it() }
-      postRecipe()
+  override var recipe: TemplateRecipe<R>? = null
+    get() = TemplateRecipe {
+      preRecipe(it)
+      val result = (field ?: EMPTY_RECIPE).execute(it)
+      postRecipe(it)
+      result
     }
 }
 
@@ -40,8 +45,8 @@ sealed class PrePostRecipeTemplateBuilder<T : Template> : TemplateBuilder<T>() {
  * @property executor The [RecipeExecutor] instance.
  * @property data The project template data.
  */
-sealed class ExecutorDataTemplateBuilder<T : Template, D : TemplateData> :
-  PrePostRecipeTemplateBuilder<T>() {
+sealed class ExecutorDataTemplateBuilder<R : TemplateRecipeResult, D : TemplateData> :
+  PrePostRecipeTemplateBuilder<R>() {
 
   internal var _executor: RecipeExecutor? = null
   internal var _data: D? = null

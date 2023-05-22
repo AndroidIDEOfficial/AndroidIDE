@@ -34,7 +34,7 @@ import com.itsaky.androidide.templates.Template
  *
  * @author Akash Yadav
  */
-class TemplateListAdapter(templates: List<Template>, private val onClick: ((Template, ViewHolder) -> Unit)? = null
+class TemplateListAdapter(templates: List<Template<*>>, private val onClick: ((Template<*>, ViewHolder) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
 
   private val templates = templates.toMutableList()

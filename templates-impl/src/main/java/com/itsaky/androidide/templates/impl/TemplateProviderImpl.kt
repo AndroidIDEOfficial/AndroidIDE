@@ -37,7 +37,7 @@ import com.itsaky.androidide.templates.impl.tabbedActivity.tabbedActivityProject
 @AutoService(ITemplateProvider::class) //
 class TemplateProviderImpl : ITemplateProvider {
 
-  private val templates = mutableMapOf<String, Template>().apply {
+  private val templates = mutableMapOf<String, Template<*>>().apply {
     templates().forEach { template ->
       this[template.templateId] = template
     }
@@ -55,11 +55,11 @@ class TemplateProviderImpl : ITemplateProvider {
     )
   //@formatter:on
 
-  override fun getTemplates(): List<Template> {
+  override fun getTemplates(): List<Template<*>> {
     return ImmutableList.copyOf(templates.values)
   }
 
-  override fun getTemplate(templateId: String): Template? {
+  override fun getTemplate(templateId: String): Template<*>? {
     return templates[templateId]
   }
 

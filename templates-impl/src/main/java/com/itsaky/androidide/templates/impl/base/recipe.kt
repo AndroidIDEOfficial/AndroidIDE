@@ -15,22 +15,17 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.base
+package com.itsaky.androidide.templates.impl.base
 
-import com.itsaky.androidide.templates.FileTemplate
-import com.itsaky.androidide.templates.FileTemplateRecipeResult
-import com.itsaky.androidide.templates.TemplateBuilder
-import java.io.File
+import com.itsaky.androidide.templates.RecipeExecutor
+import com.itsaky.androidide.templates.TemplateRecipe
+import com.itsaky.androidide.templates.TemplateRecipeResult
+import com.itsaky.androidide.templates.base.ExecutorDataTemplateBuilder
 
-/**
- * [TemplateBuilder] implementation for building files templates.
- *
- * @property dir The directory in which the file must be created.
- * @author Akash Yadav
- */
-class FileTemplateBuilder<R: FileTemplateRecipeResult>(val dir: File) : TemplateBuilder<R>() {
-
-  override fun buildInternal(): FileTemplate<R> {
-    return FileTemplate(templateName!!, thumb!!, description, widgets!!, recipe!!)
+internal fun <R : TemplateRecipeResult> ExecutorDataTemplateBuilder<*, *>.createRecipe(
+  action: RecipeExecutor.() -> R
+): TemplateRecipe<R> {
+  return TemplateRecipe {
+    return@TemplateRecipe executor.run(action)
   }
 }

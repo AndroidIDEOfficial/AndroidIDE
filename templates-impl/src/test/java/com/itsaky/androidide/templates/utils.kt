@@ -70,8 +70,9 @@ private fun <T : Any> mockConstructors(klass: KClass<T>,
   configure()
 }
 
-fun testTemplate(name: String, generate: Boolean = true, builder: () -> Template
-): Template {
+fun testTemplate(name: String, generate: Boolean = true,
+                 builder: () -> Template<*>
+): Template<*> {
   mockPrefManager()
   testProjectsDir.apply {
     if (exists()) {
@@ -91,7 +92,7 @@ fun testTemplate(name: String, generate: Boolean = true, builder: () -> Template
   return template
 }
 
-private fun generateTemplateProject(name: String, template: Template
+private fun generateTemplateProject(name: String, template: Template<*>
 ) {
   for (language in Language.values()) {
     val packageName = "com.itsaky.androidide.template.${language.lang}"
@@ -127,10 +128,10 @@ private fun generateTemplateProject(name: String, template: Template
   }
 }
 
-fun Template.setupRootProjectParams(name: String = "TestTemplate",
-                                    packageName: String = "com.itsaky.androidide.template",
-                                    language: Language = Language.Kotlin,
-                                    minSdk: Sdk = Sdk.Lollipop
+fun Template<*>.setupRootProjectParams(name: String = "TestTemplate",
+                                       packageName: String = "com.itsaky.androidide.template",
+                                       language: Language = Language.Kotlin,
+                                       minSdk: Sdk = Sdk.Lollipop
 ) {
   val iterator = parameters.iterator()
 
@@ -155,8 +156,8 @@ fun Template.setupRootProjectParams(name: String = "TestTemplate",
   (param as EnumParameter<Sdk>).value = minSdk
 }
 
-fun Template.executeRecipe() {
-  TestRecipeExecutor().apply(recipe)
+fun Template<*>.executeRecipe() {
+  recipe.execute(TestRecipeExecutor())
 }
 
 fun Collection<Parameter<*>>.assertParameterTypes(

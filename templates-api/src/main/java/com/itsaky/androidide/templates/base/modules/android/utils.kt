@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.templates.base.modules.android
 
+import com.itsaky.androidide.templates.ModuleTemplate
+import com.itsaky.androidide.templates.ProjectTemplateRecipeResult
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateConfigurator
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
@@ -57,7 +59,7 @@ fun ProjectTemplateBuilder.defaultAppModule(name: String = ":app",
     }
 
     block()
-  }.build()
+  }.build() as ModuleTemplate
 
   modules.add(module)
 }

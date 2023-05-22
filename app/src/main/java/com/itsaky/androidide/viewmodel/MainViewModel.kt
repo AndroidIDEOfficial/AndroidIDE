@@ -22,6 +22,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.Template
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -44,7 +45,7 @@ class MainViewModel : ViewModel() {
   private val _previousScreen = AtomicInteger(-1)
   private val _isTransitionInProgress = MutableLiveData(false)
 
-  internal val template = MutableLiveData<Template>(null)
+  internal val template = MutableLiveData<Template<*>>(null)
   internal val creatingProject = MutableLiveData(false)
 
   val currentScreen: LiveData<Int> = _currentScreen
