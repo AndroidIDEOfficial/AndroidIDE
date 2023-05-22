@@ -60,6 +60,12 @@ class MainActivity : IDEActivity() {
   private val onBackPressedCallback = object : OnBackPressedCallback(true) {
     override fun handleOnBackPressed() {
       viewModel.apply {
+
+        // Ignore back press if project creating is in progress
+        if (creatingProject.value == true) {
+          return@apply
+        }
+
         val newScreen = when (currentScreen.value) {
           SCREEN_TEMPLATE_DETAILS -> SCREEN_TEMPLATE_LIST
           SCREEN_TEMPLATE_LIST -> SCREEN_MAIN
@@ -112,6 +118,9 @@ class MainActivity : IDEActivity() {
     val previous = viewModel.previousScreen
     if (previous != -1) {
       val axis =
+        // template list -> template details
+        // ------- OR -------
+        // template details -> template list
         if ((previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) && (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)) {
           MaterialSharedAxis.X
         } else MaterialSharedAxis.Y
@@ -120,6 +129,7 @@ class MainActivity : IDEActivity() {
         previous == SCREEN_MAIN && screen == SCREEN_TEMPLATE_LIST -> true
         previous == SCREEN_TEMPLATE_LIST && screen == SCREEN_TEMPLATE_DETAILS -> true
         previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_TEMPLATE_LIST -> false
+        previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_MAIN -> false
         previous == SCREEN_TEMPLATE_LIST && screen == SCREEN_MAIN -> false
         else -> throw IllegalStateException("Invalid screen states")
       }

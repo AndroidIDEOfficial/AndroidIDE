@@ -19,12 +19,21 @@ package com.itsaky.androidide.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.TransitionManager
 import com.itsaky.androidide.R
+import com.itsaky.androidide.R.string
 import com.itsaky.androidide.adapters.TemplateWidgetsListAdapter
 import com.itsaky.androidide.databinding.FragmentTemplateDetailsBinding
+import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.Template
+import com.itsaky.androidide.templates.impl.ConstraintVerifier
+import com.itsaky.androidide.utils.TemplateRecipeExecutor
+import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashSuccess
 import com.itsaky.androidide.viewmodel.MainViewModel
 
 /**
@@ -47,8 +56,51 @@ class TemplateDetailsFragment :
       viewModel.postTransition(viewLifecycleOwner) { bindWithTemplate(it) }
     }
 
+    viewModel.creatingProject.observe(viewLifecycleOwner) {
+      TransitionManager.beginDelayedTransition(binding.root)
+      binding.progress.isVisible = it
+      binding.finish.isEnabled = !it
+      binding.previous.isEnabled = !it
+    }
+
     binding.previous.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
+    }
+
+    binding.finish.setOnClickListener {
+      viewModel.creatingProject.value = true
+      val template = checkNotNull(
+        viewModel.template.value) { "Cannot create project. Template not found." }
+
+      val isValid = template.parameters.fold(true) { isValid, param ->
+        if (param is StringParameter) {
+          return@fold isValid && ConstraintVerifier.isValid(param.value ?: "",
+            param.constraints)
+        } else isValid
+      }
+
+      if (!isValid) {
+        viewModel.creatingProject.value = false
+        flashError(string.msg_invalid_project_details)
+        return@setOnClickListener
+      }
+
+      viewModel.creatingProject.value = true
+      executeAsyncProvideError({
+        template.recipe.invoke(TemplateRecipeExecutor())
+        true
+      }) { result, err ->
+
+        viewModel.creatingProject.value = false
+        if (result == false || err != null) {
+          err?.printStackTrace()
+          flashError(string.project_creation_failed)
+          return@executeAsyncProvideError
+        }
+
+        viewModel.setScreen(MainViewModel.SCREEN_MAIN)
+        flashSuccess(string.project_created_successfully)
+      }
     }
 
     binding.widgets.layoutManager = LinearLayoutManager(requireContext())

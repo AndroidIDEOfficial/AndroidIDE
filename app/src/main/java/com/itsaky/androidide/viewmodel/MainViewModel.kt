@@ -45,6 +45,7 @@ class MainViewModel : ViewModel() {
   private val _isTransitionInProgress = MutableLiveData(false)
 
   internal val template = MutableLiveData<Template>(null)
+  internal val creatingProject = MutableLiveData(false)
 
   val currentScreen: LiveData<Int> = _currentScreen
   val previousScreen: Int
