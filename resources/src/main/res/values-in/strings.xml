@@ -120,7 +120,7 @@
   <string name="asset_copy_failed">Gagal menyalin templat ke penyimpanan!</string>
   <string name="cannot_create_temp">Gagal membuat direktori projek sementara!</string>
   <string name="project_created_successfully">Projek sukses dibuat!</string>
-  <string name="project_creation_failed">Failed to create project</string>
+  <string name="project_creation_failed">Gagal membuat proyek</string>
   <string name="msg_begin_project_write">Memulai proses penulisan</string>
   <string name="msg_folder_creation_failed">Gagal membuat folder!</string>
   <string name="msg_file_creation_failed">Gagal membuat file!</string>
@@ -478,5 +478,5 @@
   <string name="msg_classname_with_keywords">Nama kelas berisi kata kunci</string>
   <string name="msg_path_must_be_dir">Harus jalur ke direktori</string>
   <string name="msg_invalid_layout_name">Nama file tata letak tidak valid</string>
-  <string name="msg_invalid_project_details">Invalid project details</string>
+  <string name="msg_invalid_project_details">Detail proyek tidak valid</string>
 </resources>
