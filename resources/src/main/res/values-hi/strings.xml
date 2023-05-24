@@ -479,4 +479,5 @@
   <string name="msg_path_must_be_dir">Must be path to a directory</string>
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
   <string name="msg_invalid_project_details">Invalid project details</string>
+  <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
 </resources>
