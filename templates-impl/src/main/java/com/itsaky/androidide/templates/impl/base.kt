@@ -19,6 +19,7 @@ package com.itsaky.androidide.templates.impl
 
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.templates.ProjectVersionData
 import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
@@ -47,12 +48,15 @@ internal fun AndroidModuleTemplateBuilder.templateAsset(name: String,
 
 internal fun baseProjectImpl(sdkFilter: ((Sdk) -> Boolean)? = null,
                              languageFilter: ((Language) -> Boolean)? = null,
+                             projectVersionData: ProjectVersionData = ProjectVersionData(),
                              block: ProjectTemplateBuilder.() -> Unit
-): ProjectTemplate = baseProject(sdkFilter = sdkFilter, languageFilter = languageFilter) {
-  block()
+): ProjectTemplate =
+  baseProject(sdkFilter = sdkFilter, languageFilter = languageFilter,
+    projectVersionData = projectVersionData) {
+    block()
 
-  // make sure we return a proper result
-  if (!isRecipeSet) {
-    recipe = createRecipe {}
+    // make sure we return a proper result
+    if (!isRecipeSet) {
+      recipe = createRecipe {}
+    }
   }
-}

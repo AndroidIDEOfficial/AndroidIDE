@@ -15,12 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.templates.base.models
+package com.itsaky.androidide.templates.impl.composeActivity
 
-enum class DependencyConfiguration(val configName: String) { Api("api"),
-  ApiOnly("apiOnly"),
-  Implementation("implementation"),
-  DebugImplementation("debugImplementation"),
-  Runtime("runtime"),
-  RuntimeOnly("runtimeOnly")
-}
+import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
+
+fun AndroidModuleTemplateBuilder.composeThemesXml()
+= """
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="${manifest.themeRes}" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
+""".trimIndent()

@@ -17,16 +17,26 @@
 
 package com.itsaky.androidide.templates.base.models
 
+import com.itsaky.androidide.templates.base.models.DependencyConfiguration.DebugImplementation
+
 data class Dependency(val configuration: DependencyConfiguration,
                       val group: String, val artifact: String,
-                      val version: String
+                      val version: String?
 ) {
 
   fun value(): String {
     return """
-      ${configuration.configName}("${group}:${artifact}:${version}")
+      ${configuration.configName}("${group}:${artifact}${optionalVersion()}")
     """.trimIndent()
   }
+
+  fun platformValue(): String {
+    return """
+      ${configuration.configName}(platform("${group}:${artifact}${optionalVersion()}"))
+    """.trimIndent()
+  }
+
+  private fun optionalVersion() = version?.let { ":${it}" } ?: ""
 
   object AndroidX {
 
@@ -73,6 +83,45 @@ data class Dependency(val configuration: DependencyConfiguration,
     @JvmStatic
     val Navigation_Ui_Ktx = parseDependency(
       "androidx.navigation:navigation-ui-ktx:${navigationVersion}")
+
+    object Compose {
+
+      @JvmStatic
+      val Core_Ktx = parseDependency("androidx.core:core-ktx:1.8.0")
+
+      @JvmStatic
+      val LifeCycle_Runtime_Ktx = parseDependency(
+        "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+
+      @JvmStatic
+      val Activity = parseDependency("androidx.activity:activity-compose:1.5.1")
+
+      @JvmStatic
+      val BOM = parseDependency("androidx.compose:compose-bom:2022.10.00",
+        isPlatform = true)
+
+      @JvmStatic
+      val UI = parseDependency("androidx.compose.ui:ui")
+
+      @JvmStatic
+      val UI_Graphics = parseDependency("androidx.compose.ui:ui-graphics")
+
+      @JvmStatic
+      val UI_Tooling_Preview =
+        parseDependency("androidx.compose.ui:ui-tooling-preview")
+
+      @JvmStatic
+      val Material3 = parseDependency("androidx.compose.material3:material3")
+
+      @JvmStatic
+      val UI_Tooling = parseDependency("androidx.compose.ui:ui-tooling",
+        configuration = DebugImplementation)
+
+      @JvmStatic
+      val UI_Test_Manifest =
+        parseDependency("androidx.compose.ui:ui-test-manifest",
+          configuration = DebugImplementation)
+    }
   }
 
   object Google {

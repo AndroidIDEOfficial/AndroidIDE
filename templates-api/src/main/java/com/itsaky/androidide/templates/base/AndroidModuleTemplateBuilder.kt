@@ -18,7 +18,6 @@
 package com.itsaky.androidide.templates.base
 
 import com.android.SdkConstants.ANDROID_MANIFEST_XML
-import com.itsaky.androidide.templates.ModuleTemplateRecipeResult
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
@@ -30,8 +29,15 @@ import com.itsaky.androidide.templates.base.util.stringRes
 import com.squareup.javapoet.TypeSpec
 import java.io.File
 
-class AndroidModuleTemplateBuilder :
-  ModuleTemplateBuilder() {
+class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
+
+  /**
+   * Set whether this Android module is a Jetpack Compose module or not.
+   *
+   * If this is set to `true`, then compose-specific configurations will be
+   * added to the `build.gradle[.kts]` file.
+   */
+  var isComposeModule = false
 
   val manifest = AndroidManifestBuilder()
   val res = AndroidModuleResManager()
@@ -133,6 +139,6 @@ class AndroidModuleTemplateBuilder :
   }
 
   override fun RecipeExecutor.buildGradle() {
-    save(buildGradleSrc(), buildGradleFile())
+    save(buildGradleSrc(isComposeModule), buildGradleFile())
   }
 }

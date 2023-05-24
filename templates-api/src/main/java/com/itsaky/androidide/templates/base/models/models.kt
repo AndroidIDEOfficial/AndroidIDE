@@ -27,7 +27,8 @@ import com.itsaky.androidide.templates.base.models.DependencyConfiguration.Imple
  * @param version The dependency version.
  * @return The [Dependency] artifact.
  */
-fun defaultDependency(group: String, artifact: String, version: String): Dependency {
+fun defaultDependency(group: String, artifact: String, version: String
+): Dependency {
   return Dependency(Implementation, group, artifact, version)
 }
 
@@ -38,9 +39,19 @@ fun defaultDependency(group: String, artifact: String, version: String): Depende
  * @param configuration The dependency configuration.
  * @return The [Dependency] artifact.s
  */
-fun parseDependency(coordinates: String, configuration: DependencyConfiguration = Implementation
+fun parseDependency(
+  coordinates: String, configuration: DependencyConfiguration = Implementation,
+  isPlatform: Boolean = false,
 ): Dependency {
   val split = coordinates.split(':')
-  check(split.size == 3) { "Maven coordinates must be in the form 'group:artifact:version'" }
-  return Dependency(configuration, split[0], split[1], split[2])
+  if (isPlatform) {
+    require(
+      split.size == 3) { "Maven coordinates must be in the form 'group:artifact:version'" }
+  } else {
+    require(
+      split.size in 2..3) { "Maven coordinates must be in the form 'group:artifact[:version]'" }
+  }
+
+  val version = if (split.size == 3) split[2] else null
+  return Dependency(configuration, split[0], split[1], version)
 }

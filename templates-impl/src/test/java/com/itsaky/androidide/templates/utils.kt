@@ -71,6 +71,7 @@ private fun <T : Any> mockConstructors(klass: KClass<T>,
 }
 
 fun testTemplate(name: String, generate: Boolean = true,
+                 languages: Array<Language> = Language.values(),
                  builder: () -> Template<*>
 ): Template<*> {
   mockPrefManager()
@@ -86,15 +87,16 @@ fun testTemplate(name: String, generate: Boolean = true,
   val template = builder()
 
   if (generate) {
-    generateTemplateProject(name, template)
+    generateTemplateProject(name, languages, template)
   }
 
   return template
 }
 
-private fun generateTemplateProject(name: String, template: Template<*>
+private fun generateTemplateProject(name: String, languages: Array<Language>,
+                                    template: Template<*>
 ) {
-  for (language in Language.values()) {
+  for (language in languages) {
     val packageName = "com.itsaky.androidide.template.${language.lang}"
     run {
       val projectName = "${name}Project${language.name}WithoutKts"

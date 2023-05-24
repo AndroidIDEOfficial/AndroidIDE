@@ -21,10 +21,10 @@ import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ModuleTemplateRecipeResult
-import com.itsaky.androidide.templates.TemplateRecipeConfigurator
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
 import com.itsaky.androidide.templates.TemplateBuilder
+import com.itsaky.androidide.templates.TemplateRecipeConfigurator
 import com.itsaky.androidide.templates.TemplateRecipeFinalizer
 import com.itsaky.androidide.templates.base.models.Dependency
 import com.itsaky.androidide.templates.base.models.defaultDependency
@@ -40,6 +40,7 @@ import java.io.File
 abstract class ModuleTemplateBuilder :
   ExecutorDataTemplateBuilder<ModuleTemplateRecipeResult, ModuleTemplateData>() {
 
+  internal val platforms = hashSetOf<Dependency>()
   internal val dependencies = hashSetOf<Dependency>()
   protected val sourceWriter = SourceWriter()
   internal var _name: String? = null
@@ -70,7 +71,9 @@ abstract class ModuleTemplateBuilder :
    * Get the path to the Java source file in the given [source set][srcSet] with the
    * given [packageName] and the [simple name][name].
    */
-  fun srcFilePath(srcSet: SrcSet, packageName: String, name: String, language: Language): File {
+  fun srcFilePath(srcSet: SrcSet, packageName: String, name: String,
+                  language: Language
+  ): File {
     var path = packageName.replace('.', '/')
     path += "/${name}"
     path += ".${language.ext}"
@@ -154,7 +157,9 @@ abstract class ModuleTemplateBuilder :
    * @param extraConfig Called after the [recipe] is executed. Caller can perform its own
    * post-recipe configuration here.
    */
-  fun commonPostRecipe(extraConfig: TemplateRecipeFinalizer = {}): TemplateRecipeFinalizer = {
+  fun commonPostRecipe(isComposeModule: Boolean = false,
+                       extraConfig: TemplateRecipeFinalizer = {}
+  ): TemplateRecipeFinalizer = {
 
     // Write build.gradle[.kts]
     buildGradle()
@@ -169,18 +174,26 @@ abstract class ModuleTemplateBuilder :
    * @param group The group ID of the dependency.
    * @param artifact The artifact of the dependency.
    * @param version The version of the dependency.
+   * @param isPlatform Whether this dependency declares a BOM.
    */
-  fun addDependency(group: String, artifact: String, version: String) {
-    addDependency(defaultDependency(group, artifact, version))
+  @JvmOverloads
+  fun addDependency(group: String, artifact: String, version: String, isPlatform: Boolean = false) {
+    addDependency(defaultDependency(group, artifact, version), isPlatform)
   }
 
   /**
    * Adds the given dependency to the `build.gradle[.kts]` file for this module.
    *
    * @param dependency The dependency to add.
+   * @param isPlatform Whether this dependency declares a BOM.
    */
-  fun addDependency(dependency: Dependency) {
-    this.dependencies.add(dependency)
+  @JvmOverloads
+  fun addDependency(dependency: Dependency, isPlatform: Boolean = false) {
+    if (isPlatform) {
+      this.platforms.add(dependency)
+    } else {
+      this.dependencies.add(dependency)
+    }
   }
 
   /**
@@ -189,6 +202,7 @@ abstract class ModuleTemplateBuilder :
   abstract fun RecipeExecutor.buildGradle()
 
   override fun buildInternal(): ModuleTemplate {
-    return ModuleTemplate(name, templateName!!, thumb!!, description, widgets!!, recipe!!)
+    return ModuleTemplate(name, templateName!!, thumb!!, description, widgets!!,
+      recipe!!)
   }
 }

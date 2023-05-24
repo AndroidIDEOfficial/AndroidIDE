@@ -26,6 +26,7 @@ import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ModuleType
 import com.itsaky.androidide.templates.ModuleType.AndroidApp
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
+import com.itsaky.androidide.templates.ModuleVersionData
 import com.itsaky.androidide.templates.ParameterConstraint.DIRECTORY
 import com.itsaky.androidide.templates.ParameterConstraint.EXISTS
 import com.itsaky.androidide.templates.ParameterConstraint.MODULE_NAME
@@ -58,6 +59,7 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
  */
 fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
                 languageFilter: ((Language) -> Boolean)? = null,
+                projectVersionData: ProjectVersionData = ProjectVersionData(),
                 block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
@@ -94,7 +96,7 @@ fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
       this@apply._executor = this
 
       this@apply._data = ProjectTemplateData(projectName.value,
-        File(saveLocation.value, projectName.value), ProjectVersionData(),
+        File(saveLocation.value, projectName.value), projectVersionData,
         language = language.value, useKts = useKts.value)
 
       if (data.projectDir.exists() && data.projectDir.listFiles()

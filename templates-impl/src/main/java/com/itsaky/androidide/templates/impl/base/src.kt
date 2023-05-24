@@ -29,10 +29,16 @@ internal fun AndroidModuleTemplateBuilder.writeMainActivity(
   val className = "MainActivity"
   writer.apply {
     if (data.language == Language.Kotlin) {
-      writeKtSrc(data.packageName, className, source = ktSrc)
+      val src = ktSrc()
+      if (src.isNotBlank()) {
+        writeKtSrc(data.packageName, className, source = src)
+      }
     } else {
-      writeJavaSrc(packageName = data.packageName, className = className,
-        source = javaSrc)
+      val src = javaSrc()
+      if (src.isNotBlank()) {
+        writeJavaSrc(packageName = data.packageName, className = className,
+          source = src)
+      }
     }
   }
 

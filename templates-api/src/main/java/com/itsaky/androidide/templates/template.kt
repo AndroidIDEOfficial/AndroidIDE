@@ -346,9 +346,9 @@ abstract class TemplateBuilder<R : TemplateRecipeResult>(
   }
 
   fun build(): Template<R> {
-    checkNotNull(templateName) { "Template must have a name" }
-    checkNotNull(thumb) { "Template must have a thumbnail" }
-    checkNotNull(recipe) { "Template must have a recipe" }
+    requireNotNull(templateName) { "Template must have a name" }
+    requireNotNull(thumb) { "Template must have a thumbnail" }
+    requireNotNull(recipe) { "Template must have a recipe" }
 
     this.widgets = this.widgets ?: emptyList()
 

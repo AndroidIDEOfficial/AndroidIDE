@@ -27,3 +27,17 @@ fun AndroidModuleTemplateBuilder.baseAndroidXDependencies() {
   addDependency(Dependency.AndroidX.ConstraintLayout)
   addDependency(Dependency.Google.Material)
 }
+
+fun AndroidModuleTemplateBuilder.composeDependencies() {
+  addDependency(Dependency.AndroidX.Compose.Core_Ktx)
+  addDependency(Dependency.AndroidX.Compose.LifeCycle_Runtime_Ktx)
+  addDependency(Dependency.AndroidX.Compose.Activity)
+
+  addDependency(dependency = Dependency.AndroidX.Compose.BOM, isPlatform = true)
+  addDependency(Dependency.AndroidX.Compose.UI)
+  addDependency(Dependency.AndroidX.Compose.UI_Graphics)
+  addDependency(Dependency.AndroidX.Compose.UI_Tooling_Preview)
+  addDependency(Dependency.AndroidX.Compose.Material3)
+  addDependency(Dependency.AndroidX.Compose.UI_Tooling)
+  addDependency(Dependency.AndroidX.Compose.UI_Test_Manifest)
+}

@@ -23,17 +23,23 @@ import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.modules.dependencies
 
+private const val compose_kotlinCompilerExtensionVersion = "1.3.2"
+
 private val AndroidModuleTemplateBuilder.androidPlugin: String
   get() {
     return if (data.type == ModuleType.AndroidLibrary) "com.android.library"
     else "com.android.application"
   }
 
-fun AndroidModuleTemplateBuilder.buildGradleSrc(): String {
-  return if (data.useKts) buildGradleSrcKts() else buildGradleSrcGroovy()
+fun AndroidModuleTemplateBuilder.buildGradleSrc(isComposeModule: Boolean
+): String {
+  return if (data.useKts) buildGradleSrcKts(
+    isComposeModule) else buildGradleSrcGroovy(isComposeModule)
 }
 
-private fun AndroidModuleTemplateBuilder.buildGradleSrcKts(): String {
+private fun AndroidModuleTemplateBuilder.buildGradleSrcKts(
+  isComposeModule: Boolean
+): String {
   return """
 plugins {
     id("$androidPlugin")
@@ -51,6 +57,10 @@ android {
         targetSdk = ${data.versions.targetSdk.api}
         versionCode = 1
         versionName = "1.0"
+        
+        vectorDrawables { 
+            useSupportLibrary = true
+        }
     }
     
     compileOptions {
@@ -67,14 +77,18 @@ android {
 
     buildFeatures {
         viewBinding = true
+        ${if (isComposeModule) "compose = true" else ""}
     }
+    ${if(isComposeModule) composeConfigKts() else ""}
 }
 ${ktJvmTarget()}
 ${dependencies()}
 """
 }
 
-private fun AndroidModuleTemplateBuilder.buildGradleSrcGroovy(): String {
+private fun AndroidModuleTemplateBuilder.buildGradleSrcGroovy(
+  isComposeModule: Boolean
+): String {
   return """
 plugins {
     id '$androidPlugin'
@@ -92,6 +106,10 @@ android {
         targetSdk ${data.versions.targetSdk.api}
         versionCode 1
         versionName "1.0"
+        
+        vectorDrawables { 
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -108,12 +126,38 @@ android {
 
     buildFeatures {
         viewBinding true
+        ${if (isComposeModule) "compose true" else ""}
     }
+    ${if(isComposeModule) composeConfigGroovy() else ""}
 }
 ${ktJvmTarget()}
 ${dependencies()}
 """
 }
+
+fun composeConfigGroovy(): String
+= """
+    composeOptions {
+        kotlinCompilerExtensionVersion '$compose_kotlinCompilerExtensionVersion'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+""".trim()
+
+fun composeConfigKts(): String
+  = """
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$compose_kotlinCompilerExtensionVersion"
+    }
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+""".trim()
 
 private fun ModuleTemplateBuilder.ktJvmTarget(): String {
   if (data.language != Kotlin) {

@@ -18,6 +18,8 @@
 package com.itsaky.androidide.templates
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.templates.Language.Java
+import com.itsaky.androidide.templates.Language.Kotlin
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
@@ -26,6 +28,7 @@ import com.itsaky.androidide.templates.base.modules.createMethod
 import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.basicActivity.basicActivityProject
 import com.itsaky.androidide.templates.impl.bottomNavActivity.bottomNavActivityProject
+import com.itsaky.androidide.templates.impl.composeActivity.composeActivityProject
 import com.itsaky.androidide.templates.impl.emptyActivity.emptyActivityProject
 import com.itsaky.androidide.templates.impl.navDrawerActivity.navDrawerActivityProject
 import com.itsaky.androidide.templates.impl.noActivity.noActivityProjectTemplate
@@ -37,6 +40,7 @@ import com.squareup.javapoet.TypeName
 import jdkx.lang.model.element.Modifier.PRIVATE
 import jdkx.lang.model.element.Modifier.PUBLIC
 import jdkx.lang.model.element.Modifier.STATIC
+import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -177,6 +181,24 @@ class TemplateBuilderTest {
   fun `test no activity project`() {
     testTemplate("NoActivity") {
       noActivityProjectTemplate()
+    }
+  }
+
+  @Test
+  fun `test compose activity template`() {
+    testTemplate("ComposeActivity", languages = arrayOf(Kotlin)) {
+      composeActivityProject()
+    }
+  }
+
+  @Test()
+  fun `test compose activity template with Java language should fail at generation`() {
+    assertThrows("Compose activity requires Kotlin language",
+      IllegalArgumentException::class.java) {
+
+      testTemplate("ComposeActivityJava", languages = arrayOf(Java)) {
+        composeActivityProject()
+      }
     }
   }
 }
