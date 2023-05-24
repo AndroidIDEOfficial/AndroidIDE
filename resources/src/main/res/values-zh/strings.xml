@@ -479,4 +479,5 @@
   <string name="msg_path_must_be_dir">必须是目录路径</string>
   <string name="msg_invalid_layout_name">布局文件名无效</string>
   <string name="msg_invalid_project_details">项目信息无效</string>
+  <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
 </resources>
