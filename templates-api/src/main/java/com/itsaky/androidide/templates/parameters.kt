@@ -88,10 +88,13 @@ abstract class Parameter<T>(@StringRes val name: Int,
 
   private val observers = hashSetOf<Observer<T>>()
   private val lock = ReentrantLock()
+  private var _value: T? = null
 
-  var value: T? = null
-    get() = field ?: default
-    private set
+  /**
+   * The value of this parameter.
+   */
+  val value: T
+    get() = _value ?: default
 
   /**
    * Set the new value to this parameter.
@@ -100,7 +103,7 @@ abstract class Parameter<T>(@StringRes val name: Int,
    * @param notify Whether the observers must be notified of the change or not.
    */
   fun setValue(value: T, notify: Boolean = true) {
-    this.value = value
+    this._value = value
 
     if (notify) {
       notifyObservers()
@@ -293,7 +296,7 @@ fun <T : Enum<*>> enumParameter(block: EnumParameterBuilder<T>.() -> Unit
 
 fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
-    name = R.string.project_app_name
+    name = string.project_app_name
     default = "My Application"
     startIcon = R.drawable.ic_android
     constraints = listOf(NONEMPTY)
@@ -303,7 +306,7 @@ fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
 
 fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
-    name = R.string.package_name
+    name = string.package_name
     default = "com.example.myapplication"
     startIcon = R.drawable.ic_package
     constraints = listOf(NONEMPTY, PACKAGE)
@@ -314,7 +317,7 @@ fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
 fun projectLanguageParameter(
   configure: EnumParameterBuilder<Language>.() -> Unit = {}
 ) = enumParameter<Language> {
-  name = R.string.wizard_language
+  name = string.wizard_language
   default = Java
   displayName = Language::lang
   startIcon = R.drawable.ic_language_java
@@ -324,7 +327,7 @@ fun projectLanguageParameter(
 
 fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
   enumParameter<Sdk> {
-    name = R.string.minimum_sdk
+    name = string.minimum_sdk
     default = Sdk.Lollipop
     displayName = Sdk::displayName
     startIcon = R.drawable.ic_min_sdk

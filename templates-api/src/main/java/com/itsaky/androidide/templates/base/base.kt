@@ -67,7 +67,7 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     // When project name is changed, change the package name accordingly
     projectName.observe { name ->
       val newPackage =
-        AndroidUtils.appNameToPackageName(name.value!!, packageName.value!!)
+        AndroidUtils.appNameToPackageName(name.value, packageName.value)
       packageName.setValue(newPackage)
     }
 
@@ -86,9 +86,9 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     preRecipe = {
       this@apply._executor = this
 
-      this@apply._data = ProjectTemplateData(projectName.value!!,
-        File(saveLocation.value!!, projectName.value!!), ProjectVersionData(),
-        language = language.value!!, useKts = useKts.value ?: useKts.default)
+      this@apply._data = ProjectTemplateData(projectName.value,
+        File(saveLocation.value, projectName.value), ProjectVersionData(),
+        language = language.value, useKts = useKts.value)
 
       if (data.projectDir.exists() && data.projectDir.listFiles()
           ?.isNotEmpty() == true
@@ -97,9 +97,9 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
       }
 
       setDefaultModuleData(
-        ModuleTemplateData(":app", appName = data.name, packageName.value!!,
+        ModuleTemplateData(":app", appName = data.name, packageName.value,
           data.moduleNameToDir(":app"), type = AndroidApp,
-          language = language.value!!, minSdk = minSdk.value!!,
+          language = language.value, minSdk = minSdk.value,
           useKts = data.useKts))
     }
 
@@ -167,11 +167,11 @@ fun baseAndroidModule(isLibrary: Boolean = false,
       SpinnerWidget(type), SpinnerWidget(language), CheckBoxWidget(useKts))
 
     preRecipe = commonPreRecipe {
-      ModuleTemplateData(name = moduleName.value!!, appName = appName?.value,
-        packageName = packageName.value!!,
-        projectDir = requireProjectData().moduleNameToDir(moduleName.value!!),
-        type = type.value!!, language = language.value!!,
-        minSdk = minSdk.value!!, useKts = useKts.value ?: useKts.default)
+      ModuleTemplateData(name = moduleName.value, appName = appName?.value,
+        packageName = packageName.value,
+        projectDir = requireProjectData().moduleNameToDir(moduleName.value),
+        type = type.value, language = language.value,
+        minSdk = minSdk.value, useKts = useKts.value)
     }
     postRecipe = commonPostRecipe()
 

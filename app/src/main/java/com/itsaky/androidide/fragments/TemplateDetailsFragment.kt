@@ -78,7 +78,7 @@ class TemplateDetailsFragment :
 
       val isValid = template.parameters.fold(true) { isValid, param ->
         if (param is StringParameter) {
-          return@fold isValid && ConstraintVerifier.isValid(param.value ?: "",
+          return@fold isValid && ConstraintVerifier.isValid(param.value,
             param.constraints)
         } else isValid
       }

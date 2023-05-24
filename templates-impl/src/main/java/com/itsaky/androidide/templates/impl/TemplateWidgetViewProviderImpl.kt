@@ -84,7 +84,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       val observer = object : DefaultObserver<Boolean>() {
         override fun onChanged(parameter: Parameter<Boolean>) {
           disableAndRun {
-            root.isChecked = param.value ?: false
+            root.isChecked = param.value
           }
         }
       }
@@ -105,7 +105,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       val observer = object : DefaultObserver<String>() {
         override fun onChanged(parameter: Parameter<String>) {
           disableAndRun {
-            input.setText(param.value ?: "")
+            input.setText(param.value)
           }
         }
       }
@@ -152,19 +152,17 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
         array))
 
-
-      val defaultName =
-        enumToName[param.default] ?: param.default.name
+      val defaultName = enumToName[param.default] ?: param.default.name
 
       root.isEnabled = nameToEnum.size > 1
       input.listSelection = array.indexOf(defaultName)
       input.setText(defaultName, false)
 
-      val observer = object  : DefaultObserver<Enum<*>>() {
+      val observer = object : DefaultObserver<Enum<*>>() {
         override fun onChanged(parameter: Parameter<Enum<*>>) {
           (parameter as EnumParameter<*>).apply {
             disableAndRun {
-              input.setText(enumToName[value ?: default])
+              input.setText(enumToName[value])
             }
           }
         }
