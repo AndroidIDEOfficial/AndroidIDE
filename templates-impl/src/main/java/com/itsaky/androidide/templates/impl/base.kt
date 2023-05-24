@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.templates.impl
 
+import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
@@ -43,8 +45,10 @@ internal fun AndroidModuleTemplateBuilder.templateAsset(name: String,
   return "templates/${name}/${path}"
 }
 
-internal fun baseProjectImpl(block: ProjectTemplateBuilder.() -> Unit
-): ProjectTemplate = baseProject {
+internal fun baseProjectImpl(sdkFilter: ((Sdk) -> Boolean)? = null,
+                             languageFilter: ((Language) -> Boolean)? = null,
+                             block: ProjectTemplateBuilder.() -> Unit
+): ProjectTemplate = baseProject(sdkFilter = sdkFilter, languageFilter = languageFilter) {
   block()
 
   // make sure we return a proper result

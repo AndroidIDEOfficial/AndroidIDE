@@ -253,19 +253,21 @@ class EnumParameter<T : Enum<*>>(@StringRes name: Int,
                                  onStartIconClick: (() -> Unit)?,
                                  onEndIconClick: (() -> Unit)?,
                                  constraints: List<ParameterConstraint>,
-                                 val displayName: ((T) -> String)? = null
+                                 val displayName: ((T) -> String)? = null,
+                                 val filter: ((T) -> Boolean)? = null
 ) : TextFieldParameter<T>(name, description, default, startIcon, endIcon,
   onStartIconClick, onEndIconClick, constraints)
 
 class EnumParameterBuilder<T : Enum<*>> : TextFieldParameterBuilder<T>() {
 
   var displayName: ((T) -> String)? = null
+  var filter: ((T) -> Boolean)? = null
 
   override fun build(): EnumParameter<T> {
     return EnumParameter(name = name!!, description = description,
       default = default!!, startIcon = startIcon, endIcon = endIcon,
       onStartIconClick = onStartIconClick, onEndIconClick = onEndIconClick,
-      constraints = constraints, displayName = displayName)
+      constraints = constraints, displayName = displayName, filter = filter)
   }
 }
 

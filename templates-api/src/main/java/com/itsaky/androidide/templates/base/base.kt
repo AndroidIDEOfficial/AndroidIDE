@@ -20,6 +20,7 @@ package com.itsaky.androidide.templates.base
 import com.itsaky.androidide.templates.CheckBoxWidget
 import com.itsaky.androidide.templates.FileTemplate
 import com.itsaky.androidide.templates.FileTemplateRecipeResult
+import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ModuleType
@@ -33,6 +34,7 @@ import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.ProjectTemplateData
 import com.itsaky.androidide.templates.ProjectVersionData
 import com.itsaky.androidide.templates.R
+import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.TextFieldWidget
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
@@ -49,20 +51,25 @@ import java.io.File
 
 typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
 
-
 /**
  * Setup base files for project templates.
  *
  * @param block Function to configure the template.
  */
-fun baseProject(block: ProjectTemplateBuilder.() -> Unit
+fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
+                languageFilter: ((Language) -> Boolean)? = null,
+                block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
     val projectName = projectNameParameter()
-    val language = projectLanguageParameter()
-    val minSdk = minSdkParameter()
     val packageName = packageNameParameter()
     val useKts = useKtsParameter()
+    val minSdk = minSdkParameter {
+      filter = sdkFilter
+    }
+    val language = projectLanguageParameter {
+      filter = languageFilter
+    }
 
     // When project name is changed, change the package name accordingly
     projectName.observe { name ->
@@ -170,8 +177,8 @@ fun baseAndroidModule(isLibrary: Boolean = false,
       ModuleTemplateData(name = moduleName.value, appName = appName?.value,
         packageName = packageName.value,
         projectDir = requireProjectData().moduleNameToDir(moduleName.value),
-        type = type.value, language = language.value,
-        minSdk = minSdk.value, useKts = useKts.value)
+        type = type.value, language = language.value, minSdk = minSdk.value,
+        useKts = useKts.value)
     }
     postRecipe = commonPostRecipe()
 

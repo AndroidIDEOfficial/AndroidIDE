@@ -138,6 +138,12 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       val nameToEnum = mutableMapOf<String, Enum<*>>()
       val enumToName = mutableMapOf<Enum<*>, String>()
       param.default.javaClass.enumConstants?.forEach {
+
+        // remove the elements for which the filter fails
+        if (param.filter?.invoke(it) == false) {
+          return@forEach
+        }
+
         val displayName = param.displayName?.invoke(it) ?: it.name
         nameToEnum[displayName] = it
         enumToName[it] = displayName
@@ -172,6 +178,14 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         observer.disableAndRun {
           param.setValue(nameToEnum[it] ?: param.default)
         }
+      }
+
+      if (param.default != nameToEnum[defaultName]) {
+        // the default value may have been filtered
+        // reset the value to the first item
+        val first = checkNotNull(
+          nameToEnum.values.firstOrNull()) { "No entries available for enum parameter (all entries filtered out?)." }
+        param.setValue(first)
       }
 
       param.observe(observer)
