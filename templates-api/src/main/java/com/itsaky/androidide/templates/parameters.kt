@@ -133,7 +133,9 @@ abstract class Parameter<T>(@StringRes val name: Int,
   private fun notifyObservers() {
     lock.withLock {
       observers.forEach {
-        it.onChanged(this)
+        if (it !is DefaultObserver || it.isEnabled) {
+          it.onChanged(this)
+        }
       }
     }
   }
@@ -150,9 +152,27 @@ abstract class Parameter<T>(@StringRes val name: Int,
      */
     fun onChanged(parameter: Parameter<T>)
   }
+
+  /**
+   * Default implementation of [Observer] which can enabled or disabled.
+   */
+  abstract class DefaultObserver<T>(var isEnabled: Boolean = true) : Observer<T> {
+
+    /**
+     * Executes the given [action] with this observer disabled.
+     *
+     * @param action The action to perform.
+     */
+    fun disableAndRun(action: () -> Unit) {
+      val enabled = isEnabled
+      isEnabled = false
+      action()
+      isEnabled = enabled
+    }
+  }
 }
 
-abstract class ParameterBuilder<T>() {
+abstract class ParameterBuilder<T> {
 
   @StringRes
   var name: Int? = null
@@ -221,7 +241,7 @@ class StringParameter(@StringRes name: Int, @StringRes description: Int?,
 ) : TextFieldParameter<String>(name, description, default, startIcon, endIcon,
   onStartIconClick, onEndIconClick, constraints, suggest)
 
-class StringParameterBuilder() : TextFieldParameterBuilder<String>() {
+class StringParameterBuilder : TextFieldParameterBuilder<String>() {
 
   override fun build(): StringParameter {
     return StringParameter(name = name!!, description = description,
@@ -279,7 +299,7 @@ fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
     configure()
   }
 
-fun packageNameParameter(configure: StringParameterBuilder.() -> Unit) =
+fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
     name = R.string.package_name
     default = "com.example.myapplication"

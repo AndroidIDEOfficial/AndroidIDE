@@ -28,6 +28,8 @@ import com.itsaky.androidide.templates.BooleanParameter
 import com.itsaky.androidide.templates.CheckBoxWidget
 import com.itsaky.androidide.templates.EnumParameter
 import com.itsaky.androidide.templates.ITemplateWidgetViewProvider
+import com.itsaky.androidide.templates.Parameter
+import com.itsaky.androidide.templates.Parameter.DefaultObserver
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.TextFieldParameter
@@ -79,17 +81,40 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       root.setText(param.name)
       root.isChecked = param.default
 
-      root.addOnCheckedStateChangedListener { checkbox, _ ->
-        param.setValue(checkbox.isChecked)
+      val observer = object : DefaultObserver<Boolean>() {
+        override fun onChanged(parameter: Parameter<Boolean>) {
+          disableAndRun {
+            root.isChecked = param.value ?: false
+          }
+        }
       }
+
+      root.addOnCheckedStateChangedListener { checkbox, _ ->
+        observer.disableAndRun {
+          param.setValue(checkbox.isChecked)
+        }
+      }
+
+      param.observe(observer)
     }.root
   }
 
   private fun createTextField(context: Context, widget: TextFieldWidget): View {
     return LayoutTextfieldBinding.inflate(LayoutInflater.from(context)).apply {
       val param = widget.parameter as StringParameter
+      val observer = object : DefaultObserver<String>() {
+        override fun onChanged(parameter: Parameter<String>) {
+          disableAndRun {
+            input.setText(param.value ?: "")
+          }
+        }
+      }
+
       param.configureTextField(context, root) { value ->
-        param.setValue(value)
+        observer.disableAndRun {
+          param.setValue(value)
+        }
+
         val err =
           ConstraintVerifier.verify(value, constraints = param.constraints)
 
@@ -97,8 +122,12 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         if (err != null) {
           root.error = err
         }
+
       }
+
       input.setText(param.default)
+      param.observe(observer)
+
     }.root
   }
 
@@ -106,31 +135,48 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
     return LayoutSpinnerBinding.inflate(LayoutInflater.from(context)).apply {
       val param = widget.parameter as EnumParameter<Enum<*>>
 
-      val items = mutableMapOf<String, Enum<*>>()
+      val nameToEnum = mutableMapOf<String, Enum<*>>()
+      val enumToName = mutableMapOf<Enum<*>, String>()
       param.default.javaClass.enumConstants?.forEach {
         val displayName = param.displayName?.invoke(it) ?: it.name
-        items[displayName] = it
+        nameToEnum[displayName] = it
+        enumToName[it] = displayName
       }
 
       check(
-        items.isNotEmpty()) { "Cannot retrive values for enum parameter $param with default value ${param.default}" }
+        nameToEnum.isNotEmpty()) { "Cannot retrive values for enum parameter $param with default value ${param.default}" }
 
-      val array = items.keys.toTypedArray()
+      val array = nameToEnum.keys.toTypedArray()
 
       input.setAdapter(ArrayAdapter(context,
         androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
         array))
 
-      val defaultName =
-        param.displayName?.invoke(param.default) ?: param.default.name
 
-      root.isEnabled = items.size > 1
+      val defaultName =
+        enumToName[param.default] ?: param.default.name
+
+      root.isEnabled = nameToEnum.size > 1
       input.listSelection = array.indexOf(defaultName)
       input.setText(defaultName, false)
 
-      param.configureTextField(context, root) {
-        param.setValue(items[it] ?: param.default)
+      val observer = object  : DefaultObserver<Enum<*>>() {
+        override fun onChanged(parameter: Parameter<Enum<*>>) {
+          (parameter as EnumParameter<*>).apply {
+            disableAndRun {
+              input.setText(enumToName[value ?: default])
+            }
+          }
+        }
       }
+
+      param.configureTextField(context, root) {
+        observer.disableAndRun {
+          param.setValue(nameToEnum[it] ?: param.default)
+        }
+      }
+
+      param.observe(observer)
     }.root
   }
 

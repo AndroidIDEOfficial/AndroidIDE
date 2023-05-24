@@ -68,14 +68,12 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     val projectName = projectNameParameter()
     val language = projectLanguageParameter()
     val minSdk = minSdkParameter()
+    val packageName = packageNameParameter()
 
-    val packageName = packageNameParameter {
-
-      suggest = {
-        AndroidUtils.appNameToPackageName(/* appName = */
-          projectName.value, /* packageName = */
-          this.value ?: "")
-      }
+    // When project name is changed, change the package name accordingly
+    projectName.observe { name ->
+      val newPackage = AndroidUtils.appNameToPackageName(name.value!!, packageName.value!!)
+      packageName.setValue(newPackage)
     }
 
     val saveLocation = stringParameter {
@@ -83,12 +81,6 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
       default = Environment.PROJECTS_DIR.absolutePath
       endIcon = R.drawable.ic_folder
       constraints = listOf(NONEMPTY, DIRECTORY, EXISTS)
-
-      suggest = {
-        projectName.value!!.replace(" ", "").let {
-          File(Environment.PROJECTS_DIR, it).absolutePath
-        }
-      }
     }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
@@ -151,31 +143,15 @@ fun baseAndroidModule(isLibrary: Boolean = false,
 ): ModuleTemplate {
   return AndroidModuleTemplateBuilder().apply {
 
+    val appName = if (isLibrary) null else projectNameParameter()
+    val language = projectLanguageParameter()
+    val minSdk = minSdkParameter()
+    val packageName = packageNameParameter()
+
     val moduleName = stringParameter {
       name = R.string.wizard_module_name
       default = ":app"
       constraints = listOf(NONEMPTY, MODULE_NAME)
-    }
-
-    val appName = if (isLibrary) null else stringParameter {
-      name = R.string.project_app_name
-      default = "My Application"
-      startIcon = R.drawable.ic_android
-      constraints = listOf(NONEMPTY)
-    }
-
-    val packageName = stringParameter {
-      name = R.string.package_name
-      default = "com.example.myapplication"
-      startIcon = R.drawable.ic_package
-      constraints = listOf(NONEMPTY, PACKAGE)
-    }
-
-    val minSdk = enumParameter<Sdk> {
-      name = R.string.minimum_sdk
-      default = Sdk.Lollipop
-      startIcon = R.drawable.ic_min_sdk
-      displayName = Sdk::displayName
     }
 
     val type = enumParameter<ModuleType> {
@@ -183,13 +159,6 @@ fun baseAndroidModule(isLibrary: Boolean = false,
       default = AndroidLibrary
       startIcon = R.drawable.ic_android
       displayName = ModuleType::typeName
-    }
-
-    val language = enumParameter<Language> {
-      name = R.string.wizard_language
-      default = Java
-      startIcon = R.drawable.ic_language_java
-      displayName = Language::lang
     }
 
     widgets(TextFieldWidget(moduleName))
