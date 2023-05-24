@@ -479,4 +479,5 @@
   <string name="msg_path_must_be_dir">Harus jalur ke direktori</string>
   <string name="msg_invalid_layout_name">Nama file tata letak tidak valid</string>
   <string name="msg_invalid_project_details">Detail proyek tidak valid</string>
+  <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
 </resources>
