@@ -78,12 +78,9 @@ enum class ParameterConstraint {
   EXISTS
 }
 
-typealias ValueSuggestion<T> = Parameter<T>.() -> T?
-
 abstract class Parameter<T>(@StringRes val name: Int,
                             @StringRes val description: Int?, val default: T,
-                            var constraints: List<ParameterConstraint>,
-                            var suggest: ValueSuggestion<T>
+                            var constraints: List<ParameterConstraint>
 ) {
 
   private val observers = hashSetOf<Observer<T>>()
@@ -188,8 +185,6 @@ abstract class ParameterBuilder<T> {
 
   var constraints: List<ParameterConstraint> = emptyList()
 
-  var suggest: ValueSuggestion<T> = { null }
-
   protected open fun validate() {
     checkNotNull(name) { "Parameter must have a name" }
     checkNotNull(default) { "Parameter must have a default value" }
@@ -199,15 +194,13 @@ abstract class ParameterBuilder<T> {
 }
 
 class BooleanParameter(@StringRes name: Int, @StringRes description: Int?,
-                       default: Boolean, constraints: List<ParameterConstraint>,
-                       suggest: ValueSuggestion<Boolean>
-) : Parameter<Boolean>(name, description, default, constraints, suggest)
+                       default: Boolean, constraints: List<ParameterConstraint>
+) : Parameter<Boolean>(name, description, default, constraints)
 
 class BooleanParameterBuilder : ParameterBuilder<Boolean>() {
 
   override fun build(): BooleanParameter {
-    return BooleanParameter(name!!, description, default!!, constraints,
-      suggest)
+    return BooleanParameter(name!!, description, default!!, constraints)
   }
 
 }
@@ -227,9 +220,8 @@ abstract class TextFieldParameter<T>(@StringRes name: Int,
                                      val startIcon: Int?, val endIcon: Int?,
                                      val onStartIconClick: (() -> Unit)?,
                                      val onEndIconClick: (() -> Unit)?,
-                                     constraints: List<ParameterConstraint>,
-                                     suggest: ValueSuggestion<T>
-) : Parameter<T>(name, description, default, constraints, suggest)
+                                     constraints: List<ParameterConstraint>
+) : Parameter<T>(name, description, default, constraints)
 
 abstract class TextFieldParameterBuilder<T>(var startIcon: Int? = null,
                                             var endIcon: Int? = null,
@@ -241,10 +233,9 @@ class StringParameter(@StringRes name: Int, @StringRes description: Int?,
                       default: String, startIcon: Int?, endIcon: Int?,
                       onStartIconClick: (() -> Unit)?,
                       onEndIconClick: (() -> Unit)?,
-                      constraints: List<ParameterConstraint>,
-                      suggest: ValueSuggestion<String>
+                      constraints: List<ParameterConstraint>
 ) : TextFieldParameter<String>(name, description, default, startIcon, endIcon,
-  onStartIconClick, onEndIconClick, constraints, suggest)
+  onStartIconClick, onEndIconClick, constraints)
 
 class StringParameterBuilder : TextFieldParameterBuilder<String>() {
 
@@ -252,7 +243,7 @@ class StringParameterBuilder : TextFieldParameterBuilder<String>() {
     return StringParameter(name = name!!, description = description,
       default = default!!, startIcon = startIcon, endIcon = endIcon,
       onStartIconClick = onStartIconClick, onEndIconClick = onEndIconClick,
-      constraints = constraints, suggest = suggest)
+      constraints = constraints)
   }
 }
 
@@ -262,10 +253,9 @@ class EnumParameter<T : Enum<*>>(@StringRes name: Int,
                                  onStartIconClick: (() -> Unit)?,
                                  onEndIconClick: (() -> Unit)?,
                                  constraints: List<ParameterConstraint>,
-                                 suggest: ValueSuggestion<T>,
                                  val displayName: ((T) -> String)? = null
 ) : TextFieldParameter<T>(name, description, default, startIcon, endIcon,
-  onStartIconClick, onEndIconClick, constraints, suggest)
+  onStartIconClick, onEndIconClick, constraints)
 
 class EnumParameterBuilder<T : Enum<*>> : TextFieldParameterBuilder<T>() {
 
@@ -275,7 +265,7 @@ class EnumParameterBuilder<T : Enum<*>> : TextFieldParameterBuilder<T>() {
     return EnumParameter(name = name!!, description = description,
       default = default!!, startIcon = startIcon, endIcon = endIcon,
       onStartIconClick = onStartIconClick, onEndIconClick = onEndIconClick,
-      constraints = constraints, suggest = suggest, displayName = displayName)
+      constraints = constraints, displayName = displayName)
   }
 }
 
