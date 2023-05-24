@@ -17,10 +17,9 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.templates.CheckBoxWidget
 import com.itsaky.androidide.templates.FileTemplate
 import com.itsaky.androidide.templates.FileTemplateRecipeResult
-import com.itsaky.androidide.templates.Language
-import com.itsaky.androidide.templates.Language.Java
 import com.itsaky.androidide.templates.ModuleTemplate
 import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ModuleType
@@ -30,12 +29,10 @@ import com.itsaky.androidide.templates.ParameterConstraint.DIRECTORY
 import com.itsaky.androidide.templates.ParameterConstraint.EXISTS
 import com.itsaky.androidide.templates.ParameterConstraint.MODULE_NAME
 import com.itsaky.androidide.templates.ParameterConstraint.NONEMPTY
-import com.itsaky.androidide.templates.ParameterConstraint.PACKAGE
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.ProjectTemplateData
 import com.itsaky.androidide.templates.ProjectVersionData
 import com.itsaky.androidide.templates.R
-import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.TextFieldWidget
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
@@ -45,17 +42,13 @@ import com.itsaky.androidide.templates.packageNameParameter
 import com.itsaky.androidide.templates.projectLanguageParameter
 import com.itsaky.androidide.templates.projectNameParameter
 import com.itsaky.androidide.templates.stringParameter
+import com.itsaky.androidide.templates.useKtsParameter
 import com.itsaky.androidide.utils.AndroidUtils
 import com.itsaky.androidide.utils.Environment
 import java.io.File
 
 typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() -> Unit
 
-/**
- * TODO : Allow the user to choose if he/she wants to use Kotlin script for the project.
- *        Currently, the 'useKts' property is always set to 'true'. We only need to implement
- *        it as a parameter/widget while creating the projects.
- */
 
 /**
  * Setup base files for project templates.
@@ -69,10 +62,12 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
     val language = projectLanguageParameter()
     val minSdk = minSdkParameter()
     val packageName = packageNameParameter()
+    val useKts = useKtsParameter()
 
     // When project name is changed, change the package name accordingly
     projectName.observe { name ->
-      val newPackage = AndroidUtils.appNameToPackageName(name.value!!, packageName.value!!)
+      val newPackage =
+        AndroidUtils.appNameToPackageName(name.value!!, packageName.value!!)
       packageName.setValue(newPackage)
     }
 
@@ -85,7 +80,7 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
       TextFieldWidget(saveLocation), SpinnerWidget(language),
-      SpinnerWidget(minSdk))
+      SpinnerWidget(minSdk), CheckBoxWidget(useKts))
 
     // Setup the required properties before executing the recipe
     preRecipe = {
@@ -93,7 +88,7 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
 
       this@apply._data = ProjectTemplateData(projectName.value!!,
         File(saveLocation.value!!, projectName.value!!), ProjectVersionData(),
-        language = language.value!!, useKts = true)
+        language = language.value!!, useKts = useKts.value ?: useKts.default)
 
       if (data.projectDir.exists() && data.projectDir.listFiles()
           ?.isNotEmpty() == true
@@ -147,6 +142,7 @@ fun baseAndroidModule(isLibrary: Boolean = false,
     val language = projectLanguageParameter()
     val minSdk = minSdkParameter()
     val packageName = packageNameParameter()
+    val useKts = useKtsParameter()
 
     val moduleName = stringParameter {
       name = R.string.wizard_module_name
@@ -168,14 +164,14 @@ fun baseAndroidModule(isLibrary: Boolean = false,
     }
 
     widgets(TextFieldWidget(packageName), SpinnerWidget(minSdk),
-      SpinnerWidget(type), SpinnerWidget(language))
+      SpinnerWidget(type), SpinnerWidget(language), CheckBoxWidget(useKts))
 
     preRecipe = commonPreRecipe {
       ModuleTemplateData(name = moduleName.value!!, appName = appName?.value,
         packageName = packageName.value!!,
         projectDir = requireProjectData().moduleNameToDir(moduleName.value!!),
         type = type.value!!, language = language.value!!,
-        minSdk = minSdk.value!!)
+        minSdk = minSdk.value!!, useKts = useKts.value ?: useKts.default)
     }
     postRecipe = commonPostRecipe()
 

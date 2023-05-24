@@ -21,6 +21,7 @@ import androidx.annotation.StringRes
 import com.itsaky.androidide.templates.Language.Java
 import com.itsaky.androidide.templates.ParameterConstraint.NONEMPTY
 import com.itsaky.androidide.templates.ParameterConstraint.PACKAGE
+import com.itsaky.androidide.templates.R.string
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -156,7 +157,8 @@ abstract class Parameter<T>(@StringRes val name: Int,
   /**
    * Default implementation of [Observer] which can enabled or disabled.
    */
-  abstract class DefaultObserver<T>(var isEnabled: Boolean = true) : Observer<T> {
+  abstract class DefaultObserver<T>(var isEnabled: Boolean = true) :
+    Observer<T> {
 
     /**
      * Executes the given [action] with this observer disabled.
@@ -326,6 +328,14 @@ fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
     default = Sdk.Lollipop
     displayName = Sdk::displayName
     startIcon = R.drawable.ic_min_sdk
+
+    configure()
+  }
+
+fun useKtsParameter(configure: BooleanParameterBuilder.() -> Unit = {}) =
+  booleanParameter {
+    name = string.msg_use_kts
+    default = true
 
     configure()
   }
