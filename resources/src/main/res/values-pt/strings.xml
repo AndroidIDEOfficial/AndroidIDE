@@ -479,4 +479,5 @@
   <string name="msg_path_must_be_dir">Deve ter um caminho para um arquivo</string>
   <string name="msg_invalid_layout_name">Nome do arquivo de layout inválido</string>
   <string name="msg_invalid_project_details">Invalid project details</string>
+  <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
 </resources>
