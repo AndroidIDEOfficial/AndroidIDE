@@ -23,6 +23,7 @@ import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.defaultAppModule
 import com.itsaky.androidide.templates.base.modules.createConstructor
 import com.itsaky.androidide.templates.base.modules.createMethod
+import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.basicActivity.basicActivityProject
 import com.itsaky.androidide.templates.impl.bottomNavActivity.bottomNavActivityProject
 import com.itsaky.androidide.templates.impl.emptyActivity.emptyActivityProject
@@ -111,7 +112,7 @@ class TemplateBuilderTest {
                 isLauncher = true))
           }
 
-          recipe = {
+          recipe = createRecipe {
             sources {
               createClass("com.itsaky", "TestClass") {
                 createConstructor {
