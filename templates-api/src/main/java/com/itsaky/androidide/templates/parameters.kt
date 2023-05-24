@@ -18,6 +18,11 @@
 package com.itsaky.androidide.templates
 
 import androidx.annotation.StringRes
+import com.itsaky.androidide.templates.Language.Java
+import com.itsaky.androidide.templates.ParameterConstraint.NONEMPTY
+import com.itsaky.androidide.templates.ParameterConstraint.PACKAGE
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 enum class ParameterConstraint {
 
@@ -80,8 +85,71 @@ abstract class Parameter<T>(@StringRes val name: Int,
                             var suggest: ValueSuggestion<T>
 ) {
 
+  private val observers = hashSetOf<Observer<T>>()
+  private val lock = ReentrantLock()
+
   var value: T? = null
     get() = field ?: default
+    private set
+
+  /**
+   * Set the new value to this parameter.
+   *
+   * @param value The new parameter value.
+   * @param notify Whether the observers must be notified of the change or not.
+   */
+  fun setValue(value: T, notify: Boolean = true) {
+    this.value = value
+
+    if (notify) {
+      notifyObservers()
+    }
+  }
+
+  /**
+   * Adds the [Observer] instance to the list of observers.
+   *
+   * @param observer The observer to add.
+   * @return Whether the observer was added or not.
+   */
+  fun observe(observer: Observer<T>): Boolean {
+    return lock.withLock {
+      observers.add(observer)
+    }
+  }
+
+  /**
+   * Removes the [Observer] instance from the list of observers.
+   *
+   * @param observer The observer to remove.
+   * @return Whether the observer was removed or not.
+   */
+  fun removeObserver(observer: Observer<T>): Boolean {
+    return lock.withLock {
+      observers.remove(observer)
+    }
+  }
+
+  private fun notifyObservers() {
+    lock.withLock {
+      observers.forEach {
+        it.onChanged(this)
+      }
+    }
+  }
+
+  /**
+   * An [Observer] observes changes to values of a [Parameter].
+   */
+  fun interface Observer<T> {
+
+    /**
+     * Called when the value of the parameter is changed.
+     *
+     * @param parameter The parameter that was changed (contains the new value).
+     */
+    fun onChanged(parameter: Parameter<T>)
+  }
 }
 
 abstract class ParameterBuilder<T>() {
@@ -200,3 +268,44 @@ fun booleanParameter(block: BooleanParameterBuilder.() -> Unit
 
 fun <T : Enum<*>> enumParameter(block: EnumParameterBuilder<T>.() -> Unit
 ): EnumParameter<T> = EnumParameterBuilder<T>().apply(block).build()
+
+fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
+  stringParameter {
+    name = R.string.project_app_name
+    default = "My Application"
+    startIcon = R.drawable.ic_android
+    constraints = listOf(NONEMPTY)
+
+    configure()
+  }
+
+fun packageNameParameter(configure: StringParameterBuilder.() -> Unit) =
+  stringParameter {
+    name = R.string.package_name
+    default = "com.example.myapplication"
+    startIcon = R.drawable.ic_package
+    constraints = listOf(NONEMPTY, PACKAGE)
+
+    configure()
+  }
+
+fun projectLanguageParameter(
+  configure: EnumParameterBuilder<Language>.() -> Unit = {}
+) = enumParameter<Language> {
+  name = R.string.wizard_language
+  default = Java
+  displayName = Language::lang
+  startIcon = R.drawable.ic_language_java
+
+  configure()
+}
+
+fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
+  enumParameter<Sdk> {
+    name = R.string.minimum_sdk
+    default = Sdk.Lollipop
+    displayName = Sdk::displayName
+    startIcon = R.drawable.ic_min_sdk
+
+    configure()
+  }

@@ -40,6 +40,10 @@ import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.TextFieldWidget
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
 import com.itsaky.androidide.templates.enumParameter
+import com.itsaky.androidide.templates.minSdkParameter
+import com.itsaky.androidide.templates.packageNameParameter
+import com.itsaky.androidide.templates.projectLanguageParameter
+import com.itsaky.androidide.templates.projectNameParameter
 import com.itsaky.androidide.templates.stringParameter
 import com.itsaky.androidide.utils.AndroidUtils
 import com.itsaky.androidide.utils.Environment
@@ -61,18 +65,11 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
 fun baseProject(block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
-    val projectName = stringParameter {
-      name = R.string.project_app_name
-      default = "My Application"
-      startIcon = R.drawable.ic_android
-      constraints = listOf(NONEMPTY)
-    }
+    val projectName = projectNameParameter()
+    val language = projectLanguageParameter()
+    val minSdk = minSdkParameter()
 
-    val packageName = stringParameter {
-      name = R.string.package_name
-      default = "com.example.myapplication"
-      startIcon = R.drawable.ic_package
-      constraints = listOf(NONEMPTY, PACKAGE)
+    val packageName = packageNameParameter {
 
       suggest = {
         AndroidUtils.appNameToPackageName(/* appName = */
@@ -92,20 +89,6 @@ fun baseProject(block: ProjectTemplateBuilder.() -> Unit
           File(Environment.PROJECTS_DIR, it).absolutePath
         }
       }
-    }
-
-    val language = enumParameter<Language> {
-      name = R.string.wizard_language
-      default = Java
-      displayName = Language::lang
-      startIcon = R.drawable.ic_language_java
-    }
-
-    val minSdk = enumParameter<Sdk> {
-      name = R.string.minimum_sdk
-      default = Sdk.Lollipop
-      displayName = Sdk::displayName
-      startIcon = R.drawable.ic_min_sdk
     }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),

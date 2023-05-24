@@ -137,23 +137,23 @@ fun Template<*>.setupRootProjectParams(name: String = "TestTemplate",
 
   // name
   var param = iterator.next()
-  (param as StringParameter).value = name
+  (param as StringParameter).setValue(name)
 
   // package
   param = iterator.next()
-  (param as StringParameter).value = packageName
+  (param as StringParameter).setValue(packageName)
 
   // save location
   param = iterator.next()
-  (param as StringParameter).value = testProjectsDir.absolutePath
+  (param as StringParameter).setValue(testProjectsDir.absolutePath)
 
   // language
   param = iterator.next()
-  (param as EnumParameter<Language>).value = language
+  (param as EnumParameter<Language>).setValue(language)
 
   // Min SDK
   param = iterator.next()
-  (param as EnumParameter<Sdk>).value = minSdk
+  (param as EnumParameter<Sdk>).setValue(minSdk)
 }
 
 fun Template<*>.executeRecipe() {

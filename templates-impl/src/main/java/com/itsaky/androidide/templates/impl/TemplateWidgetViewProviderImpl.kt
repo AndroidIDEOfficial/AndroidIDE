@@ -80,7 +80,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       root.isChecked = param.default
 
       root.addOnCheckedStateChangedListener { checkbox, _ ->
-        param.value = checkbox.isChecked
+        param.setValue(checkbox.isChecked)
       }
     }.root
   }
@@ -89,7 +89,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
     return LayoutTextfieldBinding.inflate(LayoutInflater.from(context)).apply {
       val param = widget.parameter as StringParameter
       param.configureTextField(context, root) { value ->
-        param.value = value
+        param.setValue(value)
         val err =
           ConstraintVerifier.verify(value, constraints = param.constraints)
 
@@ -129,7 +129,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       input.setText(defaultName, false)
 
       param.configureTextField(context, root) {
-        param.value = items[it] ?: param.default
+        param.setValue(items[it] ?: param.default)
       }
     }.root
   }
