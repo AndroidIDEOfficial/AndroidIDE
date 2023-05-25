@@ -55,6 +55,7 @@ jobs:
           IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+          IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy debug APK
         if: ${{ github.ref != 'refs/heads/main' }}
         run: cp app/build/outputs/apk/debug/**.apk ./
@@ -69,6 +70,7 @@ jobs:
           IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+          IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy release APK
         if: ${{ github.ref == 'refs/heads/main' }}
         run: cp app/build/outputs/apk/release/**.apk ./
@@ -117,6 +119,7 @@ jobs:
           IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+          IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
@@ -157,6 +160,7 @@ jobs:
           IDE_SIGNING_KEY_PASS: ${{ secrets.IDE_SIGNING_KEY_PASS }}
           IDE_SIGNING_STORE_PASS: ${{ secrets.IDE_SIGNING_STORE_PASS }}
           IDE_SIGNING_URL: ${{ secrets.IDE_SIGNING_URL }}
+          IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Upload Test Reports
         if: ${{ always() }}
         uses: actions/upload-artifact@v3

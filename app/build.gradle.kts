@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import java.util.Base64
+
 plugins {
   id("com.android.application")
   id("kotlin-android")
@@ -164,6 +166,13 @@ dependencies {
 fun downloadSigningKey() {
   if (signingKey.exists()) {
     logger.info("Skipping download as ${signingKey.name} file already exists.")
+    return
+  }
+
+  getEnvOrProp(KEY_BIN)?.let { bin ->
+    logger.info("Using $KEY_BIN for writing signing key")
+    val contents = Base64.getDecoder().decode(bin)
+    signingKey.writeBytes(contents)
     return
   }
 

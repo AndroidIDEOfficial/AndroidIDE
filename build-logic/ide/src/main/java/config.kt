@@ -18,12 +18,13 @@
 import org.gradle.api.Project
 import java.io.File
 
-val KEY_ALIAS = "IDE_SIGNING_ALIAS"
-val AUTH_PASS = "IDE_SIGNING_AUTH_PASS"
-val AUTH_USER = "IDE_SIGNING_AUTH_USER"
-val KEY_PASS = "IDE_SIGNING_KEY_PASS"
-val KEY_STORE_PASS = "IDE_SIGNING_STORE_PASS"
-val KEY_URL = "IDE_SIGNING_URL"
+const val KEY_ALIAS = "IDE_SIGNING_ALIAS"
+const val AUTH_PASS = "IDE_SIGNING_AUTH_PASS"
+const val AUTH_USER = "IDE_SIGNING_AUTH_USER"
+const val KEY_PASS = "IDE_SIGNING_KEY_PASS"
+const val KEY_STORE_PASS = "IDE_SIGNING_STORE_PASS"
+const val KEY_URL = "IDE_SIGNING_URL"
+const val KEY_BIN = "IDE_SIGNING_KEY_BIN"
 
 val Project.signingKey: File
   get() = rootProject.file("signing-key.jks")
