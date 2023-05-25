@@ -31,7 +31,7 @@ private const val composeKotlinVersion = "1.7.20"
 
 // Compose template is available only in Kotlin
 fun composeActivityProject() =
-  baseProjectImpl(languageFilter = { it != Kotlin },
+  baseProjectImpl(languageFilter = { it == Kotlin },
     projectVersionData = ProjectVersionData(kotlin = composeKotlinVersion)) {
 
     templateName = R.string.template_compose
