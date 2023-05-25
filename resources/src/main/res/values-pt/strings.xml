@@ -85,7 +85,7 @@
   <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão. Adequado quando você mesmo quer fazer todas as coisas básicas.</string>
   <string name="template_description_navigation_drawer">Projeto com AppCompat Toolbar, DrawerLayout e NavigationView</string>
   <string name="template_empty">Projeto vazio</string>
-  <string name="template_navigation_drawer">Projeto com Drawer Navigation</string>
+  <string name="template_navigation_drawer">Projeto com Gaveta de Navegação</string>
   <string name="template_libgdx">Jogo LibGDX</string>
   <string name="template_description_libgdx">Projeto de jogo LibGDX criado para renderizar uma imagem como exemplo.</string>
   <string name="template_description_compose">Projeto básico Jetpack Compose hello world.</string>
