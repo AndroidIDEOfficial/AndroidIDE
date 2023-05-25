@@ -70,7 +70,7 @@ class TemplateBuilderTest {
 
       parameters.apply {
         assertThat(this).isNotEmpty()
-        assertThat(this).hasSize(5)
+        assertThat(this).hasSize(6)
         assertParameterTypes {
           when (it) {
             0 -> StringParameter::class
@@ -78,6 +78,7 @@ class TemplateBuilderTest {
             2 -> StringParameter::class
             3 -> EnumParameter::class
             4 -> EnumParameter::class
+            5 -> BooleanParameter::class
             else -> throw IndexOutOfBoundsException("index $it")
           }
         }
@@ -85,7 +86,7 @@ class TemplateBuilderTest {
 
       widgets.apply {
         assertThat(this).isNotEmpty()
-        assertThat(this).hasSize(5)
+        assertThat(this).hasSize(6)
         assertWidgetTypes {
           when (it) {
             0 -> TextFieldWidget::class
@@ -93,6 +94,7 @@ class TemplateBuilderTest {
             2 -> TextFieldWidget::class
             3 -> SpinnerWidget::class
             4 -> SpinnerWidget::class
+            5 -> CheckBoxWidget::class
             else -> throw IndexOutOfBoundsException("index $it")
           }
         }

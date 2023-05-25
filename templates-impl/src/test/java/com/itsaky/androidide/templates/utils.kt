@@ -21,7 +21,6 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.preferences.internal.prefManager
-import com.itsaky.androidide.tooling.testing.findAndroidHome
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import io.mockk.every
@@ -32,7 +31,9 @@ import java.io.File
 import kotlin.reflect.KClass
 
 val testProjectsDir: File by lazy {
-  FileProvider.currentDir().resolve("build/templateTest").toFile()
+  FileProvider.currentDir().resolve("build/templateTest").toFile().apply {
+    mkdirs()
+  }
 }
 
 fun mockPrefManager(configure: PreferenceManager.() -> Unit = {}) {
@@ -75,13 +76,6 @@ fun testTemplate(name: String, generate: Boolean = true,
                  builder: () -> Template<*>
 ): Template<*> {
   mockPrefManager()
-  testProjectsDir.apply {
-    if (exists()) {
-      delete()
-    }
-    mkdirs()
-  }
-
   Environment.PROJECTS_DIR = testProjectsDir
 
   val template = builder()
@@ -102,7 +96,7 @@ private fun generateTemplateProject(name: String, languages: Array<Language>,
       val projectName = "${name}Project${language.name}WithoutKts"
 
       File(testProjectsDir, projectName).apply {
-        if (exists()) delete()
+        if (exists()) deleteRecursively()
       }
 
       // Test with language without Kotlin Script
@@ -117,7 +111,7 @@ private fun generateTemplateProject(name: String, languages: Array<Language>,
       val projectName = "${name}Project${language.name}WithKts"
 
       File(testProjectsDir, projectName).apply {
-        if (exists()) delete()
+        if (exists()) deleteRecursively()
       }
 
       // Test with language + Kotlin Script
@@ -176,20 +170,3 @@ fun <T : Any> Collection<T>.assertTypes(checker: (Int) -> KClass<out T>) {
     assertThat(element).isInstanceOf(checker(index).java)
   }
 }
-
-private fun wrapperProcess(gradlew: File, vararg args: String) =
-  ProcessBuilder(cmd(gradlew, *args)).apply {
-    inheritIO()
-    directory(gradlew.parentFile)
-    environment().apply {
-      put("JAVA_HOME", System.getProperty("java.home"))
-      put("ANDROID_HOME", findAndroidHome())
-    }
-  }.start()
-
-private fun cmd(gradlew: File, vararg args: String) =
-  (if (isWindows()) mutableListOf("cmd", "/c", gradlew.absolutePath)
-  else mutableListOf("bash", gradlew.absolutePath)).apply { addAll(args) }
-
-private fun isWindows() =
-  System.getProperty("os.name")?.contains("windows", ignoreCase = true) == true
