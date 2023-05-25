@@ -31,7 +31,7 @@ class LogSenderPlugin : Plugin<Project> {
   companion object {
     private const val LOGSENDER_DEPENDENCY_ARTIFACT = "logsender"
     private const val LOGSENDER_DEPENDENCY =
-      "${BuildInfo.MVN_GROUP_ID}:${LOGSENDER_DEPENDENCY_ARTIFACT}:${BuildInfo.VERSION_NAME_PUBLISHING}"
+      "${BuildInfo.MVN_GROUP_ID}:${LOGSENDER_DEPENDENCY_ARTIFACT}:${BuildInfo.VERSION_NAME_DOWNLOAD}"
   }
 
   override fun apply(target: Project) {

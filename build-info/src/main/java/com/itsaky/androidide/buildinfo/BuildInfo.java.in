@@ -26,6 +26,7 @@ public class BuildInfo {
   public static final String VERSION_NAME = "@@VERSION_NAME@@";
   public static final String VERSION_NAME_SIMPLE = "@@VERSION_NAME_SIMPLE@@";
   public static final String VERSION_NAME_PUBLISHING = "@@VERSION_NAME_PUBLISHING@@";
+  public static final String VERSION_NAME_DOWNLOAD = "@@VERSION_NAME_DOWNLOAD@@";
 
   // --------- CI info --------------------
 

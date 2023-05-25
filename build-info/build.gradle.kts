@@ -41,6 +41,7 @@ tasks.create("generateBuildInfo") {
           "VERSION_NAME" to rootProject.version.toString(),
           "VERSION_NAME_SIMPLE" to rootProject.simpleVersionName,
           "VERSION_NAME_PUBLISHING" to rootProject.publishingVersion,
+          "VERSION_NAME_DOWNLOAD" to rootProject.downloadVersion,
           "CI_BUILD" to CI.isCiBuild.toString(),
           "CI_GIT_BRANCH" to CI.branchName,
           "CI_COMMIT_HASH" to CI.commitHash,

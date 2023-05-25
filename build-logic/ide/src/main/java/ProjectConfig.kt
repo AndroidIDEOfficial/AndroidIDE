@@ -24,8 +24,10 @@ object ProjectConfig {
   const val REPO_OWNER = "AndroidIDEOfficial"
   const val REPO_NAME = "AndroidIDE"
   const val REPO_URL = "https://${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}"
-  const val SCM_GIT = "scm:git:git://${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
-  const val SCM_SSH = "scm:git:ssh://git@${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
+  const val SCM_GIT =
+    "scm:git:git://${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
+  const val SCM_SSH =
+    "scm:git:ssh://git@${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}.git"
 
   const val PROJECT_SITE = "https://androidide.com"
 }
@@ -41,10 +43,9 @@ val Project.simpleVersionName: String
     val version = rootProject.version.toString()
     val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
 
-    simpleVersion =
-      regex.find(version)?.value?.substring(1)?.also {
-        logger.warn("Simple version name is '$it' (from version $version)")
-      }
+    simpleVersion = regex.find(version)?.value?.substring(1)?.also {
+      logger.warn("Simple version name is '$it' (from version $version)")
+    }
 
     if (simpleVersion == null) {
       if (CI.isTestEnv) {
@@ -52,8 +53,7 @@ val Project.simpleVersionName: String
       }
 
       throw IllegalStateException(
-        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-      )
+        "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
     }
 
     return simpleVersion!!
@@ -69,15 +69,13 @@ val Project.projectVersionCode: Int
     val version = simpleVersionName
     val regex = Regex("^\\d+\\.?\\d+\\.?\\d+")
 
-    versionCode =
-      regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
-        logger.warn("Version code is '$it' (from version ${version}).")
-      }
+    versionCode = regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
+      logger.warn("Version code is '$it' (from version ${version}).")
+    }
 
     if (versionCode == null) {
       throw IllegalStateException(
-        "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix"
-      )
+        "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
     }
 
     return versionCode!!
@@ -96,4 +94,28 @@ val Project.publishingVersion: String
     }
 
     return publishing!!
+  }
+
+private var download: String? = null
+
+/**
+ * The version name which is used to download the artifacts at runtime.
+ *
+ * The value varies based on the following cases :
+ * - For CI builds: same as [publishingVersion].
+ * - For local builds: `latest.integration` to make sure that Gradle downloads the latest snapshots.
+ */
+val Project.downloadVersion: String
+  get() {
+    if (download != null) {
+      return download!!
+    }
+
+    download = if (CI.isCiBuild) {
+      publishingVersion
+    } else {
+      "latest.integration"
+    }
+
+    return download!!
   }
