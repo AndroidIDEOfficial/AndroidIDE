@@ -20,9 +20,11 @@ package com.itsaky.androidide.logsender.utils;
 import android.app.Application;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import com.itsaky.androidide.logsender.LogSender;
+import com.itsaky.androidide.logsender.LogSenderService;
 
 /**
  * Content providers are loaded before the application class is created. {@link LogSenderInstaller}
@@ -40,7 +42,7 @@ public class LogSenderInstaller extends ContentProvider {
   @Override
   public boolean onCreate() {
     final Application application = ((Application) getContext());
-    LogSender.install(application);
+    application.startService(new Intent(application, LogSenderService.class));
     return true;
   }
 

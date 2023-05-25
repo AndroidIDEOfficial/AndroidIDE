@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.logsender;
 
-import android.app.Application;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Akash Yadav
  */
-public class LogSender extends ILogSender.Stub implements ServiceConnection {
+public final class LogSender extends ILogSender.Stub implements ServiceConnection {
 
   private final AtomicBoolean installed = new AtomicBoolean(false);
 
@@ -63,24 +63,20 @@ public class LogSender extends ILogSender.Stub implements ServiceConnection {
   private LogSender() {
   }
 
-  public static void install(Application app) {
-    INSTANCE.doInstall(app);
-  }
-
-  private void doInstall(Application app) {
+  void doInstall(Context context) {
     if (installed.get()) {
       Logger.warn("LogSender is already installed");
       return;
     }
 
-    this.packageName = app.getPackageName();
+    this.packageName = context.getPackageName();
     if (PACKAGE_ANDROIDIDE.equals(packageName)) {
       return;
     }
 
     final Intent intent = new Intent(SERVICE_ACTION);
     intent.setPackage(PACKAGE_ANDROIDIDE);
-    if (app.bindService(intent, this, 0)) {
+    if (context.bindService(intent, this, 0)) {
       Logger.info("Binding to log receiver");
       installed.set(true);
     } else {

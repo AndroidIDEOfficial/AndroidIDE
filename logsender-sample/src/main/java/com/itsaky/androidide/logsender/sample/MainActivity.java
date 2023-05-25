@@ -20,7 +20,6 @@ package com.itsaky.androidide.logsender.sample;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PersistableBundle;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,12 +50,14 @@ public class MainActivity extends AppCompatActivity {
 
     handler.postDelayed(logger, 1000);
 
-    new Thread(() -> {
+    findViewById(R.id.exception).setOnClickListener(v -> {
+      throw new RuntimeException("Oops!");
+    });
 
-      // Test with 100K lines at once
+    findViewById(R.id.log_overflow).setOnClickListener(v -> new Thread(() -> {
       for (int i = 0; i < 100000; i++) {
-        Log.d("SomeLogs", "Log #" + i);
+        Log.d("ShouldNotBreak", "Log #" + i);
       }
-    }).start();
+    }).start());
   }
 }
