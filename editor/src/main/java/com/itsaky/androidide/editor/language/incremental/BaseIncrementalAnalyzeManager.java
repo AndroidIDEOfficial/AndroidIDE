@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ArrayUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
-import com.itsaky.androidide.editor.language.java.JavaAnalyzer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
@@ -51,8 +50,8 @@ import org.antlr.v4.runtime.Token;
  *
  * @author Akash Yadav
  */
-public abstract class BaseIncrementalAnalyzeManager
-  extends AsyncIncrementalAnalyzeManager<LineState, IncrementalToken> {
+public abstract class BaseIncrementalAnalyzeManager extends
+                                                    AsyncIncrementalAnalyzeManager<LineState, IncrementalToken> {
 
   protected final Lexer lexer;
   private final int[] multilineStartTypes;
@@ -101,8 +100,8 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   private void verifyMultilineTypes(@NonNull final int[][] types) {
-    Preconditions.checkState(
-      types.length == 2, "There must be exact two inner int[] in multiline token types");
+    Preconditions.checkState(types.length == 2,
+      "There must be exact two inner int[] in multiline token types");
 
     final var start = types[0];
     final var end = types[1];
@@ -117,7 +116,6 @@ public abstract class BaseIncrementalAnalyzeManager
    * multiline token and int[] 1 specifies tokens which end the multiline token. For example,
    * <p>[['/', '*'], ['*', '/']].
    * <p>But instead of characters, there must be token types.
-   * @see JavaAnalyzer
    */
   protected abstract int[][] getMultilineTokenStartEndTypes();
 
@@ -139,8 +137,10 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   @Override
-  public LineTokenizeResult<LineState, IncrementalToken> tokenizeLine(
-    final CharSequence lineText, final LineState state, final int line) {
+  public LineTokenizeResult<LineState, IncrementalToken> tokenizeLine(final CharSequence lineText,
+                                                                      final LineState state,
+                                                                      final int line
+  ) {
     final var tokens = new ArrayList<IncrementalToken>();
     var newState = 0;
     var stateObj = new LineState();
@@ -150,8 +150,8 @@ public abstract class BaseIncrementalAnalyzeManager
       final var result = fillIncomplete(lineText, tokens, state.lexerMode);
       newState = IntPair.getFirst(result);
       if (newState == LineState.NORMAL) {
-        newState =
-          tokenizeNormal(lineText, IntPair.getSecond(result), tokens, stateObj, state.lexerMode);
+        newState = tokenizeNormal(lineText, IntPair.getSecond(result), tokens, stateObj,
+          state.lexerMode);
       } else {
         newState = LineState.INCOMPLETE;
       }
@@ -163,7 +163,8 @@ public abstract class BaseIncrementalAnalyzeManager
 
   @Override
   public List<Span> generateSpansForLine(
-    final LineTokenizeResult<LineState, IncrementalToken> tokens) {
+    final LineTokenizeResult<LineState, IncrementalToken> tokens
+  ) {
     var result = generateSpans(tokens);
 
     Objects.requireNonNull(result);
@@ -182,13 +183,13 @@ public abstract class BaseIncrementalAnalyzeManager
    * @return The spans for the tokens.
    */
   protected abstract List<Span> generateSpans(
-    final LineTokenizeResult<LineState, IncrementalToken> tokens);
+    final LineTokenizeResult<LineState, IncrementalToken> tokens
+  );
 
   @Override
-  public List<CodeBlock> computeBlocks(
-    final Content text,
-    final AsyncIncrementalAnalyzeManager<LineState, IncrementalToken>.CodeBlockAnalyzeDelegate
-      delegate) {
+  public List<CodeBlock> computeBlocks(final Content text,
+                                       final AsyncIncrementalAnalyzeManager<LineState, IncrementalToken>.CodeBlockAnalyzeDelegate delegate
+  ) {
     final var stack = new Stack<CodeBlock>();
     final var blocks = new ArrayList<CodeBlock>();
     var line = 0;
@@ -196,9 +197,8 @@ public abstract class BaseIncrementalAnalyzeManager
     var currSwitch = 0;
     while (delegate.isNotCancelled() && line < text.getLineCount()) {
       final var tokens = getState(line);
-      final var checkForIdentifiers =
-        tokens.state.state == LineState.NORMAL
-          || (tokens.state.state == LineState.INCOMPLETE && tokens.tokens.size() > 1);
+      final var checkForIdentifiers = tokens.state.state == LineState.NORMAL ||
+        (tokens.state.state == LineState.INCOMPLETE && tokens.tokens.size() > 1);
       if (!tokens.state.hasBraces && !checkForIdentifiers) {
         line++;
         continue;
@@ -282,13 +282,15 @@ public abstract class BaseIncrementalAnalyzeManager
    * @param incompleteToken The token which is the start of the incomplete token.
    * @param tokens          The list of tokens from which extra tokens must be removed.
    */
-  protected void popTokensAfterIncomplete(
-    @NonNull IncrementalToken incompleteToken, @NonNull List<IncrementalToken> tokens) {
+  protected void popTokensAfterIncomplete(@NonNull IncrementalToken incompleteToken,
+                                          @NonNull List<IncrementalToken> tokens
+  ) {
     tokens.remove(tokens.size() - 1);
   }
 
-  protected void handleLineCommentSpan(
-    @NonNull IncrementalToken token, @NonNull List<Span> spans, int offset) {
+  protected void handleLineCommentSpan(@NonNull IncrementalToken token, @NonNull List<Span> spans,
+                                       int offset
+  ) {
     var commentType = SchemeAndroidIDE.COMMENT;
 
     // highlight special line comments
@@ -306,7 +308,7 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   /**
-   * Called when the <code>state</code> in {@link #tokenizeLine(CharSequence, LineState)} is
+   * Called when the <code>state</code> in {@link #tokenizeLine(CharSequence, LineState, int)} is
    * {@link LineState#NORMAL}.
    *
    * @param line   The line source.
@@ -317,12 +319,10 @@ public abstract class BaseIncrementalAnalyzeManager
    * @return The new state.
    */
   @SuppressWarnings("UnstableApiUsage")
-  protected int tokenizeNormal(
-    final CharSequence line,
-    final int column,
-    final List<IncrementalToken> tokens,
-    final LineState st,
-    final int lexerMode) {
+  protected int tokenizeNormal(final CharSequence line, final int column,
+                               final List<IncrementalToken> tokens, final LineState st,
+                               final int lexerMode
+  ) {
     lexer.setInputStream(createStream(line));
     if (lexer._mode != lexerMode) {
       lexer.pushMode(lexerMode);
@@ -387,7 +387,7 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   /**
-   * Called when the <code>state</code> in {@link #tokenizeLine(CharSequence, LineState)} is
+   * Called when the <code>state</code> in {@link #tokenizeLine(CharSequence, LineState, int)} is
    * {@link LineState#INCOMPLETE}.
    *
    * @param line   The line source.
@@ -395,16 +395,19 @@ public abstract class BaseIncrementalAnalyzeManager
    * @return The state and offset.
    */
   @SuppressWarnings("UnstableApiUsage")
-  protected long fillIncomplete(
-    CharSequence line, final List<IncrementalToken> tokens, final int lexerMode) {
+  protected long fillIncomplete(CharSequence line, final List<IncrementalToken> tokens,
+                                final int lexerMode
+  ) {
     lexer.setInputStream(createStream(line));
     if (lexer._mode != lexerMode) {
       lexer.pushMode(lexerMode);
     }
     final var queue = createEvictingQueueForTokens();
     final var end = queue.getSecond();
-    final var allTokens =
-      lexer.getAllTokens().stream().map(IncrementalToken::new).collect(Collectors.toList());
+    final var allTokens = lexer.getAllTokens()
+      .stream()
+      .map(IncrementalToken::new)
+      .collect(Collectors.toList());
     if (allTokens.isEmpty()) {
       return IntPair.pack(LineState.INCOMPLETE, 0);
     }
@@ -437,16 +440,15 @@ public abstract class BaseIncrementalAnalyzeManager
 
   @SuppressWarnings("UnstableApiUsage")
   @NonNull
-  private Pair<EvictingQueue<IncrementalToken>, EvictingQueue<IncrementalToken>>
-  createEvictingQueueForTokens() {
-    return new Pair<>(
-      EvictingQueue.create(multilineStartTypes.length),
+  private Pair<EvictingQueue<IncrementalToken>, EvictingQueue<IncrementalToken>> createEvictingQueueForTokens() {
+    return new Pair<>(EvictingQueue.create(multilineStartTypes.length),
       EvictingQueue.create(multilineEndTypes.length));
   }
 
   @SuppressWarnings("UnstableApiUsage")
-  private boolean matchTokenTypes(
-    @NonNull int[] types, @NonNull EvictingQueue<IncrementalToken> tokens) {
+  private boolean matchTokenTypes(@NonNull int[] types,
+                                  @NonNull EvictingQueue<IncrementalToken> tokens
+  ) {
     final var arr = tokens.toArray(new IncrementalToken[0]);
     for (int i = 0; i < types.length; i++) {
       if (types[i] != arr[i].getType()) {
