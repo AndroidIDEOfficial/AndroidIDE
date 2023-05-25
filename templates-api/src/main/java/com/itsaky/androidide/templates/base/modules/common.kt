@@ -25,7 +25,7 @@ import com.squareup.javapoet.TypeSpec
 import jdkx.lang.model.element.Modifier
 
 internal fun ModuleTemplateBuilder.dependencies(): String {
-  if (dependencies.isEmpty() || platforms.isEmpty()) {
+  if (dependencies.isEmpty() && platforms.isEmpty()) {
     return ""
   }
 
