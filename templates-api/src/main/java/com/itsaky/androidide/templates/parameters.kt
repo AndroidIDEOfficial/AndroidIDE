@@ -19,6 +19,7 @@ package com.itsaky.androidide.templates
 
 import androidx.annotation.StringRes
 import com.itsaky.androidide.templates.Language.Java
+import com.itsaky.androidide.templates.Language.Kotlin
 import com.itsaky.androidide.templates.ParameterConstraint.NONEMPTY
 import com.itsaky.androidide.templates.ParameterConstraint.PACKAGE
 import com.itsaky.androidide.templates.R.string
@@ -217,20 +218,24 @@ class BooleanParameterBuilder : ParameterBuilder<Boolean>() {
  */
 abstract class TextFieldParameter<T>(@StringRes name: Int,
                                      @StringRes description: Int?, default: T,
-                                     val startIcon: Int?, val endIcon: Int?,
+                                     val startIcon: ((TextFieldParameter<T>) -> Int)?,
+                                     val endIcon: ((TextFieldParameter<T>) -> Int)?,
                                      val onStartIconClick: (() -> Unit)?,
                                      val onEndIconClick: (() -> Unit)?,
                                      constraints: List<ParameterConstraint>
 ) : Parameter<T>(name, description, default, constraints)
 
-abstract class TextFieldParameterBuilder<T>(var startIcon: Int? = null,
-                                            var endIcon: Int? = null,
-                                            var onStartIconClick: (() -> Unit)? = null,
-                                            var onEndIconClick: (() -> Unit)? = null
+abstract class TextFieldParameterBuilder<T>(
+  var startIcon: ((TextFieldParameter<T>) -> Int)? = null,
+  var endIcon: ((TextFieldParameter<T>) -> Int)? = null,
+  var onStartIconClick: (() -> Unit)? = null,
+  var onEndIconClick: (() -> Unit)? = null
 ) : ParameterBuilder<T>()
 
 class StringParameter(@StringRes name: Int, @StringRes description: Int?,
-                      default: String, startIcon: Int?, endIcon: Int?,
+                      default: String,
+                      startIcon: ((TextFieldParameter<String>) -> Int)?,
+                      endIcon: ((TextFieldParameter<String>) -> Int)?,
                       onStartIconClick: (() -> Unit)?,
                       onEndIconClick: (() -> Unit)?,
                       constraints: List<ParameterConstraint>
@@ -249,7 +254,8 @@ class StringParameterBuilder : TextFieldParameterBuilder<String>() {
 
 class EnumParameter<T : Enum<*>>(@StringRes name: Int,
                                  @StringRes description: Int?, default: T,
-                                 startIcon: Int?, endIcon: Int?,
+                                 startIcon: ((TextFieldParameter<T>) -> Int)?,
+                                 endIcon: ((TextFieldParameter<T>) -> Int)?,
                                  onStartIconClick: (() -> Unit)?,
                                  onEndIconClick: (() -> Unit)?,
                                  constraints: List<ParameterConstraint>,
@@ -290,7 +296,7 @@ fun projectNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
     name = string.project_app_name
     default = "My Application"
-    startIcon = R.drawable.ic_android
+    startIcon = { R.drawable.ic_android }
     constraints = listOf(NONEMPTY)
 
     configure()
@@ -300,7 +306,7 @@ fun packageNameParameter(configure: StringParameterBuilder.() -> Unit = {}) =
   stringParameter {
     name = string.package_name
     default = "com.example.myapplication"
-    startIcon = R.drawable.ic_package
+    startIcon = { R.drawable.ic_package }
     constraints = listOf(NONEMPTY, PACKAGE)
 
     configure()
@@ -312,7 +318,10 @@ fun projectLanguageParameter(
   name = string.wizard_language
   default = Java
   displayName = Language::lang
-  startIcon = R.drawable.ic_language_java
+  startIcon = {
+    if (it.value == Kotlin) R.drawable.ic_language_kotlin
+    else R.drawable.ic_language_java
+  }
 
   configure()
 }
@@ -322,7 +331,7 @@ fun minSdkParameter(configure: EnumParameterBuilder<Sdk>.() -> Unit = {}) =
     name = string.minimum_sdk
     default = Sdk.Lollipop
     displayName = Sdk::displayName
-    startIcon = R.drawable.ic_min_sdk
+    startIcon = { R.drawable.ic_min_sdk }
 
     configure()
   }

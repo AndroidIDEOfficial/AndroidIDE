@@ -83,7 +83,7 @@ fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
     val saveLocation = stringParameter {
       name = R.string.wizard_save_location
       default = Environment.PROJECTS_DIR.absolutePath
-      endIcon = R.drawable.ic_folder
+      endIcon = { R.drawable.ic_folder }
       constraints = listOf(NONEMPTY, DIRECTORY, EXISTS)
     }
 
@@ -162,7 +162,7 @@ fun baseAndroidModule(isLibrary: Boolean = false,
     val type = enumParameter<ModuleType> {
       name = R.string.wizard_module_type
       default = AndroidLibrary
-      startIcon = R.drawable.ic_android
+      startIcon = { R.drawable.ic_android }
       displayName = ModuleType::typeName
     }
 

@@ -113,6 +113,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
       param.configureTextField(context, root) { value ->
         observer.disableAndRun {
           param.setValue(value)
+          param.resetStartAndEndIcons(root.context, root)
         }
 
         val err =
@@ -174,18 +175,19 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         }
       }
 
-      param.configureTextField(context, root) {
-        observer.disableAndRun {
-          param.setValue(nameToEnum[it] ?: param.default)
-        }
-      }
-
       if (param.default != nameToEnum[defaultName]) {
         // the default value may have been filtered
         // reset the value to the first item
         val first = checkNotNull(
           nameToEnum.values.firstOrNull()) { "No entries available for enum parameter (all entries filtered out?)." }
         param.setValue(first)
+      }
+
+      param.configureTextField(context, root) {
+        observer.disableAndRun {
+          param.setValue(nameToEnum[it] ?: param.default)
+          param.resetStartAndEndIcons(root.context, root)
+        }
       }
 
       param.observe(observer)
@@ -197,21 +199,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
                                                        onTextChanged: (String) -> Unit = {}
   ) {
     root.setHint(name)
-
-    startIcon?.let {
-      root.startIconDrawable = ContextCompat.getDrawable(context, it)
-      onStartIconClick?.let { onClick ->
-        root.setStartIconOnClickListener { onClick() }
-      }
-    }
-
-    endIcon?.let {
-      root.endIconDrawable = ContextCompat.getDrawable(context, it)
-      onEndIconClick?.let { onClick ->
-        root.setEndIconOnClickListener { onClick() }
-      }
-    }
-
+    resetStartAndEndIcons(context, root)
     root.editText!!.addTextChangedListener(object : SingleTextWatcher() {
       override fun onTextChanged(s: CharSequence?, start: Int, before: Int,
                                  count: Int
@@ -219,5 +207,23 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
         onTextChanged(s?.toString() ?: "")
       }
     })
+  }
+
+  private fun <T> TextFieldParameter<T>.resetStartAndEndIcons(context: Context,
+                                                          root: TextInputLayout
+  ) {
+    startIcon?.let {
+      root.startIconDrawable = ContextCompat.getDrawable(context, it(this))
+      onStartIconClick?.let { onClick ->
+        root.setStartIconOnClickListener { onClick() }
+      }
+    }
+
+    endIcon?.let {
+      root.endIconDrawable = ContextCompat.getDrawable(context, it(this))
+      onEndIconClick?.let { onClick ->
+        root.setEndIconOnClickListener { onClick() }
+      }
+    }
   }
 }
