@@ -30,8 +30,13 @@ import com.android.SdkConstants.XMLNS
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.base.modules.android.ManifestActivity
 import com.itsaky.androidide.templates.base.modules.android.ManifestIcon
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder.ConfigurationType.APPLICATION_ATTR
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder.ConfigurationType.APPLICATION_CONTENT
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder.ConfigurationType.MANIFEST_ATTR
+import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder.ConfigurationType.MANIFEST_CONTENT
 import com.itsaky.androidide.xml.permissions.Permission
 import org.eclipse.lemminx.dom.builder.IndentedXmlBuilder
+import org.eclipse.lemminx.dom.builder.IndentedXmlConfigurator
 import java.io.File
 
 /**
@@ -41,6 +46,31 @@ import java.io.File
  */
 class AndroidManifestBuilder {
 
+  enum class ConfigurationType {
+
+    /**
+     * For configuring attributes for the `<manifest>` tag.
+     */
+    MANIFEST_ATTR,
+
+    /**
+     * For configuring elements inside the `<manifest>` tag.
+     */
+    MANIFEST_CONTENT,
+
+    /**
+     * For configuring attributes for the `<application>` tag.
+     */
+    APPLICATION_ATTR,
+
+    /**
+     * For configuring elements inside the `<application>` tag.
+     */
+    APPLICATION_CONTENT
+  }
+
+  private val configurators =
+    hashMapOf<ConfigurationType, HashSet<IndentedXmlConfigurator>>()
   private val permissions = hashSetOf<Permission>()
   private val activities = hashSetOf<ManifestActivity>()
 
@@ -94,6 +124,11 @@ class AndroidManifestBuilder {
     activities.add(activity)
   }
 
+  fun configure(type: ConfigurationType, configurator: IndentedXmlConfigurator
+  ) {
+    configurators.computeIfAbsent(type) { hashSetOf() }.add(configurator)
+  }
+
   /**
    * Generates the manifest and saves the content to the given file.
    */
@@ -110,9 +145,13 @@ class AndroidManifestBuilder {
   private fun IndentedXmlBuilder.buildManifest() {
     createElement(TAG_MANIFEST) {
       attr(name = ANDROID_NS_NAME, value = ANDROID_URI, ns = XMLNS)
+      configurators[MANIFEST_ATTR]?.forEach { configurator -> configurator() }
       closeStartElement()
 
       permissions()
+
+      configurators[MANIFEST_CONTENT]?.forEach { configurator -> configurator() }
+
       application()
     }
   }
@@ -141,9 +180,12 @@ class AndroidManifestBuilder {
       androidAttr("label", "@string/${appLabelRes}")
       androidAttr("supportsRtl", rtl.toString())
       androidAttr("theme", "@style/${themeRes}")
+      configurators[APPLICATION_ATTR]?.forEach { configurator -> configurator() }
       closeStartElement()
 
       activities()
+
+      configurators[APPLICATION_CONTENT]?.forEach { configurator -> configurator() }
     }
   }
 
@@ -159,10 +201,14 @@ class AndroidManifestBuilder {
           androidAttr("exported", "true")
         }
 
+        activity.configureAttrs?.invoke(this@activities)
         closeStartElement()
+
         if (activity.isLauncher) {
           intentFilter()
         }
+
+        activity.configureInside?.invoke(this@activities)
       }
     }
   }
