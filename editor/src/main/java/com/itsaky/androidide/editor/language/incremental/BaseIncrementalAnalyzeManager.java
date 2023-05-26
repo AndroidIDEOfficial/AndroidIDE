@@ -233,6 +233,7 @@ public abstract class BaseIncrementalAnalyzeManager extends
 
       line++;
     }
+    blocks.sort(CodeBlock.COMPARATOR_END);
     return blocks;
   }
 
