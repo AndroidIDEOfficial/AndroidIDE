@@ -165,6 +165,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     LOG.info("Service is being destroyed.", "Dismissing the shown notification...");
     notificationManager.cancel(NOTIFICATION_ID);
+
+    final var lookup = Lookup.getDefault();
+    lookup.unregister(GradleBuildService.KEY_BUILD_SERVICE);
+    lookup.unregister(GradleBuildService.KEY_PROJECT_PROXY);
+
     if (server != null) {
       server.cancelCurrentBuild();
       final var shutdown = server.shutdown();
@@ -181,6 +186,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     if (toolingServerThread != null) {
+      toolingServerThread.release();
       toolingServerThread.interrupt();
       toolingServerThread = null;
     }

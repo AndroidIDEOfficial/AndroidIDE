@@ -51,12 +51,9 @@ internal class ToolingServerRunner(
       log.info("Starting tooling API server...")
       val serverStreams = ProcessStreamsHolder()
       val executor = CommonProcessExecutor()
-      executor.execAsync(
-        serverStreams,
-        { observer?.onServerExited(it) },
-        false, // The 'java' binary executable
-        Environment.JAVA
-          .absolutePath, // Allow reflective access to private members of classes in the following
+      executor.execAsync(serverStreams, { observer?.onServerExited(it) }, false,
+        Environment.JAVA.absolutePath, // The 'java' binary executable
+        // Allow reflective access to private members of classes in the following
         // packages:
         // - java.lang
         // - java.io
@@ -70,29 +67,19 @@ internal class ToolingServerRunner(
         // these objects are reflectively accessed by Gson. If we do no specify
         // '--add-opens' for 'java.io' (for java.io.File) package, JVM will throw an
         // InaccessibleObjectException.
-        "--add-opens",
-        "java.base/java.lang=ALL-UNNAMED",
-        "--add-opens",
-        "java.base/java.util=ALL-UNNAMED",
-        "--add-opens",
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens",
+        "java.base/java.util=ALL-UNNAMED", "--add-opens",
         "java.base/java.io=ALL-UNNAMED", // The JAR file to run
-        "-jar",
-        Environment.TOOLING_API_JAR.absolutePath
-      )
+        "-jar", Environment.TOOLING_API_JAR.absolutePath)
 
-      val launcher =
-        ToolingApiLauncher.newClientLauncher(
-          observer?.getClient(),
-          serverStreams.`in`,
-          serverStreams.out
-        )
+      val launcher = ToolingApiLauncher.newClientLauncher(observer?.getClient(),
+        serverStreams.`in`, serverStreams.out)
 
       val future = launcher.startListening()
       observer?.onListenerStarted(
         server = launcher.remoteProxy as IToolingApiServer,
         projectProxy = launcher.remoteProxy as IProject,
-        streams = serverStreams
-      )
+        streams = serverStreams)
 
       isStarted = true
 
@@ -113,6 +100,7 @@ internal class ToolingServerRunner(
           is CancellationException,
           is InterruptedException,
           -> log.info("ToolingServerThread has been cancelled or interrupted.")
+
           else -> throw err
         }
       }
@@ -122,8 +110,8 @@ internal class ToolingServerRunner(
   }
 
   override fun interrupt() {
-    super.interrupt()
     release()
+    super.interrupt()
   }
 
   fun release() {
@@ -132,17 +120,20 @@ internal class ToolingServerRunner(
   }
 
   interface Observer {
+
     fun onListenerStarted(
       server: IToolingApiServer,
       projectProxy: IProject,
       streams: ProcessStreamsHolder,
     )
+
     fun onServerExited(exitCode: Int)
     fun getClient(): IToolingApiClient
   }
-  
+
   /** Callback to listen for Tooling API server start event.  */
   fun interface OnServerStartListener {
+
     /** Called when the tooling API server has been successfully started.  */
     fun onServerStarted()
   }
