@@ -160,6 +160,9 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onDestroy() {
+    mBinder.release();
+    mBinder = null;
+
     LOG.info("Service is being destroyed.", "Dismissing the shown notification...");
     notificationManager.cancel(NOTIFICATION_ID);
     if (server != null) {
@@ -198,17 +201,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    if (mBinder != null && !mBinder.isReleased()) {
-      LOG.verbose("Reusing GradleServiceBinder instance");
-      return mBinder;
+    if (mBinder == null) {
+      mBinder = new GradleServiceBinder(this);
     }
-  
-    if (mBinder != null) {
-      mBinder.release();
-    }
-    
-    LOG.verbose("Creating new GradleServiceBinder instance...");
-    return mBinder = new GradleServiceBinder(this);
+    return mBinder;
   }
   
   @Override

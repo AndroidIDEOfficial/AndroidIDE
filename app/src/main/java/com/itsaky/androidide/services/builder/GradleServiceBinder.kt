@@ -19,26 +19,17 @@ package com.itsaky.androidide.services.builder
 import android.os.Binder
 
 /**
- * [Binder] implementation for [GradleBuildService] which provides a single-use instance of the
+ * [Binder] implementation for [GradleBuildService] which provides instance of the
  * service.
  *
  * @author Akash Yadav
  */
 internal class GradleServiceBinder(service: GradleBuildService?) : Binder() {
 
-  var isReleased = false
-    private set
-  
   var service: GradleBuildService? = service
     private set
-    get() {
-      check(!isReleased) { "GradleBuildService instance has been released" }
-      return field.also { release() }
-    }
 
-  @Suppress("ProtectedInFinal")
-  protected fun release() {
+  fun release() {
     service = null
-    isReleased = true
   }
 }

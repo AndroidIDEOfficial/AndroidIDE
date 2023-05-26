@@ -126,7 +126,7 @@ internal class ToolingServerRunner(
     release()
   }
 
-  internal fun release() {
+  fun release() {
     this.listener = null
     this.observer = null
   }
