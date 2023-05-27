@@ -51,8 +51,8 @@ interface IViewGroup : IView, Iterable<IView> {
    * view's [IViewAdapter.canAcceptChild] returns `true`.
    */
   fun canAcceptChild(name: String): Boolean {
-    return canModifyChildViews() &&
-      (this.viewAdapter as? IViewGroupAdapter)?.canAcceptChild(this, name) == true
+    return canModifyChildViews() && (this.viewAdapter as? IViewGroupAdapter)?.canAcceptChild(
+      this, name) == true
   }
 
   /**
@@ -116,6 +116,17 @@ interface IViewGroup : IView, Iterable<IView> {
   }
 
   /**
+   * Find the child nearest to the given coordinates.
+   *
+   * @param x The X coordinate.
+   * @param y The Y coordinate.
+   * @param vertical Whether to compare the vertical or horizontal bounds of
+   * existing child views with the given coordinates.
+   */
+  fun findNearestChild(x: Float, y: Float, vertical: Boolean = true
+  ): Pair<IView, Int>?
+
+  /**
    * Adds the given hierarchy change listener.
    *
    * @param listener The listener to add.
@@ -167,6 +178,7 @@ interface IViewGroup : IView, Iterable<IView> {
 
   /** Allows overriding a single method in [OnHierarchyChangeListener]. */
   open class SingleOnHierarchyChangeListener : OnHierarchyChangeListener {
+
     override fun onViewAdded(group: IViewGroup, view: IView, index: Int) {}
     override fun onViewRemoved(group: IViewGroup, view: IView, index: Int) {}
   }

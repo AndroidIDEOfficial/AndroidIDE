@@ -25,14 +25,26 @@ package com.itsaky.androidide.inflater
 interface IViewGroupAdapter {
 
   /**
-   * Get the layout behavior for the given view group and the view. Implementations must take the
+   * Get the layout strategy for the given view group and the view. Implementations must take the
    * attributes of the view group into account.
    *
-   * @param group The view group whose layout behavior should be returned.
-   * @return The layout behavior.
+   * @param group The view group whose layout strategy should be returned.
+   * @return The layout strategy.
    */
-  fun getLayoutBehavior(group: IViewGroup): LayoutBehavior
-  
+  fun getLayoutStrategy(group: IViewGroup): LayoutStrategy
+
+  /**
+   * Compute the index of the child based on the given [x] and [y] coordinates
+   * of the drag event.
+   *
+   * @param x The X coordinate of the drag event.
+   * @param y The Y coordinate of the drag event.
+   * @return The index at which the new child must be added
+   */
+  fun computeChildIndex(parent: IViewGroup, x: Float, y: Float): Int {
+    return getLayoutStrategy(parent).computeChildIndex(parent, x, y)
+  }
+
   /**
    * Called by the UI Designer to check if the given view group (which this adpater handles) can
    * accept the child view with the given qualified name.

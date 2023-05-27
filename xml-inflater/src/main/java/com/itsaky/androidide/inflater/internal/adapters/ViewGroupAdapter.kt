@@ -22,19 +22,24 @@ import android.view.ViewGroup
 import com.itsaky.androidide.inflater.AttributeHandlerScope
 import com.itsaky.androidide.inflater.IViewGroup
 import com.itsaky.androidide.inflater.IViewGroupAdapter
-import com.itsaky.androidide.inflater.LayoutBehavior
-import com.itsaky.androidide.inflater.LayoutBehavior.TOP_LEFT
+import com.itsaky.androidide.inflater.LayoutStrategy
+import com.itsaky.androidide.inflater.LayoutStrategy.Companion.TOP_LEFT
 
 /**
  * Base attribute adapter for all [ViewGroup].
  *
  * @author Akash Yadav
  */
-abstract class ViewGroupAdapter<T : ViewGroup> : ViewAdapter<T>(), IViewGroupAdapter {
+abstract class ViewGroupAdapter<T : ViewGroup> : ViewAdapter<T>(),
+                                                 IViewGroupAdapter {
 
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+  override fun createAttrHandlers(
+    create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
+  ) {
     super.createAttrHandlers(create)
-    create("animateLayoutChanges") { view.layoutTransition = LayoutTransition() }
+    create("animateLayoutChanges") {
+      view.layoutTransition = LayoutTransition()
+    }
     create("clipChildren") { view.clipChildren = parseBoolean(value) }
     create("clipToPadding") { view.clipToPadding = parseBoolean(value) }
     create("descendantFocusability") {
@@ -43,7 +48,7 @@ abstract class ViewGroupAdapter<T : ViewGroup> : ViewAdapter<T>(), IViewGroupAda
     create("layoutMode") { view.layoutMode = parseLayoutMode(value) }
   }
 
-  override fun getLayoutBehavior(group: IViewGroup): LayoutBehavior {
+  override fun getLayoutStrategy(group: IViewGroup): LayoutStrategy {
     return TOP_LEFT
   }
 
