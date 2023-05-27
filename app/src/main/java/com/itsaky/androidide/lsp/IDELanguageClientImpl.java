@@ -170,12 +170,22 @@ public class IDELanguageClientImpl implements ILanguageClient {
     }
 
     final var action = params.getAction();
+    final var activity = activity();
     if (activity() == null) {
       LOG.error(
           "Unable to perform code action",
           "activity=" + activity(),
           "action=" + action);
       FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
+      return;
+    }
+
+    if (activity.isFinishing()
+      || activity.isDestroyed()
+      || activity.getSupportFragmentManager().isDestroyed()
+      || activity.getSupportFragmentManager().isStateSaved()) {
+      LOG.error("Cannot perform code action. Activity is in an invalid state.");
+      // Should we try to show the error message to the user?
       return;
     }
 

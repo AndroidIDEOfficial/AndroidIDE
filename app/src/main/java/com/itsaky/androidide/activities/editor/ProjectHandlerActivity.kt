@@ -142,13 +142,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       closeProject(false)
     }
 
+    if (IDELanguageClientImpl.isInitialized()) {
+      IDELanguageClientImpl.shutdown()
+    }
+
     super.preDestroy()
 
     if (isDestroying) {
-
-      if (IDELanguageClientImpl.isInitialized()) {
-        IDELanguageClientImpl.shutdown()
-      }
 
       try {
         stopLanguageServers()
