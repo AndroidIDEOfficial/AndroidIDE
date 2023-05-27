@@ -66,6 +66,7 @@ class TemplateProviderImpl : ITemplateProvider {
   }
 
   override fun clear() {
+    templates.forEach { it.value.release() }
     templates.clear()
   }
 }

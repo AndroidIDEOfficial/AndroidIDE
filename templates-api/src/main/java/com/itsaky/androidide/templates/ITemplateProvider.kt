@@ -48,6 +48,12 @@ interface ITemplateProvider {
         .findFirstOrThrow()
         .also { provider = it }
     }
+
+    /**
+     * @return Whether the [ITemplateProvider] has been loaded or not.
+     */
+    @JvmStatic
+    fun isLoaded() = provider != null
   }
 
   /**
@@ -63,7 +69,7 @@ interface ITemplateProvider {
    * @param templateId The ID for the template.
    * @return The [Template] with the given [templateId] if any, or `null`.
    */
-  fun getTemplate(templateId: String) : Template<*>?
+  fun getTemplate(templateId: String): Template<*>?
 
   /**
    * Clear all the templates stored in the provider.

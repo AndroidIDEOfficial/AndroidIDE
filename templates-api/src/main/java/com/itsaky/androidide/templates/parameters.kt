@@ -132,6 +132,12 @@ abstract class Parameter<T>(@StringRes val name: Int,
     }
   }
 
+  fun release() {
+    lock.withLock {
+      observers.clear()
+    }
+  }
+
   private fun notifyObservers() {
     lock.withLock {
       observers.forEach {

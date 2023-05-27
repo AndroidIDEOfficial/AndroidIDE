@@ -253,6 +253,10 @@ open class Template<R : TemplateRecipeResult>(
   open val parameters: Collection<Parameter<*>>
     get() = widgets.filterIsInstance<ParameterWidget<*>>().map { it.parameter }
 
+  open fun release() {
+    widgets.forEach { it.release() }
+  }
+
   companion object {
 
     @JvmStatic
@@ -260,11 +264,14 @@ open class Template<R : TemplateRecipeResult>(
   }
 }
 
-open class ProjectTemplate(
-  val moduleTemplates: List<Template<*>>, @StringRes templateName: Int,
-  @DrawableRes thumb: Int, @StringRes description: Int?,
-  widgets: List<Widget<*>>, recipe: TemplateRecipe<ProjectTemplateRecipeResult>
-) : Template<ProjectTemplateRecipeResult>(templateName, thumb, description, widgets, recipe) {
+open class ProjectTemplate(val moduleTemplates: List<Template<*>>,
+                           @StringRes templateName: Int,
+                           @DrawableRes thumb: Int,
+                           @StringRes description: Int?,
+                           widgets: List<Widget<*>>,
+                           recipe: TemplateRecipe<ProjectTemplateRecipeResult>
+) : Template<ProjectTemplateRecipeResult>(templateName, thumb, description,
+  widgets, recipe) {
 
   override val parameters: Collection<Parameter<*>>
     get() = if (moduleTemplates.isEmpty()) super.parameters else super.parameters.toMutableList()
@@ -286,6 +293,11 @@ open class ProjectTemplate(
         result
       }
     }
+
+  override fun release() {
+    super.release()
+    moduleTemplates.forEach { it.release() }
+  }
 }
 
 /**
@@ -293,24 +305,22 @@ open class ProjectTemplate(
  *
  * @property name The mdoule name (gradle format, e.g. ':app').
  */
-open class ModuleTemplate(val name: String,
-                                                          @StringRes
-                                                          templateName: Int,
-                                                          @DrawableRes
-                                                          thumb: Int, @StringRes
-                                                          description: Int?,
-                                                          widgets: List<Widget<*>>,
-                                                          recipe: TemplateRecipe<ModuleTemplateRecipeResult>
-) : Template<ModuleTemplateRecipeResult>(templateName, thumb, description, widgets, recipe)
+open class ModuleTemplate(val name: String, @StringRes templateName: Int,
+                          @DrawableRes thumb: Int, @StringRes description: Int?,
+                          widgets: List<Widget<*>>,
+                          recipe: TemplateRecipe<ModuleTemplateRecipeResult>
+) : Template<ModuleTemplateRecipeResult>(templateName, thumb, description,
+  widgets, recipe)
 
 /**
  * Template for creating a file.
  */
 open class FileTemplate<R : FileTemplateRecipeResult>(@StringRes name: Int,
-                                                  @DrawableRes thumb: Int,
-                                                  @StringRes description: Int?,
-                                                  widgets: List<Widget<*>>,
-                                                  recipe: TemplateRecipe<R>
+                                                      @DrawableRes thumb: Int,
+                                                      @StringRes
+                                                      description: Int?,
+                                                      widgets: List<Widget<*>>,
+                                                      recipe: TemplateRecipe<R>
 ) : Template<R>(name, thumb, description, widgets, recipe)
 
 /**

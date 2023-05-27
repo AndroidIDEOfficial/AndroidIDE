@@ -22,12 +22,20 @@ package com.itsaky.androidide.templates
  *
  * Each template has a collection of widgets which is rendered when user selects a template.
  */
-interface Widget<T>
+interface Widget<T> {
+
+  fun release()
+}
 
 /**
  * Widget for the given [parameter].
  */
-sealed class ParameterWidget<T>(val parameter: Parameter<T>) : Widget<T>
+sealed class ParameterWidget<T>(val parameter: Parameter<T>) : Widget<T> {
+
+  override fun release() {
+    parameter.release()
+  }
+}
 
 /**
  * Widget for a [StringParameter]. Creates a text field for the parameter.
