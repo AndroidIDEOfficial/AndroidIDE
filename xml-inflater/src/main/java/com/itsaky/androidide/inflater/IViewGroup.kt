@@ -138,7 +138,21 @@ interface IViewGroup : IView, Iterable<IView> {
    * existing child views with the given coordinates.
    */
   fun findNearestChild(x: Float, y: Float, vertical: Boolean = true
-  ): Pair<IView, Int>?
+  ): Pair<IView, Int>? {
+    for (i in 0 until childCount) {
+      val child = get(i)
+      val rect = child.getViewRect()
+      if (vertical && (y > rect.top && y < rect.bottom)) {
+        return child to i
+      }
+
+      if (!vertical && (x > rect.left && x < rect.right)) {
+        return child to i
+      }
+    }
+
+    return null
+  }
 
   /**
    * Adds the given hierarchy change listener.
