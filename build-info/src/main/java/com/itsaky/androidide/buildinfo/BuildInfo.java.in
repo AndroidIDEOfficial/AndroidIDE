@@ -1,0 +1,48 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.buildinfo;
+
+public class BuildInfo {
+
+  // ---------- Version info ----------------
+
+  public static final String MVN_GROUP_ID = "@@MVN_GROUP_ID@@";
+
+  public static final String VERSION_NAME = "@@VERSION_NAME@@";
+  public static final String VERSION_NAME_SIMPLE = "@@VERSION_NAME_SIMPLE@@";
+  public static final String VERSION_NAME_PUBLISHING = "@@VERSION_NAME_PUBLISHING@@";
+  public static final String VERSION_NAME_DOWNLOAD = "@@VERSION_NAME_DOWNLOAD@@";
+
+  // --------- CI info --------------------
+
+  public static final boolean CI_BUILD = @@CI_BUILD@@;
+  public static final String CI_GIT_BRANCH = "@@CI_GIT_BRANCH@@";
+  public static final String CI_GIT_COMMIT_HASH = "@@CI_COMMIT_HASH@@";
+
+  // ------- SCM info --------------------
+
+  public static final String REPO_HOST = "@@REPO_HOST@@";
+  public static final String REPO_OWNER = "@@REPO_OWNER@@";
+  public static final String REPO_NAME = "@@REPO_NAME@@";
+  public static final String REPO_URL = "https://@@REPO_HOST@@/@@REPO_OWNER@@/@@REPO_NAME@@";
+  public static final String SCM_GIT = "scm:git:git://@@REPO_HOST@@/@@REPO_OWNER@@/@@REPO_NAME@@.git";
+  public static final String SCM_SSH = "scm:git:ssh://git@@@REPO_HOST@@/@@REPO_OWNER@@/@@REPO_NAME@@.git";
+
+  // ------- Misc ------------------------
+  public static final String PROJECT_SITE = "@@PROJECT_SITE@@";
+}

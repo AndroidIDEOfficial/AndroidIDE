@@ -24,9 +24,7 @@ import com.itsaky.androidide.actions.newDialogBuilder
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.javac.services.util.JavaDiagnosticUtils
-import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
-import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.AddImport
@@ -81,22 +79,9 @@ class AddImportAction : BaseJavaCodeAction() {
       return
     }
 
-    var found = false
-    val simpleName = jcDiagnostic.args[1]
-    for (name in compiler.publicTopLevelTypes()) {
-      var klass = name
-
-      // This will be true in a test environment
-      if (klass.contains("/")) {
-        klass = name.replace('/', '.')
-      }
-
-      if (klass.endsWith(".$simpleName")) {
-        found = true
-        // There is at least one class to import
-        break
-      }
-    }
+    val found =
+      jcDiagnostic.args[1]?.toString()?.let { compiler.findQualifiedNames(it, true).isNotEmpty() }
+        ?: false
 
     visible = found
     enabled = found
@@ -158,10 +143,7 @@ class AddImportAction : BaseJavaCodeAction() {
         }
 
     val compiler = JavaCompilerProvider.get(module)
-    val server =
-      ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
-        as JavaLanguageServer
-    val client = server.client ?: return
+    val client = data.getLanguageClient() ?: return
     val actions = mutableListOf<CodeActionItem>()
     val titles = result.first as List<String>
     val rewrites = result.second as List<Rewrite>
@@ -169,8 +151,7 @@ class AddImportAction : BaseJavaCodeAction() {
     for (index in rewrites.indices) {
       val name = titles[index]
       val rewrite = rewrites[index]
-      val action = rewrite.asCodeActions(compiler, name)
-      actions.add(action)
+      rewrite.asCodeActions(compiler, name)?.let { actions.add(it) }
     }
 
     when (actions.size) {
@@ -178,14 +159,14 @@ class AddImportAction : BaseJavaCodeAction() {
         log.warn("No rewrites found. Cannot perform action")
       }
       1 -> {
-        client.performCodeAction(file, actions[0])
+        client.performCodeAction(actions[0])
       }
       else -> {
         val builder = newDialogBuilder(data)
         builder.setTitle(label)
         builder.setItems(toArray(titles, String::class.java)) { d, w ->
           d.dismiss()
-          client.performCodeAction(file, actions[w])
+          client.performCodeAction(actions[w])
         }
         builder.show()
       }

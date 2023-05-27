@@ -27,7 +27,6 @@ import static com.itsaky.androidide.lexers.log.LogToken.TIME;
 import static com.itsaky.androidide.lexers.log.LogToken.UNKNOWN;
 import static com.itsaky.androidide.lexers.log.LogToken.WS;
 import static java.lang.Character.isDigit;
-import static java.lang.Character.isWhitespace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +34,15 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * Tokenizer for tokenizing a log line. The tokenizer does not expect multiline input.
+ * Tokenizer for tokenizing a log line.
  *
  * @author Akash Yadav
  */
 public class LogLineTokenizer {
+
+  private static final int MODE_UNKNOWN = -1;
+  private static final int MODE_SIMPLE = 0;
+  private static final int MODE_FULL = 1;
 
   /** The EOF token is returned if nothing is left to tokenize. */
   public static final LogToken EOF = new LogToken("", -1, -1, -1);
@@ -54,7 +57,7 @@ public class LogLineTokenizer {
   public int lexerState = -1;
 
   public int index = -1;
-  private boolean parseSimple = false;
+  private int mode = MODE_UNKNOWN;
 
   public LogLineTokenizer(String input) {
     this(input, true);
@@ -74,15 +77,6 @@ public class LogLineTokenizer {
   }
 
   /**
-   * Set to <code>true</code>> if parsing the simple version of <code>LogLine</code>.
-   *
-   * @param parseSimple The new flag.
-   */
-  public void setParseSimple(final boolean parseSimple) {
-    this.parseSimple = parseSimple;
-  }
-
-  /**
    * Generate the next token.
    *
    * @return The next token.
@@ -95,9 +89,22 @@ public class LogLineTokenizer {
 
     final var text = new StringBuilder();
     final var c = input[index];
-    if (isWhitespace(c)) {
-      final var whitespace = parseWhitespace(text);
+    if (isWhitespace(c) || isNewLine(c)) {
+      var idx = index;
+      final var whitespace = parseWsOrNl(text);
 
+      if (isNewLine(c)) {
+        // case(CR): '\r'
+        // case(LF): '\n'
+        lexerState = -1;
+        mode = MODE_UNKNOWN;
+        index = idx;
+      }
+
+      if (c == '\r' && idx + 1 < input.length && input[idx + 1] == '\n') {
+        // case(CRLF): '\r\n'
+        index = ++idx;
+      }
       return skipWs ? next() : whitespace;
     } else if (c == '-' && index == 0) {
       // Lines like these must be handled as well
@@ -108,7 +115,12 @@ public class LogLineTokenizer {
       return createToken(new StringBuilder().append(input), 0, MESSAGE);
     }
 
-    if (parseSimple) {
+    // in case of IDE logs, the log lines won't start with a digit
+    if (mode == MODE_UNKNOWN) {
+      mode = isDigit(c) ? MODE_FULL : MODE_SIMPLE;
+    }
+
+    if (mode == MODE_SIMPLE) {
       return nextSimpleToken(text);
     }
 
@@ -185,6 +197,8 @@ public class LogLineTokenizer {
     final var start = index;
     iterateInput(
         c -> {
+          if (isNewLine(c)) return true;
+
           text.append(c);
           return false;
         });
@@ -250,11 +264,11 @@ public class LogLineTokenizer {
   }
 
   /** Parse whitespace tokens. */
-  protected LogToken parseWhitespace(final StringBuilder text) {
+  protected LogToken parseWsOrNl(final StringBuilder text) {
     final var start = index;
     iterateInput(
         c -> {
-          if (isWhitespace(c)) {
+          if (isWhitespace(c) || isNewLine(c)) {
             text.append(c);
             return false;
           }
@@ -353,5 +367,13 @@ public class LogLineTokenizer {
           return false;
         });
     return createToken(text, start, TAG);
+  }
+
+  private static boolean isWhitespace(char c) {
+    return c == ' ' || c == '\t' || isNewLine(c);
+  }
+
+  private static boolean isNewLine(char c) {
+    return c == '\r' || c == '\n';
   }
 }

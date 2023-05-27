@@ -4,8 +4,8 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical"
-  android:layout_marginTop="16dp"
-  android:layout_marginBottom="16dp">
+  android:paddingTop="16dp"
+  android:paddingBottom="16dp">
 
   <HorizontalScrollView
     android:layout_width="match_parent"
@@ -83,12 +83,13 @@
   </com.google.android.material.textfield.TextInputLayout>
 
   <CheckBox
-    android:id="@+id/checkButton"
+    android:id="@+id/create_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginStart="24dp"
     android:checked="true"
-    android:text="@string/create_auto_layout" />
+    android:text="@string/create_auto_layout"
+    android:visibility="gone" />
 
 </LinearLayout>
 

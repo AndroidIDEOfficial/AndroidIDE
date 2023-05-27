@@ -21,31 +21,35 @@ import android.widget.ScrollView
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
+import com.itsaky.androidide.resources.R
 
 /**
  * View adapter for [ScrollView].
  *
  * @author Akash Yadav
  */
-@com.itsaky.androidide.annotations.inflater.ViewAdapter(forView = ScrollView::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(
+  forView = ScrollView::class)
 @IncludeInDesigner(group = LAYOUTS)
 open class ScrollViewAdapter<T : ScrollView> : FrameLayoutAdapter<T>() {
 
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+  override fun createAttrHandlers(
+    create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
+  ) {
     super.createAttrHandlers(create)
     create("fillViewPort") { view.isFillViewport = parseBoolean(value, false) }
   }
 
   override fun createUiWidgets(): List<UiWidget> {
-    return listOf(
-      UiWidget(ScrollView::class.java, R.string.widget_scrollview, R.drawable.ic_widget_scroll_view)
-    )
+    return listOf(UiWidget(ScrollView::class.java, R.string.widget_scrollview,
+      R.drawable.ic_widget_scroll_view))
   }
 
-  override fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+  override fun canAcceptChild(view: IViewGroup, child: IView?, name: String
+  ): Boolean {
     // scrollview can have only one child
     return view.childCount == 0
   }

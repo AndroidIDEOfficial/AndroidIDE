@@ -19,6 +19,8 @@ package com.itsaky.androidide.lsp.java.rewrite;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
@@ -81,6 +83,7 @@ public class ImplementAbstractMethods extends Rewrite {
     }
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final Path file = compiler.findTypeDeclaration(this.classFile);
@@ -104,14 +107,14 @@ public class ImplementAbstractMethods extends Rewrite {
           }
 
           final Set<String> imports = new TreeSet<>();
-          int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
+          int indent = EditHelper.indent(task.task, task.root(), thisTree) + EditorPreferencesKt.getTabSize();
           for (Element member : elements.getAllMembers(thisClass)) {
             if (member.getKind() == ElementKind.METHOD
                 && member.getModifiers().contains(Modifier.ABSTRACT)) {
               ExecutableElement method = (ExecutableElement) member;
               final MethodSpec methodSpec = MethodSpec.overriding(method).build();
               String text = "\n" + JavaPoetUtils.print(methodSpec, imports, false);
-              text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+              text = text.replaceAll("\n", "\n" + EditorUtilKt.indentationString(indent));
               insertText.add(text);
             }
           }
@@ -172,7 +175,7 @@ public class ImplementAbstractMethods extends Rewrite {
   }
 
   @Override
-  protected void applyCommands(@NonNull CodeActionItem action) {
+  protected void finalizeCodeAction(@NonNull CodeActionItem action) {
     action.setCommand(new Command("Format code", Command.FORMAT_CODE));
   }
 }

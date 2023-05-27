@@ -42,6 +42,7 @@ import com.itsaky.androidide.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.androidide.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.androidide.lsp.java.providers.ReferenceProvider;
 import com.itsaky.androidide.lsp.java.providers.SignatureProvider;
+import com.itsaky.androidide.lsp.java.providers.snippet.JavaSnippetRepository;
 import com.itsaky.androidide.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.models.CodeFormatResult;
@@ -99,6 +100,8 @@ public class JavaLanguageServer implements ILanguageServer {
     if (!EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().register(this);
     }
+
+    JavaSnippetRepository.INSTANCE.init();
   }
 
   public IServerSettings getSettings() {

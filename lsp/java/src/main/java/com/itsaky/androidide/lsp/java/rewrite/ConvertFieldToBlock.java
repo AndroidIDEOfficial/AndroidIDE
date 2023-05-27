@@ -48,6 +48,7 @@ public class ConvertFieldToBlock extends Rewrite {
     this.position = position;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     ParseTask task = compiler.parse(file);

@@ -15,8 +15,6 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("DEPRECATION")
-
 package io.github.rosemoe.sora.widget
 
 import com.itsaky.androidide.editor.ui.IDEEditor
@@ -29,7 +27,7 @@ import com.itsaky.androidide.editor.ui.IDEEditor
  */
 open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
 
-  var searching = false
+  var isSearching = false
     private set
 
   protected fun getEditor(): CodeEditor {
@@ -67,11 +65,15 @@ open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
   }
 
   override fun stopSearch() {
-    searching = false
+    isSearching = false
     super.stopSearch()
   }
 
+  fun onClose() {
+    isSearching = false
+  }
+
   private fun markSearching() {
-    searching = true
+    isSearching = true
   }
 }

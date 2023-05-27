@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
   <string name="title_open_source_licenses">licence Open Source</string>
   <string name="msg_about_licensed_under">licence sous:&#x20;</string>
   <string name="about_option_email">Émail</string>
@@ -315,7 +314,7 @@
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_donate">Sponsor</string>
   <string name="btn_docs">Documentation</string>
   <string name="btn_close">Fermer</string>
   <string name="msg_ignore_case">Ignore case</string>

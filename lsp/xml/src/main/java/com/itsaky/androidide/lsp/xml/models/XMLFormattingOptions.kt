@@ -19,6 +19,8 @@ package com.itsaky.androidide.lsp.xml.models
 
 import com.itsaky.androidide.lsp.xml.providers.format.FormatElementCategory
 import com.itsaky.androidide.lsp.xml.providers.format.FormatElementCategory.PreserveSpace
+import org.eclipse.lemminx.dom.builder.EmptyElements
+import org.eclipse.lemminx.dom.builder.BaseXmlFormattingOptions
 import org.eclipse.lemminx.dom.DOMElement
 
 /**
@@ -26,60 +28,47 @@ import org.eclipse.lemminx.dom.DOMElement
  *
  * @author Akash Yadav
  */
-class XMLFormattingOptions {
-  val trimFinalNewLine: Boolean
+open class XMLFormattingOptions : BaseXmlFormattingOptions() {
+
+  override val isTrimFinalNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.trimFinalNewLine
-  val insertFinalNewLine: Boolean
+  override val isInsertFinalNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.insertFinalNewLine
-  val splitAttributes: Boolean
+  override val isSplitAttributes: Boolean
     get() = com.itsaky.androidide.preferences.internal.splitAttributes
-  val joinCDataLines: Boolean
+  override val isJoinCDataLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinCDataLines
-  val joinCommentLines: Boolean
+  override val isJoinCommentLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinCommentLines
-  val joinContentLines: Boolean
+  override val isJoinContentLines: Boolean
     get() = com.itsaky.androidide.preferences.internal.joinContentLines
-  val spaceBeforeEmptyCloseTag: Boolean
+  override val isSpaceBeforeEmptyCloseTag: Boolean
     get() = com.itsaky.androidide.preferences.internal.spaceBeforeEmptyCloseTag
-  val preserveEmptyContent: Boolean
+  override val isPreserveEmptyContent: Boolean
     get() = com.itsaky.androidide.preferences.internal.preserveEmptyContent
-  val preserveAttributeLineBreaks: Boolean
+  override val isPreserveAttributeLineBreaks: Boolean
     get() = com.itsaky.androidide.preferences.internal.preserveAttributeLineBreaks
-  val closingBracketNewLine: Boolean
+  override val isClosingBracketNewLine: Boolean
     get() = com.itsaky.androidide.preferences.internal.closingBracketNewLine
-  val trimTrailingWhitespace: Boolean
+  override val isTrimTrailingWhitespace: Boolean
     get() = com.itsaky.androidide.preferences.internal.trimTrailingWhitespace
 
-  val maxLineWidth: Int
+  override val maxLineWidth: Int
     get() = com.itsaky.androidide.preferences.internal.maxLineWidth
-  val preservedNewLines: Int
+  override val preservedNewLines: Int
     get() = com.itsaky.androidide.preferences.internal.preservedNewLines
-  val splitAttributesIndentSize: Int
+  override val splitAttributesIndentSize: Int
     get() = com.itsaky.androidide.preferences.internal.splitAttributesIndentSize
 
-  val emptyElementsBehavior: EmptyElements
-    get() = EmptyElements.valueOf(com.itsaky.androidide.preferences.internal.emptyElementsBehavior)
+  override val emptyElementsBehavior: EmptyElements
+    get() = EmptyElements.valueOf(
+      com.itsaky.androidide.preferences.internal.emptyElementsBehavior)
 
   private val preserveSpace =
-    listOf(
-      "xsl:text",
-      "xsl:comment",
-      "xsl:processing-instruction",
-      "literallayout",
-      "programlisting",
-      "screen",
-      "synopsis",
-      "pre",
-      "xd:pre"
-    )
+    listOf("xsl:text", "xsl:comment", "xsl:processing-instruction",
+      "literallayout", "programlisting", "screen", "synopsis", "pre", "xd:pre")
 
   fun getFormatElementCategory(element: DOMElement): FormatElementCategory? {
     return preserveSpace.find { it == element.tagName }?.let { PreserveSpace }
   }
-}
-
-enum class EmptyElements {
-  Expand,
-  Collapse,
-  Ignore
 }

@@ -33,7 +33,7 @@ fun setupLookupForCompletion(file: File) {
 
 fun setupLookupForCompletion(file: Path) {
   val module = ProjectManager.findModuleForFile(file) ?: return
-  val lookup = Lookup.DEFAULT
+  val lookup = Lookup.getDefault()
   
   lookup.update(ModuleProject.COMPLETION_MODULE_KEY, module)
   

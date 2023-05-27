@@ -18,18 +18,14 @@ package com.itsaky.androidide.app
 
 import android.Manifest.permission
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.common.R
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.isSystemInDarkMode
 import com.itsaky.androidide.utils.resolveAttr
 
 abstract class BaseIDEActivity : AppCompatActivity() {

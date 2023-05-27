@@ -25,4 +25,7 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.google.guava)
     implementation(projects.logger)
+
+    testImplementation(libs.tests.google.truth)
+    testImplementation(libs.tests.junit)
 }

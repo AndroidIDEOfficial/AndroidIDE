@@ -28,13 +28,13 @@
 package com.itsaky.androidide.lsp.xml.providers.format;
 
 import com.itsaky.androidide.lsp.models.TextEdit;
-import com.itsaky.androidide.lsp.xml.models.EmptyElements;
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
 import com.itsaky.androidide.lsp.xml.utils.XMLBuilder;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
 
+import org.eclipse.lemminx.dom.builder.EmptyElements;
 import org.eclipse.lemminx.commons.BadLocationException;
 import org.eclipse.lemminx.commons.TextDocument;
 import org.eclipse.lemminx.dom.DOMAttr;
@@ -505,7 +505,7 @@ public class XMLFormatterDocument {
    * @throws BadLocationException
    */
   private void formatElementStartTagCloseBracket(DOMElement element) throws BadLocationException {
-    if (this.sharedSettings.getFormattingOptions().getPreserveAttributeLineBreaks()
+    if (this.sharedSettings.getFormattingOptions().isPreserveAttributeLineBreaks()
         && element.hasAttributes()
         && !isSameLine(getLastAttribute(element).getEnd(), element.getStartTagCloseOffset())) {
       xmlBuilder.linefeed();
@@ -527,7 +527,7 @@ public class XMLFormatterDocument {
    */
   private void formatElementStartTagSelfCloseBracket(DOMElement element)
       throws BadLocationException {
-    if (this.sharedSettings.getFormattingOptions().getPreserveAttributeLineBreaks()
+    if (this.sharedSettings.getFormattingOptions().isPreserveAttributeLineBreaks()
         && element.hasAttributes()) {
       int elementEndOffset = element.getEnd();
       if (element.isStartTagClosed()) {
@@ -550,8 +550,8 @@ public class XMLFormatterDocument {
       formatAttribute(attr, isSingleAttribute, prevOffset);
       prevOffset = attr.getEnd();
     }
-    if ((this.sharedSettings.getFormattingOptions().getClosingBracketNewLine()
-            && this.sharedSettings.getFormattingOptions().getSplitAttributes())
+    if ((this.sharedSettings.getFormattingOptions().isClosingBracketNewLine()
+            && this.sharedSettings.getFormattingOptions().isSplitAttributes())
         && !isSingleAttribute) {
       xmlBuilder.linefeed();
       // Indent by tag + splitAttributesIndentSize to match with attribute indent
@@ -565,7 +565,7 @@ public class XMLFormatterDocument {
 
   private void formatAttribute(DOMAttr attr, boolean isSingleAttribute, int prevOffset)
       throws BadLocationException {
-    if (this.sharedSettings.getFormattingOptions().getPreserveAttributeLineBreaks()
+    if (this.sharedSettings.getFormattingOptions().isPreserveAttributeLineBreaks()
         && !isSameLine(prevOffset, attr.getStart())) {
       xmlBuilder.linefeed();
       xmlBuilder.indent(this.indentLevel + 1);
@@ -636,7 +636,7 @@ public class XMLFormatterDocument {
           case Expand:
           case Collapse:
             {
-              if (this.sharedSettings.getFormattingOptions().getPreserveEmptyContent()) {
+              if (this.sharedSettings.getFormattingOptions().isPreserveEmptyContent()) {
                 // preserve content
                 if (element.hasChildNodes()) {
                   // The element is empty and contains somes spaces which must be preserved
@@ -752,11 +752,11 @@ public class XMLFormatterDocument {
     // check if format range reaches the end of the document
     if (this.endOffset == this.textDocument.getText().length()) {
 
-      if (this.sharedSettings.getFormattingOptions().getTrimFinalNewLine()) {
+      if (this.sharedSettings.getFormattingOptions().isTrimFinalNewLine()) {
         this.xmlBuilder.trimFinalNewlines();
       }
 
-      if (this.sharedSettings.getFormattingOptions().getInsertFinalNewLine()
+      if (this.sharedSettings.getFormattingOptions().isInsertFinalNewLine()
           && !this.xmlBuilder.isLastLineEmptyOrWhitespace()) {
         this.xmlBuilder.linefeed();
       }

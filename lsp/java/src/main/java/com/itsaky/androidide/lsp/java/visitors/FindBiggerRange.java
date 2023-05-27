@@ -19,37 +19,46 @@ package com.itsaky.androidide.lsp.java.visitors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.utils.ILogger;
+import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
 import openjdk.source.tree.MethodTree;
+import openjdk.source.tree.PackageTree;
 import openjdk.source.tree.Tree;
 import openjdk.source.tree.TryTree;
 import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
-import openjdk.source.util.TreeScanner;
+import openjdk.source.util.TreePathScanner;
 import openjdk.source.util.Trees;
 
 /**
  * @author Akash Yadav
  */
-public class FindBiggerRange extends TreeScanner<Range, Range> {
+public class FindBiggerRange extends TreePathScanner<Range, Range> {
 
   private final SourcePositions positions;
   private final CompilationUnitTree root;
   private final LineMap lineMap;
+  private final Range rootRange;
 
   public FindBiggerRange(JavacTask task, @NonNull CompilationUnitTree root) {
     this.positions = Trees.instance(task).getSourcePositions();
     this.root = root;
     this.lineMap = root.getLineMap();
+
+    this.rootRange = getRange(root);
   }
 
   @Override
   public Range scan(Tree tree, Range range) {
+    if (range.equals(rootRange)) {
+      // if whole file content selected, no need to scan the tree
+      return null;
+    }
+
     final Range smallerThanThis = super.scan(tree, range);
     if (smallerThanThis != null) {
       return smallerThanThis;
@@ -57,8 +66,6 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
 
     final Range treeRange = getRange(tree);
     if (treeRange != null && range.isSmallerThan(treeRange)) {
-      ILogger.newInstance("FindBiggerRange")
-          .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
       return treeRange;
     }
 
@@ -68,6 +75,30 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
   @Override
   public Range reduce(Range r1, Range r2) {
     return r1 == null ? r2 : r1;
+  }
+
+  @Override
+  public Range visitPackage(PackageTree node, Range range) {
+    final var packageRange = getRange(node);
+    if (range.equals(packageRange)) {
+      final var parentPath = getCurrentPath().getParentPath();
+      if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
+        return rootRange;
+      }
+    }
+    return super.visitPackage(node, range);
+  }
+
+  @Override
+  public Range visitClass(ClassTree node, Range range) {
+    final var classRange = getRange(node);
+    if (range.equals(classRange)) {
+      final var parentPath = getCurrentPath().getParentPath();
+      if (parentPath != null && parentPath.getLeaf() instanceof CompilationUnitTree) {
+        return rootRange;
+      }
+    }
+    return super.visitClass(node, range);
   }
 
   @Override

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
   <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="msg_about_licensed_under">Лицензия: </string>
   <string name="about_option_email">Электронная почта</string>
@@ -315,7 +314,7 @@
   <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
-  <string name="btn_sponsor">Спонсировать</string>
+  <string name="btn_donate">Спонсировать</string>
   <string name="btn_docs">Документация</string>
   <string name="btn_close">Закрыть</string>
   <string name="msg_ignore_case">Игнорировать регистр</string>

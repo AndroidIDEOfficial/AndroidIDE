@@ -26,9 +26,11 @@ import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import com.itsaky.androidide.utils.FileProvider
 import java.io.File
 import org.junit.Ignore
 import org.robolectric.Robolectric
+import kotlin.io.path.pathString
 
 @Ignore("Test utility provider")
 object XmlInflaterTest {
@@ -42,10 +44,10 @@ object XmlInflaterTest {
     }
 
     val (server, project) =
-      ToolingApiTestLauncher().launchServer(implDir = "../subprojects/tooling-api-impl")
-    server.initialize(InitializeProjectMessage(File("../tests/test-project").absolutePath)).get()
+      ToolingApiTestLauncher().launchServer()
+    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
 
-    Lookup.DEFAULT.register(BuildService.KEY_PROJECT_PROXY, project)
+    Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
     ProjectManager.setupProject()
     init = true
   }

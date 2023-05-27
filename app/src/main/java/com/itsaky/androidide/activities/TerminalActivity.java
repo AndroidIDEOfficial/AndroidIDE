@@ -324,9 +324,7 @@ public class TerminalActivity extends IDEActivity
 
       // Show the progress sheet
       final var progress = new ProgressSheet();
-      progress.setShowShadow(false);
       progress.setSubMessageEnabled(true);
-      progress.setShowTitle(false);
       progress.setMessage(getString(R.string.please_wait));
       progress.setSubMessage(getString(R.string.msg_reading_bootstrap));
       progress.setCancelable(false);

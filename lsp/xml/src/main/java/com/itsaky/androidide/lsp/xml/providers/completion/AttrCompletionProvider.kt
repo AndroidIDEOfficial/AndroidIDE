@@ -174,7 +174,7 @@ open class AttrCompletionProvider(provider: ICompletionProvider) :
 
   protected open fun findNodeStyleables(node: DOMNode, styleables: ResourceGroup): Set<Styleable> {
     val nodeName = node.nodeName
-    val widgets = Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
+    val widgets = Lookup.getDefault().lookup(WidgetTable.COMPLETION_LOOKUP_KEY) ?: return emptySet()
 
     // Find the widget
     val widget =

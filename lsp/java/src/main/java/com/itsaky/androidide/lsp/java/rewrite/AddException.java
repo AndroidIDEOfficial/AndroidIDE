@@ -18,37 +18,37 @@
 package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Map;
+import jdkx.lang.model.element.ExecutableElement;
 import openjdk.source.tree.LineMap;
 import openjdk.source.tree.MethodTree;
 import openjdk.source.util.SourcePositions;
 import openjdk.source.util.Trees;
 
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
-
-import jdkx.lang.model.element.ExecutableElement;
-
 public class AddException extends Rewrite {
+
   final String className, methodName;
   final String[] erasedParameterTypes;
   final String exceptionType;
 
-  public AddException(
-      String className, String methodName, String[] erasedParameterTypes, String exceptionType) {
+  public AddException(String className, String methodName, String[] erasedParameterTypes,
+                      String exceptionType
+  ) {
     this.className = className;
     this.methodName = methodName;
     this.erasedParameterTypes = erasedParameterTypes;
     this.exceptionType = exceptionType;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
@@ -57,34 +57,33 @@ public class AddException extends Rewrite {
     }
 
     SynchronizedTask synchronizedTask = compiler.compile(file);
-    return synchronizedTask.get(
-        task -> {
-          Trees trees = Trees.instance(task.task);
-          ExecutableElement methodElement =
-              FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-          MethodTree methodTree = trees.getTree(methodElement);
-          SourcePositions pos = trees.getSourcePositions();
-          LineMap lines = task.root().getLineMap();
-          long startBody = pos.getStartPosition(task.root(), methodTree.getBody());
-          int line = (int) lines.getLineNumber(startBody);
-          int column = (int) lines.getColumnNumber(startBody);
-          Position insertPos = new Position(line - 1, column - 1);
-          String simpleName = exceptionType;
-          int lastDot = simpleName.lastIndexOf('.');
-          if (lastDot != -1) {
-            simpleName = exceptionType.substring(lastDot + 1);
-          }
+    return synchronizedTask.get(task -> {
+      Trees trees = Trees.instance(task.task);
+      ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName,
+        erasedParameterTypes);
+      MethodTree methodTree = trees.getTree(methodElement);
+      SourcePositions pos = trees.getSourcePositions();
+      LineMap lines = task.root().getLineMap();
+      long startBody = pos.getStartPosition(task.root(), methodTree.getBody());
+      int line = (int) lines.getLineNumber(startBody);
+      int column = (int) lines.getColumnNumber(startBody);
+      Position insertPos = new Position(line - 1, column - 1);
+      String simpleName = exceptionType;
+      int lastDot = simpleName.lastIndexOf('.');
+      if (lastDot != -1) {
+        simpleName = exceptionType.substring(lastDot + 1);
+      }
 
-          String insertText;
-          if (methodTree.getThrows().isEmpty()) {
-            insertText = "throws " + simpleName + " ";
-          } else {
-            insertText = ", " + simpleName + " ";
-          }
-          TextEdit insertThrows = new TextEdit(new Range(insertPos, insertPos), insertText);
-          // TODO add import if needed
-          TextEdit[] edits = {insertThrows};
-          return Collections.singletonMap(file, edits);
-        });
+      String insertText;
+      if (methodTree.getThrows().isEmpty()) {
+        insertText = "throws " + simpleName + " ";
+      } else {
+        insertText = ", " + simpleName + " ";
+      }
+      TextEdit insertThrows = new TextEdit(new Range(insertPos, insertPos), insertText);
+      // TODO add import if needed
+      TextEdit[] edits = {insertThrows};
+      return Collections.singletonMap(file, edits);
+    });
   }
 }

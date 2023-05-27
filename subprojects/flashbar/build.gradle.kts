@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.flashbar"
+  namespace = "${BuildConfig.packageName}.flashbar"
 }
 
 dependencies {

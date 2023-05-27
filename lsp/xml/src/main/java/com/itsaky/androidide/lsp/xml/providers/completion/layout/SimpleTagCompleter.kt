@@ -44,7 +44,7 @@ class SimpleTagCompleter(provider: ICompletionProvider) : LayoutTagCompletionPro
     prefix: String
   ): CompletionResult {
     val widgets =
-      Lookup.DEFAULT.lookup(WidgetTable.COMPLETION_LOOKUP_KEY)?.getAllWidgets()
+      Lookup.getDefault().lookup(WidgetTable.COMPLETION_LOOKUP_KEY)?.getAllWidgets()
         ?: return CompletionResult.EMPTY
     val result = mutableListOf<CompletionItem>()
 
@@ -56,7 +56,7 @@ class SimpleTagCompleter(provider: ICompletionProvider) : LayoutTagCompletionPro
 
     // Complete the root package names if possible
     val module =
-      Lookup.DEFAULT.lookup(ModuleProject.COMPLETION_MODULE_KEY) ?: return CompletionResult(result)
+      Lookup.getDefault().lookup(ModuleProject.COMPLETION_MODULE_KEY) ?: return CompletionResult(result)
 
     // Add root packages from the compile classpath and source paths
     addFromTrie(module.compileClasspathClasses, prefix, result)

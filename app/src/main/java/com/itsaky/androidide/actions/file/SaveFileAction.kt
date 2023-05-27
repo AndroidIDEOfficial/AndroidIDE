@@ -21,9 +21,11 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
+import com.itsaky.androidide.models.SaveResult
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 
 /** @author Akash Yadav */
@@ -52,34 +54,40 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
     enabled = context.areFilesModified()
   }
 
-  override fun execAction(data: ActionData): Boolean {
-    val context = data.getActivity() ?: return false
+  override fun execAction(data: ActionData): ResultWrapper {
+    val context = data.getActivity() ?: return ResultWrapper()
 
     return try {
       // Cannot use context.saveAll() because this.execAction is called on non-UI thread
       // and saveAll call will result in UI actions
-      val result = context.saveAllResult()
-
-      if (result.xmlSaved) {
-        ProjectManager.generateSources()
-      }
-
-      if (result.gradleSaved) {
-        context.notifySyncNeeded()
-      }
-      true
+      ResultWrapper(context.saveAllResult())
     } catch (error: Throwable) {
       log.error("Failed to save file", error)
-      false
+      ResultWrapper()
     }
   }
 
   override fun postExec(data: ActionData, result: Any) {
-    if (result is Boolean && result) {
+    if (result is ResultWrapper && result.result != null) {
+      val context = data.requireActivity()
+
+      // show save notification before calling 'notifySyncNeeded' so that the file save notification
+      // does not overlap the sync notification
       flashSuccess(R.string.all_saved)
+
+      val saveResult = result.result
+      if (saveResult.xmlSaved) {
+        ProjectManager.generateSources()
+      }
+
+      if (saveResult.gradleSaved) {
+        context.notifySyncNeeded()
+      }
     } else {
       log.error("Failed to save file")
-      TODO("Create message in strings.xml")
+      flashError(R.string.save_failed)
     }
   }
+
+  inner class ResultWrapper(val result: SaveResult? = null)
 }

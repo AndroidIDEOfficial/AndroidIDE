@@ -36,7 +36,7 @@ import kotlin.math.min
  */
 internal class WidgetDragListener(
   val view: UiViewGroup,
-  private val placeholder: com.itsaky.androidide.inflater.IView,
+  private val placeholder: IView,
   private val touchSlop: Int
 ) : View.OnDragListener {
 
@@ -49,14 +49,14 @@ internal class WidgetDragListener(
 
         val name =
           when (val data = event.localState) {
-            is com.itsaky.androidide.inflater.IView -> data.name
+            is IView -> data.name
             is UiWidget -> data.name
             else -> throw IllegalArgumentException("A local state of UiWidget or IView is expected")
           }
  
         return event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) &&
           event.localState != view &&
-          view.canAcceptChild(name)
+          view.canAcceptChild(name, event.localState as? IView?)
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {
@@ -92,7 +92,7 @@ internal class WidgetDragListener(
       DragEvent.ACTION_DROP -> {
         val child =
           when (val data = event.localState) {
-            is com.itsaky.androidide.inflater.IView -> {
+            is IView -> {
               data.removeFromParent()
               data
             }

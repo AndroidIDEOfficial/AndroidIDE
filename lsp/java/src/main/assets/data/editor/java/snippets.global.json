@@ -1,0 +1,36 @@
+{
+  "lcomm": {
+    "desc": "Create a line comment",
+    "body": [
+      "// $0"
+    ]
+  },
+  "bcomm": {
+    "desc": "Create a block comment",
+    "body": [
+      "/*",
+      " * $0",
+      " */"
+    ]
+  },
+  "todo": {
+    "desc": "Create a TODO comment",
+    "body": [
+      "// TODO: $0"
+    ]
+  },
+  "fixme": {
+    "desc": "Create a FIXME comment",
+    "body": [
+      "// FIXME: $0"
+    ]
+  },
+  "jdoc": {
+    "desc": "Create a JavaDoc comment",
+    "body": [
+      "/**",
+      " * $0",
+      " */"
+    ]
+  }
+}

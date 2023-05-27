@@ -39,7 +39,7 @@ abstract class BaseJavaServiceProvider(
 
   /** Abort the completion if cancelled. */
   fun abortCompletionIfCancelled() {
-    val checker = Lookup.DEFAULT.lookup(ICompletionCancelChecker::class.java)
+    val checker = Lookup.getDefault().lookup(ICompletionCancelChecker::class.java)
     checker?.abortIfCancelled()
   }
 }

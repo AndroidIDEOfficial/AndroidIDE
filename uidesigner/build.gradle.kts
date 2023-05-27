@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.uidesigner"
+  namespace = "${BuildConfig.packageName}.uidesigner"
 }
 
 dependencies {
@@ -13,7 +13,7 @@ dependencies {
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.ktx)
   implementation(libs.androidx.fragment.ktx)
-  implementation(libs.androidx.nav.frag)
+  implementation(libs.androidx.nav.fragment)
   implementation(libs.androidx.nav.ui)
   implementation(libs.androidx.nav.dynamic.features)
   implementation(libs.common.editor)

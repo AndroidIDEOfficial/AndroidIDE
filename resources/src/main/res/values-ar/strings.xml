@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">يستخدم AndroidIDE نسخة معدلة من JDK مرخصة بموجب رخصة GNU العامة 2.0 يمكن الحصول على كود المصدر ورخصة JDK على العنوان التالي:</string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
@@ -315,7 +314,7 @@
   <string name="msg_swipe_for_output">مرر لأعلى لعرض @@مخرجات البناء@@</string>
   <string name="idepref_editor_useSoftTabs_title">استخدام علامة التبويب الناعمة</string>
   <string name="idepref_editor_useSoftTabs_summary">اختر ما إذا كان سيتم استخدام المسافات بدلاً من حرف التبويب (\\t).</string>
-  <string name="btn_sponsor">دعم المشروع</string>
+  <string name="btn_donate">دعم المشروع</string>
   <string name="btn_docs">إرشادات الإستخدام</string>
   <string name="btn_close">إغلاق</string>
   <string name="msg_ignore_case">تجاهل الحالة</string>

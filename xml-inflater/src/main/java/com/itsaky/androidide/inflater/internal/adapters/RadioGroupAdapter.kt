@@ -22,32 +22,36 @@ import android.widget.RadioGroup
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.LAYOUTS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
+import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewGroup
+import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.inflater.models.UiWidget
 
 /**
  * View adapter for [RadioGroup].
  *
  * @author Akash Yadav
  */
-@com.itsaky.androidide.annotations.inflater.ViewAdapter(forView = RadioGroup::class)
+@com.itsaky.androidide.annotations.inflater.ViewAdapter(
+  forView = RadioGroup::class)
 @IncludeInDesigner(group = LAYOUTS)
 open class RadioGroupAdapter<T : RadioGroup> : LinearLayoutAdapter<T>() {
 
-  override fun createAttrHandlers(create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit) {
+  override fun createAttrHandlers(
+    create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
+  ) {
     super.createAttrHandlers(create)
     create("checkedButton") { view.check(parseId(file.resName, value, -1)) }
   }
 
   override fun createUiWidgets(): List<UiWidget> {
-    return listOf(
-      UiWidget(RadioGroup::class.java, string.widget_radio_group, drawable.ic_widget_radio_group)
-    )
+    return listOf(UiWidget(RadioGroup::class.java, string.widget_radio_group,
+      drawable.ic_widget_radio_group))
   }
 
-  override fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+  override fun canAcceptChild(view: IViewGroup, child: IView?, name: String
+  ): Boolean {
     return name == RadioButton::class.java.name
   }
 }

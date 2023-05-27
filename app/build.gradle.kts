@@ -1,11 +1,14 @@
 @file:Suppress("UnstableApiUsage")
 
+import java.util.Base64
+
 plugins {
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-kapt")
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
+  id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -45,7 +48,7 @@ android {
 
   buildTypes { release { isShrinkResources = true } }
 
-  packagingOptions {
+  packaging {
     resources.excludes.addAll(
       arrayOf(
         "META-INF/eclipse.inf",
@@ -70,15 +73,15 @@ android {
   }
 }
 
-kapt { arguments { arg("eventBusIndex", "com.itsaky.androidide.events.AppEventsIndex") } }
+kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex") } }
 
 dependencies {
   debugImplementation(libs.common.leakcanary)
 
   // Annotation processors
   kapt(libs.common.glide.ap)
-  kapt(libs.common.eventbus.ap)
   kapt(libs.google.auto.service)
+  kapt(projects.annotationProcessors)
 
   implementation(libs.common.editor)
   implementation(libs.common.utilcode)
@@ -101,11 +104,15 @@ dependencies {
   implementation(libs.androidx.coordinatorlayout)
   implementation(libs.androidx.drawer)
   implementation(libs.androidx.grid)
+  implementation(libs.androidx.nav.fragment)
+  implementation(libs.androidx.nav.ui)
   implementation(libs.androidx.preference)
   implementation(libs.androidx.recyclerview)
+  implementation(libs.androidx.transition)
   implementation(libs.androidx.vectors)
   implementation(libs.androidx.animated.vectors)
   implementation(libs.google.material)
+  implementation(libs.google.flexbox)
   implementation(libs.google.oss.licenses)
 
   // Kotlin
@@ -114,6 +121,7 @@ dependencies {
 
   // Local projects here
   implementation(projects.actions)
+  implementation(projects.buildInfo)
   implementation(projects.common)
   implementation(projects.editor)
   implementation(projects.emulatorview)
@@ -126,6 +134,7 @@ dependencies {
   implementation(projects.subprojects.xmlUtils)
   implementation(projects.subprojects.projects)
   implementation(projects.subprojects.toolingApi)
+  implementation(projects.logsender)
   implementation(projects.lsp.api)
   implementation(projects.lsp.java)
   implementation(projects.lsp.xml)
@@ -134,6 +143,8 @@ dependencies {
   implementation(projects.preferences)
   implementation(projects.resources)
   implementation(projects.treeview)
+  implementation(projects.templatesApi)
+  implementation(projects.templatesImpl)
   implementation(projects.uidesigner)
   implementation(projects.xmlInflater)
 
@@ -155,6 +166,13 @@ dependencies {
 fun downloadSigningKey() {
   if (signingKey.exists()) {
     logger.info("Skipping download as ${signingKey.name} file already exists.")
+    return
+  }
+
+  getEnvOrProp(KEY_BIN)?.let { bin ->
+    logger.info("Using $KEY_BIN for writing signing key")
+    val contents = Base64.getDecoder().decode(bin)
+    signingKey.writeBytes(contents)
     return
   }
 
@@ -186,6 +204,57 @@ fun getEnvOrProp(key: String): String? {
   return value
 }
 
+tasks.create("generateInitScript") {
+  val out = file("src/main/assets/data/common/androidide.init.gradle")
+
+  if (out.exists()) {
+    out.delete()
+  }
+
+  doLast {
+    out.bufferedWriter().use {
+      it.write(
+        """
+      initscript {
+        repositories {
+          maven {
+            mavenCentral()
+            
+            // Add snapshots repository for AndroidIDE CI builds
+            url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+          }
+        }
+    
+        dependencies {
+          classpath '${BuildConfig.packageName}:gradle-plugin:${downloadVersion}'
+        }
+      }
+      
+      gradle.settingsEvaluated { settings ->
+        settings.dependencyResolutionManagement.repositories {
+          // For release builds
+          mavenCentral()
+          
+          // For AndroidIDE CI builds
+          maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+        }
+      }
+      
+      gradle.projectsLoaded {
+        rootProject.subprojects.forEach {sub ->
+          sub.afterEvaluate {
+            sub.apply plugin: com.itsaky.androidide.gradle.AndroidIDEGradlePlugin
+          }
+        }
+      }
+      
+    """
+          .trimIndent()
+      )
+    }
+  }
+}
+
 afterEvaluate {
   val dependents =
     listOf(
@@ -196,6 +265,9 @@ afterEvaluate {
       "lintVitalAnalyzeRelease"
     )
   for (dependent in dependents) {
-    tasks.getByName(dependent).dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+    tasks.getByName(dependent).apply {
+      dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+      dependsOn("generateInitScript")
+    }
   }
 }

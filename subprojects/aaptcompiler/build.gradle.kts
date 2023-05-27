@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.aaptcompiler"
+    namespace = "${BuildConfig.packageName}.aaptcompiler"
     
     buildTypes {
         release {
@@ -44,4 +44,5 @@ dependencies {
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.robolectric)
     testImplementation(libs.tests.google.truth)
+    testImplementation(projects.shared)
 }

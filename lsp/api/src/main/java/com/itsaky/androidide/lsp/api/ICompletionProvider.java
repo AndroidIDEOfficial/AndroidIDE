@@ -59,7 +59,7 @@ public interface ICompletionProvider {
 
   /** Abort the completion process if cancelled. */
   default void abortCompletionIfCancelled() {
-    final var checker = Lookup.DEFAULT.lookup(ICompletionCancelChecker.class);
+    final var checker = Lookup.getDefault().lookup(ICompletionCancelChecker.class);
     if (checker != null) {
       checker.abortIfCancelled();
     }

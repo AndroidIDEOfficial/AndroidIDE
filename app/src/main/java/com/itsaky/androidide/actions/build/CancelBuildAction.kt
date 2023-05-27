@@ -48,7 +48,7 @@ class CancelBuildAction(context: Context) : EditorActivityAction() {
     }
 
     val context = data.getActivity()
-    val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
     if (context == null || buildService == null) {
       markInvisible()
       return
@@ -60,7 +60,7 @@ class CancelBuildAction(context: Context) : EditorActivityAction() {
 
   override fun execAction(data: ActionData): Boolean {
     log.info("Sending build cancellation request...")
-    val builder = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+    val builder = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
     if (builder?.isToolingServerStarted() != true) {
       flashError(com.itsaky.androidide.projects.R.string.msg_tooling_server_unavailable)
       return false

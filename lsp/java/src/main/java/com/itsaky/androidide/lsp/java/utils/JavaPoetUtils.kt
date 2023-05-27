@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.lsp.java.utils
 
+import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.ImportCollectingCodeWriter
 import com.squareup.javapoet.MethodSpec
@@ -38,7 +40,7 @@ class JavaPoetUtils {
       qualifiedNames: Boolean = true,
     ): String {
       val sb = StringBuilder()
-      val writer = ImportCollectingCodeWriter(sb)
+      val writer = ImportCollectingCodeWriter(sb, indentationString, emptySet(), emptySet())
 
       writer.isPrintQualifiedNames = qualifiedNames
       writer.emit(method)

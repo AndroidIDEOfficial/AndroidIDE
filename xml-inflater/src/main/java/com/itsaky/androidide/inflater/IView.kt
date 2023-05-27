@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.inflater
 
+import android.graphics.RectF
 import android.view.View
 
 /**
@@ -108,6 +109,27 @@ interface IView {
    */
   fun onHighlightStateUpdated(highlight: Boolean)
 
+  /**
+   * Get the bounds of the view.
+   *
+   * @return The bounds of the view.
+   */
+  fun getViewRect(): RectF {
+    return RectF().apply { getViewRect(this) }
+  }
+
+  /**
+   * Get the bounds of the view.
+   *
+   * @return The [RectF] to store the bounds of the view.
+   */
+  fun getViewRect(out: RectF) {
+    out.left = view.left.toFloat()
+    out.top = view.top.toFloat()
+    out.right = out.left + view.width
+    out.bottom = out.top + view.height
+  }
+
   /** Removes this view from its parent view. */
   fun removeFromParent() {
     parent?.removeChild(this)
@@ -159,8 +181,12 @@ interface IView {
   }
 
   open class SingleAttributeChangeListener : AttributeChangeListener {
+
     override fun onAttributeAdded(view: IView, attribute: IAttribute) {}
     override fun onAttributeRemoved(view: IView, attribute: IAttribute) {}
-    override fun onAttributeUpdated(view: IView, attribute: IAttribute, oldValue: String) {}
+    override fun onAttributeUpdated(view: IView, attribute: IAttribute,
+                                    oldValue: String
+    ) {
+    }
   }
 }

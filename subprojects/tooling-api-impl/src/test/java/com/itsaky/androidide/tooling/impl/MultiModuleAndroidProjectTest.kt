@@ -30,11 +30,12 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
+import com.itsaky.androidide.utils.FileProvider
+import kotlin.io.path.deleteExisting
+import kotlin.io.path.pathString
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.File
-import kotlin.jvm.Throws
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -42,8 +43,8 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient("7.2.0"))
-    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
+    val (server, project) = ToolingApiTestLauncher().launchServer()
+    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
     doAssertions(project, server)
   }
 
@@ -145,40 +146,46 @@ class MultiModuleAndroidProjectTest {
   @Throws(CIOnlyException::class)
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
     ciOnlyTest {
-      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0", "7.4.0")
+      // Test the minimum supported and the latest AGP version
+      val versions =
+        listOf(
+          // AGP to Gradle
+          "7.2.0" to "7.3.3",
+          "8.0.0-rc01" to "8.0.2"
+        )
+
       val client = MultiVersionTestClient()
-      for (version in versions) {
-        client.version = version
+      for ((agpVersion, gradleVersion) in versions) {
+        client.agpVersion = agpVersion
+        client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-        server
-          .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
-          .get()
+        server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
         doAssertions(project = project, server = server)
-        MultiVersionTestClient.buildFile.delete()
+        FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
       }
     }
   }
-  
+
   private fun ciOnlyTest(test: () -> Unit) {
     try {
       assertIsCI()
       test()
     } catch (err: CIOnlyException) {
-      if(shouldTestMultipleVersions()) {
+      if (shouldTestMultipleVersions()) {
         throw err
       }
     }
   }
-  
+
   private fun assertIsCI() {
     if (!shouldTestMultipleVersions()) {
       throw CIOnlyException()
     }
   }
-  
-  private fun shouldTestMultipleVersions() : Boolean {
+
+  private fun shouldTestMultipleVersions(): Boolean {
     return System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
   }
-  
+
   private class CIOnlyException : IllegalStateException()
 }

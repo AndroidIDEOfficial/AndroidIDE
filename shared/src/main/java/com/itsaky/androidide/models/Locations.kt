@@ -92,6 +92,16 @@ constructor(var start: Position = Position(0, 0), var end: Position = Position(0
 
   companion object {
     @JvmField val NONE = Range(Position.NONE, Position.NONE)
+
+    @JvmStatic
+    fun pointRange(line: Int, column: Int) : Range {
+      return pointRange(Position(line, column))
+    }
+
+    @JvmStatic
+    fun pointRange(position: Position) : Range {
+      return Range(position, position)
+    }
   }
 
   /**

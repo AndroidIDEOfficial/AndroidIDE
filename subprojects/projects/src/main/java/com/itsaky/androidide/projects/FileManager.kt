@@ -17,17 +17,16 @@
 
 package com.itsaky.androidide.projects
 
-import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
 import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.progress.ProcessCancelledException
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.projects.models.ActiveDocument
 import com.itsaky.androidide.utils.ILogger
+import org.apache.commons.io.FileUtils
 import java.io.BufferedReader
 import java.io.InputStream
 import java.net.URI
@@ -37,16 +36,13 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
-import org.apache.commons.io.FileUtils
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages active documents.
  *
  * @author Akash Yadav
  */
-object FileManager : EventReceiver {
+object FileManager {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val activeDocuments = ConcurrentHashMap<Path, ActiveDocument>()
@@ -103,25 +99,31 @@ object FileManager : EventReceiver {
     return createFileInputStream(file)
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentOpen(event: DocumentOpenEvent) {
     activeDocuments[event.openedFile.normalize()] = createDocument(event)
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentContentChange(event: DocumentChangeEvent) {
-    activeDocuments[event.changedFile.normalize()] = createDocument(event)
+    val document = activeDocuments[event.changedFile.normalize()]
+
+    if (document == null) {
+      // create document if not already created
+      // this should not happen under normal circumstances
+      activeDocuments[event.changedFile.normalize()] = createDocument(event)
+      log.warn("Document change event received before open event for file ${event.changedFile}")
+      return
+    }
+
+    document.version = event.version
+    document.modified = Instant.now()
+    document.content = event.newText!!
+    event.newText = null
   }
 
-  @Subscribe(threadMode = BACKGROUND)
-  @Suppress("unused")
   fun onDocumentClose(event: DocumentCloseEvent) {
     activeDocuments.remove(event.closedFile.normalize())
   }
 
-  @Subscribe(threadMode = BACKGROUND)
   fun onFileRenamed(event: FileRenameEvent) {
     val document = activeDocuments.remove(event.file.toPath().normalize())
     if (document != null) {
@@ -129,7 +131,6 @@ object FileManager : EventReceiver {
     }
   }
 
-  @Subscribe(threadMode = BACKGROUND)
   fun onFileDeleted(event: FileDeletionEvent) {
     // If the file was an active document, remove the document cache
     activeDocuments.remove(event.file.toPath().normalize())
@@ -138,22 +139,18 @@ object FileManager : EventReceiver {
   private fun createDocument(event: DocumentOpenEvent): ActiveDocument {
     return ActiveDocument(
       file = event.openedFile,
-      content = event.text,
-      changeRange = Range.NONE,
       version = event.version,
-      changDelta = 0,
-      modified = Instant.now()
+      modified = Instant.now(),
+      content = event.text
     )
   }
 
   private fun createDocument(event: DocumentChangeEvent): ActiveDocument {
     return ActiveDocument(
       file = event.changedFile,
-      content = event.newText,
-      changeRange = event.changeRange,
       version = event.version,
-      changDelta = event.changeDelta,
-      modified = Instant.now()
+      modified = Instant.now(),
+      content = event.changedText
     )
   }
 

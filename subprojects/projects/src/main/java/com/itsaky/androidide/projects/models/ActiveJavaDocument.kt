@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.projects.models
 
-import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.projects.util.StringSearch
 import java.nio.file.Path
 import java.time.Instant
@@ -27,14 +26,8 @@ import java.time.Instant
  *
  * @author Akash Yadav
  */
-class ActiveJavaDocument(
-  file: Path,
-  content: String,
-  changeRange: Range,
-  changDelta: Int,
-  version: Int,
-  modified: Instant
-) : ActiveDocument(file, content, changeRange, changDelta, version, modified) {
+class ActiveJavaDocument(file: Path, content: String, version: Int, modified: Instant) :
+  ActiveDocument(file = file, version = version, modified = modified, content = content) {
 
   val packageName: String = StringSearch.packageName(reader())
 }

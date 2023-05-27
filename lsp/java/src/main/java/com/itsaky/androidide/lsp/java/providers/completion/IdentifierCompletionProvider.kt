@@ -23,8 +23,8 @@ import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionResult
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
-import openjdk.source.util.TreePath
 import java.nio.file.Path
+import openjdk.source.util.TreePath
 
 /** @author Akash Yadav */
 class IdentifierCompletionProvider(
@@ -44,6 +44,12 @@ class IdentifierCompletionProvider(
 
     abortIfCancelled()
     abortCompletionIfCancelled()
+
+    val snippets =
+      SnippetCompletionProvider(cursor, file, compiler, settings)
+        .complete(task, path, partial, endsWithParen)
+    list.addAll(snippets.items)
+
     val scopeMembers =
       ScopeCompletionProvider(file, cursor, compiler, settings)
         .complete(task, path, partial, endsWithParen)
@@ -52,13 +58,7 @@ class IdentifierCompletionProvider(
     abortIfCancelled()
     abortCompletionIfCancelled()
     val staticImports =
-      StaticImportCompletionProvider(
-          file,
-          cursor,
-          compiler,
-          settings,
-          path.compilationUnit
-        )
+      StaticImportCompletionProvider(file, cursor, compiler, settings, path.compilationUnit)
         .complete(task, path, partial, endsWithParen)
     list.addAll(staticImports.items)
 
@@ -68,13 +68,7 @@ class IdentifierCompletionProvider(
         abortIfCancelled()
         abortCompletionIfCancelled()
         val classNames =
-          ClassNamesCompletionProvider(
-              file,
-              cursor,
-              compiler,
-              settings,
-              path.compilationUnit
-            )
+          ClassNamesCompletionProvider(file, cursor, compiler, settings, path.compilationUnit)
             .complete(task, path, partial, endsWithParen)
         list.addAll(classNames.items)
       }

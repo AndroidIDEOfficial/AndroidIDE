@@ -18,7 +18,6 @@
 package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -69,6 +68,7 @@ import com.itsaky.androidide.fragments.SearchResultFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
 import com.itsaky.androidide.interfaces.DiagnosticClickListener
+import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.DiagnosticItem
 import com.itsaky.androidide.models.DiagnosticGroup
@@ -79,25 +79,30 @@ import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.services.LogReceiver
-import com.itsaky.androidide.ui.MaterialBanner
+import com.itsaky.androidide.services.log.LogReceiverService
+import com.itsaky.androidide.services.log.LogReceiverServiceConnection
+import com.itsaky.androidide.services.log.lookupLogService
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
+import com.itsaky.androidide.utils.DURATION_INDEFINITE
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashbarBuilder
 import com.itsaky.androidide.utils.resolveAttr
+import com.itsaky.androidide.utils.showOnUiThread
+import com.itsaky.androidide.utils.withIcon
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Objects
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.MAIN
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -118,7 +123,9 @@ abstract class BaseEditorActivity :
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
-  protected val logReceiver: LogReceiver = LogReceiver().setLogListener(::appendApkLog)
+  protected val logServiceConnection = LogReceiverServiceConnection {
+    lookupLogService()?.setConsumer(this::appendApkLog)
+  }
 
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
@@ -159,16 +166,19 @@ abstract class BaseEditorActivity :
   protected open fun preDestroy() {
     installationCallback?.destroy()
     installationCallback = null
+
     try {
-      unregisterReceiver(logReceiver)
-    } catch (th: Throwable) {
-      log.error("Failed to release resources", th)
+      lookupLogService()?.setConsumer(null)
+      logServiceConnection.onConnected = null
+      unbindService(logServiceConnection)
+    } catch (e: Exception) {
+      log.error("Failed to unbind LogReceiver service")
     }
   }
 
   protected open fun postDestroy() {
     if (isDestroying) {
-      Lookup.DEFAULT.unregisterAll()
+      Lookup.getDefault().unregisterAll()
       ApiVersionsRegistry.getInstance().clear()
       ResourceTableRegistry.getInstance().clear()
       WidgetTableRegistry.getInstance().clear()
@@ -191,13 +201,11 @@ abstract class BaseEditorActivity :
     val packageName = onResult(this, intent)
     if (packageName != null) {
       Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-        .setAction(string.yes) {
-          tryLaunchApp(packageName)
-        }
+        .setAction(string.yes) { tryLaunchApp(packageName) }
         .show()
     }
   }
-  
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -224,7 +232,7 @@ abstract class BaseEditorActivity :
     setupViews()
 
     KeyboardUtils.registerSoftInputChangedListener(this) { onSoftInputChanged() }
-    registerLogReceiver()
+    startLogReceiver()
     setupContainers()
     setupDiagnosticInfo()
 
@@ -384,14 +392,24 @@ abstract class BaseEditorActivity :
   }
 
   fun notifySyncNeeded(onConfirm: () -> Unit) {
-    val buildService = Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
-    if (buildService != null && !buildService.isBuildInProgress) {
-      getSyncBanner()?.apply {
-        setNegative(android.R.string.cancel, null)
-        setPositive(android.R.string.ok) { onConfirm() }
-        show()
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
+    if (buildService == null || buildService.isBuildInProgress) return
+
+    flashbarBuilder(
+        duration = DURATION_INDEFINITE,
+        backgroundColor = resolveAttr(attr.colorSecondaryContainer),
+        messageColor = resolveAttr(attr.colorOnSecondaryContainer)
+      )
+      .withIcon(drawable.ic_sync, colorFilter = resolveAttr(attr.colorOnSecondaryContainer))
+      .message(string.msg_sync_needed)
+      .positiveActionText(string.btn_sync)
+      .positiveActionTapListener {
+        onConfirm()
+        it.dismiss()
       }
-    }
+      .negativeActionText(string.btn_ignore_changes)
+      .negativeActionTapListener { it.dismiss() }
+      .showOnUiThread()
   }
 
   open fun getFileTreeFragment(): FileTreeFragment? {
@@ -406,7 +424,7 @@ abstract class BaseEditorActivity :
     viewModel.statusText = text
     viewModel.statusGravity = gravity
   }
-  
+
   private fun tryLaunchApp(packageName: String) {
     val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
     launchIntent?.let {
@@ -615,10 +633,14 @@ abstract class BaseEditorActivity :
     startActivity(intent)
   }
 
-  private fun registerLogReceiver() {
-    val filter = IntentFilter()
-    filter.addAction(LogReceiver.APPEND_LOG)
-    registerReceiver(logReceiver, filter)
+  private fun startLogReceiver() {
+    try {
+      val intent = Intent(this, LogReceiverService::class.java).setAction(LogSender.SERVICE_ACTION)
+      check(bindService(intent, logServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT))
+      log.info("LogReceiver service is being started")
+    } catch (err: Throwable) {
+      log.error("Failed to start LogReceiver service", err)
+    }
   }
 
   private fun showNeedHelpDialog() {
@@ -627,17 +649,6 @@ abstract class BaseEditorActivity :
     builder.setMessage(string.msg_need_help)
     builder.setPositiveButton(string.ok, null)
     builder.create().show()
-  }
-
-  private fun getSyncBanner(): MaterialBanner? {
-    return binding.run {
-      return@run syncBanner
-        .setContentTextColor(resolveAttr(attr.colorOnPrimaryContainer))
-        .setBannerBackgroundColor(resolveAttr(attr.colorPrimaryContainer))
-        .setButtonTextColor(resolveAttr(attr.colorOnPrimaryContainer))
-        .setIcon(drawable.ic_sync)
-        .setContentText(string.msg_sync_needed)
-    }
   }
 
   open fun installationSessionCallback(): SessionCallback {

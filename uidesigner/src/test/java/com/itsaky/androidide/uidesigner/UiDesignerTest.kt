@@ -37,7 +37,7 @@ private val activity by lazy { Robolectric.buildActivity(AppCompatActivity::clas
 
 fun requiresActivity(initComponentFactory: Boolean = true, block: AppCompatActivity.() -> Unit) {
   if (initComponentFactory) {
-    Lookup.DEFAULT.apply {
+    Lookup.getDefault().apply {
       lookup(LAYOUT_INFLATER_COMPONENT_FACTORY_KEY)
         ?: register(LAYOUT_INFLATER_COMPONENT_FACTORY_KEY, UiInflaterComponentFactory())
     }

@@ -25,42 +25,44 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
+import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.nio.file.Path
 import java.util.Collections
 import java.util.concurrent.CompletableFuture
+import kotlin.io.path.bufferedReader
+import kotlin.io.path.bufferedWriter
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.pathString
 
 /**
  * Launches the Tooling API server in a separate JVM process.
  *
  * ***For testing purposes only!***
  *
- * ***This must be used only from modules that are located in the 'build-tools' directory!***
- *
  * @author Akash Yadav
  */
 class ToolingApiTestLauncher {
 
   private val opens =
-    mutableMapOf("java.base" to "java.lang", "java.base" to "java.util", "java.base" to "java.io")
-  
+    mutableMapOf("java.base" to "java.lang", "java.base" to "java.util",
+      "java.base" to "java.io")
+
   private val exports =
-    mutableMapOf(
-      "jdk.compiler" to "com.sun.tools.javac.api",
+    mutableMapOf("jdk.compiler" to "com.sun.tools.javac.api",
       "jdk.compiler" to "com.sun.tools.javac.file",
       "jdk.compiler" to "com.sun.tools.javac.parser",
       "jdk.compiler" to "com.sun.tools.javac.tree",
-      "jdk.compiler" to "com.sun.tools.javac.util"
-    )
+      "jdk.compiler" to "com.sun.tools.javac.util")
 
   fun launchServer(
-    client: IToolingApiClient = TestClient(),
-    implDir: String = "../tooling-api-impl"
+    client: IToolingApiClient = MultiVersionTestClient(),
   ): Pair<IToolingApiServer, IProject> {
-    val builder = ProcessBuilder(createProcessCmd("$implDir/build/libs/tooling-api-all.jar"))
+    val builder = ProcessBuilder(createProcessCmd(FileProvider.implModule()
+      .resolve("build/libs/tooling-api-all.jar").pathString))
     val androidHome = findAndroidHome()
     println("ANDROID_HOME=$androidHome")
     builder.environment()["ANDROID_SDK_ROOT"] = androidHome
@@ -68,7 +70,9 @@ class ToolingApiTestLauncher {
     val proc = builder.start()
 
     Thread(Reader(proc.errorStream)).start()
-    val launcher = ToolingApiLauncher.newClientLauncher(client, proc.inputStream, proc.outputStream)
+    val launcher =
+      ToolingApiLauncher.newClientLauncher(client, proc.inputStream,
+        proc.outputStream)
 
     launcher.startListening()
 
@@ -86,34 +90,36 @@ class ToolingApiTestLauncher {
     }
 
     Collections.addAll(cmd, "-jar", jar)
-    
-    println("[ToolingApiTestLauncher] Java cmd: " + cmd.joinToString(separator = " "))
-    
+
+    println(
+      "[ToolingApiTestLauncher] Java cmd: " + cmd.joinToString(separator = " "))
+
     return cmd
   }
 
-  private fun findAndroidHome(): String {
-    var androidHome = System.getenv("ANDROID_HOME")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
+  class MultiVersionTestClient(
+    private val projectDir: Path = FileProvider.testProjectRoot(),
+    var agpVersion: String = DEFAULT_AGP_VERSION,
+    var gradleVersion: String = DEFAULT_GRADLE_VERSION
+  ) : IToolingApiClient {
+
+    companion object {
+
+      const val buildFile = "build.gradle"
+      const val buildFileIn = "$buildFile.in"
+
+      const val gradlewProps = "gradle/wrapper/gradle-wrapper.properties"
+      const val gradlewPropsIn = "$gradlewProps.in"
+
+      const val DEFAULT_AGP_VERSION = "7.2.0"
+      const val DEFAULT_GRADLE_VERSION = "7.5.1"
+
+      const val GENERATED_FILE_WARNING =
+        "DO NOT EDIT - Automatically generated file"
+
+      private val log = ILogger.newInstance("MultiVersionTestClient")
     }
 
-    androidHome = System.getenv("ANDROID_SDK_ROOT")
-    if (androidHome != null && androidHome.isNotBlank()) {
-      return androidHome
-    }
-
-    val os = System.getProperty("os.name")
-    val home = System.getProperty("user.home")
-    return if (os.contains("Linux")) {
-      "$home/Android/Sdk"
-    } else {
-      "$home\\AppData\\Local\\Android\\Sdk"
-    }
-  }
-
-  open class TestClient : IToolingApiClient {
-    private val log = ILogger.newInstance(javaClass.simpleName)
     override fun logMessage(line: LogLine) {
       log.log(line.priority, line.formattedTagAndMessage())
     }
@@ -122,7 +128,21 @@ class ToolingApiTestLauncher {
       log.debug(line.trim())
     }
 
-    override fun prepareBuild() {}
+    override fun prepareBuild() {
+      log.debug("---------- PREPARE BUILD ----------")
+      log.debug("AGP Version : ${this.agpVersion}")
+      log.debug("Gradle Version : ${this.gradleVersion}")
+      log.debug("-----------------------------------")
+
+      projectDir.resolve(buildFileIn)
+        .replaceContents(dest = projectDir.resolve(buildFile),
+          candidate = "@@TOOLING_API_TEST_AGP_VERSION@@" to this.agpVersion)
+
+      projectDir.resolve(gradlewPropsIn)
+        .replaceContents(comment = "#", dest = projectDir.resolve(gradlewProps),
+          candidate = "@@GRADLE_VERSION@@" to this.gradleVersion)
+    }
+
     override fun onBuildSuccessful(result: BuildResult) {}
     override fun onBuildFailed(result: BuildResult) {}
 
@@ -134,29 +154,40 @@ class ToolingApiTestLauncher {
 
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
       CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
-  }
 
-  class MultiVersionTestClient(var version: String = "7.2.0") : TestClient() {
+    private fun Path.replaceContents(dest: Path, comment: String = "//",
+                                     candidate: Pair<String, String>
+    ) = replaceContents(dest, comment, *arrayOf(candidate))
 
-    companion object {
-      val buildTemplateFile = File("../../tests/test-project/build.gradle.in")
-      val buildFile = File(buildTemplateFile.parentFile, "build.gradle")
-    }
+    private fun Path.replaceContents(dest: Path, comment: String = "//",
+                                     vararg candidates: Pair<String, String>
+    ) {
+      val contents = StringBuilder().append(comment)
+        .append(" ")
+        .append(GENERATED_FILE_WARNING)
+        .append(System.getProperty("line.separator").repeat(2))
 
-    override fun prepareBuild() {
-      super.prepareBuild()
-      var contents = buildTemplateFile.bufferedReader().readText()
-      contents = contents.replace("@@TOOLING_API_TEST_AGP_VERSION@@", this.version)
-      contents = "/* DO NOT EDIT - Automatically generated file */\n${contents.trim()}"
-      val writer = buildFile.bufferedWriter()
-      writer.use {
-        it.write(contents)
-        it.flush()
+      bufferedReader().use { reader ->
+        reader.readText().also { text ->
+          var t = text
+          for ((old, new) in candidates) {
+            t = t.replace(old, new)
+          }
+          contents.append(t)
+        }
+      }
+
+      dest.deleteIfExists()
+
+      dest.bufferedWriter().use { writer ->
+        writer.write(contents.toString())
+        writer.flush()
       }
     }
   }
 
   private class Reader(val input: InputStream) : Runnable {
+
     private val log = ILogger.newInstance(javaClass.simpleName)
     override fun run() {
       try {

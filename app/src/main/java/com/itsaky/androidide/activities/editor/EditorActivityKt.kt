@@ -20,5 +20,4 @@ package com.itsaky.androidide.activities.editor
 /**
  * @author Akash Yadav
  */
-class EditorActivityKt : EditorHandlerActivity() {
-}
+class EditorActivityKt : EditorHandlerActivity()

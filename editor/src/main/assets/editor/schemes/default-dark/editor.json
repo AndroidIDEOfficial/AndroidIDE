@@ -13,8 +13,8 @@
   "text.selected": "@onSurface",
   "text.matched.bg": "#FF8F00",
   "text.selected.bg": "@primaryLight",
-  "snippet.bg.editing": "#cccccc",
-  "snippet.bg.related": "#aadddddd",
+  "snippet.bg.editing": "#44cccccc",
+  "snippet.bg.related": "#44dddddd",
   "snippet.bg.inactive": "#66dddddd",
 
   "scrollbar.thumb": "@surface",

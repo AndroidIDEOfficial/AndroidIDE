@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">AndroidIDE menggunakan build JDK yang dimodifikasi yang dilisensikan di bawah Lisensi Publik Umum GNU v2.0. Kode sumber dan lisensi JDK tersedia di : </string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
   <string name="about_option_email">Email</string>
@@ -315,7 +314,7 @@
   <string name="msg_swipe_for_output">Geser ke atas untuk @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Gunakan soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Pilih apakah akan menggunakan spasi alih-alih karakter tab (\\t).</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_donate">Sponsor</string>
   <string name="btn_docs">Dokumentasi</string>
   <string name="btn_close">Tutup</string>
   <string name="msg_ignore_case">Abaikan kasus</string>

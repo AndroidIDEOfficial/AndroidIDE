@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="license_jdk">Android IDE utiliza una versión modificada del JDK que está licenciado bajo la GNU General Public License v2.0. El código fuente y la licencia del JDK están disponibles en: </string>
   <string name="title_open_source_licenses">Licencias de código abierto</string>
   <string name="msg_about_licensed_under">Bajo Licencia: </string>
   <string name="about_option_email">Correo</string>
@@ -315,7 +314,7 @@
   <string name="msg_swipe_for_output">Desliza hacia arriba para ver el @@Registro@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Usar pestaña flexible</string>
   <string name="idepref_editor_useSoftTabs_summary">Elija si desea utilizar espacios en lugar del carácter de pestaña (\\t).</string>
-  <string name="btn_sponsor">Patrocinadores</string>
+  <string name="btn_donate">Patrocinadores</string>
   <string name="btn_docs">Documentación</string>
   <string name="btn_close">Cerrar</string>
   <string name="msg_ignore_case">Ignorar Mayúscula/minúscula</string>

@@ -121,7 +121,7 @@ open class CompletionItem(
   insertTextFormat: InsertTextFormat?,
   sortText: String?,
   var command: Command?,
-  var kind: CompletionItemKind,
+  var completionKind: CompletionItemKind,
   var matchLevel: MatchLevel,
   var additionalTextEdits: List<TextEdit>?,
   var data: ICompletionData?,
@@ -227,7 +227,7 @@ open class CompletionItem(
     if (label != other.label) return false
     if (detail != other.detail) return false
     if (command != other.command) return false
-    if (kind != other.kind) return false
+    if (completionKind != other.completionKind) return false
     if (matchLevel != other.matchLevel) return false
     if (additionalTextEdits != other.additionalTextEdits) return false
     if (data != other.data) return false
@@ -245,7 +245,7 @@ open class CompletionItem(
     var result = label.hashCode()
     result = 31 * result + detail.hashCode()
     result = 31 * result + (command?.hashCode() ?: 0)
-    result = 31 * result + kind.hashCode()
+    result = 31 * result + completionKind.hashCode()
     result = 31 * result + matchLevel.hashCode()
     result = 31 * result + (additionalTextEdits?.hashCode() ?: 0)
     result = 31 * result + (data?.hashCode() ?: 0)
@@ -259,7 +259,7 @@ open class CompletionItem(
   }
 
   override fun toString(): String {
-    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$kind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$ideSortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
+    return "CompletionItem(label='$label', detail='$detail', command=$command, kind=$completionKind, matchLevel=$matchLevel, additionalTextEdits=$additionalTextEdits, data=$data, sortText=$ideSortText, insertText='$insertText', insertTextFormat=$insertTextFormat, editHandler=$editHandler, additionalEditHandler=$additionalEditHandler, overrideTypeText=$overrideTypeText)"
   }
 }
 

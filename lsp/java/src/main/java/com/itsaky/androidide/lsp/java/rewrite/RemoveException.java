@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
@@ -61,6 +62,7 @@ public class RemoveException extends Rewrite {
     this.exceptionType = exceptionType;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);

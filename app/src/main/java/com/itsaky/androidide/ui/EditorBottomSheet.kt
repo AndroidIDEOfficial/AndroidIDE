@@ -229,6 +229,10 @@ constructor(
     pagerAdapter.buildOutputFragment?.appendOutput(str)
   }
 
+  fun clearBuildOutput() {
+    pagerAdapter.buildOutputFragment?.clearOutput()
+  }
+
   fun handleDiagnosticsResultVisibility(errorVisible: Boolean) {
     runOnUiThread { pagerAdapter.diagnosticsFragment?.handleResultVisibility(errorVisible) }
   }

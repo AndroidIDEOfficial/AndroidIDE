@@ -157,7 +157,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
 
       if (viewModel.displayedChild == CHILD_CONFIRMATION) {
         val buildService =
-          Lookup.DEFAULT.lookup(BuildService.KEY_BUILD_SERVICE)
+          Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
             ?: run {
               log.error("Cannot find build service")
               return@setOnClickListener

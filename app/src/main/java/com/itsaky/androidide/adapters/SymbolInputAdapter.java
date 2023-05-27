@@ -17,6 +17,7 @@
  */
 package com.itsaky.androidide.adapters;
 
+import static com.itsaky.androidide.preferences.utils.EditorUtilKt.getIndentationString;
 import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
 
 import android.annotation.SuppressLint;
@@ -95,6 +96,18 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
     if (selectionOffset < 0 || selectionOffset > text.length()) {
       return;
     }
+
+    final var controller = editor.getSnippetController();
+    if ("\t".equals(text) && controller.isInSnippet()) {
+      controller.shiftToNextTabStop();
+      return;
+    }
+
+    if ("\t".equals(text)) {
+      text = getIndentationString();
+      selectionOffset = text.length();
+    }
+
     var cur = editor.getText().getCursor();
     if (cur.isSelected()) {
       editor

@@ -1,0 +1,26 @@
+{
+  "class": {
+    "desc": "Create a new class",
+    "body" : [
+      "public class ${1:$TM_FILENAME_BASE} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "interface": {
+    "desc": "Create a new interface",
+    "body" : [
+      "public interface ${1:$TM_FILENAME_BASE} {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "enum": {
+    "desc": "Create a new enum class",
+    "body" : [
+      "public enum ${1:$TM_FILENAME_BASE} {",
+      "\t$0",
+      "}"
+    ]
+  }
+}

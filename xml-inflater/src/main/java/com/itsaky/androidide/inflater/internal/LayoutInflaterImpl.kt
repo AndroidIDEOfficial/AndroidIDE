@@ -71,7 +71,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
   override var componentFactory: IComponentFactory = DefaultComponentFactory()
     set(value) {
       field = value
-      Lookup.DEFAULT.update(LAYOUT_INFLATER_COMPONENT_FACTORY_KEY, value)
+      Lookup.getDefault().update(LAYOUT_INFLATER_COMPONENT_FACTORY_KEY, value)
     }
 
   protected val primaryInflatingFile: File

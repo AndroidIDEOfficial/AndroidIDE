@@ -112,7 +112,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
     showNotification(getString(R.string.build_status_idle), false);
 
-    Lookup.DEFAULT.update(BuildService.KEY_BUILD_SERVICE, this);
+    Lookup.getDefault().update(BuildService.KEY_BUILD_SERVICE, this);
   }
 
   @Override
@@ -160,8 +160,16 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void onDestroy() {
+    mBinder.release();
+    mBinder = null;
+
     LOG.info("Service is being destroyed.", "Dismissing the shown notification...");
     notificationManager.cancel(NOTIFICATION_ID);
+
+    final var lookup = Lookup.getDefault();
+    lookup.unregister(GradleBuildService.KEY_BUILD_SERVICE);
+    lookup.unregister(GradleBuildService.KEY_PROJECT_PROXY);
+
     if (server != null) {
       server.cancelCurrentBuild();
       final var shutdown = server.shutdown();
@@ -178,6 +186,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     if (toolingServerThread != null) {
+      toolingServerThread.release();
       toolingServerThread.interrupt();
       toolingServerThread = null;
     }
@@ -198,24 +207,17 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
-    if (mBinder != null && !mBinder.isReleased()) {
-      LOG.verbose("Reusing GradleServiceBinder instance");
-      return mBinder;
+    if (mBinder == null) {
+      mBinder = new GradleServiceBinder(this);
     }
-  
-    if (mBinder != null) {
-      mBinder.release();
-    }
-    
-    LOG.verbose("Creating new GradleServiceBinder instance...");
-    return mBinder = new GradleServiceBinder(this);
+    return mBinder;
   }
   
   @Override
   public void onListenerStarted(@NotNull final IToolingApiServer server, @NotNull IProject projectProxy, @NotNull final ProcessStreamsHolder streams) {
     startServerOutputReader(streams.err);
     this.server = server;
-    Lookup.DEFAULT.update(BuildService.KEY_PROJECT_PROXY, projectProxy);
+    Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy);
     this.isToolingServerStarted = true;
     ProjectManager.INSTANCE.setupProject(projectProxy);
   }

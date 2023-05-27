@@ -26,6 +26,7 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.lsp.models.TextEdit;
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import openjdk.source.tree.LineMap;
 import openjdk.source.tree.MethodTree;
 import openjdk.source.util.SourcePositions;
@@ -48,6 +49,7 @@ public class AddSuppressWarningAnnotation extends Rewrite {
     this.erasedParameterTypes = erasedParameterTypes;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
@@ -67,7 +69,7 @@ public class AddSuppressWarningAnnotation extends Rewrite {
           int line = (int) lines.getLineNumber(startMethod);
           int column = (int) lines.getColumnNumber(startMethod);
           int startLine = (int) lines.getStartPosition(line);
-          String indent = EditHelper.repeatSpaces(startMethod - startLine);
+          String indent = EditorUtilKt.indentationString(startMethod - startLine);
           String insertText = "@SuppressWarnings(\"unchecked\")\n" + indent;
           Position insertPoint = new Position(line - 1, column - 1);
           TextEdit insert = new TextEdit(new Range(insertPoint, insertPoint), insertText);

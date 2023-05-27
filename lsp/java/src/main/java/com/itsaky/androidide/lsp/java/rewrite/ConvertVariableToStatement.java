@@ -45,6 +45,7 @@ public class ConvertVariableToStatement extends Rewrite {
     this.position = position;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     final ParseTask task = compiler.parse(file);

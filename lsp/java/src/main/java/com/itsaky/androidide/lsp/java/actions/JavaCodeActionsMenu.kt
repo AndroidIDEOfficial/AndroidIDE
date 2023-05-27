@@ -27,6 +27,7 @@ import com.itsaky.androidide.lsp.java.actions.common.RemoveUnusedImportsAction
 import com.itsaky.androidide.lsp.java.actions.common.UncommentAction
 import com.itsaky.androidide.lsp.java.actions.diagnostics.AddImportAction
 import com.itsaky.androidide.lsp.java.actions.diagnostics.AddThrowsAction
+import com.itsaky.androidide.lsp.java.actions.diagnostics.AutoFixImportsAction
 import com.itsaky.androidide.lsp.java.actions.diagnostics.CreateMissingMethodAction
 import com.itsaky.androidide.lsp.java.actions.diagnostics.FieldToBlockAction
 import com.itsaky.androidide.lsp.java.actions.diagnostics.ImplementAbstractMethodsAction
@@ -54,6 +55,7 @@ object JavaCodeActionsMenu : IActionsMenuProvider {
       GoToDefinitionAction(),
       FindReferencesAction(),
       AddImportAction(),
+      AutoFixImportsAction(),
       ImplementAbstractMethodsAction(),
       VariableToStatementAction(),
       FieldToBlockAction(),

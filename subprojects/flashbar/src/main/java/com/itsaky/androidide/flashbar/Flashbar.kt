@@ -273,7 +273,7 @@ class Flashbar private constructor(private var builder: Builder) {
      * infinite
      */
     fun duration(milliseconds: Long) = apply {
-      require(milliseconds > 0) { "Duration can not be negative or zero" }
+      require(milliseconds == DURATION_INDEFINITE || milliseconds > 0) { "Duration can only be $DURATION_INDEFINITE or > 0" }
       this.duration = milliseconds
     }
 
@@ -652,7 +652,7 @@ class Flashbar private constructor(private var builder: Builder) {
     RIGHT
   }
 
-  interface OnActionTapListener {
+  fun interface OnActionTapListener {
     fun onActionTapped(bar: Flashbar)
   }
 

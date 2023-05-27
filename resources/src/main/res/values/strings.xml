@@ -5,7 +5,6 @@
   <item name="copy" type="string" tools:override="true">Copy</item>
   <item name="text_to_search" type="string">Text to search</item>
   <string name="app_name" translatable="false">AndroidIDE</string>
-  <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
   <string name="title_open_source_licenses">Open source licenses</string>
   <string name="msg_about_licensed_under">Licensed under: </string>
   <string name="about_option_email">Email</string>
@@ -82,7 +81,7 @@
   <string name="project_app_name">App name</string>
   <string name="msg_create_new_project_greeting">Start your new awesome project!</string>
   <string name="title_confirm_open_project">Open last project?</string>
-  <string name="msg_confirm_open_project">Do you want me to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
   <string name="group_project">Project</string>
   <string name="title_close_project">Close this project</string>
   <string name="msg_opened_project_does_not_exist">Last opened project doesn\'t exist!</string>
@@ -136,13 +135,16 @@
   <string name="asset_copy_failed">Failed to copy template to storage!</string>
   <string name="cannot_create_temp">Failed to create temporary project directory!</string>
   <string name="project_created_successfully">Project created successfully!</string>
+  <string name="project_creation_failed">Failed to create project</string>
   <string name="msg_begin_project_write">Starting writing process</string>
   <string name="msg_folder_creation_failed">Failed to create folder!</string>
   <string name="msg_file_creation_failed">Failed to create file!</string>
+  <string name="msg_layout_file_creation_failed">Failed to create layout file!</string>
   <string name="msg_folder_created">Folder created successfully!</string>
   <string name="msg_file_created">File created successfully!</string>
   <string name="msg_folder_exists">Folder already exists!</string>
   <string name="msg_file_exists">File already exists!</string>
+  <string name="msg_layout_file_exists">Layout file already exists!</string>
   <string name="msg_invalid_name">Invalid Name!</string>
   <string name="text_create">Create</string>
   <string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
@@ -150,7 +152,7 @@
   <string name="file_name">File Name</string>
   <string name="new_name">New name</string>
   <string name="new_file">New file</string>
-  <string name="create_auto_layout">Create layout file automatically</string>
+  <string name="create_auto_layout">Create layout file</string>
   <string name="new_java_class">New Java class</string>
   <string name="new_xml_resource">New XML resource</string>
   <string name="new_folder">New folder</string>
@@ -170,6 +172,7 @@
   <string name="action_closeOthers">Close others</string>
   <string name="action_closeThis">Close this</string>
   <string name="all_saved">All files saved!</string>
+  <string name="save_failed">Failed to save files</string>
   <string name="msg_newfile_dest">Destination: %s/</string>
   <string name="restype_drawable">Drawable</string>
   <string name="restype_layout">Layout</string>
@@ -340,7 +343,7 @@
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
-  <string name="btn_sponsor">Sponsor</string>
+  <string name="btn_donate">Donate</string>
   <string name="btn_docs">Documentation</string>
   <string name="btn_close">Close</string>
   <string name="msg_ignore_case">Ignore case</string>
@@ -536,4 +539,29 @@
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
+  <string name="idepref_deleteEmptyLines_title">Delete empty lines on backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
+  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+
+  <string name="btn_sync">Sync</string>
+  <string name="btn_ignore_changes">Ignore these changes</string>
+  <string name="title_fix_imports">Fix imports</string>
+  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
+  <string name="title_class_chooser">Which %1$s?</string>
+
+  <string name="permlab_bind_logger_service">bind to log service</string>
+  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
+  <string name="msg_invalid_module_name">Invalid Gradle module name</string>
+  <string name="msg_invalid_class_name">Invalid class name</string>
+  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_file_not_exist">File does not exist</string>
+  <string name="msg_path_must_be_file">Must be path to a file</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
+  <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
 </resources>

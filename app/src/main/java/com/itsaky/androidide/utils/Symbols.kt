@@ -17,8 +17,6 @@
  */
 package com.itsaky.androidide.utils
 
-import com.itsaky.androidide.preferences.internal.tabSize
-import com.itsaky.androidide.preferences.internal.useSoftTab
 import com.itsaky.androidide.ui.SymbolInputView.Symbol
 import java.io.File
 
@@ -123,21 +121,12 @@ object Symbols {
   }
 
   private class TabSymbol : Symbol("↹") {
-
     override fun getCommit(): String {
-      return createTabChars()
+      return "\t"
     }
 
     override fun getOffset(): Int {
-      return createTabChars().length
-    }
-
-    private fun createTabChars(): String {
-      if (!useSoftTab) {
-        return "\t"
-      }
-
-      return " ".repeat(tabSize)
+      return 1
     }
   }
 }

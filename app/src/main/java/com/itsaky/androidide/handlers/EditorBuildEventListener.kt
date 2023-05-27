@@ -37,9 +37,6 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
-  
-  fun releaes() {
-  }
 
   override fun prepareBuild() {
     val isFirstBuild = isFirstBuild
@@ -53,11 +50,11 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
 
     activity().viewModel.isBuildInProgress = true
+    activity().binding.bottomSheet.clearBuildOutput()
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {
     analyzeCurrentFile()
-    appendOutputSeparator()
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false
@@ -69,13 +66,8 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
   }
 
-  private fun appendOutputSeparator() {
-    activity().appendBuildOutput("\n\n")
-  }
-
   override fun onBuildFailed(tasks: MutableList<String>) {
     analyzeCurrentFile()
-    appendOutputSeparator()
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false

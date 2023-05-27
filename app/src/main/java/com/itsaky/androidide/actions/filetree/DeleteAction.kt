@@ -23,6 +23,7 @@ import com.blankj.utilcode.util.FileUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireFile
 import com.itsaky.androidide.eventbus.events.file.FileDeletionEvent
+import com.itsaky.androidide.projects.FileManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.DialogUtils
@@ -96,6 +97,11 @@ class DeleteAction(context: Context) :
   }
 
   private fun notifyFileDeleted(file: File, context: Context) {
-    EventBus.getDefault().post(FileDeletionEvent(file).putData(context))
+    val deletionEvent = FileDeletionEvent(file)
+
+    // Notify FileManager first
+    FileManager.onFileDeleted(deletionEvent)
+
+    EventBus.getDefault().post(deletionEvent.putData(context))
   }
 }

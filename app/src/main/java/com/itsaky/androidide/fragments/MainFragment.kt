@@ -6,11 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.viewModels
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.activities.PreferencesActivity
 import com.itsaky.androidide.activities.TerminalActivity
-import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
@@ -18,7 +19,6 @@ import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
-import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsyncProvideError
@@ -27,19 +27,21 @@ import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
+import com.itsaky.androidide.viewmodel.MainViewModel
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
 
 class MainFragment : BaseFragment(), OnProjectCreatedListener {
+
+  private val viewModel by viewModels<MainViewModel>(
+    ownerProducer = { requireActivity() })
   private var binding: FragmentMainBinding? = null
 
   private val log = ILogger.newInstance("MainFragment")
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                            savedInstanceState: Bundle?
   ): View {
     binding = FragmentMainBinding.inflate(inflater, container, false)
     return binding!!.root
@@ -47,39 +49,28 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val createProject =
-      MainScreenAction(string.create_project, R.drawable.ic_add) { showCreateProject() }
-    val openProject =
-      MainScreenAction(string.msg_open_existing_project, R.drawable.ic_folder) { pickDirectory() }
-    val cloneGitRepository =
-      MainScreenAction(string.git_clone_repo, R.drawable.ic_git) { cloneGitRepo() }
+    val createProject = MainScreenAction(string.create_project,
+      R.drawable.ic_add) { showCreateProject() }
+    val openProject = MainScreenAction(string.msg_open_existing_project,
+      R.drawable.ic_folder) { pickDirectory() }
+    val cloneGitRepository = MainScreenAction(string.git_clone_repo,
+      R.drawable.ic_git) { cloneGitRepo() }
     val openTerminal =
       MainScreenAction(string.title_terminal, R.drawable.ic_terminal) {
         startActivity(Intent(requireActivity(), TerminalActivity::class.java))
       }
-    val preferences =
-      MainScreenAction(string.msg_preferences, R.drawable.ic_settings) { gotoPreferences() }
-    val sponsor =
-      MainScreenAction(string.btn_sponsor, R.drawable.ic_sponsor) {
-        BaseApplication.getBaseInstance().openSponsors()
-      }
-    val docs =
-      MainScreenAction(string.btn_docs, R.drawable.ic_docs) {
-        BaseApplication.getBaseInstance().openDocs()
-      }
+    val preferences = MainScreenAction(string.msg_preferences,
+      R.drawable.ic_settings) { gotoPreferences() }
+    val sponsor = MainScreenAction(string.btn_donate, R.drawable.ic_donate) {
+      BaseApplication.getBaseInstance().openSponsors()
+    }
+    val docs = MainScreenAction(string.btn_docs, R.drawable.ic_docs) {
+      BaseApplication.getBaseInstance().openDocs()
+    }
 
-    binding!!.actions.adapter =
-      MainActionsListAdapter(
-        listOf(
-          createProject,
-          openProject,
-          cloneGitRepository,
-          openTerminal,
-          preferences,
-          docs,
-          sponsor
-        )
-      )
+    binding!!.actions.adapter = MainActionsListAdapter(
+      listOf(createProject, openProject, cloneGitRepository, openTerminal,
+        preferences, docs, sponsor))
   }
 
   override fun onDestroyView() {
@@ -92,18 +83,11 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
   }
 
   private fun showCreateProject() {
-    val wizardFragment = WizardFragment()
-    wizardFragment.setOnProjectCreatedListener(this)
-    parentFragmentManager
-      .beginTransaction()
-      .add(com.itsaky.androidide.R.id.container, wizardFragment, WizardFragment.TAG)
-      .addToBackStack(null)
-      .commit()
+    viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
   }
 
   override fun openProject(root: File) {
-    projectPath = root.absolutePath
-    startActivity(Intent(requireActivity(), EditorActivityKt::class.java))
+    (requireActivity() as MainActivity).openProject(root)
   }
 
   private fun cloneGitRepo() {
@@ -149,18 +133,14 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
 
     val progress = GitCloneProgressMonitor(binding.progress, binding.message)
     var git: Git? = null
-    val future =
-      executeAsyncProvideError(
-        {
-          return@executeAsyncProvideError Git.cloneRepository()
-            .setURI(url)
-            .setDirectory(targetDir)
-            .setProgressMonitor(progress)
-            .call()
-            .also { git = it }
-        },
-        { _, _ -> }
-      )
+    val future = executeAsyncProvideError({
+      return@executeAsyncProvideError Git.cloneRepository()
+        .setURI(url)
+        .setDirectory(targetDir)
+        .setProgressMonitor(progress)
+        .call()
+        .also { git = it }
+    }, { _, _ -> })
 
     builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
       iface.dismiss()
@@ -201,13 +181,10 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     startActivity(Intent(requireActivity(), PreferencesActivity::class.java))
   }
 
-  companion object {
-    const val TAG = "MainFragmentTag"
-  }
-
   // TODO(itsaky) : Improve this implementation
-  class GitCloneProgressMonitor(val progress: LinearProgressIndicator, val message: TextView) :
-    ProgressMonitor {
+  class GitCloneProgressMonitor(val progress: LinearProgressIndicator,
+                                val message: TextView
+  ) : ProgressMonitor {
 
     private var cancelled = false
 
