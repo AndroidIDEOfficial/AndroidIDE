@@ -1,7 +1,0 @@
-## Working with an existing project
-
-To open an existing project in AndroidIDE, click the `Open existing project` in the main activity. This opens the SAF file picker where you can choose the project directory you want to open.
-
-Gradle based Android projects are supported. However, it is currently not possible to build projects that use older versions of the Android Gradle Plugin. To be able to build a project in AndroidIDE, your project must use Android Gradle Plugin `v7.2.0` or newer.
-
-For people trying to build projects developed with other older IDEs, you might need to update your build scripts before opening the project in AndroidIDE.
