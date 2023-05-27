@@ -56,7 +56,7 @@ internal class WidgetDragListener(
  
         return event.clipDescription.hasMimeType(DRAGGING_WIDGET_MIME) &&
           event.localState != view &&
-          view.canAcceptChild(name)
+          view.canAcceptChild(name, event.localState as? IView?)
       }
       DragEvent.ACTION_DRAG_ENTERED,
       DragEvent.ACTION_DRAG_LOCATION -> {

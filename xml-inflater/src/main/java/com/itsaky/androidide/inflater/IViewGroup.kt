@@ -48,11 +48,25 @@ interface IViewGroup : IView, Iterable<IView> {
    * @param name The fully qualified name of the [View][android.view.View] instance.
    * @return `true` if this view group can accept the child view, `false` otherwise. The default
    * implementation returns `true` if and only if [canModifyChildViews] returns `true` and this
-   * view's [IViewAdapter.canAcceptChild] returns `true`.
+   * view's [IViewGroupAdapter.canAcceptChild] returns `true`.
    */
   fun canAcceptChild(name: String): Boolean {
+    return canAcceptChild(name, null)
+  }
+
+  /**
+   * Called to check whether this view group can accept child view with the given fully qualifed
+   * name.
+   *
+   * @param name The fully qualified name of the [View][android.view.View] instance.
+   * @param child The child view which should be checked.
+   * @return `true` if this view group can accept the child view, `false` otherwise. The default
+   * implementation returns `true` if and only if [canModifyChildViews] returns `true` and this
+   * view's [IViewGroupAdapter.canAcceptChild] returns `true`.
+   */
+  fun canAcceptChild(name: String, child: IView?): Boolean {
     return canModifyChildViews() && (this.viewAdapter as? IViewGroupAdapter)?.canAcceptChild(
-      this, name) == true
+      this, child, name) == true
   }
 
   /**

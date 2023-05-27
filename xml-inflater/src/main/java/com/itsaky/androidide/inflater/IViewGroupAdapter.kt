@@ -50,8 +50,23 @@ interface IViewGroupAdapter {
   /**
    * Called by the UI Designer to check if the given view group (which this adpater handles) can
    * accept the child view with the given qualified name.
+   *
+   * @param view The parent in which the child will be added.
+   * @param name The fully qualified name of the child view.
    */
   fun canAcceptChild(view: IViewGroup, name: String): Boolean {
+    return canAcceptChild(view, null, name)
+  }
+
+  /**
+   * Called by the UI Designer to check if the given view group (which this adpater handles) can
+   * accept the child view with the given qualified name.
+   *
+   * @param view The parent in which the child will be added.
+   * @param child The child view which will be added. May be `null`.
+   * @param name The fully qualified name of the child view.
+   */
+  fun canAcceptChild(view: IViewGroup, child: IView?, name: String): Boolean {
     return true
   }
 }
