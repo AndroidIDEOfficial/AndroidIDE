@@ -22,15 +22,19 @@ import com.itsaky.androidide.utils.ILogger
 import java.net.ServerSocket
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Handles clients that connect to the log receiver.
  *
  * @author Akash Yadav
  */
-class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("MultiLogSenderHandler"), AutoCloseable {
+class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
+  Thread("MultiLogSenderHandler"), AutoCloseable {
 
   private val log = ILogger.newInstance("MultiLogSenderHandler")
+  private val lock = ReentrantLock(true)
   private val clients = mutableListOf<LogSenderHandler>()
   private val port = AtomicInteger(-1)
   private var keepAlive = AtomicBoolean(false)
@@ -38,10 +42,14 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("Mul
   internal var consumer: ((LogLine) -> Unit)? = consumer
     set(value) {
       field = value
-      clients.forEach { it.consumer = value }
+      lock.withLock {
+        for (i in clients.indices) {
+          clients[i].consumer = value
+        }
+      }
     }
 
-  fun getPort() : Int {
+  fun getPort(): Int {
     return port.get()
   }
 
@@ -51,10 +59,8 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("Mul
         port.set(it.localPort)
         log.info("Starting log receiver server socket at port ${getPort()}")
 
-        while(keepAlive.get()) {
-          val handler = LogSenderHandler(it.accept(), consumer) { handler ->
-            clients.remove(handler)
-          }
+        while (keepAlive.get()) {
+          val handler = LogSenderHandler(it.accept(), consumer, ::removeClient)
 
           log.info("A log sender has been connected")
 
@@ -71,6 +77,12 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("Mul
     }
   }
 
+  private fun removeClient(handler: LogSenderHandler) {
+    lock.withLock {
+      clients.remove(handler)
+    }
+  }
+
   override fun start() {
     keepAlive.set(true)
     super.start()
@@ -78,6 +90,18 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) : Thread("Mul
 
   override fun close() {
     this.keepAlive.set(false)
-    clients.forEach(LogSenderHandler::close)
+    lock.withLock {
+      for (i in clients.indices) {
+        clients[i].closeAndLogError()
+      }
+    }
+  }
+
+  private fun AutoCloseable.closeAndLogError() {
+    try {
+      close()
+    } catch (e: Exception) {
+      log.warn("Failed to close", e)
+    }
   }
 }
