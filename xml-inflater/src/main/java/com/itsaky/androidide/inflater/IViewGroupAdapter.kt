@@ -37,6 +37,8 @@ interface IViewGroupAdapter {
    * Compute the index of the child based on the given [x] and [y] coordinates
    * of the drag event.
    *
+   * @param parent The [IViewGroup] in which the child will be added.
+   *   This is guaranteed to have at least one child view.
    * @param x The X coordinate of the drag event.
    * @param y The Y coordinate of the drag event.
    * @return The index at which the new child must be added
