@@ -10,12 +10,12 @@ Your XML code is parsed and inflated by AndroidIDE's `LayoutInflater API` and th
 
 <details>
   <summary>Workspace</summary>
-  <img src="./images/uidesigner/workspace.png" width="250"/>
+  <img src="https://raw.githubusercontent.com/BanDroid/AndroidIDE/docs-migration/docs/images/uidesigner/workspace.png" width="250"/>
 </details>
 
 <details>
   <summary>Drag-n-Drop</summary>
-  <img src="./images/uidesigner/drag-n-drop.png" width="250"/><br>
+  <img src="https://raw.githubusercontent.com/BanDroid/AndroidIDE/docs-migration/docs/images/uidesigner/drag-n-drop.png" width="250"/><br>
   A placeholder view is used to indicate the drop position of the widget when you start dragging.
 </details> <br>
 
@@ -29,7 +29,7 @@ To move a view in the workspace, you can simply long press the view to start the
 
 <details>
   <summary>Widget drawer</summary>
-  <img src="./images/uidesigner/widgets_drawer.png" width="250"/>
+  <img src="https://raw.githubusercontent.com/BanDroid/AndroidIDE/docs-migration/docs/images/uidesigner/widgets_drawer.png" width="250"/>
 </details><br>
 
 ### Edit view attributes
@@ -48,7 +48,7 @@ It also contains the list of attributes that have been applied to the selected v
 
 <details>
   <summary>View info sheet</summary>
-  <img src="./images/uidesigner/view_info.png" width="250"/>
+  <img src="https://raw.githubusercontent.com/BanDroid/AndroidIDE/docs-migration/docs/images/uidesigner/view_info.png" width="250"/>
 </details><br>
 
 ### The layout hierarchy
@@ -59,5 +59,5 @@ You can open the layout hierarchy by simply opening the right drawer or clicking
 
 <details>
   <summary>See screenshot</summary>
-  <img src="./images/uidesigner/hierarchy_drawer.png" width="250"/>
+  <img src="https://github.com/BanDroid/AndroidIDE/blob/docs-migration/docs/images/uidesigner/hierarchy_drawer.png?raw=true" width="250"/>
 </details>
