@@ -101,7 +101,7 @@ android {
     buildToolsVersion "${data.versions.buildTools}"
 
     defaultConfig {
-        applicationId "com.itsaky.myapplication"
+        applicationId "${data.packageName}"
         minSdk ${data.versions.minSdk.api}
         targetSdk ${data.versions.targetSdk.api}
         versionCode 1
