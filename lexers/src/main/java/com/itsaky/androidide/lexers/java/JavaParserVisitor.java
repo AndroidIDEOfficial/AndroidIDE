@@ -1,4 +1,4 @@
-// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/java/JavaParser.g4 by ANTLR 4.12.0
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/java/JavaParser.g4 by ANTLR 4.13.0
 package com.itsaky.androidide.lexers.java;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 

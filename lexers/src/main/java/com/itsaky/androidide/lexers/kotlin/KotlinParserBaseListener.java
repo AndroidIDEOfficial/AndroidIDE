@@ -1,4 +1,4 @@
-// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/kotlin/KotlinParser.g4 by ANTLR 4.12.0
+// Generated from /home/itsaky/Projects/ide/AndroidIDE/lexers/src/main/antlr/kotlin/KotlinParser.g4 by ANTLR 4.13.0
 package com.itsaky.androidide.lexers.kotlin;
 
 import org.antlr.v4.runtime.ParserRuleContext;
