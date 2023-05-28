@@ -1,5 +1,5 @@
 [versions]
-agp = "8.0.0"
+agp = "8.0.2"
 agp-tooling = "7.4.2"
 gradle-tooling = "8.1.1"
 kotlin = "1.8.21"
