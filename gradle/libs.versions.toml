@@ -39,7 +39,7 @@ common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", 
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
 common-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 common-jsonrpc = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc", version = "0.20.1" }
-common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.10"}
+common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.11"}
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.6.0" }
