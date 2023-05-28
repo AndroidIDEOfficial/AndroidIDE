@@ -69,8 +69,8 @@ google-guava = { module = "com.google.guava:guava", version = "31.1-android" }
 google-guava-jre = { module = "com.google.guava:guava", version = "31.1-jre" }
 google-auto-value-annotations = { module = "com.google.auto.value:auto-value-annotations", version = "1.10.1" }
 google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.1" }
-google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.0.1" }
-google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.0.1" }
+google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.0" }
+google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.0" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.22.3" }
 google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.16.0" }
