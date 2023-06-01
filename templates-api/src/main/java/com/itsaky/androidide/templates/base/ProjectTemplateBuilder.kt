@@ -131,6 +131,14 @@ class ProjectTemplateBuilder :
     gradleWrapperProps()
   }
 
+  /**
+   * Writes the `.gitignore` file in the project directory.
+   */
+  fun gitignore() {
+    val gitignore = File(data.projectDir, ".gitignore")
+    executor.copyAsset(baseAsset("gitignore"), gitignore)
+  }
+
   override fun buildInternal(): ProjectTemplate {
     return ProjectTemplate(modules, templateName!!, thumb!!, description,
       widgets!!, recipe!!)

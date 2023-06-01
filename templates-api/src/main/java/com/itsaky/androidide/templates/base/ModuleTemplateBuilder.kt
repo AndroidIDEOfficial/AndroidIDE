@@ -157,8 +157,7 @@ abstract class ModuleTemplateBuilder :
    * @param extraConfig Called after the [recipe] is executed. Caller can perform its own
    * post-recipe configuration here.
    */
-  fun commonPostRecipe(isComposeModule: Boolean = false,
-                       extraConfig: TemplateRecipeFinalizer = {}
+  fun commonPostRecipe(extraConfig: TemplateRecipeFinalizer = {}
   ): TemplateRecipeFinalizer = {
 
     // Write build.gradle[.kts]
@@ -169,7 +168,9 @@ abstract class ModuleTemplateBuilder :
   }
 
   /**
-   * Add the dependency with the given maven coordinates to this module with the [DependencyConfiguration.Implementation] configuration.
+   * Add the dependency with the given maven coordinates to this module with the
+   * [Implementation][com.itsaky.androidide.templates.base.models.DependencyConfiguration.Implementation]
+   * configuration.
    *
    * @param group The group ID of the dependency.
    * @param artifact The artifact of the dependency.
@@ -177,7 +178,9 @@ abstract class ModuleTemplateBuilder :
    * @param isPlatform Whether this dependency declares a BOM.
    */
   @JvmOverloads
-  fun addDependency(group: String, artifact: String, version: String, isPlatform: Boolean = false) {
+  fun addDependency(group: String, artifact: String, version: String,
+                    isPlatform: Boolean = false
+  ) {
     addDependency(defaultDependency(group, artifact, version), isPlatform)
   }
 

@@ -130,6 +130,9 @@ fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
       // gradle/wrapper/gradle-wrapper.jar
       // gradle/wrapper/gradle-wrapper.properties
       gradleWrapper()
+
+      // .gitignore
+      gitignore()
     }
 
     block()

@@ -21,6 +21,7 @@ import com.android.SdkConstants.ANDROID_MANIFEST_XML
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
 import com.itsaky.androidide.templates.RecipeExecutor
 import com.itsaky.androidide.templates.SrcSet
+import com.itsaky.androidide.templates.base.modules.android.androidGitignoreSrc
 import com.itsaky.androidide.templates.base.modules.android.buildGradleSrc
 import com.itsaky.androidide.templates.base.modules.android.proguardRules
 import com.itsaky.androidide.templates.base.util.AndroidManifestBuilder
@@ -119,6 +120,10 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
   }
 
   override fun RecipeExecutor.postConfig() {
+
+    // Write .gitignore
+    gitignore()
+
     manifest.apply {
       generate(manifestFile())
     }
@@ -140,5 +145,13 @@ class AndroidModuleTemplateBuilder : ModuleTemplateBuilder() {
 
   override fun RecipeExecutor.buildGradle() {
     save(buildGradleSrc(isComposeModule), buildGradleFile())
+  }
+
+  /**
+   * Writes the `.gitignore` file in the mdoule directory.
+   */
+  fun RecipeExecutor.gitignore() {
+    val gitignore = File(data.projectDir, ".gitignore")
+    save(androidGitignoreSrc(), gitignore)
   }
 }

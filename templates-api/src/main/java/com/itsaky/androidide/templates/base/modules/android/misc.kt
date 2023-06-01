@@ -34,3 +34,11 @@ fun AndroidModuleTemplateBuilder.proguardRules() {
   val file = proguardRulesFile()
   executor.copyAsset(baseAsset(file.name), file)
 }
+
+/**
+ * `.gitignore` file source for android modules.
+ */
+fun AndroidModuleTemplateBuilder.androidGitignoreSrc()
+= """
+/build
+""".trimIndent()
