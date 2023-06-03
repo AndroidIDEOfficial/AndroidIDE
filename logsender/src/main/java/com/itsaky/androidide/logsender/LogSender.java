@@ -24,6 +24,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
+import android.util.Log;
 import com.itsaky.androidide.logsender.utils.LogReader;
 import com.itsaky.androidide.logsender.utils.Logger;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +36,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class LogSender extends ILogSender.Stub implements ServiceConnection {
 
-  private final AtomicBoolean installed = new AtomicBoolean(false);
+  private final AtomicBoolean isBinding = new AtomicBoolean(false);
+  private final AtomicBoolean isConnected = new AtomicBoolean(false);
 
   private LogReader reader;
 
@@ -63,27 +65,6 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   private LogSender() {
   }
 
-  void doInstall(Context context) {
-    if (installed.get()) {
-      Logger.warn("LogSender is already installed");
-      return;
-    }
-
-    this.packageName = context.getPackageName();
-    if (PACKAGE_ANDROIDIDE.equals(packageName)) {
-      return;
-    }
-
-    final Intent intent = new Intent(SERVICE_ACTION);
-    intent.setPackage(PACKAGE_ANDROIDIDE);
-    if (context.bindService(intent, this, 0)) {
-      Logger.info("Binding to log receiver");
-      installed.set(true);
-    } else {
-      Logger.error("Failed to bind to log receiver");
-    }
-  }
-
   @Override
   public void onServiceConnected(ComponentName name, IBinder service) {
     this.receiver = ILogReceiver.Stub.asInterface(service);
@@ -94,6 +75,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
     try {
       this.receiver.connect(this);
       Logger.info("Connecting to log receiver");
+      this.isConnected.set(true);
     } catch (RemoteException e) {
       Logger.error("Failed to connect to log receiver", e);
       throw new RuntimeException(e);
@@ -108,7 +90,8 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
     }
     this.receiver = null;
     this.reader = null;
-    this.installed.set(false);
+    this.isBinding.set(false);
+    this.isConnected.set(false);
   }
 
   @Override
@@ -134,5 +117,66 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
     }
 
     return this.packageName;
+  }
+
+  /**
+   * @return Whether the log sender is bound to the log receiver service in AndroidIDE.
+   */
+  boolean isBinding() {
+    return isBinding.get();
+  }
+
+  /**
+   * @return Whether the log sender is connected to the service.
+   */
+  boolean isConnected() {
+    return isConnected.get();
+  }
+
+  /**
+   * Binds to the log receiver service in AndroidIDE.
+   *
+   * @param context The context used to bind to the service.
+   * @return Whether the binding was successful or not. This returns <code>true</code> if
+   * {@link Context#bindService(Intent, ServiceConnection, int)} returns true or if the log sender
+   * is already bound to the service. Otherwise <code>false</code> is returned.
+   */
+  boolean bind(Context context) {
+    if (isConnected()) {
+      Logger.warn("LogSender is already installed");
+      return true;
+    }
+
+    if (isBinding()) {
+      Logger.warn("LogSender is already being installed");
+      return true;
+    }
+
+    this.packageName = context.getPackageName();
+    if (PACKAGE_ANDROIDIDE.equals(packageName)) {
+      return false;
+    }
+
+    final Intent intent = new Intent(SERVICE_ACTION);
+    intent.setPackage(PACKAGE_ANDROIDIDE);
+    isBinding.set(context.bindService(intent, this, 0));
+
+    if (isBinding()) {
+      Logger.info("Binding to log receiver");
+    } else {
+      Logger.error("Failed to bind to log receiver");
+    }
+
+    return isBinding();
+  }
+
+  /**
+   * Unbinds from the log receiver service.
+   *
+   * @param context The context used to unbind from the service.
+   */
+  void unbind(Context context) {
+    context.unbindService(this);
+    isBinding.set(false);
   }
 }

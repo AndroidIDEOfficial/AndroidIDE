@@ -20,6 +20,7 @@ package com.itsaky.androidide.logsender;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 /**
@@ -39,7 +40,16 @@ public class LogSenderService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    logSender.doInstall(getApplicationContext());
+    if (!logSender.bind(getApplicationContext())) {
+      Toast.makeText(this, getString(R.string.msg_bind_service_failed), Toast.LENGTH_SHORT).show();
+      stopSelf();
+    }
     return START_NOT_STICKY;
+  }
+
+  @Override
+  public void onDestroy() {
+    logSender.unbind(getApplicationContext());
+    super.onDestroy();
   }
 }
