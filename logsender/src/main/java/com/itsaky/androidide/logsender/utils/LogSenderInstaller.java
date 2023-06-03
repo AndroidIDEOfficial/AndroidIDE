@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.logsender.utils;
 
+import static com.itsaky.androidide.logsender.LogSender.PACKAGE_ANDROIDIDE;
+
 import android.app.Application;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -42,6 +44,10 @@ public class LogSenderInstaller extends ContentProvider {
   @Override
   public boolean onCreate() {
     final Application application = ((Application) getContext());
+    if (PACKAGE_ANDROIDIDE.equals(application.getPackageName())) {
+      // do not send logs to self
+      return true;
+    }
     application.startService(new Intent(application, LogSenderService.class));
     return true;
   }

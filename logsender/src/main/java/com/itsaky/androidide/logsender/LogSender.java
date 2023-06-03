@@ -58,7 +58,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   /**
    * AndroidIDE's package name.
    */
-  private static final String PACKAGE_ANDROIDIDE = "com.itsaky.androidide";
+  public static final String PACKAGE_ANDROIDIDE = "com.itsaky.androidide";
 
   private LogSender() {
   }
