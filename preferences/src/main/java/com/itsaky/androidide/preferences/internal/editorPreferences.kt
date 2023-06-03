@@ -31,6 +31,7 @@ const val AUTO_SAVE = "idepref_editor_autoSave"
 const val FONT_LIGATURES = "idepref_editor_fontLigatures"
 const val FLAG_PASSWORD = "idepref_editor_flagPassword"
 const val WORD_WRAP = "idepref_editor_word_wrap"
+const val SHOW_FILE_TREE_BUTTON = "idepref_show_file_tree_button"
 const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
@@ -111,6 +112,12 @@ var wordwrap: Boolean
   get() = prefManager.getBoolean(WORD_WRAP, false)
   set(value) {
     prefManager.putBoolean(WORD_WRAP, value)
+  }
+
+var showFileTreeButton: Boolean
+  get() = prefManager.getBoolean(SHOW_FILE_TREE_BUTTON, false)
+  set(value) {
+    prefManager.putBoolean(SHOW_FILE_TREE_BUTTON, value)
   }
 
 var useMagnifier: Boolean
