@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">هل يجب على المحرر أن يرسم سلسلة ألوان hex؟</string>
   <string name="idepref_editor_word_wrap_title">التفاف النص</string>
   <string name="idepref_editor_word_wrap_summary">استخدام تغليف الكلمات للمحرر</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">تمكين المكبر</string>
   <string name="idepref_editor_use_magnifier_summary">تكبير النص في موضع المؤشر أثناء اختيار النص في المحرر</string>
   <string name="idepref_editor_title">المحرر</string>
