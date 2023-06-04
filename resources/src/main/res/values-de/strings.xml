@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">Soll der Editor Hex-Farbstrings anzeigen?</string>
   <string name="idepref_editor_word_wrap_title">Zeilenumbruch</string>
   <string name="idepref_editor_word_wrap_summary">Wordwrap des Editor benutzen</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Magnifier aktivieren</string>
   <string name="idepref_editor_use_magnifier_summary">Vergrößern Sie Text an der Cursorposition, während Sie Text im Editor auswählen</string>
   <string name="idepref_editor_title">Editor</string>
