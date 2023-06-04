@@ -18,11 +18,13 @@
 package com.itsaky.androidide.actions.etc
 
 import android.content.Context
+import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
+import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 
 /** @author Akash Yadav */
 class FileTreeAction(context: Context) : EditorActivityAction() {
@@ -50,5 +52,13 @@ class FileTreeAction(context: Context) : EditorActivityAction() {
     }
 
     return false
+  }
+
+  override fun getShowAsActionFlags(data: ActionData): Int {
+    return if (hideFileTreeButton) {
+      MenuItem.SHOW_AS_ACTION_NEVER
+    } else {
+      MenuItem.SHOW_AS_ACTION_IF_ROOM
+    }
   }
 }
