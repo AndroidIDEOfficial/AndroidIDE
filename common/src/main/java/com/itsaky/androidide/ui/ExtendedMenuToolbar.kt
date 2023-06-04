@@ -15,13 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide
+package com.itsaky.androidide.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MenuItem
 import android.view.ViewTreeObserver
 import androidx.appcompat.view.menu.MenuItemImpl
@@ -31,12 +30,8 @@ import androidx.core.view.iterator
 import com.google.android.material.appbar.MaterialToolbar
 import kotlin.math.floor
 
-// TODO Ask Akash which package this class should belong to and move it there
-
 /** @author Smooth E */
 class ExtendedMenuToolbar : MaterialToolbar {
-
-  private val TAG: String = "ExtendedMenuToolbar"
 
   private var cachedRequiredSpace: Float = 0f
   private var cachedItemWidth: Int = 0
@@ -86,7 +81,6 @@ class ExtendedMenuToolbar : MaterialToolbar {
       cachedRequiredSpace = requiredSpace
 
       if (actionMenuView?.getChildAt(0) == null) {
-        Log.d(TAG, "No view!")
         return
       }
 
@@ -121,8 +115,6 @@ class ExtendedMenuToolbar : MaterialToolbar {
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
       }
     }
-
-    Log.d(TAG, " ")
   }
 
   // https://stackoverflow.com/a/48392871

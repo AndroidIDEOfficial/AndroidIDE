@@ -209,7 +209,7 @@
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Use wordwrap of the editor</string>
   <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Move the "File Tree" button into the overflow menu of the editor's toolbar.</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the "File Tree" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Enable Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
   <string name="idepref_editor_title">Editor</string>
