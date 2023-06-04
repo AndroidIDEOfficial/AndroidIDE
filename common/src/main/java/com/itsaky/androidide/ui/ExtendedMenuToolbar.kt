@@ -46,10 +46,6 @@ class ExtendedMenuToolbar : MaterialToolbar {
     defStyleAttr
   )
 
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-  }
-
   override fun onConfigurationChanged(newConfig: Configuration?) {
     super.onConfigurationChanged(newConfig)
 
