@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">क्या एडिटर को हेक्स रंग की स्ट्रिंग ड्रा करनी चाहिए?</string>
   <string name="idepref_editor_word_wrap_title">वर्ड रैप</string>
   <string name="idepref_editor_word_wrap_summary">एडिटर के वर्डरैप का प्रयोग करें</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">मैग्नीफायर एनेबल करें</string>
   <string name="idepref_editor_use_magnifier_summary">एडिटर में टेक्स्ट का चयन करते समय कर्सर की स्थिति में टेक्स्ट को बड़ा करें</string>
   <string name="idepref_editor_title">एडिटर</string>
