@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
   <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
   <string name="idepref_editor_word_wrap_summary">Use quebra de linha no editor</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
   <string name="idepref_editor_title">Editor</string>
