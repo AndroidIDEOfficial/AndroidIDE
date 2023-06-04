@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">Düzenleyici onaltılık renk dizisi çizmeli mi?</string>
   <string name="idepref_editor_word_wrap_title">Kelime kaydırma</string>
   <string name="idepref_editor_word_wrap_summary">Editörün yazı kaydırmasını kullan</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Büyüteçi etkinleştir</string>
   <string name="idepref_editor_use_magnifier_summary">Düzenleyicide metin seçerken imleç konumundaki metni büyütün</string>
   <string name="idepref_editor_title">Editör</string>
