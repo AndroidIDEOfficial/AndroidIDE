@@ -289,7 +289,7 @@ private class CompletionsMatchLower(
 private class VisibiblePasswordFlag(
   override val key: String = FLAG_PASSWORD,
   override val title: Int = string.idepref_visiblePassword_title,
-  override val summary: Int? = string.idepref_editor_paintingflags_summary,
+  override val summary: Int? = string.idepref_visiblePassword_summary,
   override val icon: Int? = drawable.ic_password_input,
 ) : SwitchPreference(setValue = ::visiblePasswordFlag::set, getValue = ::visiblePasswordFlag::get)
 
