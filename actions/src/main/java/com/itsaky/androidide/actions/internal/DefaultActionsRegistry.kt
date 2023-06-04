@@ -158,6 +158,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
       item.setShowAsAction(action.getShowAsActionFlags(data))
     }
 
+    if (!action.enabled) {
+      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+    }
+
     action.createActionView(data)?.let { item.actionView = it }
 
     if (action !is ActionMenu) {
