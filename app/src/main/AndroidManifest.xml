@@ -34,6 +34,7 @@
     android:supportsRtl="true"
     android:theme="@style/Theme.AndroidIDE"
     tools:ignore="UnusedAttribute,MediaCapabilities">
+
     <activity
       android:name=".activities.CrashHandlerActivity"
       android:exported="true"
@@ -44,8 +45,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".activities.MainActivity"
-      android:configChanges="orientation|screenSize"
+      android:name=".activities.SplashActivity"
       android:exported="true"
       android:theme="@style/AppTheme.Splash">
       <intent-filter>
@@ -53,6 +53,11 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity
+      android:name=".activities.MainActivity"
+      android:configChanges="orientation|screenSize"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE"/>
     <activity
       android:name=".activities.editor.EditorActivityKt"
       android:configChanges="orientation|screenSize"

@@ -75,7 +75,7 @@ class IDEApplication : BaseApplication() {
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
     if (enableMaterialYou) {
-      DynamicColors.applyToActivitiesIfAvailable(this)
+     DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
