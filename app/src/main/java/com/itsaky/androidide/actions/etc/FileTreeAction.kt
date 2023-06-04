@@ -24,8 +24,7 @@ import androidx.core.view.GravityCompat
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
-import com.itsaky.androidide.preferences.internal.SHOW_FILE_TREE_BUTTON
-import com.itsaky.androidide.preferences.internal.prefManager
+import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 
 /** @author Akash Yadav */
 class FileTreeAction(context: Context) : EditorActivityAction() {
@@ -56,11 +55,10 @@ class FileTreeAction(context: Context) : EditorActivityAction() {
   }
 
   override fun getShowAsActionFlags(data: ActionData): Int {
-    return if (prefManager.getBoolean(SHOW_FILE_TREE_BUTTON)) {
-      MenuItem.SHOW_AS_ACTION_IF_ROOM
-    }
-    else {
+    return if (hideFileTreeButton) {
       MenuItem.SHOW_AS_ACTION_NEVER
+    } else {
+      MenuItem.SHOW_AS_ACTION_IF_ROOM
     }
   }
 }

@@ -33,7 +33,7 @@ import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
-import com.itsaky.androidide.preferences.internal.SHOW_FILE_TREE_BUTTON
+import com.itsaky.androidide.preferences.internal.HIDE_FILE_TREE_BUTTON
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
 import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.USE_ICU
@@ -52,7 +52,7 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
-import com.itsaky.androidide.preferences.internal.showFileTreeButton
+import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.useIcu
@@ -94,7 +94,7 @@ private class CommonConfigurations(
     addPreference(UseCustomFont())
     addPreference(UseSoftTab())
     addPreference(WordWrap())
-    addPreference(ShowFileTreeButton())
+    addPreference(HideFileTreeButton())
     addPreference(UseMagnifier())
     addPreference(UseICU())
     addPreference(AutoSave())
@@ -261,12 +261,12 @@ private class WordWrap(
 ) : SwitchPreference(setValue = ::wordwrap::set, getValue = ::wordwrap::get)
 
 @Parcelize
-private class ShowFileTreeButton(
-  override val key: String = SHOW_FILE_TREE_BUTTON,
-  override val title: Int = string.idepref_editor_show_file_tree_button_title,
-  override val summary: Int? = string.idepref_editor_show_file_tree_button_summary,
+private class HideFileTreeButton(
+  override val key: String = HIDE_FILE_TREE_BUTTON,
+  override val title: Int = string.idepref_editor_hide_file_tree_button_title,
+  override val summary: Int? = string.idepref_editor_hide_file_tree_button_summary,
   override val icon: Int? = drawable.ic_folder,
-) : SwitchPreference(setValue = ::showFileTreeButton::set, getValue = ::showFileTreeButton::get)
+) : SwitchPreference(setValue = ::hideFileTreeButton::set, getValue = ::hideFileTreeButton::get)
 
 @Parcelize
 private class UseMagnifier(

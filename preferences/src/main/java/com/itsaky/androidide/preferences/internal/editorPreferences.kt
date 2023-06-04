@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.preferences.internal
 
+import android.os.Build
+
 const val COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower"
 
 const val FLAG_WS_LEADING = "idepref_editor_wsLeading"
@@ -31,7 +33,7 @@ const val AUTO_SAVE = "idepref_editor_autoSave"
 const val FONT_LIGATURES = "idepref_editor_fontLigatures"
 const val FLAG_PASSWORD = "idepref_editor_flagPassword"
 const val WORD_WRAP = "idepref_editor_word_wrap"
-const val SHOW_FILE_TREE_BUTTON = "idepref_show_file_tree_button"
+const val HIDE_FILE_TREE_BUTTON = "idepref_hide_file_tree_button"
 const val USE_MAGNIFER = "idepref_editor_use_magnifier"
 const val USE_ICU = "idepref_editor_useIcu"
 const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
@@ -114,10 +116,22 @@ var wordwrap: Boolean
     prefManager.putBoolean(WORD_WRAP, value)
   }
 
-var showFileTreeButton: Boolean
-  get() = prefManager.getBoolean(SHOW_FILE_TREE_BUTTON, false)
+/** By default File Tree button is hidden into the overflow menu on devices running
+ * Android 11 and older and on those, where gesture navigation is disabled at the moment of
+ * first launching the app.
+ *
+ * Getting the navigation mode, however, requires a context.
+ */
+var hideFileTreeButton: Boolean
+  get() = prefManager.getBoolean(
+    HIDE_FILE_TREE_BUTTON,
+    // TODO: Decide whether should we consider the fact that Gesture Navigation is enabled to set a
+    //  default value for this preference. Getting the navigation mode requires a Context
+    //  See com.itsaky.androidide.utils.NavigationBar.kt in :common
+    Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+  )
   set(value) {
-    prefManager.putBoolean(SHOW_FILE_TREE_BUTTON, value)
+    prefManager.putBoolean(HIDE_FILE_TREE_BUTTON, value)
   }
 
 var useMagnifier: Boolean
