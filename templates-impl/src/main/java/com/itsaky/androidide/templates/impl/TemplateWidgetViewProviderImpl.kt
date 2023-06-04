@@ -214,16 +214,12 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
   ) {
     startIcon?.let {
       root.startIconDrawable = ContextCompat.getDrawable(context, it(this))
-      onStartIconClick?.let { onClick ->
-        root.setStartIconOnClickListener { onClick() }
-      }
+      onStartIconClick?.let(root::setStartIconOnClickListener)
     }
 
     endIcon?.let {
       root.endIconDrawable = ContextCompat.getDrawable(context, it(this))
-      onEndIconClick?.let { onClick ->
-        root.setEndIconOnClickListener { onClick() }
-      }
+      onEndIconClick?.let(root::setEndIconOnClickListener)
     }
   }
 }
