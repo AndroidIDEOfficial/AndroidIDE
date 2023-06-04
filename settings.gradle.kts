@@ -13,7 +13,7 @@ pluginManagement {
   }
 }
 
-plugins { id("com.mooltiverse.oss.nyx") version "2.4.1" }
+plugins { id("com.mooltiverse.oss.nyx") version "2.4.3" }
 
 extensions.configure<NyxExtension> {
   git {
