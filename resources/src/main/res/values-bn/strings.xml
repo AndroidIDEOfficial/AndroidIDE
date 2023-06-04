@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">এডিটর কী হেক্স স্ট্রিং-এ রঙ আঁকবে?</string>
   <string name="idepref_editor_word_wrap_title">শব্দ মোড়ানো</string>
   <string name="idepref_editor_word_wrap_summary">সম্পাদকের wordwrap ব্যবহার করুন</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">ম্যাগনিফায়ার সক্ষম করুন</string>
   <string name="idepref_editor_use_magnifier_summary">এডিটরে পাঠ্য নির্বাচন করার সময় কার্সার অবস্থানে পাঠ্যকে বড় করুন</string>
   <string name="idepref_editor_title">সম্পাদক</string>
