@@ -19,6 +19,7 @@ androidide-ts = { module = "com.itsaky.androidide:android-tree-sitter", version.
 androidide-ts-java = { module = "com.itsaky.androidide:tree-sitter-java", version.ref = "tree-sitter" }
 androidide-ts-json = { module = "com.itsaky.androidide:tree-sitter-json", version.ref = "tree-sitter" }
 androidide-ts-kotlin = { module = "com.itsaky.androidide:tree-sitter-kotlin", version.ref = "tree-sitter" }
+androidide-ts-log = { module = "com.itsaky.androidide:tree-sitter-log", version.ref = "tree-sitter" }
 androidide-ts-xml = { module = "com.itsaky.androidide:tree-sitter-xml", version.ref = "tree-sitter" }
 
 # Common
