@@ -190,6 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Utilizați wordwrap al editorului</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activați lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Mărirea textului în poziția cursorului în timp ce selectați textul în editor</string>
   <string name="idepref_editor_title">Editor</string>
