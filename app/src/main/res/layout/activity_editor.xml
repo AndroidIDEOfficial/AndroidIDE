@@ -20,7 +20,7 @@
       android:background="?attr/colorSurface"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
-      <com.google.android.material.appbar.MaterialToolbar
+      <com.itsaky.androidide.ExtendedMenuToolbar
         android:id="@+id/editor_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

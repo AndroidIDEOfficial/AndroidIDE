@@ -451,6 +451,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     getInstance().fillMenu(data, EDITOR_TOOLBAR, menu)
+    binding.editorToolbar.updateMenuDisplay()
   }
 
   private fun closeAll(runAfter: () -> Unit = {}) {
