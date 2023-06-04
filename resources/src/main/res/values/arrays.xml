@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,6 +16,7 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 -->
+
 <resources>
     <string-array name="dimension_units">
         <item>dp</item>

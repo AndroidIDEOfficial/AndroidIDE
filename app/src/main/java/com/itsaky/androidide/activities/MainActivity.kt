@@ -14,6 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.activities
 
 import android.content.Intent
@@ -136,7 +137,9 @@ class MainActivity : IDEActivity() {
         // template details -> template list
         if ((previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) && (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)) {
           MaterialSharedAxis.X
-        } else MaterialSharedAxis.Y
+        } else {
+          MaterialSharedAxis.Y
+        }
 
       val isForward = when {
         previous == SCREEN_MAIN && screen == SCREEN_TEMPLATE_LIST -> true

@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -15,7 +17,8 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<com.itsaky.androidide.editor.ui.IDEEditor xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/editor"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<com.itsaky.androidide.editor.ui.IDEEditor
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/editor"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent" />

@@ -22,7 +22,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.Template
 import java.util.concurrent.atomic.AtomicInteger
 

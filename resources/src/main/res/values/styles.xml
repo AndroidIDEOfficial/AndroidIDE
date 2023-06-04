@@ -1,4 +1,6 @@
-<resources><!--
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,6 +16,8 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
+
+<resources>
 
   <style name="Theme.AndroidIDE.Material" parent="Theme.Material3.Light.NoActionBar">
     <item name="colorPrimary">@color/light_colorPrimary</item>
@@ -137,4 +141,5 @@
     <item name="android:windowIsFloating">false</item>
     <item name="android:windowSoftInputMode">adjustResize</item>
   </style>
+
 </resources>
