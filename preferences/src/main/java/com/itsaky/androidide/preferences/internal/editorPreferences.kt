@@ -17,7 +17,8 @@
 
 package com.itsaky.androidide.preferences.internal
 
-import android.os.Build
+import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.utils.NavigationBar
 
 const val COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower"
 
@@ -116,20 +117,15 @@ var wordwrap: Boolean
     prefManager.putBoolean(WORD_WRAP, value)
   }
 
-/** By default File Tree button is hidden into the overflow menu on devices running
- * Android 11 and older and on those, where gesture navigation is disabled at the moment of
- * first launching the app.
- *
- * Getting the navigation mode, however, requires a context.
+/** By default the File Tree button is hidden into the overflow menu on devices where
+ * Gesture Navigation is enabled at the moment of accessing the preference.
  */
 var hideFileTreeButton: Boolean
-  get() = prefManager.getBoolean(
-    HIDE_FILE_TREE_BUTTON,
-    // TODO: Decide whether should we consider the fact that Gesture Navigation is enabled to set a
-    //  default value for this preference. Getting the navigation mode requires a Context
-    //  See com.itsaky.androidide.utils.NavigationBar.kt in :common
-    Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-  )
+  get() {
+    val navigationMode = NavigationBar.getInteractionMode(BaseApplication.getBaseInstance())
+    val gestureNavigationDisabled = navigationMode != NavigationBar.MODE_GESTURES
+    return prefManager.getBoolean(HIDE_FILE_TREE_BUTTON, gestureNavigationDisabled)
+  }
   set(value) {
     prefManager.putBoolean(HIDE_FILE_TREE_BUTTON, value)
   }
