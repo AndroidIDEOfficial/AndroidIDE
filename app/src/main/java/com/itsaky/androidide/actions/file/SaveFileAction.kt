@@ -83,6 +83,8 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
       if (saveResult.gradleSaved) {
         context.notifySyncNeeded()
       }
+
+      context.invalidateOptionsMenu()
     } else {
       log.error("Failed to save file")
       flashError(R.string.save_failed)
