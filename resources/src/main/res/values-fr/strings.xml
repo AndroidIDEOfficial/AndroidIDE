@@ -191,6 +191,8 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_editor_drawhexcolors_summary">L\'éditeur doit-il afficher les couleurs hex ?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Utiliser le Word Wrap de l\'éditeur </string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activer Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Agrandir le texte à la position du curseur lors de la sélection du texte dans l\'éditeur</string>
   <string name="idepref_editor_title">Éditeur</string>
