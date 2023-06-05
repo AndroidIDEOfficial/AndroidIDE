@@ -26,12 +26,18 @@ import com.itsaky.androidide.templates.impl.R
 import com.itsaky.androidide.templates.impl.base.createRecipe
 import com.itsaky.androidide.templates.impl.base.writeMainActivity
 import com.itsaky.androidide.templates.impl.baseProjectImpl
+import com.itsaky.androidide.templates.projectLanguageParameter
 
 private const val composeKotlinVersion = "1.7.20"
 
+private fun composeLanguageParameter() = projectLanguageParameter {
+  default = Kotlin
+  filter = { it == Kotlin }
+}
+
 // Compose template is available only in Kotlin
 fun composeActivityProject() =
-  baseProjectImpl(languageFilter = { it == Kotlin },
+  baseProjectImpl(language = composeLanguageParameter(),
     projectVersionData = ProjectVersionData(kotlin = composeKotlinVersion)) {
 
     templateName = R.string.template_compose

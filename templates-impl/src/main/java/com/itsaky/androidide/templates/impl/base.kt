@@ -17,14 +17,22 @@
 
 package com.itsaky.androidide.templates.impl
 
+import com.itsaky.androidide.templates.BooleanParameter
+import com.itsaky.androidide.templates.EnumParameter
 import com.itsaky.androidide.templates.Language
 import com.itsaky.androidide.templates.ProjectTemplate
 import com.itsaky.androidide.templates.ProjectVersionData
 import com.itsaky.androidide.templates.Sdk
+import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.base.ProjectTemplateBuilder
 import com.itsaky.androidide.templates.base.baseProject
 import com.itsaky.androidide.templates.impl.base.createRecipe
+import com.itsaky.androidide.templates.minSdkParameter
+import com.itsaky.androidide.templates.packageNameParameter
+import com.itsaky.androidide.templates.projectLanguageParameter
+import com.itsaky.androidide.templates.projectNameParameter
+import com.itsaky.androidide.templates.useKtsParameter
 
 /**
  * Indents the given string for the given [indentation level][level].
@@ -46,12 +54,17 @@ internal fun AndroidModuleTemplateBuilder.templateAsset(name: String,
   return "templates/${name}/${path}"
 }
 
-internal fun baseProjectImpl(sdkFilter: ((Sdk) -> Boolean)? = null,
-                             languageFilter: ((Language) -> Boolean)? = null,
-                             projectVersionData: ProjectVersionData = ProjectVersionData(),
-                             block: ProjectTemplateBuilder.() -> Unit
+internal fun baseProjectImpl(
+  projectName: StringParameter = projectNameParameter(),
+  packageName: StringParameter = packageNameParameter(),
+  useKts: BooleanParameter = useKtsParameter(),
+  minSdk: EnumParameter<Sdk> = minSdkParameter(),
+  language: EnumParameter<Language> = projectLanguageParameter(),
+  projectVersionData: ProjectVersionData = ProjectVersionData(),
+  block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate =
-  baseProject(sdkFilter = sdkFilter, languageFilter = languageFilter,
+  baseProject(projectName = projectName, packageName = packageName,
+    useKts = useKts, minSdk = minSdk, language = language,
     projectVersionData = projectVersionData) {
     block()
 
