@@ -190,8 +190,8 @@
   <string name="idepref_editor_drawhexcolors_summary">编辑器是否为十六进制色显示对应颜色?</string>
   <string name="idepref_editor_word_wrap_title">自动换行</string>
   <string name="idepref_editor_word_wrap_summary">在编辑器中使用自动换行</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
+  <string name="idepref_editor_hide_file_tree_button_title">隐藏文件树按钮</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">将“文件树”按钮移动到编辑器工具栏的溢出菜单中。</string>
   <string name="idepref_editor_use_magnifier_title">启用放大镜</string>
   <string name="idepref_editor_use_magnifier_summary">在编辑器中选择文本时，放大光标处的文本</string>
   <string name="idepref_editor_title">编辑器</string>
