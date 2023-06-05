@@ -69,7 +69,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
   override fun <T> createView(context: Context, widget: Widget<T>): View {
     if (widget is ParameterWidget<T>) {
-      widget.parameter.setValue(widget.parameter.default)
+      widget.parameter.setValue(widget.parameter.default, false)
     }
     return when (widget) {
       is TextFieldWidget -> createTextField(context, widget)
