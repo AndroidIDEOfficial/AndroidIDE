@@ -60,8 +60,6 @@ import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /**
  * Base class for EditorActivity. Handles logic for working with file editors.

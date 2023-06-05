@@ -164,8 +164,8 @@ object AdvancedEditProvider {
     queryString: String,
     action: (TSQuery, List<TSQueryMatch>) -> Unit
   ) {
-    TSQuery(TSLanguageXml.newInstance(), queryString).use { query ->
-      if (query.errorType != TSQueryError.None) {
+    TSQuery.create(TSLanguageXml.newInstance(), queryString).use { query ->
+      if (!query.isValid || query.errorType != TSQueryError.None) {
         throw RuntimeException("Invalid query. Please open an issue on GitHub.")
       }
 
