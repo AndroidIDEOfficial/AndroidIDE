@@ -30,6 +30,7 @@ import com.itsaky.androidide.templates.EnumParameter
 import com.itsaky.androidide.templates.ITemplateWidgetViewProvider
 import com.itsaky.androidide.templates.Parameter
 import com.itsaky.androidide.templates.Parameter.DefaultObserver
+import com.itsaky.androidide.templates.ParameterWidget
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.TextFieldParameter
@@ -66,7 +67,10 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
     }
   }
 
-  override fun createView(context: Context, widget: Widget<*>): View {
+  override fun <T> createView(context: Context, widget: Widget<T>): View {
+    if (widget is ParameterWidget<T>) {
+      widget.parameter.setValue(widget.parameter.default)
+    }
     return when (widget) {
       is TextFieldWidget -> createTextField(context, widget)
       is CheckBoxWidget -> createCheckBox(context, widget)
