@@ -18,6 +18,7 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.viewModels
@@ -38,7 +39,8 @@ import kotlin.math.ceil
  * @author Akash Yadav
  */
 class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
-  R.layout.fragment_template_list, FragmentTemplateListBinding::bind) {
+  R.layout.fragment_template_list, FragmentTemplateListBinding::bind
+) {
 
   private var adapter: TemplateListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
@@ -48,6 +50,8 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    Log.d("TemplateListFragment", "onViewCreated(view, savedInstanceState)")
 
     // Show only project templates
     val templates = ITemplateProvider.getInstance()
@@ -69,16 +73,14 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
     // This makes sure that the items are evenly distributed in the list
     // and the last row is always aligned to the start
-    binding.list.viewTreeObserver.addOnGlobalLayoutListener(object :
-      OnGlobalLayoutListener {
+    binding.list.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
       override fun onGlobalLayout() {
         binding.list.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
         val adapter = this@TemplateListFragment.adapter ?: return
         val layoutManager = this@TemplateListFragment.layoutManager ?: return
 
-        val columns =
-          layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
+        val columns = layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
         if (columns == 0) {
           return
         }

@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
 import android.view.WindowInsets
+import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.core.view.WindowCompat
 import androidx.core.view.doOnAttach
 
@@ -53,11 +54,10 @@ abstract class LimitlessIDEActivity : IDEActivity() {
     window.statusBarColor = Color.TRANSPARENT
     window.navigationBarColor = Color.TRANSPARENT
 
-    // TODO: Implement correct behaviour with LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-    //  in landscape mode
-    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-    //   window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-    // }
+    // This removes a black strip on the side where the camera cutout is in landscape mode
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+    }
   }
 
   private fun installOnDecorViewAttachedListener() {

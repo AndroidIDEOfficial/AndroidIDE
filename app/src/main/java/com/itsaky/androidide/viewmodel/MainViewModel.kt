@@ -48,6 +48,7 @@ class MainViewModel : ViewModel() {
   internal val creatingProject = MutableLiveData(false)
 
   val currentScreen: LiveData<Int> = _currentScreen
+
   val previousScreen: Int
     get() = _previousScreen.get()
 
@@ -70,6 +71,8 @@ class MainViewModel : ViewModel() {
           action.run()
         }
       })
-    } else action.run()
+    } else {
+      action.run()
+    }
   }
 }
