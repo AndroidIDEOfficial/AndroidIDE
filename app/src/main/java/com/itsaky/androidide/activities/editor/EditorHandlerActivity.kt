@@ -53,7 +53,6 @@ import com.itsaky.androidide.utils.DialogUtils.newYesNoDialog
 import com.itsaky.androidide.utils.IntentUtils.openImage
 import com.itsaky.androidide.utils.UniqueNameBuilder
 import com.itsaky.androidide.utils.flashSuccess
-import io.github.rosemoe.sora.event.ContentChangeEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
@@ -439,15 +438,20 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   open fun ensureToolbarMenu(menu: Menu) {
     menu.clear()
+
     val data = ActionData()
     val currentEditor = getCurrentEditor()
+
     data.put(Context::class.java, this)
     data.put(CodeEditorView::class.java, currentEditor)
+
     if (currentEditor != null) {
       data.put(IDEEditor::class.java, currentEditor.editor)
       data.put(File::class.java, currentEditor.editor.file)
     }
+
     getInstance().fillMenu(data, EDITOR_TOOLBAR, menu)
+    binding.editorToolbar.updateMenuDisplay()
   }
 
   private fun closeAll(runAfter: () -> Unit = {}) {

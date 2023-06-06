@@ -52,5 +52,5 @@ interface ITemplateWidgetViewProvider {
    * @param widget The widget to create the view for.
    * @return The view.
    */
-  fun createView(context: Context, widget: Widget<*>): View
+  fun <T> createView(context: Context, widget: Widget<T>): View
 }

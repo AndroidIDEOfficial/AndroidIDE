@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.templates.base
 
+import com.itsaky.androidide.templates.BooleanParameter
 import com.itsaky.androidide.templates.CheckBoxWidget
+import com.itsaky.androidide.templates.EnumParameter
 import com.itsaky.androidide.templates.FileTemplate
 import com.itsaky.androidide.templates.FileTemplateRecipeResult
 import com.itsaky.androidide.templates.Language
@@ -37,6 +39,7 @@ import com.itsaky.androidide.templates.ProjectVersionData
 import com.itsaky.androidide.templates.R
 import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
+import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.TextFieldWidget
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
 import com.itsaky.androidide.templates.enumParameter
@@ -57,21 +60,15 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
  *
  * @param block Function to configure the template.
  */
-fun baseProject(sdkFilter: ((Sdk) -> Boolean)? = null,
-                languageFilter: ((Language) -> Boolean)? = null,
+fun baseProject(projectName: StringParameter = projectNameParameter(),
+                packageName: StringParameter = packageNameParameter(),
+                useKts: BooleanParameter = useKtsParameter(),
+                minSdk: EnumParameter<Sdk> = minSdkParameter(),
+                language: EnumParameter<Language> = projectLanguageParameter(),
                 projectVersionData: ProjectVersionData = ProjectVersionData(),
                 block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
-    val projectName = projectNameParameter()
-    val packageName = packageNameParameter()
-    val useKts = useKtsParameter()
-    val minSdk = minSdkParameter {
-      filter = sdkFilter
-    }
-    val language = projectLanguageParameter {
-      filter = languageFilter
-    }
 
     // When project name is changed, change the package name accordingly
     projectName.observe { name ->

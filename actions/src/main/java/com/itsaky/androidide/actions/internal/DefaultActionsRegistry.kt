@@ -119,6 +119,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   private fun addActionToMenu(menu: Menu, action: ActionItem, data: ActionData) {
     val context = data[Context::class.java]
+
     val item: MenuItem = if (action is ActionMenu) {
       val sub = menu.addSubMenu(action.label)
 
@@ -141,6 +142,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     }
 
     item.isEnabled = action.enabled
+
     item.icon = action.icon?.apply {
       colorFilter = PorterDuffColorFilter(context!!.resolveAttr(R.attr.colorOnSurface), SRC_ATOP)
     }
@@ -154,6 +156,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
     if (action.getShowAsActionFlags(data) != -1) {
       item.setShowAsAction(action.getShowAsActionFlags(data))
+    }
+
+    if (!action.enabled) {
+      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
     }
 
     action.createActionView(data)?.let { item.actionView = it }

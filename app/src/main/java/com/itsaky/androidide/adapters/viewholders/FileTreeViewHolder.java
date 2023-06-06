@@ -56,9 +56,13 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
     binding.filetreeIcon.setImageResource(icon);
 
     final var root = applyPadding(node, binding, dp15);
-    chevron.setVisibility(file.isFile() ? View.INVISIBLE : View.VISIBLE);
 
-    updateChevronIcon(node.isExpanded());
+    if (file.isDirectory()) {
+      chevron.setVisibility(View.VISIBLE);
+      updateChevronIcon(node.isExpanded());
+    } else {
+      chevron.setVisibility(View.INVISIBLE);
+    }
 
     return root;
   }
