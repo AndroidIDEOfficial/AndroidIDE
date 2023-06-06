@@ -18,6 +18,7 @@
 package com.itsaky.androidide.activities
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
@@ -46,8 +47,10 @@ import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.PaddingSide
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
+import com.itsaky.androidide.utils.setPadding
 import com.itsaky.androidide.viewmodel.MainViewModel
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_MAIN
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_DETAILS
@@ -114,6 +117,11 @@ class MainActivity : LimitlessIDEActivity() {
 
     onBackPressedDispatcher.addCallback(/* owner = */
       this, /* onBackPressedCallback = */ onBackPressedCallback)
+  }
+
+  override fun onInsetsUpdated(insets: Rect) {
+    super.onInsetsUpdated(insets)
+    _binding!!.fragmentContainersParent.setPadding(insets.bottom, PaddingSide.BOTTOM)
   }
 
   override fun onStart() {

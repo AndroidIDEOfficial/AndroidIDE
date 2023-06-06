@@ -18,9 +18,15 @@
 package com.itsaky.androidide.app
 
 import android.graphics.Color
+import android.graphics.Insets
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.View
+import android.view.WindowInsets
 import androidx.core.view.WindowCompat
+import androidx.core.view.doOnAttach
 
 /**
  * Same as IDEActivity but DecorFitsSystemWindows is set to false
@@ -33,11 +39,13 @@ abstract class LimitlessIDEActivity : IDEActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     makeLimitless()
+    installOnDecorViewAttachedListener()
   }
 
   override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
     super.onCreate(savedInstanceState, persistentState)
     makeLimitless()
+    installOnDecorViewAttachedListener()
   }
 
   private fun makeLimitless() {
@@ -51,5 +59,44 @@ abstract class LimitlessIDEActivity : IDEActivity() {
     //   window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
     // }
   }
+
+  private fun installOnDecorViewAttachedListener() {
+    window.decorView.doOnAttach { decorView -> updateInsets(decorView) }
+  }
+
+  private fun updateInsets(decorView: View)
+  {
+    val insets: Rect
+    val rootWindowInsets = decorView.rootWindowInsets
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+      val receivedInsets: Insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val typeMask = WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
+        rootWindowInsets.getInsetsIgnoringVisibility(typeMask)
+      } else {
+        decorView.rootWindowInsets.stableInsets
+      }
+
+      insets = Rect(
+        receivedInsets.left,
+        receivedInsets.top,
+        receivedInsets.right,
+        receivedInsets.bottom
+      )
+    } else {
+      insets = Rect(
+        rootWindowInsets.stableInsetLeft,
+        rootWindowInsets.stableInsetTop,
+        rootWindowInsets.stableInsetRight,
+        rootWindowInsets.stableInsetBottom
+      )
+    }
+
+    onInsetsUpdated(insets)
+  }
+
+  /** Called when insets are updated */
+  open fun onInsetsUpdated(insets: Rect) { }
 
 }
