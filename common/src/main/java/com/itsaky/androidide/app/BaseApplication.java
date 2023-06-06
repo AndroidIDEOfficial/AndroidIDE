@@ -43,7 +43,7 @@ public  class BaseApplication extends Application {
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
-  public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate.php";
+  public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
 
   // TODO Replace when available on website
   public static final String DOCS_URL = BuildInfo.REPO_URL + "/tree/main/docs";
