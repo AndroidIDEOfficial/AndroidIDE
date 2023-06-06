@@ -34,7 +34,6 @@
     android:supportsRtl="true"
     android:theme="@style/Theme.AndroidIDE"
     tools:ignore="UnusedAttribute,MediaCapabilities">
-
     <activity
       android:name=".activities.CrashHandlerActivity"
       android:exported="true"

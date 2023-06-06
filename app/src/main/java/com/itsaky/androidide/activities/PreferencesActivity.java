@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.LimitlessIDEActivity;
 import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
 import com.itsaky.androidide.fragments.IDEPreferencesFragment;
 import com.itsaky.androidide.preferences.AboutPreferences;
@@ -33,7 +33,7 @@ import com.itsaky.androidide.preferences.IDEPreferences;
 
 import java.util.ArrayList;
 
-public class PreferencesActivity extends IDEActivity {
+public class PreferencesActivity extends LimitlessIDEActivity {
 
   private ActivityPreferencesBinding binding;
   private IDEPreferencesFragment rootFragment;
@@ -67,6 +67,7 @@ public class PreferencesActivity extends IDEActivity {
   }
   
   @Override
+  @NonNull
   protected View bindLayout() {
     binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
     return binding.getRoot();

@@ -35,7 +35,7 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.app.IDEActivity
+import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
@@ -54,7 +54,7 @@ import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_D
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_LIST
 import java.io.File
 
-class MainActivity : IDEActivity() {
+class MainActivity : LimitlessIDEActivity() {
 
   private val viewModel by viewModels<MainViewModel>()
   private var _binding: ActivityMainBinding? = null

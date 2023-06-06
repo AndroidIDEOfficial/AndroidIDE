@@ -13,7 +13,8 @@
     android:layout_height="wrap_content"
     android:elevation="8dp"
     app:elevation="8dp"
-    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.MaterialToolbar
       android:id="@+id/toolbar"

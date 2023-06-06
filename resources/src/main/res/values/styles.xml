@@ -17,7 +17,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
   <style name="Theme.AndroidIDE.Material" parent="Theme.Material3.Light.NoActionBar">
     <item name="colorPrimary">@color/light_colorPrimary</item>
@@ -54,6 +54,7 @@
     <item name="colorOnSurfaceVariant">@color/light_colorOnSurfaceVariant</item>
 
     <item name="colorOutline">@color/light_colorOutline</item>
+
   </style>
 
   <style name="Theme.AndroidIDE.Base" parent="Theme.AndroidIDE.Material">
@@ -72,7 +73,24 @@
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">
+    <!--
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+    <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
+    -->
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
     <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+  </style>
+
+  <style
+    name="TextAppearance.AndroidIDE.TitleLarge.Bold"
+    parent="TextAppearance.Material3.TitleLarge">
+    <item name="android:textStyle">bold</item>
+    <item name="android:textAlignment">center</item>
   </style>
 
   <style name="TextAppearance.AndroidIDE.BodySmall" parent="TextAppearance.Material3.BodySmall">
