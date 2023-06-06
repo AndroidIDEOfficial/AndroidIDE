@@ -18,7 +18,6 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.viewModels
@@ -45,23 +44,18 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
   private var adapter: TemplateListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
 
-  private val viewModel by viewModels<MainViewModel>(
-    ownerProducer = { requireActivity() })
+  private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    Log.d("TemplateListFragment", "onViewCreated(view, savedInstanceState)")
-
     // Show only project templates
-    val templates = ITemplateProvider.getInstance()
+    val templates = ITemplateProvider.getInstance(true)
       .getTemplates()
       .filterIsInstance<ProjectTemplate>()
 
-    layoutManager =
-      FlexboxLayoutManager(requireContext(), FlexDirection.ROW).apply {
-        justifyContent = JustifyContent.SPACE_EVENLY
-      }
+    layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
+    layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
 
     adapter = TemplateListAdapter(templates) { template, _ ->
       viewModel.template.value = template
