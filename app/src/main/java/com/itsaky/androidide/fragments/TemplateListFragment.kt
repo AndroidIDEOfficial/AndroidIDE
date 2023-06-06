@@ -44,6 +44,8 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
   private var adapter: TemplateListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
 
+  private lateinit var globalLayoutListener: OnGlobalLayoutListener
+
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,10 +69,8 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
     // This makes sure that the items are evenly distributed in the list
     // and the last row is always aligned to the start
-    binding.list.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+    globalLayoutListener = object : OnGlobalLayoutListener {
       override fun onGlobalLayout() {
-        binding.list.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
         val adapter = this@TemplateListFragment.adapter ?: return
         val layoutManager = this@TemplateListFragment.layoutManager ?: return
 
@@ -92,10 +92,17 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
         adapter.fillDiff(diff)
       }
-    })
+    }
+    binding.list.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
     binding.exitButton.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_MAIN)
     }
   }
+
+  override fun onDestroyView() {
+    binding.list.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
+    super.onDestroyView()
+  }
+
 }
