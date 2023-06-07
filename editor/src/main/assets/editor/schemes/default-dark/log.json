@@ -10,7 +10,7 @@
     "err.pid": "@log.err.text",
     "err.tid": "@log.err.text",
     "err.tag" : "@log.err.text",
-    "err.message": "@log.err.text",
+    "err.msg": "@log.err.text",
     "err.priority": {
       "fg": "@log.err.pr.fg",
       "bg": "@log.err.pr.bg"
@@ -21,7 +21,7 @@
     "warn.pid": "@log.warn.text",
     "warn.tid": "@log.warn.text",
     "warn.tag" : "@log.warn.text",
-    "warn.message": "@log.warn.text",
+    "warn.msg": "@log.warn.text",
     "warn.priority": {
       "fg": "@log.warn.pr.fg",
       "bg": "@log.warn.pr.bg"
@@ -32,7 +32,7 @@
     "info.pid": "@log.info.text",
     "info.tid": "@log.info.text",
     "info.tag" : "@log.info.text",
-    "info.message": "@log.info.text",
+    "info.msg": "@log.info.text",
     "info.priority": {
       "fg": "@log.info.pr.fg",
       "bg": "@log.info.pr.bg"
@@ -43,7 +43,7 @@
     "debug.pid": "@log.debug.text",
     "debug.tid": "@log.debug.text",
     "debug.tag" : "@log.debug.text",
-    "debug.message": "@log.debug.text",
+    "debug.msg": "@log.debug.text",
     "debug.priority": {
       "fg": "@log.debug.pr.fg",
       "bg": "@log.debug.pr.bg"
@@ -54,7 +54,7 @@
     "verbose.pid": "@log.verbose.text",
     "verbose.tid": "@log.verbose.text",
     "verbose.tag" : "@log.verbose.text",
-    "verbose.message": "@log.verbose.text",
+    "verbose.msg": "@log.verbose.text",
     "verbose.priority": {
       "fg": "@log.verbose.pr.fg",
       "bg": "@log.verbose.pr.bg"
