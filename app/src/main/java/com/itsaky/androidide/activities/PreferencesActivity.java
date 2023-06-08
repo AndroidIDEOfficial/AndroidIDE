@@ -17,8 +17,10 @@
 
 package com.itsaky.androidide.activities;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -38,6 +40,10 @@ public class PreferencesActivity extends LimitlessIDEActivity {
   private ActivityPreferencesBinding binding;
   private IDEPreferencesFragment rootFragment;
 
+  public PreferencesActivity() {
+    super(true);
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -47,7 +53,7 @@ public class PreferencesActivity extends LimitlessIDEActivity {
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
-  
+
     if (savedInstanceState != null) {
       return;
     }
@@ -59,13 +65,41 @@ public class PreferencesActivity extends LimitlessIDEActivity {
 
     final var args = new Bundle();
     args.putParcelableArrayList(
-        IDEPreferencesFragment.EXTRA_CHILDREN, new ArrayList<>(prefs.getChildren()));
+            IDEPreferencesFragment.EXTRA_CHILDREN,
+            new ArrayList<>(prefs.getChildren())
+    );
     
     final var root = getRootFragment();
     root.setArguments(args);
     loadFragment(root);
   }
-  
+
+  @Override
+  public void onInsetsUpdated(@NonNull Rect insets) {
+    super.onInsetsUpdated(insets);
+
+    View toolbar = binding.toolbar;
+    toolbar.setPadding(
+            toolbar.getPaddingLeft() + insets.left,
+            toolbar.getPaddingTop(),
+            toolbar.getPaddingRight() + insets.right,
+            toolbar.getPaddingBottom()
+    );
+
+    View fragmentContainer = binding.fragmentContainerParent;
+    fragmentContainer.setPadding(
+            fragmentContainer.getPaddingLeft() + insets.left,
+            fragmentContainer.getPaddingTop(),
+            fragmentContainer.getPaddingRight() + insets.right,
+            fragmentContainer.getPaddingBottom()
+    );
+
+    binding.paddingDistributor.setLayoutParams(new LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            insets.bottom
+    ));
+  }
+
   @Override
   @NonNull
   protected View bindLayout() {
@@ -77,8 +111,8 @@ public class PreferencesActivity extends LimitlessIDEActivity {
     return rootFragment == null ? rootFragment = new IDEPreferencesFragment() : rootFragment;
   }
 
-  private void loadFragment(Fragment frag) {
-    super.loadFragment(frag, binding.fragmentContainer.getId());
+  private void loadFragment(Fragment fragment) {
+    super.loadFragment(fragment, binding.fragmentContainer.getId());
   }
 
   @Override

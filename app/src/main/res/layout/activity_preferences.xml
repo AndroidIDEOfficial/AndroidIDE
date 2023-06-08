@@ -23,11 +23,38 @@
 
   </com.google.android.material.appbar.AppBarLayout>
 
-
-  <FrameLayout
-    android:id="@+id/fragmentContainer"
+  <androidx.core.widget.NestedScrollView
+    android:id="@+id/fragment_container_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+
+      <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+      <!--
+        TODO: Implement a custom view which is meant to be placed at the end of
+          a ScrollView and will have dimensions
+          of match_parent - [ navigation bar height ] (width / height)
+      -->
+      <!--
+        This view fills up the space on the bottom of the scroll for the content
+        above it to not be blocked by the navigation bar
+      -->
+      <FrameLayout
+        android:id="@+id/padding_distributor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+    </LinearLayout>
+
+  </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

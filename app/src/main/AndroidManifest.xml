@@ -61,9 +61,7 @@
       android:configChanges="orientation|screenSize"
       android:launchMode="singleTop"
       android:windowSoftInputMode="adjustResize" />
-    <activity
-      android:name=".activities.PreferencesActivity"
-      android:configChanges="orientation|screenSize" />
+    <activity android:name=".activities.PreferencesActivity" />
     <activity
       android:name=".activities.AboutActivity"
       android:configChanges="orientation|screenSize" />

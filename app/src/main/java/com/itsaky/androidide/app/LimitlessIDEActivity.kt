@@ -17,25 +17,28 @@
 
 package com.itsaky.androidide.app
 
+import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.Insets
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.View
-import android.view.WindowInsets
+import android.util.TypedValue
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.core.view.WindowCompat
 import androidx.core.view.doOnAttach
+import com.itsaky.androidide.utils.NavigationBar
+import com.itsaky.androidide.utils.getInsets
 
 /**
  * Same as IDEActivity but DecorFitsSystemWindows is set to false
- * Useful for creating immersive experiences
+ * Useful for creating immersive edge-to-edge experiences
  *
  * @author Smooth E
  */
-abstract class LimitlessIDEActivity : IDEActivity() {
+abstract class LimitlessIDEActivity(
+  private val highlightNavigationBar: Boolean = false
+) : IDEActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -51,8 +54,8 @@ abstract class LimitlessIDEActivity : IDEActivity() {
 
   private fun makeLimitless() {
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    window.statusBarColor = Color.TRANSPARENT
-    window.navigationBarColor = Color.TRANSPARENT
+
+    paintNavigationBar()
 
     // This removes a black strip on the side where the camera cutout is in landscape mode
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -61,42 +64,39 @@ abstract class LimitlessIDEActivity : IDEActivity() {
   }
 
   private fun installOnDecorViewAttachedListener() {
-    window.decorView.doOnAttach { decorView -> updateInsets(decorView) }
+    window.decorView.doOnAttach { decorView -> onInsetsUpdated(getInsets(decorView)) }
   }
 
-  private fun updateInsets(decorView: View)
-  {
-    val insets: Rect
-    val rootWindowInsets = decorView.rootWindowInsets
+  /** Called whenever insets are updated */
+  open fun onInsetsUpdated(insets: Rect) { }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+  private fun paintNavigationBar() {
+    window.statusBarColor = Color.TRANSPARENT
+    window.navigationBarColor = Color.TRANSPARENT
 
-      val receivedInsets: Insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val typeMask = WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
-        rootWindowInsets.getInsetsIgnoringVisibility(typeMask)
-      } else {
-        decorView.rootWindowInsets.stableInsets
-      }
-
-      insets = Rect(
-        receivedInsets.left,
-        receivedInsets.top,
-        receivedInsets.right,
-        receivedInsets.bottom
-      )
-    } else {
-      insets = Rect(
-        rootWindowInsets.stableInsetLeft,
-        rootWindowInsets.stableInsetTop,
-        rootWindowInsets.stableInsetRight,
-        rootWindowInsets.stableInsetBottom
-      )
+    if (!highlightNavigationBar) {
+      return
     }
 
-    onInsetsUpdated(insets)
-  }
+    val refrainHighlighting =
+      NavigationBar.getInteractionMode(this) == NavigationBar.MODE_GESTURES ||
+      resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-  /** Called when insets are updated */
-  open fun onInsetsUpdated(insets: Rect) { }
+    if (refrainHighlighting) {
+      return
+    }
+
+    var id = com.google.android.material.R.attr.colorSurface
+    var typedValue = TypedValue()
+    theme.resolveAttribute(id, typedValue, true)
+    window.navigationBarColor = typedValue.data
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      id = com.google.android.material.R.attr.colorOutlineVariant
+      typedValue = TypedValue()
+      theme.resolveAttribute(id, typedValue, true)
+      window.navigationBarDividerColor = typedValue.data
+    }
+  }
 
 }
