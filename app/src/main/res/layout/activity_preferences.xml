@@ -37,19 +37,9 @@
       <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
-      <!--
-        TODO: Implement a custom view which is meant to be placed at the end of
-          a ScrollView and will have dimensions
-          of match_parent - [ navigation bar height ] (width / height)
-      -->
-      <!--
-        This view fills up the space on the bottom of the scroll for the content
-        above it to not be blocked by the navigation bar
-      -->
-      <FrameLayout
-        android:id="@+id/padding_distributor"
+      <com.itsaky.androidide.ui.BottomInsetHeightDistributor
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
