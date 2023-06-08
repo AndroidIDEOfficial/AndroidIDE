@@ -31,7 +31,7 @@ import com.itsaky.androidide.preferences.IPreferenceScreen
 class IDEPreferencesFragment : BasePreferenceFragment() {
 
   private var children: List<IPreference> = emptyList()
-  
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -78,6 +78,7 @@ class IDEPreferencesFragment : BasePreferenceFragment() {
   }
 
   companion object {
+
     const val EXTRA_CHILDREN = "idepref_children"
   }
 }

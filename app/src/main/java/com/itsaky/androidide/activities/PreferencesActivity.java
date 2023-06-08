@@ -20,10 +20,8 @@ package com.itsaky.androidide.activities;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.LimitlessIDEActivity;
 import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
@@ -31,7 +29,6 @@ import com.itsaky.androidide.fragments.IDEPreferencesFragment;
 import com.itsaky.androidide.preferences.AboutPreferences;
 import com.itsaky.androidide.preferences.ConfigurationPreferences;
 import com.itsaky.androidide.preferences.IDEPreferences;
-
 import java.util.ArrayList;
 
 public class PreferencesActivity extends LimitlessIDEActivity {
@@ -56,7 +53,7 @@ public class PreferencesActivity extends LimitlessIDEActivity {
     if (savedInstanceState != null) {
       return;
     }
-    
+
     final var prefs = IDEPreferences.INSTANCE;
     prefs.getChildren().clear();
     prefs.addPreference(new ConfigurationPreferences());
@@ -64,10 +61,10 @@ public class PreferencesActivity extends LimitlessIDEActivity {
 
     final var args = new Bundle();
     args.putParcelableArrayList(
-            IDEPreferencesFragment.EXTRA_CHILDREN,
-            new ArrayList<>(prefs.getChildren())
+        IDEPreferencesFragment.EXTRA_CHILDREN,
+        new ArrayList<>(prefs.getChildren())
     );
-    
+
     final var root = getRootFragment();
     root.setArguments(args);
     loadFragment(root);
@@ -79,18 +76,18 @@ public class PreferencesActivity extends LimitlessIDEActivity {
 
     View toolbar = binding.toolbar;
     toolbar.setPadding(
-            toolbar.getPaddingLeft() + insets.left,
-            toolbar.getPaddingTop(),
-            toolbar.getPaddingRight() + insets.right,
-            toolbar.getPaddingBottom()
+        toolbar.getPaddingLeft() + insets.left,
+        toolbar.getPaddingTop(),
+        toolbar.getPaddingRight() + insets.right,
+        toolbar.getPaddingBottom()
     );
 
     View fragmentContainer = binding.fragmentContainerParent;
     fragmentContainer.setPadding(
-            fragmentContainer.getPaddingLeft() + insets.left,
-            fragmentContainer.getPaddingTop(),
-            fragmentContainer.getPaddingRight() + insets.right,
-            fragmentContainer.getPaddingBottom()
+        fragmentContainer.getPaddingLeft() + insets.left,
+        fragmentContainer.getPaddingTop(),
+        fragmentContainer.getPaddingRight() + insets.right,
+        fragmentContainer.getPaddingBottom()
     );
   }
 
