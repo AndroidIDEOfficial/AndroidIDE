@@ -23,12 +23,12 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.TypedValue
 import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.core.view.WindowCompat
 import androidx.core.view.doOnAttach
 import com.itsaky.androidide.utils.NavigationBar
 import com.itsaky.androidide.utils.getInsets
+import com.itsaky.androidide.utils.resolveAttr
 
 /**
  * Same as IDEActivity but DecorFitsSystemWindows is set to false
@@ -86,16 +86,12 @@ abstract class LimitlessIDEActivity(
       return
     }
 
-    var id = com.google.android.material.R.attr.colorSurface
-    var typedValue = TypedValue()
-    theme.resolveAttribute(id, typedValue, true)
-    window.navigationBarColor = typedValue.data
+    val navigationBarColor = resolveAttr(com.google.android.material.R.attr.colorSurface)
+    window.navigationBarColor = navigationBarColor
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-      id = com.google.android.material.R.attr.colorOutlineVariant
-      typedValue = TypedValue()
-      theme.resolveAttribute(id, typedValue, true)
-      window.navigationBarDividerColor = typedValue.data
+      val dividerColor = resolveAttr(com.google.android.material.R.attr.colorOutlineVariant)
+      window.navigationBarDividerColor = dividerColor
     }
   }
 

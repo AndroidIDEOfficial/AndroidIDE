@@ -19,8 +19,10 @@ package com.itsaky.androidide.ui
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.doOnAttach
+import androidx.core.view.updateLayoutParams
 import com.itsaky.androidide.utils.getInsets
 
 /**
@@ -51,10 +53,10 @@ class BottomInsetHeightDistributor : FrameLayout {
   }
 
   private fun applyLayoutParameters() {
-    doOnAttach {
-      val params = layoutParams
-      params.height = getInsets(this).bottom
-      layoutParams = params
+    doOnAttach { view ->
+      updateLayoutParams<ViewGroup.LayoutParams> {
+        height = getInsets(view).bottom
+      }
     }
   }
 

@@ -129,7 +129,7 @@ class MainActivity : LimitlessIDEActivity() {
 
   override fun onInsetsUpdated(insets: Rect) {
     super.onInsetsUpdated(insets)
-    _binding!!.fragmentContainersParent.setPadding(insets.left, 0, insets.right, insets.bottom)
+    binding.fragmentContainersParent.setPadding(insets.left, 0, insets.right, insets.bottom)
   }
 
   override fun onStart() {
