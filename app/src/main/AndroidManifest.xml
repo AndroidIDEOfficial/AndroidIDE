@@ -44,8 +44,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name=".activities.MainActivity"
-      android:configChanges="orientation|screenSize"
+      android:name=".activities.SplashActivity"
       android:exported="true"
       android:theme="@style/AppTheme.Splash">
       <intent-filter>
@@ -54,13 +53,15 @@
       </intent-filter>
     </activity>
     <activity
+      android:name=".activities.MainActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AndroidIDE"/>
+    <activity
       android:name=".activities.editor.EditorActivityKt"
       android:configChanges="orientation|screenSize"
       android:launchMode="singleTop"
       android:windowSoftInputMode="adjustResize" />
-    <activity
-      android:name=".activities.PreferencesActivity"
-      android:configChanges="orientation|screenSize" />
+    <activity android:name=".activities.PreferencesActivity" />
     <activity
       android:name=".activities.AboutActivity"
       android:configChanges="orientation|screenSize" />

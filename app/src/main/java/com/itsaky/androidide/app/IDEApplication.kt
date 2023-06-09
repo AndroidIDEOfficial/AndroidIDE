@@ -15,6 +15,7 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
 package com.itsaky.androidide.app
 
 import android.content.Intent
@@ -75,7 +76,7 @@ class IDEApplication : BaseApplication() {
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
     if (enableMaterialYou) {
-      DynamicColors.applyToActivitiesIfAvailable(this)
+     DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))

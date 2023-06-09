@@ -38,26 +38,26 @@ import kotlin.math.ceil
  * @author Akash Yadav
  */
 class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
-  R.layout.fragment_template_list, FragmentTemplateListBinding::bind) {
+  R.layout.fragment_template_list, FragmentTemplateListBinding::bind
+) {
 
   private var adapter: TemplateListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
 
-  private val viewModel by viewModels<MainViewModel>(
-    ownerProducer = { requireActivity() })
+  private lateinit var globalLayoutListener: OnGlobalLayoutListener
+
+  private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
     // Show only project templates
-    val templates = ITemplateProvider.getInstance()
+    val templates = ITemplateProvider.getInstance(true)
       .getTemplates()
       .filterIsInstance<ProjectTemplate>()
 
-    layoutManager =
-      FlexboxLayoutManager(requireContext(), FlexDirection.ROW).apply {
-        justifyContent = JustifyContent.SPACE_EVENLY
-      }
+    layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
+    layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
 
     adapter = TemplateListAdapter(templates) { template, _ ->
       viewModel.template.value = template
@@ -69,16 +69,12 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
     // This makes sure that the items are evenly distributed in the list
     // and the last row is always aligned to the start
-    binding.list.viewTreeObserver.addOnGlobalLayoutListener(object :
-      OnGlobalLayoutListener {
+    globalLayoutListener = object : OnGlobalLayoutListener {
       override fun onGlobalLayout() {
-        binding.list.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
         val adapter = this@TemplateListFragment.adapter ?: return
         val layoutManager = this@TemplateListFragment.layoutManager ?: return
 
-        val columns =
-          layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
+        val columns = layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
         if (columns == 0) {
           return
         }
@@ -96,10 +92,17 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
         adapter.fillDiff(diff)
       }
-    })
+    }
+    binding.list.viewTreeObserver.addOnGlobalLayoutListener(globalLayoutListener)
 
     binding.exitButton.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_MAIN)
     }
   }
+
+  override fun onDestroyView() {
+    binding.list.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
+    super.onDestroyView()
+  }
+
 }

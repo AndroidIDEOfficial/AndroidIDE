@@ -156,11 +156,17 @@ abstract class BaseEditorActivity :
   }
 
   protected abstract fun provideCurrentEditor(): CodeEditorView?
+
   protected abstract fun provideEditorAt(index: Int): CodeEditorView?
+
   protected abstract fun doOpenFile(file: File, selection: Range?)
+
   protected abstract fun doSaveAll(): Boolean
+
   protected abstract fun doDismissSearchProgress()
+
   protected abstract fun doConfirmProjectClose()
+
   protected abstract fun getOpenedFiles(): List<OpenedFile>
 
   protected open fun preDestroy() {

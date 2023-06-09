@@ -14,12 +14,15 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.activities
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -34,7 +37,7 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.app.IDEActivity
+import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
@@ -53,7 +56,7 @@ import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_D
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_LIST
 import java.io.File
 
-class MainActivity : IDEActivity() {
+class MainActivity : LimitlessIDEActivity() {
 
   private val viewModel by viewModels<MainViewModel>()
   private var _binding: ActivityMainBinding? = null
@@ -109,10 +112,24 @@ class MainActivity : IDEActivity() {
       }
     }
 
-    viewModel.setScreen(SCREEN_MAIN)
+    Log.d("MainActivity", "Current screen: ${viewModel.currentScreen.value}")
+    Log.d("MainActivity", "Previous screen: ${viewModel.previousScreen}")
 
-    onBackPressedDispatcher.addCallback(/* owner = */
-      this, /* onBackPressedCallback = */ onBackPressedCallback)
+    // Data in a ViewModel is kept between activity rebuilds on
+    // configuration changes (i.e. screen rotation)
+    // * previous == -1 and current == -1 -> this is an initial instantiation of the activity
+    if (viewModel.currentScreen.value == -1 && viewModel.previousScreen == -1) {
+      viewModel.setScreen(SCREEN_MAIN)
+    } else {
+      onScreenChanged(viewModel.currentScreen.value)
+    }
+
+    onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+  }
+
+  override fun onInsetsUpdated(insets: Rect) {
+    super.onInsetsUpdated(insets)
+    binding.fragmentContainersParent.setPadding(insets.left, 0, insets.right, insets.bottom)
   }
 
   override fun onStart() {
@@ -130,13 +147,18 @@ class MainActivity : IDEActivity() {
   private fun onScreenChanged(screen: Int?) {
     val previous = viewModel.previousScreen
     if (previous != -1) {
-      val axis =
-        // template list -> template details
-        // ------- OR -------
-        // template details -> template list
-        if ((previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) && (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)) {
-          MaterialSharedAxis.X
-        } else MaterialSharedAxis.Y
+      // template list -> template details
+      // ------- OR -------
+      // template details -> template list
+      val setAxisToX =
+        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
+        (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
+
+      val axis = if (setAxisToX) {
+        MaterialSharedAxis.X
+      } else {
+        MaterialSharedAxis.Y
+      }
 
       val isForward = when {
         previous == SCREEN_MAIN && screen == SCREEN_TEMPLATE_LIST -> true
@@ -144,14 +166,15 @@ class MainActivity : IDEActivity() {
         previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_TEMPLATE_LIST -> false
         previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_MAIN -> false
         previous == SCREEN_TEMPLATE_LIST && screen == SCREEN_MAIN -> false
-        else -> throw IllegalStateException("Invalid screen states")
+        else -> throw IllegalStateException(
+          "Invalid screen states. Previous: $previous Current: $screen"
+        )
       }
 
       val transition = MaterialSharedAxis(axis, isForward)
       transition.doOnEnd {
         viewModel.isTransitionInProgress = false
-        onBackPressedCallback.isEnabled =
-          viewModel.currentScreen.value != SCREEN_MAIN
+        onBackPressedCallback.isEnabled = viewModel.currentScreen.value != SCREEN_MAIN
       }
 
       viewModel.isTransitionInProgress = true
@@ -165,8 +188,7 @@ class MainActivity : IDEActivity() {
       else -> throw IllegalArgumentException("Invalid screen id: '$screen'")
     }
 
-    for (fragment in arrayOf(binding.main, binding.templateList,
-      binding.templateDetails)) {
+    for (fragment in arrayOf(binding.main, binding.templateList, binding.templateDetails)) {
       fragment.isVisible = fragment == currentFragment
     }
   }

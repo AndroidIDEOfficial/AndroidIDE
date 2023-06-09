@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.blankj.utilcode.util.ConvertUtils
-import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.shape.CornerFamily
 import com.itsaky.androidide.adapters.TemplateListAdapter.ViewHolder
 import com.itsaky.androidide.databinding.LayoutTemplateListItemBinding
@@ -34,7 +33,9 @@ import com.itsaky.androidide.templates.Template
  *
  * @author Akash Yadav
  */
-class TemplateListAdapter(templates: List<Template<*>>, private val onClick: ((Template<*>, ViewHolder) -> Unit)? = null
+class TemplateListAdapter(
+  templates: List<Template<*>>,
+  private val onClick: ((Template<*>, ViewHolder) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
 
   private val templates = templates.toMutableList()
@@ -42,11 +43,12 @@ class TemplateListAdapter(templates: List<Template<*>>, private val onClick: ((T
   class ViewHolder(internal val binding: LayoutTemplateListItemBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int
-  ): ViewHolder {
-    return ViewHolder(
-      LayoutTemplateListItemBinding.inflate(LayoutInflater.from(parent.context),
-        parent, false))
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    return ViewHolder(LayoutTemplateListItemBinding.inflate(
+      LayoutInflater.from(parent.context),
+      parent,
+      false
+    ))
   }
 
   override fun getItemCount(): Int {
@@ -88,13 +90,11 @@ class TemplateListAdapter(templates: List<Template<*>>, private val onClick: ((T
         return count + extras
       }
 
-      override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int
-      ): Boolean {
+      override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return newItemPosition < count && oldItemPosition == newItemPosition
       }
 
-      override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int
-      ): Boolean {
+      override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return areItemsTheSame(oldItemPosition, newItemPosition)
       }
     })
