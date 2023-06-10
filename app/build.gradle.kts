@@ -29,6 +29,10 @@ android {
   flavorDimensions.add("default")
   productFlavors {
     flavorsAbis.forEach(this::create)
+
+    forEach {
+      defaultConfig.buildConfigField("String", "FLAVOR_${it.name.uppercase()}", "\"${it.name}\"")
+    }
   }
 
   splits {
