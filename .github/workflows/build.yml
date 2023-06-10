@@ -58,7 +58,7 @@ jobs:
           IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy debug APK
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/debug/**.apk ./
+        run: cp app/build/outputs/apk/debug/**/*.apk ./
       - name: Assemble Release
         if: ${{ github.ref == 'refs/heads/main' }}
         run: ./gradlew assembleRelease
@@ -73,19 +73,31 @@ jobs:
           IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy release APK
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/release/**.apk ./
-      - name: Upload Debug APK
+        run: cp app/build/outputs/apk/release/**/*.apk ./
+      - name: Upload arm64-v8a-debug APK
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: actions/upload-artifact@v3
         with:
-          name: apk-debug
-          path: app-debug.apk
-      - name: Upload Release APK
-        if: ${{ github.ref == 'refs/heads/main' }}
+          name: apk-arm64-v8a-debug
+          path: app-arm64-v8a-arm64-v8a-debug.apk
+      - name: Upload armeabi-v7a-debug APK
+        if: ${{ github.ref != 'refs/heads/main' }}
         uses: actions/upload-artifact@v3
         with:
-          name: apk-release
-          path: app-release.apk
+          name: apk-armeabi-v7a-debug
+          path: app-armeabi-v7a-armeabi-v7a-debug.apk
+      - name: Upload arm64-v8a-release APK
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-arm64-v8a-release
+          path: app-arm64-v8a-arm64-v8a-release.apk
+      - name: Upload armeabi-v7a-release APK
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-armeabi-v7a-release
+          path: app-armeabi-v7a-armeabi-v7a-release.apk
 
   unit_test_debug:
     name: Run local tests
@@ -183,10 +195,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Download APKs
+      - name: Download arm64-v8a APK
         uses: actions/download-artifact@v3
         with:
-          name: apk-release
+          name: apk-arm64-v8a-release
+      - name: Download armeabi-v7a APK
+        uses: actions/download-artifact@v3
+        with:
+          name: apk-armeabi-v7a-release
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
       - name: Restore cache
