@@ -23,10 +23,11 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.buildinfo.BuildInfo;
+import com.itsaky.androidide.common.BuildConfig;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
@@ -38,7 +39,7 @@ import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
 import java.util.Arrays;
 
-public  class BaseApplication extends Application {
+public class BaseApplication extends Application {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
@@ -56,26 +57,22 @@ public  class BaseApplication extends Application {
   }
 
   public static boolean isAbiSupported() {
-    return isAarch64() || isArmv7a();
+    return Arrays.asList(Build.SUPPORTED_ABIS).contains(getArch());
   }
 
   public static boolean isAarch64() {
-    return Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    //noinspection ConstantConditions
+    return BuildConfig.FLAVOR.equals(BuildConfig.FLAVOR_ARM64_V8A);
   }
 
   public static boolean isArmv7a() {
-    return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
+    //noinspection ConstantConditions
+    return BuildConfig.FLAVOR.equals(BuildConfig.FLAVOR_ARMEABI_V7A);
   }
 
-  @Nullable
+  @NonNull
   public static String getArch() {
-    if (BaseApplication.isAarch64()) {
-      return "arm64-v8a";
-    } else if (BaseApplication.isArmv7a()) {
-      return "armeabi-v7a";
-    }
-
-    return null;
+    return BuildConfig.FLAVOR;
   }
 
   @Override
@@ -96,9 +93,9 @@ public  class BaseApplication extends Application {
 
   private void createNotificationChannels() {
     NotificationChannel buildNotificationChannel = new NotificationChannel(
-      NOTIFICATION_GRADLE_BUILD_SERVICE,
-      getString(R.string.title_gradle_service_notification_channel),
-      NotificationManager.IMPORTANCE_LOW);
+        NOTIFICATION_GRADLE_BUILD_SERVICE,
+        getString(R.string.title_gradle_service_notification_channel),
+        NotificationManager.IMPORTANCE_LOW);
     NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
 
@@ -113,7 +110,7 @@ public  class BaseApplication extends Application {
 
   public void writeException(Throwable th) {
     FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
-      ThrowableUtils.getFullStackTrace(th));
+        ThrowableUtils.getFullStackTrace(th));
   }
 
   public final File getTempProjectDir() {
