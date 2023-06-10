@@ -1,6 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+import androidx.navigation.safe.args.generator.ext.capitalize
+import com.android.build.gradle.BaseExtension
 import java.util.Base64
+import java.util.Locale
 
 plugins {
   id("com.android.application")
@@ -11,6 +14,8 @@ plugins {
   id("androidx.navigation.safeargs.kotlin")
 }
 
+val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
+
 android {
   namespace = BuildConfig.packageName
 
@@ -20,6 +25,29 @@ android {
   }
 
   compileOptions { isCoreLibraryDesugaringEnabled = true }
+
+  flavorDimensions.add("default")
+  productFlavors {
+    flavorsAbis.forEach(this::create)
+  }
+
+  splits {
+    abi {
+      reset()
+
+      isEnable = true
+      isUniversalApk = false
+
+      // TODO: Find a way to enable split APKs in product flavors. If this is possible, we can configure
+      //       each flavor to include only a single ABI. For example, for the 'arm64-v8a' flavor,
+      //       we can configure it to include only 'arm64-v8a' libraries. Size of APK can further be
+      //       reduced by 10-15MB once this is achieved.
+      //
+      //  See the contribution guidelines for more information.
+      @Suppress("ChromeOsAbiSupport")
+      include(*flavorsAbis)
+    }
+  }
 
   downloadSigningKey()
 
@@ -256,18 +284,24 @@ tasks.create("generateInitScript") {
 }
 
 afterEvaluate {
-  val dependents =
-    listOf(
-      "mergeDebugAssets",
-      "mergeReleaseAssets",
-      "lintAnalyzeDebug",
-      "lintAnalyzeRelease",
-      "lintVitalAnalyzeRelease"
-    )
-  for (dependent in dependents) {
-    tasks.getByName(dependent).apply {
-      dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
-      dependsOn("generateInitScript")
+  extensions.getByType<BaseExtension>().apply {
+    val flavorNames = productFlavors.map { it.name.capitalize(Locale.getDefault()) }
+    val dependents =
+      listOf(
+        "merge@@DebugAssets",
+        "merge@@ReleaseAssets",
+        "lintAnalyze@@Debug",
+        "lintAnalyze@@Release",
+        "lintVitalAnalyze@@Release"
+      )
+
+    for (dependent in dependents) {
+      for (flavorName in flavorNames) {
+        tasks.getByName(dependent.replace("@@", flavorName)).apply {
+          dependsOn(":subprojects:tooling-api-impl:copyJarToAssets")
+          dependsOn("generateInitScript")
+        }
+      }
     }
   }
 }
