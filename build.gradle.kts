@@ -19,6 +19,7 @@
 
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
+import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavaLibrary
@@ -45,6 +46,8 @@ buildscript {
   }
 }
 
+val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
+
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(BuildConfig.compileSdk)
@@ -60,6 +63,42 @@ fun Project.configureBaseExtension() {
     compileOptions {
       sourceCompatibility = BuildConfig.javaVersion
       targetCompatibility = BuildConfig.javaVersion
+    }
+
+//    // ':common' module is configured to use product flavors as it uses the BuildConfig fields to
+//    // determine asset paths
+//    if (arrayOf(":app", ":common").contains(project.path)) {
+//    }
+    flavorDimensions("default")
+
+    productFlavors {
+      flavorsAbis.forEach(this::create)
+
+      forEach {
+        defaultConfig.buildConfigField("String",
+          "FLAVOR_${it.name.replace('-', '_').uppercase()}",
+          "\"${it.name}\"")
+      }
+    }
+
+    // configure split APKs for ':app' module only
+    if (this@configureBaseExtension == rootProject.findProject(":app")) {
+      splits {
+        abi {
+          reset()
+
+          isEnable = true
+          isUniversalApk = false
+
+          // TODO: Find a way to enable split APKs in product flavors. If this is possible, we can configure
+          //       each flavor to include only a single ABI. For example, for the 'arm64-v8a' flavor,
+          //       we can configure it to generate APK only for 'arm64-v8a'.
+          //
+          //  See the contribution guidelines for more information.
+          @Suppress("ChromeOsAbiSupport")
+          include(*flavorsAbis)
+        }
+      }
     }
 
     buildTypes.getByName("debug") { isMinifyEnabled = false }
@@ -126,7 +165,7 @@ subprojects {
       signAllPublications()
 
       if (plugins.hasPlugin("com.android.library")) {
-        configure(AndroidSingleVariantLibrary())
+        configure(AndroidMultiVariantLibrary())
       } else if (plugins.hasPlugin("java-gradle-plugin")) {
         configure(GradlePlugin(javadocJar = JavadocJar.Javadoc()))
       } else if (plugins.hasPlugin("java-library")) {

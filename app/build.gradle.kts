@@ -14,8 +14,6 @@ plugins {
   id("androidx.navigation.safeargs.kotlin")
 }
 
-val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
-
 android {
   namespace = BuildConfig.packageName
 
@@ -25,33 +23,6 @@ android {
   }
 
   compileOptions { isCoreLibraryDesugaringEnabled = true }
-
-  flavorDimensions.add("default")
-  productFlavors {
-    flavorsAbis.forEach(this::create)
-
-    forEach {
-      defaultConfig.buildConfigField("String", "FLAVOR_${it.name.uppercase()}", "\"${it.name}\"")
-    }
-  }
-
-  splits {
-    abi {
-      reset()
-
-      isEnable = true
-      isUniversalApk = false
-
-      // TODO: Find a way to enable split APKs in product flavors. If this is possible, we can configure
-      //       each flavor to include only a single ABI. For example, for the 'arm64-v8a' flavor,
-      //       we can configure it to include only 'arm64-v8a' libraries. Size of APK can further be
-      //       reduced by 10-15MB once this is achieved.
-      //
-      //  See the contribution guidelines for more information.
-      @Suppress("ChromeOsAbiSupport")
-      include(*flavorsAbis)
-    }
-  }
 
   downloadSigningKey()
 
