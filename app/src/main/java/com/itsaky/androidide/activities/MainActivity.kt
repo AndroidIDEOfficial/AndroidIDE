@@ -22,18 +22,15 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.transition.TransitionManager
 import androidx.transition.doOnEnd
 import com.blankj.utilcode.util.SizeUtils
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.BaseApplication
@@ -111,9 +108,6 @@ class MainActivity : LimitlessIDEActivity() {
         onBackPressedCallback.isEnabled = screen != SCREEN_MAIN
       }
     }
-
-    Log.d("MainActivity", "Current screen: ${viewModel.currentScreen.value}")
-    Log.d("MainActivity", "Previous screen: ${viewModel.previousScreen}")
 
     // Data in a ViewModel is kept between activity rebuilds on
     // configuration changes (i.e. screen rotation)
@@ -196,13 +190,6 @@ class MainActivity : LimitlessIDEActivity() {
   override fun onStorageDenied() {
     flashError(string.msg_storage_denied)
     finishAffinity()
-  }
-
-  override fun preSetContentLayout() {
-    installSplashScreen().setOnExitAnimationListener {
-      it.remove()
-      DynamicColors.applyToActivityIfAvailable(this)
-    }
   }
 
   override fun bindLayout(): View {
