@@ -58,7 +58,7 @@ jobs:
           IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy debug APK
         if: ${{ github.ref != 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/debug/**/*.apk ./
+        run: cp app/build/outputs/apk/**/debug/*.apk ./
       - name: Assemble Release
         if: ${{ github.ref == 'refs/heads/main' }}
         run: ./gradlew assembleRelease
@@ -73,7 +73,7 @@ jobs:
           IDE_SIGNING_KEY_BIN: ${{ secrets.IDE_SIGNING_KEY_BIN }}
       - name: Copy release APK
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: cp app/build/outputs/apk/release/**/*.apk ./
+        run: cp app/build/outputs/apk/**/release/*.apk ./
       - name: Upload arm64-v8a-debug APK
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: actions/upload-artifact@v3
