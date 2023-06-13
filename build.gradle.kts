@@ -20,7 +20,6 @@
 import com.android.build.gradle.BaseExtension
 import com.itsaky.androidide.plugins.AndroidIDEPlugin
 import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
@@ -65,19 +64,18 @@ fun Project.configureBaseExtension() {
       targetCompatibility = BuildConfig.javaVersion
     }
 
-//    // ':common' module is configured to use product flavors as it uses the BuildConfig fields to
-//    // determine asset paths
-//    if (arrayOf(":app", ":common").contains(project.path)) {
-//    }
-    flavorDimensions("default")
+    if (":app" == project.path) {
+      flavorDimensions("default")
 
-    productFlavors {
-      flavorsAbis.forEach(this::create)
+      productFlavors {
+        flavorsAbis.forEach(this::create)
 
-      forEach {
-        defaultConfig.buildConfigField("String",
-          "FLAVOR_${it.name.replace('-', '_').uppercase()}",
-          "\"${it.name}\"")
+        forEach {
+          val name = it.name
+          defaultConfig.buildConfigField("String",
+            "FLAVOR_${name.replace('-', '_').uppercase()}",
+            "\"${name}\"")
+        }
       }
     }
 

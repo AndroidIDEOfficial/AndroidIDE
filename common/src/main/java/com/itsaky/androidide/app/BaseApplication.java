@@ -23,11 +23,10 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.buildinfo.BuildInfo;
-import com.itsaky.androidide.common.BuildConfig;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
@@ -38,6 +37,7 @@ import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
 import java.util.Arrays;
+import kotlin.collections.ArraysKt;
 
 public class BaseApplication extends Application {
 
@@ -49,6 +49,8 @@ public class BaseApplication extends Application {
   // TODO Replace when available on website
   public static final String DOCS_URL = BuildInfo.REPO_URL + "/tree/main/docs";
   public static final String EMAIL = "contact@androidide.com";
+  private static final String AARCH64 = "arm64-v8a";
+  private static final String ARM = "armeabi-v7a";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
 
@@ -61,18 +63,21 @@ public class BaseApplication extends Application {
   }
 
   public static boolean isAarch64() {
-    //noinspection ConstantConditions
-    return BuildConfig.FLAVOR.equals(BuildConfig.FLAVOR_ARM64_V8A);
+    return ArraysKt.contains(Build.SUPPORTED_64_BIT_ABIS, AARCH64);
   }
 
   public static boolean isArmv7a() {
-    //noinspection ConstantConditions
-    return BuildConfig.FLAVOR.equals(BuildConfig.FLAVOR_ARMEABI_V7A);
+    return ArraysKt.contains(Build.SUPPORTED_32_BIT_ABIS, ARM);
   }
 
-  @NonNull
+  @Nullable
   public static String getArch() {
-    return BuildConfig.FLAVOR;
+    if (isAarch64()) {
+      return AARCH64;
+    } else if (isArmv7a()) {
+      return ARM;
+    }
+    return null;
   }
 
   @Override
