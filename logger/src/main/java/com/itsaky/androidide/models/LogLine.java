@@ -159,7 +159,7 @@ public class LogLine {
   public String toString() {
     return this.formatted
         ? String.format(
-            "%s %s %s/%s %-25s %-2s %s",
+            "%s %s %s %s %-25s %-2s %s",
             date, time, pid, tid, trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
         : this.unformatted;
   }
