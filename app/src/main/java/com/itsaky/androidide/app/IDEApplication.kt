@@ -36,6 +36,7 @@ import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.uiMode
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
@@ -50,12 +51,7 @@ class IDEApplication : BaseApplication() {
 
   init {
     if (!VMUtils.isJvm()) {
-      System.loadLibrary("android-tree-sitter")
-      System.loadLibrary("tree-sitter-java")
-      System.loadLibrary("tree-sitter-json")
-      System.loadLibrary("tree-sitter-kotlin")
-      System.loadLibrary("tree-sitter-log")
-      System.loadLibrary("tree-sitter-xml")
+      TreeSitter.loadLibrary()
     }
   }
 
@@ -77,7 +73,7 @@ class IDEApplication : BaseApplication() {
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
     if (enableMaterialYou) {
-     DynamicColors.applyToActivitiesIfAvailable(this)
+      DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
