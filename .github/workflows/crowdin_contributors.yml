@@ -8,6 +8,7 @@ on:
 jobs:
   crowdin-contributors:
     runs-on: ubuntu-latest
+    if: github.repository == 'AndroidIDEOfficial/AndroidIDE'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
