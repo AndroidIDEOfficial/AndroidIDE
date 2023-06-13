@@ -25,7 +25,6 @@ import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost.Companion.S01
-import org.gradle.api.Project
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
