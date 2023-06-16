@@ -20,7 +20,6 @@ package com.itsaky.androidide.models;
 import static com.itsaky.androidide.utils.LogUtils.preProcessLogTag;
 
 import com.itsaky.androidide.utils.ILogger;
-
 import java.util.Objects;
 
 public class LogLine {
@@ -37,7 +36,8 @@ public class LogLine {
 
   // For JSONRpc
   @SuppressWarnings("unused")
-  protected LogLine() {}
+  protected LogLine() {
+  }
 
   public LogLine(ILogger.Priority priority, String tag, String message) {
     this(priority, "", "", "", "", tag, message);
@@ -92,7 +92,7 @@ public class LogLine {
           split[3], // thread id
           split[5], // tag
           split[6] // message
-          );
+      );
     } catch (Throwable th) {
       return new LogLine(log);
     }
@@ -105,7 +105,7 @@ public class LogLine {
   public String toSimpleString() {
     return this.formatted
         ? String.format(
-            "%-25s %-2s %s", trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
+        "%-25s %-2s %s", trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
         : this.unformatted;
   }
 
@@ -159,8 +159,8 @@ public class LogLine {
   public String toString() {
     return this.formatted
         ? String.format(
-            "%s %s %s %s %-25s %-2s %s",
-            date, time, pid, tid, trimIfNeeded(tag, 25), ILogger.priorityChar(priority), message)
+        "%s %s %s %s %-2s %-25s %s",
+        date, time, pid, tid, ILogger.priorityChar(priority), trimIfNeeded(tag, 25), message)
         : this.unformatted;
   }
 }
