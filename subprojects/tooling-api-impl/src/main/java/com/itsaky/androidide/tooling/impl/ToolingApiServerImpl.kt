@@ -24,6 +24,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult.Reason.CANCELLATION_ERROR
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
@@ -69,7 +70,6 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  @Suppress("UnstableApiUsage")
   override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
     forwardingProject.projectPath = params.directory
     return CompletableFutures.computeAsync {
@@ -100,7 +100,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
           )
         }
 
-        notifyBeforeBuild()
+        notifyBeforeBuild(BuildInfo(emptyList()))
 
         val connection = this.connector!!.connect()
         stopWatch.lapFromLast("Project connection established")
@@ -172,7 +172,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
       this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
       builder.withCancellationToken(this.buildCancellationToken!!.token())
 
-      notifyBeforeBuild()
+      notifyBeforeBuild(BuildInfo(message.tasks))
 
       try {
         builder.run()
@@ -190,17 +190,18 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     connector: GradleConnector,
     gradleDistribution: String?
   ) {
-    if (gradleDistribution != null && gradleDistribution.isNotBlank()) {
-      val file = File(gradleDistribution)
-      if (file.exists() && file.isDirectory) {
-        log.info("Using Gradle installation:", file.canonicalPath)
-        connector.useInstallation(file)
-      } else {
-        log.error("Specified Gradle installation does not exist:", gradleDistribution)
-      }
-    } else {
+    if (gradleDistribution.isNullOrBlank()) {
       log.info("Using Gradle wrapper for build...")
+      return
     }
+    val file = File(gradleDistribution)
+    if (!file.exists() || !file.isDirectory) {
+      log.error("Specified Gradle installation does not exist:", gradleDistribution)
+      return
+    }
+
+    log.info("Using Gradle installation:", file.canonicalPath)
+    connector.useInstallation(file)
   }
 
   private fun notifyBuildFailure(tasks: List<String>) {
@@ -215,9 +216,9 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     }
   }
 
-  private fun notifyBeforeBuild() {
+  private fun notifyBeforeBuild(buildInfo: BuildInfo) {
     if (client != null) {
-      client!!.prepareBuild()
+      client!!.prepareBuild(buildInfo)
     }
   }
 
@@ -242,7 +243,6 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     }
   }
 
-  @Suppress("UnstableApiUsage")
   override fun shutdown(): CompletableFuture<Void> {
     return CompletableFuture.runAsync {
       connector?.disconnect()

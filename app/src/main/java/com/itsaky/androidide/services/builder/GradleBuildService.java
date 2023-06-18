@@ -59,6 +59,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult;
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo;
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
@@ -250,10 +251,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   @Override
-  public void prepareBuild() {
+  public void prepareBuild(@NotNull BuildInfo buildInfo) {
     updateNotification(getString(R.string.build_status_in_progress), true);
     if (eventListener != null) {
-      eventListener.prepareBuild();
+      eventListener.prepareBuild(buildInfo);
     }
   }
 
@@ -509,8 +510,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
       @SuppressWarnings("ConstantConditions")
       @Override
-      public void prepareBuild() {
-        ThreadUtils.runOnUiThread(listener::prepareBuild);
+      public void prepareBuild(@NonNull BuildInfo buildInfo) {
+        ThreadUtils.runOnUiThread(() -> listener.prepareBuild(buildInfo));
       }
 
       @SuppressWarnings("ConstantConditions")
@@ -555,9 +556,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     /**
      * Called just before a build is started.
      *
-     * @see IToolingApiClient#prepareBuild()
+     * @param buildInfo The information about the build to be executed.
+     * @see IToolingApiClient#prepareBuild(BuildInfo)
      */
-    void prepareBuild();
+    void prepareBuild(@NonNull BuildInfo buildInfo);
 
     /**
      * Called when a build is successful.

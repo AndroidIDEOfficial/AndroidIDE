@@ -80,9 +80,6 @@ abstract class BaseBuildAction : EditorActivityAction() {
         }
 
     activity.saveAll()
-    activity.runOnUiThread {
-      activity.appendBuildOutput("Executing tasks: " + TextUtils.join(", ", tasks))
-    }
 
     buildService.executeTasks(tasks = tasks).whenComplete { result, err ->
       if (result == null || err != null) {

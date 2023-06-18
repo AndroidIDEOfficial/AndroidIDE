@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
@@ -49,7 +50,7 @@ interface IToolingApiClient {
   @JsonNotification fun logOutput(line: String)
 
   /** Called just before a build is started. */
-  @JsonNotification fun prepareBuild()
+  @JsonNotification fun prepareBuild(buildInfo: BuildInfo)
 
   /**
    * Called when a build is successful.

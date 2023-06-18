@@ -21,6 +21,7 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
@@ -128,7 +129,7 @@ class ToolingApiTestLauncher {
       log.debug(line.trim())
     }
 
-    override fun prepareBuild() {
+    override fun prepareBuild(buildInfo: BuildInfo) {
       log.debug("---------- PREPARE BUILD ----------")
       log.debug("AGP Version : ${this.agpVersion}")
       log.debug("Gradle Version : ${this.gradleVersion}")
