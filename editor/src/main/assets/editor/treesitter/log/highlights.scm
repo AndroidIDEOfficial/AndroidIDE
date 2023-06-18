@@ -5,8 +5,8 @@
   (time) @err.time
   (pid) @err.pid
   (tid) @err.tid
-  (tag) @err.tag
   (priority) @err.priority
+  (tag) @err.tag
   (message) @err.msg
   (#match? @err.priority "E")
 )
@@ -16,8 +16,8 @@
   (time) @warn.time
   (pid) @warn.pid
   (tid) @warn.tid
-  (tag) @warn.tag
   (priority) @warn.priority
+  (tag) @warn.tag
   (message) @warn.msg
   (#match? @warn.priority "W")
 )
@@ -27,8 +27,8 @@
   (time) @info.time
   (pid) @info.pid
   (tid) @info.tid
-  (tag) @info.tag
   (priority) @info.priority
+  (tag) @info.tag
   (message) @info.msg
   (#match? @info.priority "I")
 )
@@ -38,8 +38,8 @@
   (time) @debug.time
   (pid) @debug.pid
   (tid) @debug.tid
-  (tag) @debug.tag
   (priority) @debug.priority
+  (tag) @debug.tag
   (message) @debug.msg
   (#match? @debug.priority "D")
 )
@@ -49,8 +49,8 @@
   (time) @verbose.time
   (pid) @verbose.pid
   (tid) @verbose.tid
-  (tag) @verbose.tag
   (priority) @verbose.priority
+  (tag) @verbose.tag
   (message) @verbose.msg
   (#match? @verbose.priority "V")
 )
