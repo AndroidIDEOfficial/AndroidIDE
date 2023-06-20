@@ -16,7 +16,6 @@ import com.itsaky.androidide.adapters.MainActionsListAdapter
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.databinding.FragmentMainBinding
-import com.itsaky.androidide.fragments.WizardFragment.OnProjectCreatedListener
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
 import com.itsaky.androidide.resources.R
@@ -32,7 +31,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
 import java.io.File
 
-class MainFragment : BaseFragment(), OnProjectCreatedListener {
+class MainFragment : BaseFragment() {
 
   private val viewModel by viewModels<MainViewModel>(
     ownerProducer = { requireActivity() })
@@ -86,7 +85,7 @@ class MainFragment : BaseFragment(), OnProjectCreatedListener {
     viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
   }
 
-  override fun openProject(root: File) {
+  fun openProject(root: File) {
     (requireActivity() as MainActivity).openProject(root)
   }
 
