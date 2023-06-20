@@ -15,18 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences
+package com.itsaky.androidide.preferences.internal
 
-import android.content.Context
-import androidx.preference.Preference
+const val STAT_COLLECTION_CONSENT_SHOWN = "ide.stats.consentShown"
+const val STAT_OPT_IN = "ide.stats.optIn"
 
-/**
- * Abstract simple preference.
- *
- * @author Akash Yadav
- */
-abstract class SimplePreference() : BasePreference() {
-  override fun onCreatePreference(context: Context): Preference {
-    return Preference(context)
+var statConsentShown: Boolean
+  get() = prefManager.getBoolean(STAT_COLLECTION_CONSENT_SHOWN, false)
+  set(value) {
+    prefManager.putBoolean(STAT_COLLECTION_CONSENT_SHOWN, value)
   }
-}
+
+var statOptIn: Boolean
+  get() = prefManager.getBoolean(STAT_OPT_IN, false)
+  set(value) {
+    prefManager.putBoolean(STAT_OPT_IN, value)
+  }

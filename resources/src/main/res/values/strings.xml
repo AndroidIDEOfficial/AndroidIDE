@@ -566,4 +566,16 @@
   <string name="msg_invalid_layout_name">Invalid layout file name</string>
   <string name="msg_invalid_project_details">Invalid project details</string>
   <string name="msg_use_kts">Use Kotlin Script (.kts) for Gradle build files</string>
+  <string name="title_privacy">Privacy</string>
+  <string name="title_androidide_statistics">AndroidIDE Statistics</string>
+  <string name="summary_anonymous_usage_stats">Anonymous usage stats</string>
+  <string name="idepref_stats_optIn_title">Stats collection</string>
+  <string name="idepref_stats_optIn_summary">Allow installation metrics and device statistics to be collected (fully anonymous).</string>
+  <string name="title_unique_id">Unique ID</string>
+  <string name="title_device">Device</string>
+  <string name="title_app_version">App version</string>
+  <string name="title_country">Country</string>
+  <string name="title_cpu_arch">CPU Arch</string>
+  <string name="title_preview_data">Preview data</string>
+  <string name="title_android_veresion">Android veresion</string>
 </resources>

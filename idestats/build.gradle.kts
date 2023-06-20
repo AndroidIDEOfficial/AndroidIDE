@@ -15,18 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.preferences
+plugins {
+  id("com.android.library")
+  id("org.jetbrains.kotlin.android")
+}
 
-import android.content.Context
-import androidx.preference.Preference
+android {
+  namespace = "com.itsaky.androidide.stats"
+}
 
-/**
- * Abstract simple preference.
- *
- * @author Akash Yadav
- */
-abstract class SimplePreference() : BasePreference() {
-  override fun onCreatePreference(context: Context): Preference {
-    return Preference(context)
-  }
+dependencies {
+  implementation(libs.common.utilcode)
+  implementation(projects.buildInfo)
+  implementation(projects.common)
+  implementation(projects.logger)
 }
