@@ -96,6 +96,5 @@ include(
   ":subprojects:tooling-api-model",
   ":subprojects:tooling-api-testing",
   ":subprojects:xml-dom",
-  ":subprojects:xml-formatter",
   ":subprojects:xml-utils"
 )

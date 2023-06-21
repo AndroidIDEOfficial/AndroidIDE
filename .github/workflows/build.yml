@@ -122,7 +122,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew test --continue
+        run: ./gradlew runTestsInCI --continue
         env:
           ANDROIDIDE_TEST: true
           IDE_SIGNING_ALIAS: ${{ secrets.IDE_SIGNING_ALIAS }}

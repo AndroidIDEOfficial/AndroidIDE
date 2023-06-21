@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.plugins
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -28,5 +29,25 @@ import org.gradle.api.Project
 class AndroidIDEPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
+    target.run {
+      if (project.path == rootProject.path) {
+        throw GradleException("Cannot apply ${AndroidIDEPlugin::class.simpleName} to root project")
+      }
+
+      val taskName = when {
+        project.path == ":app" -> "testArm64-v8aDebugUnitTest"
+
+        plugins.hasPlugin("com.android.application") ||
+        plugins.hasPlugin("com.android.library") -> "testDebugUnitTest"
+
+        else -> "test"
+      }
+
+      logger.info("${project.path} will run task '$taskName' for tests in CI")
+
+      project.tasks.create("runTestsInCI") {
+        dependsOn(taskName)
+      }
+    }
   }
 }

@@ -25,6 +25,7 @@ import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SonatypeHost.Companion.S01
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
@@ -114,7 +115,9 @@ fun Project.configureBaseExtension() {
 }
 
 subprojects {
-  apply { plugin(AndroidIDEPlugin::class.java) }
+  afterEvaluate {
+    apply { plugin(AndroidIDEPlugin::class.java) }
+  }
 
   project.group = BuildConfig.packageName
   project.version = rootProject.version
@@ -179,7 +182,7 @@ subprojects {
     }
   }
 
-  tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+  tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = BuildConfig.javaVersion.toString()
   }
 }
