@@ -121,7 +121,7 @@ class IDEApplication : BaseApplication() {
 
   fun showChangelog() {
     val intent = Intent(Intent.ACTION_VIEW)
-    var version = BuildConfig.VERSION_NAME
+    var version = BuildInfo.VERSION_NAME_SIMPLE
     if (!version.startsWith('v')) {
       version = "v${version}"
     }
