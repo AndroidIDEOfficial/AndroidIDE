@@ -19,8 +19,9 @@ package com.itsaky.androidide.preferences.internal
 
 const val STAT_COLLECTION_CONSENT_SHOWN = "ide.stats.consentShown"
 const val STAT_OPT_IN = "ide.stats.optIn"
+const val STAT_LAST_REPORTED = "ide.stats.lastReported"
 
-var statConsentShown: Boolean
+var statConsentDialogShown: Boolean
   get() = prefManager.getBoolean(STAT_COLLECTION_CONSENT_SHOWN, false)
   set(value) {
     prefManager.putBoolean(STAT_COLLECTION_CONSENT_SHOWN, value)
@@ -30,4 +31,10 @@ var statOptIn: Boolean
   get() = prefManager.getBoolean(STAT_OPT_IN, false)
   set(value) {
     prefManager.putBoolean(STAT_OPT_IN, value)
+  }
+
+var statLastReported: Long
+  get() = prefManager.getLong(STAT_LAST_REPORTED, 0L)
+  set(value) {
+    prefManager.putLong(STAT_LAST_REPORTED, value)
   }

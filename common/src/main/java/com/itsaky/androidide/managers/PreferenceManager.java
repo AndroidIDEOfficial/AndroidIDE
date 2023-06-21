@@ -19,10 +19,8 @@ package com.itsaky.androidide.managers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent;
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceRemoveEvent;
-
 import org.greenrobot.eventbus.EventBus;
 
 public class PreferenceManager {
@@ -96,6 +94,15 @@ public class PreferenceManager {
 
   public void putBoolean(String key, boolean value) {
     prefs.edit().putBoolean(key, value).apply();
+    dispatchChangeEvent(key, value);
+  }
+
+  public long getLong(String key, long defaultValue) {
+    return prefs.getLong(key, defaultValue);
+  }
+
+  public void putLong(String key, long value) {
+    prefs.edit().putLong(key, value).apply();
     dispatchChangeEvent(key, value);
   }
 

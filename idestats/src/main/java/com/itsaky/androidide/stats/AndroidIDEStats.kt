@@ -61,6 +61,10 @@ object AndroidIDEStats {
     BaseApplication.getArch()!!
   }
 
+  val statData by lazy {
+    StatData(uniqueDeviceId, deviceModel, country, androidVersion, appVersion, cpuArch)
+  }
+
   private fun digest(input: String): String {
     return try {
       val md = MessageDigest.getInstance("SHA-256")

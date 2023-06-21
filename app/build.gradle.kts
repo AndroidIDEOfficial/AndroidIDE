@@ -114,6 +114,8 @@ dependencies {
   implementation(libs.androidx.transition)
   implementation(libs.androidx.vectors)
   implementation(libs.androidx.animated.vectors)
+  implementation(libs.androidx.work)
+  implementation(libs.androidx.work.ktx)
   implementation(libs.google.material)
   implementation(libs.google.flexbox)
   implementation(libs.google.oss.licenses)

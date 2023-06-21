@@ -23,6 +23,7 @@ import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.stats.AndroidIDEStats
+import com.itsaky.androidide.stats.StatUploadWorker
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -80,36 +81,36 @@ private abstract class StatDataPreference(
 
 @Parcelize
 private class UniqueID(
-  override val key: String = "device_hash",
+  override val key: String = StatUploadWorker.KEY_DEVICE_ID,
   override val title: Int = R.string.title_unique_id,
 ) : StatDataPreference({ AndroidIDEStats.uniqueDeviceId })
 
 @Parcelize
 private class DeviceName(
-  override val key: String = "device_name",
+  override val key: String = StatUploadWorker.KEY_DEVICE_NAME,
   override val title: Int = R.string.title_device
 ) : StatDataPreference({ AndroidIDEStats.deviceModel })
 
 @Parcelize
 private class AndroidVersion(
-  override val key: String = "android_version",
+  override val key: String = StatUploadWorker.KEY_ANDROID_VERSION,
   override val title: Int = R.string.title_android_veresion
 ) : StatDataPreference({ AndroidIDEStats.androidVersion.toString() })
 
 @Parcelize
 private class AppVersion(
-  override val key: String = "app_version",
+  override val key: String = StatUploadWorker.KEY_APP_VERSION,
   override val title: Int = R.string.title_app_version
 ) : StatDataPreference({ AndroidIDEStats.appVersion })
 
 @Parcelize
 private class Country(
-  override val key: String = "device_hash",
+  override val key: String = StatUploadWorker.KEY_DEVICE_COUNTRY,
   override val title: Int = R.string.title_country
 ) : StatDataPreference({ AndroidIDEStats.country })
 
 @Parcelize
 private class CpuArch(
-  override val key: String = "app_cpu_arch",
+  override val key: String = StatUploadWorker.KEY_APP_CPU_ARCH,
   override val title: Int = R.string.title_cpu_arch
 ) : StatDataPreference({ AndroidIDEStats.cpuArch })

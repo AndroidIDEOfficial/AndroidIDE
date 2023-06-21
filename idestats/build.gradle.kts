@@ -25,8 +25,24 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.work)
+  implementation(libs.androidx.work.ktx)
+  implementation(libs.common.retrofit)
+  implementation(libs.common.retrofit.gson)
   implementation(libs.common.utilcode)
+  implementation(libs.google.gson)
+
   implementation(projects.buildInfo)
   implementation(projects.common)
   implementation(projects.logger)
+  implementation(projects.preferences)
+
+  androidTestImplementation(libs.tests.androidx.junit)
+  androidTestImplementation(libs.tests.androidx.test.core)
+  androidTestImplementation(libs.tests.androidx.test.runner)
+  androidTestImplementation(libs.tests.androidx.test.rules)
+  androidTestImplementation(libs.tests.androidx.work.testing)
+  androidTestImplementation(libs.androidx.work)
+  androidTestImplementation(libs.androidx.work.ktx)
+  androidTestImplementation(libs.tests.google.truth)
 }

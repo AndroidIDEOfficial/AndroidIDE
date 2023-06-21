@@ -40,6 +40,8 @@ import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
+import com.itsaky.androidide.preferences.internal.statConsentDialogShown
+import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
@@ -91,10 +93,15 @@ class MainActivity : LimitlessIDEActivity() {
       return
     }
 
-    if (!checkToolsIsInstalled()) {
-      showDialogInstallJdkSdk()
-    } else {
-      openLastProject()
+    showStatConsentDialogIfNeeded {
+
+      app.reportStatsIfNecessary()
+
+      if (!checkToolsIsInstalled()) {
+        showDialogInstallJdkSdk()
+      } else {
+        openLastProject()
+      }
     }
 
     viewModel.currentScreen.observe(this) { screen ->
@@ -119,6 +126,32 @@ class MainActivity : LimitlessIDEActivity() {
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+  }
+
+  private fun showStatConsentDialogIfNeeded(onResult: () -> Unit) {
+    if (statConsentDialogShown) {
+      onResult()
+      return
+    }
+
+    DialogUtils.newMaterialDialogBuilder(this).apply {
+      setTitle(string.title_androidide_statistics)
+      setMessage(string.msg_androidide_statistics)
+      setCancelable(false)
+      setPositiveButton(string.btn_opt_in) { dialog, _ ->
+        dialog.dismiss()
+        statOptIn = true
+      }
+      setNegativeButton(string.btn_no_thanks) { dialog, _ ->
+        dialog.dismiss()
+        statOptIn = false
+      }
+      setOnDismissListener {
+        statConsentDialogShown = true
+        onResult()
+      }
+      show()
+    }
   }
 
   override fun onInsetsUpdated(insets: Rect) {
@@ -146,7 +179,7 @@ class MainActivity : LimitlessIDEActivity() {
       // template details -> template list
       val setAxisToX =
         (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
-        (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
+            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
 
       val axis = if (setAxisToX) {
         MaterialSharedAxis.X

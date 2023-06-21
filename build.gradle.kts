@@ -56,6 +56,8 @@ fun Project.configureBaseExtension() {
       targetSdk = BuildConfig.targetSdk
       versionCode = projectVersionCode
       versionName = rootProject.version.toString()
+
+      testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
