@@ -482,4 +482,19 @@
   <string name="msg_invalid_layout_name">Nome do arquivo de layout inválido</string>
   <string name="msg_invalid_project_details">Detalhes do projeto inválidos</string>
   <string name="msg_use_kts">Use o Kotlin Script (.kts) para arquivos de compilação do Gradle</string>
+  <string name="title_privacy">Privacy</string>
+  <string name="title_androidide_statistics">AndroidIDE Statistics</string>
+  <string name="msg_androidide_statistics">Help us improve AndroidIDE by providing anonymous statistics. We collect basic information about your device for user base statistics only. The exact data that is shared can be viewed in preferences. Your data is secure and not shared with third-party services. You can opt-out anytime in preferences.</string>
+  <string name="summary_anonymous_usage_stats">Anonymous usage stats</string>
+  <string name="idepref_stats_optIn_title">Stats collection</string>
+  <string name="idepref_stats_optIn_summary">Allow installation metrics and device statistics to be collected (fully anonymous).</string>
+  <string name="title_unique_id">Unique ID</string>
+  <string name="title_device">Device</string>
+  <string name="title_app_version">App version</string>
+  <string name="title_country">Country</string>
+  <string name="title_cpu_arch">CPU Arch</string>
+  <string name="title_preview_data">Preview data</string>
+  <string name="title_android_veresion">Android veresion</string>
+  <string name="btn_opt_in">Opt-in</string>
+  <string name="btn_no_thanks">No, thanks</string>
 </resources>
