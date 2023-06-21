@@ -109,11 +109,8 @@ class MainActivity : LimitlessIDEActivity() {
         return@observe
       }
 
-      try {
-        onScreenChanged(screen)
-      } catch (err: Exception) {
-        onBackPressedCallback.isEnabled = screen != SCREEN_MAIN
-      }
+      onScreenChanged(screen)
+      onBackPressedCallback.isEnabled = screen != SCREEN_MAIN
     }
 
     // Data in a ViewModel is kept between activity rebuilds on
