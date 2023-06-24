@@ -75,9 +75,17 @@ public class RemoveException extends Rewrite {
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {
-          ExecutableElement methodElement =
+          final var methodElement =
               FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-          MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+          if (methodElement == null) {
+            return CANCELLED;
+          }
+
+          final var methodTree = Trees.instance(task.task).getTree(methodElement);
+          if (methodTree == null) {
+            return CANCELLED;
+          }
+
           if (methodTree.getThrows().size() == 1) {
             TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
             if (delete == TextEdit.NONE) {

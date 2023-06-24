@@ -217,7 +217,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
             pointer.className,
             pointer.methodName,
             pointer.erasedParameterTypes
-          )
+          ) ?: continue
 
         val thisDeclaredType = thisClass.asType() as DeclaredType
         val executableType = types.asMemberOf(thisDeclaredType, superMethod) as ExecutableType

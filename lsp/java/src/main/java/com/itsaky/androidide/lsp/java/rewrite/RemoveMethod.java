@@ -21,14 +21,10 @@ import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.lsp.models.TextEdit;
-import openjdk.source.tree.MethodTree;
-import openjdk.source.util.Trees;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-
-import jdkx.lang.model.element.ExecutableElement;
+import openjdk.source.util.Trees;
 
 public class RemoveMethod extends Rewrite {
 
@@ -53,9 +49,17 @@ public class RemoveMethod extends Rewrite {
         .compile(file)
         .get(
             task -> {
-              ExecutableElement methodElement =
+              final var methodElement =
                   FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-              MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+              if (methodElement == null) {
+                return CANCELLED;
+              }
+
+              final var methodTree = Trees.instance(task.task).getTree(methodElement);
+              if (methodTree == null) {
+                return CANCELLED;
+              }
+
               TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
               return Collections.singletonMap(file, edits);
             });
