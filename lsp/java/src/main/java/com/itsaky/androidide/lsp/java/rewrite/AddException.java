@@ -28,9 +28,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import jdkx.lang.model.element.ExecutableElement;
-import openjdk.source.tree.LineMap;
-import openjdk.source.tree.MethodTree;
-import openjdk.source.util.SourcePositions;
 import openjdk.source.util.Trees;
 
 public class AddException extends Rewrite {
@@ -40,7 +37,7 @@ public class AddException extends Rewrite {
   final String exceptionType;
 
   public AddException(String className, String methodName, String[] erasedParameterTypes,
-                      String exceptionType
+      String exceptionType
   ) {
     this.className = className;
     this.methodName = methodName;
@@ -59,14 +56,28 @@ public class AddException extends Rewrite {
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(task -> {
       Trees trees = Trees.instance(task.task);
+      final var type = task.task.getElements().getTypeElement(className);
+      if (type == null) {
+        return CANCELLED;
+      }
+
       ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName,
-        erasedParameterTypes);
-      MethodTree methodTree = trees.getTree(methodElement);
-      SourcePositions pos = trees.getSourcePositions();
-      LineMap lines = task.root().getLineMap();
-      long startBody = pos.getStartPosition(task.root(), methodTree.getBody());
-      int line = (int) lines.getLineNumber(startBody);
-      int column = (int) lines.getColumnNumber(startBody);
+          erasedParameterTypes);
+      if (methodElement == null) {
+        return CANCELLED;
+      }
+
+      final var methodTree = trees.getTree(methodElement);
+      if (methodTree == null || methodTree.getBody() == null) {
+        return CANCELLED;
+      }
+
+      final var pos = trees.getSourcePositions();
+      final var lines = task.root().getLineMap();
+
+      final var index = pos.getStartPosition(task.root(), methodTree.getBody());
+      int line = (int) lines.getLineNumber(index);
+      int column = (int) lines.getColumnNumber(index);
       Position insertPos = new Position(line - 1, column - 1);
       String simpleName = exceptionType;
       int lastDot = simpleName.lastIndexOf('.');
@@ -80,6 +91,7 @@ public class AddException extends Rewrite {
       } else {
         insertText = ", " + simpleName + " ";
       }
+
       TextEdit insertThrows = new TextEdit(new Range(insertPos, insertPos), insertText);
       // TODO add import if needed
       TextEdit[] edits = {insertThrows};

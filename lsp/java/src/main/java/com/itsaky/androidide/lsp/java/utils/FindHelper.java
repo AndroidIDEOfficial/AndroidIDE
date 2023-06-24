@@ -94,6 +94,9 @@ public class FindHelper {
   public static ExecutableElement findMethod(
       CompileTask task, String className, String methodName, String[] erasedParameterTypes) {
     TypeElement type = task.task.getElements().getTypeElement(className);
+    if (type == null) {
+      return null;
+    }
     for (Element member : type.getEnclosedElements()) {
       if (member.getKind() != ElementKind.METHOD) continue;
       ExecutableElement method = (ExecutableElement) member;
