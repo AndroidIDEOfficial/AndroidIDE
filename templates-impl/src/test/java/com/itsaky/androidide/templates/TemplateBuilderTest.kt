@@ -32,6 +32,7 @@ import com.itsaky.androidide.templates.impl.composeActivity.composeActivityProje
 import com.itsaky.androidide.templates.impl.emptyActivity.emptyActivityProject
 import com.itsaky.androidide.templates.impl.navDrawerActivity.navDrawerActivityProject
 import com.itsaky.androidide.templates.impl.noActivity.noActivityProjectTemplate
+import com.itsaky.androidide.templates.impl.noAndroidXActivity.noAndroidXActivityProject
 import com.itsaky.androidide.templates.impl.tabbedActivity.tabbedActivityProject
 import com.itsaky.androidide.xml.permissions.Permission.INTERNET
 import com.squareup.javapoet.ArrayTypeName
@@ -183,6 +184,13 @@ class TemplateBuilderTest {
   fun `test no activity project`() {
     testTemplate("NoActivity") {
       noActivityProjectTemplate()
+    }
+  }
+
+  @Test
+  fun `test no AndroidX activity template`() {
+    testTemplate("NoAndroidXActivity") {
+      noAndroidXActivityProject()
     }
   }
 
