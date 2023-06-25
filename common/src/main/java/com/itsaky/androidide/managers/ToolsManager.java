@@ -18,23 +18,21 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
 
@@ -113,7 +111,9 @@ public class ToolsManager {
 
     try {
       final var props = new Properties();
-      props.load(new InputStreamReader(app.getAssets().open(path + "/scheme.prop")));
+      Reader reader = new InputStreamReader(app.getAssets().open(path + "/scheme.prop"));
+      props.load(reader);
+      reader.close();
 
       final var version = Integer.parseInt(props.getProperty("scheme.version", "0"));
       if (version == 0) {
@@ -122,7 +122,10 @@ public class ToolsManager {
 
       props.clear();
 
-      props.load(new FileReader(schemePropFile));
+      reader = new FileReader(schemePropFile);
+      props.load(reader);
+      reader.close();
+
       final var fileVersion = Integer.parseInt(props.getProperty("scheme.version", "0"));
       if (fileVersion < 0) {
         return true;
@@ -164,7 +167,9 @@ public class ToolsManager {
 
   private static void copyBusyboxIfNeeded() {
     File exec = Environment.BUSYBOX;
-    if (exec.exists()) return;
+    if (exec.exists()) {
+      return;
+    }
     Environment.mkdirIfNotExits(exec.getParentFile());
     ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
     if (!exec.canExecute()) {
