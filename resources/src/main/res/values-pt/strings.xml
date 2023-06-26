@@ -497,9 +497,9 @@
   <string name="title_android_veresion">Versão do Android</string>
   <string name="btn_opt_in">Aceitar</string>
   <string name="btn_no_thanks">Não, obrigado</string>
-  <string name="title_developer_options">Developer options</string>
-  <string name="idepref_devOptions_summary">Experimental/debugging options for AndroidIDE</string>
-  <string name="idepref_group_debugging">Debugging</string>
-  <string name="idepref_devOptions_dumpLogs_title">Dump logs</string>
-  <string name="idepref_devOptions_dumpLogs_summary">Dump AndroidIDE logs to $HOME/.androidide/logs</string>
+  <string name="title_developer_options">Opções do desenvolvedor</string>
+  <string name="idepref_devOptions_summary">Opções experimentais/de depuração para AndroidIDE</string>
+  <string name="idepref_group_debugging">Depuração</string>
+  <string name="idepref_devOptions_dumpLogs_title">Despejar registros</string>
+  <string name="idepref_devOptions_dumpLogs_summary">Despejar registros do AndroidIDE para $HOME/.androidide/logs</string>
 </resources>
