@@ -497,9 +497,9 @@
   <string name="title_android_veresion">Android 版本</string>
   <string name="btn_opt_in">选择加入</string>
   <string name="btn_no_thanks">不用了，谢谢</string>
-  <string name="title_developer_options">Developer options</string>
-  <string name="idepref_devOptions_summary">Experimental/debugging options for AndroidIDE</string>
-  <string name="idepref_group_debugging">Debugging</string>
-  <string name="idepref_devOptions_dumpLogs_title">Dump logs</string>
-  <string name="idepref_devOptions_dumpLogs_summary">Dump AndroidIDE logs to $HOME/.androidide/logs</string>
+  <string name="title_developer_options">开发者选项</string>
+  <string name="idepref_devOptions_summary">AndroidIDE 的实验/调试选项</string>
+  <string name="idepref_group_debugging">调试</string>
+  <string name="idepref_devOptions_dumpLogs_title">转储日志</string>
+  <string name="idepref_devOptions_dumpLogs_summary">将 AndroidIDE 日志转储到 $HOME/.androidide/logs</string>
 </resources>
