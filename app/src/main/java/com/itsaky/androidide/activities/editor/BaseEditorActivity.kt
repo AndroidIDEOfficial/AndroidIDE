@@ -215,12 +215,6 @@ abstract class BaseEditorActivity :
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    if (BuildConfig.DEBUG) {
-      StrictMode.setVmPolicy(
-        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).detectLeakedClosableObjects().build()
-      )
-    }
-
     registerLanguageServers()
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {

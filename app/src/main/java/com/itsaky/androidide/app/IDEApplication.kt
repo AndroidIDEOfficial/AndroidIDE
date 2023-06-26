@@ -20,6 +20,7 @@ package com.itsaky.androidide.app
 
 import android.content.Intent
 import android.net.Uri
+import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Observer
 import androidx.work.Constraints
@@ -32,6 +33,7 @@ import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
+import com.itsaky.androidide.activities.editor.IDELogcatReader
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
@@ -40,6 +42,8 @@ import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.preferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS
+import com.itsaky.androidide.preferences.dumpLogs
 import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
 import com.itsaky.androidide.preferences.internal.enableMaterialYou
 import com.itsaky.androidide.preferences.internal.statOptIn
@@ -63,6 +67,7 @@ import kotlin.system.exitProcess
 class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
+  private var ideLogcatReader: IDELogcatReader? = null
   private val log = ILogger.newInstance("IDEApplication")
 
   init {
@@ -77,6 +82,16 @@ class IDEApplication : BaseApplication() {
 
     Thread.setDefaultUncaughtExceptionHandler { thread, th -> handleCrash(thread, th) }
     super.onCreate()
+
+    if (BuildConfig.DEBUG) {
+      StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build()
+      )
+
+      if (dumpLogs) {
+        startLogcatReader()
+      }
+    }
 
     EventBus.builder()
       .addIndex(AppEventsIndex())
@@ -164,14 +179,36 @@ class IDEApplication : BaseApplication() {
     })
   }
 
+  private fun startLogcatReader() {
+    if (ideLogcatReader != null) {
+      // already started
+      return
+    }
+
+    log.info("Starting logcat reader...")
+    ideLogcatReader = IDELogcatReader().also { it.start() }
+  }
+
+  private fun stopLogcatReader() {
+    log.info("Stopping logcat reader...")
+    ideLogcatReader?.interrupt()
+    ideLogcatReader = null
+  }
+
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onPrefChanged(event: PreferenceChangeEvent) {
+    val enabled = event.value as? Boolean? ?: return
     if (event.key == STAT_OPT_IN) {
-      val enabled = event.value as Boolean
       if (enabled) {
         reportStatsIfNecessary()
       } else {
         cancelStatUploadWorker()
+      }
+    } else if (event.key == KEY_DEVOPTS_DEBUGGING_DUMPLOGS) {
+      if (enabled) {
+        startLogcatReader()
+      } else {
+        stopLogcatReader()
       }
     }
   }

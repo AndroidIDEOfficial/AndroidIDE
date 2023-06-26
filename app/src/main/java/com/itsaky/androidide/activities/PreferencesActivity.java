@@ -28,6 +28,7 @@ import com.itsaky.androidide.databinding.ActivityPreferencesBinding;
 import com.itsaky.androidide.fragments.IDEPreferencesFragment;
 import com.itsaky.androidide.preferences.AboutPreferences;
 import com.itsaky.androidide.preferences.ConfigurationPreferences;
+import com.itsaky.androidide.preferences.DeveloperOptionsPreferences;
 import com.itsaky.androidide.preferences.IDEPreferences;
 import com.itsaky.androidide.preferences.PrivacyPreferences;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class PreferencesActivity extends LimitlessIDEActivity {
     prefs.getChildren().clear();
     prefs.addPreference(new ConfigurationPreferences());
     prefs.addPreference(new PrivacyPreferences());
+    prefs.addPreference(new DeveloperOptionsPreferences());
     prefs.addPreference(new AboutPreferences());
 
     final var args = new Bundle();
