@@ -63,8 +63,17 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
      */
     const val LOG_DELAY = 100L
 
-    /** The maximum number of lines that are shown in the log view. */
-    const val MAX_LINE_COUNT = 5000
+    /**
+     * Trim the logs when the number of lines reaches this value. Only [MAX_LINE_COUNT]
+     * number of lines are kept in the logs.
+     */
+    const val TRIM_ON_LINE_COUNT = 5000;
+
+    /**
+     * The maximum number of lines that are shown in the log view. This value must be less than
+     * [TRIM_ON_LINE_COUNT] by a difference of [LOG_FREQUENCY] or preferably, more.
+     */
+    const val MAX_LINE_COUNT = TRIM_ON_LINE_COUNT - 300
   }
 
   var binding: FragmentLogBinding? = null
@@ -103,7 +112,6 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
             logHandler.removeCallbacks(this)
             logHandler.postDelayed(this, LOG_DELAY)
           } else {
-            log.debug("Cache has become empty, trimming lines at start")
             trimLinesAtStart()
           }
         }
@@ -155,7 +163,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   private fun trimLinesAtStart() {
     ThreadUtils.runOnUiThread {
       binding?.editor?.text?.apply {
-        if (lineCount <= MAX_LINE_COUNT) {
+        if (lineCount <= TRIM_ON_LINE_COUNT) {
           return@apply
         }
 
