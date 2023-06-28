@@ -242,7 +242,7 @@ class MainActivity : LimitlessIDEActivity() {
     builder.setPositiveButton(android.R.string.ok) { _, _ -> openTerminal() }
     builder.setNegativeButton(
       android.R.string.cancel) { _, _ -> finishAffinity() }
-    builder.setNeutralButton(string.btn_docs) { _, _ -> app.openDocs() }
+    builder.setNeutralButton(string.btn_docs) { _, _ -> app.openDocs(); finishAffinity() }
     builder.show()
   }
 
