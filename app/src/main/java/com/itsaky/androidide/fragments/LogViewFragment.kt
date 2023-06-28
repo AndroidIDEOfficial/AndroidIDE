@@ -32,7 +32,9 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.androidide.utils.jetbrainsMono
+import io.github.rosemoe.sora.widget.style.CursorAnimator
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.min
@@ -67,7 +69,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
      * Trim the logs when the number of lines reaches this value. Only [MAX_LINE_COUNT]
      * number of lines are kept in the logs.
      */
-    const val TRIM_ON_LINE_COUNT = 5000;
+    const val TRIM_ON_LINE_COUNT = 5000
 
     /**
      * The maximum number of lines that are shown in the log view. This value must be less than
@@ -85,6 +87,8 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   private var cacheLineTrack = ArrayBlockingQueue<Int>(MAX_LINE_COUNT, true)
 
   private val log = ILogger.newInstance("LogViewFragment")
+
+  private val isTrimming = AtomicBoolean(false)
 
   private val logHandler = Handler(Looper.getMainLooper())
   private val logRunnable =
@@ -131,7 +135,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
       lineString += "\n"
     }
 
-    if (cache.isNotEmpty() || System.currentTimeMillis() - lastLog <= LOG_FREQUENCY) {
+    if (isTrimming.get() || cache.isNotEmpty() || System.currentTimeMillis() - lastLog <= LOG_FREQUENCY) {
       cacheLock.withLock {
         logHandler.removeCallbacks(logRunnable)
 
@@ -161,15 +165,23 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   }
 
   private fun trimLinesAtStart() {
+    if (isTrimming.get()) {
+      // trimming is already in progress
+      return
+    }
+
     ThreadUtils.runOnUiThread {
       binding?.editor?.text?.apply {
         if (lineCount <= TRIM_ON_LINE_COUNT) {
+          isTrimming.set(false)
           return@apply
         }
 
+        isTrimming.set(true)
         val lastLine = lineCount - MAX_LINE_COUNT
         log.debug("Deleting log text till line $lastLine")
         delete(0, 0, lastLine, getColumnCount(lastLine))
+        isTrimming.set(false)
       }
     }
   }
@@ -201,6 +213,32 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     editor.typefaceLineNumber = jetbrainsMono()
     editor.setTextSize(12f)
     editor.typefaceText = jetbrainsMono()
+    editor.isEnsurePosAnimEnabled = false
+    editor.cursorAnimator = object : CursorAnimator {
+      override fun markStartPos() {}
+      override fun markEndPos() {}
+      override fun start() {}
+      override fun cancel() {}
+      override fun isRunning(): Boolean {
+        return false
+      }
+
+      override fun animatedX(): Float {
+        return 0f
+      }
+
+      override fun animatedY(): Float {
+        return 0f
+      }
+
+      override fun animatedLineHeight(): Float {
+        return 0f
+      }
+
+      override fun animatedLineBottom(): Float {
+        return 0f
+      }
+    }
 
     IDEColorSchemeProvider.readScheme(requireContext()) { scheme ->
       editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)

@@ -96,12 +96,13 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   private static final long SELECTION_CHANGE_DELAY = 500;
 
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
-  @Nullable
-  private EditorActionsMenu actionsMenu;
-  private IDEEditorSearcher searcher;
   private int fileVersion;
   private File file;
   private boolean isModified;
+  private boolean ensurePosAnimEnabled = true;
+  @Nullable
+  private EditorActionsMenu actionsMenu;
+  private IDEEditorSearcher searcher;
   private ILanguageServer languageServer;
   private SignatureHelpWindow signatureHelpWindow;
   private DiagnosticWindow diagnosticWindow;
@@ -178,6 +179,14 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
 
     return diagnosticWindow;
+  }
+
+  public void setEnsurePosAnimEnabled(boolean ensurePosAnimEnabled) {
+    this.ensurePosAnimEnabled = ensurePosAnimEnabled;
+  }
+
+  public boolean isEnsurePosAnimEnabled() {
+    return ensurePosAnimEnabled;
   }
 
   /**
@@ -305,6 +314,11 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     } else {
       LOG.warn("Selection range is invalid", range);
     }
+  }
+
+  @Override
+  public void ensurePositionVisible(int line, int column, boolean noAnimation) {
+    super.ensurePositionVisible(line, column, !isEnsurePosAnimEnabled() || noAnimation);
   }
 
   /**
