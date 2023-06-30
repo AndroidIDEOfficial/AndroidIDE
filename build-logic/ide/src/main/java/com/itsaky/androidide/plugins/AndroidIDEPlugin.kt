@@ -34,11 +34,15 @@ class AndroidIDEPlugin : Plugin<Project> {
         throw GradleException("Cannot apply ${AndroidIDEPlugin::class.simpleName} to root project")
       }
 
+      if (!project.buildFile.exists() || !project.buildFile.isFile) {
+        return@run
+      }
+      
       val taskName = when {
         project.path == ":app" -> "testArm64-v8aDebugUnitTest"
 
         plugins.hasPlugin("com.android.application") ||
-        plugins.hasPlugin("com.android.library") -> "testDebugUnitTest"
+            plugins.hasPlugin("com.android.library") -> "testDebugUnitTest"
 
         else -> "test"
       }
