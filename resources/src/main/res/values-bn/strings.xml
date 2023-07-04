@@ -70,7 +70,8 @@
   <string name="project_app_name">অ্যাপের নাম</string>
   <string name="msg_create_new_project_greeting">আপনার নতুন দুর্দান্ত প্রকল্প শুরু করুন!</string>
   <string name="title_confirm_open_project">শেষ প্রজেক্ট খুলবেন?</string>
-  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">আপনি কী শেষ খোলা প্রকল্পটি খুলতে চান?
+শেষ খোলা প্রকল্পটি হল:\n%s</string>
   <string name="group_project">প্রকল্প</string>
   <string name="title_close_project">প্রকল্পটি বন্ধ করুন</string>
   <string name="msg_opened_project_does_not_exist">শেষবার খোলা প্রকল্পের অস্তিত্ব নেই!</string>
@@ -120,7 +121,7 @@
   <string name="asset_copy_failed">সঞ্চয়স্থানে টেমপ্লেট কপি করতে ব্যর্থ!</string>
   <string name="cannot_create_temp">অস্থায়ী প্রকল্প ডিরেক্টরি তৈরি করতে ব্যর্থ!</string>
   <string name="project_created_successfully">প্রকল্প সফলভাবে তৈরি হয়েছে!</string>
-  <string name="project_creation_failed">Failed to create project</string>
+  <string name="project_creation_failed">প্রকল্প তৈরি করতে ব্যর্থ</string>
   <string name="msg_begin_project_write">লেখার প্রক্রিয়া শুরু হচ্ছে</string>
   <string name="msg_folder_creation_failed">ফোল্ডার তৈরি করতে ব্যর্থ হয়েছে!</string>
   <string name="msg_file_creation_failed">ফাইল তৈরি করতে ব্যর্থ!</string>
@@ -190,7 +191,7 @@
   <string name="idepref_editor_drawhexcolors_summary">এডিটর কী হেক্স স্ট্রিং-এ রঙ আঁকবে?</string>
   <string name="idepref_editor_word_wrap_title">শব্দ মোড়ানো</string>
   <string name="idepref_editor_word_wrap_summary">সম্পাদকের wordwrap ব্যবহার করুন</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_title">ফাইল ট্রী বাটন হাইড করুন</string>
   <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">ম্যাগনিফায়ার সক্ষম করুন</string>
   <string name="idepref_editor_use_magnifier_summary">এডিটরে পাঠ্য নির্বাচন করার সময় কার্সার অবস্থানে পাঠ্যকে বড় করুন</string>
@@ -470,11 +471,11 @@
   <string name="title_class_chooser">কোন %1$sটি?</string>
   <string name="permlab_bind_logger_service">লগ সার্ভিসে আবদ্ধ করুন</string>
   <string name="permdesc_bind_logger_service">এই অ্যাপ্লিকেশানটিকে AndroidIDE-এর লগিং পরিষেবার সাথে আবদ্ধ হওয়ার অনুমতি দেয়৷ এই অ্যাপ্লিকেশনটির লগ পড়ার জন্য AndroidIDE-এর এই অনুমতি প্রয়োজন৷</string>
-  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_name">মডিউলের নাম</string>
   <string name="wizard_module_type">Module type</string>
   <string name="msg_invalid_module_name">Invalid Gradle module name</string>
-  <string name="msg_invalid_class_name">Invalid class name</string>
-  <string name="msg_value_empty">Value is empty</string>
+  <string name="msg_invalid_class_name">শ্রেণীর নাম অবৈধ</string>
+  <string name="msg_value_empty">মানটি খালি</string>
   <string name="msg_file_not_exist">File does not exist</string>
   <string name="msg_path_must_be_file">Must be path to a file</string>
   <string name="msg_classname_with_keywords">Class name contains keywords</string>
@@ -496,7 +497,7 @@
   <string name="title_preview_data">Preview data</string>
   <string name="title_android_veresion">Android veresion</string>
   <string name="btn_opt_in">Opt-in</string>
-  <string name="btn_no_thanks">No, thanks</string>
+  <string name="btn_no_thanks">না, ধন্যবাদ</string>
   <string name="title_developer_options">Developer options</string>
   <string name="idepref_devOptions_summary">Experimental/debugging options for AndroidIDE</string>
   <string name="idepref_group_debugging">Debugging</string>
