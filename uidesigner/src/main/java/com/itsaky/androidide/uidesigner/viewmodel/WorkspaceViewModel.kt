@@ -32,6 +32,7 @@ internal class WorkspaceViewModel : ViewModel() {
   internal val _addAttrMode = MutableLiveData(false)
   internal val _undoManager = MutableLiveData(UndoManager())
   internal val _currentDestination = MutableLiveData(0)
+  internal val _layoutHasError = MutableLiveData(false)
   private val _file = MutableLiveData<File>()
 
   companion object {
@@ -89,6 +90,12 @@ internal class WorkspaceViewModel : ViewModel() {
     get() = this._currentDestination.value ?: 0
     set(value) {
       this._currentDestination.value = value
+    }
+
+  var layoutHasError: Boolean
+    get() = _layoutHasError.value ?: false
+    set(value) {
+      _layoutHasError.value = value
     }
 
   fun notifyAttrUpdated() {

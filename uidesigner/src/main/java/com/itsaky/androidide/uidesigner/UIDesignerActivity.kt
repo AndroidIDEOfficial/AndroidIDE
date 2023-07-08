@@ -66,8 +66,14 @@ class UIDesignerActivity : BaseIDEActivity() {
               return
             }
 
+        if (viewModel.layoutHasError) {
+          onFailedToReturnXml("Inflation failed, layout has errors.")
+          return
+        }
+
         if (frag.workspaceView.childCount <= 0) {
           onFailedToReturnXml("No views have been added")
+          return
         }
 
         ViewToXml.generateXml(frag.requireContext(), frag.workspaceView) { onXmlGenerated(it) }
@@ -86,6 +92,7 @@ class UIDesignerActivity : BaseIDEActivity() {
   }
 
   companion object {
+
     const val EXTRA_FILE = "layout_file"
     const val RESULT_GENERATED_XML = "ide.uidesigner.generatedXml"
   }
@@ -111,12 +118,12 @@ class UIDesignerActivity : BaseIDEActivity() {
     supportActionBar?.title = viewModel.file.nameWithoutExtension
 
     ActionBarDrawerToggle(
-        this,
-        binding!!.root,
-        binding!!.toolbar,
-        R.string.app_name,
-        R.string.app_name
-      )
+      this,
+      binding!!.root,
+      binding!!.toolbar,
+      R.string.app_name,
+      R.string.app_name
+    )
       .apply {
         binding!!.root.addDrawerListener(this)
         syncState()
