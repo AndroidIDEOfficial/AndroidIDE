@@ -121,5 +121,5 @@ tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.7" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.2" }
+maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.3" }
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
