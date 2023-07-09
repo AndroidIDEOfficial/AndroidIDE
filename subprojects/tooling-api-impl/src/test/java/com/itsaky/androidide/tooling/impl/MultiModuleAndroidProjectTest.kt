@@ -31,11 +31,11 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.FileProvider
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.pathString
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
+import kotlin.io.path.deleteExisting
+import kotlin.io.path.pathString
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -77,12 +77,12 @@ class MultiModuleAndroidProjectTest {
     assertThat(app.libraryMap.values.filter { it.type == PROJECT }).isNotEmpty()
     // :app module includes :java-library as a dependency. But it is not transitive
     assertThat(
-        app.libraryMap.values.firstOrNull {
-          it.type == PROJECT &&
+      app.libraryMap.values.firstOrNull {
+        it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
-        }
-      )
+      }
+    )
       .isNull()
     val androidLib = project.findByPath(":android-library").get()
     assertThat(androidLib).isNotNull()
@@ -91,12 +91,12 @@ class MultiModuleAndroidProjectTest {
     // :java-library project which further includes :another-java-libraries project with 'api'
     // configuration
     assertThat(
-        (androidLib as AndroidModule).libraryMap.values.firstOrNull {
-          it.type == PROJECT &&
+      (androidLib as AndroidModule).libraryMap.values.firstOrNull {
+        it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
-        }
-      )
+      }
+    )
       .isNotNull()
     assertThat(androidLib.javaCompileOptions.javaSourceVersion).isEqualTo("11")
     assertThat(androidLib.javaCompileOptions.javaBytecodeVersion).isEqualTo("11")
@@ -106,22 +106,22 @@ class MultiModuleAndroidProjectTest {
     assertThat((javaLibrary as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("11")
     assertThat(javaLibrary.compilerSettings.javaBytecodeVersion).isEqualTo("11")
     assertThat(
-        javaLibrary.javaDependencies.firstOrNull {
-          it is JavaModuleExternalDependency &&
+      javaLibrary.javaDependencies.firstOrNull {
+        it is JavaModuleExternalDependency &&
             it.gradleArtifact != null &&
             it.run {
               gradleArtifact!!.group == "io.github.itsaky" &&
-                gradleArtifact!!.name == "nb-javac-android" &&
-                gradleArtifact!!.version == "17.0.0.0"
+                  gradleArtifact!!.name == "nb-javac-android" &&
+                  gradleArtifact!!.version == "17.0.0.0"
             }
-        }
-      )
+      }
+    )
       .isNotNull()
     assertThat(
-        javaLibrary.javaDependencies.firstOrNull {
-          it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
-        }
-      )
+      javaLibrary.javaDependencies.firstOrNull {
+        it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
+      }
+    )
       .isNotNull()
     // In case we have multiple dependencies with same name but different path
     val nested =
@@ -151,7 +151,7 @@ class MultiModuleAndroidProjectTest {
         listOf(
           // AGP to Gradle
           "7.2.0" to "7.3.3",
-          "8.0.0-rc01" to "8.0.2"
+          "8.0.2" to "8.2"
         )
 
       val client = MultiVersionTestClient()
