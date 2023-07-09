@@ -478,7 +478,7 @@
   <string name="msg_file_not_exist">O arquivo não existe</string>
   <string name="msg_path_must_be_file">Deve ter um caminho para um arquivo</string>
   <string name="msg_classname_with_keywords">Nome da classe contém palavras-chave</string>
-  <string name="msg_path_must_be_dir">Deve ter um caminho para um arquivo</string>
+  <string name="msg_path_must_be_dir">Deve ser o caminho para um diretório</string>
   <string name="msg_invalid_layout_name">Nome do arquivo de layout inválido</string>
   <string name="msg_invalid_project_details">Detalhes do projeto inválidos</string>
   <string name="msg_use_kts">Use o Kotlin Script (.kts) para arquivos de compilação do Gradle</string>
