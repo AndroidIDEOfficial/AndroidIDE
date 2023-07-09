@@ -24,6 +24,7 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultAndroidArtifact : AndroidArtifact, Serializable {
+
   private val serialVersionUID = 1L
   override var applicationId: String? = ""
   override var resGenTaskName: String? = null
@@ -46,4 +47,5 @@ class DefaultAndroidArtifact : AndroidArtifact, Serializable {
   override var targetSdkVersionOverride: DefaultApiVersion? = null
   override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
   override var privacySandboxSdkInfo: PrivacySandboxSdkInfo? = null
+  override var desugaredMethodsFiles: Collection<File> = emptyList()
 }

@@ -1,6 +1,6 @@
 [versions]
 agp = "8.0.2"
-agp-tooling = "7.4.2"
+agp-tooling = "8.0.2"
 gradle-tooling = "8.1.1"
 kotlin = "1.8.21"
 tree-sitter = "3.1.0"
@@ -84,10 +84,10 @@ google-java-format = { module ="com.google.googlejavaformat:google-java-format",
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
-aapt2-common = { module = "com.android.tools:common", version = "30.2.2" }
-aapt2-annotations = { module = "com.android.tools:annotations", version = "30.2.2" }
+aapt2-common = { module = "com.android.tools:common", version = "31.0.2" }
+aapt2-annotations = { module = "com.android.tools:annotations", version = "31.0.2" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
-aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "7.2.2-7984345" }
+aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.0.2-9289358" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
