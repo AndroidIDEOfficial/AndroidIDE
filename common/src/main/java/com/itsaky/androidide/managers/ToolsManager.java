@@ -18,33 +18,27 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
 
-  public static final int LOG_SENDER_VERSION = 2;
-  public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
   private static final ILogger LOG = ILogger.newInstance("ToolsManager");
   public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
   public static String COMMON_ASSET_DATA_DIR = "data/common";
-  private static PreferenceManager prefs;
 
   public static void init(@NonNull BaseApplication app, Runnable onFinish) {
 
@@ -53,15 +47,11 @@ public class ToolsManager {
       return;
     }
 
-    prefs = app.getPrefManager();
-
     CompletableFuture.runAsync(
             () -> {
               writeNoMediaFile();
               copyBusyboxIfNeeded();
-              extractLogsenderIfNeeded();
               extractAapt2();
-              extractGradlePlugin();
               extractToolingApi();
               extractAndroidJar();
               extractColorScheme(app);
@@ -121,7 +111,9 @@ public class ToolsManager {
 
     try {
       final var props = new Properties();
-      props.load(new InputStreamReader(app.getAssets().open(path + "/scheme.prop")));
+      Reader reader = new InputStreamReader(app.getAssets().open(path + "/scheme.prop"));
+      props.load(reader);
+      reader.close();
 
       final var version = Integer.parseInt(props.getProperty("scheme.version", "0"));
       if (version == 0) {
@@ -130,7 +122,10 @@ public class ToolsManager {
 
       props.clear();
 
-      props.load(new FileReader(schemePropFile));
+      reader = new FileReader(schemePropFile);
+      props.load(reader);
+      reader.close();
+
       final var fileVersion = Integer.parseInt(props.getProperty("scheme.version", "0"));
       if (fileVersion < 0) {
         return true;
@@ -172,7 +167,9 @@ public class ToolsManager {
 
   private static void copyBusyboxIfNeeded() {
     File exec = Environment.BUSYBOX;
-    if (exec.exists()) return;
+    if (exec.exists()) {
+      return;
+    }
     Environment.mkdirIfNotExits(exec.getParentFile());
     ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
     if (!exec.canExecute()) {
@@ -186,21 +183,6 @@ public class ToolsManager {
   @Contract(pure = true)
   public static String getArchSpecificAsset(String name) {
     return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
-  }
-
-  private static void extractLogsenderIfNeeded() {
-    try {
-      final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
-      if (isOld) {
-        final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
-        ResourceUtils.copyFileFromAssets(
-            getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
-        ZipUtils.unzipFile(logsenderZip, Environment.HOME);
-        prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
-      }
-    } catch (IOException e) {
-      LOG.error("Error extracting log sender", e);
-    }
   }
 
   @NonNull
@@ -217,23 +199,6 @@ public class ToolsManager {
 
     if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {
       LOG.error("Cannot set executable permissions to AAPT2 binary");
-    }
-  }
-
-  private static void extractGradlePlugin() {
-    final var repoDir = new File(Environment.ANDROIDIDE_HOME, "repo");
-    FileUtils.createOrExistsDir(repoDir);
-
-    final var zip = new File(Environment.TMP_DIR, "gradle-plugin.zip");
-    if (zip.exists()) {
-      FileUtils.delete(zip);
-    }
-
-    ResourceUtils.copyFileFromAssets(getCommonAsset("gradle-plugin.zip"), zip.getAbsolutePath());
-    try {
-      ZipUtils.unzipFile(zip, repoDir);
-    } catch (Throwable e) {
-      LOG.error("Unable to extract gradle plugin zip file");
     }
   }
 

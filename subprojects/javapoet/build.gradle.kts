@@ -20,5 +20,5 @@ plugins {
 }
 
 dependencies {
-  implementation(projects.subprojects.javaCompiler)
+  api(projects.subprojects.javaCompiler)
 }

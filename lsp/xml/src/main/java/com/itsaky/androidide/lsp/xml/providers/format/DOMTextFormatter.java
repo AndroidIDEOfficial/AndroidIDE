@@ -123,7 +123,7 @@ public class DOMTextFormatter {
   }
 
   private boolean isPreserveEmptyContent() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getPreserveEmptyContent();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isPreserveEmptyContent();
   }
 
   private void replaceSpacesWithOneSpace(int spaceStart, int spaceEnd, List<TextEdit> edits) {
@@ -131,6 +131,6 @@ public class DOMTextFormatter {
   }
 
   private boolean isJoinContentLines() {
-    return formatterDocument.getSharedSettings().getFormattingOptions().getJoinContentLines();
+    return formatterDocument.getSharedSettings().getFormattingOptions().isJoinContentLines();
   }
 }

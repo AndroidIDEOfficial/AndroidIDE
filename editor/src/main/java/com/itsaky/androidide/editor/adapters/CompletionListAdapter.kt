@@ -84,7 +84,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     val item = getItem(position) as LspCompletionItem
     val label = item.getLabel()
     val desc = item.detail
-    var type: String? = item.kind.toString()
+    var type: String? = item.completionKind.toString()
     val header = if (type!!.isEmpty()) "O" else type[0].toString()
     if (item.overrideTypeText != null) {
       type = item.overrideTypeText
@@ -106,7 +106,6 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     binding.completionApiInfo.visibility = View.GONE
 
     applyColorScheme(binding, isCurrentCursorPosition)
-
     showApiInfoIfNeeded(item, binding.completionApiInfo)
     return binding.root
   }
@@ -150,14 +149,14 @@ class CompletionListAdapter : EditorCompletionAdapter() {
 
       val data = item.data
       val versions =
-        Lookup.DEFAULT.lookup(ApiVersions.COMPLETION_LOOKUP_KEY) ?: return@executeAsync null
+        Lookup.getDefault().lookup(ApiVersions.COMPLETION_LOOKUP_KEY) ?: return@executeAsync null
       val className =
         when (data) {
           is ClassCompletionData -> data.className
           is MemberCompletionData -> data.classInfo.className
           else -> return@executeAsync null
         }
-      val kind = item.kind
+      val kind = item.completionKind
 
       val clazz = versions.getClass(className) ?: return@executeAsync null
       var info: Info? = clazz
@@ -209,7 +208,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     if (item == null) {
       return false
     }
-    val type = item.kind
+    val type = item.completionKind
     val data = item.data
     return if ( // These represent a class type
       (type === CLASS ||

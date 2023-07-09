@@ -22,7 +22,7 @@ import static com.itsaky.androidide.resources.R.string;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import android.app.Dialog;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
@@ -33,9 +33,11 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.itsaky.androidide.editor.R;
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter;
 import com.itsaky.androidide.editor.api.IEditor;
 import com.itsaky.androidide.editor.api.ILspEditor;
@@ -46,6 +48,9 @@ import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage;
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguageProvider;
 import com.itsaky.androidide.editor.schemes.IDEColorScheme;
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider;
+import com.itsaky.androidide.editor.snippets.AbstractSnippetVariableResolver;
+import com.itsaky.androidide.editor.snippets.FileVariableResolver;
+import com.itsaky.androidide.editor.snippets.WorkspaceVariableResolver;
 import com.itsaky.androidide.eventbus.events.editor.ChangeType;
 import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
@@ -53,9 +58,11 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
+import com.itsaky.androidide.flashbar.Flashbar;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
@@ -65,9 +72,12 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
+import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
@@ -79,8 +89,10 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
+import io.github.rosemoe.sora.widget.snippet.variable.ISnippetVariableResolver;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import kotlin.io.FilesKt;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -91,12 +103,13 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
   private static final long SELECTION_CHANGE_DELAY = 500;
 
   private static final ILogger LOG = ILogger.newInstance("IDEEditor");
-  @Nullable
-  private EditorActionsMenu actionsMenu;
-  private IDEEditorSearcher searcher;
   private int fileVersion;
   private File file;
   private boolean isModified;
+  private boolean ensurePosAnimEnabled = true;
+  @Nullable
+  private EditorActionsMenu actionsMenu;
+  private IDEEditorSearcher searcher;
   private ILanguageServer languageServer;
   private SignatureHelpWindow signatureHelpWindow;
   private DiagnosticWindow diagnosticWindow;
@@ -110,8 +123,8 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var cursor = getCursor();
 
     // we do not use getSignatureHelpWindow() to avoid initializing the window unnecessarily
-    if (languageClient == null || cursor == null || cursor.isSelected()
-      || (signatureHelpWindow != null && signatureHelpWindow.isShowing())) {
+    if (languageClient == null || cursor == null || cursor.isSelected() ||
+        (signatureHelpWindow != null && signatureHelpWindow.isShowing())) {
       return;
     }
 
@@ -175,6 +188,14 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     return diagnosticWindow;
   }
 
+  public void setEnsurePosAnimEnabled(boolean ensurePosAnimEnabled) {
+    this.ensurePosAnimEnabled = ensurePosAnimEnabled;
+  }
+
+  public boolean isEnsurePosAnimEnabled() {
+    return ensurePosAnimEnabled;
+  }
+
   /**
    * Get the file that this editor is currently editing.
    *
@@ -198,9 +219,9 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     }
   }
 
-public void updateFile(File file) {
+  public void updateFile(File file) {
     this.file = file;
-}
+  }
 
   @NonNull
   @Override
@@ -216,8 +237,12 @@ public void updateFile(File file) {
       return;
     }
 
-    final var openEvent =
-      new DocumentOpenEvent(getFile().toPath(), getText().toString(), fileVersion = 0);
+    final var openEvent = new DocumentOpenEvent(getFile().toPath(), getText().toString(),
+        fileVersion = 0);
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentOpen(openEvent);
+
     EventBus.getDefault().post(openEvent);
   }
 
@@ -233,27 +258,20 @@ public void updateFile(File file) {
   @Override
   public void signatureHelp() {
     if (languageServer != null && getFile() != null) {
-      final CompletableFuture<SignatureHelp> future =
-        CompletableFuture.supplyAsync(
-          () ->
-            languageServer.signatureHelp(
-              new SignatureHelpParams(
-                getFile().toPath(),
-                getCursorLSPPosition())));
+      final CompletableFuture<SignatureHelp> future = CompletableFuture.supplyAsync(
+          () -> languageServer.signatureHelp(
+              new SignatureHelpParams(getFile().toPath(), getCursorLSPPosition())));
 
-      future.whenComplete(
-        (help, error) -> {
-          if (help == null
-            || languageClient == null
-            || future.isCancelled()
-            || future.isCompletedExceptionally()) {
-            LOG.error("An error occurred while finding signature help", error);
-            return;
-          }
+      future.whenComplete((help, error) -> {
+        if (help == null || languageClient == null || future.isCancelled() ||
+            future.isCompletedExceptionally()) {
+          LOG.error("An error occurred while finding signature help", error);
+          return;
+        }
 
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
-        });
+        //noinspection ConstantConditions
+        ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
+      });
     }
   }
 
@@ -298,14 +316,16 @@ public void updateFile(File file) {
   @Override
   public void setSelection(@NonNull Range range) {
     if (isValidPosition(range.getStart(), true) && isValidPosition(range.getEnd(), true)) {
-      setSelectionRegion(
-        range.getStart().getLine(),
-        range.getStart().getColumn(),
-        range.getEnd().getLine(),
-        range.getEnd().getColumn());
+      setSelectionRegion(range.getStart().getLine(), range.getStart().getColumn(),
+          range.getEnd().getLine(), range.getEnd().getColumn());
     } else {
       LOG.warn("Selection range is invalid", range);
     }
+  }
+
+  @Override
+  public void ensurePositionVisible(int line, int column, boolean noAnimation) {
+    super.ensurePositionVisible(line, column, !isEnsurePosAnimEnabled() || noAnimation);
   }
 
   /**
@@ -366,9 +386,8 @@ public void updateFile(File file) {
     final var start = range.getStart();
     final var end = range.getEnd();
 
-    return isValidPosition(start, allowColumnEqual)
-      && isValidPosition(end, allowColumnEqual)
-      && start.compareTo(end) < 0; // make sure start position is before end position
+    return isValidPosition(start, allowColumnEqual) && isValidPosition(end, allowColumnEqual) &&
+        start.compareTo(end) < 0; // make sure start position is before end position
   }
 
   /**
@@ -383,8 +402,8 @@ public void updateFile(File file) {
       return false;
     }
 
-    return isValidLine(position.getLine())
-      && isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
+    return isValidLine(position.getLine()) &&
+        isValidColumn(position.getLine(), position.getColumn(), allowColumnEqual);
   }
 
   /**
@@ -432,6 +451,8 @@ public void updateFile(File file) {
 
     if (server != null) {
       this.languageClient = server.getClient();
+      getSnippetController().setFileVariableResolver(new FileVariableResolver(this));
+      getSnippetController().setWorkspaceVariableResolver(new WorkspaceVariableResolver());
     }
   }
 
@@ -478,94 +499,70 @@ public void updateFile(File file) {
    * file in this editor, the range specified in the response will be selected.
    */
   @Override
-  @SuppressWarnings({"deprecation", "unused"})
   public void findDefinition() {
     if (getFile() == null) {
       return;
     }
 
-    final ProgressDialog pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.msg_finding_definition));
+    final var cancelChecker = new ICancelChecker.Default();
 
-    try {
-      final CompletableFuture<DefinitionResult> future =
-        CompletableFuture.supplyAsync(
-          () -> {
-            final var params =
-              new com.itsaky.androidide.lsp.models.DefinitionParams(
-                getFile().toPath(),
-                new com.itsaky.androidide.models.Position(
-                  getCursor().getLeftLine(), getCursor().getLeftColumn()));
+    final var action = (Consumer<Flashbar>) flashbar -> {
+      final var params = new DefinitionParams(getFile().toPath(),
+          getCursorLSPPosition());
 
-            return languageServer.findDefinition(params);
-          });
+      final CompletableFuture<DefinitionResult> future = CompletableFuture.supplyAsync(
+          () -> languageServer.findDefinition(params, cancelChecker));
 
       future.whenComplete(
-        (result, error) -> {
-          if (result == null
-            || languageClient == null
-            || future.isCancelled()
-            || future.isCompletedExceptionally()) {
-            LOG.error("An error occurred while finding definition", error);
-            showDefinitionNotFound(pd);
-            return;
-          }
+          (result, error) -> onFindDefinitionResult(flashbar, future, result, error));
+    };
 
-          final var locations = result.getLocations();
-          if (locations.size() == 0) {
-            LOG.error("No definitions found", "Size:", locations.size());
-            showDefinitionNotFound(pd);
-            return;
-          }
+    FlashbarActivityUtilsKt.flashProgress(((Activity) getContext()),
+        builder -> configureFlashbar(builder, string.msg_finding_definition, cancelChecker),
+        action);
+  }
 
-          //noinspection ConstantConditions
-          ThreadUtils.runOnUiThread(
-            () -> {
-              if (locations.size() == 1) {
-                var location = locations.get(0);
-                if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
-                  setSelection(location.getRange());
-                  return;
-                }
-                languageClient.showDocument(
-                  new ShowDocumentParams(location.getFile(), location.getRange()));
-              } else {
-                languageClient.showLocations(locations);
-              }
-            });
+  private void onFindDefinitionResult(Flashbar flashbar, CompletableFuture<DefinitionResult> future,
+      DefinitionResult result, Throwable error) {
+    LOG.debug("onFindDefinitionsResult");
+    dismissOnUiThread(flashbar);
 
-          dismissOnUiThread(pd);
-        });
-    } catch (Throwable th) {
-      LOG.error("An error occurred while finding definition", th);
-      showDefinitionNotFound(pd);
+    if (result == null || languageClient == null || future.isCancelled() ||
+        future.isCompletedExceptionally()) {
+      LOG.error("An error occurred while finding definition", error);
+      notify(string.msg_no_definition);
+      return;
     }
+
+    final var locations = result.getLocations();
+    if (locations.size() == 0) {
+      LOG.error("No definitions found", "Size:", locations.size());
+      notify(string.msg_no_definition);
+      return;
+    }
+
+    ThreadUtils.runOnUiThread(() -> {
+      if (locations.size() == 1) {
+        var location = locations.get(0);
+        if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
+          setSelection(location.getRange());
+          return;
+        }
+        languageClient.showDocument(
+            new ShowDocumentParams(location.getFile(), location.getRange()));
+      } else {
+        languageClient.showLocations(locations);
+      }
+    });
   }
 
   /**
-   * Notify the user that no definitions can be found.
+   * Dismisses the given flashbar on the UI thread.
    *
-   * @param pd The {@link ProgressDialog} that was shown when requesting the definitions.
+   * @param flashbar The flashbar to dismiss.
    */
-  @SuppressWarnings("deprecation")
-  private void showDefinitionNotFound(final ProgressDialog pd) {
-    //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(
-      () -> {
-        FlashbarUtilsKt.flashError(string.msg_no_definition);
-        pd.dismiss();
-      });
-  }
-
-  /**
-   * Dismisses the given dialog on the UI thread.
-   *
-   * @param dialog The dialog to dismiss.
-   */
-  private void dismissOnUiThread(@NonNull final Dialog dialog) {
-    //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(dialog::dismiss);
+  private void dismissOnUiThread(@NonNull final Flashbar flashbar) {
+    post(flashbar::dismiss);
   }
 
   /**
@@ -581,77 +578,71 @@ public void updateFile(File file) {
       return;
     }
 
-    @SuppressWarnings("deprecation") final ProgressDialog pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.msg_finding_references));
+    final var cancelChecker = new ICancelChecker.Default();
 
-    try {
-      final var future =
-        CompletableFuture.supplyAsync(
-          () -> {
-            final var referenceParams =
-              new ReferenceParams(
-                getFile().toPath(),
-                new com.itsaky.androidide.models.Position(
-                  getCursor().getLeftLine(), getCursor().getLeftColumn()),
-                true);
-            return languageServer.findReferences(referenceParams);
-          });
+    final var action = (Consumer<Flashbar>) flashbar -> {
+      final var referenceParams = new ReferenceParams(getFile().toPath(),
+          getCursorLSPPosition(), true);
 
-      future.whenComplete((result, error) -> onFindReferencesResult(pd, future, result, error));
-    } catch (Throwable th) {
-      LOG.error("An error occurred while finding references", th);
-      showReferencesNotFound(pd);
-    }
+      final var future = CompletableFuture.supplyAsync(
+          () -> languageServer.findReferences(referenceParams, cancelChecker));
+
+      future.whenComplete(
+          (result, error) -> onFindReferencesResult(flashbar, future, result, error));
+    };
+
+    FlashbarActivityUtilsKt.flashProgress(((Activity) getContext()),
+        builder -> configureFlashbar(builder, R.string.msg_finding_references, cancelChecker),
+        action);
   }
 
-  @SuppressWarnings("deprecation")
-  private void onFindReferencesResult(
-    final ProgressDialog pd,
-    final CompletableFuture<ReferenceResult> future,
-    final ReferenceResult result,
-    final Throwable error) {
-    if (result == null
-      || languageClient == null
-      || future.isCancelled()
-      || future.isCompletedExceptionally()) {
+  private void onFindReferencesResult(final Flashbar flashbar,
+      final CompletableFuture<ReferenceResult> future,
+      final ReferenceResult result, final Throwable error
+  ) {
+    LOG.debug("onFindRefsResult");
+    dismissOnUiThread(flashbar);
+
+    if (result == null || languageClient == null || future.isCancelled() ||
+        future.isCompletedExceptionally()) {
       LOG.error("An error occurred while finding references", error);
-      showReferencesNotFound(pd);
+      notify(string.msg_no_references);
       return;
     }
 
     if (result.getLocations().isEmpty()) {
-      showReferencesNotFound(pd);
+      notify(string.msg_no_references);
       return;
-    } else {
-      if (result.getLocations().size() == 1) {
-        final var loc = result.getLocations().get(0);
-        if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
-          setSelection(loc.getRange());
-          return;
-        }
-      }
-
-      //noinspection ConstantConditions
-      ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
     }
 
-    dismissOnUiThread(pd);
+    if (result.getLocations().size() == 1) {
+      final var loc = result.getLocations().get(0);
+      if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
+        setSelection(loc.getRange());
+        return;
+      }
+    }
+
+    ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
   }
 
   /**
-   * Notify the user that no references were found for the selected token.
+   * Notify the user that no results were found for a task.
    *
-   * @param pd The {@link ProgressDialog} that was shown when requesting references.
    */
-  @SuppressWarnings("deprecation")
-  private void showReferencesNotFound(final ProgressDialog pd) {
+  private void notify(@StringRes final int message) {
     //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(
-      () -> {
-        FlashbarUtilsKt.flashError(string.msg_no_references);
-        pd.dismiss();
-      });
+    ThreadUtils.runOnUiThread(() -> FlashbarUtilsKt.flashError(message));
+  }
+
+  private void configureFlashbar(Flashbar.Builder builder, @StringRes int message,
+      ICancelChecker cancelChecker) {
+    builder.message(message)
+        .negativeActionText(android.R.string.cancel)
+        .negativeActionTapListener(bar -> {
+          cancelChecker.cancel();
+          bar.dismiss();
+        });
   }
 
   /**
@@ -666,32 +657,29 @@ public void updateFile(File file) {
     }
 
     //noinspection deprecation
-    final var pd =
-      ProgressDialog.show(
-        getContext(), null, getContext().getString(string.please_wait), true, false);
-    final CompletableFuture<Range> future =
-      CompletableFuture.supplyAsync(
-        () ->
-          languageServer.expandSelection(
+    final var pd = ProgressDialog.show(getContext(), null,
+        getContext().getString(string.please_wait), true, false);
+    final CompletableFuture<Range> future = CompletableFuture.supplyAsync(
+        () -> languageServer.expandSelection(
             new ExpandSelectionParams(getFile().toPath(), getCursorLSPRange())));
 
-    future.whenComplete(
-      ((range, throwable) -> {
-        pd.dismiss();
+    future.whenComplete(((range, throwable) -> {
+      pd.dismiss();
 
-        if (throwable != null) {
-          LOG.error("Error computing expanded selection range", throwable);
-          return;
-        }
+      if (throwable != null) {
+        LOG.error("Error computing expanded selection range", throwable);
+        return;
+      }
 
-        //noinspection ConstantConditions
-        ThreadUtils.runOnUiThread(() -> setSelection(range));
-      }));
+      //noinspection ConstantConditions
+      ThreadUtils.runOnUiThread(() -> setSelection(range));
+    }));
   }
 
   @Override
-  protected void onFocusChanged(
-    final boolean gainFocus, final int direction, @Nullable final Rect previouslyFocusedRect) {
+  protected void onFocusChanged(final boolean gainFocus, final int direction,
+      @Nullable final Rect previouslyFocusedRect
+  ) {
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     if (!gainFocus) {
       ensureWindowsDismissed();
@@ -722,19 +710,15 @@ public void updateFile(File file) {
    * @param event The content change event.
    */
   private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      isModified = true;
-    }
-
+    isModified = true;
     if (getFile() == null) {
       return;
     }
 
-    CompletableFuture.runAsync(
-      () -> {
-        dispatchDocumentChangeEvent(event);
-        checkForSignatureHelp(event);
-      });
+    CompletableFuture.runAsync(() -> {
+      dispatchDocumentChangeEvent(event);
+      checkForSignatureHelp(event);
+    });
   }
 
   /**
@@ -753,9 +737,8 @@ public void updateFile(File file) {
       return;
     }
     final var changeLength = event.getChangedText().length();
-    if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-      || changeLength > 0
-      && changeLength <= 2) { // changeLength will be 2 as '(' and ')' are inserted at the same time
+    if (event.getAction() != ContentChangeEvent.ACTION_INSERT || changeLength > 0 &&
+        changeLength <= 2) { // changeLength will be 2 as '(' and ')' are inserted at the same time
       return;
     }
 
@@ -785,22 +768,21 @@ public void updateFile(File file) {
 
     final var start = event.getChangeStart();
     final var end = event.getChangeEnd();
-    final var changeRange =
-      new Range(
-        new Position(start.line, start.column, start.index),
+    final var changeRange = new Range(new Position(start.line, start.column, start.index),
         new Position(end.line, end.column, end.index));
 
-    final var changeEvent =
-      new DocumentChangeEvent(
-        file, getText().toString(), fileVersion + 1, type, changeDelta, changeRange);
+    final var changedText = event.getChangedText().toString();
+    final var changeEvent = new DocumentChangeEvent(file, changedText, getText().toString(),
+        ++fileVersion, type, changeDelta, changeRange);
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentContentChange(changeEvent);
     EventBus.getDefault().post(changeEvent);
   }
 
   public static int createInputFlags() {
-    var flags =
-      EditorInfo.TYPE_CLASS_TEXT
-        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+    var flags = EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE |
+        EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
     if (getVisiblePasswordFlag()) {
       flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
@@ -819,8 +801,7 @@ public void updateFile(File file) {
   public void analyze() {
     if (languageServer != null && getFile() != null && getEditorLanguage() instanceof IDELanguage) {
       CompletableFuture.supplyAsync(() -> languageServer.analyze(getFile().toPath()))
-        .whenComplete(
-          (diagnostics, throwable) -> {
+          .whenComplete((diagnostics, throwable) -> {
             if (languageClient != null) {
               languageClient.publishDiagnostics(diagnostics);
             }
@@ -855,6 +836,19 @@ public void updateFile(File file) {
   public void release() {
     ensureWindowsDismissed();
     super.release();
+    ISnippetVariableResolver resolver = getSnippetController().getFileVariableResolver();
+    if (resolver instanceof AbstractSnippetVariableResolver) {
+      ((AbstractSnippetVariableResolver) resolver).close();
+    }
+
+    resolver = getSnippetController().getWorkspaceVariableResolver();
+    if (resolver instanceof AbstractSnippetVariableResolver) {
+      ((AbstractSnippetVariableResolver) resolver).close();
+    }
+
+    getSnippetController().setFileVariableResolver(null);
+    getSnippetController().setWorkspaceVariableResolver(null);
+
     if (this.actionsMenu != null) {
       this.actionsMenu.destroy();
     }
@@ -873,6 +867,10 @@ public void updateFile(File file) {
     }
 
     final var closeEvent = new DocumentCloseEvent(getFile().toPath(), getCursorLSPRange());
+
+    // Notify FileManager first
+    FileManager.INSTANCE.onDocumentClose(closeEvent);
+
     EventBus.getDefault().post(closeEvent);
   }
 
@@ -928,7 +926,7 @@ public void updateFile(File file) {
   @Override
   public void beginSearchMode() {
     throw new UnsupportedOperationException(
-      "Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
+        "Search ActionMode is not supported. Use CodeEditorView.beginSearch() instead.");
   }
 
   public void dispatchDocumentSaveEvent() {
@@ -968,16 +966,23 @@ public void updateFile(File file) {
     }
   }
 
-  private void applyTreeSitterLang(final Language language, final String extension,
-    SchemeAndroidIDE scheme) {
+  public void applyTreeSitterLang(final TreeSitterLanguage language, final String type,
+      @Nullable SchemeAndroidIDE scheme
+  ) {
+    applyTreeSitterLang(((Language) language), type, scheme);
+  }
+
+  private void applyTreeSitterLang(final Language language, final String type,
+      @Nullable SchemeAndroidIDE scheme
+  ) {
     if (scheme == null) {
       LOG.error("Failed to read current color scheme");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }
 
-    if (scheme instanceof IDEColorScheme
-      && ((IDEColorScheme) scheme).getLanguageScheme(extension) == null) {
-      LOG.warn("Color scheme does not support file type '" + extension + "'");
+    if (scheme instanceof IDEColorScheme &&
+        ((IDEColorScheme) scheme).getLanguageScheme(type) == null) {
+      LOG.warn("Color scheme does not support file type '" + type + "'");
       scheme = SchemeAndroidIDE.newInstance(getContext());
     }
 

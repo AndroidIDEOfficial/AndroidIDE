@@ -17,27 +17,9 @@
 
 package com.itsaky.androidide.lookup
 
-import com.itsaky.androidide.lookup.Lookup.Key
-
 /**
- * For all calls to the provided lookup instance.
+ * Forwards all calls to the provided lookup instance.
  *
  * @author Akash Yadav
  */
-abstract class ForwardingLookup(protected val lookup: Lookup) : Lookup {
-  override fun <T : Any?> register(klass: Class<T>?, instance: T) = lookup.register(klass, instance)
-
-  override fun <T : Any?> update(klass: Class<T>?, instance: T) = lookup.update(klass, instance)
-
-  override fun <T : Any?> unregister(klass: Class<T>?) = lookup.unregister(klass)
-
-  override fun <T : Any?> lookup(klass: Class<T>?): T? = lookup.lookup(klass)
-
-  override fun <T : Any?> register(key: Key<T>?, instance: T) = lookup.register(key, instance)
-
-  override fun <T : Any?> unregister(key: Key<T>?) = lookup.unregister(key)
-
-  override fun <T : Any?> lookup(key: Key<T>?): T? = lookup.lookup(key)
-
-  override fun <T : Any?> update(key: Key<T>?, instance: T) = lookup.update(key, instance)
-}
+open class ForwardingLookup(lookup: Lookup) : Lookup by lookup

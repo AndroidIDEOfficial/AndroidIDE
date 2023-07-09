@@ -23,9 +23,10 @@ import com.itsaky.androidide.lsp.java.providers.BaseJavaServiceProvider
 import com.itsaky.androidide.lsp.java.providers.DefinitionProvider
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.utils.ILogger
-import java.nio.file.Path
 import jdkx.lang.model.element.Element
+import java.nio.file.Path
 
 /**
  * Provides definition for a specific symbol in Java source code.
@@ -36,8 +37,9 @@ abstract class IJavaDefinitionProvider(
   protected val position: Position,
   completingFile: Path,
   compiler: JavaCompilerService,
-  settings: IServerSettings
-) : BaseJavaServiceProvider(completingFile, compiler, settings) {
+  settings: IServerSettings,
+  cancelChecker: ICancelChecker
+) : BaseJavaServiceProvider(completingFile, compiler, settings), ICancelChecker by cancelChecker {
 
   protected val log = ILogger.newInstance(javaClass.simpleName)
 

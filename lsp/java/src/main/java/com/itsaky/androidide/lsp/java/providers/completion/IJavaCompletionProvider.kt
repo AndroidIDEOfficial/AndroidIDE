@@ -42,6 +42,8 @@ import com.itsaky.androidide.lsp.models.ICompletionData
 import com.itsaky.androidide.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.androidide.lsp.models.MatchLevel
 import com.itsaky.androidide.lsp.models.MethodCompletionData
+import com.itsaky.androidide.lsp.snippets.ISnippet
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
@@ -150,7 +152,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(keyword)
-    item.kind = KEYWORD
+    item.completionKind = KEYWORD
     item.detail = "keyword"
     item.ideSortText = keyword
     item.matchLevel = matchLevel
@@ -169,7 +171,7 @@ abstract class IJavaCompletionProvider(
     val first = overloads[0]
     val item = JavaCompletionItem()
     item.setLabel(first.simpleName.toString())
-    item.kind = CompletionItemKind.METHOD
+    item.completionKind = CompletionItemKind.METHOD
     item.detail = printMethodDetail(first)
     item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
@@ -186,7 +188,7 @@ abstract class IJavaCompletionProvider(
         item.insertText = first.simpleName.toString() + "($0)"
         item.command = Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS)
       }
-      item.insertTextFormat = SNIPPET // Snippet
+      item.insertTextFormat = SNIPPET // DefaultSnippet
       item.snippetDescription = describeSnippet(prefix = partial, allowCommandExecution = true)
     }
     return item
@@ -220,7 +222,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(element.simpleName.toString())
-    item.kind = kind(element)
+    item.completionKind = kind(element)
     item.detail = element.toString()
     item.data = data(task, element, 1)
     item.ideSortText = item.label.toString()
@@ -250,7 +252,7 @@ abstract class IJavaCompletionProvider(
     abortCompletionIfCancelled()
     val item = JavaCompletionItem()
     item.setLabel(simpleName(className).toString())
-    item.kind = CompletionItemKind.CLASS
+    item.completionKind = CompletionItemKind.CLASS
     item.detail = packageName(className).toString()
     item.ideSortText = item.label.toString()
     item.matchLevel = matchLevel
@@ -285,9 +287,32 @@ abstract class IJavaCompletionProvider(
       setLabel(simpleName)
       this.detail = packageName
       this.insertText = simpleName
-      this.kind = MODULE
+      this.completionKind = MODULE
       this.ideSortText = name
       this.matchLevel = matchLevel
+    }
+  }
+
+  protected open fun snippetItem(
+    snippet: ISnippet,
+    matchLevel: MatchLevel,
+    partial: String,
+    indent: Int
+  ): CompletionItem {
+    return JavaCompletionItem().apply {
+      this.label = snippet.prefix
+      this.detail = snippet.description
+      this.completionKind = CompletionItemKind.SNIPPET
+      this.matchLevel = matchLevel
+      this.ideSortText = "00000${snippet.prefix}"
+      this.snippetDescription = describeSnippet(partial)
+
+      val indentation = indentationString(indent)
+      this.insertTextFormat = SNIPPET
+      this.insertText =
+        snippet.body.joinToString(separator = "\n").also {
+          it.replace("\t", indentationString).replace("\n", "\n${indentation}")
+        }
     }
   }
 

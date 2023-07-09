@@ -14,21 +14,19 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
-
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.IDEActivity;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,31 +17,22 @@
 
 package com.itsaky.androidide.editor.language.log
 
-import android.os.Bundle
-import com.itsaky.androidide.editor.language.IDELanguage
-import io.github.rosemoe.sora.lang.completion.CompletionPublisher
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
-import io.github.rosemoe.sora.text.CharPosition
-import io.github.rosemoe.sora.text.ContentReference
-import io.github.rosemoe.sora.widget.SymbolPairMatch.DefaultSymbolPairs
+import android.content.Context
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
+import com.itsaky.androidide.treesitter.log.TSLanguageLog
 
-/** @author Akash Yadav */
-class LogLanguage @JvmOverloads constructor(val analyzer: LogLineAnalyzer = LogLineAnalyzer()) :
-  IDELanguage() {
+/**
+ * Tree Sitter language implementation for logs.
+ *
+ * @author Akash Yadav
+ */
+class LogLanguage(context: Context) :
+  TreeSitterLanguage(context, TSLanguageLog.newInstance(), TS_TYPE) {
 
-  override fun getAnalyzeManager() = analyzer
+  companion object {
+    const val TS_TYPE = "log"
 
-  override fun requireAutoComplete(
-    content: ContentReference,
-    position: CharPosition,
-    publisher: CompletionPublisher,
-    extraArguments: Bundle
-  ) {}
-
-  override fun destroy() {}
-
-  override fun getInterruptionLevel() = INTERRUPTION_LEVEL_NONE
-  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int) = 0
-  override fun getSymbolPairs() = DefaultSymbolPairs()
-  override fun getNewlineHandlers() = emptyArray<NewlineHandler>()
+    @JvmField val FACTORY = Factory { LogLanguage(it) }
+  }
 }

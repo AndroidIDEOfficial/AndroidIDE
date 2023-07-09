@@ -17,10 +17,12 @@
 
 package com.itsaky.androidide.handlers
 
+import com.itsaky.androidide.R
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.preferences.internal.isFirstBuild
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.services.builder.GradleBuildService
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
@@ -37,11 +39,8 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
   fun setActivity(activity: EditorHandlerActivity) {
     this.activityReference = WeakReference(activity)
   }
-  
-  fun releaes() {
-  }
 
-  override fun prepareBuild() {
+  override fun prepareBuild(buildInfo: BuildInfo) {
     val isFirstBuild = isFirstBuild
     activity()
       .setStatus(
@@ -53,11 +52,16 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
 
     activity().viewModel.isBuildInProgress = true
+    activity().binding.bottomSheet.clearBuildOutput()
+
+    if (buildInfo.tasks.isNotEmpty()) {
+      activity().binding.bottomSheet.appendBuildOut(
+        activity().getString(R.string.title_run_tasks) + " : " + buildInfo.tasks)
+    }
   }
 
   override fun onBuildSuccessful(tasks: MutableList<String>) {
     analyzeCurrentFile()
-    appendOutputSeparator()
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false
@@ -69,13 +73,8 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
   }
 
-  private fun appendOutputSeparator() {
-    activity().appendBuildOutput("\n\n")
-  }
-
   override fun onBuildFailed(tasks: MutableList<String>) {
     analyzeCurrentFile()
-    appendOutputSeparator()
 
     isFirstBuild = false
     activity().viewModel.isBuildInProgress = false

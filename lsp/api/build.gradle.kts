@@ -22,18 +22,18 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.lsp.api"
+    namespace = "${BuildConfig.packageName}.lsp.api"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.LspApiEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.LspApiEventsIndex")
     }
 }
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     implementation(libs.common.editor)
     implementation(projects.subprojects.fuzzysearch)

@@ -23,6 +23,7 @@ import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.MemberSelectTree;
 import openjdk.source.tree.MethodInvocationTree;
+import openjdk.source.tree.Tree;
 import openjdk.source.tree.VariableTree;
 import openjdk.source.util.JavacTask;
 import openjdk.source.util.SourcePositions;
@@ -83,6 +84,15 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
   }
 
   @Override
+  public MethodInvocationTree scan(Tree tree, Integer find) {
+    final var result = super.scan(tree, find);
+    if (result != null && result.getMethodSelect() instanceof MemberSelectTree) {
+      initProperties(((MemberSelectTree) result.getMethodSelect()), find);
+    }
+    return result;
+  }
+
+  @Override
   public MethodInvocationTree reduce(MethodInvocationTree r1, MethodInvocationTree r2) {
     if (r1 != null) return r1;
     return r2;
@@ -130,11 +140,9 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
     }
 
     if (pos.getStartPosition(root, t) <= find && find < pos.getEndPosition(root, t)) {
-      if (t.getMethodSelect() instanceof MemberSelectTree) {
-        checkForQualifiedName((MemberSelectTree) t.getMethodSelect(), find);
-      }
       return t;
     }
+
     return null;
   }
 
@@ -170,7 +178,7 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
     return null;
   }
 
-  private void checkForQualifiedName(MemberSelectTree tree, Integer find) {
+  private void initProperties(MemberSelectTree tree, Integer find) {
     if (tree != null) {
       long start = pos.getStartPosition(root, tree);
       long end = pos.getEndPosition(root, tree);
@@ -178,7 +186,7 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
         Element element = trees.getElement(trees.getPath(root, tree));
 
         // Is this a static access?
-        isStatic = element instanceof TypeElement;
+        this.isStatic = element instanceof TypeElement;
 
         // Find enclosing element to get the TypeElement from which this method is being
         // called
@@ -194,27 +202,11 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
         // Will be needed in CreateMissingMethod.java for EditHelper
         this.enclosingTree = enclosingClass(this.enclosingTreePath);
 
-        isMemberSelect =
+        this.isMemberSelect =
             enclosingElement != null
                 && declaredInTopLevel != null
                 && enclosingTreePath != null
                 && enclosingTree != null;
-
-        LOG.info(
-            String.format(
-                "checkForQualifiedName\n"
-                    + "isStatic: %s\n"
-                    + "enclosingElement: %s\n"
-                    + "declaredInTopLevel: %s\n"
-                    + "enclosingTreePath: %s\n"
-                    + "enclosingTree: %s\n"
-                    + "isMemberSelect: %s",
-                "" + isStatic,
-                "" + enclosingElement,
-                "" + declaredInTopLevel,
-                "" + enclosingTreePath,
-                "" + enclosingTree,
-                "" + isMemberSelect));
       }
     }
   }

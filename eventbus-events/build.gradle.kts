@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.eventbus.events"
+    namespace = "${BuildConfig.packageName}.eventbus.events"
 }
 
 dependencies {

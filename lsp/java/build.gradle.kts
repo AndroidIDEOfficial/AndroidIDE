@@ -21,18 +21,18 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.lsp.java"
+    namespace = "${BuildConfig.packageName}.lsp.java"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.LspJavaEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.LspJavaEventsIndex")
     }
 }
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     implementation(libs.androidide.ts)
     implementation(libs.androidide.ts.java)

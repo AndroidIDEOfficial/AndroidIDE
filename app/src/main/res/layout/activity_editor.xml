@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/editor_drawerLayout"
@@ -20,7 +21,7 @@
       android:background="?attr/colorSurface"
       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
-      <com.google.android.material.appbar.MaterialToolbar
+      <com.itsaky.androidide.ui.ExtendedMenuToolbar
         android:id="@+id/editor_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,12 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true" />
-
-      <com.itsaky.androidide.ui.MaterialBanner
-        android:id="@+id/syncBanner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
 
       <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"

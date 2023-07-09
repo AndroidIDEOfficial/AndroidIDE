@@ -37,7 +37,7 @@ fun match(simpleName: String, qualifiedName: String, prefix: String): MatchLevel
 }
 
 fun platformResourceTable(): ResourceTable? {
-  return Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
+  return Lookup.getDefault().lookup(ResourceTableRegistry.COMPLETION_FRAMEWORK_RES)
 }
 
 fun findAllNamespaces(node: DOMNode): MutableSet<Pair<String, String>> {

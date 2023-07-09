@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
@@ -38,8 +39,8 @@ class ForwardingToolingApiClient(var client: IToolingApiClient?) : IToolingApiCl
     client?.logOutput(line)
   }
 
-  override fun prepareBuild() {
-    client?.prepareBuild()
+  override fun prepareBuild(buildInfo: BuildInfo) {
+    client?.prepareBuild(buildInfo)
   }
 
   override fun onBuildSuccessful(result: BuildResult) {

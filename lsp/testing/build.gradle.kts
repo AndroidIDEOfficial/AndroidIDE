@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.lsp.testing"
+    namespace = "${BuildConfig.packageName}.lsp.testing"
 }
 
 dependencies {
@@ -33,9 +33,11 @@ dependencies {
     implementation(projects.common)
     implementation(projects.eventbusAndroid)
     implementation(projects.subprojects.toolingApiTesting)
+    implementation(projects.shared)
+
     implementation(libs.common.editor)
     implementation(libs.tests.junit)
     implementation(libs.tests.google.truth)
     implementation(libs.tests.robolectric)
-    implementation(projects.actions)
+    implementation(libs.tests.mockk)
 }

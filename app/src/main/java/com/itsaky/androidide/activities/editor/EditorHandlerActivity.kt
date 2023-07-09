@@ -34,6 +34,7 @@ import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.editor.language.java.JavaLanguage
 import com.itsaky.androidide.editor.language.json.JsonLanguage
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage
+import com.itsaky.androidide.editor.language.log.LogLanguage
 import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry
 import com.itsaky.androidide.editor.language.xml.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -53,7 +54,6 @@ import com.itsaky.androidide.utils.DialogUtils.newYesNoDialog
 import com.itsaky.androidide.utils.IntentUtils.openImage
 import com.itsaky.androidide.utils.UniqueNameBuilder
 import com.itsaky.androidide.utils.flashSuccess
-import io.github.rosemoe.sora.event.ContentChangeEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
@@ -125,6 +125,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       TSLanguageRegistry.instance.register(JavaLanguage.TS_TYPE, JavaLanguage.FACTORY)
       TSLanguageRegistry.instance.register(KotlinLanguage.TS_TYPE_KT, KotlinLanguage.FACTORY)
       TSLanguageRegistry.instance.register(KotlinLanguage.TS_TYPE_KTS, KotlinLanguage.FACTORY)
+      TSLanguageRegistry.instance.register(LogLanguage.TS_TYPE, LogLanguage.FACTORY)
       TSLanguageRegistry.instance.register(JsonLanguage.TS_TYPE, JsonLanguage.FACTORY)
       TSLanguageRegistry.instance.register(XMLLanguage.TS_TYPE, XMLLanguage.FACTORY)
       IDEColorSchemeProvider.initIfNeeded()
@@ -251,9 +252,6 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     log.info("Opening file at index:", position, "file: ", file)
 
     val editor = CodeEditorView(this, file, selection!!)
-    editor.editor.subscribeEvent(ContentChangeEvent::class.java) { event, _ ->
-      onEditorContentChanged(event)
-    }
     editor.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     binding.editorContainer.addView(editor)
@@ -365,11 +363,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
   }
 
-  private fun onEditorContentChanged(event: ContentChangeEvent) {
-    if (event.action != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-      viewModel.setFilesModified(true)
-      invalidateOptionsMenu()
-    }
+  private fun onEditorContentChanged() {
+    viewModel.setFilesModified(true)
+    invalidateOptionsMenu()
   }
 
   override fun areFilesModified(): Boolean {
@@ -444,15 +440,20 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   open fun ensureToolbarMenu(menu: Menu) {
     menu.clear()
+
     val data = ActionData()
     val currentEditor = getCurrentEditor()
+
     data.put(Context::class.java, this)
     data.put(CodeEditorView::class.java, currentEditor)
+
     if (currentEditor != null) {
       data.put(IDEEditor::class.java, currentEditor.editor)
       data.put(File::class.java, currentEditor.editor.file)
     }
+
     getInstance().fillMenu(data, EDITOR_TOOLBAR, menu)
+    binding.editorToolbar.updateMenuDisplay()
   }
 
   private fun closeAll(runAfter: () -> Unit = {}) {
@@ -542,6 +543,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onDocumentChange(event: DocumentChangeEvent) {
+    // update content modification status
+    onEditorContentChanged()
+
     val index = findIndexOfEditorByFile(event.file.toFile())
     if (index == -1) {
       return

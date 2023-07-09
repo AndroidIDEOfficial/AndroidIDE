@@ -30,6 +30,6 @@ class UiLayoutInflater : LayoutInflaterImpl() {
 
   init {
     this.componentFactory = UiInflaterComponentFactory()
-    Lookup.DEFAULT.update(com.itsaky.androidide.inflater.ILayoutInflater.LOOKUP_KEY, this)
+    Lookup.getDefault().update(com.itsaky.androidide.inflater.ILayoutInflater.LOOKUP_KEY, this)
   }
 }

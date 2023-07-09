@@ -27,10 +27,13 @@ import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.preferences.internal.AUTO_SAVE
 import com.itsaky.androidide.preferences.internal.COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.COMPLETIONS_MATCH_LOWER
+import com.itsaky.androidide.preferences.internal.DELETE_EMPTY_LINES
+import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
 import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
+import com.itsaky.androidide.preferences.internal.HIDE_FILE_TREE_BUTTON
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
 import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.USE_ICU
@@ -40,6 +43,8 @@ import com.itsaky.androidide.preferences.internal.WORD_WRAP
 import com.itsaky.androidide.preferences.internal.autoSave
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.preferences.internal.completionsMatchLower
+import com.itsaky.androidide.preferences.internal.deleteEmptyLines
+import com.itsaky.androidide.preferences.internal.deleteTabsOnBackspace
 import com.itsaky.androidide.preferences.internal.drawEmptyLineWs
 import com.itsaky.androidide.preferences.internal.drawInnerWs
 import com.itsaky.androidide.preferences.internal.drawLeadingWs
@@ -47,6 +52,7 @@ import com.itsaky.androidide.preferences.internal.drawLineBreak
 import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
+import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.useIcu
@@ -88,10 +94,13 @@ private class CommonConfigurations(
     addPreference(UseCustomFont())
     addPreference(UseSoftTab())
     addPreference(WordWrap())
+    addPreference(HideFileTreeButton())
     addPreference(UseMagnifier())
     addPreference(UseICU())
     addPreference(AutoSave())
     addPreference(VisibiblePasswordFlag())
+    addPreference(DeleteEmptyLines())
+    addPreference(DeleteTabs())
     addPreference(CompletionsMatchLower())
   }
 }
@@ -156,9 +165,8 @@ private class TabSize(
   override val summary: Int? = string.msg_tab_size,
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
-  
-  @IgnoredOnParcel
-  private val choices = arrayOf("2", "4", "6", "8")
+
+  @IgnoredOnParcel private val choices = arrayOf("2", "4", "6", "8")
 
   override fun getChoices(context: Context): Array<String> {
     return choices
@@ -253,6 +261,14 @@ private class WordWrap(
 ) : SwitchPreference(setValue = ::wordwrap::set, getValue = ::wordwrap::get)
 
 @Parcelize
+private class HideFileTreeButton(
+  override val key: String = HIDE_FILE_TREE_BUTTON,
+  override val title: Int = string.idepref_editor_hide_file_tree_button_title,
+  override val summary: Int? = string.idepref_editor_hide_file_tree_button_summary,
+  override val icon: Int? = drawable.ic_folder,
+) : SwitchPreference(setValue = ::hideFileTreeButton::set, getValue = ::hideFileTreeButton::get)
+
+@Parcelize
 private class UseMagnifier(
   override val key: String = USE_MAGNIFER,
   override val title: Int = string.idepref_editor_use_magnifier_title,
@@ -274,17 +290,16 @@ private class CompletionsMatchLower(
   override val title: Int = string.idepref_java_matchLower_title,
   override val summary: Int? = string.idepref_java_matchLower_summary,
   override val icon: Int? = drawable.ic_text_lower,
-) :
-  SwitchPreference(
+) : SwitchPreference(
     setValue = ::completionsMatchLower::set,
     getValue = ::completionsMatchLower::get
-  )
+)
 
 @Parcelize
 private class VisibiblePasswordFlag(
   override val key: String = FLAG_PASSWORD,
   override val title: Int = string.idepref_visiblePassword_title,
-  override val summary: Int? = string.idepref_editor_paintingflags_summary,
+  override val summary: Int? = string.idepref_visiblePassword_summary,
   override val icon: Int? = drawable.ic_password_input,
 ) : SwitchPreference(setValue = ::visiblePasswordFlag::set, getValue = ::visiblePasswordFlag::get)
 
@@ -303,3 +318,19 @@ private class UseCustomFont(
   override val summary: Int? = string.idepref_customFont_summary,
   override val icon: Int? = drawable.ic_custom_font,
 ) : SwitchPreference(setValue = ::useCustomFont::set, getValue = ::useCustomFont::get)
+
+@Parcelize
+private class DeleteEmptyLines(
+  override val key: String = DELETE_EMPTY_LINES,
+  override val title: Int = R.string.idepref_deleteEmptyLines_title,
+  override val summary: Int? = R.string.idepref_deleteEmptyLines_summary,
+  override val icon: Int? = drawable.ic_backspace
+) : SwitchPreference(setValue = ::deleteEmptyLines::set, getValue = ::deleteEmptyLines::get)
+
+@Parcelize
+private class DeleteTabs(
+  override val key: String = DELETE_TABS_ON_BACKSPACE,
+  override val title: Int = R.string.idepref_deleteTabs_title,
+  override val summary: Int? = R.string.idepref_deleteTabs_summary,
+  override val icon: Int? = drawable.ic_backspace
+) : SwitchPreference(setValue = ::deleteTabsOnBackspace::set, getValue = ::deleteTabsOnBackspace::get)

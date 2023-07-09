@@ -40,12 +40,12 @@ import java.io.File
 
 /** Get the [ILayoutInflater] registered with [Lookup]. */
 fun lookupLayoutInflater(): ILayoutInflater? {
-  return Lookup.DEFAULT.lookup(Companion.LOOKUP_KEY)
+  return Lookup.getDefault().lookup(Companion.LOOKUP_KEY)
 }
 
 /** Get the [IComponentFactory] registered with [Lookup]. */
 fun lookupComponentFactory(): IComponentFactory? {
-  return Lookup.DEFAULT.lookup(IComponentFactory.LAYOUT_INFLATER_COMPONENT_FACTORY_KEY)
+  return Lookup.getDefault().lookup(IComponentFactory.LAYOUT_INFLATER_COMPONENT_FACTORY_KEY)
 }
 
 @JvmOverloads

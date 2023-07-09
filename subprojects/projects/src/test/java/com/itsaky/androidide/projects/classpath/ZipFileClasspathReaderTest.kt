@@ -18,7 +18,7 @@
 package com.itsaky.androidide.projects.classpath
 
 import com.google.common.truth.Truth.assertThat
-import java.io.File
+import com.itsaky.androidide.utils.FileProvider
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -32,9 +32,12 @@ class ZipFileClasspathReaderTest {
   @Test
   fun testListClasses() {
     val classes =
-      ZipFileClasspathReader().listClasses(
-        listOf(File("../../tests/test-project/app/src/main/resources/android.jar"))
-      )
+      ZipFileClasspathReader()
+        .listClasses(
+          listOf(
+            FileProvider.testProjectRoot().resolve("app/src/main/resources/android.jar").toFile()
+          )
+        )
 
     val context = classes.firstOrNull { it.name == "android.content.Context" }
     assertThat(context).isNotNull()

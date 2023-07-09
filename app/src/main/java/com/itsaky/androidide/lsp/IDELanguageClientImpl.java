@@ -36,6 +36,7 @@ import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.models.CodeActionItem;
 import com.itsaky.androidide.lsp.models.DiagnosticItem;
 import com.itsaky.androidide.lsp.models.DiagnosticResult;
+import com.itsaky.androidide.lsp.models.PerformCodeActionParams;
 import com.itsaky.androidide.lsp.models.ShowDocumentParams;
 import com.itsaky.androidide.lsp.models.ShowDocumentResult;
 import com.itsaky.androidide.lsp.models.TextEdit;
@@ -163,28 +164,40 @@ public class IDELanguageClientImpl implements ILanguageClient {
   }
 
   @Override
-  public void performCodeAction(File file, CodeActionItem actionItem) {
-    final var editor = activity().getEditorForFile(file);
-    if (editor != null) {
-      performCodeAction(editor.getEditor(), actionItem);
+  public void performCodeAction(PerformCodeActionParams params) {
+    if (params == null) {
+      return;
     }
-  }
 
-  /**
-   * Perform the given {@link CodeActionItem}
-   *
-   * @param editor The {@link IDEEditor} that invoked the code action request. This is required to
-   *     reduce the time finding the code action from the edits.
-   * @param action The action to perform
-   */
-  public void performCodeAction(IDEEditor editor, CodeActionItem action) {
-    if (activity() == null || editor == null || action == null) {
+    final var action = params.getAction();
+    final var activity = activity();
+    if (activity() == null) {
       LOG.error(
           "Unable to perform code action",
           "activity=" + activity(),
-          "editor=" + editor,
           "action=" + action);
       FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
+      return;
+    }
+
+    if (activity.isFinishing()
+      || activity.isDestroyed()
+      || activity.getSupportFragmentManager().isDestroyed()
+      || activity.getSupportFragmentManager().isStateSaved()) {
+      LOG.error("Cannot perform code action. Activity is in an invalid state.");
+      // Should we try to show the error message to the user?
+      return;
+    }
+
+    final var currentEditor = activity().getCurrentEditor();
+    final var editor = currentEditor != null ? currentEditor.getEditor() : null;
+
+    if (!params.getAsync()) {
+      applyActionEdits(editor, action);
+      if (editor != null) {
+        action.getCommand();
+        editor.executeCommand(action.getCommand());
+      }
       return;
     }
 
@@ -195,21 +208,20 @@ public class IDELanguageClientImpl implements ILanguageClient {
     progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
 
     TaskExecutor.executeAsyncProvideError(
-        () -> performCodeActionAsync(editor, action),
+        () -> applyActionEdits(editor, action),
         (result, throwable) -> {
           progress.dismiss();
           if (result == null || throwable != null || !result) {
             LOG.error(
                 "Unable to perform code action", "result=" + result, "throwable=" + throwable);
             FlashbarActivityUtilsKt.flashError(activity(), string.msg_cannot_perform_fix);
-          } else {
+          } else if (editor != null) {
             editor.executeCommand(action.getCommand());
           }
         });
   }
 
-  private Boolean performCodeActionAsync(final IDEEditor editor, final CodeActionItem action) {
-    LOG.debug("Performing code action:", action);
+  private Boolean applyActionEdits(@Nullable final IDEEditor editor, final CodeActionItem action) {
     final var changes = action.getChanges();
     if (changes.isEmpty()) {
       return Boolean.FALSE;
@@ -228,7 +240,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
       for (TextEdit edit : change.getEdits()) {
         final String editorFilepath =
-            editor.getFile() == null ? "" : editor.getFile().getAbsolutePath();
+            editor == null || editor.getFile() == null ? "" : editor.getFile().getAbsolutePath();
         if (file.getAbsolutePath().equals(editorFilepath)) {
           // Edit is in the same editor which requested the code action
           editInEditor(editor, edit);
@@ -240,7 +252,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
             editInEditor(openedFrag.getEditor(), edit);
           } else {
             // Edit is in some other file which is not opened
-            // We should open that file and perform the edit
+            // open that file and perform the edit
             openedFrag = activity().openFile(file);
             if (openedFrag != null && openedFrag.getEditor() != null) {
               editInEditor(openedFrag.getEditor(), edit);

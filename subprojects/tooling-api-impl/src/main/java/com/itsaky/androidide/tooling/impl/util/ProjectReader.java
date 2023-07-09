@@ -206,8 +206,7 @@ public class ProjectReader {
     try {
       final var info = createAndroidModelInfo(gradle, controller);
       if (info == null) {
-        throw new UnknownModelException(
-            "Project " + gradle.getName() + " is not an AndroidProject");
+        throw new NotAnAndroidProjectException(gradle.getName());
       }
 
       outIssues.put(gradle.getPath(), info.getSyncIssues());
@@ -215,6 +214,12 @@ public class ProjectReader {
     } catch (Throwable error) {
 
       if (androidOnly) {
+        if (error instanceof NotAnAndroidProjectException && gradle.getParent() == null) {
+          // A root project is not an Android project in most cases
+          // do not emit misleading logs
+          return null;
+        }
+
         log(error.getMessage());
         return null;
       }
@@ -537,6 +542,13 @@ public class ProjectReader {
       if (sub != null) {
         project.moduleProjects.add(sub);
       }
+    }
+  }
+
+  private static class NotAnAndroidProjectException extends UnknownModelException {
+
+    public NotAnAndroidProjectException(String projectName) {
+      super("Project " + projectName + " is not an Android project");
     }
   }
 }

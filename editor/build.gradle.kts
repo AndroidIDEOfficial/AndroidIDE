@@ -6,23 +6,24 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.editor"
+    namespace = "${BuildConfig.packageName}.editor"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.EditorEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.EditorEventsIndex")
     }
 }
 
 dependencies {
-    ksp(projects.annotationKsp)
-    kapt(libs.common.eventbus.ap)
+    ksp(projects.annotationProcessorsKsp)
+    kapt(projects.annotationProcessors)
     
     api(libs.androidide.ts)
     api(libs.androidide.ts.java)
     api(libs.androidide.ts.json)
     api(libs.androidide.ts.kotlin)
+    api(libs.androidide.ts.log)
     api(libs.androidide.ts.xml)
     api(libs.common.editor)
     api(libs.common.editor.ts)

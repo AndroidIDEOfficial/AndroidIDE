@@ -72,7 +72,7 @@ public class TerminalActivity extends IDEActivity
   public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
   private static final ILogger LOG = ILogger.newInstance("TerminalActivity");
   private static final byte[] SOURCES_LIST_CONTENT =
-      "deb https://androidide.com/packages/apt/termux-main/ stable main".getBytes();
+      "deb https://packages.androidide.com/apt/termux-main/ stable main".getBytes();
   private static final String KEY_FONT_SIZE = "terminal_fontSize";
   private ActivityTerminalBinding binding;
   private TerminalView terminal;
@@ -324,9 +324,7 @@ public class TerminalActivity extends IDEActivity
 
       // Show the progress sheet
       final var progress = new ProgressSheet();
-      progress.setShowShadow(false);
       progress.setSubMessageEnabled(true);
-      progress.setShowTitle(false);
       progress.setMessage(getString(R.string.please_wait));
       progress.setSubMessage(getString(R.string.msg_reading_bootstrap));
       progress.setCancelable(false);

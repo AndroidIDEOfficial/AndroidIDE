@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.javac.services"
+    namespace = "${BuildConfig.packageName}.javac.services"
     
     buildTypes {
         release {

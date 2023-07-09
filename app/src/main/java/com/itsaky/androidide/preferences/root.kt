@@ -19,9 +19,9 @@ package com.itsaky.androidide.preferences
 
 import android.content.Intent
 import com.itsaky.androidide.activities.AboutActivity
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.IDEApplication
+import com.itsaky.androidide.resources.R.string
 import kotlinx.parcelize.Parcelize
 
 private const val KEY_GITHUB = "idepref_gh"
@@ -82,10 +82,35 @@ class ConfigurationPreferences(
   override val title: Int = string.configure,
   override val children: List<IPreference> = mutableListOf()
 ) : IPreferenceGroup() {
+
   init {
     addPreference(GeneralPreferences())
     addPreference(EditorPreferences())
     addPreference(BuildAndRunPreferences())
+  }
+}
+
+@Parcelize
+class PrivacyPreferences(
+  override val key: String = "idepref_privacy",
+  override val title: Int = string.title_privacy,
+  override val children: List<IPreference> = mutableListOf()
+) : IPreferenceGroup() {
+
+  init {
+    addPreference(StatPreferences())
+  }
+}
+
+@Parcelize
+class DeveloperOptionsPreferences(
+  override val key: String = "idepref_devOpts",
+  override val title: Int = string.title_developer_options,
+  override val children: List<IPreference> = mutableListOf()
+) : IPreferenceGroup() {
+
+  init {
+    addPreference(DeveloperOptionsScreen())
   }
 }
 
@@ -95,6 +120,7 @@ class AboutPreferences(
   override val title: Int = string.about,
   override val children: List<IPreference> = mutableListOf()
 ) : IPreferenceGroup() {
+
   init {
     addPreference(github)
     addPreference(channel)

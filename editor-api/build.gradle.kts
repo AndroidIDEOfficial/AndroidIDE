@@ -21,7 +21,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.editor.api"
+  namespace = "${BuildConfig.packageName}.editor.api"
 }
 
 dependencies {

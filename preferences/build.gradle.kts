@@ -22,7 +22,7 @@ plugins {
 }
 
 android {
-  namespace = "com.itsaky.androidide.preferences"
+  namespace = "${BuildConfig.packageName}.preferences"
 }
 
 dependencies {

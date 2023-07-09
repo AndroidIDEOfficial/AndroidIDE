@@ -25,7 +25,8 @@ dependencies {
     implementation(libs.common.jkotlin)
     implementation(projects.logger)
     implementation(projects.subprojects.toolingApi)
-    
+    implementation(projects.shared)
+
     // build tooling API before tests
     compileOnly(projects.subprojects.toolingApiImpl)
 }

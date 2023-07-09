@@ -19,7 +19,6 @@ package com.itsaky.androidide.preferences
 
 import android.content.Context
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.lsp.xml.models.EmptyElements
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
 import com.itsaky.androidide.preferences.internal.EMPTY_ELEMENTS_BEHAVIOR
 import com.itsaky.androidide.preferences.internal.INSERT_FINAL_NEW_LINE
@@ -50,6 +49,7 @@ import com.itsaky.androidide.preferences.internal.splitAttributes
 import com.itsaky.androidide.preferences.internal.splitAttributesIndentSize
 import com.itsaky.androidide.preferences.internal.trimFinalNewLine
 import com.itsaky.androidide.preferences.internal.trimTrailingWhitespace
+import org.eclipse.lemminx.dom.builder.EmptyElements
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

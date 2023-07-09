@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.xml;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.lsp.api.ICompletionProvider;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
@@ -38,11 +39,17 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.NoCompletionsProvider;
 import com.itsaky.androidide.lsp.xml.models.XMLServerSettings;
+import com.itsaky.androidide.lsp.xml.providers.AdvancedEditProvider;
 import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.api.Project;
 
+import com.itsaky.androidide.utils.DocumentUtils;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -62,7 +69,9 @@ public class XMLLanguageServer implements ILanguageServer {
 
   private IServerSettings settings;
 
-  public XMLLanguageServer() {}
+  public XMLLanguageServer() {
+    EventBus.getDefault().register(this);
+  }
 
   @Override
   public String getServerId() {
@@ -70,7 +79,11 @@ public class XMLLanguageServer implements ILanguageServer {
   }
 
   @Override
-  public void shutdown() {}
+  public void shutdown() {
+    if (EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().unregister(this);
+    }
+  }
 
   @Override
   public void connectClient(ILanguageClient client) {
@@ -93,7 +106,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CompletionResult complete(final CompletionParams params) {
+  public CompletionResult complete(final CompletionParams params, ICancelChecker cancelChecker) {
     final ICompletionProvider completionProvider;
     if (!getSettings().completionsEnabled()) {
       completionProvider = new NoCompletionsProvider();
@@ -114,13 +127,15 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+  public ReferenceResult findReferences(@NonNull ReferenceParams params,
+      ICancelChecker cancelChecker) {
     return new ReferenceResult(Collections.emptyList());
   }
 
   @NonNull
   @Override
-  public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+  public DefinitionResult findDefinition(@NonNull DefinitionParams params,
+      ICancelChecker cancelChecker) {
     return new DefinitionResult(Collections.emptyList());
   }
 
@@ -146,5 +161,14 @@ public class XMLLanguageServer implements ILanguageServer {
   @Override
   public CodeFormatResult formatCode(FormatCodeParams params) {
     return new CodeFormatProvider().format(params);
+  }
+
+  @Subscribe(threadMode = ThreadMode.BACKGROUND)
+  public void onDocumentChange(DocumentChangeEvent event) {
+    if (!DocumentUtils.isXmlFile(event.getChangedFile())) {
+      return;
+    }
+
+    AdvancedEditProvider.INSTANCE.onContentChange(event);
   }
 }

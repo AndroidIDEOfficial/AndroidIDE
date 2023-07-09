@@ -14,6 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
@@ -30,8 +31,12 @@ import com.itsaky.androidide.preferences.IPreferenceScreen
 class IDEPreferencesFragment : BasePreferenceFragment() {
 
   private var children: List<IPreference> = emptyList()
-  
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
     reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
@@ -40,7 +45,10 @@ class IDEPreferencesFragment : BasePreferenceFragment() {
 
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
     super.onCreatePreferences(savedInstanceState, rootKey)
-    if (context == null) return
+
+    if (context == null) {
+      return
+    }
 
     @Suppress("DEPRECATION")
     this.children = arguments?.getParcelableArrayList(EXTRA_CHILDREN) ?: emptyList()
@@ -70,6 +78,7 @@ class IDEPreferencesFragment : BasePreferenceFragment() {
   }
 
   companion object {
+
     const val EXTRA_CHILDREN = "idepref_children"
   }
 }

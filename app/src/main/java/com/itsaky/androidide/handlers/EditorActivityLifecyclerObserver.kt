@@ -53,7 +53,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
 
   override fun onStart(owner: LifecycleOwner) {
     CompletableFuture.runAsync(this::initBootclasspathProvider)
-    register(fileActionsHandler, FileManager, ProjectManager)
+    register(fileActionsHandler, ProjectManager)
 
     dispatchEvent(OnStartEvent())
   }
@@ -69,7 +69,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
   }
 
   override fun onStop(owner: LifecycleOwner) {
-    unregister(fileActionsHandler, FileManager, ProjectManager)
+    unregister(fileActionsHandler, ProjectManager)
     dispatchEvent(OnStopEvent())
   }
 

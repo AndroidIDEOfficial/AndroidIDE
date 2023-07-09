@@ -20,6 +20,7 @@ package com.itsaky.androidide.utils
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.itsaky.androidide.preferences.internal.tabSize
+import com.itsaky.androidide.preferences.utils.indentationString
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.TypeSpec
@@ -38,7 +39,7 @@ object ClassBuilder {
     block: JavaFile.Builder.() -> Unit = {}
   ): JavaFile {
     return JavaFile.builder(packageName, type)
-      .indent(" ".repeat(tabSize))
+      .indent(indentationString)
       .apply { block(this) }
       .build()
   }

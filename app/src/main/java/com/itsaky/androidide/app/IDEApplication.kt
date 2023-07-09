@@ -15,44 +15,64 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
 package com.itsaky.androidide.app
 
 import android.content.Intent
 import android.net.Uri
+import android.os.StrictMode
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.Observer
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.Operation
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.blankj.utilcode.util.ThrowableUtils.getFullStackTrace
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
+import com.itsaky.androidide.activities.editor.IDELogcatReader
+import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
+import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
 import com.itsaky.androidide.events.AppEventsIndex
 import com.itsaky.androidide.events.EditorEventsIndex
 import com.itsaky.androidide.events.LspApiEventsIndex
 import com.itsaky.androidide.events.LspJavaEventsIndex
 import com.itsaky.androidide.events.ProjectsApiEventsIndex
+import com.itsaky.androidide.preferences.KEY_DEVOPTS_DEBUGGING_DUMPLOGS
+import com.itsaky.androidide.preferences.dumpLogs
+import com.itsaky.androidide.preferences.internal.STAT_OPT_IN
 import com.itsaky.androidide.preferences.internal.enableMaterialYou
+import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.preferences.internal.uiMode
+import com.itsaky.androidide.stats.AndroidIDEStats
+import com.itsaky.androidide.stats.StatUploadWorker
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import java.lang.Thread.UncaughtExceptionHandler
-import kotlin.system.exitProcess
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.lang.Thread.UncaughtExceptionHandler
+import java.time.Duration
+import kotlin.system.exitProcess
 
 class IDEApplication : BaseApplication() {
 
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
+  private var ideLogcatReader: IDELogcatReader? = null
+  private val log = ILogger.newInstance("IDEApplication")
 
   init {
     if (!VMUtils.isJvm()) {
-      System.loadLibrary("android-tree-sitter")
-      System.loadLibrary("tree-sitter-java")
-      System.loadLibrary("tree-sitter-json")
-      System.loadLibrary("tree-sitter-kotlin")
-      System.loadLibrary("tree-sitter-xml")
+      TreeSitter.loadLibrary()
     }
   }
 
@@ -63,6 +83,16 @@ class IDEApplication : BaseApplication() {
     Thread.setDefaultUncaughtExceptionHandler { thread, th -> handleCrash(thread, th) }
     super.onCreate()
 
+    if (BuildConfig.DEBUG) {
+      StrictMode.setVmPolicy(
+        StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy()).penaltyLog().detectAll().build()
+      )
+
+      if (dumpLogs) {
+        startLogcatReader()
+      }
+    }
+
     EventBus.builder()
       .addIndex(AppEventsIndex())
       .addIndex(EditorEventsIndex())
@@ -70,6 +100,8 @@ class IDEApplication : BaseApplication() {
       .addIndex(LspApiEventsIndex())
       .addIndex(LspJavaEventsIndex())
       .installDefaultEventBus(true)
+
+    EventBus.getDefault().register(this)
 
     AppCompatDelegate.setDefaultNightMode(uiMode)
 
@@ -104,7 +136,11 @@ class IDEApplication : BaseApplication() {
 
   fun showChangelog() {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(GITHUB_URL + "/releases/tag/v" + BuildConfig.VERSION_NAME)
+    var version = BuildInfo.VERSION_NAME_SIMPLE
+    if (!version.startsWith('v')) {
+      version = "v${version}"
+    }
+    intent.data = Uri.parse("${BuildInfo.REPO_URL}/releases/tag/${version}")
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     try {
       startActivity(intent)
@@ -112,6 +148,81 @@ class IDEApplication : BaseApplication() {
       LOG.error("Unable to start activity to show changelog", th)
       flashError("Unable to start activity")
     }
+  }
+
+  fun reportStatsIfNecessary() {
+
+    if (!statOptIn) {
+      log.info("Stat collection is disabled.")
+      return
+    }
+
+    val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+    val request = PeriodicWorkRequestBuilder<StatUploadWorker>(Duration.ofHours(24))
+      .setInputData(AndroidIDEStats.statData.toInputData())
+      .setConstraints(constraints)
+      .addTag(StatUploadWorker.WORKER_WORK_NAME)
+      .build()
+
+    val workManager = WorkManager.getInstance(this)
+
+    log.info("reportStatsIfNecessary: Enqueuing StatUploadWorker...")
+    val operation = workManager
+      .enqueueUniquePeriodicWork(StatUploadWorker.WORKER_WORK_NAME,
+        ExistingPeriodicWorkPolicy.UPDATE, request)
+
+    operation.state.observeForever(object : Observer<Operation.State> {
+      override fun onChanged(t: Operation.State?) {
+        operation.state.removeObserver(this)
+        log.debug("reportStatsIfNecessary: WorkManager enqueue result: $t")
+      }
+    })
+  }
+
+  private fun startLogcatReader() {
+    if (ideLogcatReader != null) {
+      // already started
+      return
+    }
+
+    log.info("Starting logcat reader...")
+    ideLogcatReader = IDELogcatReader().also { it.start() }
+  }
+
+  private fun stopLogcatReader() {
+    log.info("Stopping logcat reader...")
+    ideLogcatReader?.interrupt()
+    ideLogcatReader = null
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onPrefChanged(event: PreferenceChangeEvent) {
+    val enabled = event.value as? Boolean? ?: return
+    if (event.key == STAT_OPT_IN) {
+      if (enabled) {
+        reportStatsIfNecessary()
+      } else {
+        cancelStatUploadWorker()
+      }
+    } else if (event.key == KEY_DEVOPTS_DEBUGGING_DUMPLOGS) {
+      if (enabled) {
+        startLogcatReader()
+      } else {
+        stopLogcatReader()
+      }
+    }
+  }
+
+  private fun cancelStatUploadWorker() {
+    log.info("Opted-out of stat collection. Cancelling StatUploadWorker if enqueued...")
+    val operation = WorkManager.getInstance(this)
+      .cancelUniqueWork(StatUploadWorker.WORKER_WORK_NAME)
+    operation.state.observeForever(object : Observer<Operation.State> {
+      override fun onChanged(t: Operation.State?) {
+        operation.state.removeObserver(this)
+        log.info("StatUploadWorker: Cancellation result state: $t")
+      }
+    })
   }
 
   companion object {

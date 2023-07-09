@@ -36,7 +36,7 @@ import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
  */
 object LanguageSpecProvider {
 
-  const val BASE_SPEC_PATH = "editor/treesitter"
+  private const val BASE_SPEC_PATH = "editor/treesitter"
   private val log = ILogger.newInstance("LanguageSpecProvider")
 
   @JvmStatic
@@ -56,7 +56,13 @@ object LanguageSpecProvider {
         bracketsScmSource = readScheme(context, type, "brackets"),
         localsCaptureSpec = localsCaptureSpec,
         predicates =
-          listOf(MatchPredicate, NotMatchPredicate, EqualPredicate, NotEqualPredicate, AnyOfPredicate)
+          listOf(
+            MatchPredicate,
+            NotMatchPredicate,
+            EqualPredicate,
+            NotEqualPredicate,
+            AnyOfPredicate
+          )
       )
     return TreeSitterLanguageSpec(
       spec = editorLangSpec,
@@ -65,15 +71,13 @@ object LanguageSpecProvider {
   }
 
   private fun readScheme(context: Context, type: String, name: String): String {
-    val assests = context.assets
-    if (assests.list(BASE_SPEC_PATH)?.contains(type) == false) {
-      log.warn("No scheme files defined for type '$type'")
-      return ""
+    return try {
+      context.assets.open("${BASE_SPEC_PATH}/${type}/${name}.scm").reader().readText()
+    } catch (e: Exception) {
+      if (type != "log" || name == "highlights") {
+        log.warn("Scheme file '$name' for type '$type' not found")
+      }
+      ""
     }
-    if (assests.list("$BASE_SPEC_PATH/$type")?.contains("$name.scm") == false) {
-      log.warn("Scheme file '$name' for type '$type' not found")
-      return ""
-    }
-    return assests.open("${BASE_SPEC_PATH}/${type}/${name}.scm").reader().readText()
   }
 }

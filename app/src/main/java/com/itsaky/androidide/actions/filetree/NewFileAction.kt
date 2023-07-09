@@ -19,6 +19,7 @@ package com.itsaky.androidide.actions.filetree
 
 import android.content.Context
 import android.view.LayoutInflater
+import androidx.core.view.isVisible
 import com.blankj.utilcode.util.FileIOUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireFile
@@ -132,6 +133,9 @@ class NewFileAction(context: Context) :
     val builder = DialogUtils.newMaterialDialogBuilder(context)
     val binding: LayoutCreateFileJavaBinding =
       LayoutCreateFileJavaBinding.inflate(LayoutInflater.from(context))
+    binding.typeGroup.addOnButtonCheckedListener { _, _, _ ->
+      binding.createLayout.isVisible = binding.typeGroup.checkedButtonId == binding.typeActivity.id
+    }
     binding.name.editText?.addTextChangedListener(
       object : SingleTextWatcher() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -154,7 +158,9 @@ class NewFileAction(context: Context) :
       }
 
       val name: String = binding.name.editText!!.text.toString().trim()
-      val autoLayout = binding.checkButton.isChecked
+      val autoLayout =
+        binding.typeGroup.checkedButtonId == binding.typeActivity.id &&
+          binding.createLayout.isChecked
       val pkgName = ProjectWriter.getPackageName(file)
       if (pkgName == null || pkgName.trim { it <= ' ' }.isEmpty()) {
         flashError(R.string.msg_get_package_failed)
@@ -234,12 +240,12 @@ class NewFileAction(context: Context) :
     val layoutName = ProjectWriter.createLayoutName(fileName.replace(".java", ".xml"))
     val newFileLayout = File(dir, layoutName)
     if (newFileLayout.exists()) {
-      flashError(R.string.msg_file_exists)
+      flashError(R.string.msg_layout_file_exists)
       return
     }
 
     if (!FileIOUtils.writeFileFromString(newFileLayout, ProjectWriter.createLayout())) {
-      flashError(R.string.msg_file_creation_failed)
+      flashError(R.string.msg_layout_file_creation_failed)
       return
     }
 

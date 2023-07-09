@@ -14,16 +14,28 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 plugins {
-    id("groovy-gradle-plugin")
+  id("java-gradle-plugin")
+  id("org.jetbrains.kotlin.jvm")
+  id("com.vanniktech.maven.publish.base")
 }
 
-group = "com.itsaky.androidide"
-version = "1.0.0"
+dependencies {
+  implementation(projects.buildInfo)
+}
 
 gradlePlugin {
-    plugins.create("androidide") {
-        id = "com.itsaky.androidide"
-        implementationClass = "com.itsaky.androidide.gradle.plugin.AndroidIDEPlugin"
+  website.set(ProjectConfig.REPO_URL)
+  vcsUrl.set(ProjectConfig.REPO_URL)
+
+  plugins {
+    create("gradlePlugin") {
+      id = "${BuildConfig.packageName}.gradle"
+      implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEGradlePlugin"
+      displayName = "AndroidIDE Gradle Plugin"
+      description = "Gradle plugin for projects that are built with AndroidIDE"
+      tags.set(setOf("androidide"))
     }
+  }
 }

@@ -41,7 +41,6 @@ import com.itsaky.androidide.lsp.java.providers.completion.KeywordCompletionProv
 import com.itsaky.androidide.lsp.java.providers.completion.MemberReferenceCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.MemberSelectCompletionProvider;
 import com.itsaky.androidide.lsp.java.providers.completion.SwitchConstantCompletionProvider;
-import com.itsaky.androidide.lsp.java.providers.completion.TopLevelSnippetsProvider;
 import com.itsaky.androidide.lsp.java.utils.ASTFixer;
 import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.java.visitors.FindCompletionsAt;
@@ -73,11 +72,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     super();
   }
 
-  public synchronized CompletionProvider reset(
-    JavaCompilerService compiler,
-    IServerSettings settings,
-    CachedCompletion cache,
-    Consumer<CachedCompletion> nextCacheConsumer) {
+  public synchronized CompletionProvider reset(JavaCompilerService compiler,
+                                               IServerSettings settings, CachedCompletion cache,
+                                               Consumer<CachedCompletion> nextCacheConsumer
+  ) {
     this.compiler = compiler;
     this.cache = cache;
     this.nextCacheConsumer = nextCacheConsumer;
@@ -130,25 +128,22 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     if (this.cache != null && this.cache.canUseCache(params)) {
       final String prefix = params.requirePrefix();
       final String partial = partialIdentifier(prefix, prefix.length());
-      final CompletionResult result =
-        CompletionResult.mapAndFilter(
-          this.cache.getResult(),
-          partial,
-          item -> {
-            final var description = item.getSnippetDescription();
-            var deleteSelected = true;
-            var allowCommands = false;
-            CodeSnippet snippet = null;
+      final CompletionResult result = CompletionResult.mapAndFilter(this.cache.getResult(), partial,
+        item -> {
+          final var description = item.getSnippetDescription();
+          var deleteSelected = true;
+          var allowCommands = false;
+          CodeSnippet snippet = null;
 
-            if (description != null) {
-              deleteSelected = description.getDeleteSelected();
-              allowCommands = description.getAllowCommandExecution();
-              snippet = description.getSnippet();
-            }
+          if (description != null) {
+            deleteSelected = description.getDeleteSelected();
+            allowCommands = description.getAllowCommandExecution();
+            snippet = description.getSnippet();
+          }
 
-            item.setSnippetDescription(
-              describeSnippet(partial, deleteSelected, snippet, allowCommands));
-          });
+          item.setSnippetDescription(
+            describeSnippet(partial, deleteSelected, snippet, allowCommands));
+        });
 
       result.markCached();
 
@@ -183,8 +178,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     final String contentString = contents.toString();
-    final PartialReparseRequest partialRequest =
-      new PartialReparseRequest(cursor - params.requirePrefix().length(), contentString);
+    final PartialReparseRequest partialRequest = new PartialReparseRequest(
+      cursor - params.requirePrefix().length(), contentString);
     abortIfCancelled();
     abortCompletionIfCancelled();
 
@@ -217,14 +212,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
   private void logCompletionDuration(Instant started, @NonNull CompletionResult result) {
     long elapsedMs = Duration.between(started, Instant.now()).toMillis();
-    LOG.info(
-      String.format(
-        Locale.US,
-        "Found %d items%s%sin %,d ms",
-        result.getItems().size(),
-        result.isIncomplete() ? " (incomplete) " : "",
-        result.isCached() ? " (cached) " : " ",
-        elapsedMs));
+    LOG.info(String.format(Locale.US, "Found %d items%s%sin %,d ms", result.getItems().size(),
+      result.isIncomplete() ? " (incomplete) " : "", result.isCached() ? " (cached) " : " ",
+      elapsedMs));
   }
 
   private int endOfLine(@NonNull CharSequence contents, int cursor) {
@@ -238,8 +228,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return cursor;
   }
 
-  private CompletionResult compileAndComplete(
-    String contents, CompletionParams params, PartialReparseRequest partialRequest) {
+  private CompletionResult compileAndComplete(String contents, CompletionParams params,
+                                              PartialReparseRequest partialRequest
+  ) {
     final long cursor = params.getPosition().requireIndex();
     final var file = params.getFile();
     final var started = Instant.now();
@@ -250,58 +241,51 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     abortIfCancelled();
     abortCompletionIfCancelled();
 
-    final CompilationRequest request =
-      new CompilationRequest(Collections.singletonList(source), partialRequest);
+    final CompilationRequest request = new CompilationRequest(Collections.singletonList(source),
+      partialRequest);
     request.configureContext = ctx -> {
       final var config = JavaCompilerConfig.instance(ctx);
       config.setCompletionInfo(new CompletionInfo(params.getPosition()));
     };
 
     SynchronizedTask synchronizedTask = compiler.compile(request);
-    return synchronizedTask.get(
-      task -> {
-        if (task == null || task.task == null || task.task.getContext() == null) {
-          LOG.warn("Compilation resulted in an invalid JavacTask");
-          return CompletionResult.EMPTY;
+    return synchronizedTask.get(task -> {
+      if (task == null || task.task == null || task.task.getContext() == null) {
+        LOG.warn("Compilation resulted in an invalid JavacTask");
+        return CompletionResult.EMPTY;
+      }
+      abortIfCancelled();
+      abortCompletionIfCancelled();
+      LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
+      TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
+
+      abortIfCancelled();
+      abortCompletionIfCancelled();
+      String newPartial = partial;
+      if (path.getLeaf().getKind() == Tree.Kind.IMPORT) {
+        newPartial = qualifiedPartialIdentifier(contents, (int) cursor);
+        if (newPartial.endsWith(ASTFixer.IDENT)) {
+          newPartial = newPartial.substring(0, newPartial.length() - ASTFixer.IDENT.length());
         }
-        abortIfCancelled();
-        abortCompletionIfCancelled();
-        LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
-        TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
+      }
 
-        abortIfCancelled();
-        abortCompletionIfCancelled();
-        String newPartial = partial;
-        if (path.getLeaf().getKind() == Tree.Kind.IMPORT) {
-          newPartial = qualifiedPartialIdentifier(contents, (int) cursor);
-          if (newPartial.endsWith(ASTFixer.IDENT)) {
-            newPartial = newPartial.substring(0, newPartial.length() - ASTFixer.IDENT.length());
-          }
-        }
+      final var result = doComplete(file, contents, cursor, newPartial, endsWithParen, task, path);
 
-        final var result = doComplete(file, contents, cursor, newPartial, endsWithParen, task,
-          path);
-        new TopLevelSnippetsProvider().complete(partial, task.root(), result);
+      // IMPORTANT: Unregister the completion info from the compiler configuration
+      if (task.task.getContext() != null) {
+        final var compilerConfig = JavaCompilerConfig.instance(task.task.getContext());
+        compilerConfig.setCompletionInfo(null);
+      }
 
-        // IMPORTANT: Unregister the completion info from the compiler configuration
-        if (task.task.getContext() != null) {
-          final var compilerConfig = JavaCompilerConfig.instance(task.task.getContext());
-          compilerConfig.setCompletionInfo(null);
-        }
-
-        return result;
-      });
+      return result;
+    });
   }
 
   @NonNull
-  private CompletionResult doComplete(
-    final Path file,
-    final String contents,
-    final long cursor,
-    final String partial,
-    final boolean endsWithParen,
-    final CompileTask task,
-    final TreePath path) {
+  private CompletionResult doComplete(final Path file, final String contents, final long cursor,
+                                      final String partial, final boolean endsWithParen,
+                                      final CompileTask task, final TreePath path
+  ) {
     final Class<? extends IJavaCompletionProvider> klass;
     abortIfCancelled();
     abortCompletionIfCancelled();
@@ -326,12 +310,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         break;
     }
 
-    final IJavaCompletionProvider provider =
-      ReflectUtils.reflect(klass).newInstance(file, cursor, compiler, getSettings()).get();
+    final IJavaCompletionProvider provider = ReflectUtils.reflect(klass)
+      .newInstance(file, cursor, compiler, getSettings())
+      .get();
 
     if (provider instanceof ImportCompletionProvider) {
-      ((ImportCompletionProvider) provider)
-        .setImportPath(qualifiedPartialIdentifier(contents, (int) cursor));
+      ((ImportCompletionProvider) provider).setImportPath(
+        qualifiedPartialIdentifier(contents, (int) cursor));
     }
 
     abortIfCancelled();

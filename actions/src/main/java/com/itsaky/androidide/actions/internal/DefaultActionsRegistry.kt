@@ -22,6 +22,7 @@ import android.graphics.PorterDuffColorFilter
 import android.view.Menu
 import android.view.MenuItem
 import com.blankj.utilcode.util.ThreadUtils
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
@@ -38,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Akash Yadav
  */
+@AutoService(ActionsRegistry::class)
 class DefaultActionsRegistry : ActionsRegistry() {
 
   private val log = ILogger.newInstance("DefaultActionsRegistry")
@@ -117,33 +119,33 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   private fun addActionToMenu(menu: Menu, action: ActionItem, data: ActionData) {
     val context = data[Context::class.java]
-    val item: MenuItem =
-      if (action is ActionMenu) {
-        val sub = menu.addSubMenu(action.label)
 
-        var shouldBeEnabled = false
-        for (subItem in action.children) {
-          subItem.prepare(data)
-          if (subItem.visible) {
-            addActionToMenu(sub, subItem, data)
-          }
+    val item: MenuItem = if (action is ActionMenu) {
+      val sub = menu.addSubMenu(action.label)
 
-          if (action.enabled && subItem.enabled && !shouldBeEnabled) {
-            shouldBeEnabled = true
-          }
+      var shouldBeEnabled = false
+      for (subItem in action.children) {
+        subItem.prepare(data)
+        if (subItem.visible) {
+          addActionToMenu(sub, subItem, data)
         }
 
-        action.enabled = shouldBeEnabled
-        sub.item
-      } else {
-        menu.add(action.label)
+        if (action.enabled && subItem.enabled && !shouldBeEnabled) {
+          shouldBeEnabled = true
+        }
       }
 
+      action.enabled = shouldBeEnabled
+      sub.item
+    } else {
+      menu.add(action.label)
+    }
+
     item.isEnabled = action.enabled
-    item.icon =
-      action.icon?.apply {
-        colorFilter = PorterDuffColorFilter(context!!.resolveAttr(R.attr.colorOnSurface), SRC_ATOP)
-      }
+
+    item.icon = action.icon?.apply {
+      colorFilter = PorterDuffColorFilter(context!!.resolveAttr(R.attr.colorOnSurface), SRC_ATOP)
+    }
 
     if (item.icon != null) {
       item.icon!!.alpha = if (action.enabled) 255 else 76
@@ -154,6 +156,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
     if (action.getShowAsActionFlags(data) != -1) {
       item.setShowAsAction(action.getShowAsActionFlags(data))
+    }
+
+    if (!action.enabled) {
+      item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
     }
 
     action.createActionView(data)?.let { item.actionView = it }
@@ -182,13 +188,11 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
   private fun execInBackground(action: ActionItem, data: ActionData) {
     val start = System.currentTimeMillis()
-    CompletableFuture.supplyAsync { action.execAction(data) }
-      .whenComplete { result, error ->
+    CompletableFuture.supplyAsync { action.execAction(data) }.whenComplete { result, error ->
         if (result == null || (result is Boolean && !result) || error != null) {
           log.error(
             "An error occurred when performing action '${action.id}'. Action failed in ${System.currentTimeMillis() - start}ms",
-            error
-          )
+            error)
         } else {
           log.info("Action '${action.id}' completed in ${System.currentTimeMillis() - start}ms")
         }

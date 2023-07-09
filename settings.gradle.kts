@@ -13,7 +13,7 @@ pluginManagement {
   }
 }
 
-plugins { id("com.mooltiverse.oss.nyx") version "2.3.0" }
+plugins { id("com.mooltiverse.oss.nyx") version "2.4.5" }
 
 extensions.configure<NyxExtension> {
   git {
@@ -40,10 +40,12 @@ dependencyResolutionManagement {
 rootProject.name = "AndroidIDE"
 
 include(
-  ":annotation-ksp",
+  ":annotation-processors",
+  ":annotation-processors-ksp",
   ":annotations",
   ":actions",
   ":app",
+  ":build-info",
   ":common",
   ":editor",
   ":editor-api",
@@ -51,16 +53,21 @@ include(
   ":eventbus",
   ":eventbus-android",
   ":eventbus-events",
+  ":gradle-plugin",
+  ":idestats",
   ":lexers",
   ":logger",
+  ":logsender",
+  ":logsender-sample",
   ":lookup",
   ":preferences",
   ":resources",
   ":shared",
+  ":templates-api",
+  ":templates-impl",
   ":treeview",
   ":uidesigner",
   ":xml-inflater",
-  ":gradle-plugin",
   ":lsp:api",
   ":lsp:models",
   ":lsp:java",
@@ -89,39 +96,5 @@ include(
   ":subprojects:tooling-api-model",
   ":subprojects:tooling-api-testing",
   ":subprojects:xml-dom",
-  ":subprojects:xml-formatter",
   ":subprojects:xml-utils"
 )
-
-/**
- * Information about the CI build.
- *
- * @author Akash Yadav
- */
-object CI {
-
-  /** The short commit hash. */
-  val commitHash by lazy {
-    val sha = System.getenv("GITHUB_SHA") ?: return@lazy ""
-    shortSha(sha)
-  }
-
-  /** Name of the current branch. */
-  val branchName by lazy {
-    System.getenv("GITHUB_REF_NAME") ?: "main" // by default, 'main'
-  }
-
-  /** Whether the current build is a CI build. */
-  val isCiBuild by lazy { "true" == System.getenv("CI") }
-
-  private fun shortSha(sha: String): String {
-    return ProcessBuilder("git", "rev-parse", "--short", sha)
-      .directory(File("."))
-      .redirectErrorStream(true)
-      .start()
-      .inputStream
-      .bufferedReader()
-      .readText()
-      .trim()
-  }
-}

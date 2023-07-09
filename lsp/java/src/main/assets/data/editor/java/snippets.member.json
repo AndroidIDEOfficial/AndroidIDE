@@ -1,0 +1,56 @@
+{
+  "const": {
+    "desc": "Create a constant field",
+    "body": [
+      "public static final ${1:type} ${2/(.*)/${1:/upcase}/} = ${3:value};"
+    ]
+  },
+  "ctor": {
+    "desc": "Public constructor",
+    "body": [
+      "public ${1:$TM_FILENAME_BASE}($2) {",
+      "\t${3:super();}$0",
+      "}"
+    ]
+  },
+  "public_method": {
+    "desc": "Create a new public method",
+    "body": [
+      "public ${1:void} ${2:method}($3) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "protected_method": {
+    "desc": "Create a new protected method",
+    "body": [
+      "protected ${1:void} ${2:method}($3) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "private_method": {
+    "desc": "Create a new private method",
+    "body": [
+      "private ${1:void} ${2:method}($3) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "public_static_method": {
+    "desc": "Create a new public static method",
+    "body": [
+      "public static ${1:void} ${2:method}($3) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "private_static_method": {
+    "desc": "Create a new private stataic method",
+    "body": [
+      "private static ${1:void} ${2:method}($3) {",
+      "\t$0",
+      "}"
+    ]
+  }
+}

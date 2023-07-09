@@ -35,20 +35,28 @@ import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.FlashType.ERROR
 import com.itsaky.androidide.utils.FlashType.INFO
 import com.itsaky.androidide.utils.FlashType.SUCCESS
+import java.util.function.Consumer
 
-const val LENGTH_SHORT = 2000L
-const val LENGTH_LONG = 3500L
+const val DURATION_SHORT = 2000L
+const val DURATION_LONG = 3500L
+const val DURATION_INDEFINITE = Flashbar.DURATION_INDEFINITE
 
-private val COLOR_SUCCESS = Color.parseColor("#4CAF50")
-private val COLOR_ERROR = Color.parseColor("#f44336")
-private const val COLOR_INFO = Color.DKGRAY
+val COLOR_SUCCESS = Color.parseColor("#4CAF50")
+val COLOR_ERROR = Color.parseColor("#f44336")
+const val COLOR_INFO = Color.DKGRAY
 
-fun Activity.flashbarBuilder(duration: Long = LENGTH_SHORT): Flashbar.Builder {
+@JvmOverloads
+fun Activity.flashbarBuilder(
+  gravity: Flashbar.Gravity = TOP,
+  duration: Long = DURATION_SHORT,
+  backgroundColor: Int = resolveAttr(R.attr.colorPrimaryContainer),
+  messageColor: Int = resolveAttr(R.attr.colorOnPrimaryContainer)
+): Flashbar.Builder {
   return Flashbar.Builder(this)
-    .gravity(TOP)
+    .gravity(gravity)
     .duration(duration)
-    .backgroundColor(resolveAttr(R.attr.colorPrimaryContainer))
-    .messageColor(resolveAttr(R.attr.colorOnPrimaryContainer))
+    .backgroundColor(backgroundColor)
+    .messageColor(messageColor)
 }
 
 fun Activity.flashMessage(msg: String?, type: FlashType) {
@@ -95,6 +103,18 @@ fun Activity.flashInfo(@StringRes msg: Int) {
   flashbarBuilder().infoIcon().message(msg).showOnUiThread()
 }
 
+@JvmOverloads
+fun Activity.flashProgress(configure: Consumer<Flashbar.Builder>? = null, action: Consumer<Flashbar>) {
+  val builder = flashbarBuilder(gravity = TOP, duration = DURATION_INDEFINITE)
+    .showProgress(Flashbar.ProgressPosition.LEFT)
+
+  configure?.accept(builder)
+
+  val flashbar = builder.build()
+  flashbar.show()
+  action.accept(flashbar)
+}
+
 fun Flashbar.Builder.showOnUiThread() {
   build().showOnUiThread()
 }
@@ -107,19 +127,19 @@ fun Flashbar.showOnUiThread() {
   }
 }
 
-private fun Flashbar.Builder.successIcon(): Flashbar.Builder {
+fun Flashbar.Builder.successIcon(): Flashbar.Builder {
   return withIcon(R.drawable.ic_ok, colorFilter = COLOR_SUCCESS)
 }
 
-private fun Flashbar.Builder.errorIcon(): Flashbar.Builder {
+fun Flashbar.Builder.errorIcon(): Flashbar.Builder {
   return withIcon(R.drawable.ic_error, colorFilter = COLOR_ERROR)
 }
 
-private fun Flashbar.Builder.infoIcon(): Flashbar.Builder {
+fun Flashbar.Builder.infoIcon(): Flashbar.Builder {
   return withIcon(R.drawable.ic_info, colorFilter = COLOR_INFO)
 }
 
-private fun Flashbar.Builder.withIcon(
+fun Flashbar.Builder.withIcon(
   @DrawableRes icon: Int,
   @FloatRange(from = 0.0, to = 1.0) scale: Float = 1.0f,
   @ColorInt colorFilter: Int = -1,

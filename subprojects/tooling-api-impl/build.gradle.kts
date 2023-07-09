@@ -15,20 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.archivesName
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
-
 @Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("com.github.johnrengelman.shadow") version "8.1.0"
+  id("com.github.johnrengelman.shadow") version "8.1.1"
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
 }
 
-shadow { archivesName.set("tooling-api") }
-
 tasks.withType<Jar> {
-  manifest { attributes("Main-Class" to "com.itsaky.androidide.tooling.impl.Main") }
+  manifest { attributes("Main-Class" to "${BuildConfig.packageName}.tooling.impl.Main") }
 }
 
 tasks.register<Copy>("copyJarToAssets") {
@@ -36,21 +31,28 @@ tasks.register<Copy>("copyJarToAssets") {
   into(project.rootProject.file("app/src/main/assets/data/common/"))
 }
 
-tasks.register("renameJar") {
+tasks.register("deleteExistingJarFiles") { delete { delete(project.buildDir.resolve("libs")) } }
+
+tasks.register("copyJar") {
   finalizedBy("copyJarToAssets")
-
   doLast {
-    val jar = project.file("${project.buildDir}/libs/tooling-api-${project.version}-all.jar")
-    val destJar = jar.parentFile.resolve("tooling-api-all.jar")
-    destJar.exists().ifTrue { destJar.delete() }
+    val libsDir = project.buildDir.resolve("libs")
 
-    jar.renameTo(destJar)
+    copy {
+      from(libsDir)
+      into(libsDir)
+      include("*-all.jar")
+      rename { "tooling-api-all.jar" }
+    }
   }
 }
 
-project.tasks.getByName("jar") { finalizedBy("shadowJar") }
+project.tasks.getByName("jar") {
+  dependsOn("deleteExistingJarFiles")
+  finalizedBy("shadowJar")
+}
 
-project.tasks.getByName("shadowJar") { finalizedBy("renameJar") }
+project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
 
 dependencies {
   implementation(projects.subprojects.toolingApi)
@@ -61,6 +63,7 @@ dependencies {
   implementation(libs.tooling.gradleApi)
 
   testImplementation(projects.subprojects.toolingApiTesting)
+  testImplementation(projects.shared)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
 

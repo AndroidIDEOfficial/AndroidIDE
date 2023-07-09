@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.ClipboardUtils;
+import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.databinding.LayoutCrashReportBinding;
@@ -128,7 +129,7 @@ public class CrashReportFragment extends Fragment {
   private void reportTrace(String report) {
     ClipboardUtils.copyText("AndroidIDE CrashLog", report);
 
-    final var url = BaseApplication.GITHUB_URL.concat("/issues");
+    final var url = BuildInfo.REPO_URL.concat("/issues");
     final var intent = new Intent();
     intent.setAction(Intent.ACTION_VIEW);
     intent.setData(Uri.parse(url));

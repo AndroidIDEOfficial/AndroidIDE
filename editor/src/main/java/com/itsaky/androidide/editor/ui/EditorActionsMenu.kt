@@ -83,6 +83,11 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   private var mLastScroll: Long = 0
   private var mLastPosition: Int = 0
 
+  private val contentHeight by lazy {
+    // approximated size is around 56dp
+    SizeUtils.dp2px(56f)
+  }
+
   private val menu: MenuBuilder = MenuBuilder(editor.context)
   protected open var location = ActionItem.Location.EDITOR_TEXT_ACTIONS
 
@@ -147,9 +152,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
       return
     }
     if (event.isSelected) {
-      if (!isShowing) {
-        editor.post(::displayWindow)
-      }
+      editor.post { displayWindow(isShowing) }
       mLastPosition = -1
     } else {
       var show = false
@@ -226,6 +229,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
 
   private fun selectTop(rect: RectF): Int {
     val rowHeight = editor.rowHeight
+    // when the window is being shown for the first time, the height is 0
+    val height = if (this.height == 0) contentHeight else this.height
     return if (rect.top - rowHeight * 3 / 2f > height) {
       (rect.top - rowHeight * 3 / 2 - height).toInt()
     } else {
@@ -233,7 +238,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     }
   }
 
-  open fun displayWindow() {
+  @JvmOverloads
+  open fun displayWindow(update: Boolean = false) {
     var top: Int
     val cursor = editor.cursor
     top =
@@ -251,7 +257,9 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     val handleRightX = editor.getOffset(editor.cursor.rightLine, editor.cursor.rightColumn)
     val panelX = computePanelX(cursor, handleLeftX, handleRightX)
     setLocationAbsolutely(panelX, top)
-    show()
+    if (!update) {
+      show()
+    }
   }
 
   private fun computePanelX(cursor: Cursor, handleLeftX: Float, handleRightX: Float): Int {
@@ -324,12 +332,6 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   }
 
   override fun show() {
-
-    if (editor.searcher.searching) {
-      // Do not show if user is searching text
-      return
-    }
-
     if (list.parent != null) {
       (list.parent as ViewGroup).removeView(list)
     }

@@ -30,11 +30,12 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
+import com.itsaky.androidide.utils.FileProvider
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import java.io.File
-import kotlin.jvm.Throws
+import kotlin.io.path.deleteExisting
+import kotlin.io.path.pathString
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -42,8 +43,8 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project) = ToolingApiTestLauncher().launchServer(client = MultiVersionTestClient("7.2.0"))
-    server.initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath)).get()
+    val (server, project) = ToolingApiTestLauncher().launchServer()
+    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
     doAssertions(project, server)
   }
 
@@ -76,12 +77,12 @@ class MultiModuleAndroidProjectTest {
     assertThat(app.libraryMap.values.filter { it.type == PROJECT }).isNotEmpty()
     // :app module includes :java-library as a dependency. But it is not transitive
     assertThat(
-        app.libraryMap.values.firstOrNull {
-          it.type == PROJECT &&
+      app.libraryMap.values.firstOrNull {
+        it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
-        }
-      )
+      }
+    )
       .isNull()
     val androidLib = project.findByPath(":android-library").get()
     assertThat(androidLib).isNotNull()
@@ -90,12 +91,12 @@ class MultiModuleAndroidProjectTest {
     // :java-library project which further includes :another-java-libraries project with 'api'
     // configuration
     assertThat(
-        (androidLib as AndroidModule).libraryMap.values.firstOrNull {
-          it.type == PROJECT &&
+      (androidLib as AndroidModule).libraryMap.values.firstOrNull {
+        it.type == PROJECT &&
             it.projectInfo!!.projectPath == ":another-java-library" &&
             it.projectInfo!!.attributes["org.gradle.usage"] == "java-api"
-        }
-      )
+      }
+    )
       .isNotNull()
     assertThat(androidLib.javaCompileOptions.javaSourceVersion).isEqualTo("11")
     assertThat(androidLib.javaCompileOptions.javaBytecodeVersion).isEqualTo("11")
@@ -105,22 +106,22 @@ class MultiModuleAndroidProjectTest {
     assertThat((javaLibrary as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("11")
     assertThat(javaLibrary.compilerSettings.javaBytecodeVersion).isEqualTo("11")
     assertThat(
-        javaLibrary.javaDependencies.firstOrNull {
-          it is JavaModuleExternalDependency &&
+      javaLibrary.javaDependencies.firstOrNull {
+        it is JavaModuleExternalDependency &&
             it.gradleArtifact != null &&
             it.run {
               gradleArtifact!!.group == "io.github.itsaky" &&
-                gradleArtifact!!.name == "nb-javac-android" &&
-                gradleArtifact!!.version == "17.0.0.0"
+                  gradleArtifact!!.name == "nb-javac-android" &&
+                  gradleArtifact!!.version == "17.0.0.0"
             }
-        }
-      )
+      }
+    )
       .isNotNull()
     assertThat(
-        javaLibrary.javaDependencies.firstOrNull {
-          it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
-        }
-      )
+      javaLibrary.javaDependencies.firstOrNull {
+        it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
+      }
+    )
       .isNotNull()
     // In case we have multiple dependencies with same name but different path
     val nested =
@@ -145,40 +146,46 @@ class MultiModuleAndroidProjectTest {
   @Throws(CIOnlyException::class)
   fun `test CI-only simple multi module project initialization with multiple AGP versions`() {
     ciOnlyTest {
-      val versions = listOf("7.2.0", "7.2.1", "7.2.2", "7.3.0", "7.4.0")
+      // Test the minimum supported and the latest AGP version
+      val versions =
+        listOf(
+          // AGP to Gradle
+          "7.2.0" to "7.3.3",
+          "8.0.2" to "8.2"
+        )
+
       val client = MultiVersionTestClient()
-      for (version in versions) {
-        client.version = version
+      for ((agpVersion, gradleVersion) in versions) {
+        client.agpVersion = agpVersion
+        client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-        server
-          .initialize(InitializeProjectMessage(File("../../tests/test-project").absolutePath))
-          .get()
+        server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString)).get()
         doAssertions(project = project, server = server)
-        MultiVersionTestClient.buildFile.delete()
+        FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
       }
     }
   }
-  
+
   private fun ciOnlyTest(test: () -> Unit) {
     try {
       assertIsCI()
       test()
     } catch (err: CIOnlyException) {
-      if(shouldTestMultipleVersions()) {
+      if (shouldTestMultipleVersions()) {
         throw err
       }
     }
   }
-  
+
   private fun assertIsCI() {
     if (!shouldTestMultipleVersions()) {
       throw CIOnlyException()
     }
   }
-  
-  private fun shouldTestMultipleVersions() : Boolean {
+
+  private fun shouldTestMultipleVersions(): Boolean {
     return System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
   }
-  
+
   private class CIOnlyException : IllegalStateException()
 }

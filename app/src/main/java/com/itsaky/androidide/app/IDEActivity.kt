@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.app
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode
 import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
@@ -29,11 +27,10 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 
 abstract class IDEActivity : BaseIDEActivity() {
+
   val app: IDEApplication
     get() = application as IDEApplication
-  
-  
-  
+
   override fun onStart() {
     super.onStart()
     EventBus.getDefault().register(this)

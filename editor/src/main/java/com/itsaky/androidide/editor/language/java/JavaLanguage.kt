@@ -18,11 +18,11 @@
 package com.itsaky.androidide.editor.language.java
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.json.JsonLanguage
-import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
 import com.itsaky.androidide.editor.language.newline.TSCStyleBracketsHandler
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
+import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.lsp.api.ILanguageServer
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
@@ -39,9 +39,11 @@ class JavaLanguage(context: Context) :
   TreeSitterLanguage(context, TSLanguageJava.newInstance(), TS_TYPE) {
 
   companion object {
+
     const val TS_TYPE = "java"
 
-    @JvmField val FACTORY = Factory { JavaLanguage(it) }
+    @JvmField
+    val FACTORY = Factory { JavaLanguage(it) }
   }
 
   override fun getLanguageServer(): ILanguageServer? {
@@ -59,7 +61,7 @@ class JavaLanguage(context: Context) :
   override fun getSymbolPairs(): SymbolPairMatch {
     return JavaSymbolPairs()
   }
-  
+
   override fun createNewlineHandlers(): Array<TSBracketsHandler> {
     return arrayOf(TSCStyleBracketsHandler(this))
   }

@@ -23,11 +23,10 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.resources.R;
@@ -35,23 +34,21 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
-
+import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
 import java.util.Arrays;
+import kotlin.collections.ArraysKt;
 
-public abstract class BaseApplication extends Application {
+public class BaseApplication extends Application {
 
   public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
   public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
   public static final String TELEGRAM_CHANNEL_URL = "https://t.me/AndroidIDEOfficial";
-  public static final String GITHUB_URL = "https://github.com/AndroidIDEOfficial/AndroidIDE";
-  public static final String WEBSITE = "https://androidide.com";
-  public static final String SPONSOR_URL = "https://androidide.com/donate.php";
-
-  // TODO Replace when available on website
-  public static final String DOCS_URL =
-      "https://github.com/AndroidIDEOfficial/AndroidIDE/tree/main/docs";
+  public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
+  public static final String DOCS_URL = BuildInfo.PROJECT_SITE + "/docs";
   public static final String EMAIL = "contact@androidide.com";
+  private static final String AARCH64 = "arm64-v8a";
+  private static final String ARM = "armeabi-v7a";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
 
@@ -60,25 +57,24 @@ public abstract class BaseApplication extends Application {
   }
 
   public static boolean isAbiSupported() {
-    return isAarch64() || isArmv7a();
+    return Arrays.asList(Build.SUPPORTED_ABIS).contains(getArch());
   }
 
   public static boolean isAarch64() {
-    return Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    return ArraysKt.contains(Build.SUPPORTED_64_BIT_ABIS, AARCH64);
   }
 
   public static boolean isArmv7a() {
-    return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
+    return ArraysKt.contains(Build.SUPPORTED_32_BIT_ABIS, ARM);
   }
 
   @Nullable
   public static String getArch() {
-    if (BaseApplication.isAarch64()) {
-      return "arm64-v8a";
-    } else if (BaseApplication.isArmv7a()) {
-      return "armeabi-v7a";
+    if (isAarch64()) {
+      return AARCH64;
+    } else if (isArmv7a()) {
+      return ARM;
     }
-
     return null;
   }
 
@@ -90,20 +86,22 @@ public abstract class BaseApplication extends Application {
 
     mPrefsManager = new PreferenceManager(this);
     JavaCharacter.initMap();
-    ToolsManager.init(this, null);
+
+    if (!VMUtils.isJvm()) {
+      ToolsManager.init(this, null);
+    }
 
     createNotificationChannels();
   }
 
   private void createNotificationChannels() {
-    NotificationChannel buildNotificationChannel =
-        new NotificationChannel(
-            NOTIFICATION_GRADLE_BUILD_SERVICE,
-            getString(R.string.title_gradle_service_notification_channel),
-            NotificationManager.IMPORTANCE_LOW);
+    NotificationChannel buildNotificationChannel = new NotificationChannel(
+        NOTIFICATION_GRADLE_BUILD_SERVICE,
+        getString(R.string.title_gradle_service_notification_channel),
+        NotificationManager.IMPORTANCE_LOW);
     NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
   }
-  
+
   public File getRootDir() {
     return new File(getIDEDataDir(), "home");
   }
@@ -114,8 +112,7 @@ public abstract class BaseApplication extends Application {
   }
 
   public void writeException(Throwable th) {
-    FileUtil.writeFile(
-        new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
+    FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
         ThrowableUtils.getFullStackTrace(th));
   }
 
@@ -140,11 +137,11 @@ public abstract class BaseApplication extends Application {
   }
 
   public void openGitHub() {
-    openUrl(GITHUB_URL);
+    openUrl(BuildInfo.REPO_URL);
   }
 
   public void openWebsite() {
-    openUrl(WEBSITE);
+    openUrl(BuildInfo.PROJECT_SITE);
   }
 
   public void openSponsors() {

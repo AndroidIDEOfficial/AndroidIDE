@@ -116,18 +116,19 @@ class DesignerWorkspaceFragment : BaseFragment() {
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
     inflater.inflationEventListener = this.inflationHandler
-    var hasError = false
     val inflated =
       try {
-        inflater.inflate(viewModel.file, workspaceView)
+        inflater.inflate(viewModel.file, workspaceView).also {
+          viewModel.layoutHasError = false
+        }
       } catch (e: Throwable) {
         log.error(e)
         viewModel.errText = "${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"
-        hasError = true
+        viewModel.layoutHasError = true
         emptyList()
       }
 
-    if (inflated.isEmpty() && !hasError) {
+    if (inflated.isEmpty() && !viewModel.layoutHasError) {
       viewModel.errText = getString(R.string.msg_empty_ui_layout)
     }
 

@@ -19,13 +19,14 @@ package com.itsaky.androidide.lsp.xml
 
 import com.itsaky.androidide.lsp.models.CompletionItem
 import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.progress.ICancelChecker
 
 /** @author Akash Yadav */
 class CompletionHelperImpl : CompletionHelper {
   override fun complete(transform: (CompletionItem) -> CharSequence): Pair<Boolean, List<CharSequence>> {
     return XMLLSPTest.run {
       val createCompletionParams = createCompletionParams()
-      val result = server.complete(createCompletionParams)
+      val result = server.complete(createCompletionParams, ICancelChecker.Default())
       result.isIncomplete to
         result.items
           .filter { it.label != null }

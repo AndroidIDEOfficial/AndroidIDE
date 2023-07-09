@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
- **************************************************************************************/
+ */
 
 package com.itsaky.androidide.fragments.sheets;
 
@@ -24,17 +21,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
+import android.view.ViewGroup;
 import androidx.annotation.NonNull;
-
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
-import com.itsaky.androidide.utils.ILogger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
-  private final ILogger LOG = ILogger.newInstance("ProgressSheet");
   private LayoutProgressSheetBinding binding;
   private String message = "";
   private String subMessage = "";
@@ -45,39 +40,25 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     super.onViewCreated(view, savedInstanceState);
 
     binding.message.setText(message);
+
+    final var params = (ConstraintLayout.LayoutParams) binding.message.getLayoutParams();
     if (subMessageEnabled) {
       binding.subMessage.setText(subMessage);
       binding.subMessage.setVisibility(View.VISIBLE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.removeRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
+      params.bottomToBottom = View.NO_ID;
     } else {
       binding.subMessage.setVisibility(View.GONE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.addRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
+      params.bottomToBottom = LayoutParams.PARENT_ID;
     }
   }
 
+  @Nullable
   @Override
-  protected boolean shouldHideTitle() {
-    return true;
-  }
-
-  @Override
-  protected void bind(LinearLayout container) {
+  public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                           @Nullable Bundle savedInstanceState
+  ) {
     binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
-    container.addView(binding.getRoot());
+    return binding.getRoot();
   }
 
   public void setSubMessageEnabled(boolean enabled) {
@@ -104,12 +85,13 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     if (isShowing()) {
       binding.progress.setIndeterminateDrawable(drawable);
     }
-
     return this;
   }
 
   @Override
   public void dismiss() {
-    if (isShowing()) super.dismiss();
+    if (isShowing()) {
+      super.dismiss();
+    }
   }
 }

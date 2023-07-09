@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace = "com.itsaky.test.app"
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
     

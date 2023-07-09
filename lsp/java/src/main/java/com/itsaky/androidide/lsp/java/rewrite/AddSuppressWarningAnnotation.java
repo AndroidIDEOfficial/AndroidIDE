@@ -18,26 +18,20 @@
 package com.itsaky.androidide.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
-import com.itsaky.androidide.lsp.java.utils.EditHelper;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
+import com.itsaky.androidide.lsp.models.TextEdit;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.lsp.models.TextEdit;
-import openjdk.source.tree.LineMap;
-import openjdk.source.tree.MethodTree;
-import openjdk.source.util.SourcePositions;
-import openjdk.source.util.Trees;
-
+import com.itsaky.androidide.preferences.utils.EditorUtilKt;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-
-import jdkx.lang.model.element.ExecutableElement;
+import openjdk.source.util.Trees;
 
 public class AddSuppressWarningAnnotation extends Rewrite {
+
   final String className, methodName;
   final String[] erasedParameterTypes;
 
@@ -48,6 +42,7 @@ public class AddSuppressWarningAnnotation extends Rewrite {
     this.erasedParameterTypes = erasedParameterTypes;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
@@ -57,21 +52,27 @@ public class AddSuppressWarningAnnotation extends Rewrite {
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {
-          Trees trees = Trees.instance(task.task);
-          ExecutableElement methodElement =
+          final var trees = Trees.instance(task.task);
+          final var methodElement =
               FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-          MethodTree methodTree = trees.getTree(methodElement);
-          SourcePositions pos = trees.getSourcePositions();
-          int startMethod = (int) pos.getStartPosition(task.root(), methodTree);
-          LineMap lines = task.root().getLineMap();
-          int line = (int) lines.getLineNumber(startMethod);
-          int column = (int) lines.getColumnNumber(startMethod);
-          int startLine = (int) lines.getStartPosition(line);
-          String indent = EditHelper.repeatSpaces(startMethod - startLine);
-          String insertText = "@SuppressWarnings(\"unchecked\")\n" + indent;
-          Position insertPoint = new Position(line - 1, column - 1);
-          TextEdit insert = new TextEdit(new Range(insertPoint, insertPoint), insertText);
-          TextEdit[] edits = {insert};
+          if (methodElement == null) {
+            return CANCELLED;
+          }
+          final var methodTree = trees.getTree(methodElement);
+          if (methodTree == null) {
+            return CANCELLED;
+          }
+          final var startMethod = (int) trees.getSourcePositions()
+              .getStartPosition(task.root(), methodTree);
+          final var lines = task.root().getLineMap();
+          final var line = (int) lines.getLineNumber(startMethod);
+          final var column = (int) lines.getColumnNumber(startMethod);
+          final var startLine = (int) lines.getStartPosition(line);
+          final var indent = EditorUtilKt.indentationString(startMethod - startLine);
+          final var insertText = "@SuppressWarnings(\"unchecked\")\n" + indent;
+          final var insertPoint = new Position(line - 1, column - 1);
+          final var edits = new TextEdit[]{
+              new TextEdit(new Range(insertPoint, insertPoint), insertText)};
           return Collections.singletonMap(file, edits);
         });
   }

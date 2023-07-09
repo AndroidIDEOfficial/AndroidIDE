@@ -24,10 +24,10 @@ plugins {
   id("com.google.devtools.ksp") version libs.versions.ksp
 }
 
-android { namespace = "com.itsaky.androidide.inflater" }
+android { namespace = "${BuildConfig.packageName}.inflater" }
 
 dependencies {
-  ksp(projects.annotationKsp)
+  ksp(projects.annotationProcessorsKsp)
 
   implementation(libs.androidx.appcompat)
   implementation(libs.common.kotlin)
@@ -42,6 +42,7 @@ dependencies {
 
   testImplementation(projects.subprojects.projects)
   testImplementation(projects.subprojects.toolingApiTesting)
+  testImplementation(projects.shared)
   testImplementation(libs.tests.junit)
   testImplementation(libs.tests.google.truth)
   testImplementation(libs.tests.robolectric)

@@ -6,18 +6,18 @@ plugins {
 }
 
 android {
-    namespace = "com.itsaky.androidide.projects"
+    namespace = "${BuildConfig.packageName}.projects"
 }
 
 kapt {
     arguments {
-        arg ("eventBusIndex", "com.itsaky.androidide.events.ProjectsApiEventsIndex")
+        arg ("eventBusIndex", "${BuildConfig.packageName}.events.ProjectsApiEventsIndex")
     }
 }
 
 dependencies {
     
-    kapt(libs.common.eventbus.ap)
+    kapt(projects.annotationProcessors)
     
     api(projects.eventbus)
     api(projects.eventbusEvents)
@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.google.guava)
     
     testImplementation(projects.subprojects.toolingApiTesting)
+    testImplementation(projects.shared)
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)
     testImplementation(libs.tests.robolectric)

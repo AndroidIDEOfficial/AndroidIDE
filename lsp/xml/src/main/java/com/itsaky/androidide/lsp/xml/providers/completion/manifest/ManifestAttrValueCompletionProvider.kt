@@ -95,7 +95,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
       item.overrideTypeText = "Permission"
 
       // Show API information
-      item.kind = FIELD
+      item.completionKind = FIELD
       item.data =
         FieldCompletionData(
           memberName = value.name,
@@ -186,7 +186,7 @@ class ManifestAttrValueCompletionProvider(provider: ICompletionProvider) :
   }
 
   private fun getModule(): ModuleProject {
-    return Lookup.DEFAULT.lookup(ModuleProject.COMPLETION_MODULE_KEY)
+    return Lookup.getDefault().lookup(ModuleProject.COMPLETION_MODULE_KEY)
       ?: throw IllegalStateException("No module project provided")
   }
 

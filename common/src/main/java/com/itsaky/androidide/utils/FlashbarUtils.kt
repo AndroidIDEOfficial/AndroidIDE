@@ -21,6 +21,7 @@ import android.app.Activity
 import androidx.annotation.StringRes
 import com.blankj.utilcode.util.ActivityUtils
 import com.itsaky.androidide.flashbar.Flashbar
+import java.util.function.Consumer
 
 fun flashbarBuilder(): Flashbar.Builder? {
   return withActivity { flashbarBuilder() }
@@ -58,6 +59,11 @@ fun flashInfo(@StringRes msg: Int) {
   withActivity { flashInfo(msg) }
 }
 
+@JvmOverloads
+fun flashProgress(configure: Consumer<Flashbar.Builder>? = null, action: Consumer<Flashbar>) {
+  withActivity { flashProgress(configure, action) }
+}
+
 private fun <T> withActivity(action: Activity.() -> T?): T? {
   return ActivityUtils.getTopActivity()?.let { it.action() }
     ?: run {
@@ -68,6 +74,7 @@ private fun <T> withActivity(action: Activity.() -> T?): T? {
 
 /** The type of flashbar message. */
 enum class FlashType {
+
   ERROR,
   INFO,
   SUCCESS

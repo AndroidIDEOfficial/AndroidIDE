@@ -17,25 +17,48 @@
 
 package com.itsaky.androidide.progress
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 /**
  * Check whether a process is cancelled.
  *
  * @author Akash Yadav
  */
 interface ICancelChecker {
+
+  /**
+   * Cancel this process.
+   */
   fun cancel()
+
+  /**
+   * Check whether this process has been cancelled or not.
+   *
+   * @return Whether the process has been cancelled.
+   */
   fun isCancelled(): Boolean
 
-  companion object {
+  /**
+   * Throw [ProcessCancelledException] if this process has been cancelled.
+   */
+  @Throws(ProcessCancelledException::class)
+  fun abortIfCancelled()
 
-    internal class Default(private var cancelled: Boolean = false) : ICancelChecker {
+  open class Default(cancelled: Boolean = false) : ICancelChecker {
 
-      override fun cancel() {
-        cancelled = true
-      }
+    private val cancelled = AtomicBoolean(cancelled)
 
-      override fun isCancelled(): Boolean {
-        return cancelled
+    override fun cancel() {
+      cancelled.set(true)
+    }
+
+    override fun isCancelled(): Boolean {
+      return cancelled.get()
+    }
+
+    override fun abortIfCancelled() {
+      if (isCancelled()) {
+        throw ProcessCancelledException()
       }
     }
   }

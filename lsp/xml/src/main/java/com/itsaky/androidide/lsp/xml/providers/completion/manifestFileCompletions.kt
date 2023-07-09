@@ -36,6 +36,6 @@ fun canCompleteManifest(pathData: ResourcePathData, type: NodeType): Boolean {
 
 fun manifestResourceTable(): Set<ResourceTable> {
   return setOf(
-    Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES) ?: return emptySet()
+    Lookup.getDefault().lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES) ?: return emptySet()
   )
 }

@@ -1,0 +1,103 @@
+{
+  "for": {
+    "desc": "Indexed for loop",
+    "body": [
+      "for(int ${1:i} = 0; $1 < ${2:count}; ++$1) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "foreach": {
+    "desc": "For-each loop",
+    "body": [
+      "for(${1:element} : ${2:iterable}) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "forr": {
+    "desc": "Reverse-indexed for loop",
+    "body": [
+      "for(int ${1:i} = ${2:count} - 1; $1 >= 0; --$1) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "while": {
+    "desc": "While loop",
+    "body": [
+      "while(${1:condition}) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "dowhile": {
+    "desc": "Do-While loop",
+    "body": [
+      "do {",
+      "\t$0",
+      "} while(${1:condition});"
+    ]
+  },
+  "if": {
+    "desc": "If statement",
+    "body": [
+      "if(${1:condition}) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "ifelse": {
+    "desc": "If-else statement",
+    "body": [
+      "if(${1:condition}) {",
+      "\t$0",
+      "} else {",
+      "\t",
+      "}"
+    ]
+  },
+  "ifnull": {
+    "desc": "If-null",
+    "body": [
+      "if(${1:object} == null) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "ifnotnull": {
+    "desc": "If-not-null",
+    "body": [
+      "if(${1:object} != null) {",
+      "\t$0",
+      "}"
+    ]
+  },
+  "new_object": {
+    "desc": "Create a new object",
+    "body": [
+      "${1:Object} ${2:foo} = new $1($3);",
+      "$0"
+    ]
+  },
+  "trycatch": {
+    "desc": "A try-catch statement",
+    "body": [
+      "try {",
+      "\t$0",
+      "} catch(${1:Exception} ${2:err}) {",
+      "\t",
+      "}"
+    ]
+  },
+  "tryresources": {
+    "desc": "A try-with-resources statement",
+    "body": [
+      "try ($1) {",
+      "\t$0",
+      "} catch(${2:Exception} ${3:err}) {",
+      "\t",
+      "}"
+    ]
+  }
+}

@@ -78,7 +78,9 @@ object IDEColorSchemeProvider {
       val prop = File(schemeDir, "scheme.prop")
       val props =
         try {
-          Properties().apply { load(prop.reader()) }
+          prop.reader().use { reader ->
+            Properties().apply { load(reader) }
+          }
         } catch (err: Exception) {
           log.error("Failed to read properties for scheme '${schemeDir.name}'")
           continue

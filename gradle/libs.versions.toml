@@ -1,25 +1,28 @@
 [versions]
-agp = "7.4.2"
-agp-tooling = "7.4.2"
-gradle-tooling = "7.6.1"
-kotlin = "1.8.10"
-tree-sitter = "1.4.2"
-editor = "0.21.1"
+agp = "8.0.2"
+agp-tooling = "8.0.2"
+gradle-tooling = "8.1.1"
+kotlin = "1.8.21"
+tree-sitter = "3.1.0"
+editor = "0.21.1-5c3385c-SNAPSHOT"
 glide = "4.15.1"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
-ksp = "1.8.10-1.0.9"
-antlr4 = "4.12.0"
+ksp = "1.8.21-1.0.11"
+antlr4 = "4.13.0"
+androidx-work = "2.8.1"
+retrofit = "2.9.0"
 
 [libraries]
 
 # AndroidIDE
 androidide-javac = { module = "io.github.itsaky:nb-javac-android", version = "17.0.0.4-SNAPSHOT" }
-androidide-ts = { module = "io.github.itsaky:android-tree-sitter", version.ref = "tree-sitter" }
-androidide-ts-java = { module = "io.github.itsaky:tree-sitter-java", version.ref = "tree-sitter" }
-androidide-ts-json = { module = "io.github.itsaky:tree-sitter-json", version.ref = "tree-sitter" }
-androidide-ts-kotlin = { module = "io.github.itsaky:tree-sitter-kotlin", version.ref = "tree-sitter" }
-androidide-ts-xml = { module = "io.github.itsaky:tree-sitter-xml", version.ref = "tree-sitter" }
+androidide-ts = { module = "com.itsaky.androidide:android-tree-sitter", version.ref = "tree-sitter" }
+androidide-ts-java = { module = "com.itsaky.androidide:tree-sitter-java", version.ref = "tree-sitter" }
+androidide-ts-json = { module = "com.itsaky.androidide:tree-sitter-json", version.ref = "tree-sitter" }
+androidide-ts-kotlin = { module = "com.itsaky.androidide:tree-sitter-kotlin", version.ref = "tree-sitter" }
+androidide-ts-log = { module = "com.itsaky.androidide:tree-sitter-log", version.ref = "tree-sitter" }
+androidide-ts-xml = { module = "com.itsaky.androidide:tree-sitter-xml", version.ref = "tree-sitter" }
 
 # Common
 common-editor = { module = "io.github.Rosemoe.sora-editor:editor", version.ref = "editor" }
@@ -27,19 +30,21 @@ common-editor-ts = { module = "io.github.Rosemoe.sora-editor:language-treesitter
 common-utilcode = { module = "com.blankj:utilcodex", version = "1.31.1" }
 common-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 common-glide_ap = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
-common-jsoup = { module = "org.jsoup:jsoup", version = "1.15.4" }
+common-jsoup = { module = "org.jsoup:jsoup", version = "1.16.1" }
 common-antlr4 = { module = "org.antlr:antlr4", version.ref = "antlr4" }
 common-antlr4-runtime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr4" }
-common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-core", version = "3.25.1" }
+common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-core", version = "3.25.3" }
 common-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.12.0" }
-common-io = { module = "commons-io:commons-io", version = "2.11.0" }
+common-io = { module = "commons-io:commons-io", version = "2.12.0" }
 common-kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 common-jkotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", version = "3.3.1" }
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
 common-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 common-jsonrpc = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc", version = "0.20.1" }
-common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.10"}
+common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.11"}
+common-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 
 # AndroidX
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.6.0" }
@@ -47,38 +52,42 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1
 androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version = "1.2.0" }
-androidx-drawer = { module = "androidx.drawerlayout:drawerlayout", version = "1.1.1" }
+androidx-drawer = { module = "androidx.drawerlayout:drawerlayout", version = "1.2.0" }
 androidx-grid = { module = "androidx.gridlayout:gridlayout", version = "1.0.0" }
 androidx-preference = { module = "androidx.preference:preference", version = "1.2.0" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version = "1.3.0" }
 androidx-vectors = { module = "androidx.vectordrawable:vectordrawable", version.ref = "androidx-vectordrawable" }
 androidx-animated_vectors = { module = "androidx.vectordrawable:vectordrawable-animated", version.ref = "androidx-vectordrawable" }
-androidx-ktx = { module = "androidx.core:core-ktx", version = "1.9.0" }
-androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.5.5" }
+androidx-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
+androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.5.7" }
 androidx-lib_desugaring = { module = "com.android.tools:desugar_jdk_libs", version = "1.1.6" }
-androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.0" }
-androidx-nav_frag = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
-androidx-nav_ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
-androidx-nav_dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
+androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
+androidx-transition = { module = "androidx.transition:transition-ktx", version = "1.4.1" }
+androidx-nav-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "androidx-navigation" }
+androidx-nav-ui = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "androidx-navigation" }
+androidx-nav-dynamic_features = { module = "androidx.navigation:navigation-dynamic-features-fragment", version.ref = "androidx-navigation" }
+androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
+androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
 # Google
-google-material = { module = "com.google.android.material:material", version = "1.8.0" }
+google-material = { module = "com.google.android.material:material", version = "1.9.0" }
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 google-guava = { module = "com.google.guava:guava", version = "31.1-android" }
 google-guava-jre = { module = "com.google.guava:guava", version = "31.1-jre" }
 google-auto-value-annotations = { module = "com.google.auto.value:auto-value-annotations", version = "1.10.1" }
 google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.1" }
-google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.0.1" }
-google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.0.1" }
-google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
-google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.22.2" }
-google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.16.0" }
+google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
+google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
+google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
+google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.23.2" }
+google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.17.0" }
+google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
-aapt2-common = { module = "com.android.tools:common", version = "30.2.2" }
-aapt2-annotations = { module = "com.android.tools:annotations", version = "30.2.2" }
+aapt2-common = { module = "com.android.tools:common", version = "31.0.2" }
+aapt2-annotations = { module = "com.android.tools:annotations", version = "31.0.2" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
-aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "7.2.2-7984345" }
+aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.0.2-9289358" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
@@ -92,12 +101,16 @@ git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.2015
 
 # Tests
 tests-junit = { module = "junit:junit", version = "4.13.2" }
-tests-google-truth = { module = "com.google.truth:truth", version = "1.1.3" }
-tests-robolectric = { module = "org.robolectric:robolectric", version = "4.9.2" }
+tests-google-truth = { module = "com.google.truth:truth", version = "1.1.5" }
+tests-robolectric = { module = "org.robolectric:robolectric", version = "4.10.3" }
 tests-androidx-test-core = { module = "androidx.test:core", version = "1.5.0" }
+tests-androidx-test-runner = { module = "androidx.test:runner", version = "1.5.2" }
+tests-androidx-test-rules = { module = "androidx.test:rules", version = "1.5.0" }
 tests-androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
+tests-androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 tests-androidx-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
-tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "4.1.0" }
+tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.0.0" }
+tests-mockk = { module = "io.mockk:mockk", version = "1.13.5" }
 
 # Tooling
 tooling-builderModel = { module="com.android.tools.build:builder-model", version.ref = "agp-tooling" }
@@ -108,3 +121,5 @@ tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.7" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.3" }
+gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }

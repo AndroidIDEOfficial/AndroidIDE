@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
@@ -61,6 +62,7 @@ public class RemoveException extends Rewrite {
     this.exceptionType = exceptionType;
   }
 
+  @NonNull
   @Override
   public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
     Path file = compiler.findTypeDeclaration(className);
@@ -73,9 +75,17 @@ public class RemoveException extends Rewrite {
     SynchronizedTask synchronizedTask = compiler.compile(file);
     return synchronizedTask.get(
         task -> {
-          ExecutableElement methodElement =
+          final var methodElement =
               FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-          MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+          if (methodElement == null) {
+            return CANCELLED;
+          }
+
+          final var methodTree = Trees.instance(task.task).getTree(methodElement);
+          if (methodTree == null) {
+            return CANCELLED;
+          }
+
           if (methodTree.getThrows().size() == 1) {
             TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
             if (delete == TextEdit.NONE) {

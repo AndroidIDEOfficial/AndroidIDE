@@ -65,7 +65,7 @@ class ManifestTagCompletionProvider(provider: ICompletionProvider) :
       }
 
     val styleables =
-      Lookup.DEFAULT.lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES)
+      Lookup.getDefault().lookup(ResourceTableRegistry.COMPLETION_MANIFEST_ATTR_RES)
         ?.findPackage(ResourceTableRegistry.PCK_ANDROID)
         ?.findGroup(STYLEABLE)
         ?: run {

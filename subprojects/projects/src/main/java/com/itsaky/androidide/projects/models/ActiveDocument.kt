@@ -17,12 +17,15 @@
 
 package com.itsaky.androidide.projects.models
 
-import com.itsaky.androidide.models.Range
-import com.itsaky.androidide.utils.DocumentUtils
+import com.itsaky.androidide.eventbus.events.editor.ChangeType
+import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent
+import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedInputStream
 import java.io.BufferedReader
+import java.io.Closeable
 import java.nio.file.Path
 import java.time.Instant
+import java.util.concurrent.Semaphore
 
 /**
  * A document that is opened in the editor.
@@ -31,31 +34,12 @@ import java.time.Instant
  */
 open class ActiveDocument(
   val file: Path,
-  val content: String,
-  val changeRange: Range,
-  var changDelta: Int,
-  val version: Int,
-  val modified: Instant
+  var version: Int,
+  var modified: Instant,
+  content: String = ""
 ) {
-
-  companion object {
-
-    @JvmStatic
-    fun create(
-      file: Path,
-      content: String,
-      changeRange: Range,
-      changDelta: Int,
-      version: Int,
-      modified: Instant
-    ): ActiveDocument {
-      if (DocumentUtils.isJavaFile(file)) {
-        return ActiveJavaDocument(file, content, changeRange, changDelta, version, modified)
-      }
-
-      return ActiveDocument(file, content, changeRange, changDelta, version, modified)
-    }
-  }
+  var content: String = content
+    internal set
 
   fun inputStream(): BufferedInputStream {
     return content.byteInputStream().buffered()
