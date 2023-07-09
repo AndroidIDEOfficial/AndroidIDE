@@ -29,6 +29,7 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.file.Path
@@ -82,6 +83,16 @@ class ToolingApiTestLauncher {
 
   private fun createProcessCmd(jar: String): List<String> {
     val cmd = mutableListOf("java")
+    System.getenv("JAVA_HOME")?.let {
+      val java = File(it, "bin/java")
+      if (java.exists() && java.isFile) {
+        if (!java.canExecute()) {
+          java.setExecutable(true)
+        }
+
+        cmd[0] = java.absolutePath
+      }
+    }
     for (open in opens) {
       cmd.add("--add-opens=${open.key}/${open.value}=ALL-UNNAMED")
     }
@@ -157,11 +168,11 @@ class ToolingApiTestLauncher {
       CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
 
     private fun Path.replaceContents(dest: Path, comment: String = "//",
-                                     candidate: Pair<String, String>
+      candidate: Pair<String, String>
     ) = replaceContents(dest, comment, *arrayOf(candidate))
 
     private fun Path.replaceContents(dest: Path, comment: String = "//",
-                                     vararg candidates: Pair<String, String>
+      vararg candidates: Pair<String, String>
     ) {
       val contents = StringBuilder().append(comment)
         .append(" ")
