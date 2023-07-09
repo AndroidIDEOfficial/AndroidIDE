@@ -482,8 +482,8 @@
   <string name="msg_invalid_layout_name">اسم ملف التخطيط غير صالح</string>
   <string name="msg_invalid_project_details">تفاصيل المشروع غير صالحة</string>
   <string name="msg_use_kts">استخدام سكريبت كوتلن (.kts) لإنشاء ملفات بناء غرادل</string>
-  <string name="title_privacy">Privacy</string>
-  <string name="title_androidide_statistics">AndroidIDE Statistics</string>
+  <string name="title_privacy">الخصوصية</string>
+  <string name="title_androidide_statistics">إحصائيات AndroidIDE</string>
   <string name="msg_androidide_statistics">Help us improve AndroidIDE by providing anonymous statistics. We collect basic information about your device for user base statistics only. The exact data that is shared can be viewed in preferences. Your data is secure and not shared with third-party services. You can opt-out anytime in preferences.</string>
   <string name="summary_anonymous_usage_stats">Anonymous usage stats</string>
   <string name="idepref_stats_optIn_title">Stats collection</string>
