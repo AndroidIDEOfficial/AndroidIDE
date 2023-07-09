@@ -50,6 +50,7 @@ import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.Project;
 
@@ -113,29 +114,32 @@ public interface ILanguageServer {
   /**
    * Compute code completions for the given completion params.
    *
-   * @param params The completion params.
+   * @param params        The completion params.
+   * @param cancelChecker
    * @return The completion provider.
    */
   @NonNull
-  CompletionResult complete(CompletionParams params);
+  CompletionResult complete(CompletionParams params, ICancelChecker cancelChecker);
 
   /**
    * Find references using the given params.
    *
-   * @param params The params to use for computing references.
+   * @param params        The params to use for computing references.
+   * @param cancelChecker
    * @return The result of the computation.
    */
   @NonNull
-  ReferenceResult findReferences(@NonNull ReferenceParams params);
+  ReferenceResult findReferences(@NonNull ReferenceParams params, ICancelChecker cancelChecker);
 
   /**
    * Find definition using the given params.
    *
-   * @param params The params to use for computing the definition.
+   * @param params        The params to use for computing the definition.
+   * @param cancelChecker
    * @return The result of the computation.
    */
   @NonNull
-  DefinitionResult findDefinition(@NonNull DefinitionParams params);
+  DefinitionResult findDefinition(@NonNull DefinitionParams params, ICancelChecker cancelChecker);
 
   /**
    * Request the server to provide an expanded selection range for the current selection.

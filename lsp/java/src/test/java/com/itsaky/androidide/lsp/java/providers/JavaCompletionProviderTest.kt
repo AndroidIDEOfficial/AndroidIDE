@@ -81,7 +81,7 @@ class JavaCompletionProviderTest {
 
   private fun completionTitles(pos: com.itsaky.androidide.models.Position): List<CharSequence> {
     return JavaLSPTest.server
-      .complete(CompletionParams(pos, JavaLSPTest.file!!).apply { prefix = "" })
+      .complete(CompletionParams(pos, JavaLSPTest.file!!).apply { prefix = "" }, )
       .items
       .map { it.label }
   }

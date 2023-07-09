@@ -15,15 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.lsp.api
+package com.itsaky.androidide.lsp.java.providers
+
+import com.itsaky.androidide.progress.ICancelChecker
 
 /**
- * Checks for cancellation of a process.
+ * A service provider which supports cancellation.
  *
  * @author Akash Yadav
  */
-fun interface ICompletionCancelChecker {
-
-  /** Abort the process if it is cancelled. */
-  fun abortIfCancelled()
-}
+abstract class CancelableServiceProvider(cancelChecker: ICancelChecker) :
+  ICancelChecker by cancelChecker

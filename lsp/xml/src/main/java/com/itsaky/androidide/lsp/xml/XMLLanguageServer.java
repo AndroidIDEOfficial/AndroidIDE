@@ -43,6 +43,7 @@ import com.itsaky.androidide.lsp.xml.providers.AdvancedEditProvider;
 import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.api.Project;
 
 import com.itsaky.androidide.utils.DocumentUtils;
@@ -105,7 +106,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CompletionResult complete(final CompletionParams params) {
+  public CompletionResult complete(final CompletionParams params, ICancelChecker cancelChecker) {
     final ICompletionProvider completionProvider;
     if (!getSettings().completionsEnabled()) {
       completionProvider = new NoCompletionsProvider();
@@ -126,13 +127,15 @@ public class XMLLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+  public ReferenceResult findReferences(@NonNull ReferenceParams params,
+      ICancelChecker cancelChecker) {
     return new ReferenceResult(Collections.emptyList());
   }
 
   @NonNull
   @Override
-  public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+  public DefinitionResult findDefinition(@NonNull DefinitionParams params,
+      ICancelChecker cancelChecker) {
     return new DefinitionResult(Collections.emptyList());
   }
 

@@ -35,6 +35,7 @@ import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.FlashType.ERROR
 import com.itsaky.androidide.utils.FlashType.INFO
 import com.itsaky.androidide.utils.FlashType.SUCCESS
+import java.util.function.Consumer
 
 const val DURATION_SHORT = 2000L
 const val DURATION_LONG = 3500L
@@ -44,6 +45,7 @@ val COLOR_SUCCESS = Color.parseColor("#4CAF50")
 val COLOR_ERROR = Color.parseColor("#f44336")
 const val COLOR_INFO = Color.DKGRAY
 
+@JvmOverloads
 fun Activity.flashbarBuilder(
   gravity: Flashbar.Gravity = TOP,
   duration: Long = DURATION_SHORT,
@@ -99,6 +101,18 @@ fun Activity.flashError(@StringRes msg: Int) {
 
 fun Activity.flashInfo(@StringRes msg: Int) {
   flashbarBuilder().infoIcon().message(msg).showOnUiThread()
+}
+
+@JvmOverloads
+fun Activity.flashProgress(configure: Consumer<Flashbar.Builder>? = null, action: Consumer<Flashbar>) {
+  val builder = flashbarBuilder(gravity = TOP, duration = DURATION_INDEFINITE)
+    .showProgress(Flashbar.ProgressPosition.LEFT)
+
+  configure?.accept(builder)
+
+  val flashbar = builder.build()
+  flashbar.show()
+  action.accept(flashbar)
 }
 
 fun Flashbar.Builder.showOnUiThread() {

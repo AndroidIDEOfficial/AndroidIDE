@@ -17,25 +17,21 @@
 package com.itsaky.androidide.editor.language;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.editor.api.IEditor;
 import com.itsaky.androidide.lookup.Lookup;
-import com.itsaky.androidide.lsp.api.ICompletionCancelChecker;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.utils.ILogger;
-
-import java.nio.file.Paths;
-import java.util.ArrayList;
-
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.lang.format.Formatter;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  * Base class for language implementations in the IDE.
@@ -43,7 +39,7 @@ import io.github.rosemoe.sora.text.ContentReference;
  * @author Akash Yadav
  */
 public abstract class IDELanguage implements Language {
-  
+
   private static final ILogger LOG = ILogger.newInstance("IDELanguage");
   private Formatter formatter;
 
@@ -56,10 +52,10 @@ public abstract class IDELanguage implements Language {
       throws CompletionCancelledException {
     try {
       final var cancelChecker = new CompletionCancelChecker(publisher);
-      Lookup.getDefault().register(ICompletionCancelChecker.class, cancelChecker);
-      doComplete(content, position, publisher, extraArguments);
+      Lookup.getDefault().register(ICancelChecker.class, cancelChecker);
+      doComplete(content, position, publisher, cancelChecker, extraArguments);
     } finally {
-      Lookup.getDefault().unregister(ICompletionCancelChecker.class);
+      Lookup.getDefault().unregister(ICancelChecker.class);
     }
   }
 
@@ -67,6 +63,7 @@ public abstract class IDELanguage implements Language {
       final @NonNull ContentReference content,
       final @NonNull CharPosition position,
       final @NonNull CompletionPublisher publisher,
+      final @NonNull CompletionCancelChecker cancelChecker,
       final @NonNull Bundle extraArguments) {
     final var server = getLanguageServer();
     if (server == null) {
@@ -80,7 +77,7 @@ public abstract class IDELanguage implements Language {
       return;
     }
 
-    final var completionProvider = new CommonCompletionProvider(server);
+    final var completionProvider = new CommonCompletionProvider(server, cancelChecker);
     final var file = Paths.get(path);
 
     final var completionItems =
@@ -122,12 +119,13 @@ public abstract class IDELanguage implements Language {
   public int getTabSize() {
     return EditorPreferencesKt.getTabSize();
   }
-  
+
   @Override
-  public int getIndentAdvance(@NonNull final ContentReference content, final int line, final int column) {
+  public int getIndentAdvance(@NonNull final ContentReference content, final int line,
+      final int column) {
     return getIndentAdvance(content.getLine(line).substring(0, column));
   }
-  
+
   public int getIndentAdvance(@NonNull String line) {
     return 0;
   }

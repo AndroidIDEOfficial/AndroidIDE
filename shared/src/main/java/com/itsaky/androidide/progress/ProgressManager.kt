@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.progress
 
-import com.itsaky.androidide.progress.ICancelChecker.Companion.Default
+import com.itsaky.androidide.progress.ICancelChecker.Default
 import java.util.WeakHashMap
 
 /**

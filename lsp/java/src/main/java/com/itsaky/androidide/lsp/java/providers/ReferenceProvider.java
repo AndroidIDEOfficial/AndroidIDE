@@ -18,35 +18,36 @@
 package com.itsaky.androidide.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.lsp.java.compiler.CompileTask;
 import com.itsaky.androidide.lsp.java.compiler.CompilerProvider;
 import com.itsaky.androidide.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.androidide.lsp.java.utils.CancelChecker;
 import com.itsaky.androidide.lsp.java.utils.FindHelper;
 import com.itsaky.androidide.lsp.java.utils.NavigationHelper;
 import com.itsaky.androidide.lsp.java.visitors.FindReferences;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
 import com.itsaky.androidide.lsp.models.ReferenceResult;
 import com.itsaky.androidide.models.Location;
-import openjdk.source.tree.CompilationUnitTree;
-import openjdk.source.util.TreePath;
-
+import com.itsaky.androidide.progress.ICancelChecker;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import java.util.function.Supplier;
 import jdkx.lang.model.element.Element;
 import jdkx.lang.model.element.TypeElement;
+import openjdk.source.tree.CompilationUnitTree;
+import openjdk.source.util.TreePath;
 
-public class ReferenceProvider {
+public class ReferenceProvider extends CancelableServiceProvider {
 
   public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
   private final CompilerProvider compiler;
   private Path file;
   private int line, column;
 
-  public ReferenceProvider(CompilerProvider compiler) {
+  public ReferenceProvider(CompilerProvider compiler, ICancelChecker checker) {
+    super(checker);
     this.compiler = compiler;
   }
 
@@ -57,58 +58,100 @@ public class ReferenceProvider {
     // 1-based line and column indexes
     this.line = params.getPosition().getLine() + 1;
     this.column = params.getPosition().getColumn() + 1;
-    return new ReferenceResult(find());
+
+    List<Location> locations;
+    try {
+      locations = find();
+    } catch (Exception err) {
+      if (!CancelChecker.isCancelled(err)) {
+        throw err;
+      }
+      locations = new ArrayList<>();
+    }
+
+    return new ReferenceResult(locations);
   }
 
   public List<Location> find() {
+    abortIfCancelled();
     final SynchronizedTask synchronizedTask = compiler.compile(file);
-    return synchronizedTask.get(
+
+    // findTypeReferences and findMemberReferences initiate another compilation task
+    // However, initiating a compilation task while another compilation is in progress will result in a deadlock
+    // Therefore, we return a supplier from the current synchronized task and
+    final Supplier<List<Location>> result = synchronizedTask.get(
         task -> {
-          Element element = NavigationHelper.findElement(task, file, line, column);
-          if (element == null) return NOT_SUPPORTED;
-          if (NavigationHelper.isLocal(element)) {
-            return findReferences(task);
+          abortIfCancelled();
+          Element element = NavigationHelper.findElement(task, file, line, column, this);
+          if (element == null) {
+            return () -> NOT_SUPPORTED;
           }
+
+          if (NavigationHelper.isLocal(element)) {
+            // findReferences method here uses the compilation task object
+            // however, finding the references lazily using supplier will leak this task
+            final var references = findReferences(task);
+            return () -> references;
+          }
+
           if (NavigationHelper.isType(element)) {
             TypeElement type = (TypeElement) element;
             String className = type.getQualifiedName().toString();
-            task.close();
-            return findTypeReferences(className);
+            return () -> findTypeReferences(className);
           }
+
           if (NavigationHelper.isMember(element)) {
-            TypeElement parentClass = (TypeElement) element.getEnclosingElement();
-            String className = parentClass.getQualifiedName().toString();
-            String memberName = element.getSimpleName().toString();
+            final var parentClass = (TypeElement) element.getEnclosingElement();
+            final var className = parentClass.getQualifiedName().toString();
+
+            var memberName = element.getSimpleName().toString();
             if (memberName.equals("<init>")) {
               memberName = parentClass.getSimpleName().toString();
             }
-            task.close();
-            return findMemberReferences(className, memberName);
+
+            String finalMemberName = memberName;
+            return () -> findMemberReferences(className, finalMemberName);
           }
-          return NOT_SUPPORTED;
+
+          return () -> NOT_SUPPORTED;
         });
+
+    return result.get();
   }
 
   private List<Location> findTypeReferences(String className) {
+    abortIfCancelled();
     Path[] files = compiler.findTypeReferences(className);
-    if (files.length == 0) return Collections.emptyList();
+    if (files.length == 0) {
+      return Collections.emptyList();
+    }
+
+    abortIfCancelled();
     return compiler.compile(files).get(this::findReferences);
   }
 
   private List<Location> findMemberReferences(String className, String memberName) {
-    Path[] files = compiler.findMemberReferences(className, memberName);
-    if (files.length == 0) return Collections.emptyList();
+    abortIfCancelled();
+    final var files = compiler.findMemberReferences(className, memberName);
+    if (files.length == 0) {
+      return Collections.emptyList();
+    }
+
+    abortIfCancelled();
     return compiler.compile(files).get(this::findReferences);
   }
 
   private List<Location> findReferences(CompileTask task) {
-    Element element = NavigationHelper.findElement(task, file, line, column);
+    abortIfCancelled();
+    Element element = NavigationHelper.findElement(task, file, line, column, this);
     List<TreePath> paths = new ArrayList<>();
     for (CompilationUnitTree root : task.roots) {
+      abortIfCancelled();
       new FindReferences(task.task, element).scan(root, paths);
     }
     List<Location> locations = new ArrayList<>();
     for (TreePath p : paths) {
+      abortIfCancelled();
       locations.add(FindHelper.location(task, p));
     }
     return locations;

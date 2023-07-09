@@ -23,6 +23,7 @@ import com.itsaky.androidide.lsp.java.compiler.SourceFileObject
 import com.itsaky.androidide.lsp.java.utils.NavigationHelper
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.progress.ICancelChecker
 import java.nio.file.Path
 import jdkx.lang.model.element.Element
 import jdkx.tools.JavaFileObject
@@ -36,8 +37,8 @@ class RemoteDefinitionProvider(
   position: Position,
   completingFile: Path,
   compiler: JavaCompilerService,
-  settings: IServerSettings,
-) : IJavaDefinitionProvider(position, completingFile, compiler, settings) {
+  settings: IServerSettings, cancelChecker: ICancelChecker,
+) : IJavaDefinitionProvider(position, completingFile, compiler, settings, cancelChecker) {
 
   private lateinit var otherFile: JavaFileObject
 
@@ -48,7 +49,7 @@ class RemoteDefinitionProvider(
 
   override fun doFindDefinition(element: Element): List<Location> {
 //    val task = compiler.compile(listOf(SourceFileObject(file), otherFile))
-    val provider = LocalDefinitionProvider(position, file, compiler, settings)
+    val provider = LocalDefinitionProvider(position, file, compiler, settings, this)
     return provider.findDefinition(element)
 //    return provider
 //      .findDefinition(task.get { NavigationHelper.findElement(it, file, line, column) })

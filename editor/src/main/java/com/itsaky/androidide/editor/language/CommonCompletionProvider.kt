@@ -39,7 +39,8 @@ import java.util.function.Predicate
  *
  * @author Akash Yadav
  */
-class CommonCompletionProvider(private val server: ILanguageServer) {
+class CommonCompletionProvider(private val server: ILanguageServer,
+  private val cancelChecker: CompletionCancelChecker) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -66,7 +67,7 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
           CompletionParams(Position(position.line, position.column, position.index), file)
         params.content = content
         params.prefix = prefix
-        server.complete(params)
+        server.complete(params, cancelChecker)
       } catch (e: Throwable) {
 
         if (e is ProcessCancelledException) {
@@ -74,7 +75,7 @@ class CommonCompletionProvider(private val server: ILanguageServer) {
         }
 
         // Do not log if completion was interrupted or cancelled
-        if (!(e is  ProcessCancelledException || e is CompletionCancelledException)) {
+        if (!(e is ProcessCancelledException || e is CompletionCancelledException)) {
           if (!server.handleFailure(LSPFailure(COMPLETION, e))) {
             log.error("Unable to compute completions", e)
           }

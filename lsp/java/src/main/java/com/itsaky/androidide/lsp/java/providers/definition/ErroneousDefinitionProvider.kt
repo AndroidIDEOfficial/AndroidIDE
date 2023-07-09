@@ -24,6 +24,7 @@ import com.itsaky.androidide.lsp.java.providers.DefinitionProvider
 import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.models.Location
 import com.itsaky.androidide.models.Position
+import com.itsaky.androidide.progress.ICancelChecker
 import com.itsaky.androidide.utils.DocumentUtils.isSameFile
 import openjdk.source.util.Trees
 import java.nio.file.Path
@@ -41,8 +42,8 @@ class ErroneousDefinitionProvider(
   position: Position,
   completingFile: Path,
   compiler: JavaCompilerService,
-  settings: IServerSettings,
-) : IJavaDefinitionProvider(position, completingFile, compiler, settings) {
+  settings: IServerSettings, cancelChecker: ICancelChecker,
+) : IJavaDefinitionProvider(position, completingFile, compiler, settings, cancelChecker) {
 
   override fun doFindDefinition(element: Element): List<Location> {
     val name = element.simpleName ?: return DefinitionProvider.NOT_SUPPORTED
@@ -54,6 +55,7 @@ class ErroneousDefinitionProvider(
 
   private fun findAllMembers(className: String, memberName: String): List<Location> {
     val otherFile = compiler.findAnywhere(className)
+    abortIfCancelled()
     if (!otherFile.isPresent) {
       log.error("Cannot find source file for class:", className)
       return emptyList()
@@ -65,16 +67,20 @@ class ErroneousDefinitionProvider(
       sources = listOf<JavaFileObject>(fileAsSource)
     }
 
+    abortIfCancelled()
+
     return compiler.compile(sources).get { task ->
       val locations = mutableListOf<Location>()
       val trees = Trees.instance(task.task)
       val elements = task.task.elements
       val parentClass = elements.getTypeElement(className)
 
+      abortIfCancelled()
       for (member in elements.getAllMembers(parentClass)) {
         if (!member.simpleName.contentEquals(memberName)) continue
         val path = trees.getPath(member) ?: continue
         val location = FindHelper.location(task, path, memberName)
+        abortIfCancelled()
         locations.add(location)
       }
 

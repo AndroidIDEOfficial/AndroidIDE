@@ -22,7 +22,7 @@ import static com.itsaky.androidide.resources.R.string;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import android.app.Dialog;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Rect;
@@ -33,9 +33,11 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.itsaky.androidide.editor.R;
 import com.itsaky.androidide.editor.adapters.CompletionListAdapter;
 import com.itsaky.androidide.editor.api.IEditor;
 import com.itsaky.androidide.editor.api.ILspEditor;
@@ -56,9 +58,11 @@ import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentSelectedEvent;
+import com.itsaky.androidide.flashbar.Flashbar;
 import com.itsaky.androidide.lsp.api.ILanguageClient;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.lsp.models.Command;
+import com.itsaky.androidide.lsp.models.DefinitionParams;
 import com.itsaky.androidide.lsp.models.DefinitionResult;
 import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
 import com.itsaky.androidide.lsp.models.ReferenceParams;
@@ -68,10 +72,12 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.DocumentUtils;
+import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
@@ -86,6 +92,7 @@ import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 import io.github.rosemoe.sora.widget.snippet.variable.ISnippetVariableResolver;
 import java.io.File;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import kotlin.io.FilesKt;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -492,84 +499,70 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
    * file in this editor, the range specified in the response will be selected.
    */
   @Override
-  @SuppressWarnings({"deprecation", "unused"})
   public void findDefinition() {
     if (getFile() == null) {
       return;
     }
 
-    final ProgressDialog pd = ProgressDialog.show(getContext(), null,
-        getContext().getString(string.msg_finding_definition));
+    final var cancelChecker = new ICancelChecker.Default();
 
-    try {
-      final CompletableFuture<DefinitionResult> future = CompletableFuture.supplyAsync(() -> {
-        final var params = new com.itsaky.androidide.lsp.models.DefinitionParams(getFile().toPath(),
-            new Position(getCursor().getLeftLine(),
-                getCursor().getLeftColumn()));
+    final var action = (Consumer<Flashbar>) flashbar -> {
+      final var params = new DefinitionParams(getFile().toPath(),
+          getCursorLSPPosition());
 
-        return languageServer.findDefinition(params);
-      });
+      final CompletableFuture<DefinitionResult> future = CompletableFuture.supplyAsync(
+          () -> languageServer.findDefinition(params, cancelChecker));
 
-      future.whenComplete((result, error) -> {
-        if (result == null || languageClient == null || future.isCancelled() ||
-            future.isCompletedExceptionally()) {
-          LOG.error("An error occurred while finding definition", error);
-          showDefinitionNotFound(pd);
-          return;
-        }
+      future.whenComplete(
+          (result, error) -> onFindDefinitionResult(flashbar, future, result, error));
+    };
 
-        final var locations = result.getLocations();
-        if (locations.size() == 0) {
-          LOG.error("No definitions found", "Size:", locations.size());
-          showDefinitionNotFound(pd);
-          return;
-        }
-
-        //noinspection ConstantConditions
-        ThreadUtils.runOnUiThread(() -> {
-          if (locations.size() == 1) {
-            var location = locations.get(0);
-            if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
-              setSelection(location.getRange());
-              return;
-            }
-            languageClient.showDocument(
-                new ShowDocumentParams(location.getFile(), location.getRange()));
-          } else {
-            languageClient.showLocations(locations);
-          }
-        });
-
-        dismissOnUiThread(pd);
-      });
-    } catch (Throwable th) {
-      LOG.error("An error occurred while finding definition", th);
-      showDefinitionNotFound(pd);
-    }
+    FlashbarActivityUtilsKt.flashProgress(((Activity) getContext()),
+        builder -> configureFlashbar(builder, string.msg_finding_definition, cancelChecker),
+        action);
   }
 
-  /**
-   * Notify the user that no definitions can be found.
-   *
-   * @param pd The {@link ProgressDialog} that was shown when requesting the definitions.
-   */
-  @SuppressWarnings("deprecation")
-  private void showDefinitionNotFound(final ProgressDialog pd) {
-    //noinspection ConstantConditions
+  private void onFindDefinitionResult(Flashbar flashbar, CompletableFuture<DefinitionResult> future,
+      DefinitionResult result, Throwable error) {
+    LOG.debug("onFindDefinitionsResult");
+    dismissOnUiThread(flashbar);
+
+    if (result == null || languageClient == null || future.isCancelled() ||
+        future.isCompletedExceptionally()) {
+      LOG.error("An error occurred while finding definition", error);
+      notify(string.msg_no_definition);
+      return;
+    }
+
+    final var locations = result.getLocations();
+    if (locations.size() == 0) {
+      LOG.error("No definitions found", "Size:", locations.size());
+      notify(string.msg_no_definition);
+      return;
+    }
+
     ThreadUtils.runOnUiThread(() -> {
-      FlashbarUtilsKt.flashError(string.msg_no_definition);
-      pd.dismiss();
+      if (locations.size() == 1) {
+        var location = locations.get(0);
+        if (DocumentUtils.isSameFile(location.getFile(), getFile().toPath())) {
+          setSelection(location.getRange());
+          return;
+        }
+        languageClient.showDocument(
+            new ShowDocumentParams(location.getFile(), location.getRange()));
+      } else {
+        languageClient.showLocations(locations);
+      }
     });
   }
 
   /**
-   * Dismisses the given dialog on the UI thread.
+   * Dismisses the given flashbar on the UI thread.
    *
-   * @param dialog The dialog to dismiss.
+   * @param flashbar The flashbar to dismiss.
    */
-  private void dismissOnUiThread(@NonNull final Dialog dialog) {
-    //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(dialog::dismiss);
+  private void dismissOnUiThread(@NonNull final Flashbar flashbar) {
+    post(flashbar::dismiss);
   }
 
   /**
@@ -585,66 +578,71 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       return;
     }
 
-    @SuppressWarnings("deprecation") final ProgressDialog pd = ProgressDialog.show(getContext(),
-        null, getContext().getString(string.msg_finding_references));
+    final var cancelChecker = new ICancelChecker.Default();
 
-    try {
+    final var action = (Consumer<Flashbar>) flashbar -> {
       final var referenceParams = new ReferenceParams(getFile().toPath(),
           getCursorLSPPosition(), true);
 
       final var future = CompletableFuture.supplyAsync(
-          () -> languageServer.findReferences(referenceParams));
+          () -> languageServer.findReferences(referenceParams, cancelChecker));
 
-      future.whenComplete((result, error) -> onFindReferencesResult(pd, future, result, error));
-    } catch (Throwable th) {
-      LOG.error("An error occurred while finding references", th);
-      showReferencesNotFound(pd);
-    }
+      future.whenComplete(
+          (result, error) -> onFindReferencesResult(flashbar, future, result, error));
+    };
+
+    FlashbarActivityUtilsKt.flashProgress(((Activity) getContext()),
+        builder -> configureFlashbar(builder, R.string.msg_finding_references, cancelChecker),
+        action);
   }
 
-  @SuppressWarnings("deprecation")
-  private void onFindReferencesResult(final ProgressDialog pd,
+  private void onFindReferencesResult(final Flashbar flashbar,
       final CompletableFuture<ReferenceResult> future,
       final ReferenceResult result, final Throwable error
   ) {
+    LOG.debug("onFindRefsResult");
+    dismissOnUiThread(flashbar);
+
     if (result == null || languageClient == null || future.isCancelled() ||
         future.isCompletedExceptionally()) {
       LOG.error("An error occurred while finding references", error);
-      showReferencesNotFound(pd);
+      notify(string.msg_no_references);
       return;
     }
 
     if (result.getLocations().isEmpty()) {
-      showReferencesNotFound(pd);
+      notify(string.msg_no_references);
       return;
-    } else {
-      if (result.getLocations().size() == 1) {
-        final var loc = result.getLocations().get(0);
-        if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
-          setSelection(loc.getRange());
-          return;
-        }
-      }
-
-      //noinspection ConstantConditions
-      ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
     }
 
-    dismissOnUiThread(pd);
+    if (result.getLocations().size() == 1) {
+      final var loc = result.getLocations().get(0);
+      if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
+        setSelection(loc.getRange());
+        return;
+      }
+    }
+
+    ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
   }
 
   /**
-   * Notify the user that no references were found for the selected token.
+   * Notify the user that no results were found for a task.
    *
-   * @param pd The {@link ProgressDialog} that was shown when requesting references.
    */
-  @SuppressWarnings("deprecation")
-  private void showReferencesNotFound(final ProgressDialog pd) {
+  private void notify(@StringRes final int message) {
     //noinspection ConstantConditions
-    ThreadUtils.runOnUiThread(() -> {
-      FlashbarUtilsKt.flashError(string.msg_no_references);
-      pd.dismiss();
-    });
+    ThreadUtils.runOnUiThread(() -> FlashbarUtilsKt.flashError(message));
+  }
+
+  private void configureFlashbar(Flashbar.Builder builder, @StringRes int message,
+      ICancelChecker cancelChecker) {
+    builder.message(message)
+        .negativeActionText(android.R.string.cancel)
+        .negativeActionTapListener(bar -> {
+          cancelChecker.cancel();
+          bar.dismiss();
+        });
   }
 
   /**

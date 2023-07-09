@@ -20,7 +20,6 @@ package com.itsaky.androidide.lsp.java;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentCloseEvent;
 import com.itsaky.androidide.eventbus.events.editor.DocumentOpenEvent;
@@ -60,6 +59,7 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.lsp.util.LSPEditorActions;
 import com.itsaky.androidide.models.Range;
+import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
@@ -67,15 +67,13 @@ import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.VMUtils;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class JavaLanguageServer implements ILanguageServer {
 
@@ -87,7 +85,7 @@ public class JavaLanguageServer implements ILanguageServer {
   private Path selectedFile;
   private final AnalyzeTimer timer = new AnalyzeTimer(this::analyzeSelected);
   private CachedCompletion cachedCompletion;
-  
+
   private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
 
   public JavaLanguageServer() {
@@ -179,14 +177,14 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public CompletionResult complete(final CompletionParams params) {
+  public CompletionResult complete(final CompletionParams params, ICancelChecker cancelChecker) {
     final JavaCompilerService compiler = getCompiler(params.getFile());
     if (compiler == null
         || !settings.completionsEnabled()
         || !this.completionProvider.canComplete(params.getFile())) {
       return CompletionResult.EMPTY;
     }
-    
+
     if (diagnosticProvider.isAnalyzing()) {
       LOG.warn("Cancelling source code analysis due to completion request");
       diagnosticProvider.cancel();
@@ -199,24 +197,26 @@ public class JavaLanguageServer implements ILanguageServer {
 
   @NonNull
   @Override
-  public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+  public ReferenceResult findReferences(@NonNull ReferenceParams params,
+      ICancelChecker cancelChecker) {
     final JavaCompilerService compiler = getCompiler(params.getFile());
     if (!settings.referencesEnabled() || compiler == null) {
       return new ReferenceResult(Collections.emptyList());
     }
 
-    return new ReferenceProvider(compiler).findReferences(params);
+    return new ReferenceProvider(compiler, cancelChecker).findReferences(params);
   }
 
   @NonNull
   @Override
-  public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+  public DefinitionResult findDefinition(@NonNull DefinitionParams params,
+      ICancelChecker cancelChecker) {
     final JavaCompilerService compiler = getCompiler(params.getFile());
     if (!settings.definitionsEnabled() || compiler == null) {
       return new DefinitionResult(Collections.emptyList());
     }
 
-    return new DefinitionProvider(compiler, getSettings()).findDefinition(params);
+    return new DefinitionProvider(compiler, getSettings(), cancelChecker).findDefinition(params);
   }
 
   @NonNull
