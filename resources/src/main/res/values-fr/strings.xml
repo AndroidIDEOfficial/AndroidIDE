@@ -70,7 +70,8 @@
   <string name="project_app_name">Nom de l\'application</string>
   <string name="msg_create_new_project_greeting">Libérez vos talents de développeur ! Créer un projet et commencez à créer votre propre application</string>
   <string name="title_confirm_open_project">Ouvrir le dernier projet ouvert ?</string>
-  <string name="msg_confirm_open_project">Voulez-vous ouvrir le dernier projet ouvert ?\ndernier projet ouvert :\n%s</string>
+  <string name="msg_confirm_open_project">Voulez-vous ouvrir le dernier projet ouvert ?
+Dernier projet ouvert : \n%s</string>
   <string name="group_project">Projet</string>
   <string name="title_close_project">Fermer le projet</string>
   <string name="msg_opened_project_does_not_exist">Le dernier projet ouvert n\'exist pas !</string>
@@ -120,13 +121,16 @@
   <string name="asset_copy_failed">Échec de la copie des assets dans le stockage !</string>
   <string name="cannot_create_temp">Êchec lors de la création d\'un dossier temporaire !</string>
   <string name="project_created_successfully">Création du projet avec succés</string>
+  <string name="project_creation_failed">Erreur lors de la création du projet</string>
   <string name="msg_begin_project_write">Lancement du processus de création</string>
   <string name="msg_folder_creation_failed">Échec lors de la création du dossier</string>
   <string name="msg_file_creation_failed">Échec de la création du fichier</string>
+  <string name="msg_layout_file_creation_failed">Erreur lors de la création du fichier graphique (layout)</string>
   <string name="msg_folder_created">Dossier crée avec succés</string>
   <string name="msg_file_created">Fichier crée avec succés</string>
   <string name="msg_folder_exists">Ce dossier existe déjà</string>
   <string name="msg_file_exists">Ce fichier existe déjà</string>
+  <string name="msg_layout_file_exists">Le fichier graphique (layout) avec ce nom existe déjà.</string>
   <string name="msg_invalid_name">Nom invalide</string>
   <string name="text_create">Créer</string>
   <string name="msg_can_contain_slashes">Si le chemin contient des séparateurs (\'/\'), alors les répertoires (parents) requis seront créés s\'ils n\'existent pas.</string>
@@ -134,7 +138,7 @@
   <string name="file_name">Nom du fichier</string>
   <string name="new_name">Nouveau nom</string>
   <string name="new_file">Nouveau fichier</string>
-  <string name="create_auto_layout">Créer un fichier layout automatiquement </string>
+  <string name="create_auto_layout">Créer fichier graphique</string>
   <string name="new_java_class">Nouvelle class java</string>
   <string name="new_xml_resource">Nouvelle ressource XML</string>
   <string name="new_folder">Nouveau dossier</string>
@@ -154,6 +158,7 @@
   <string name="action_closeOthers">Fermer les autres</string>
   <string name="action_closeThis">Fermer</string>
   <string name="all_saved">Fichiers ouverts sauvegardés</string>
+  <string name="save_failed">Erreur lors de la sauvegarde des fichiers</string>
   <string name="msg_newfile_dest">Destination: %s/</string>
   <string name="restype_drawable">Drawable</string>
   <string name="restype_layout">Layout</string>
@@ -186,6 +191,8 @@
   <string name="idepref_editor_drawhexcolors_summary">L\'éditeur doit-il afficher les couleurs hex ?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Utiliser le Word Wrap de l\'éditeur </string>
+  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activer Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Agrandir le texte à la position du curseur lors de la sélection du texte dans l\'éditeur</string>
   <string name="idepref_editor_title">Éditeur</string>
@@ -202,7 +209,7 @@
   <string name="msg_preferences">Paramètres</string>
   <string name="pref_changelog">Changelog</string>
   <string name="msg_editor_font_size">Veuillez choisir la taille des caractères par défaut de l\'éditeur :</string>
-  <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+  <string name="msg_clear_cache">Les fichiers caches vont être supprimés. Une fois supprimé, la prochaine compilation prendra plus de temps que la normale pour régénérer les fichiers nécessaires.\n\nÊtes-vous sûr de supprimer le cache ?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">Échec de l\'initialisation des informations du SDK</string>
   <string name="err_cannot_preview_layout">Impossible d\'afficher l\'aperçu du layout</string>
@@ -310,11 +317,11 @@
   <string name="idepref_useIcu_summary">Use ICU library to use retrive word edges for double-tap and long-press word selection.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
-  <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
-  <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
+  <string name="msg_swipe_for_files">Swipez de droite à gauche pour accéder aux @@fichiers@@.</string>
+  <string name="msg_swipe_for_output">Tirez du bas vers le haut pour accéder aux @@consoles (application, ide et compilation)@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
-  <string name="btn_donate">Sponsor</string>
+  <string name="btn_donate">Faire un don</string>
   <string name="btn_docs">Documentation</string>
   <string name="btn_close">Fermer</string>
   <string name="msg_ignore_case">Ignore case</string>
@@ -327,8 +334,8 @@
   <string name="idepref_group_summary">Discuss featues, bugs and improvements here.</string>
   <string name="idepref_changelog_summary">What\'s new in this version?</string>
   <string name="idepref_about_summary">More about AndroidIDE.</string>
-  <string name="idepref_general_summary">General IDE configuration.</string>
-  <string name="idepref_editor_summary">Configure the editor.</string>
+  <string name="idepref_general_summary">Préférences principales (mode sombre, terminal)</string>
+  <string name="idepref_editor_summary">Configurer l\'éditeur (tailles des caractères, thème, ...)</string>
   <string name="idepref_xml_trimFinalNewLine_title">Trim final new line</string>
   <string name="idepref_xml_insertFinalNewLine_title">Insert final new line</string>
   <string name="idepref_xml_trimFinalNewLine_summary">Remove extra empty line at the end of file</string>
@@ -361,7 +368,7 @@
   <string name="idepref_emptyElements_title">Empty elements behaviour</string>
   <string name="idepref_emptyElements_summary">Choose the formatting behavior for empty elements.</string>
   <string name="xml_formatting_options">XML formatting options</string>
-  <string name="xml_formatting_options_summary">Configure the XML formatter</string>
+  <string name="xml_formatting_options_summary">Configurer le formateur XML</string>
   <string name="idepref_customFont_title">Use custom font</string>
   <string name="idepref_customFont_summary">Si activé le font : \"/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf\" sera utilisé comme font d\'éditeur par défaut.</string>
   <string name="idepref_chooseFont_title">Choisir font personnalisé </string>
@@ -453,4 +460,47 @@
   <string name="title_reload_color_schemes">Reload color schemes</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
+  <string name="idepref_deleteEmptyLines_title">Supprimer les lignes vides après un retour à la ligne</string>
+  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
+  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+  <string name="btn_sync">Synchroniser</string>
+  <string name="btn_ignore_changes">Ignore these changes</string>
+  <string name="title_fix_imports">Corriger les importations</string>
+  <string name="msg_no_unresolved_classes">No unresolved class names found</string>
+  <string name="title_class_chooser">Quel %1$s ?</string>
+  <string name="permlab_bind_logger_service">bind to log service</string>
+  <string name="permdesc_bind_logger_service">Allows this application to bind to AndroidIDE\'s logging service. This permission is required for AndroidIDE to read logs of this application.</string>
+  <string name="wizard_module_name">Module name</string>
+  <string name="wizard_module_type">Module type</string>
+  <string name="msg_invalid_module_name">Nom du module Gradle invalide</string>
+  <string name="msg_invalid_class_name">Nom de la classe invalide</string>
+  <string name="msg_value_empty">La valeur est vide</string>
+  <string name="msg_file_not_exist">Le fichier n\'existe pas</string>
+  <string name="msg_path_must_be_file">Le chemin du fichier doit être valide</string>
+  <string name="msg_classname_with_keywords">Class name contains keywords</string>
+  <string name="msg_path_must_be_dir">Must be path to a directory</string>
+  <string name="msg_invalid_layout_name">Invalid layout file name</string>
+  <string name="msg_invalid_project_details">Invalid project details</string>
+  <string name="msg_use_kts">Utiliser les scripts Kotlin (.kts) pour les configurations Gradle</string>
+  <string name="title_privacy">Privacy</string>
+  <string name="title_androidide_statistics">AndroidIDE Statistics</string>
+  <string name="msg_androidide_statistics">Help us improve AndroidIDE by providing anonymous statistics. We collect basic information about your device for user base statistics only. The exact data that is shared can be viewed in preferences. Your data is secure and not shared with third-party services. You can opt-out anytime in preferences.</string>
+  <string name="summary_anonymous_usage_stats">Anonymous usage stats</string>
+  <string name="idepref_stats_optIn_title">Stats collection</string>
+  <string name="idepref_stats_optIn_summary">Allow installation metrics and device statistics to be collected (fully anonymous).</string>
+  <string name="title_unique_id">Unique ID</string>
+  <string name="title_device">Device</string>
+  <string name="title_app_version">App version</string>
+  <string name="title_country">Country</string>
+  <string name="title_cpu_arch">CPU Arch</string>
+  <string name="title_preview_data">Preview data</string>
+  <string name="title_android_veresion">Android version</string>
+  <string name="btn_opt_in">Opt-in</string>
+  <string name="btn_no_thanks">No, thanks</string>
+  <string name="title_developer_options">Developer options</string>
+  <string name="idepref_devOptions_summary">Experimental/debugging options for AndroidIDE</string>
+  <string name="idepref_group_debugging">Debugging</string>
+  <string name="idepref_devOptions_dumpLogs_title">Dump logs</string>
+  <string name="idepref_devOptions_dumpLogs_summary">Dump AndroidIDE logs to $HOME/.androidide/logs</string>
 </resources>
