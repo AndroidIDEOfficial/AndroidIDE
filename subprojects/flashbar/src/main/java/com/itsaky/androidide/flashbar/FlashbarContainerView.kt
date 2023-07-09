@@ -75,6 +75,7 @@ internal class FlashbarContainerView(context: Context)
     private var isBarShown = false
     private var isBarDismissing = false
     private var barDismissOnTapOutside: Boolean = false
+    private var earlyDismissalRequested = false
     private var showOverlay: Boolean = false
     private var overlayBlockable: Boolean = false
 
@@ -190,6 +191,11 @@ internal class FlashbarContainerView(context: Context)
                     }
 
                     onBarShowListener?.onShown(parentFlashbar)
+
+                    if (earlyDismissalRequested) {
+                        dismiss()
+                        earlyDismissalRequested = false
+                    }
                 }
             })
 
@@ -264,7 +270,15 @@ internal class FlashbarContainerView(context: Context)
     }
 
     private fun dismissInternal(event: DismissEvent) {
-        if (isBarDismissing || isBarShowing || !isBarShown) {
+        if (isBarShowing) {
+            // Flashbar is currently being shown
+            // but a dismissal has been requested
+            // take this into account and dismiss flashbar afterwards
+            earlyDismissalRequested = true
+            return
+        }
+
+        if (isBarDismissing || !isBarShown) {
             return
         }
 
