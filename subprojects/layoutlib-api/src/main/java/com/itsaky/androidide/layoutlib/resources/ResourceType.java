@@ -22,15 +22,11 @@ import com.android.annotations.Nullable;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Enum representing a type of compiled resource.
@@ -84,7 +80,9 @@ public enum ResourceType {
    */
   OVERLAYABLE("overlayable", "Overlayable tag", Kind.SYNTHETIC),
 
-  /** Represents item tags inside a style definition. */
+  /**
+   * Represents item tags inside a style definition.
+   */
   STYLE_ITEM("item", "Style Item", Kind.SYNTHETIC),
 
   /**
@@ -101,7 +99,9 @@ public enum ResourceType {
   MACRO("macro", "Macro resource replacement", Kind.SYNTHETIC),
   ;
 
-  /** The set of all types of resources that can be referenced by other resources. */
+  /**
+   * The set of all types of resources that can be referenced by other resources.
+   */
   public static final ImmutableSet<ResourceType> REFERENCEABLE_TYPES;
   private static final ImmutableMap<String, ResourceType> TAG_NAMES;
   private static final ImmutableMap<String, ResourceType> CLASS_NAMES;
@@ -129,16 +129,25 @@ public enum ResourceType {
 
     TAG_NAMES = tagNames.build();
     CLASS_NAMES = classNames.build();
-    REFERENCEABLE_TYPES =
-        Arrays.stream(values())
-            .filter(ResourceType::getCanBeReferenced)
-            .collect(Sets.toImmutableEnumSet());
+
+    final ImmutableSet.Builder<ResourceType> setBuilder = ImmutableSet.builder();
+    for (ResourceType type : values()) {
+      if (type.getCanBeReferenced()) {
+        setBuilder.add(type);
+      }
+    }
+
+    REFERENCEABLE_TYPES = setBuilder.build();
   }
 
-  @NonNull private final String mName;
-  @NonNull private final Kind mKind;
-  @NonNull private final String mDisplayName;
-  @NonNull private final String[] mAlternateXmlNames;
+  @NonNull
+  private final String mName;
+  @NonNull
+  private final Kind mKind;
+  @NonNull
+  private final String mDisplayName;
+  @NonNull
+  private final String[] mAlternateXmlNames;
 
   ResourceType(
       @NonNull String name, @NonNull String displayName, @NonNull String... alternateXmlNames) {
@@ -147,6 +156,7 @@ public enum ResourceType {
     mDisplayName = displayName;
     mAlternateXmlNames = alternateXmlNames;
   }
+
   ResourceType(@NonNull String name, @NonNull String displayName, @NonNull Kind kind) {
     mName = name;
     mKind = kind;
@@ -247,7 +257,9 @@ public enum ResourceType {
     return CLASS_NAMES.keySet();
   }
 
-  /** Returns a translated display name for the resource type. */
+  /**
+   * Returns a translated display name for the resource type.
+   */
   @NonNull
   public String getDisplayName() {
     return mDisplayName;
@@ -264,7 +276,9 @@ public enum ResourceType {
     return (mKind == Kind.REAL && this != ATTR) || this == MACRO;
   }
 
-  /** Returns true if this type is a synthetic type, such as {@link #PUBLIC} */
+  /**
+   * Returns true if this type is a synthetic type, such as {@link #PUBLIC}
+   */
   public boolean isSynthetic() {
     return mKind == Kind.SYNTHETIC;
   }
@@ -276,14 +290,18 @@ public enum ResourceType {
     return getName();
   }
 
-  /** Returns the resource type name, as used by XML files. */
+  /**
+   * Returns the resource type name, as used by XML files.
+   */
   @NonNull
   public String getName() {
     return mName;
   }
 
   private enum Kind {
-    /** These types are used both in the R and as XML tag names. */
+    /**
+     * These types are used both in the R and as XML tag names.
+     */
     REAL,
 
     /**
