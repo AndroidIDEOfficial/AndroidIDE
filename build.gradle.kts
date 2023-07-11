@@ -41,7 +41,7 @@ buildscript {
   dependencies {
     classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
-    classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3")
+    classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0")
   }
 }
 
