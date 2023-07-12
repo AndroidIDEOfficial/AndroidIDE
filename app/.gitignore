@@ -1,6 +1,8 @@
 # Directories that are created when generating signed APK in Android Studio
 /debug
 /release
+/arm64-v8a
+/armeabi-v7a
 
 # Built application files
 *.apk
