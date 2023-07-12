@@ -30,6 +30,7 @@ import com.itsaky.androidide.inflater.internal.utils.parseInteger
 import com.itsaky.androidide.inflater.internal.utils.parseIntegerArray
 import com.itsaky.androidide.inflater.internal.utils.parseString
 import com.itsaky.androidide.inflater.internal.utils.parseStringArray
+import org.junit.Before
 import kotlin.math.roundToInt
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,6 +38,11 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ValueParsersTest {
+
+  @Before
+  fun `setup project`() {
+    XmlInflaterTest.initIfNeeded()
+  }
 
   @Test
   fun `hardcoded dimension parser test`() {

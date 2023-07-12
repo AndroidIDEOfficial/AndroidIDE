@@ -27,19 +27,19 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
-import java.io.File
 import org.junit.Ignore
 import org.robolectric.Robolectric
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.io.path.pathString
 
 @Ignore("Test utility provider")
 object XmlInflaterTest {
 
-  private var init: Boolean = false
+  private var init = AtomicBoolean(false)
   internal val activity by lazy { Robolectric.buildActivity(AppCompatActivity::class.java).get() }
 
   fun initIfNeeded() {
-    if (init) {
+    if (init.get()) {
       return
     }
 
@@ -49,7 +49,7 @@ object XmlInflaterTest {
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
     ProjectManager.setupProject()
-    init = true
+    init.set(true)
   }
 }
 
