@@ -10,7 +10,7 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <br />
         <sub><b>Akash Yadav (itsaky)</b></sub></a>
       <br />
-      <sub><b>52747 words</b></sub>
+      <sub><b>57976 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/esalessandrx"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15563911/medium/a2262fe354d51d9c991d06fcace20b7a.jpg" />
@@ -64,6 +64,13 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
   </tr>
   <tr>
     <td align="center" valign="top">
+      <a href="https://crowdin.com/profile/deepkrg17"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png" />
+        <br />
+        <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
+      <br />
+      <sub><b>572 words</b></sub>
+    </td>
+    <td align="center" valign="top">
       <a href="https://crowdin.com/profile/friostd"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15549279/medium/2d1718f34c949d5df55e346a0d6e5cb0.jpeg" />
         <br />
         <sub><b>friostd</b></sub></a>
@@ -83,13 +90,6 @@ Thanks to all these people, AndroidIDE has been translated into multiple languag
         <sub><b>Smooth-E</b></sub></a>
       <br />
       <sub><b>436 words</b></sub>
-    </td>
-    <td align="center" valign="top">
-      <a href="https://crowdin.com/profile/deepkrg17"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15548687/medium/728142e47177cd0a16f27404215a9a69.png" />
-        <br />
-        <sub><b>Deep Kr. Ghosh (deepkrg17)</b></sub></a>
-      <br />
-      <sub><b>421 words</b></sub>
     </td>
     <td align="center" valign="top">
       <a href="https://crowdin.com/profile/rafael_mn"><img alt="logo" style="width: 64px" src="https://crowdin-static.downloads.crowdin.com/avatar/15197694/medium/e75e727190d17436b60e284b50bfb32f_default.png" />
