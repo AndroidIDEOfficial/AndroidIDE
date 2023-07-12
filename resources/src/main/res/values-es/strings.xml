@@ -49,7 +49,7 @@
   <string name="lint_tasks">Lint tasks</string>
   <string name="clean_amp_build">Limpiar &amp; compilar</string>
   <string name="clean_project">Limpiar</string>
-  <string name="quick_run_debug">Quick run</string>
+  <string name="quick_run_debug">Ejecutar rápidamente</string>
   <string name="msg_sync_needed">Los archivos Gradle han cambiado. Reconstruya su proyecto para sincronizar dependencias y configuraciones.</string>
   <string name="preparing">Preparando...</string>
   <string name="preparing_first">Preparando. ¡La primera construcción puede tardar hasta 10–15 minutos!</string>
@@ -70,7 +70,7 @@
   <string name="project_app_name">Nombre de la app</string>
   <string name="msg_create_new_project_greeting">¡Comienza tu nuevo proyecto impresionante!</string>
   <string name="title_confirm_open_project">¿Abrir el último proyecto?</string>
-  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">¿Quieres abrir el último proyecto abierto? El proyecto abierto fue:\n%s</string>
   <string name="group_project">Proyecto</string>
   <string name="title_close_project">Cerrar este proyecto</string>
   <string name="msg_opened_project_does_not_exist">¡El último proyecto abierto no existe!</string>
@@ -120,7 +120,7 @@
   <string name="asset_copy_failed">¡No se pudo copiar la plantilla al almacenamiento!</string>
   <string name="cannot_create_temp">¡No se pudo crear el directorio del proyecto temporal!</string>
   <string name="project_created_successfully">¡Proyecto creado con éxito!</string>
-  <string name="project_creation_failed">Failed to create project</string>
+  <string name="project_creation_failed">Error al crear el proyecto</string>
   <string name="msg_begin_project_write">Iniciando proceso de escritura</string>
   <string name="msg_folder_creation_failed">¡Error al crear la carpeta!</string>
   <string name="msg_file_creation_failed">¡Error al crear el archivo!</string>
@@ -160,13 +160,13 @@
   <string name="save_failed">Error al guardar los archivos</string>
   <string name="msg_newfile_dest">Destino: %s/</string>
   <string name="restype_drawable">Dibujables</string>
-  <string name="restype_layout">Layout</string>
-  <string name="restype_menu">Menu</string>
+  <string name="restype_layout">Diseño</string>
+  <string name="restype_menu">Menú</string>
   <string name="restype_other">Otro</string>
-  <string name="classtype_class">Class</string>
-  <string name="classtype_activity">Activity</string>
-  <string name="title_interface">Interface</string>
-  <string name="classtype_enum">Enum</string>
+  <string name="classtype_class">Clase</string>
+  <string name="classtype_activity">Actividad</string>
+  <string name="title_interface">Interfaz</string>
+  <string name="classtype_enum">Enumerar</string>
   <string name="msg_checking_storage_permissions">Verificar permisos de almacenamiento</string>
   <string name="msg_failed_list_files">¡Error al enumerar los archivos del proyecto!</string>
   <string name="msg_storage_denied">No puede continuar sin permisos de almacenamiento</string>
@@ -190,7 +190,7 @@
   <string name="idepref_editor_drawhexcolors_summary">¿Debe el editor dibujar una cadena de color hex?</string>
   <string name="idepref_editor_word_wrap_title">Ajuste de línea</string>
   <string name="idepref_editor_word_wrap_summary">Usar ajuste de línea del editor</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Ocultar el botón de árbol de archivos</string>
   <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
   <string name="idepref_editor_use_magnifier_title">Activar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Aumenta el texto en la posición del cursor mientras seleccionas el texto en el editor</string>
