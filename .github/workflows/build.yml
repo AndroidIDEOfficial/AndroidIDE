@@ -87,13 +87,13 @@ jobs:
           name: apk-armeabi-v7a-debug
           path: app-armeabi-v7a-armeabi-v7a-debug.apk
       - name: Upload arm64-v8a-release APK
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: actions/upload-artifact@v3
         with:
           name: apk-arm64-v8a-release
           path: app-arm64-v8a-arm64-v8a-release.apk
       - name: Upload armeabi-v7a-release APK
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: actions/upload-artifact@v3
         with:
           name: apk-armeabi-v7a-release
@@ -174,7 +174,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Publish release
-        run: ./gradlew nyxMake nyxMark nyxPublish release --stacktrace
+        run: ./gradlew nyxMake nyxMark nyxPublish publish release --stacktrace
         env:
           ReleaseAndroidIDE: true
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
