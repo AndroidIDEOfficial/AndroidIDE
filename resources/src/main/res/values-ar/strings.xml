@@ -482,7 +482,7 @@
   <string name="msg_invalid_layout_name">اسم ملف التخطيط غير صالح</string>
   <string name="msg_invalid_project_details">تفاصيل المشروع غير صالحة</string>
   <string name="msg_use_kts">استخدام سكريبت كوتلن (.kts) لإنشاء ملفات بناء غرادل</string>
-  <string name="title_privacy">إغلاق هذا المشروع</string>
+  <string name="title_privacy">الخصوصية</string>
   <string name="title_androidide_statistics">إحصائيات التطبيق</string>
   <string name="msg_androidide_statistics">ساعدنا في تحسين التطبيق مِن خلال توفير إحصائيات مجهولة المصدر. سوف نجمع المعلومات الأساسية حول جهازك لإحصاءات قاعدة المستخدمين فقط. يمكن عرض البيانات الدقيقة التي تتم مشاركتها في التفضيلات. بياناتك آمنة ولا تتم مشاركتها مع خَدَمَات الجهات الخارجية. يمكنك إلغاء الاشتراك في أي وقت في تفضيلاتك.</string>
   <string name="summary_anonymous_usage_stats">إحصائيات الإستخدام المجهول</string>
