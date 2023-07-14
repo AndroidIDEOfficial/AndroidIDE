@@ -17,12 +17,12 @@ releaseAssets:
   apk_arm64:
     fileName: "androidide-{{version}}-arm64-v8a.apk"
     description: "AndroidIDE {{version}} arm64-v8a release APK"
-    path: app-arm64-v8a-release.apk
+    path: app-arm64-v8a-arm64-v8a-release.apk
     type: application/octet-stream
   apk_arm:
     fileName: "androidide-{{version}}-armeabi-v7a.apk"
     description: "AndroidIDE {{version}} armeabi-v7a release APK"
-    path: app-armeabi-v7a-release.apk
+    path: app-armeabi-v7a-armeabi-v7a-release.apk
     type: application/octet-stream
 
 releaseTypes:
