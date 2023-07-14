@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tasks.executeAsync
@@ -199,11 +200,13 @@ class EditorViewModel : ViewModel() {
 
   fun readOpenedFiles(result: (OpenedFilesCache?) -> Unit) {
     executeAsync({
-      val file = getOpenedFilesCache()
+      val file = getOpenedFilesCache(false)
       if (file.length() == 0L) {
         return@executeAsync null
       }
-      return@executeAsync Gson().fromJson(file.readText(), OpenedFilesCache::class.java)
+      return@executeAsync file.reader().buffered().use { reader ->
+        OpenedFilesCache.parse(reader)
+      }
     }) {
       result(it)
     }
@@ -224,17 +227,17 @@ class EditorViewModel : ViewModel() {
     }
   }
 
-  private fun getOpenedFilesCache(): File {
+  private fun getOpenedFilesCache(forWrite: Boolean = false): File {
     var file = Environment.getProjectCacheDir(ProjectManager.projectPath)
     file = File(file, "editor/openedFiles.json")
-    if (file.exists()) {
+    if (file.exists() && forWrite) {
       FileUtils.rename(file, "${file.name}.bak")
     }
 
     if (file.parentFile?.exists() == false) {
       file.parentFile?.mkdirs()
     }
-  
+
     file.createNewFile()
 
     return file
