@@ -21,6 +21,8 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
+description = "Gradle Plugin for projects that are built with AndroidIDE"
+
 dependencies {
   implementation(projects.buildInfo)
 }
