@@ -20,7 +20,8 @@
 <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License"></p>
 
 <p align="center">
-  <a href="./docs">Explore the docs »</a>
+  <a href="https://androidide.com/docs/">Explore the docs »</a> &nbsp; &#8226; &nbsp;
+  <a href="https://androidide.com/blogs/">Read our blog »</a>
 </p>
 
 <p align="center">
@@ -59,15 +60,18 @@
 > - [_GitHub Releases_](https://github.com/AndroidIDEOfficial/AndroidIDE/releases)
 > - [_GitHub Actions_](https://github.com/AndroidIDEOfficial/AndroidIDE/actions)
 
-- Download the AndroidIDE APK from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
-  can also download APKs from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions).
+- Download the AndroidIDE APK
+  from [releases](https://github.com/AndroidIDEOfficial/AndroidIDE/releases). You
+  can also download APKs
+  from [GitHub actions](https://github.com/AndroidIDEOfficial/AndroidIDE/actions).
 - Follow the
-  instructions [here](./docs/installation.md) to
+  instructions [here](https://androidide.com/docs/installation/) to
   install the build tools.
 
 ## Limitations
 
-- For working with projects in AndroidIDE, your project must use Android Gradle Plugin v7.2.0 or newer. Projects with older AGP must be migrated to newer versions.
+- For working with projects in AndroidIDE, your project must use Android Gradle Plugin v7.2.0 or
+  newer. Projects with older AGP must be migrated to newer versions.
 - SDK Manager is already included in Android SDK and is accessible in AndroidIDE via its Terminal.
   But, you cannot use it to install some tools (like NDK) because those tools are not built for
   Android.
@@ -116,4 +120,5 @@ You should have received a copy of the GNU General Public License
 along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
-Any violations to the license can be reported either by opening an issue or writing a mail to us directly.
+Any violations to the license can be reported either by opening an issue or writing a mail to us
+directly.
