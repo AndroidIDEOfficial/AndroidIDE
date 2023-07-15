@@ -20,7 +20,7 @@
 <img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License"></p>
 
 <p align="center">
-  <a href="https://androidide.com/docs/">Explore the docs »</a> &nbsp; &#8226; &nbsp;
+  <a href="https://androidide.com/docs/">Explore the docs »</a> &nbsp; &nbsp;
   <a href="https://androidide.com/blogs/">Read our blog »</a>
 </p>
 
