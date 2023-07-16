@@ -33,6 +33,10 @@
       "fg": "@keyword",
       "bold": true
     },
+    "label": {
+      "fg": "@keyword",
+      "bold": true
+    },
     "type.qualifier": {
       "fg": "@keyword",
       "bold": true
@@ -66,16 +70,19 @@
       "bold": true
     },
     "number": "@number",
-    "variable": "@onSurface",
+    "identifier": "@onSurface",
     "parameter": "@variable",
     "constant.builtin": "@keyword",
     "type": "@type",
-    "attribute": "@type",
+    "attribute": "@attribute",
     "function.declaration": "@func.decl",
     "function.invocation": "@func.call",
     "operator": "@operator",
     "punctuation.special": "@kt.punctuation.special",
     "constructor": "@kt.constructor",
-    "property": "@kt.property"
+    "property.class": "@kt.property",
+    "property.top_level": "@kt.property",
+    "property.local": "@onSurface",
+    "bracket": "@onSurface"
   }
 }

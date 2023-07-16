@@ -40,11 +40,15 @@
 ; Annotations
 
 (annotation
-  name: (identifier) @attribute)
-(marker_annotation
-  name: (identifier) @attribute)
+  "@" @attribute
+  name: (identifier) @attribute
+  (annotation_argument_list
+    (element_value_pair
+      key: (identifier) @variable.field)))
 
-"@" @operator
+(marker_annotation
+  "@" @attribute
+  name: (identifier) @attribute)
 
 ; Types
 
