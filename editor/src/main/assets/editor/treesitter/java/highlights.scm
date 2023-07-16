@@ -41,10 +41,11 @@
 
 (annotation
   "@" @attribute
-  name: (identifier) @attribute
-  (annotation_argument_list
-    (element_value_pair
-      key: (identifier) @variable.field)))
+  name: (identifier) @attribute)
+
+(annotation_argument_list
+  (element_value_pair
+    key: (identifier) @variable.field))
 
 (marker_annotation
   "@" @attribute
