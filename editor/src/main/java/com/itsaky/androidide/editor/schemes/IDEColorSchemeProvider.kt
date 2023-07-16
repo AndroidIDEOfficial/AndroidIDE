@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.schemes
 
 import android.content.Context
 import com.itsaky.androidide.eventbus.events.editor.ColorSchemeInvalidatedEvent
+import com.itsaky.androidide.preferences.internal.DEFAULT_COLOR_SCHEME
 import com.itsaky.androidide.preferences.internal.colorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsyncProvideError
@@ -45,25 +46,32 @@ object IDEColorSchemeProvider {
   private const val SCHEME_IS_DARK = "scheme.isDark"
   private const val SCHEME_FILE = "scheme.file"
 
-  var currentScheme: IDEColorScheme? = null
+  var defaultScheme: IDEColorScheme? = null
     get() {
-      if (field != null) {
-        return field
-      }
-
-      val scheme = this.schemes[colorScheme] ?: return null
-      field = try {
-        scheme.load()
-        scheme.darkVariant?.load()
-        scheme
-      } catch (err: Exception) {
-        log.error("An error occurred while loading color scheme '$colorScheme'", err)
-        null
-      }
-
-      return field
+      return field ?: getColorScheme(DEFAULT_COLOR_SCHEME).also { field = it }
     }
     private set
+
+  var currentScheme: IDEColorScheme? = null
+    get() {
+      return field ?: getColorScheme(colorScheme).also { field = it }
+    }
+    private set
+
+  private fun getColorScheme(name: String): IDEColorScheme? {
+    return schemes[name]?.also(this::loadColorScheme)
+  }
+
+  private fun loadColorScheme(scheme: IDEColorScheme): IDEColorScheme? {
+    return try {
+      scheme.load()
+      scheme.darkVariant?.load()
+      scheme
+    } catch (err: Exception) {
+      log.error("An error occurred while loading color scheme '$colorScheme'", err)
+      null
+    }
+  }
 
   @JvmStatic
   fun init() {
@@ -97,11 +105,11 @@ object IDEColorSchemeProvider {
             )
             ""
           }
-      
+
       if (version <= 0) {
         log.warn("Version code of color scheme '$schemeDir' must be set to >= 1")
       }
-      
+
       if (file.isBlank()) {
         continue
       }
@@ -112,12 +120,12 @@ object IDEColorSchemeProvider {
       scheme.isDarkScheme = isDark
       schemes[schemeDir.name] = scheme
     }
-    
+
     schemes.values.forEach {
       it.darkVariant = schemes["${it.key}-dark"]
     }
   }
-  
+
   @JvmStatic
   fun initIfNeeded() {
     if (this.schemes.isEmpty()) {
@@ -125,19 +133,21 @@ object IDEColorSchemeProvider {
     }
   }
 
-  fun readScheme(context: Context, schemeConsumer: Consumer<SchemeAndroidIDE?>) {
-    readScheme(context) {
+  @JvmOverloads
+  fun readScheme(context: Context, type: String? = null, schemeConsumer: Consumer<SchemeAndroidIDE?>) {
+    readScheme(context, type) {
       schemeConsumer.accept(it)
     }
   }
 
-  fun readScheme(context: Context, consume: (SchemeAndroidIDE?) -> Unit) {
-    executeAsyncProvideError({ this.currentScheme }) { scheme, error ->
+  @JvmOverloads
+  fun readScheme(context: Context, type: String? = null, consume: (SchemeAndroidIDE?) -> Unit) {
+    executeAsyncProvideError({ getColorSchemeForType(type) }) { scheme, error ->
       if (scheme == null || error != null) {
         log.error("Failed to read color scheme", error)
         return@executeAsyncProvideError
       }
-      
+
       val dark = scheme.darkVariant
       if (context.isSystemInDarkMode() && dark != null) {
         consume(dark)
@@ -147,15 +157,32 @@ object IDEColorSchemeProvider {
     }
   }
 
+  fun getColorSchemeForType(type: String?) : IDEColorScheme? {
+    if (type == null) {
+      return currentScheme
+    }
+
+    return currentScheme?.let { scheme ->
+      return@let if (scheme.getLanguageScheme(type) == null) {
+        log.warn("Color scheme '${scheme.name}' does not support '$type'")
+        log.warn("Falling back to default color scheme")
+        null
+      } else {
+        scheme
+      }
+    } ?: defaultScheme
+  }
+
   fun list(): List<IDEColorScheme> {
     // filter out schemes that are dark variants of other schemes
     // schemes with both light and dark variant will be used according to system's dark mode
     return this.schemes.values.filter { !it.key.endsWith("-dark") }.toList()
   }
-  
+
   fun destroy() {
     this.schemes.clear()
     this.currentScheme = null
+    this.defaultScheme = null
   }
 
   fun reload() {

@@ -68,7 +68,7 @@ class ShowXmlActivity : BaseIDEActivity() {
       editor.setText(intent?.getStringExtra(KEY_XML) ?: "")
       editor.setTextSize(fontSize)
 
-      IDEColorSchemeProvider.readScheme(this) {
+      IDEColorSchemeProvider.readScheme(this, XMLLanguage.TS_TYPE) {
         if (it == null) {
           log.error("Unable to load color sheme")
           return@readScheme

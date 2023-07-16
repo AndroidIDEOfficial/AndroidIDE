@@ -57,7 +57,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   init {
     this.languageSpec = getLanguageSpec(context, type, lang, newLocalCaptureSpec(type))
     this.tsTheme = TsTheme(languageSpec.spec.tsQuery)
-    IDEColorSchemeProvider.readScheme(context) { scheme ->
+    IDEColorSchemeProvider.readScheme(context, type) { scheme ->
       if (scheme == null) {
         log.error("Failed to read color scheme")
         return@readScheme
