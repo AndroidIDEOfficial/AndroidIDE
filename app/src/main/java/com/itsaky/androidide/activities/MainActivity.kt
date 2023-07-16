@@ -184,16 +184,7 @@ class MainActivity : LimitlessIDEActivity() {
         MaterialSharedAxis.Y
       }
 
-      val isForward = when {
-        previous == SCREEN_MAIN && screen == SCREEN_TEMPLATE_LIST -> true
-        previous == SCREEN_TEMPLATE_LIST && screen == SCREEN_TEMPLATE_DETAILS -> true
-        previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_TEMPLATE_LIST -> false
-        previous == SCREEN_TEMPLATE_DETAILS && screen == SCREEN_MAIN -> false
-        previous == SCREEN_TEMPLATE_LIST && screen == SCREEN_MAIN -> false
-        else -> throw IllegalStateException(
-          "Invalid screen states. Previous: $previous Current: $screen"
-        )
-      }
+      val isForward = (screen ?: 0) - previous == 1
 
       val transition = MaterialSharedAxis(axis, isForward)
       transition.doOnEnd {
