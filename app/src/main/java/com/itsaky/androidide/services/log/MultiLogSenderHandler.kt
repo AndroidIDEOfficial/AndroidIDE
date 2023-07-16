@@ -43,9 +43,7 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
     set(value) {
       field = value
       lock.withLock {
-        for (i in clients.indices) {
-          clients[i].consumer = value
-        }
+        clients.forEach { it?.consumer = value }
       }
     }
 
@@ -91,9 +89,7 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
   override fun close() {
     this.keepAlive.set(false)
     lock.withLock {
-      for (i in clients.indices) {
-        clients[i].closeAndLogError()
-      }
+      clients.forEach { it?.closeAndLogError() }
     }
   }
 
