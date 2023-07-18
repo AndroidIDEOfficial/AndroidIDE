@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
+  <string name="copy" tools:override="true">Copy</string>
+  <string name="text_to_search">Text to search</string>
   <string name="title_open_source_licenses">licence Open Source</string>
   <string name="msg_about_licensed_under">licence sous:&#x20;</string>
   <string name="about_option_email">Émail</string>
@@ -495,7 +497,7 @@ Dernier projet ouvert : \n%s</string>
   <string name="title_country">Country</string>
   <string name="title_cpu_arch">CPU Arch</string>
   <string name="title_preview_data">Preview data</string>
-  <string name="title_android_veresion">Android version</string>
+  <string name="title_android_veresion">Android veresion</string>
   <string name="btn_opt_in">Opt-in</string>
   <string name="btn_no_thanks">No, thanks</string>
   <string name="title_developer_options">Developer options</string>
