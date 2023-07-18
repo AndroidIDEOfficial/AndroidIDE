@@ -1,6 +1,6 @@
 ;;; Identifiers
 
-(simple_identifier) @variable
+(simple_identifier) @identifier
 
 ; `this` this keyword inside classes
 (this_expression) @variable.builtin
@@ -8,18 +8,28 @@
 ; `super` keyword inside classes
 (super_expression) @variable.builtin
 
-(class_parameter
-	(simple_identifier) @property)
+(statements
+	  (property_declaration
+  	  	(variable_declaration
+  		  	(simple_identifier) @property.local)))
+
+(source_file
+	(property_declaration
+		(variable_declaration
+			(simple_identifier) @property.top_level)))
 
 (class_body
 	(property_declaration
 		(variable_declaration
-			(simple_identifier) @property)))
+			(simple_identifier) @property.class)))
+
+(class_parameter
+	(simple_identifier) @property.class)
 
 ; id_1.id_2.id_3: `id_2` and `id_3` are assumed as object properties
 (_
 	(navigation_suffix
-		(simple_identifier) @property))
+		(simple_identifier) @property.class))
 
 ; SCREAMING CASE identifiers are assumed to be constants
 ((simple_identifier) @constant
@@ -93,16 +103,25 @@
 (setter
 	("set") @function.builtin)
 
-(primary_constructor) @constructor
+(primary_constructor
+  "constructor" @keyword
+  (class_parameter
+    (simple_identifier) @property.class
+    (_
+      (type_identifier) @type )))
+
 (secondary_constructor
-	("constructor") @constructor)
+	("constructor") @keyword)
+
+(constructor_delegation_call
+	[ "this" "super" ] @keyword)
 
 (constructor_invocation
 	(user_type
 		(type_identifier) @constructor))
 
 (anonymous_initializer
-	("init") @constructor)
+	("init") @function.invocation)
 
 (parameter
 	(simple_identifier) @parameter)
@@ -263,9 +282,6 @@
 	"interface"
 	"fun"
 ;	"typeof" ; NOTE: It is reserved for future use
-] @keyword
-
-[
   "fun"
 	"for"
 	"do"
@@ -281,6 +297,8 @@
   "continue"
   "break"
 ] @keyword
+
+(label) @label
 
 (annotation
 	"@" @attribute (use_site_target)? @attribute)
@@ -340,12 +358,15 @@
 	"as?"
 	".."
 	"->"
-	"(" ")"
-	"[" "]"
-	"{" "}"
 	"."
 	","
 	";"
 	":"
 	"::"
 ] @operator
+
+[
+  "(" ")"
+  "[" "]"
+  "{" "}"
+] @bracket

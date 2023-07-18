@@ -4,6 +4,10 @@
 -dontnote **
 -dontobfuscate
 
+-keepattributes Signature
+-keepattributes Exceptions
+-keepattributes *Annotation*
+
 -keep class javax.** { *; }
 -keep class jdkx.** { *; }
 
@@ -35,7 +39,6 @@
 }
 
 # EventBus
--keepattributes *Annotation*
 -keepclassmembers class ** {
     @org.greenrobot.eventbus.Subscribe <methods>;
 }
@@ -91,19 +94,29 @@
 # Retrofit 2
 -dontwarn retrofit2.**
 -keep class retrofit2.** { *; }
--keepattributes Signature
--keepattributes Exceptions
 
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
 
 # OkHttp3
--keepattributes Signature
--keepattributes *Annotation*
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
 -dontwarn okhttp3.**
 
 # Stat uploader
 -keep class com.itsaky.androidide.stats.** { *; }
+
+# Gson
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+## Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken

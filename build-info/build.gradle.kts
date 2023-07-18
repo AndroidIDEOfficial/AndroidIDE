@@ -22,6 +22,8 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
+description = "Information about the AndroidIDE build"
+
 val buildInfoGenDir = project.buildDir.resolve("generated/buildInfo").also { it.createDirectory() }
 
 sourceSets { getByName("main").java.srcDir(buildInfoGenDir) }

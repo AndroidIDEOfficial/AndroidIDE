@@ -17,7 +17,56 @@
 
 package com.itsaky.androidide.models
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.itsaky.androidide.utils.ILogger
+import java.io.Reader
+
 /**
  * @author Akash Yadav
  */
-data class OpenedFilesCache(val selectedFile: String, val allFiles: List<OpenedFile>)
+data class OpenedFilesCache(@SerializedName(KEY_SELECTED_FILE) val selectedFile: String,
+  @SerializedName(KEY_ALL_FILES) val allFiles: List<OpenedFile>) {
+
+  companion object {
+
+    private const val KEY_SELECTED_FILE = "selectedFile"
+    private const val KEY_ALL_FILES = "allFiles"
+    private val log = ILogger.newInstance("OpenedFilesCache")
+
+    @JvmStatic
+    fun parse(contentReader: Reader): OpenedFilesCache? {
+      return try {
+        JsonReader(contentReader).use { reader ->
+          if (!reader.hasNext()) {
+            return@use null
+          }
+
+          reader.beginObject()
+          var selectedFile = ""
+          var allFiles = emptyList<OpenedFile>()
+          while (reader.hasNext()) {
+            val name = reader.nextName()
+
+            if (name == KEY_SELECTED_FILE) {
+              selectedFile = reader.nextString()
+            } else if (name == KEY_ALL_FILES) {
+              allFiles = Gson().fromJson(reader, object : TypeToken<List<OpenedFile>>() {})
+            }
+          }
+          reader.endObject()
+
+          return@use OpenedFilesCache(selectedFile, allFiles)
+        }
+      } catch (err: Exception) {
+        log.error("Failed to parse opened files cache", err)
+        null
+      }
+    }
+
+    private fun readOpenedFiles(reader: JsonReader, allFiles: MutableList<OpenedFile>) {
+    }
+  }
+}

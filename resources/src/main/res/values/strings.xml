@@ -2,8 +2,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <!-- AndroidIDE -->
-  <item name="copy" type="string" tools:override="true">Copy</item>
-  <item name="text_to_search" type="string">Text to search</item>
+  <string name="copy" tools:override="true">Copy</string>
+  <string name="text_to_search">Text to search</string>
   <string name="app_name" translatable="false">AndroidIDE</string>
   <string name="title_open_source_licenses">Open source licenses</string>
   <string name="msg_about_licensed_under">Licensed under: </string>
@@ -578,7 +578,7 @@
   <string name="title_country">Country</string>
   <string name="title_cpu_arch">CPU Arch</string>
   <string name="title_preview_data">Preview data</string>
-  <string name="title_android_veresion">Android veresion</string>
+  <string name="title_android_version">Android version</string>
   <string name="btn_opt_in">Opt-in</string>
   <string name="btn_no_thanks">No, thanks</string>
   <string name="title_developer_options">Developer options</string>

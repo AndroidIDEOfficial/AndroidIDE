@@ -2,7 +2,7 @@
 scheme.name=AndroidIDE Default - Dark
 
 # The version code of the color scheme
-scheme.version=11
+scheme.version=12
 
 # Whether the scheme is dark or light
 scheme.isDark=true

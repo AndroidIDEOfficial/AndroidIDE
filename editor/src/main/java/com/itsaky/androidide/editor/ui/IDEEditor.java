@@ -958,7 +958,7 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
     final var language = createLanguage(file);
     final var extension = FilesKt.getExtension(file);
     if (language instanceof TreeSitterLanguage) {
-      IDEColorSchemeProvider.INSTANCE.readScheme(getContext(), scheme -> {
+      IDEColorSchemeProvider.INSTANCE.readScheme(getContext(), extension, scheme -> {
         applyTreeSitterLang(language, extension, scheme);
       });
     } else {

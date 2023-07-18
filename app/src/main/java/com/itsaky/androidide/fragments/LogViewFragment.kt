@@ -240,7 +240,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
       }
     }
 
-    IDEColorSchemeProvider.readScheme(requireContext()) { scheme ->
+    IDEColorSchemeProvider.readScheme(requireContext(), LogLanguage.TS_TYPE) { scheme ->
       editor.applyTreeSitterLang(LogLanguage(requireContext()), LogLanguage.TS_TYPE, scheme)
     }
   }

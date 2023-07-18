@@ -20,6 +20,8 @@ plugins {
   id("com.vanniktech.maven.publish.base")
 }
 
+description = "LogSender is used to read logs from applications built with AndroidIDE"
+
 android {
   namespace = "${BuildConfig.packageName}.logsender"
   buildFeatures.aidl = true

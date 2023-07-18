@@ -163,21 +163,26 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     try {
       if (viewModel.openedFilesCache != null) {
-        viewModel.openedFilesCache?.apply {
-          this.allFiles.forEach { openFile(File(it.filePath), it.selection) }
-          openFile(File(selectedFile))
+        viewModel.openedFilesCache?.let { cache ->
+          onReadOpenedFilesCache(cache)
         }
       } else {
-        viewModel.readOpenedFiles {
-          it ?: return@readOpenedFiles
-          it.allFiles.forEach { file -> openFile(File(file.filePath), file.selection) }
-          openFile(File(it.selectedFile))
+        viewModel.readOpenedFiles { cache ->
+          cache ?: return@readOpenedFiles
+          onReadOpenedFilesCache(cache)
         }
       }
       viewModel.openedFilesCache = null
     } catch (err: Throwable) {
       log.error("Failed to reopen recently opened files", err)
     }
+  }
+
+  private fun onReadOpenedFilesCache(cache: OpenedFilesCache) {
+    cache.allFiles.forEach { file ->
+      openFile(File(file.filePath), file.selection)
+    }
+    openFile(File(cache.selectedFile))
   }
 
   override fun onPrepareOptionsMenu(menu: Menu): Boolean {

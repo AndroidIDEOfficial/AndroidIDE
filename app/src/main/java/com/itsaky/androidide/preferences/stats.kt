@@ -94,7 +94,7 @@ private class DeviceName(
 @Parcelize
 private class AndroidVersion(
   override val key: String = StatUploadWorker.KEY_ANDROID_VERSION,
-  override val title: Int = R.string.title_android_veresion
+  override val title: Int = R.string.title_android_version
 ) : StatDataPreference({ AndroidIDEStats.androidVersion.toString() })
 
 @Parcelize

@@ -21,6 +21,8 @@ plugins {
     id("com.vanniktech.maven.publish.base")
 }
 
+description = "AndroidIDE Logging Framework"
+
 dependencies {
     compileOnly(projects.subprojects.frameworkStubs)
     

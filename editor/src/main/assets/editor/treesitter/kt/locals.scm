@@ -32,10 +32,9 @@
 		(variable_declaration
 			(simple_identifier) @definition.parameter)))
 
-(class_body
-	(property_declaration
+(property_declaration
 		(variable_declaration
-			(simple_identifier) @definition.field)))
+			(simple_identifier) @definition.field))
 
 (class_declaration
 	(primary_constructor

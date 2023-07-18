@@ -131,6 +131,12 @@ subprojects {
     }
   }
 
+  project.afterEvaluate {
+    if (project.plugins.hasPlugin("com.vanniktech.maven.publish.base") && project.description.isNullOrBlank()) {
+      throw GradleException("Project ${project.path} must have a description")
+    }
+  }
+
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
 
