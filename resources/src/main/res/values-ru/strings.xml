@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
+  <string name="copy" tools:override="true">Copy</string>
+  <string name="text_to_search">Text to search</string>
   <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="msg_about_licensed_under">Лицензия: </string>
   <string name="about_option_email">Электронная почта</string>
@@ -494,7 +496,7 @@
   <string name="title_country">Страна</string>
   <string name="title_cpu_arch">Архитектура ЦП</string>
   <string name="title_preview_data">Предпросмотр данных</string>
-  <string name="title_android_veresion">Версия Android</string>
+  <string name="title_android_veresion">Android veresion</string>
   <string name="btn_opt_in">Присоединиться</string>
   <string name="btn_no_thanks">Нет, спасибо</string>
   <string name="title_developer_options">Настройки разработчика</string>
