@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">Copiar</string>
+  <string name="text_to_search">Texto para procurar</string>
   <string name="title_open_source_licenses">Licenças de código aberto</string>
   <string name="msg_about_licensed_under">Licenciado sob:</string>
   <string name="about_option_email">E-mail</string>
