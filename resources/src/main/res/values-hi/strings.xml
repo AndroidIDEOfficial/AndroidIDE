@@ -496,7 +496,7 @@
   <string name="title_country">देश</string>
   <string name="title_cpu_arch">सीपीयू आर्किटेक्चर</string>
   <string name="title_preview_data">डेटा का पूर्वावलोकन</string>
-  <string name="title_android_version">Android version</string>
+  <string name="title_android_version">Android वर्शन</string>
   <string name="btn_opt_in">चयन करें</string>
   <string name="btn_no_thanks">जी नहीं, धन्यवाद</string>
   <string name="title_developer_options">डेवलपर विकल्प</string>
