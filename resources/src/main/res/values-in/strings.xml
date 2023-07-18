@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">Salin</string>
+  <string name="text_to_search">Ketik untuk mencari</string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
   <string name="about_option_email">Email</string>
@@ -496,7 +496,7 @@
   <string name="title_country">Negara</string>
   <string name="title_cpu_arch">Arch CPU</string>
   <string name="title_preview_data">Pratinjau data</string>
-  <string name="title_android_veresion">Android veresion</string>
+  <string name="title_android_veresion">Versi Android</string>
   <string name="btn_opt_in">Pendaftaran</string>
   <string name="btn_no_thanks">Tidak, terima kasih</string>
   <string name="title_developer_options">Opsi pengembang</string>
