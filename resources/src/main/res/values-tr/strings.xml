@@ -330,7 +330,7 @@
   <string name="idepref_buildnrun_summary">Gradle inşasını yapılandırın.</string>
   <string name="configure">Yapılandır</string>
   <string name="about">Hakkında</string>
-  <string name="idepref_github_summary">AndroieIDE açık kaynaktır!</string>
+  <string name="idepref_github_summary">AndroidIDE açık kaynaktır!</string>
   <string name="idepref_channel_summary">Son güncellemeler için abone olun.</string>
   <string name="idepref_group_summary">Özellikleri, sorunları ve iyileştirmeleri burada tartışın.</string>
   <string name="idepref_changelog_summary">Bu sürümde yeni ne var?</string>
@@ -364,7 +364,7 @@
   <string name="idepref_maxLineWidth_summary">Bir satırda olabilecek en fazla karakter sayısını ayarlayın.</string>
   <string name="idepref_splitAttrIndentSize_title">Bölünmüş öznitelikler girinti boyutu</string>
   <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
-  <string name="idepref_preservedNewLines_title">Korunan yeni satırlar</string>
+  <string name="idepref_preservedNewLines_title">Korunmuş yeni çizgiler</string>
   <string name="idepref_preservedNewLines_summary">Korunması gereken art arda yeni satırların sayısını ayarlayın.</string>
   <string name="idepref_emptyElements_title">Boş öğeler davranışı</string>
   <string name="idepref_emptyElements_summary">Boş öğeler için biçimlendirme davranışını seçin.</string>
