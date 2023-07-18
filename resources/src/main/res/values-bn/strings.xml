@@ -495,7 +495,7 @@
   <string name="title_country">দেশ</string>
   <string name="title_cpu_arch">CPU আর্ক</string>
   <string name="title_preview_data">তথ্য পূর্বরূপ</string>
-  <string name="title_android_veresion">অ্যান্ড্রয়েড ভার্সন</string>
+  <string name="title_android_version">অ্যান্ড্রয়েড ভার্সন</string>
   <string name="btn_opt_in">বাছাই করুন</string>
   <string name="btn_no_thanks">না, ধন্যবাদ</string>
   <string name="title_developer_options">বিকাশকারী অপশনগুলি</string>

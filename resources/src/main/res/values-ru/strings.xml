@@ -494,7 +494,7 @@
   <string name="title_country">Country</string>
   <string name="title_cpu_arch">CPU Arch</string>
   <string name="title_preview_data">Preview data</string>
-  <string name="title_android_veresion">Android version</string>
+  <string name="title_android_version">Android version</string>
   <string name="btn_opt_in">Opt-in</string>
   <string name="btn_no_thanks">No, thanks</string>
   <string name="title_developer_options">Developer options</string>
