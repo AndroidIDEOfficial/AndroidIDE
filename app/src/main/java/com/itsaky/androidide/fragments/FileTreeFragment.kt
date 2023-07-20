@@ -269,6 +269,12 @@ class FileTreeFragment :
         state!!.split(AndroidTreeView.NODES_PATH_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
       restoreNodeState(mRoot!!, HashSet(openNodes))
     }
+
+    mRoot?.let { rootNode ->
+      if (rootNode.children.isNotEmpty()) {
+        rootNode.childAt(0)?.let { projectRoot -> expandNode(projectRoot) }
+      }
+    }
   }
 
   private fun restoreNodeState(root: TreeNode, openNodes: Set<String>) {
