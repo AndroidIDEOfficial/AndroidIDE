@@ -77,6 +77,26 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   private val widget by lazy { createUiWidgets() }
 
   /**
+   * Remove the attribute handler with the given name.
+   *
+   * @param name The name of the attribute.
+   */
+  protected open fun removeAttrHandler(name: String) {
+    this.attributeHandlers.remove(name)
+  }
+
+  /**
+   * Sets the attribute handler for the given name.
+   *
+   * @param name The name of the attribute.
+   * @param handler The attribute handler.
+   */
+  protected open fun putAttrHandler(name: String,
+    handler: AttributeHandlerScope<T>.() -> Unit) {
+    this.attributeHandlers[name] = handler
+  }
+
+  /**
    * Get the [UiWidget] model that can be used to list this adapter's view in the UI designer.
    *
    * @throws UnsupportedOperationException If this view adapter does not adapt a UI designer widget.
@@ -133,6 +153,7 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   protected open fun canHandleNamespace(namespace: INamespace?): Boolean {
     return this.canHandleNamespace(namespace?.uri)
   }
+
   protected open fun canHandleNamespace(nsUri: String?): Boolean {
     return SdkConstants.ANDROID_URI == nsUri
   }
@@ -167,14 +188,14 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
     return (view.view as T).let {
       val file = (view as ViewImpl).file
       return@let AttributeHandlerScope(
-          it,
-          file,
-          it.context,
-          it.layoutParams,
-          attribute.namespace,
-          attribute.name,
-          attribute.value
-        )
+        it,
+        file,
+        it.context,
+        it.layoutParams,
+        attribute.namespace,
+        attribute.name,
+        attribute.value
+      )
         .let(apply)
     }
   }
@@ -187,5 +208,6 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
    */
   protected open fun createAttrHandlers(
     create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
-  ) {}
+  ) {
+  }
 }
