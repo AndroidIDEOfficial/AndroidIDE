@@ -23,9 +23,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tasks.executeAsync
@@ -168,7 +166,7 @@ class EditorViewModel : ViewModel() {
    * @return The list of opened files.
    */
   fun getOpenedFiles(): List<File> {
-    return files.value!!
+    return files.value ?: mutableListOf()
   }
 
   /**

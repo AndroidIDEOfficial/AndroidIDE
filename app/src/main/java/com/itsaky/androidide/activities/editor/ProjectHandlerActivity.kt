@@ -87,6 +87,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
   abstract fun doCloseAll(runAfter: () -> Unit)
 
+  abstract fun saveOpenedFiles()
+
   override fun doDismissSearchProgress() {
     if (mSearchingProgress?.isShowing == true) {
       mSearchingProgress!!.dismiss()
@@ -445,6 +447,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   }
 
   private fun closeProject(manualFinish: Boolean) {
+    if (manualFinish) {
+      // if the user is manually closing the project,
+      // save the opened files cache
+      // this is needed because in this case, the opened files cache will be empty
+      // when onPause will be called.
+      saveOpenedFiles()
+    }
 
     // Make sure we close files
     // This will make sure that file contents are not erased.

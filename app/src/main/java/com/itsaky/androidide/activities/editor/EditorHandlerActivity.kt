@@ -57,6 +57,7 @@ import com.itsaky.androidide.utils.flashSuccess
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -67,6 +68,8 @@ import kotlin.collections.set
  * @author Akash Yadav
  */
 open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
+
+  protected val isOpenedFilesSaved = AtomicBoolean(false)
 
   override fun doOpenFile(file: File, selection: Range?) {
     openFileAndSelect(file, selection)
@@ -143,19 +146,32 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   override fun onPause() {
     super.onPause()
 
-    val current =
-      getCurrentEditor()?.editor?.file?.absolutePath
-        ?: run {
-          viewModel.writeOpenedFiles(null)
-          viewModel.openedFilesCache = null
-          return
-        }
-
-    getOpenedFiles().also {
-      val cache = OpenedFilesCache(current, it)
-      viewModel.writeOpenedFiles(cache)
-      viewModel.openedFilesCache = if (!isDestroying) cache else null
+    // if the user manually closes the project, this will be true
+    // in this case, don't overwrite the already saved cache
+    if (!isOpenedFilesSaved.get()) {
+      saveOpenedFiles()
     }
+  }
+
+  override fun saveOpenedFiles() {
+    writeOpenedFilesCache(getOpenedFiles(), getCurrentEditor()?.editor?.file)
+  }
+
+  private fun writeOpenedFilesCache(openedFiles: List<OpenedFile>, selectedFile: File?) {
+    if (selectedFile == null || openedFiles.isEmpty()) {
+      viewModel.writeOpenedFiles(null)
+      viewModel.openedFilesCache = null
+      log.debug("[onPause]", "No opened files.", "Opened files cache reset to null.")
+      isOpenedFilesSaved.set(true)
+      return
+    }
+
+    val cache = OpenedFilesCache(selectedFile = selectedFile.absolutePath, allFiles = openedFiles)
+
+    viewModel.writeOpenedFiles(cache)
+    viewModel.openedFilesCache = if (!isDestroying) cache else null
+    log.debug("[onPause]", "Opened files cache reset to ${viewModel.openedFilesCache}")
+    isOpenedFilesSaved.set(true)
   }
 
   override fun onStart() {
