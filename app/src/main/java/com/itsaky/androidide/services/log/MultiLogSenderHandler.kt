@@ -62,7 +62,10 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
 
           log.info("A log sender has been connected")
 
-          clients.add(handler)
+          lock.withLock {
+            clients.add(handler)
+          }
+
           handler.start()
         }
       }
