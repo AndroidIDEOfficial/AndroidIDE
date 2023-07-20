@@ -71,6 +71,7 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   private val attributeHandlers by lazy {
     val handlers = mutableMapOf<String, AttributeHandlerScope<T>.() -> Unit>()
     createAttrHandlers(handlers::put)
+    postCreateAttrHandlers(handlers)
     return@lazy handlers
   }
 
@@ -81,7 +82,7 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
    *
    * @param name The name of the attribute.
    */
-  protected open fun removeAttrHandler(name: String) {
+  protected fun removeAttrHandler(name: String) {
     this.attributeHandlers.remove(name)
   }
 
@@ -91,7 +92,7 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
    * @param name The name of the attribute.
    * @param handler The attribute handler.
    */
-  protected open fun putAttrHandler(name: String,
+  protected fun putAttrHandler(name: String,
     handler: AttributeHandlerScope<T>.() -> Unit) {
     this.attributeHandlers[name] = handler
   }
@@ -209,5 +210,16 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
   protected open fun createAttrHandlers(
     create: (String, AttributeHandlerScope<T>.() -> Unit) -> Unit
   ) {
+  }
+
+  /**
+   * Called after the attribute handlers are created. Subclasses can use this to remove attribute
+   * handlers that are added by their superclasses.
+   *
+   * @param handlers The attribute handlers, mapped by the attribute names.
+   * @see createAttrHandlers
+   */
+  protected open fun postCreateAttrHandlers(
+    handlers: MutableMap<String, AttributeHandlerScope<T>.() -> Unit>) {
   }
 }
