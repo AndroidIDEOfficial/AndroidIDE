@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.inflater
 
+import android.content.Context
 import android.view.View
 import com.android.SdkConstants
 import com.itsaky.androidide.inflater.internal.AttributeImpl
@@ -221,5 +222,16 @@ abstract class IViewAdapter<T : View> : AbstractParser() {
    */
   protected open fun postCreateAttrHandlers(
     handlers: MutableMap<String, AttributeHandlerScope<T>.() -> Unit>) {
+  }
+
+  /**
+   * A hook that can be used by subclasses to create view instances for the given view [name].
+   *
+   * @param name The fully qualified class name of the view to create.
+   * @param context The Android context.
+   * @return The view instance, or `null`.
+   */
+  open fun onCreateView(name: String, context: Context): View? {
+    return null
   }
 }

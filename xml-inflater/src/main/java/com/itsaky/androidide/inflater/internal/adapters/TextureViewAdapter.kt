@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.inflater.internal.adapters
 
+import android.content.Context
 import android.view.TextureView
+import android.view.View
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner
 import com.itsaky.androidide.annotations.uidesigner.IncludeInDesigner.Group.WIDGETS
 import com.itsaky.androidide.inflater.AttributeHandlerScope
@@ -48,5 +50,12 @@ open class TextureViewAdapter<T : TextureView> : ViewAdapter<T>() {
       UiWidget(DesignerTextureView::class.java, string.widget_textureview,
         drawable.ic_widget_textureview)
     )
+  }
+
+  override fun onCreateView(name: String, context: Context): View? {
+    if (name == TextureView::class.java.name) {
+      return DesignerTextureView(context)
+    }
+    return super.onCreateView(name, context)
   }
 }

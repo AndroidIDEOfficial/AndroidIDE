@@ -22,15 +22,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import com.itsaky.androidide.inflater.InflateException
+import com.itsaky.androidide.inflater.internal.ViewAdapterIndexImpl
 import com.itsaky.androidide.utils.ILogger
 import java.lang.reflect.Method
 
 /** @author Akash Yadav */
 object ViewFactory {
+
   private val log = ILogger.newInstance("ViewFactory")
 
   fun createViewInstance(name: String, context: Context): View {
+    val adapter = ViewAdapterIndexImpl.INSTANCE.getViewAdapter(name)
     return try {
+      if (adapter != null) {
+        // Check if adapter can create the view instance
+        val view = adapter.onCreateView(name, context)
+        if (view != null) {
+          return view
+        }
+      }
+
       val klass = javaClass.classLoader!!.loadClass(name)
       val constructor = klass.getConstructor(Context::class.java)
       constructor.newInstance(context) as View
@@ -39,8 +50,8 @@ object ViewFactory {
       throw RuntimeException(err)
     }
   }
-  
-  fun generateLayoutParams(parent: ViewGroup) : LayoutParams {
+
+  fun generateLayoutParams(parent: ViewGroup): LayoutParams {
     return try {
       var clazz: Class<in ViewGroup> = parent.javaClass
       var method: Method?
@@ -51,7 +62,7 @@ object ViewFactory {
         } catch (e: Throwable) {
           /* ignored */
         }
-      
+
         clazz = clazz.superclass
       }
       if (method != null) {
