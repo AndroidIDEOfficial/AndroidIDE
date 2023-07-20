@@ -76,6 +76,8 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
         AndroidUtils.appNameToPackageName(name.value, packageName.value)
       packageName.setValue(newPackage)
     }
+    
+    Environment.mkdirIfNotExits(Environment.PROJECTS_DIR)
 
     val saveLocation = stringParameter {
       name = R.string.wizard_save_location
