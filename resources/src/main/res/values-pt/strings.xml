@@ -51,7 +51,7 @@
   <string name="lint_tasks">Lint</string>
   <string name="clean_amp_build">Limpar &amp; construir</string>
   <string name="clean_project">Limpar</string>
-  <string name="quick_run_debug">Executar rapidamente</string>
+  <string name="quick_run_debug">Executar</string>
   <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
   <string name="preparing">Preparando</string>
   <string name="preparing_first">Preparando. A primeira compilação pode levar até 10-15 minutos!</string>
