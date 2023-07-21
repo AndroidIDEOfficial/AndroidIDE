@@ -35,6 +35,7 @@
  */
 package com.itsaky.androidide.javac.services;
 
+import com.itsaky.androidide.utils.ILogger;
 import openjdk.tools.javac.parser.JavacParser;
 import openjdk.tools.javac.parser.Lexer;
 import openjdk.tools.javac.parser.ParserFactory;
@@ -52,6 +53,7 @@ import openjdk.tools.javac.util.Context;
 import openjdk.tools.javac.util.List;
 import openjdk.tools.javac.util.Name;
 import openjdk.tools.javac.util.Names;
+import openjdk.tools.javac.util.Options;
 import openjdk.tools.javac.util.Position;
 
 /**
@@ -59,9 +61,17 @@ import openjdk.tools.javac.util.Position;
  */
 public class NBParserFactory extends ParserFactory {
 
+  public static final String KEEP_COMMENTS_OVERRIDE = "keepCommentsOverride";
+  public static final String KEEP_COMMENTS_OVERRIDE_KEEP = "keep";
+  public static final String KEEP_COMMENTS_OVERRIDE_IGNORE = "ignore";
+
+  private static final ILogger LOG = ILogger.newInstance("NBParserFactory");
+
   protected final ScannerFactory scannerFactory;
   protected final Names names;
   protected final CancelService cancelService;
+
+  protected final String keepCommentsOverride;
 
   public static void preRegister(Context context) {
     context.put(parserFactoryKey, (Context.Factory<ParserFactory>) NBParserFactory::new);
@@ -72,6 +82,8 @@ public class NBParserFactory extends ParserFactory {
     this.scannerFactory = ScannerFactory.instance(context);
     this.names = Names.instance(context);
     this.cancelService = CancelService.instance(context);
+    this.keepCommentsOverride = Options.instance(context).get(KEEP_COMMENTS_OVERRIDE);
+
   }
 
   @Override
@@ -81,9 +93,20 @@ public class NBParserFactory extends ParserFactory {
       boolean keepEndPos,
       boolean keepLineMap,
       boolean parseModuleInfo) {
-    Lexer lexer = scannerFactory.newScanner(input, keepDocComments);
+    var keepDocCommentsOverride = keepDocComments;
+    if (this.keepCommentsOverride != null) {
+      if (KEEP_COMMENTS_OVERRIDE_IGNORE.equals(this.keepCommentsOverride)) {
+        keepDocCommentsOverride = false;
+      } else if (KEEP_COMMENTS_OVERRIDE_KEEP.equals(this.keepCommentsOverride)) {
+        keepDocCommentsOverride = true;
+      }
+      LOG.debug("'keepComments' overridden to ", this.keepCommentsOverride);
+    }
+
+    Lexer lexer = scannerFactory.newScanner(input, keepDocCommentsOverride);
     return new NBJavacParser(
-        this, lexer, keepDocComments, keepLineMap, keepEndPos, parseModuleInfo, cancelService);
+        this, lexer, keepDocCommentsOverride, keepLineMap, keepEndPos, parseModuleInfo,
+        cancelService);
   }
 
   public static class NBJavacParser extends JavacParser {
@@ -201,7 +224,9 @@ public class NBParserFactory extends ParserFactory {
 
       @Override
       public void storeEnd(JCTree tree, int endpos) {
-        if (endpos >= 0) delegate.storeEnd(tree, endpos);
+        if (endpos >= 0) {
+          delegate.storeEnd(tree, endpos);
+        }
       }
 
       @Override

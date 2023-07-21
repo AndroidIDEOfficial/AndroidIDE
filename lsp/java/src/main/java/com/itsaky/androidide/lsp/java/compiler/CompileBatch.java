@@ -168,6 +168,7 @@ public class CompileBatch implements AutoCloseable {
         "-XDcompilePolicy=byfile",
         "-XD-Xprefer=source",
         "-XDide",
+        "-XDkeepCommentsOverride=ignore",
         "-XDsuppressAbortOnBadClassFile",
         "-XDshould-stop.at=GENERATE",
         "-XDdiags.formatterOptions=-source",
