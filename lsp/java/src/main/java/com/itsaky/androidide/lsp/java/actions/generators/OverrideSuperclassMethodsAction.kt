@@ -35,6 +35,7 @@ import com.itsaky.androidide.lsp.java.utils.FindHelper
 import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.MethodPtr
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
+import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
 import com.itsaky.androidide.projects.ProjectManager
@@ -61,6 +62,7 @@ import java.util.concurrent.CompletableFuture
  * @author Akash Yadav
  */
 class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
+
   override val titleTextRes: Int = R.string.action_override_superclass_methods
   override val id: String = "lsp_java_overrideSuperclassMethods"
   override var label: String = ""
@@ -72,10 +74,10 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
 
     if (
       !visible ||
-        !data.hasRequiredData(
-          com.itsaky.androidide.models.Range::class.java,
-          CodeEditor::class.java
-        )
+      !data.hasRequiredData(
+        com.itsaky.androidide.models.Range::class.java,
+        CodeEditor::class.java
+      )
     ) {
       markInvisible()
       return
@@ -175,7 +177,8 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
       }
 
       CompletableFuture.runAsync { overrideMethods(data, checkedMethods) }
-        .whenComplete { _, error,
+        .whenComplete {
+            _, error,
           ->
           if (error != null) {
             log.error("An error occurred overriding methods")
@@ -257,7 +260,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     data: ActionData,
     sb: StringBuilder,
     imports: MutableSet<String>,
-    position: com.itsaky.androidide.models.Position,
+    position: Position,
   ) {
     val compiler =
       JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
