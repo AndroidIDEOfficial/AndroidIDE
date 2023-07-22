@@ -502,6 +502,6 @@
   <string name="title_developer_options">Настройки разработчика</string>
   <string name="idepref_devOptions_summary">Экспериментальные/отладочные опции для AndroidIDE</string>
   <string name="idepref_group_debugging">Отладка</string>
-  <string name="idepref_devOptions_dumpLogs_title">Дамп журналов</string>
+  <string name="idepref_devOptions_dumpLogs_title">Дамп логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Дамп логов AndroidIDE в $HOME/.androidide/logs</string>
 </resources>
