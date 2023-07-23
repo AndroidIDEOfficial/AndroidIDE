@@ -153,6 +153,11 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
   }
 
+  override fun onResume() {
+    super.onResume()
+    isOpenedFilesSaved.set(false)
+  }
+
   override fun saveOpenedFiles() {
     writeOpenedFilesCache(getOpenedFiles(), getCurrentEditor()?.editor?.file)
   }
