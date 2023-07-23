@@ -60,6 +60,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
   protected lateinit var allNamespaces: Set<Pair<String, String>>
 
   companion object {
+
     const val NAMESPACE_PREFIX = "http://schemas.android.com/apk/res/"
     const val NAMESPACE_AUTO = "http://schemas.android.com/apk/res-auto"
   }
@@ -139,7 +140,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     simpleName: String,
     qualifiedName: String,
     matchLevel: MatchLevel,
-    isPlatformWidget : Boolean = false
+    isPlatformWidget: Boolean = false
   ): CompletionItem =
     CompletionItem().apply {
       this.label = simpleName
@@ -164,6 +165,7 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
     partial: String,
     resPkg: String,
     nsPrefix: String,
+    hasNamespace: Boolean,
     matchLevel: MatchLevel
   ): CompletionItem =
     CompletionItem().apply {
@@ -175,10 +177,11 @@ abstract class IXmlCompletionProvider(private val provider: ICompletionProvider)
       }
 
       val title = "$prefix${attr.name.entry!!}"
+      val insertText = if (hasNamespace) attr.name.entry!! else title
       this.label = title
       this.completionKind = FIELD
       this.detail = "From package '$resPkg'"
-      this.insertText = "$title=\"$0\""
+      this.insertText = "$insertText=\"$0\""
       this.insertTextFormat = SNIPPET
       this.snippetDescription = describeSnippet(partial)
       this.ideSortText = label.toString()
