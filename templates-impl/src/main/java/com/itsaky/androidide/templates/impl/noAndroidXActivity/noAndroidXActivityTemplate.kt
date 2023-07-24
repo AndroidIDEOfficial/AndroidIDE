@@ -29,7 +29,7 @@ import com.itsaky.androidide.templates.impl.baseProjectImpl
 fun noAndroidXActivityProject() = baseProjectImpl {
   templateName = R.string.template_no_AndroidX
   thumb = R.drawable.template_empty_noandroidx
-  defaultAppModule {
+  defaultAppModule(addAndroidX = false) {
     recipe = createRecipe {
       emptyThemesAndColors()
       res {
