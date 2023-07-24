@@ -176,7 +176,11 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
    * @param context The context used to unbind from the service.
    */
   void unbind(Context context) {
-    context.unbindService(this);
+    try {
+      context.unbindService(this);
+    } catch (Exception err) {
+      Logger.error("Failed to unbind from the the log receiver service", err);
+    }
     isBinding.set(false);
   }
 }

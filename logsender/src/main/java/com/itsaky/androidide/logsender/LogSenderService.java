@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import com.itsaky.androidide.logsender.utils.Logger;
 
 /**
  * A {@link Service} which runs in the background and sends logs to AndroidIDE.
@@ -40,10 +41,18 @@ public class LogSenderService extends Service {
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
-    if (!logSender.bind(getApplicationContext())) {
+    boolean result = false;
+    try {
+      result = logSender.bind(getApplicationContext());
+    } catch (Exception err) {
+      Logger.error(getString(R.string.msg_bind_service_failed), err);
+    }
+
+    if (!result) {
       Toast.makeText(this, getString(R.string.msg_bind_service_failed), Toast.LENGTH_SHORT).show();
       stopSelf();
     }
+    
     return START_NOT_STICKY;
   }
 
