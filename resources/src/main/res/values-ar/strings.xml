@@ -100,7 +100,7 @@
   <string name="template_no_activity">لا يوجد نشاط</string>
   <string name="template_no_activity_description">إنشاء مشروع جديد بدون نشاط</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">بلا AndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">إنشاء مشروع جديد بدون مكتبة AndroidX</string>
   <string name="save">حفظ</string>
   <string name="menu_find">البحث</string>
