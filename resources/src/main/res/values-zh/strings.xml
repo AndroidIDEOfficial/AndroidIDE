@@ -100,7 +100,7 @@
   <string name="template_no_activity">无 Activity</string>
   <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">创建一个没有 AndroidX 库的新项目</string>
   <string name="save">保存</string>
   <string name="menu_find">查找</string>
