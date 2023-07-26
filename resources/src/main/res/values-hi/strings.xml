@@ -100,7 +100,7 @@
   <string name="template_no_activity">बिना किसी एक्टिविटी के</string>
   <string name="template_no_activity_description">एक्टिविटी के बिना एक नया प्रोजेक्ट बनाता है |</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">बिना AndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX के बिना एक नया प्रोजेक्ट बनाता है |</string>
   <string name="save">सेव</string>
   <string name="menu_find">खोजें</string>
