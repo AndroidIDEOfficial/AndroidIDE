@@ -101,7 +101,7 @@
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">AndroidX হীন</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
   <string name="save">সেভ</string>
   <string name="menu_find">খুঁজুন</string>
