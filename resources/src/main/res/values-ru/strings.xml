@@ -100,7 +100,7 @@
   <string name="template_no_activity">Проект без активности</string>
   <string name="template_no_activity_description">Создаёт новый проект без активности</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">No AndroidX</string>
+  <string name="template_no_AndroidX">Без AndroidX</string>
   <string name="template_description_noAndroidX">Создаёт новый проект без библиотеки AndroidX</string>
   <string name="save">Сохранить</string>
   <string name="menu_find">Найти</string>
