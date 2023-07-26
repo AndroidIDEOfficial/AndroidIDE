@@ -113,7 +113,7 @@
   <string name="template_no_activity_description">Creates a new project without activity</string>
 
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Creates a new project without AndroidX library</string>
   <string name="save">Save</string>
   <string name="menu_find">Find</string>
