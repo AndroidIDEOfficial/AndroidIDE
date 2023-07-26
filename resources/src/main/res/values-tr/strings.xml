@@ -100,7 +100,7 @@
   <string name="template_no_activity">Etkinlik yok</string>
   <string name="template_no_activity_description">Etkinliksiz teni bir proje oluşturur</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">AndroidX olmadan</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX kütüphanesi olmadan yeni bir proje oluşturur</string>
   <string name="save">Kaydet</string>
   <string name="menu_find">Bul</string>
