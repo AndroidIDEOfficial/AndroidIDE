@@ -100,7 +100,7 @@
   <string name="template_no_activity">Keine Activity</string>
   <string name="template_no_activity_description">Erstellt ein neues Projekt ohne Activity</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Erstellt ein neues Projekt ohne AndroidX Bibliothek</string>
   <string name="save">Speichern</string>
   <string name="menu_find">Finden</string>
