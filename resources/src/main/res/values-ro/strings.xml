@@ -100,7 +100,7 @@
   <string name="template_no_activity">Fără Activity</string>
   <string name="template_no_activity_description">Creează un nou proiect fără activity</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Creează un nou proiect fără biblioteca AndroidX</string>
   <string name="save">salvare</string>
   <string name="menu_find">Căutare</string>
