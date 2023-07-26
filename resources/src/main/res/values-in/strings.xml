@@ -100,7 +100,7 @@
   <string name="template_no_activity">Tidak ada Activity</string>
   <string name="template_no_activity_description">Buat Proyek baru tanpa Activity</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">Tidak ada AndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Buat Proyek baru tanpa Library AndroidX</string>
   <string name="save">Simpan</string>
   <string name="menu_find">Pencarian</string>
