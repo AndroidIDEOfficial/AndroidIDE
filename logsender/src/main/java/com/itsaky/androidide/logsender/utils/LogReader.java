@@ -17,10 +17,15 @@
 
 package com.itsaky.androidide.logsender.utils;
 
+import com.itsaky.androidide.logsender.socket.ISocketCommand;
+import com.itsaky.androidide.logsender.socket.SenderInfoCommand;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Reads application logs with `logcat`.
@@ -29,22 +34,27 @@ import java.net.Socket;
  */
 public class LogReader extends Thread {
 
+  private final String senderId;
+  private final String packageName;
   private final int port;
   private final ProcessBuilder processBuilder;
+  private final AtomicBoolean isInterrupted = new AtomicBoolean(false);
 
-  public LogReader(int port) {
-    this(port, defaultCmd());
+  public LogReader(String senderId, String packageName, int port) {
+    this(senderId, packageName, port, defaultCmd());
   }
 
-  public LogReader(int port, String[] cmd) {
+  public LogReader(String senderId, String packageName, int port, String[] cmd) {
     super("AndroidIDE-LogReader");
+    this.senderId = senderId;
+    this.packageName = packageName;
     this.port = port;
 
     this.processBuilder = new ProcessBuilder(cmd);
     this.processBuilder.redirectErrorStream(true);
   }
 
-  public static String[] defaultCmd() {
+  private static String[] defaultCmd() {
     return new String[]{"logcat", "-v", "threadtime"};
   }
 
@@ -53,15 +63,37 @@ public class LogReader extends Thread {
     Logger.info("Starting to read logs...");
     try (final Socket socket = new Socket(InetAddress.getLocalHost(), port)) {
       final Process process = processBuilder.start();
-      try (final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+
+      try (final BufferedReader reader = new BufferedReader(
+          new InputStreamReader(process.getInputStream()))) {
+
+        final OutputStream outputStream = socket.getOutputStream();
+
+        // Send the sender info
+        writeCommand(new SenderInfoCommand(this.senderId, this.packageName), outputStream);
+
         String line;
-        while ((line = reader.readLine()) != null) {
+        while (!isInterrupted.get() && (line = reader.readLine()) != null) {
           line += "\n";
-          socket.getOutputStream().write(line.getBytes());
+          outputStream.write(line.getBytes());
         }
+
+      } catch (IOException ioError) {
+        Logger.error("Error reading from the logcat process or writing to the socket", ioError);
+      } finally {
+        socket.close();
       }
-    } catch (Throwable err) {
-      Logger.error("An error occured while reading logs", err);
+    } catch (IOException ioError) {
+      Logger.error("Error creating the socket or starting the process", ioError);
     }
+  }
+
+  private void writeCommand(ISocketCommand command, OutputStream outputStream) throws IOException {
+    outputStream.write(command.toString().getBytes());
+  }
+
+  public void cancel() {
+    this.isInterrupted.set(true);
+    this.interrupt();
   }
 }

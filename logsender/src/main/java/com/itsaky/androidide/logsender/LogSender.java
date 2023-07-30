@@ -27,6 +27,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import com.itsaky.androidide.logsender.utils.LogReader;
 import com.itsaky.androidide.logsender.utils.Logger;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -39,13 +40,15 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   private final AtomicBoolean isBinding = new AtomicBoolean(false);
   private final AtomicBoolean isConnected = new AtomicBoolean(false);
 
+  private final String senderId;
+
+  private Context context;
+
   private LogReader reader;
 
   private ILogReceiver receiver;
 
   private String packageName;
-
-  public static final LogSender INSTANCE = new LogSender();
 
   /**
    * Action for the LogSender service.
@@ -62,7 +65,8 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
    */
   public static final String PACKAGE_ANDROIDIDE = "com.itsaky.androidide";
 
-  private LogSender() {
+  LogSender() {
+    this.senderId = UUID.randomUUID().toString();
   }
 
   @Override
@@ -84,14 +88,16 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
 
   @Override
   public void onServiceDisconnected(ComponentName name) {
-    Logger.info("Disconnected from log receiver");
-    if (this.reader != null) {
-      this.reader.interrupt();
+    tryDisconnect(true);
+    if (this.context != null) {
+      tryUnbind(this.context);
+      this.context = null;
     }
-    this.receiver = null;
-    this.reader = null;
-    this.isBinding.set(false);
-    this.isConnected.set(false);
+  }
+
+  @Override
+  public void ping() {
+    Log.d("LogSender", "ping: Received a ping request");
   }
 
   @Override
@@ -101,7 +107,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
       return;
     }
 
-    reader = new LogReader(port);
+    reader = new LogReader(getId(), getPackageName(), port);
     reader.start();
   }
 
@@ -117,6 +123,23 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
     }
 
     return this.packageName;
+  }
+
+  @Override
+  public String getId() {
+    return this.senderId;
+  }
+
+  @Override
+  public void onDisconnect() {
+    tryDisconnect(false);
+    tryUnbind(this.context);
+    try {
+      this.context.stopService(new Intent(this.context, LogSenderService.class));
+    } catch (Exception err) {
+      Logger.error("Failed to stop LogSenderService", err);
+    }
+    this.context = null;
   }
 
   /**
@@ -157,6 +180,8 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
       return false;
     }
 
+    this.context = context;
+
     final Intent intent = new Intent(SERVICE_ACTION);
     intent.setPackage(PACKAGE_ANDROIDIDE);
     isBinding.set(context.bindService(intent, this, 0));
@@ -171,16 +196,54 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   }
 
   /**
-   * Unbinds from the log receiver service.
+   * Disconnects from the log receiver and unbinds from the log receiver service.
    *
    * @param context The context used to unbind from the service.
    */
-  void unbind(Context context) {
+  void destroy(Context context) {
+    tryDisconnect(true);
+    tryUnbind(context);
+    this.context = null;
+  }
+
+  private void tryDisconnect(boolean notifyRecevier) {
+    Logger.info("Disconnecting from log receiver...");
+    if (this.reader != null) {
+      this.reader.cancel();
+    }
+
+    if (notifyRecevier && isReceiverAlive(receiver)) {
+      try {
+        receiver.disconnect(getPackageName(), getId());
+      } catch (Exception err) {
+        Logger.error("Failed to disconnect from log receiver service", err);
+      }
+    }
+
+    this.receiver = null;
+    this.reader = null;
+    this.isBinding.set(false);
+    this.isConnected.set(false);
+  }
+
+  private void tryUnbind(Context context) {
     try {
       context.unbindService(this);
     } catch (Exception err) {
       Logger.error("Failed to unbind from the the log receiver service", err);
     }
-    isBinding.set(false);
+  }
+
+  private boolean isReceiverAlive(ILogReceiver receiver) {
+    if (receiver == null) {
+      return false;
+    }
+
+    try {
+      receiver.ping();
+      return true;
+    } catch (RemoteException err) {
+      return false;
+    }
   }
 }

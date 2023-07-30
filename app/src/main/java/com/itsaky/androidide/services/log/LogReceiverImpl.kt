@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.services.log
 
+import android.util.Log
 import com.itsaky.androidide.logsender.ILogReceiver
 import com.itsaky.androidide.logsender.ILogSender
 import com.itsaky.androidide.models.LogLine
@@ -34,7 +35,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
 
   private val log = ILogger.newInstance("LogReceiverImpl")
   private val senderHandler = MultiLogSenderHandler()
-  private val senders = ConcurrentHashMap<Int, ILogSender>()
+  private val senders = LogSendersRegistry()
   private val consumerLock = ReentrantLock(true)
 
   internal var consumer: ((LogLine) -> Unit)? = consumer
@@ -56,6 +57,10 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
     senderHandler.start()
   }
 
+  override fun ping() {
+    Log.d("LogRecevier", "ping: Received a ping request")
+  }
+
   override fun connect(sender: ILogSender?) {
     val port = senderHandler.getPort()
     if (port == -1) {
@@ -63,20 +68,48 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
       return
     }
 
-    sender?.let {
-      if (senders.containsKey(it.pid)) {
-        log.warn("Rejecting duplicate connection request from client '${it.pid}'")
-        return
+    sender?.let { newSender ->
+
+      val existingSender = senders.getByPackage(newSender.packageName)
+
+      if (existingSender != null) {
+        senderHandler.removeClient(existingSender.id)
       }
 
-      log.info("Connecting to client ${it.pid}")
+      if (existingSender?.isAlive() == true) {
+        log.warn(
+          "Client '${existingSender.packageName}' has been restarted with process ID '${newSender.pid}'" +
+              " Previous connection with process ID '${existingSender.pid}' will be closed...")
+        existingSender.onDisconnect()
+      }
 
-      this.senders[it.pid] = it
+      log.info("Connecting to client ${newSender.packageName}")
 
-      it.startReader(port)
+      this.senders.put(CachingLogSender(newSender))
 
-      log.info("Total clients connected: ${senders.size}")
+      newSender.startReader(port)
+
+      logTotalConnected()
     }
+  }
+
+  override fun disconnect(packageName: String, senderId: String) {
+    val port = senderHandler.getPort()
+    if (port == -1) {
+      return
+    }
+
+    if (!senders.containsKey(packageName)) {
+      log.warn(
+        "Received disconnect request from a log sender which is not connected: '${packageName}'")
+      return
+    }
+
+    log.info("Disconnecting from client: '${packageName}'")
+    this.senderHandler.removeClient(senderId)
+    this.senders.remove(packageName)
+
+    logTotalConnected()
   }
 
   override fun close() {
@@ -84,5 +117,9 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
     senderHandler.close()
     consumer = null
     senders.clear()
+  }
+
+  private fun logTotalConnected() {
+    log.info("Total clients connected: ${senders.size}")
   }
 }

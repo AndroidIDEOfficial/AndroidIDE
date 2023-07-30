@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.services.log
 
+import com.itsaky.androidide.logsender.socket.SenderInfoCommand
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
 import java.net.Socket
@@ -27,9 +28,11 @@ import java.net.SocketException
  *
  * @author Akash Yadav
  */
-class LogSenderHandler(private val socket: Socket,
-                       internal var consumer: ((LogLine) -> Unit)? = null,
-                       internal var onClose: (LogSenderHandler) -> Unit = {}
+class LogSenderHandler(
+  private val sender: SenderInfoCommand,
+  private val socket: Socket,
+  internal var consumer: ((LogLine) -> Unit)? = null,
+  internal var onClose: (String) -> Unit = {}
 ) : Thread("LogSenderHandler"), AutoCloseable {
 
   private val log = ILogger.newInstance("LogSenderHandler")
@@ -38,11 +41,15 @@ class LogSenderHandler(private val socket: Socket,
     try {
       socket.getInputStream().bufferedReader().use { reader ->
         while (!socket.isClosed) {
-          LogLine.forLogString(reader.readLine())?.let { line -> consumer?.invoke(line) }
+          try {
+            LogLine.forLogString(reader.readLine())?.let { line -> consumer?.invoke(line) }
+          } catch (interrupt: InterruptedException) {
+            currentThread().interrupt()
+          }
         }
       }
     } catch (err: SocketException) {
-      // ignored
+      log.error("An error occurred while reading from socket", err)
     } finally {
       close()
     }
@@ -51,12 +58,13 @@ class LogSenderHandler(private val socket: Socket,
   override fun close() {
     try {
       if (!socket.isClosed) {
+        log.debug("Closing log sender handler...")
         socket.close()
       }
     } catch (err: Throwable) {
       log.error("Failed to close socket", err)
     } finally {
-      onClose(this)
+      onClose(this.sender.senderId)
     }
   }
 }

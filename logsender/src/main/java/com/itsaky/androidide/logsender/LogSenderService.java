@@ -31,7 +31,7 @@ import com.itsaky.androidide.logsender.utils.Logger;
  */
 public class LogSenderService extends Service {
 
-  private final LogSender logSender = LogSender.INSTANCE;
+  private final LogSender logSender = new LogSender();
 
   @Nullable
   @Override
@@ -52,13 +52,29 @@ public class LogSenderService extends Service {
       Toast.makeText(this, getString(R.string.msg_bind_service_failed), Toast.LENGTH_SHORT).show();
       stopSelf();
     }
-    
+
     return START_NOT_STICKY;
   }
 
   @Override
+  public void onTaskRemoved(Intent rootIntent) {
+    if (!logSender.isConnected() && !logSender.isBinding()) {
+      return;
+    }
+
+    Logger.warn("Task removed. Destroying log sender...");
+    logSender.destroy(getApplicationContext());
+    stopSelf();
+  }
+
+  @Override
   public void onDestroy() {
-    logSender.unbind(getApplicationContext());
+    if (!logSender.isConnected() && !logSender.isBinding()) {
+      return;
+    }
+
+    Logger.warn("Service is being destroyed. Destroying log sender...");
+    logSender.destroy(getApplicationContext());
     super.onDestroy();
   }
 }

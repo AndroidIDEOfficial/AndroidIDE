@@ -635,7 +635,8 @@ abstract class BaseEditorActivity :
 
   private fun startLogReceiver() {
     try {
-      val intent = Intent(this, LogReceiverService::class.java).setAction(LogSender.SERVICE_ACTION)
+      val intent = Intent(this, LogReceiverService::class.java)
+        .setAction(LogSender.SERVICE_ACTION)
       check(bindService(intent, logServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT))
       log.info("LogReceiver service is being started")
     } catch (err: Throwable) {

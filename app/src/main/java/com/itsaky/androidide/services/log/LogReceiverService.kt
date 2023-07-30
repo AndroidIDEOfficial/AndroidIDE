@@ -23,6 +23,7 @@ import android.os.IBinder
 import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.utils.ILogger
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -35,8 +36,12 @@ class LogReceiverService : Service() {
   private val binder = LogReceiverImpl()
   private val started = AtomicBoolean(false)
 
+  private val log = ILogger.newInstance("LogReceiverService")
+
   companion object {
-    @JvmStatic internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
+
+    @JvmStatic
+    internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
   }
 
   override fun onCreate() {
@@ -58,6 +63,7 @@ class LogReceiverService : Service() {
 
   override fun onDestroy() {
     super.onDestroy()
+    log.debug("LogReceiverService is being destroyed...");
     binder.close()
     Lookup.getDefault().unregister(LOOKUP_KEY)
   }

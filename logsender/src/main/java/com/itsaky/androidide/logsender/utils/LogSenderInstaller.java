@@ -51,8 +51,10 @@ public class LogSenderInstaller extends ContentProvider {
       // do not send logs to self
       return true;
     }
+
     try {
-      application.startService(new Intent(application, LogSenderService.class));
+      final Intent intent = new Intent(application, LogSenderService.class);
+      application.startService(intent);
     } catch (Exception e) {
 
       // starting a background service is not allowed on Android 12+
