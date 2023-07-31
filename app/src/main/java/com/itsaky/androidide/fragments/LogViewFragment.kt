@@ -20,11 +20,9 @@ package com.itsaky.androidide.fragments
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ThreadUtils
+import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.editor.language.log.LogLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
@@ -44,7 +42,9 @@ import kotlin.math.min
  *
  * @author Akash Yadav
  */
-abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
+abstract class LogViewFragment :
+  EmptyStateFragment<FragmentLogBinding>(R.layout.fragment_log, FragmentLogBinding::bind),
+  ShareableOutputFragment {
 
   companion object {
 
@@ -77,8 +77,6 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
      */
     const val MAX_LINE_COUNT = TRIM_ON_LINE_COUNT - 300
   }
-
-  var binding: FragmentLogBinding? = null
 
   private var lastLog = -1L
 
@@ -161,7 +159,13 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   }
 
   private fun append(chars: CharSequence?) {
-    chars?.let { ThreadUtils.runOnUiThread { binding?.editor?.append(chars) } }
+    chars?.let {
+      ThreadUtils.runOnUiThread {
+        _binding?.editor?.append(chars)?.also {
+          emptyStateViewModel.isEmpty.value = false
+        }
+      }
+    }
   }
 
   private fun trimLinesAtStart() {
@@ -171,7 +175,7 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     }
 
     ThreadUtils.runOnUiThread {
-      binding?.editor?.text?.apply {
+      _binding?.editor?.text?.apply {
         if (lineCount <= TRIM_ON_LINE_COUNT) {
           isTrimming.set(false)
           return@apply
@@ -193,18 +197,9 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
     appendLog(line)
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?,
-  ): View {
-    binding = FragmentLogBinding.inflate(inflater, container, false)
-    return binding!!.root
-  }
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val editor = this.binding!!.editor
+    val editor = this.binding.editor
     editor.props.autoIndent = false
     editor.isEditable = false
     editor.dividerWidth = 0f
@@ -246,24 +241,17 @@ abstract class LogViewFragment : Fragment(), ShareableOutputFragment {
   }
 
   override fun onDestroyView() {
-    binding?.editor?.release()
+    _binding?.editor?.release()
     super.onDestroyView()
   }
 
-  override fun onDestroy() {
-    super.onDestroy()
-    this.binding = null
-  }
-
   override fun getContent(): String {
-    if (this.binding == null) {
-      return ""
-    }
-
-    return this.binding!!.editor.text.toString()
+    return this._binding?.editor?.text?.toString() ?: ""
   }
 
   override fun clearOutput() {
-    binding?.editor?.setText("")
+    _binding?.editor?.setText("")?.also {
+      emptyStateViewModel.isEmpty.value = true
+    }
   }
 }

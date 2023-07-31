@@ -30,7 +30,7 @@ import androidx.viewbinding.ViewBinding
  * @author Akash Yadav
  */
 abstract class FragmentWithBinding<T : ViewBinding>(@LayoutRes layout: Int,
-                                                    private val bind: (View) -> T
+  private val bind: (View) -> T
 ) : BaseFragment(layout) {
 
   @Suppress("PropertyName")
@@ -41,10 +41,14 @@ abstract class FragmentWithBinding<T : ViewBinding>(@LayoutRes layout: Int,
       _binding) { "Cannot access ViewBinding. Fragment may have been destroyed." }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?
+    savedInstanceState: Bundle?
   ): View {
     return super.onCreateView(inflater, container, savedInstanceState)!!
-      .also { _binding = bind(it) }
+      .also(this::doBind)
+  }
+
+  protected fun doBind(it: View) {
+    _binding = bind(it)
   }
 
   override fun onDestroyView() {

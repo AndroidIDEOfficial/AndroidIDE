@@ -86,13 +86,15 @@ constructor(
     localContext.resources.getDimension(R.dimen.editor_sheet_collapsed_height)
   }
 
-  @JvmField var binding: LayoutEditorBottomSheetBinding
+  @JvmField
+  var binding: LayoutEditorBottomSheetBinding
 
   val pagerAdapter: EditorBottomSheetTabAdapter
 
   private val log = ILogger.newInstance("EditorBottomSheet")
 
   companion object {
+
     const val CHILD_SYMBOL_INPUT = 0
     const val CHILD_HEADER = 1
     const val CHILD_ACTION = 2
@@ -138,7 +140,8 @@ constructor(
       val filename = fragment.getFilename()
 
       @Suppress("DEPRECATION")
-      val progress = android.app.ProgressDialog.show(context, null, context.getString(string.please_wait))
+      val progress = android.app.ProgressDialog.show(context, null,
+        context.getString(string.please_wait))
       executeAsync(fragment::getContent) {
         progress.dismiss()
         shareText(it, filename)
@@ -234,11 +237,11 @@ constructor(
   }
 
   fun handleDiagnosticsResultVisibility(errorVisible: Boolean) {
-    runOnUiThread { pagerAdapter.diagnosticsFragment?.handleResultVisibility(errorVisible) }
+    runOnUiThread { pagerAdapter.diagnosticsFragment?.isEmpty = errorVisible }
   }
 
   fun handleSearchResultVisibility(errorVisible: Boolean) {
-    runOnUiThread { pagerAdapter.searchResultFragment?.handleResultVisibility(errorVisible) }
+    runOnUiThread { pagerAdapter.searchResultFragment?.isEmpty = errorVisible }
   }
 
   fun setDiagnosticsAdapter(adapter: DiagnosticsAdapter) {
@@ -300,7 +303,8 @@ constructor(
       flashError(context.getString(string.msg_output_text_extraction_failed))
       return
     }
-    val pd = android.app.ProgressDialog.show(context, null, context.getString(string.please_wait), true, false)
+    val pd = android.app.ProgressDialog.show(context, null, context.getString(string.please_wait),
+      true, false)
     executeAsyncProvideError(
       Callable { writeTempFile(text, type) },
       CallbackWithError<File> { result: File?, error: Throwable? ->

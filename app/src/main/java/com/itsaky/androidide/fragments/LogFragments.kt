@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.fragments
 
+import android.os.Bundle
+import android.view.View
+import com.itsaky.androidide.R
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -43,6 +46,11 @@ class IDELogFragment : LogViewFragment() {
   override fun isSimpleFormattingEnabled() = true
   override fun getFilename() = "ide_logs"
 
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    emptyStateViewModel.emptyMessage.value = getString(R.string.msg_emptyview_idelogs)
+  }
+
   override fun onDestroy() {
     super.onDestroy()
     ILogger.removeLogListener(logListener)
@@ -57,4 +65,9 @@ class IDELogFragment : LogViewFragment() {
 class AppLogFragment : LogViewFragment() {
   override fun isSimpleFormattingEnabled() = false
   override fun getFilename() = "app_logs"
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    emptyStateViewModel.emptyMessage.value = getString(R.string.msg_emptyview_applogs)
+  }
 }

@@ -19,11 +19,13 @@ package com.itsaky.androidide.fragments
 import android.os.Bundle
 import android.view.View
 import com.blankj.utilcode.util.ThreadUtils
+import com.itsaky.androidide.R
 
-class SimpleOutputFragment : NonEditableEditorFragment() {
+class BuildOutputFragment : NonEditableEditorFragment() {
   private val unsavedLines: MutableList<String?> = ArrayList()
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    emptyStateViewModel.emptyMessage.value = getString(R.string.msg_emptyview_buildoutput)
     if (unsavedLines.isNotEmpty()) {
       for (line in unsavedLines) {
         editor?.append("${line!!.trim()}\n")
@@ -48,7 +50,9 @@ class SimpleOutputFragment : NonEditableEditorFragment() {
       } else {
         "${output}\n"
       }
-      editor!!.append(message)
+      editor!!.append(message).also {
+        emptyStateViewModel.isEmpty.value = false
+      }
     }
   }
 }

@@ -18,40 +18,29 @@
 package com.itsaky.androidide.fragments;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
+import com.itsaky.androidide.editor.ui.IDEEditor;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.TypefaceUtilsKt;
-import com.itsaky.androidide.editor.ui.IDEEditor;
-
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
-public abstract class NonEditableEditorFragment extends Fragment
+public abstract class NonEditableEditorFragment extends
+    EmptyStateFragment<FragmentNonEditableEditorBinding>
     implements ShareableOutputFragment {
-  
-  private FragmentNonEditableEditorBinding binding;
 
-  @Nullable
-  @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-    this.binding = FragmentNonEditableEditorBinding.inflate(inflater, container, false);
-    return binding.getRoot();
+  public NonEditableEditorFragment() {
+    super(R.layout.fragment_non_editable_editor, FragmentNonEditableEditorBinding::bind);
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    final var editor = binding.getRoot();
+    getEmptyStateViewModel().getEmptyMessage().setValue(createEmptyStateMessage());
+    final var editor = getBinding().getRoot();
     editor.setEditable(false);
     editor.setDividerWidth(0);
     editor.setEditorLanguage(new EmptyLanguage());
@@ -63,10 +52,8 @@ public abstract class NonEditableEditorFragment extends Fragment
     editor.setColorScheme(SchemeAndroidIDE.newInstance(requireContext()));
   }
 
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    binding = null;
+  private CharSequence createEmptyStateMessage() {
+    return null;
   }
 
   @NonNull
@@ -82,6 +69,7 @@ public abstract class NonEditableEditorFragment extends Fragment
 
   @Nullable
   public IDEEditor getEditor() {
+    final var binding = get_binding();
     if (binding == null) {
       return null;
     }
@@ -103,5 +91,6 @@ public abstract class NonEditableEditorFragment extends Fragment
 
     // Editing CodeEditor's content is a synchronized operation
     editor.getText().delete(0, editor.getText().length());
+    getEmptyStateViewModel().isEmpty().setValue(true);
   }
 }

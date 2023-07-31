@@ -21,15 +21,21 @@
 package com.itsaky.androidide.ui;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.ResourceUtilsKt;
 
 public class EmptyView extends RelativeLayout {
+
+  private static final int MESSAGE_TEXTVIEW = View.generateViewId();
+
+  private CharSequence message = null;
 
   public EmptyView(Context context) {
     this(context, null);
@@ -54,7 +60,8 @@ public class EmptyView extends RelativeLayout {
     removeAllViews();
 
     TextView text = new TextView(getContext());
-    text.setText(com.itsaky.androidide.resources.R.string.msg_empty_view);
+    text.setId(MESSAGE_TEXTVIEW);
+    text.setText(getMessage());
     text.setTextColor(ResourceUtilsKt.resolveAttr(getContext(), R.attr.colorSecondaryVariant));
     text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
 
@@ -62,5 +69,19 @@ public class EmptyView extends RelativeLayout {
     params.addRule(CENTER_IN_PARENT);
 
     addView(text, params);
+  }
+
+  public void setMessage(CharSequence message) {
+    this.message = message;
+
+    final TextView text = findViewById(MESSAGE_TEXTVIEW);
+    if (text != null) {
+      text.setText(getMessage());
+    }
+  }
+
+  @NonNull
+  public CharSequence getMessage() {
+    return TextUtils.isEmpty(message) ? getContext().getString(R.string.msg_empty_view) : message;
   }
 }

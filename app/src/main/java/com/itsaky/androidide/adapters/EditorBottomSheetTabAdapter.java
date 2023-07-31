@@ -29,7 +29,7 @@ import com.itsaky.androidide.fragments.AppLogFragment;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
 import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
-import com.itsaky.androidide.fragments.SimpleOutputFragment;
+import com.itsaky.androidide.fragments.BuildOutputFragment;
 import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
     this.fragments.add(
         new Tab(
             fragmentActivity.getString(R.string.build_output),
-            SimpleOutputFragment.class,
+            BuildOutputFragment.class,
             ++index));
     this.fragments.add(
         new Tab(fragmentActivity.getString(R.string.app_logs), AppLogFragment.class, ++index));
@@ -117,8 +117,8 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
   }
 
   @Nullable
-  public SimpleOutputFragment getBuildOutputFragment() {
-    return findFragmentByClass(SimpleOutputFragment.class);
+  public BuildOutputFragment getBuildOutputFragment() {
+    return findFragmentByClass(BuildOutputFragment.class);
   }
 
   @Nullable
