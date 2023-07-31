@@ -19,7 +19,7 @@
   <string name="ide_preferences">环境设置</string>
   <string name="discussions_on_telegram">在 Telegram 上讨论</string>
   <string name="official_tg_channel">官方 Telegram 频道</string>
-  <string name="msg_empty_view">没有已可以显示的呢&#8230;</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">终端</string>
   <string name="reset">重置</string>
   <string name="app_logs">应用日志</string>
@@ -504,4 +504,8 @@
   <string name="idepref_group_debugging">调试</string>
   <string name="idepref_devOptions_dumpLogs_title">转储日志</string>
   <string name="idepref_devOptions_dumpLogs_summary">将 AndroidIDE 日志转储到 $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
 </resources>
