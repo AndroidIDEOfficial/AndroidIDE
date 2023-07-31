@@ -19,7 +19,7 @@
   <string name="ide_preferences">Настройки IDE</string>
   <string name="discussions_on_telegram">Обсуждение в Telegram</string>
   <string name="official_tg_channel">Официальный канал в Telegram</string>
-  <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">Терминал</string>
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
@@ -504,4 +504,8 @@
   <string name="idepref_group_debugging">Отладка</string>
   <string name="idepref_devOptions_dumpLogs_title">Дамп логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Дамп логов AndroidIDE в $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
 </resources>
