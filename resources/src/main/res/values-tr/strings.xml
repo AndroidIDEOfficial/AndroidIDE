@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE tercihleri</string>
   <string name="discussions_on_telegram">Telegram\'daki Tartışmalar</string>
   <string name="official_tg_channel">Resmi Telegram Kanalı</string>
-  <string name="msg_empty_view">Sana gösterecek hiçbir şeyim yok…</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">Uçbirim</string>
   <string name="reset">Sıfırla</string>
   <string name="app_logs">Uygulama günlükleri</string>
@@ -504,4 +504,8 @@
   <string name="idepref_group_debugging">Hata ayıklama</string>
   <string name="idepref_devOptions_dumpLogs_title">Kayıtları kaydet</string>
   <string name="idepref_devOptions_dumpLogs_summary">$HOME/.androidide/logs içine AndroidIDE kayıtlarını kaydet</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
 </resources>
