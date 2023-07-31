@@ -75,7 +75,6 @@ include(
   ":lsp:testing",
   ":subprojects:aaptcompiler",
   ":subprojects:builder-model-impl",
-  ":subprojects:classfile",
   ":subprojects:flashbar",
   ":subprojects:framework-stubs",
   ":subprojects:fuzzysearch",

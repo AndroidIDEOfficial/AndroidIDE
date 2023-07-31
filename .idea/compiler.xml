@@ -5,13 +5,6 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.1/e0184c26c3a20257c6fb46eaea16fdd3d7b6d357/auto-value-1.10.1.jar" />
-        </processorPath>
-        <module name="AndroidIDE.subprojects.google-java-format.main" />
-      </profile>
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service/1.1.1/bfeb4c40087b49e23700f074807d3f2a6d36d2d1/auto-service-1.1.1.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.ltgt.gradle.incap/incap-processor/1.0.0/ddec950483eefb2a5cca0736f5967fccbfdb7d2d/incap-processor-1.0.0.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.service/auto-service-annotations/1.1.1/da12a15cd058ba90a0ff55357fb521161af4736d/auto-service-annotations-1.1.1.jar" />
@@ -26,6 +19,13 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/2.8/c85270e307e7b822f1086b93689124b89768e273/j2objc-annotations-2.8.jar" />
         </processorPath>
         <module name="AndroidIDE.annotation-processors.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.2/ec0b68a285b67ea83e54cd4cc0fb5652dcefc2e9/auto-value-1.10.2.jar" />
+        </processorPath>
+        <module name="AndroidIDE.subprojects.google-java-format.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
@@ -117,6 +117,9 @@
       <module name="AndroidIDE.ksp-processor.main" target="11" />
       <module name="AndroidIDE.ksp-processor.test" target="11" />
       <module name="AndroidIDE.sdk-info" target="11" />
+      <module name="AndroidIDE.subprojects.classfile" target="11" />
+      <module name="AndroidIDE.subprojects.classfile.main" target="11" />
+      <module name="AndroidIDE.subprojects.classfile.test" target="11" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
       <module name="AndroidIDE.subprojects.jsonrpc" target="11" />
