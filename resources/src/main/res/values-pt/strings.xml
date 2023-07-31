@@ -19,7 +19,7 @@
   <string name="ide_preferences">Configurações da IDE</string>
   <string name="discussions_on_telegram">Discussões no Telegram</string>
   <string name="official_tg_channel">Canal oficial do Telegram</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">Sem dados</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Redefinir</string>
   <string name="app_logs">Logs de aplicativos</string>
@@ -504,8 +504,8 @@
   <string name="idepref_group_debugging">Depuração</string>
   <string name="idepref_devOptions_dumpLogs_title">Despejar registros</string>
   <string name="idepref_devOptions_dumpLogs_summary">Despejar registros do AndroidIDE para $HOME/.androidide/logs</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
-  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
-  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
-  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_emptyview_applogs">Execute a variante de depuração do seu aplicativo para ver os logs aqui.</string>
+  <string name="msg_emptyview_idelogs">Os logs da IDE são exibidos aqui.</string>
+  <string name="msg_emptyview_diagnostics">Abra um arquivo para exibir os resultados do diagnóstico</string>
+  <string name="msg_emptyview_buildoutput">"Construa o aplicativo ou execute uma tarefa para ver sua saída de compilação aqui. "</string>
 </resources>
