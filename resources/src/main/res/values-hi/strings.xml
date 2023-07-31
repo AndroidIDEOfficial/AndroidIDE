@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE प्रेफरेंसेस</string>
   <string name="discussions_on_telegram">टेलीग्राम पर चर्चाएं</string>
   <string name="official_tg_channel">आधिकारिक टेलीग्राम चैनल</string>
-  <string name="msg_empty_view">मेरे पास आपको दिखाने के लिए कुछ नहीं है &#8230;</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">टर्मिनल</string>
   <string name="reset">रिसेट</string>
   <string name="app_logs">एप लॉग्स</string>
@@ -504,4 +504,8 @@
   <string name="idepref_group_debugging">डिबगिंग</string>
   <string name="idepref_devOptions_dumpLogs_title">लॉग डंप करें</string>
   <string name="idepref_devOptions_dumpLogs_summary">AndroidIDE लॉग को $HOME/.androidide/logs डायरेक्टरी में डंप करें</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
 </resources>
