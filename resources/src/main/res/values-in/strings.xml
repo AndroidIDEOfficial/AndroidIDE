@@ -19,7 +19,7 @@
   <string name="ide_preferences">Preferensi IDE</string>
   <string name="discussions_on_telegram">Diskusi di Telegram</string>
   <string name="official_tg_channel">Channel Telegram Resmi</string>
-  <string name="msg_empty_view">Tidak ada yang dapat kami tampilkan untuk anda&#8230;</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Setel ulang</string>
   <string name="app_logs">Log App</string>
@@ -504,4 +504,8 @@
   <string name="idepref_group_debugging">Men-debug</string>
   <string name="idepref_devOptions_dumpLogs_title">Dump log</string>
   <string name="idepref_devOptions_dumpLogs_summary">Dump log AndroidIDE ke $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
 </resources>
