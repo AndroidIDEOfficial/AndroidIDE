@@ -508,5 +508,5 @@
   <string name="msg_emptyview_idelogs">Os logs da IDE são exibidos aqui.</string>
   <string name="msg_emptyview_diagnostics">Abra um arquivo para exibir os resultados do diagnóstico</string>
   <string name="msg_emptyview_buildoutput">"Construa o aplicativo ou execute uma tarefa para ver sua saída de compilação aqui. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_codeaction_failed">Falha ao executar a ação de código</string>
 </resources>
