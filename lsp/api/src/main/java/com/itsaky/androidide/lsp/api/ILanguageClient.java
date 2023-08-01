@@ -61,6 +61,9 @@ public interface ILanguageClient {
   void performCodeAction(PerformCodeActionParams params);
 
   default void performCodeAction(CodeActionItem actionItem) {
+    if (actionItem == null) {
+      return;
+    }
     performCodeAction(new PerformCodeActionParams(actionItem));
   }
 
