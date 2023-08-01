@@ -508,5 +508,5 @@
   <string name="msg_emptyview_idelogs">IDE 中的日志显示在这里。</string>
   <string name="msg_emptyview_diagnostics">打开文件以显示其诊断结果</string>
   <string name="msg_emptyview_buildoutput">"构建应用程序或运行任务以在此处查看其构建输出。"</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_codeaction_failed">无法执行代码操作</string>
 </resources>
