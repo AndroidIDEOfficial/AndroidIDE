@@ -508,4 +508,5 @@
   <string name="msg_emptyview_idelogs">Log dari IDE ditampilkan di sini.</string>
   <string name="msg_emptyview_diagnostics">Buka file untuk menampilkan hasil diagnostiknya</string>
   <string name="msg_emptyview_buildoutput">"Buat aplikasi atau jalankan tugas untuk melihat hasil pembuatannya di sini. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>
