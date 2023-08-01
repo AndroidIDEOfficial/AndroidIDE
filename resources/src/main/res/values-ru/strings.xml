@@ -19,7 +19,7 @@
   <string name="ide_preferences">Настройки IDE</string>
   <string name="discussions_on_telegram">Обсуждение в Telegram</string>
   <string name="official_tg_channel">Официальный канал в Telegram</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">Нет данных</string>
   <string name="title_terminal">Терминал</string>
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
