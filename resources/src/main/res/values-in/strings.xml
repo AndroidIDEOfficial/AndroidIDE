@@ -64,7 +64,7 @@
   <!-- Project -->
   <string name="title_first_build">Build Pertama</string>
   <string name="msg_first_build">Ini adalah build pertama setelah anda memasang AndroidIDE. Build pertama biasanya memakan waktu selama Gradle mengunduh semua dependensi dan plugin. Proses ini diperkirakan sekitar 10&#8211;15 menit. Tetapi ini bergantung pada kecepatan koneksi internet anda.\n\nMohon bersabar &#8230;</string>
-  <string name="create_project">Buat projek</string>
+  <string name="create_project">Buat proyek</string>
   <string name="minimum_sdk">Minimum SDK</string>
   <string name="target_sdk">Target SDK</string>
   <string name="new_project">Projek baru</string>
@@ -508,5 +508,5 @@
   <string name="msg_emptyview_idelogs">Log dari IDE ditampilkan di sini.</string>
   <string name="msg_emptyview_diagnostics">Buka file untuk menampilkan hasil diagnostiknya</string>
   <string name="msg_emptyview_buildoutput">"Buat aplikasi atau jalankan tugas untuk melihat hasil pembuatannya di sini. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_codeaction_failed">Gagal melakukan tindakan kode</string>
 </resources>
