@@ -178,7 +178,11 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   internal fun showViewInfo(view: IView) {
     viewModel.view = view
-    viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
+
+    val existing = childFragmentManager.findFragmentByTag(ViewInfoSheet.TAG)
+    if (existing == null) {
+      viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
+    }
   }
 
   private fun setupViewGroup(viewGroup: UiViewGroup) {

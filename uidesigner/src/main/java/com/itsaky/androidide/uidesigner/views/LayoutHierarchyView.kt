@@ -50,8 +50,8 @@ constructor(
   defStyleRes: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-  private val textToIView = mutableMapOf<HierarchyText, com.itsaky.androidide.inflater.IView>()
-  private var onClick: ((com.itsaky.androidide.inflater.IView) -> Unit)? = null
+  private val textToIView = mutableMapOf<HierarchyText, IView>()
+  private var onClick: ((IView) -> Unit)? = null
 
   private val clickListener = OnClickListener { view ->
     onClick?.let { click -> textToIView[view]?.let(click) }
@@ -70,7 +70,7 @@ constructor(
     paint.isAntiAlias = true
   }
 
-  fun setupWithView(view: com.itsaky.androidide.inflater.IView, onClick: ((com.itsaky.androidide.inflater.IView) -> Unit)? = null) {
+  fun setupWithView(view: IView, onClick: ((IView) -> Unit)? = null) {
     removeAllViews()
     textToIView.clear()
 
@@ -78,7 +78,7 @@ constructor(
     addViews(view, 1)
   }
 
-  private fun addViews(view: com.itsaky.androidide.inflater.IView, depth: Int) {
+  private fun addViews(view: IView, depth: Int) {
     val text =
       HierarchyText(context, depth, dp16).apply {
         this.text = view.tag
