@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
+  <string name="copy" tools:override="true">Copiere</string>
   <string name="text_to_search">Text to search</string>
   <string name="title_open_source_licenses">Licențe open source</string>
   <string name="msg_about_licensed_under">Licențiat:</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">Preferințte IDE</string>
   <string name="discussions_on_telegram">Discută pe Telegram</string>
   <string name="official_tg_channel">Canal Telegram Oficial</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">Nu există date</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Resetare</string>
   <string name="app_logs">Log Aplicație</string>
@@ -72,7 +72,7 @@
   <string name="project_app_name">Numele aplicatiei</string>
   <string name="msg_create_new_project_greeting">Începe noul tău proiect minunat!</string>
   <string name="title_confirm_open_project">Deschid ultimul proiect?</string>
-  <string name="msg_confirm_open_project">Do you want to open last opened project? Opened project was:\n%s</string>
+  <string name="msg_confirm_open_project">Doriți să deschideți ultimul proiect deschis? Proiectul deschis a fost:\n%s</string>
   <string name="group_project">Proiect</string>
   <string name="title_close_project">Închideți acest proiect</string>
   <string name="msg_opened_project_does_not_exist">Ultimul proiect deschis nu există!</string>
