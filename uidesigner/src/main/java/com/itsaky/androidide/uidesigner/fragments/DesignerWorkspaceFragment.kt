@@ -58,7 +58,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private var _viewInfo: ViewInfoSheet? = null
   private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
-  private val inflater by lazy { UiLayoutInflater() }
 
   private val viewInfo: ViewInfoSheet
     get() = this._viewInfo ?: ViewInfoSheet().also { _viewInfo = it }
@@ -86,7 +85,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   private val hierarchyHandler by lazy { WorkspaceViewHierarchyHandler() }
   private val attrHandler by lazy { WorkspaceViewAttrHandler() }
-  private val inflationHandler by lazy { WorkspaceLayoutInflationHandler() }
 
   companion object {
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
@@ -105,7 +103,6 @@ class DesignerWorkspaceFragment : BaseFragment() {
     this.binding = FragmentDesignerWorkspaceBinding.inflate(inflater, container, false)
     hierarchyHandler.init(this)
     attrHandler.init(this)
-    inflationHandler.init(this)
     return this.binding!!.root
   }
 
@@ -115,7 +112,12 @@ class DesignerWorkspaceFragment : BaseFragment() {
     viewModel._workspaceScreen.observe(viewLifecycleOwner) { binding?.flipper?.displayedChild = it }
     viewModel._errText.observe(viewLifecycleOwner) { binding?.errText?.text = it }
 
-    inflater.inflationEventListener = this.inflationHandler
+    val inflationHandler = WorkspaceLayoutInflationHandler()
+    inflationHandler.init(this)
+
+    val inflater = UiLayoutInflater()
+    inflater.inflationEventListener = inflationHandler
+
     val inflated =
       try {
         inflater.inflate(viewModel.file, workspaceView).also {
@@ -126,6 +128,9 @@ class DesignerWorkspaceFragment : BaseFragment() {
         viewModel.errText = "${e.message}${e.cause?.message?.let { "\n$it" } ?: ""}"
         viewModel.layoutHasError = true
         emptyList()
+      } finally {
+        inflationHandler.release()
+        inflater.close()
       }
 
     if (inflated.isEmpty() && !viewModel.layoutHasError) {
@@ -140,11 +145,10 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
+    this._viewInfo?.dismiss()
     this._viewInfo = null
     this.hierarchyHandler.release()
     this.attrHandler.release()
-    this.inflationHandler.release()
-    this.inflater.close()
   }
 
   internal fun setupView(view: IView) {
