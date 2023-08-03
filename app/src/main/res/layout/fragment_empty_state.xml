@@ -22,6 +22,9 @@
   <com.itsaky.androidide.ui.EmptyView
     android:id="@+id/empty_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:clickable="false"
+    android:focusable="false" />
 
 </ViewFlipper>
