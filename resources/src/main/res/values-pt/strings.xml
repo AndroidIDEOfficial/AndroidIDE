@@ -82,28 +82,28 @@
   <!-- Templates -->
   <string name="msg_confirm_project_close">Você tem certeza de que quer encerrar este projeto? Todos os daemons Gradle iniciados serão interrompidos após o encerramento deste projeto.</string>
   <string name="project_exists">Já existe um projeto com o mesmo nome!</string>
-  <string name="template_basic">Projeto Básico</string>
-  <string name="template_description_basic">Um projeto básico com AppCompat Toolbar e um Botão de Ação Flutuante (FAB)</string>
+  <string name="template_basic">Projeto básico</string>
+  <string name="template_description_basic">Um projeto básico com a Toolbar do AppCompat e um Botão de Ação Flutuante (FAB)</string>
   <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão. Adequado quando você mesmo quer fazer todas as coisas básicas.</string>
   <string name="template_description_navigation_drawer">Projeto com Toolbar do AppCompat, DrawerLayout e NavigationView</string>
   <string name="template_empty">Projeto vazio</string>
-  <string name="template_navigation_drawer">Projeto com Gaveta de Navegação</string>
+  <string name="template_navigation_drawer">Projeto com gaveta de navegação</string>
   <string name="template_libgdx">Jogo LibGDX</string>
   <string name="template_description_libgdx">Projeto de jogo LibGDX criado para renderizar uma imagem como exemplo.</string>
   <string name="template_description_compose">Projeto básico Jetpack Compose hello world.</string>
-  <string name="template_navigation_tabs">Atividade com Navegação Inferior</string>
-  <string name="template_navigation_tabs_description">Cria uma nova activity com bottom navigation</string>
+  <string name="template_navigation_tabs">Atividade com navegação inferior</string>
+  <string name="template_navigation_tabs_description">Cria uma nova atividade com navegação inferior</string>
   <string name="template_tabs">Atividade com abas</string>
-  <string name="template_tabs_description">Cria uma nova activity em branco com abas</string>
+  <string name="template_tabs_description">Cria uma nova atividade em branco com abas</string>
   <string name="template_cpp">C++ nativo</string>
-  <string name="template_cpp_description">Cria um novo projeto com uma Atividade Vazia configurada para usar JNI</string>
-  <string name="template_no_activity">Sem Atividade</string>
-  <string name="template_no_activity_description">Cria um novo projeto sem activity</string>
+  <string name="template_cpp_description">Cria um novo projeto com uma atividade vazia configurada para usar JNI</string>
+  <string name="template_no_activity">Sem atividade</string>
+  <string name="template_no_activity_description">Cria um novo projeto sem atividades</string>
   <!-- Files -->
   <string name="template_no_AndroidX">Sem AndroidX</string>
   <string name="template_description_noAndroidX">Cria um novo projeto sem a biblioteca AndroidX</string>
   <string name="save">Salvar</string>
-  <string name="menu_find">Encontrar</string>
+  <string name="menu_find">Procurar</string>
   <string name="menu_find_file">Localizar no arquivo</string>
   <string name="menu_find_project">Localizar no projeto</string>
   <string name="msg_search_modules">Buscar em módulos</string>
@@ -202,7 +202,7 @@
   <string name="msg_open_projects">Se habilitado, a IDE se lembrará do último projeto aberto e será reaberto na próxima vez.</string>
   <string name="title_confirm_project_open">Confirme a abertura do projeto</string>
   <string name="msg_confirm_project_open">Pergunte antes de abrir o último projeto aberto.</string>
-  <string name="title_default_shell">Usar o sistema shell no terminal</string>
+  <string name="title_default_shell">Usar shell do sistema no terminal</string>
   <string name="msg_default_shell">Se habilitado, \'/system/bin/sh\' será usado no terminal.</string>
   <string name="title_general">Geral</string>
   <string name="title_tab_size">Tamanho da tabulação</string>
@@ -449,7 +449,7 @@
   <string name="idepref_editor_colorScheme">Esquema de cores</string>
   <string name="idepref_editor_colorScheme_summary">Escolha o esquema de cores para usar no editor</string>
   <string name="idepref_general_uiMode">Tema</string>
-  <string name="idepref_general_uiMode_summary">Escolha o tema para o IDE</string>
+  <string name="idepref_general_uiMode_summary">Escolha o tema para a IDE</string>
   <string name="uiMode_light">Claro</string>
   <string name="uiMode_dark">Escuro</string>
   <string name="uiMode_system">Seguir o sistema</string>
