@@ -15,31 +15,27 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
+import java.io.File
+import java.io.Serializable
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+/**
+ * Basic (minimal) metadata about a project.
+ *
+ * @property name The name of the module.
+ * @property projectPath The project's path.
+ * @property projectDir The project directory.
+ * @property buildDir The project's build directory.
+ * @author Akash Yadav
+ */
+open class BasicProjectMetadata(
+  val name: String?,
+  val projectPath: String,
+  val projectDir: File,
+  val buildDir: File
+) : Serializable {
 
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  protected val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
 }

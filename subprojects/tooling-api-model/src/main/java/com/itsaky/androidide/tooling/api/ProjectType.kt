@@ -15,31 +15,30 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api
 
-dependencies {
-  implementation(projects.logger)
+/**
+ * The type of [IGradleProject].
+ *
+ * @author Akash Yadav
+ */
+enum class ProjectType {
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+  /** A simple Gradle project. Only root projects are represented by this type. */
+  Gradle,
 
-  implementation(libs.common.jkotlin)
-}
+  /**
+   * An Android project. Mostly module projects are of this type. But in some cases, this type can
+   * also be applied to a root Gradle project.
+   */
+  Android,
 
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
+  /**
+   * A Java project. Usually, module projects which are not {@link Type#Android} type are of this
+   * type.
+   */
+  Java,
 
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  /** An unknown project type. */
+  Unknown
 }

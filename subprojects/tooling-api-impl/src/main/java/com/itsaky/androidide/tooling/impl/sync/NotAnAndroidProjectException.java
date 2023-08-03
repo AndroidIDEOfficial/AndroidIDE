@@ -15,31 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.impl.sync;
 
-dependencies {
-  implementation(projects.logger)
+/**
+ * Exception thrown to indicate that a project is not an Android project.
+ *
+ * @author Akash Yadav
+ */
+public class NotAnAndroidProjectException extends ModelBuilderException {
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  /**
+   * Creates a new {@link NotAnAndroidProjectException} for the given project name.
+   *
+   * @param projectName The name of the project which is not an Android project.
+   */
+  public NotAnAndroidProjectException(String projectName) {
+    super("Project " + projectName + " is not an Android project");
+  }
 }

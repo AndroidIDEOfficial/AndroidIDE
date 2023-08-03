@@ -20,10 +20,10 @@ package com.itsaky.androidide.tooling.impl;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.tooling.api.IProject;
+import com.itsaky.androidide.tooling.api.IGradleProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
-import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject;
+import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
@@ -51,7 +51,7 @@ public class Main {
 
   public static void main(String[] args) {
     LOG.debug("Starting Tooling API server...");
-    final var project = new InternalForwardingProject(null, IProject.FILE_PATH_NOT_AVAILABLE);
+    final var project = new ProjectImpl();
     final var server = new ToolingApiServerImpl(project);
     final var launcher =
         ToolingApiLauncher.newServerLauncher(server, project, System.in, System.out);

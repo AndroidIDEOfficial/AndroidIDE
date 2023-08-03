@@ -15,31 +15,27 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.impl.sync;
 
-dependencies {
-  implementation(projects.logger)
+/**
+ * Exception thrown while building project models.
+ *
+ * @author Akash Yadav
+ */
+public class ModelBuilderException extends RuntimeException {
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+  public ModelBuilderException() {
+  }
 
-  implementation(libs.common.jkotlin)
-}
+  public ModelBuilderException(String message) {
+    super(message);
+  }
 
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
+  public ModelBuilderException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  public ModelBuilderException(Throwable cause) {
+    super(cause);
+  }
 }

@@ -15,31 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
-
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
-}
+/**
+ * Represents a Gradle dependency artifact.
+ *
+ * @author Akash Yadav
+ */
+data class GradleArtifact(val group: String, val name: String, val version: String) :
+  java.io.Serializable

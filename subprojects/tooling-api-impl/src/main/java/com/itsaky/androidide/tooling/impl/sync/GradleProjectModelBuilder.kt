@@ -14,32 +14,21 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.androidide.tooling.impl.sync
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+import com.itsaky.androidide.tooling.api.IGradleProject
+import com.itsaky.androidide.tooling.impl.internal.GradleProjectImpl
+import org.gradle.tooling.model.GradleProject
 
-dependencies {
-  implementation(projects.logger)
+/**
+ * Builds model for root Gradle project (represented with [IGradleProject].
+ *
+ * @author Akash Yadav
+ */
+class GradleProjectModelBuilder : AbstractModelBuilder<GradleProject, IGradleProject>() {
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  @Throws(ModelBuilderException::class)
+  override fun build(param: GradleProject): IGradleProject {
+    return GradleProjectImpl(param)
+  }
 }

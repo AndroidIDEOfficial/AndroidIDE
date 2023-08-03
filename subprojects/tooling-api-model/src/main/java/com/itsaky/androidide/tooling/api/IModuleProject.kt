@@ -15,31 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api
 
-dependencies {
-  implementation(projects.logger)
+import java.io.File
+import java.util.concurrent.CompletableFuture
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+/**
+ * Common APIs for module projects.
+ *
+ * @author Akash Yadav
+ */
+interface IModuleProject : IGradleProject {
 
-  implementation(libs.common.jkotlin)
-}
+  /**
+   * Get the `classes.jar` file for this module project.
+   */
+  fun getClassesJar(): CompletableFuture<File>
 
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  /**
+   * Get the classpaths for this module project. The returned list always included the
+   * `classes.jar` file from [getClassesJar].
+   */
+  fun getClasspaths(): CompletableFuture<List<File>>
 }

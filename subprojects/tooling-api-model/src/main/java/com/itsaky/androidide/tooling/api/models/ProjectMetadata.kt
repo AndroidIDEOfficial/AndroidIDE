@@ -15,31 +15,25 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
+import com.itsaky.androidide.tooling.api.ProjectType
+import java.io.File
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
-}
+/**
+ * Metadata about a project.
+ *
+ * @property description The project description.
+ * @property buildScript The build script file (`build.gradle[.kts]`).
+ * @property type The type of the project. See constants in [ProjectType] for more details.
+ * @author Akash Yadav
+ */
+open class ProjectMetadata(
+  name: String?,
+  path: String,
+  projectDir: File,
+  buildDir: File,
+  val description: String?,
+  val buildScript: File,
+  val type: ProjectType
+) : BasicProjectMetadata(name, path, projectDir, buildDir)

@@ -15,31 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models.result
 
-dependencies {
-  implementation(projects.logger)
-
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
-}
+/**
+ * Result sent to the client when selecting a project in [IProjectQueries][com.itsaky.androidide.tooling.api.IProjectQueries].
+ *
+ * @param isSuccessful Whether the project selection was successful. If the value is `false`, it is
+ *      because the project with the provided path was not found.
+ * @author Akash Yadav
+ */
+data class SelectProjectResult(val isSuccessful: Boolean)

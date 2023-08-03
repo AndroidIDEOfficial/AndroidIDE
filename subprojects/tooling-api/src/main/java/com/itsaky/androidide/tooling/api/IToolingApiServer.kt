@@ -22,7 +22,6 @@ import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
@@ -43,7 +42,7 @@ interface IToolingApiServer {
   @JsonRequest fun isServerInitialized(): CompletableFuture<Boolean>
 
   /** Get the root project. */
-  @JsonRequest fun getRootProject(): CompletableFuture<IdeGradleProject>
+  @JsonRequest fun getRootProject(): CompletableFuture<IProject>
 
   /** Execute the tasks specified in the message. */
   @JsonRequest

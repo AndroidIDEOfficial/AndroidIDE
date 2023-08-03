@@ -15,31 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
+import java.io.Serializable
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+/**
+ * Model containing information about anything which can be launched by the users (e.g. Gradle tasks).
+ *
+ * @property displayName The display name of the launchable.
+ * @property isPublic Whether the launchable is publicly accessible.
+ * @author Akash Yadav
+ */
+open class Launchable(val displayName: String?, val isPublic: Boolean) : Serializable {
 
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  protected val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
 }

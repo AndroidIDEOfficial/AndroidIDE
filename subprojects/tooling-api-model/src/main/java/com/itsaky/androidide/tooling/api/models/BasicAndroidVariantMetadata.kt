@@ -15,31 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
+import java.io.Serializable
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+/**
+ * Basic metadata about a variant in an Android project.
+ *
+ * @property name The name of the variant.
+ * @property mainArtifact Metadata about the main artifact of this variant.
+ * @author Akash Yadav
+ */
+open class BasicAndroidVariantMetadata(val name: String, val mainArtifact: AndroidArtifactMetadata) : Serializable {
+  protected val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
 }

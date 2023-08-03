@@ -15,11 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.messages
+package com.itsaky.androidide.tooling.api.models
 
-/**
- * Message sent from client to server to initialize the tooling API client in the given directory.
- *
- * @author Akash Yadav
- */
-data class InitializeProjectMessage(val directory: String, val androidVariant: String, val gradleInstallation: String = "")
+import java.io.Serializable
+
+/** @author Akash Yadav */
+class JavaContentRoot : Serializable {
+  private val serialVersionUID = 1L
+  val sourceDirectories: List<JavaSourceDirectory> = mutableListOf()
+  val testDirectories: List<JavaSourceDirectory> = mutableListOf()
+}

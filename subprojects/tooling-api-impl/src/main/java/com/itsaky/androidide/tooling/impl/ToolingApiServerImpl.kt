@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.impl
 
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
@@ -38,13 +39,12 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject
-import com.itsaky.androidide.tooling.impl.util.ProjectReader
+import com.itsaky.androidide.tooling.api.models.params.StringParameter
+import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
+import com.itsaky.androidide.tooling.impl.sync.ModelBuilderException
+import com.itsaky.androidide.tooling.impl.sync.RootModelBuilder
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
@@ -54,30 +54,29 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
+import java.io.File
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
  *
  * @author Akash Yadav
  */
-internal class ToolingApiServerImpl(private val forwardingProject: InternalForwardingProject) :
+internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   IToolingApiServer {
 
   private var initialized = false
   private var client: IToolingApiClient? = null
   private var connector: GradleConnector? = null
-  private var project: IdeGradleProject? = null
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
-    forwardingProject.projectPath = params.directory
     return CompletableFutures.computeAsync {
       try {
         if (initialized && connector != null) {
           connector?.disconnect()
           connector = null
-          project = null
         }
 
         Main.checkGradleWrapper()
@@ -106,13 +105,15 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         stopWatch.lapFromLast("Project connection established")
 
         val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
-        this.project = ProjectReader.read(connection, issues)
-        stopWatch.lapFromLast("Project read ${if(this.project == null) "failed" else "successful"}")
+        val project = RootModelBuilder.build(connection to "debug") as? ProjectImpl?
+        project ?: throw ModelBuilderException("Failed to build project model")
+
+        this.project.rootProject = project.rootProject
+        this.project.projects = project.projects
+        stopWatch.lapFromLast("Project read successful")
 
         connection.close()
         stopWatch.log()
-
-        this.forwardingProject.project = this.project
 
         initialized = true
 
@@ -131,7 +132,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
     return CompletableFuture.supplyAsync { initialized }
   }
 
-  override fun getRootProject(): CompletableFuture<IdeGradleProject> {
+  override fun getRootProject(): CompletableFuture<IProject> {
     return CompletableFutures.computeAsync {
       assertProjectInitialized()
       return@computeAsync this.project
@@ -150,11 +151,12 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         projectPath = ":"
       }
 
-      val project =
-        this.project!!.findByPath(projectPath).get()
-          ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
+      val project = this.project!!.run {
+        selectProject(StringParameter(projectPath)).get()
+        asGradleProject()
+      } ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
 
-      this.connector!!.forProjectDirectory(project.projectDir)
+      this.connector!!.forProjectDirectory(project.getMetadata().get().projectDir)
       setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)
 
       val connection = this.connector!!.connect()
@@ -250,9 +252,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
 
       this.connector = null
       this.client = null
-      this.project = null
       this.buildCancellationToken = null
-      this.forwardingProject.project = null
       Main.future = null
       Main.client = null
 

@@ -15,31 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.impl.sync
 
-dependencies {
-  implementation(projects.logger)
+import com.itsaky.androidide.tooling.api.IJavaProject
+import com.itsaky.androidide.tooling.impl.internal.JavaProjectImpl
+import org.gradle.tooling.model.idea.IdeaModule
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
+/**
+ * Builds model for Java library projects.
+ *
+ * @author Akash Yadav
+ */
+class JavaProjectModelBuilder : AbstractModelBuilder<IdeaModule, IJavaProject>() {
 
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  override fun build(param: IdeaModule): IJavaProject {
+    return JavaProjectImpl(param.gradleProject)
+  }
 }

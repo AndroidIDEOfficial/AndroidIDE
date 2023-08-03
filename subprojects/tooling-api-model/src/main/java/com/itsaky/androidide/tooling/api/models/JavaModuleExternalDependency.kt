@@ -15,11 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.messages
+package com.itsaky.androidide.tooling.api.models
+
+import java.io.File
+import java.io.Serializable
 
 /**
- * Message sent from client to server to initialize the tooling API client in the given directory.
+ * An external dependency of an [JavaModule].
  *
  * @author Akash Yadav
  */
-data class InitializeProjectMessage(val directory: String, val androidVariant: String, val gradleInstallation: String = "")
+class JavaModuleExternalDependency(
+  jar: File,
+
+  /** `sources.jar` for this dependency. */
+  val sources: File? = null,
+
+  /** `javadoc.jar` for this dependency. */
+  val javadoc: File? = null,
+
+  /** The Gradle dependency artifact for this dependency. */
+  val gradleArtifact: GradleArtifact?,
+
+  /** Scope of this dependency. */
+  scope: String,
+
+  /** Whether the dependency is exported. */
+  exported: Boolean
+) : JavaModuleDependency(jar, scope, exported), Serializable

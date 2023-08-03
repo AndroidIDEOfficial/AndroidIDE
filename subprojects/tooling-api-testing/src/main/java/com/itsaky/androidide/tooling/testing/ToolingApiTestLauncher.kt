@@ -93,6 +93,7 @@ class ToolingApiTestLauncher {
         cmd[0] = java.absolutePath
       }
     }
+//    cmd.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000")
     for (open in opens) {
       cmd.add("--add-opens=${open.key}/${open.value}=ALL-UNNAMED")
     }

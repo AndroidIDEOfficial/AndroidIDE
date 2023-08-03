@@ -122,9 +122,9 @@
       <module name="AndroidIDE.subprojects.classfile.test" target="11" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
-      <module name="AndroidIDE.subprojects.jsonrpc" target="11" />
-      <module name="AndroidIDE.subprojects.jsonrpc.main" target="11" />
-      <module name="AndroidIDE.subprojects.jsonrpc.test" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-model2" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-model2.main" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-model2.test" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.main" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.test" target="11" />
       <module name="AndroidIDE.templates-testing" target="17" />

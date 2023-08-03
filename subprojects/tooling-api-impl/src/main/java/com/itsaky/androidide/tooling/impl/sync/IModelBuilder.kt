@@ -14,32 +14,25 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.androidide.tooling.impl.sync
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+/**
+ * A model builder builds project models when the project is initialized/synced.
+ *
+ * @param <P> The parameter for building the model.
+ * @param <R> The type of model that is built.
+ * @author Akash Yadav
+ */
+interface IModelBuilder<P, R> {
 
-dependencies {
-  implementation(projects.logger)
-
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
+  /**
+   * Builds the model.
+   *
+   * @param param Parameter for building the model.
+   * @return The built model. Implementations should throw [ModelBuilderException] instead of
+   * returning `null`.
+   * @throws ModelBuilderException If the model could not be built.
+   */
+  @Throws(ModelBuilderException::class)
+  fun build(param: P): R
 }

@@ -37,7 +37,6 @@ import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
-import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
@@ -52,7 +51,6 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.pathString
 
 /**
  * Runs tests for a language server.
@@ -94,7 +92,8 @@ abstract class LSPTest {
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
 
     server
-      .initialize(InitializeProjectMessage(FileProvider.testProjectRoot().toFile().absolutePath))
+      .initialize(InitializeProjectMessage(FileProvider.testProjectRoot().toFile().absolutePath,
+        "debug"))
       .get()
 
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()

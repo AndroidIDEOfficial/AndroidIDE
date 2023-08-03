@@ -403,7 +403,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
     checkServerStarted();
-    final var message = new InitializeProjectMessage(rootDir, getGradleInstallationDir());
+    final var message = new InitializeProjectMessage(rootDir, "debug", getGradleInstallationDir());
     return performBuildTasks(server.initialize(message));
   }
 

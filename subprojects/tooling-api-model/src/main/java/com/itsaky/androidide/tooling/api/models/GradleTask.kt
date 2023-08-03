@@ -15,31 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
-plugins {
-  id ("java-library")
-  id ("org.jetbrains.kotlin.jvm")
-}
+package com.itsaky.androidide.tooling.api.models
 
-dependencies {
-  implementation(projects.logger)
+import java.io.Serializable
 
-  api(projects.subprojects.xmlDom)
-  api(projects.subprojects.builderModelImpl)
-  api(libs.common.jsonrpc)
-
-  implementation(libs.common.jkotlin)
-}
-
-tasks.register < Copy > ("copyToTestDir") {
-  from ("${project.buildDir.absolutePath}/libs/tooling-api-model.jar")
-  into ("${project.rootProject.file ("tests/test-home/.androidide/init").absolutePath}/")
-  rename { "model.jar" }
-
-  outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-  finalizedBy ("copyToTestDir")
-  outputs.upToDateWhen { false }
-}
+/**
+ * A Gradle task.
+ *
+ * @property name The name of the task.
+ * @property description The task description.
+ * @property group The task group.
+ * @property path The task path (such as `:app:build`).
+ * @property projectPath The path of the project in which this task is included.
+ * @author Akash Yadav
+ */
+open class GradleTask(
+  val name: String,
+  val description: String?,
+  val group: String?,
+  val path: String,
+  displayName: String?,
+  isPublic: Boolean?,
+  val projectPath: String?
+) : Launchable(displayName, isPublic ?: false), Serializable
