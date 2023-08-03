@@ -85,7 +85,7 @@
   <string name="template_basic">Projeto básico</string>
   <string name="template_description_basic">Um projeto básico com a Toolbar do AppCompat e um Botão de Ação Flutuante (FAB)</string>
   <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão. Adequado quando você mesmo quer fazer todas as coisas básicas.</string>
-  <string name="template_description_navigation_drawer">Projeto com Toolbar do AppCompat, DrawerLayout e NavigationView</string>
+  <string name="template_description_navigation_drawer">Projeto com Barra de ferramentas do AppCompat, DrawerLayout e NavigationView</string>
   <string name="template_empty">Projeto vazio</string>
   <string name="template_navigation_drawer">Projeto com gaveta de navegação</string>
   <string name="template_libgdx">Jogo LibGDX</string>
@@ -98,7 +98,7 @@
   <string name="template_cpp">C++ nativo</string>
   <string name="template_cpp_description">Cria um novo projeto com uma atividade vazia configurada para usar JNI</string>
   <string name="template_no_activity">Sem atividade</string>
-  <string name="template_no_activity_description">Cria um novo projeto sem atividades</string>
+  <string name="template_no_activity_description">Cria um novo projeto sem atividade</string>
   <!-- Files -->
   <string name="template_no_AndroidX">Sem AndroidX</string>
   <string name="template_description_noAndroidX">Cria um novo projeto sem a biblioteca AndroidX</string>
