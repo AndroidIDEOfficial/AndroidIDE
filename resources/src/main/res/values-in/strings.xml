@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Salin</string>
-  <string name="text_to_search">Ketik untuk mencari</string>
+  <string name="text_to_search">Kata untuk dicari</string>
   <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
   <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
   <string name="about_option_email">Email</string>
@@ -504,9 +504,9 @@
   <string name="idepref_group_debugging">Men-debug</string>
   <string name="idepref_devOptions_dumpLogs_title">Dump log</string>
   <string name="idepref_devOptions_dumpLogs_summary">Dump log AndroidIDE ke $HOME/.androidide/logs</string>
-  <string name="msg_emptyview_applogs">Jalankan varian debug aplikasi Anda untuk melihat lognya di sini.</string>
+  <string name="msg_emptyview_applogs">Jalankan variasi debug aplikasi Anda untuk melihat lognya di sini.</string>
   <string name="msg_emptyview_idelogs">Log dari IDE ditampilkan di sini.</string>
-  <string name="msg_emptyview_diagnostics">Buka file untuk menampilkan hasil diagnostiknya</string>
+  <string name="msg_emptyview_diagnostics">Buka file untuk menampilkan hasil diagnosa</string>
   <string name="msg_emptyview_buildoutput">"Buat aplikasi atau jalankan tugas untuk melihat hasil pembuatannya di sini. "</string>
   <string name="msg_codeaction_failed">Gagal melakukan tindakan kode</string>
 </resources>
