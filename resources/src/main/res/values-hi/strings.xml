@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">कापी</string>
+  <string name="text_to_search">खोजने के लिए पाठ</string>
   <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस</string>
   <string name="msg_about_licensed_under">लाइसेंस</string>
   <string name="about_option_email">ईमेल</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE प्रेफरेंसेस</string>
   <string name="discussions_on_telegram">टेलीग्राम पर चर्चाएं</string>
   <string name="official_tg_channel">आधिकारिक टेलीग्राम चैनल</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">कोई डेटा नहीं</string>
   <string name="title_terminal">टर्मिनल</string>
   <string name="reset">रिसेट</string>
   <string name="app_logs">एप लॉग्स</string>
@@ -100,7 +100,7 @@
   <string name="template_no_activity">बिना किसी एक्टिविटी के</string>
   <string name="template_no_activity_description">एक्टिविटी के बिना एक नया प्रोजेक्ट बनाता है |</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">No AndroidX</string>
+  <string name="template_no_AndroidX">बिना AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX के बिना एक नया प्रोजेक्ट बनाता है |</string>
   <string name="save">सेव</string>
   <string name="menu_find">खोजें</string>
@@ -504,9 +504,9 @@
   <string name="idepref_group_debugging">डिबगिंग</string>
   <string name="idepref_devOptions_dumpLogs_title">लॉग डंप करें</string>
   <string name="idepref_devOptions_dumpLogs_summary">AndroidIDE लॉग को $HOME/.androidide/logs डायरेक्टरी में डंप करें</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
-  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
-  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
-  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_emptyview_applogs">अपने एप्लिकेशन के लॉग यहां देखने के लिए उसका डिबग संस्करण चलाएँ।</string>
+  <string name="msg_emptyview_idelogs">आईडीई के लॉग यहां दिखाए जाते हैं।</string>
+  <string name="msg_emptyview_diagnostics">इसके निदान परिणाम दिखाने के लिए एक फ़ाइल खोलें</string>
+  <string name="msg_emptyview_buildoutput">"यहां बिल्ड आउटपुट देखने के लिए एप्लिकेशन बनाएं या कोई कार्य चलाएं।"</string>
+  <string name="msg_codeaction_failed">कोड कार्रवाई करने में विफल</string>
 </resources>
