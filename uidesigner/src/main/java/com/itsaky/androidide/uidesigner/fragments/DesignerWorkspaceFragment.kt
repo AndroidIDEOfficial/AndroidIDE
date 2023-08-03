@@ -56,11 +56,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private var binding: FragmentDesignerWorkspaceBinding? = null
   internal val viewModel by viewModels<WorkspaceViewModel>(ownerProducer = { requireActivity() })
 
-  private var _viewInfo: ViewInfoSheet? = null
   private val touchSlop by lazy { get(requireContext()).scaledTouchSlop }
-
-  private val viewInfo: ViewInfoSheet
-    get() = this._viewInfo ?: ViewInfoSheet().also { _viewInfo = it }
 
   internal var isInflating = false
   internal val workspaceView by lazy {
@@ -87,6 +83,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
   private val attrHandler by lazy { WorkspaceViewAttrHandler() }
 
   companion object {
+
     const val DRAGGING_WIDGET = "DRAGGING_WIDGET"
     const val DRAGGING_WIDGET_MIME = "androidide/uidesigner_widget"
     const val HIERARCHY_CHANGE_TRANSITION_DURATION = 100L
@@ -145,10 +142,13 @@ class DesignerWorkspaceFragment : BaseFragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     this.binding = null
-    this._viewInfo?.dismiss()
-    this._viewInfo = null
     this.hierarchyHandler.release()
     this.attrHandler.release()
+
+    if (!childFragmentManager.isDestroyed) {
+      val viewInfo = childFragmentManager.findFragmentByTag(ViewInfoSheet.TAG) as? ViewInfoSheet?
+      viewInfo?.dismiss()
+    }
   }
 
   internal fun setupView(view: IView) {
@@ -168,6 +168,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
       null -> view.view.foreground = bgDesignerView(requireContext())
       is UiViewLayeredForeground ->
         log.warn("Attempt to reset UiViewLayeredForeground on view", view.name, fg::class.java)
+
       else -> view.view.foreground = layeredForeground(requireContext(), fg)
     }
 
@@ -185,6 +186,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
     val existing = childFragmentManager.findFragmentByTag(ViewInfoSheet.TAG)
     if (existing == null) {
+      val viewInfo = ViewInfoSheet()
       viewInfo.show(childFragmentManager, ViewInfoSheet.TAG)
     }
   }
