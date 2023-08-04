@@ -65,8 +65,8 @@
   <string name="title_first_build">第一次编译</string>
   <string name="msg_first_build">这是您安装AndroidIDE后第一次编译项目，由于需要下载Gradle和各种依赖项目，第一次编译需要较长时间。这可能要花费10&#8211;15分钟，但这完全取决于您的网络连接。\n\n请耐心等待 &#8230;</string>
   <string name="create_project">创建项目</string>
-  <string name="minimum_sdk">最小SDK版本</string>
-  <string name="target_sdk">目标SDK版本</string>
+  <string name="minimum_sdk">最小 SDK 版本</string>
+  <string name="target_sdk">目标 SDK 版本</string>
   <string name="new_project">创建新项目</string>
   <string name="package_name">应用包名</string>
   <string name="project_app_name">应用名称</string>
@@ -85,7 +85,7 @@
   <string name="template_basic">基本项目</string>
   <string name="template_description_basic">一个有AppCompat Toolbar 和 Floating Action Button的基本项目</string>
   <string name="template_description_empty">一个使用默认Toolbar的空项目。当您想要自己完成那些基本的工作时适合您。</string>
-  <string name="template_description_navigation_drawer">使用AppCompat Toolbar, DrawerLayout and NavigationView的项目</string>
+  <string name="template_description_navigation_drawer">带有 AppCompat Toolbar、DrawerLayout 和 NavigationView 的项目</string>
   <string name="template_empty">空项目</string>
   <string name="template_navigation_drawer">导航侧滑项目</string>
   <string name="template_libgdx">LibGDX 游戏</string>
@@ -101,15 +101,15 @@
   <string name="template_no_activity_description">创建一个无 Activity 的新项目</string>
   <!-- Files -->
   <string name="template_no_AndroidX">无 AndroidX</string>
-  <string name="template_description_noAndroidX">创建一个没有 AndroidX 库的新项目</string>
+  <string name="template_description_noAndroidX">创建一个不带 AndroidX 库的项目</string>
   <string name="save">保存</string>
   <string name="menu_find">查找</string>
   <string name="menu_find_file">在文件中查找</string>
   <string name="menu_find_project">在项目中查找</string>
   <string name="msg_search_modules">在模块中搜索</string>
-  <string name="msg_no_modules">在项目中没有找到模块</string>
-  <string name="hint_find_project_filter">过滤文件扩展名 (可选)</string>
-  <string name="msg_find_project_filter">用 \'|\' 分割</string>
+  <string name="msg_no_modules">未在项目中找到模块</string>
+  <string name="hint_find_project_filter">过滤文件扩展名（可选）</string>
+  <string name="msg_find_project_filter">用‘|’分隔</string>
   <string name="msg_empty_search_query">请输入欲查找文本</string>
   <string name="msg_select_search_modules">选择要搜索的模块</string>
   <string name="msg_searching_project">正在项目中搜索，请稍等&#8230;</string>
@@ -140,17 +140,17 @@
   <string name="new_name">新名称</string>
   <string name="new_file">新文件</string>
   <string name="create_auto_layout">创建布局文件</string>
-  <string name="new_java_class">新Java类</string>
-  <string name="new_xml_resource">新XML资源文件</string>
+  <string name="new_java_class">新 Java 类</string>
+  <string name="new_xml_resource">新 XML 资源文件</string>
   <string name="new_folder">新文件夹</string>
   <string name="title_confirm_delete">确认删除</string>
   <string name="msg_confirm_delete">你真的要删除它吗:\n%s?</string>
   <string name="copied">复制成功!</string>
-  <string name="msg_rename_file">输入文件（夹）的新名称.</string>
-  <string name="renamed">重命名成功!</string>
-  <string name="rename_failed">无法重命名文件!</string>
-  <string name="deleted">删除成功!</string>
-  <string name="delete_failed">无法删除!</string>
+  <string name="msg_rename_file">输入文件（夹）的新名称。</string>
+  <string name="renamed">重命名成功！</string>
+  <string name="rename_failed">无法重命名文件！</string>
+  <string name="deleted">删除成功！</string>
+  <string name="delete_failed">无法删除文件！</string>
   <string name="copy_path">复制路径</string>
   <string name="rename_file">重命名</string>
   <string name="delete_file">删除</string>
@@ -158,7 +158,7 @@
   <string name="action_closeAll">关闭全部</string>
   <string name="action_closeOthers">关闭其他</string>
   <string name="action_closeThis">关闭当前</string>
-  <string name="all_saved">所有文件已保存!</string>
+  <string name="all_saved">所有文件已保存！</string>
   <string name="save_failed">保存文件失败</string>
   <string name="msg_newfile_dest">目标: %s/</string>
   <string name="restype_drawable">可绘制资源</string>
@@ -170,17 +170,17 @@
   <string name="title_interface">接口</string>
   <string name="classtype_enum">枚举</string>
   <string name="msg_checking_storage_permissions">正在检查存储权限</string>
-  <string name="msg_failed_list_files">无法列出项目文件列表!</string>
+  <string name="msg_failed_list_files">无法列出项目文件！</string>
   <string name="msg_storage_denied">没有存储权限，无法继续</string>
   <!-- Code Editor -->
-  <string name="msg_storage_granted">已授予存储权限!</string>
+  <string name="msg_storage_granted">已授予存储权限！</string>
   <string name="open_with">打开方式&#8230;</string>
   <string name="undo">撤销</string>
   <string name="redo">重做</string>
   <!-- Preferences -->
   <string name="title_change_text_size">编辑器字体大小</string>
-  <string name="idepref_about_title">关于AndroidIDE</string>
-  <string name="idepref_build_clearCache_title">清除Gradle缓存</string>
+  <string name="idepref_about_title">关于 AndroidIDE</string>
+  <string name="idepref_build_clearCache_title">清除 Gradle 缓存</string>
   <string name="idepref_build_clearCache_summary">清除Gradle缓存目录。这将会删除所有已下载的依赖项。所需的文件在下一次编译中会被重新下载。</string>
   <string name="idepref_build_customgradlecommands_title">附加Gradle命令</string>
   <string name="idepref_build_customgradlecommands_summary">选择执行Gradle任务时要添加的命令</string>
@@ -209,14 +209,14 @@
   <string name="msg_tab_size">指定TAB代表的空格数</string>
   <string name="msg_preferences">偏好设置</string>
   <string name="pref_changelog">更新日志</string>
-  <string name="msg_editor_font_size">请选择编辑器的默认字体大小 :</string>
-  <string name="msg_clear_cache">这将删除 Gradle 创建的缓存目录。 如果您删除它，下一次构建可能会比平时花费更长的时间，因为 Gradle 将再次下载所需的文件。\n\n您确定要删除缓存吗？</string>
+  <string name="msg_editor_font_size">请选择编辑器的默认字体大小：</string>
+  <string name="msg_clear_cache">这将删除 Gradle 创建的缓存目录。如果删除，下一次的构建可能需要更长的时间，因为 Gradle 将再次下载所需的文件。\n\n您确定要删除缓存吗？</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">无法获取SDK信息</string>
   <string name="err_cannot_preview_layout">无法预览布局</string>
   <string name="err_cannot_inflate_layout">布局实例化失败</string>
   <!-- Layout preview and designer -->
-  <string name="msg_cannot_preview_layout">无法预览布局!</string>
+  <string name="msg_cannot_preview_layout">无法预览布局！</string>
   <string name="title_preview_layout">预览布局</string>
   <string name="label_ui_designer_content">主要 UI 设计器内容</string>
   <string name="msg_applicable_attrs">可用属性</string>
@@ -229,16 +229,16 @@
   <string name="msg_view_deletion_failed">删除视图失败</string>
   <string name="msg_empty_ui_layout">还没有添加控件。单击以添加</string>
   <string name="msg_no_attr_format">为找到可用的属性格式</string>
-  <string name="msg_generate_xml_failed">生成XML代码失败</string>
-  <string name="title_generating_xml">生成XML代码</string>
+  <string name="msg_generate_xml_failed">生成 XML 代码失败</string>
+  <string name="title_generating_xml">生成 XML 代码</string>
   <string name="title_code_generation_failed">代码生成失败</string>
-  <string name="msg_code_generation_failed">生成XML代码失败，你仍要退出吗？</string>
+  <string name="msg_code_generation_failed">生成 XML 代码失败，你仍要退出吗？</string>
   <string name="msg_invalid_designer_result">布局设计器返回了非法结果</string>
   <string name="msg_swipe_up">上滑以查看编译输出和日志等</string>
-  <string name="msg_ide_crashed">AndroidIDE崩溃了</string>
-  <string name="msg_report_crash">请在GitHub上添加新的issue并提供以下异常栈信息 :</string>
-  <string name="msg_crash_report_hint">单击下面的按钮复制异常栈，并打开issue页面</string>
-  <string name="msg_copy_report_action">复制并反馈</string>
+  <string name="msg_ide_crashed">AndroidIDE 崩溃了</string>
+  <string name="msg_report_crash">请使用以下堆栈跟踪在 Github 上打开一个 issue：</string>
+  <string name="msg_crash_report_hint">单击下面的按钮以复制日志和打开 issues 页面。</string>
+  <string name="msg_copy_report_action">复制并报告</string>
   <string name="msg_reading_bootstrap">正在读取引导程序压缩包…</string>
   <string name="msg_bootstrap_installation_error">因为以下异常，引导程序安装失败</string>
   <string name="title_translations">翻译</string>
