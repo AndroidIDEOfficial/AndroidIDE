@@ -393,7 +393,7 @@
   <string name="action_import_classes">Importar classe(s)</string>
   <string name="action_generate_setters_getters">Gerar setters/getters</string>
   <string name="action_add_throws">Adicionar \'throws\'</string>
-  <string name="action_comment_line">Linha de comentário</string>
+  <string name="action_comment_line">Comentar linha</string>
   <string name="action_create_missing_method">Criar método ausente</string>
   <string name="action_convert_to_block">Converter para bloco</string>
   <string name="action_generate_constructor">Gerar construtor</string>
