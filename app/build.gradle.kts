@@ -37,6 +37,8 @@ android {
       keyAlias = alias
       storePassword = storePass
       keyPassword = keyPass
+
+      enableV3Signing = true
     }
 
     buildTypes {
