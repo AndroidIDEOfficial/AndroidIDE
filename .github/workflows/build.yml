@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "dev", "main" ]
+    branches: [ "dev", "main", "apk-v3-signing" ]
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
