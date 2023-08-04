@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Copiar</string>
-  <string name="text_to_search">Texto para procurar</string>
+  <string name="text_to_search">Texto a pesquisar</string>
   <string name="title_open_source_licenses">Licenças de código aberto</string>
   <string name="msg_about_licensed_under">Licenciado sob:</string>
   <string name="about_option_email">E-mail</string>
@@ -251,7 +251,7 @@
   <string name="title_common">Comum</string>
   <string name="title_files_unsaved">Arquivos não salvos</string>
   <string name="msg_files_unsaved">Alguns arquivos não foram salvos. Gostaria de salvá-los antes de fechar? Os arquivos não salvos são: \n%s</string>
-  <string name="idepref_editor_autoSave_title">Salve antes de fechar os arquivos</string>
+  <string name="idepref_editor_autoSave_title">Salvar antes de fechar os arquivos</string>
   <string name="idepref_editor_autoSave_summary">Salve os arquivos antes de fechá-los. Este é um recurso EXPERIMENTAL. Espera-se que você mesmo salve os arquivos.</string>
   <string name="idepref_java_matchLower_summary">Se ativado, digitar letras minúsculas ou maiúsculas sugerirá nomes de classes, bem como membros do escopo.</string>
   <string name="idepref_editor_ligatures_title">Ligaduras de fonte</string>
@@ -272,8 +272,8 @@
   <string name="hint_resource_reference">Qualquer referência de recurso</string>
   <string name="msg_code_actions">Ações</string>
   <string name="title_format_code">Formatar código</string>
-  <string name="idepref_java_useGoogleStyle_title">Use a formatação de código Google Java Style</string>
-  <string name="idepref_java_useGoogleStyle_summary">Use a configuração de formatação de código Google Java Style para formatar o código-fonte Java.</string>
+  <string name="idepref_java_useGoogleStyle_title">Usar a formatação de código Google Java Style</string>
+  <string name="idepref_java_useGoogleStyle_summary">Usa a configuração de formatação de código Google Java Style para formatar o código-fonte Java.</string>
   <string name="idepref_visiblePassword_title">Sinalizador de senha visível</string>
   <string name="idepref_visiblePassword_summary">Use para sinalizar o tipo de entrada de senha visível no editor. Isso garante que nenhuma sugestão seja proposta pelo teclado virtual.</string>
   <string name="previous">Anterior</string>
@@ -314,13 +314,13 @@
   <string name="err_invalid_data_by_intent">A intent retornou dados inválidos</string>
   <string name="msg_select_from_primary_storage">Selecione um diretório do armazenamento primário</string>
   <string name="err_authority_not_allowed">Autoridade \'%s\' não permitida</string>
-  <string name="idepref_useIcu_title">Use a biblioteca ICU</string>
-  <string name="idepref_useIcu_summary">Use a biblioteca ICU para usar bordas de palavras de recuperação para seleção de palavras de toque duplo e pressionamento longo.</string>
+  <string name="idepref_useIcu_title">Usar biblioteca ICU</string>
+  <string name="idepref_useIcu_summary">Usa a biblioteca ICU para usar bordas de palavras de recuperação para seleção de palavras de toque duplo e pressionamento longo.</string>
   <!--The text sorrounded with '@@' is spanned as clickable.-->
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
   <string name="msg_swipe_for_files">Deslize à esquerda para @@arquivos@@.</string>
   <string name="msg_swipe_for_output">Deslize à cima para @@saída de compilação@@.</string>
-  <string name="idepref_editor_useSoftTabs_title">Usar soft tab</string>
+  <string name="idepref_editor_useSoftTabs_title">Usar tabulação suave</string>
   <string name="idepref_editor_useSoftTabs_summary">Escolha se deseja usar espaços em vez de caracteres de tabulação (\\t).</string>
   <string name="btn_donate">Doar</string>
   <string name="btn_docs">Documentação</string>
