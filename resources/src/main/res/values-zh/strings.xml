@@ -134,7 +134,7 @@
   <string name="msg_layout_file_exists">布局文件已经存在！</string>
   <string name="msg_invalid_name">非法名称!</string>
   <string name="text_create">创建</string>
-  <string name="msg_can_contain_slashes">如果路径中包含路径分隔符(\'/\'), 必要的父文件夹会被创建。</string>
+  <string name="msg_can_contain_slashes">如果路径包含文件分隔符（“/”），则将创建所需的（父）目录（如果它们不存在）。</string>
   <string name="folder_name">文件夹名称</string>
   <string name="file_name">文件名称</string>
   <string name="new_name">新名称</string>
@@ -167,7 +167,7 @@
   <string name="restype_other">其他</string>
   <string name="classtype_class">类</string>
   <string name="classtype_activity">活动</string>
-  <string name="title_interface">接口</string>
+  <string name="title_interface">界面</string>
   <string name="classtype_enum">枚举</string>
   <string name="msg_checking_storage_permissions">正在检查存储权限</string>
   <string name="msg_failed_list_files">无法列出项目文件！</string>
@@ -181,7 +181,7 @@
   <string name="title_change_text_size">编辑器字体大小</string>
   <string name="idepref_about_title">关于 AndroidIDE</string>
   <string name="idepref_build_clearCache_title">清除 Gradle 缓存</string>
-  <string name="idepref_build_clearCache_summary">清除Gradle缓存目录。这将会删除所有已下载的依赖项。所需的文件在下一次编译中会被重新下载。</string>
+  <string name="idepref_build_clearCache_summary">清除 Gradle 缓存目录。这将删除 Gradle 下载的所有依赖项。所需的文件将在下一次构建中重新下载。</string>
   <string name="idepref_build_customgradlecommands_title">附加Gradle命令</string>
   <string name="idepref_build_customgradlecommands_summary">选择执行Gradle任务时要添加的命令</string>
   <string name="idepref_editor_fontsize_title">字体大小</string>
@@ -205,8 +205,8 @@
   <string name="title_default_shell">在终端中使用系统Shell</string>
   <string name="msg_default_shell">勾选此项， \'/system/bin/sh\' 将会被用于终端</string>
   <string name="title_general">常规</string>
-  <string name="title_tab_size">Tab宽度</string>
-  <string name="msg_tab_size">指定TAB代表的空格数</string>
+  <string name="title_tab_size">Tab 宽度</string>
+  <string name="msg_tab_size">指定 TAB 代表的空格数</string>
   <string name="msg_preferences">偏好设置</string>
   <string name="pref_changelog">更新日志</string>
   <string name="msg_editor_font_size">请选择编辑器的默认字体大小：</string>
@@ -332,11 +332,11 @@
   <string name="about">关于</string>
   <string name="idepref_github_summary">AndroidIDE 是开源的!</string>
   <string name="idepref_channel_summary">订阅以获取最新更新</string>
-  <string name="idepref_group_summary">在这里讨论 功能、改进 和 Bug</string>
+  <string name="idepref_group_summary">在这里讨论功能、错误和改进。</string>
   <string name="idepref_changelog_summary">此版本有什么新内容?</string>
   <string name="idepref_about_summary">更多关于 AndroidIDE</string>
   <string name="idepref_general_summary">常规 IDE 配置</string>
-  <string name="idepref_editor_summary">编辑器 配置</string>
+  <string name="idepref_editor_summary">编辑器配置</string>
   <string name="idepref_xml_trimFinalNewLine_title">删除 末尾新行</string>
   <string name="idepref_xml_insertFinalNewLine_title">插入 末尾新行</string>
   <string name="idepref_xml_trimFinalNewLine_summary">删除文件末尾多余的空行</string>
@@ -352,7 +352,7 @@
   <string name="idepref_xml_spaceBeforeEmptyClose_title">闭合标签前空格</string>
   <string name="idepref_xml_spaceBeforeEmptyClose_summary">在自闭合标签结束括号前插入空白</string>
   <string name="idepref_xml_preserveEmptyContent_title">保留空内容</string>
-  <string name="idepref_xml_preserveEmptyContent_summary">在元素中保留空内容 (空格、新行、制表符等)</string>
+  <string name="idepref_xml_preserveEmptyContent_summary">保留元素内的空内容（空格、换行符、制表符等）。</string>
   <string name="idepref_xml_preserveAttrLineBreaks_title">保留属性换行符</string>
   <string name="idepref_xml_preserveAttrLineBreaks_summary">保留属性之间的换行符</string>
   <string name="idepref_xml_closingBrackNewLine_title">新行右括号</string>
@@ -373,7 +373,7 @@
   <string name="idepref_customFont_title">使用自定义字体</string>
   <string name="idepref_customFont_summary">如果启用，位于“/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf”的文件将用作编辑器字体。</string>
   <string name="idepref_chooseFont_title">选择自定义字体</string>
-  <string name="idepref_chooseFont_summary">选择要在终端中（或者，在编辑器中）使用的字体。</string>
+  <string name="idepref_chooseFont_summary">选择要在终端（或编辑器）中使用的字体。</string>
   <string name="msg_installing_apk">正在安装 APK...</string>
   <string name="msg_installed_successfully">安装成功</string>
   <string name="msg_action_open_application">您要打开应用程序吗？</string>
