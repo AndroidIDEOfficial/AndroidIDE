@@ -38,7 +38,7 @@
   <!-- Build Tools Installation -->
   <string name="msg_no_references">Nenhuma referência encontrada</string>
   <string name="view_diags">Diagnósticos</string>
-  <string name="title_installation_failed">Instalação falhada</string>
+  <string name="title_installation_failed">Falha na instalação</string>
   <string name="get_ready_for_something_awesome">Prepare-se para algo incrível!</string>
   <string name="msg_picked_isnt_dir">O arquivo escolhido não é um diretório!</string>
   <string name="msg_pick_single_file">Por favor, escolha apenas um diretório</string>
@@ -56,7 +56,7 @@
   <string name="preparing">Preparando</string>
   <string name="preparing_first">Preparando. A primeira compilação pode levar até 10-15 minutos!</string>
   <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão. Gradle v7.4 será baixado se necessário.</string>
-  <string name="msg_getting_daemom_status">Obtendo o status de Daemon, por favor aguarde...</string>
+  <string name="msg_getting_daemom_status">Obtendo status do Daemon, por favor aguarde…</string>
   <string name="gradle_daemon_status">Status do daemon Gradle</string>
   <string name="title_install_apks">Instalar APK(s)</string>
   <string name="title_clear_output">Limpar logs</string>
@@ -83,7 +83,7 @@
   <string name="msg_confirm_project_close">Você tem certeza de que quer encerrar este projeto? Todos os daemons Gradle iniciados serão interrompidos após o encerramento deste projeto.</string>
   <string name="project_exists">Já existe um projeto com o mesmo nome!</string>
   <string name="template_basic">Projeto básico</string>
-  <string name="template_description_basic">Um projeto básico com a Toolbar do AppCompat e um Botão de Ação Flutuante (FAB)</string>
+  <string name="template_description_basic">Um projeto básico com a barra de ferramentas do AppCompat e um botão de ação flutuante (FAB)</string>
   <string name="template_description_empty">Um projeto vazio com barra de ferramentas padrão. Adequado quando você mesmo quer fazer todas as coisas básicas.</string>
   <string name="template_description_navigation_drawer">Projeto com Barra de ferramentas do AppCompat, DrawerLayout e NavigationView</string>
   <string name="template_empty">Projeto vazio</string>
@@ -104,9 +104,9 @@
   <string name="template_description_noAndroidX">Cria um novo projeto sem a biblioteca AndroidX</string>
   <string name="save">Salvar</string>
   <string name="menu_find">Procurar</string>
-  <string name="menu_find_file">Localizar no arquivo</string>
-  <string name="menu_find_project">Localizar no projeto</string>
-  <string name="msg_search_modules">Buscar em módulos</string>
+  <string name="menu_find_file">Procurar no arquivo</string>
+  <string name="menu_find_project">Procurar no projeto</string>
+  <string name="msg_search_modules">Procurar nos módulos</string>
   <string name="msg_no_modules">Nenhum módulo encontrado no projeto</string>
   <string name="hint_find_project_filter">Filtrar extensões de arquivo (opcional)</string>
   <string name="msg_find_project_filter">Separados por \'|\'</string>
@@ -134,7 +134,7 @@
   <string name="msg_layout_file_exists">O arquivo de layout já existe!</string>
   <string name="msg_invalid_name">Nome inválido!</string>
   <string name="text_create">Criar</string>
-  <string name="msg_can_contain_slashes">Se o caminho contiver o Separador de Arquivos (\'/\'), então os diretórios necessários (pai) serão criados se eles não existirem.</string>
+  <string name="msg_can_contain_slashes">Se o caminho conter o separador de arquivos (\'/\'), então os diretórios necessários (pai) serão criados se eles não existirem.</string>
   <string name="folder_name">Nome da pasta</string>
   <string name="file_name">Nome do arquivo</string>
   <string name="new_name">Novo nome</string>
@@ -149,12 +149,12 @@
   <string name="msg_rename_file">Digite um novo nome para o arquivo/pasta.</string>
   <string name="renamed">Renomeado com sucesso!</string>
   <string name="rename_failed">Não foi possível renomear o arquivo!</string>
-  <string name="deleted">Apagado com sucesso!</string>
+  <string name="deleted">Excluído com sucesso!</string>
   <string name="delete_failed">Não foi possível excluir o arquivo!</string>
   <string name="copy_path">Copiar caminho</string>
   <string name="rename_file">Renomear</string>
   <string name="delete_file">Excluir</string>
-  <string name="file_options">Opções de arquivo</string>
+  <string name="file_options">Opções do arquivo</string>
   <string name="action_closeAll">Fechar tudo</string>
   <string name="action_closeOthers">Fechar outros</string>
   <string name="action_closeThis">Fechar</string>
@@ -162,7 +162,7 @@
   <string name="save_failed">Falha ao salvar arquivos</string>
   <string name="msg_newfile_dest">Destino: %s/</string>
   <string name="restype_drawable">Desenhável</string>
-  <string name="restype_layout">Disposição</string>
+  <string name="restype_layout">Layout</string>
   <string name="restype_menu">Menu</string>
   <string name="restype_other">Outro</string>
   <string name="classtype_class">Classe</string>
@@ -191,13 +191,13 @@
   <string name="idepref_editor_drawhexcolors_title">Desenhe sequências de cores hexadecimais</string>
   <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
   <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
-  <string name="idepref_editor_word_wrap_summary">Use quebra de linha no editor</string>
+  <string name="idepref_editor_word_wrap_summary">Usa quebra de linha no editor</string>
   <string name="idepref_editor_hide_file_tree_button_title">Ocultar o botão Árvore de Arquivos</string>
   <string name="idepref_editor_hide_file_tree_button_summary">Mover o botão \"Árvore de Arquivos\" para o menu flutuante da barra de ferramentas do editor.</string>
   <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
   <string name="idepref_editor_title">Editor</string>
-  <string name="idepref_build_title">Construção &amp; Execução</string>
+  <string name="idepref_build_title">Compilação &amp; Execução</string>
   <string name="title_open_projects">Abrir último projeto</string>
   <string name="msg_open_projects">Se habilitado, a IDE se lembrará do último projeto aberto e será reaberto na próxima vez.</string>
   <string name="title_confirm_project_open">Confirme a abertura do projeto</string>
@@ -224,7 +224,7 @@
   <string name="title_viewaction_delete">Excluir</string>
   <string name="msg_viewaction_select_parent">Selecione o pai</string>
   <string name="msg_no_view_parent">Esta view não tem um pai</string>
-  <string name="msg_yesno_def_title">Por favor confirme</string>
+  <string name="msg_yesno_def_title">Por favor, confirme</string>
   <string name="msg_yesno_def_message">Tem certeza?</string>
   <string name="msg_view_deletion_failed">Não foi possível excluir a visualização.</string>
   <string name="msg_empty_ui_layout">Nenhuma visualização foi adicionada. Clique para adicionar.</string>
@@ -240,9 +240,9 @@
   <string name="msg_crash_report_hint">Clique no botão abaixo para copiar o registro e abrir a página de issues.</string>
   <string name="msg_copy_report_action">Copiar e relatar</string>
   <string name="msg_reading_bootstrap">Lendo o arquivo bootstrap…</string>
-  <string name="msg_bootstrap_installation_error">A instalação do bootstrap falhou com a seguinte exception.</string>
+  <string name="msg_bootstrap_installation_error">A instalação do bootstrap falhou com a seguinte exceção.</string>
   <string name="title_translations">Traduções</string>
-  <string name="title_compiler_module_install">Instalando o módulo compilador</string>
+  <string name="title_compiler_module_install">Instalando módulo do compilador</string>
   <string name="msg_compiler_module_install">O módulo do compilador está sendo instalado, aguarde...</string>
   <string name="msg_compiler_module_install_failed">A instalação do módulo do compilador falhou. O erro foi:\n%s</string>
   <string name="msg_compiler_module_installed">Módulo compilador instalado com sucesso!</string>
@@ -302,9 +302,9 @@
   <string name="idepref_title_tpFix">Correção de ponteiros de tag do JDK 11</string>
   <string name="idepref_msg_tpFix">Defina LD_PRELOAD como libhook.so para corrigir o problema de ponteiros de tag para JDK 11 no Android 11 [OBSOLETO - Prefira usar JDK 17].</string>
   <string name="idepref_title_customGradleInstallation">Instalação personalizada do Gradle</string>
-  <string name="idepref_msg_customGradleInstallation">Especifique uma instalação personalizada do Gradle a ser usada para build. Isso SUBSTITUI a versão especificada em gradle-wrapper.properties.</string>
+  <string name="idepref_msg_customGradleInstallation">Especifique uma instalação personalizada do Gradle a ser usada para compilação. Isso SUBSTITUI a versão especificada em gradle-wrapper.properties.</string>
   <string name="msg_gradle_installation_path">Caminho de instalação do Gradle</string>
-  <string name="msg_gradle_installation_input_help">Deixe em branco para usar o Gradle wrapper.</string>
+  <string name="msg_gradle_installation_input_help">Deixe em branco para usar o Gradle Wrapper.</string>
   <string name="msg_require_install_jdk_and_android_sdk">Você precisa instalar o JDK e o Android SDK para que a IDE funcione. Para instalar clique em \'Sim\' e siga as instruções <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">aqui</a>]]></string>
   <string name="build_status_idle">Nenhuma compilação em andamento</string>
   <string name="build_status_in_progress">Compilação em andamento…</string>
@@ -409,7 +409,7 @@
   <string name="msg_no_fields_found">Nenhum campo encontrado</string>
   <string name="action_override_superclass_methods">Sobrepor métodos de superclasse</string>
   <string name="msg_no_methods_selected">Nenhum método selecionado</string>
-  <string name="msg_cannot_override_methods">Não é possível sobrepor métodos</string>
+  <string name="msg_cannot_override_methods">Não foi possível sobrepor os métodos</string>
   <string name="msg_cannot_generate_setters_getters">Não foi possível gerar setters e getters</string>
   <string name="msg_select_methods">Selecione métodos para sobrepor</string>
   <string name="msg_no_overridable_methods">Não foi possível encontrar nenhum método sobreponível</string>
