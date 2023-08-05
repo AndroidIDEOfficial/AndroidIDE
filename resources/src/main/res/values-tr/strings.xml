@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">Kopyala</string>
+  <string name="text_to_search">Aranacak metin</string>
   <string name="title_open_source_licenses">Açık kaynak lisansları</string>
   <string name="msg_about_licensed_under">Altında lisanlı</string>
   <string name="about_option_email">E-posta</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE tercihleri</string>
   <string name="discussions_on_telegram">Telegram\'daki Tartışmalar</string>
   <string name="official_tg_channel">Resmi Telegram Kanalı</string>
-  <string name="msg_empty_view">Sana gösterecek hiçbir şeyim yok…</string>
+  <string name="msg_empty_view">Veri bulunamadı</string>
   <string name="title_terminal">Uçbirim</string>
   <string name="reset">Sıfırla</string>
   <string name="app_logs">Uygulama günlükleri</string>
@@ -100,7 +100,7 @@
   <string name="template_no_activity">Etkinlik yok</string>
   <string name="template_no_activity_description">Etkinliksiz teni bir proje oluşturur</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">AndroidX olmadan</string>
+  <string name="template_no_AndroidX">AndroidX bulunamadı</string>
   <string name="template_description_noAndroidX">AndroidX kütüphanesi olmadan yeni bir proje oluşturur</string>
   <string name="save">Kaydet</string>
   <string name="menu_find">Bul</string>
@@ -455,12 +455,12 @@
   <string name="uiMode_system">Sistemi takip et</string>
   <string name="idepref_general_materialYou_summary">Cihazınıza daha yakın bir deneyimin tadını çıkarın (yeniden başlatma gerektirir).</string>
   <string name="idepref_general_projectConfig">Proje yapılandırması</string>
-  <string name="msg_app_launch_failed">Uygulama başlatılamadı. IDE kayıtlarını inceleyerek detayları görün.</string>
+  <string name="msg_app_launch_failed">Uygulama başlatılamadı. IDE günlüklerini inceleyerek detayları görün.</string>
   <string name="idepref_java_diagnosticEnabled_title">Tanılamalar etkin</string>
   <string name="idepref_java_diagnosticsEnabled_summary">(DENEYSEL) Java kaynak kodu dosyalarının hatalar için analiz edilip edilmeyeceğini seçin.</string>
   <string name="title_reload_color_schemes">Renk şemalarını yeniden yükle</string>
   <string name="msg_dir_picker_failed">Dizin seçici başlatılamadı: %1$s</string>
-  <string name="msg_tooling_server_unavailable">Takım API sunucusu kullanım dışı. Hatalar için inşa çıktısını ve IDE kayıtlarını kontrol edin.</string>
+  <string name="msg_tooling_server_unavailable">Takım API sunucusu kullanım dışı. Hatalar için inşa çıktısını ve IDE günlüklerini kontrol edin.</string>
   <string name="idepref_deleteEmptyLines_title">Silme tuşuyla boş satırları sil</string>
   <string name="idepref_deleteEmptyLines_summary">Düzenleyicinin tek silme tuşu eylemiyle boş satırları silip silmeyeceğini seçin.</string>
   <string name="idepref_deleteTabs_title">Silme tuşuyla tab sil</string>
@@ -470,8 +470,8 @@
   <string name="title_fix_imports">İçe aktarımları düzelt</string>
   <string name="msg_no_unresolved_classes">Çözümlenmemiş sınıf adı bulunamadı</string>
   <string name="title_class_chooser">Hangi %1$s?</string>
-  <string name="permlab_bind_logger_service">kayıt servisine bağlan</string>
-  <string name="permdesc_bind_logger_service">Bu uygulamanın AndroidIDE içindeki kayıt servisine bağlanmasını sağlar. Bu izin AndroidIDE\'nin bu uygulama için kayıtları okuyabilmesi için gereklidir.</string>
+  <string name="permlab_bind_logger_service">günlük servisine bağlan</string>
+  <string name="permdesc_bind_logger_service">Bu uygulamanın AndroidIDE içindeki günlük servisine bağlanmasını sağlar. Bu izin AndroidIDE\'nin bu uygulama için günlükleri okuyabilmesi için gereklidir.</string>
   <string name="wizard_module_name">Modül adı</string>
   <string name="wizard_module_type">Modül türü</string>
   <string name="msg_invalid_module_name">Geçersiz Gradle modülü adı</string>
@@ -488,7 +488,7 @@
   <string name="title_androidide_statistics">AndroidIDE İstatistikleri</string>
   <string name="msg_androidide_statistics">AndroidIDE\'nin gelişmesine katkıda bulunmak amacıyla bize anonim istatistikler paylaşın. Sadece cihazınız hakkında kullanıcı tabanı istatistikleri topluyoruz. Paylaşılan veri seçenekler sekmesinden görüntülenebilir. Veriniz güvenlidir ve üçüncü parti servislerle paylaşılmaz. İstediğiniz an seçenekler üzerinden buna katılmayı kesebilirsiniz.</string>
   <string name="summary_anonymous_usage_stats">Anonim kullanım istatistikleri</string>
-  <string name="idepref_stats_optIn_title">İstatistik toplama</string>
+  <string name="idepref_stats_optIn_title">İstatistik topla</string>
   <string name="idepref_stats_optIn_summary">Kurulum ölçümlerinin ve cihaz istatistiklerinin toplanmasına izin ver (tamamen anonimdir).</string>
   <string name="title_unique_id">Benzersiz ID</string>
   <string name="title_device">Cihaz</string>
@@ -496,12 +496,17 @@
   <string name="title_country">Ülke</string>
   <string name="title_cpu_arch">İşlemci Mimarisi</string>
   <string name="title_preview_data">Veriyi önizle</string>
-  <string name="title_android_version">Android version</string>
+  <string name="title_android_version">Android sürümü</string>
   <string name="btn_opt_in">Katıl</string>
   <string name="btn_no_thanks">Hayır, teşekkürler</string>
   <string name="title_developer_options">Geliştirici seçenekleri</string>
   <string name="idepref_devOptions_summary">AndroidIDE için deneysel/hata ayıklama seçenekleri</string>
   <string name="idepref_group_debugging">Hata ayıklama</string>
-  <string name="idepref_devOptions_dumpLogs_title">Kayıtları kaydet</string>
-  <string name="idepref_devOptions_dumpLogs_summary">$HOME/.androidide/logs içine AndroidIDE kayıtlarını kaydet</string>
+  <string name="idepref_devOptions_dumpLogs_title">Günlükleri kaydet</string>
+  <string name="idepref_devOptions_dumpLogs_summary">$HOME/.androidide/logs içine AndroidIDE günlüklerini kaydet</string>
+  <string name="msg_emptyview_applogs">Uygulamanızın günlüklerini burada görüntülemek için debug varyantını çalıştırın.</string>
+  <string name="msg_emptyview_idelogs">IDE\'den günlükler burada görünür.</string>
+  <string name="msg_emptyview_diagnostics">Bir dosyanın analiz raporlarını görmek için dosyayı açın</string>
+  <string name="msg_emptyview_buildoutput">"İnşa çıktısını burada görmek için uygulamayı inşa edin ya da bir görev çalıştırın. "</string>
+  <string name="msg_codeaction_failed">Kod eylemi gerçekleştirilemedi</string>
 </resources>

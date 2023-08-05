@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">Копировать</string>
+  <string name="text_to_search">Текст для поиска</string>
   <string name="title_open_source_licenses">Лицензии открытого ПО</string>
   <string name="msg_about_licensed_under">Лицензия: </string>
   <string name="about_option_email">Электронная почта</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">Настройки IDE</string>
   <string name="discussions_on_telegram">Обсуждение в Telegram</string>
   <string name="official_tg_channel">Официальный канал в Telegram</string>
-  <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
+  <string name="msg_empty_view">Нет данных</string>
   <string name="title_terminal">Терминал</string>
   <string name="reset">Сброс</string>
   <string name="app_logs">Логи приложения</string>
@@ -483,7 +483,7 @@
   <string name="msg_path_must_be_dir">Должен быть путь к директории</string>
   <string name="msg_invalid_layout_name">Неверное имя файла макета</string>
   <string name="msg_invalid_project_details">Неверные сведения о проекте</string>
-  <string name="msg_use_kts">Используйте Kotlin Script (.kts) для файлов сборки Gradle</string>
+  <string name="msg_use_kts">Использовать Kotlin Script (.kts) для файлов сборки Gradle</string>
   <string name="title_privacy">Конфиденциальность</string>
   <string name="title_androidide_statistics">Статистика AndroidIDE</string>
   <string name="msg_androidide_statistics">Помогите нам улучшить AndroidIDE, предоставив анонимную статистику. Мы собираем основную информацию о вашем устройстве только для статистики базы пользователей. Точные данные, которые передаются, можно посмотреть в настройках. Ваши данные надёжно защищены и не передаются сторонним сервисам. Вы можете отказаться от этой услуги в любое время в настройках.</string>
@@ -496,12 +496,17 @@
   <string name="title_country">Страна</string>
   <string name="title_cpu_arch">Архитектура ЦП</string>
   <string name="title_preview_data">Предпросмотр данных</string>
-  <string name="title_android_version">Android version</string>
+  <string name="title_android_version">Версия Android</string>
   <string name="btn_opt_in">Присоединиться</string>
   <string name="btn_no_thanks">Нет, спасибо</string>
   <string name="title_developer_options">Настройки разработчика</string>
   <string name="idepref_devOptions_summary">Экспериментальные/отладочные опции для AndroidIDE</string>
   <string name="idepref_group_debugging">Отладка</string>
-  <string name="idepref_devOptions_dumpLogs_title">Дамп журналов</string>
+  <string name="idepref_devOptions_dumpLogs_title">Дамп логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Дамп логов AndroidIDE в $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>

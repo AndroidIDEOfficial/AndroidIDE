@@ -19,7 +19,7 @@
   <string name="ide_preferences">إعدادات IDE</string>
   <string name="discussions_on_telegram">المناقشات على التيليغرام</string>
   <string name="official_tg_channel">قناة التيليغرام الرسمية</string>
-  <string name="msg_empty_view">ليس لدي ما أعرضه عليك…</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">التيرمنال</string>
   <string name="reset">إعادة تعيين</string>
   <string name="app_logs">سجلات التطبيق</string>
@@ -100,7 +100,7 @@
   <string name="template_no_activity">لا يوجد نشاط</string>
   <string name="template_no_activity_description">إنشاء مشروع جديد بدون نشاط</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">بلا AndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">إنشاء مشروع جديد بدون مكتبة AndroidX</string>
   <string name="save">حفظ</string>
   <string name="menu_find">البحث</string>
@@ -504,4 +504,9 @@
   <string name="idepref_group_debugging">تصحيح الأخطاء</string>
   <string name="idepref_devOptions_dumpLogs_title">تفريغ السجلات</string>
   <string name="idepref_devOptions_dumpLogs_summary">تفريغ سجلات AndroidIDE إلى $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>

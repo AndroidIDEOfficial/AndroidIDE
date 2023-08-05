@@ -19,7 +19,7 @@
   <string name="ide_preferences">Configuración</string>
   <string name="discussions_on_telegram">Debates en Telegram</string>
   <string name="official_tg_channel">Canal Oficial en Telegram</string>
-  <string name="msg_empty_view">No tengo nada que mostrar…</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Reiniciar</string>
   <string name="app_logs">Registros de la app</string>
@@ -100,7 +100,7 @@
   <string name="template_no_activity">Sin Actividad</string>
   <string name="template_no_activity_description">Crear un nuevo proyecto sin actividad</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">NoAndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Crea un nuevo proyecto sin librería de AndroidX</string>
   <string name="save">Guardar Cambios</string>
   <string name="menu_find">Buscar</string>
@@ -504,4 +504,9 @@
   <string name="idepref_group_debugging">Debugging</string>
   <string name="idepref_devOptions_dumpLogs_title">Dump logs</string>
   <string name="idepref_devOptions_dumpLogs_summary">Dump AndroidIDE logs to $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>

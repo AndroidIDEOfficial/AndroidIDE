@@ -19,7 +19,7 @@
   <string name="ide_preferences">Préférences de l\'IDE</string>
   <string name="discussions_on_telegram">Discuter sur Telegram (anglais)</string>
   <string name="official_tg_channel">Channel Telegram Officiel</string>
-  <string name="msg_empty_view">je n\'ai rien à vous montrez &#8230;</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Réinitialiser</string>
   <string name="app_logs">Logs App</string>
@@ -101,7 +101,7 @@ Dernier projet ouvert : \n%s</string>
   <string name="template_no_activity">Pas d\'activité</string>
   <string name="template_no_activity_description">Créer un nouveau projet sans activité </string>
   <!-- Files -->
-  <string name="template_no_AndroidX">Sans AndroidX</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">Créer un projet sans la librairie AndroidX</string>
   <string name="save">Sauvegarder</string>
   <string name="menu_find">Trouver</string>
@@ -505,4 +505,9 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_group_debugging">Debugging</string>
   <string name="idepref_devOptions_dumpLogs_title">Dump logs</string>
   <string name="idepref_devOptions_dumpLogs_summary">Dump AndroidIDE logs to $HOME/.androidide/logs</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>

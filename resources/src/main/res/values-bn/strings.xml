@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">অনুকরন</string>
+  <string name="text_to_search">পাঠ্য অনুসন্ধান</string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">IDE-এর পছন্দ</string>
   <string name="discussions_on_telegram">টেলিগ্রামে আলোচনা</string>
   <string name="official_tg_channel">অফিসিয়াল টেলিগ্রাম চ্যানেল</string>
-  <string name="msg_empty_view">আপনাকে দেখানোর মতো আমার কাছে কিছুই নেই…</string>
+  <string name="msg_empty_view">No data</string>
   <string name="title_terminal">টার্মিনাল</string>
   <string name="reset">রিসেট করুন</string>
   <string name="app_logs">App লগ</string>
@@ -101,7 +101,7 @@
   <string name="template_no_activity">অ্যাক্টিভিটিবিহীন</string>
   <string name="template_no_activity_description">একটি নতুন প্রজেক্ট তৈরি করে যেটি অ্যাক্টিভিটিবিহীন</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">AndroidX হীন</string>
+  <string name="template_no_AndroidX">No AndroidX</string>
   <string name="template_description_noAndroidX">AndroidX library ছাড়া একটি প্রকল্প তৈরি করে</string>
   <string name="save">সেভ</string>
   <string name="menu_find">খুঁজুন</string>
@@ -505,4 +505,9 @@
   <string name="idepref_group_debugging">ডিবাগিং</string>
   <string name="idepref_devOptions_dumpLogs_title">ডাম্প লগ</string>
   <string name="idepref_devOptions_dumpLogs_summary">AndroidIDE লগ ডাম্প করুন $HOME/.androidide/logs এ</string>
+  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
+  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
+  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
+  <string name="msg_codeaction_failed">Failed to perform code action</string>
 </resources>
