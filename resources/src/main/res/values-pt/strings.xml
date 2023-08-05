@@ -206,7 +206,7 @@
   <string name="msg_default_shell">Se habilitado, \'/system/bin/sh\' será usado no terminal.</string>
   <string name="title_general">Geral</string>
   <string name="title_tab_size">Tamanho da tabulação</string>
-  <string name="msg_tab_size">Especifique o número de espaços para TAB</string>
+  <string name="msg_tab_size">Especifique o número de espaços para o TAB</string>
   <string name="msg_preferences">Configurações</string>
   <string name="pref_changelog">Registro de alterações</string>
   <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
@@ -226,7 +226,7 @@
   <string name="msg_no_view_parent">Esta view não tem um pai</string>
   <string name="msg_yesno_def_title">Por favor, confirme</string>
   <string name="msg_yesno_def_message">Tem certeza?</string>
-  <string name="msg_view_deletion_failed">Não foi possível excluir a visualização.</string>
+  <string name="msg_view_deletion_failed">Não foi possível excluir a view.</string>
   <string name="msg_empty_ui_layout">Nenhuma visualização foi adicionada. Clique para adicionar.</string>
   <string name="msg_no_attr_format">Nenhum formato de atributo está disponível para este atributo.</string>
   <string name="msg_generate_xml_failed">Falha ao gerar código XML</string>
@@ -423,9 +423,9 @@
   <string name="action_generate_missing_constructor">Gerar construtor ausente</string>
   <string name="msg_cannot_generate_constructor">Não foi possível gerar um construtor</string>
   <string name="msg_constructor_available">Um construtor com os mesmos tipos de parâmetro já está disponível</string>
-  <string name="msg_cannot_create_view">Não foi possível criar visualização para a tag: %s</string>
+  <string name="msg_cannot_create_view">Não foi possível criar a view para a tag: %s</string>
   <string name="err_no_attr_adapter">Nenhuma implementação de adaptador de atributo encontrada para %s</string>
-  <string name="msg_view_not_supported">A visualização %s não é suportada atualmente.</string>
+  <string name="msg_view_not_supported">View %s não é suportada atualmente.</string>
   <string name="replace">Substituir</string>
   <string name="replaceAll">Substituir tudo</string>
   <string name="title_run_tasks">Executar tarefas</string>
