@@ -23,7 +23,6 @@ import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.Main.finalizeLauncher
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
 import com.itsaky.androidide.utils.ILogger
-import org.gradle.tooling.BuildController
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.model.idea.IdeaProject
 
@@ -37,8 +36,7 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
   override fun build(param: ProjectConnectionAndAndroidVariant): IProject {
     val (connection, androidVariant) = param
     val executor = connection.action { controller ->
-      val ideaProject = findIdeaProject(controller) ?: throw ModelBuilderException(
-        "IdeaProject model could not be created")
+      val ideaProject = controller.getModelAndLog(IdeaProject::class.java)
 
       val ideaModules = ideaProject.modules
       val modulePaths = mapOf(*ideaModules.map { it.name to it.gradleProject.path }.toTypedArray())
@@ -76,13 +74,6 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
 
     return executor.run().also {
       logger.debug("Build action executed. Result:", it)
-    }
-  }
-
-  private fun findIdeaProject(controller: BuildController): IdeaProject? {
-    log("Creating Idea project model...")
-    return controller.findModel(IdeaProject::class.java)?.also {
-      log("IdeaProject model created...")
     }
   }
 

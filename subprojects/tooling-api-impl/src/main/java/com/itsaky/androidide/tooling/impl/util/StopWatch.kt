@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.impl.util
 
 import com.itsaky.androidide.utils.ILogger
+import java.io.PrintStream
 
 /**
  * A stop watch helps to log duration between the time when the instance of the stopwatch instance
@@ -36,7 +37,13 @@ class StopWatch(
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   fun log() {
-    log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
+    log.debug(getLogMessage())
+  }
+
+  private fun getLogMessage() = "$label completed in ${System.currentTimeMillis() - start}ms"
+
+  fun writeTo(stream: PrintStream) {
+    stream.println(getLogMessage())
   }
 
   fun lap(message: String) {

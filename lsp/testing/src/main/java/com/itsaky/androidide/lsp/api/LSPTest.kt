@@ -93,7 +93,7 @@ abstract class LSPTest {
 
     server
       .initialize(InitializeProjectMessage(FileProvider.testProjectRoot().toFile().absolutePath,
-        "debug"))
+        ""))
       .get()
 
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()

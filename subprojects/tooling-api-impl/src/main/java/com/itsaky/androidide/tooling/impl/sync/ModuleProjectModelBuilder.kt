@@ -24,7 +24,7 @@ import com.itsaky.androidide.tooling.api.IModuleProject
  *
  * @author Akash Yadav
  */
-class ModuleProjectModelBuilder(androidVariant: String = VARIANT_DEBUG) :
+class ModuleProjectModelBuilder(androidVariant: String = "") :
   AbstractModelBuilder<ModuleProjectModelBuilderParams, IModuleProject>(androidVariant) {
 
   override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {

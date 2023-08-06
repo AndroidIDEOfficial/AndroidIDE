@@ -18,9 +18,13 @@ package com.itsaky.androidide.tooling.impl.sync
 
 import com.android.builder.model.v2.models.Versions
 import com.itsaky.androidide.tooling.impl.Main
+import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.LogUtils
+import org.gradle.api.Action
 import org.gradle.tooling.BuildController
+import org.gradle.tooling.UnknownModelException
+import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.model.Model
 
 /**
@@ -29,15 +33,10 @@ import org.gradle.tooling.model.Model
  * @property androidVariant The name of the variant for which the Android models will be built.
  * @author Akash Yadav
  */
-abstract class AbstractModelBuilder<P, R>(protected val androidVariant: String = VARIANT_DEBUG) :
+abstract class AbstractModelBuilder<P, R>(protected val androidVariant: String = "") :
   IModelBuilder<P, R> {
 
   companion object {
-
-    /**
-     * Default variant name used for [AbstractModelBuilder.androidVariant].
-     */
-    const val VARIANT_DEBUG = "debug"
 
     /**
      * Checks the Android Gradle Plugin version from the given [Versions] model and compares
@@ -72,9 +71,83 @@ abstract class AbstractModelBuilder<P, R>(protected val androidVariant: String =
       return controller.findModel(model, Versions::class.java)
     }
 
+    /**
+     * Fetches a snapshot of the model of the given type. Throws a [ModelBuilderException] if the
+     * model could not be fetched. This also logs the time consumed to fetch the model.
+     *
+     * @param modelType The model type.
+     * @param <T> The model type.
+     */
     @JvmStatic
-    protected fun log(vararg objects: Any?) {
-      buildLog(*objects)
+    protected fun <T> BuildController.getModelAndLog(modelType: Class<T>): T {
+      return withStopWatch(modelType) {
+        return@withStopWatch try {
+          getModel(modelType)
+        } catch (err: UnknownModelException) {
+          throw ModelBuilderException("Failed to fetch model for type '${modelType.name}'." +
+              " Model not found or the project does not support this model.")
+        }
+      }
+    }
+
+    /**
+     * Fetches a snapshot of the model of the given type. Throws a [ModelBuilderException] if the
+     * model could not be fetched. This also logs the time consumed to fetch the model.
+     *
+     * @param target The target element, usually a project.
+     * @param modelType The model type.
+     * @param <T> The model type.
+     */
+    @JvmStatic
+    protected fun <T> BuildController.getModelAndLog(target: Model, modelType: Class<T>): T {
+      return withStopWatch(modelType) {
+        return@withStopWatch try {
+          getModel(target, modelType)
+        } catch (err: UnknownModelException) {
+          throw ModelBuilderException("Failed to fetch model for type '${modelType.name}'." +
+              " Model not found or the project does not support this model.")
+        }
+      }
+    }
+
+    /**
+     * Fetches a snapshot of the model of the given type using the given parameter. Throws a
+     * [ModelBuilderException] if the model could not be fetched. This also logs the time consumed
+     * to fetch the model.
+     *
+     * @param target The target element, usually a project.
+     * @param modelType The model type.
+     * @param parameterType The parameter type.
+     * @param <P> The parameter type.
+     * @param parameterInitializer Action to configure the parameter
+     * @param <T> The model type.
+     */
+    @JvmStatic
+    protected fun <P, T> BuildController.getModelAndLog(
+      target: Model,
+      modelType: Class<T>,
+      parameterType: Class<P>,
+      parameterInitializer: Action<in P>
+    ): T {
+      return withStopWatch(modelType) {
+        return@withStopWatch try {
+          getModel(target, modelType, parameterType, parameterInitializer)
+        } catch (err: UnknownModelException) {
+          throw ModelBuilderException("Failed to fetch model for type '${modelType.name}'." +
+              " Model not found or the project does not support this model.")
+        } catch (err: UnsupportedVersionException) {
+          throw ModelBuilderException("Failed to fetch model for type '${modelType.name}'." +
+              " Model not supported by project or Gradle version does not support parameterized models.")
+        }
+      }
+    }
+
+    @JvmStatic
+    private fun <T> withStopWatch(modelType: Class<T>, action: () -> T): T {
+      val stopwatch = StopWatch("Fetch '${modelType.simpleName}' model")
+      return action().also {
+        stopwatch.writeTo(System.err)
+      }
     }
 
     /**
@@ -82,7 +155,8 @@ abstract class AbstractModelBuilder<P, R>(protected val androidVariant: String =
      *
      * @param objects The objects to log.
      */
-    protected fun buildLog(vararg objects: Any?) {
+    @JvmStatic
+    protected fun log(vararg objects: Any?) {
       System.err.println(generateMessage(*objects))
     }
 

@@ -33,14 +33,29 @@ class AndroidProjectModelBuilder(androidVariant: String) :
 
   override fun build(param: BuildControllderAndIdeaModule): IAndroidProject {
     val (controller, module) = param
-    val basicModel = controller.findModel(module, BasicAndroidProject::class.java)
-    val androidModel = controller.findModel(module, AndroidProject::class.java)
-    val variantDependencies = controller.findModel(module, VariantDependencies::class.java,
-      ModelBuilderParameter::class.java) { it.variantName = androidVariant }
+    
+    val projectpath = module.gradleProject.path
+    val basicModel = controller.getModelAndLog(module, BasicAndroidProject::class.java)
+    val androidModel = controller.getModelAndLog(module, AndroidProject::class.java)
+
+    val variantNames = basicModel.variants.map { it.name }
+    log(
+      "${variantNames.size} build variants found for project '$projectpath': $variantNames")
+
+    val selectedVariant = androidVariant.ifBlank { variantNames.firstOrNull() }
+    if (selectedVariant.isNullOrBlank()) {
+      throw ModelBuilderException(
+        "No variant found for project '$projectpath'. providedVariant=$androidVariant")
+    }
+
+    log("Selected build variant '$selectedVariant' for project '$projectpath'")
+
+    val variantDependencies = controller.getModelAndLog(module, VariantDependencies::class.java,
+      ModelBuilderParameter::class.java) { it.variantName = selectedVariant }
 
     return AndroidProjectImpl(
       module.gradleProject,
-      androidVariant,
+      selectedVariant,
       basicModel,
       androidModel,
       variantDependencies

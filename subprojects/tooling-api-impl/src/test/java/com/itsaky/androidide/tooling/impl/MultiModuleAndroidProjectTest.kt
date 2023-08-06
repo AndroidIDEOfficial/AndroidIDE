@@ -47,7 +47,7 @@ class MultiModuleAndroidProjectTest {
   @Test
   fun `test simple multi module project initialization`() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString, "debug")).get()
+    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString, "")).get()
     doAssertions(project, server)
   }
 
@@ -198,7 +198,7 @@ class MultiModuleAndroidProjectTest {
         client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
         server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString,
-          "debug")).get()
+          "")).get()
         doAssertions(project = project, server = server)
         FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
       }
