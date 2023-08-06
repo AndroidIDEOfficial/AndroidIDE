@@ -17,14 +17,10 @@
 
 package com.itsaky.androidide.tooling.api.messages.result
 
-import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
-
 /**
  * Result received after an initialize project request.
  *
- * @param project The initialized project model.
- * @param syncIssues The issues reported by the Android Gradle Plugin during the project sync.
- *
+ * @param isSuccessful Whether the project initialization was successful.
  * @author Akash Yadav
  */
-data class InitializeResult(val syncIssues: Map<String, DefaultProjectSyncIssues>)
+class InitializeResult(val isSuccessful: Boolean)

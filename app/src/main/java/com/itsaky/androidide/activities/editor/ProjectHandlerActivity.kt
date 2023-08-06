@@ -80,9 +80,12 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   protected val mBuildEventListener = EditorBuildEventListener()
 
   companion object {
+
     const val STATE_KEY_FROM_SAVED_INSTANACE = "ide.editor.isFromSavedInstance"
     const val STATE_KEY_SHOULD_INITIALIZE = "ide.editor.isInitializing"
-    @JvmStatic private val buildServiceConnection = GradleBuildServiceConnnection()
+
+    @JvmStatic
+    private val buildServiceConnection = GradleBuildServiceConnnection()
   }
 
   abstract fun doCloseAll(runAfter: () -> Unit)
@@ -258,9 +261,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     this.initializingFuture!!.whenCompleteAsync { result, error ->
       releaseServerListener()
 
-      if (result == null || error != null) {
+      if (result == null || !result.isSuccessful || error != null) {
         log.error("An error occurred initializing the project with Tooling API", error)
-        setStatus(getString(string.msg_project_initialization_failed))
+        ThreadUtils.runOnUiThread {
+          postProjectInit(false)
+        }
         return@whenCompleteAsync
       }
 
@@ -306,7 +311,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     cachedInitResult = result
     setupProject()
     notifyProjectUpdate()
-    ThreadUtils.runOnUiThread { postProjectInit() }
+    ThreadUtils.runOnUiThread { postProjectInit(true) }
   }
 
   protected open fun preProjectInit() {
@@ -314,7 +319,15 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     viewModel.isInitializing = true
   }
 
-  protected open fun postProjectInit() {
+  protected open fun postProjectInit(isSuccessful: Boolean) {
+    if (!isSuccessful) {
+      setStatus(getString(string.msg_project_initialization_failed))
+      flashError(string.msg_project_initialization_failed)
+      viewModel.isInitializing = false
+      projectInitialized = false
+      return
+    }
+
     initialSetup()
     setStatus(getString(string.msg_project_initialized))
     viewModel.isInitializing = false
@@ -336,7 +349,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     val moduleDirs =
       try {
-        rootProject!!.subProjects.stream().map(GradleProject::projectDir).collect(Collectors.toList())
+        rootProject!!.subProjects.stream().map(GradleProject::projectDir)
+          .collect(Collectors.toList())
       } catch (e: Throwable) {
         flashError(getString(string.msg_no_modules))
         emptyList()
@@ -392,10 +406,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       if (extensions.isNotEmpty()) {
         if (extensions.contains("|")) {
           for (str in
-            extensions
-              .split(Pattern.quote("|").toRegex())
-              .dropLastWhile { it.isEmpty() }
-              .toTypedArray()) {
+          extensions
+            .split(Pattern.quote("|").toRegex())
+            .dropLastWhile { it.isEmpty() }
+            .toTypedArray()) {
             if (str.trim().isEmpty()) {
               continue
             }

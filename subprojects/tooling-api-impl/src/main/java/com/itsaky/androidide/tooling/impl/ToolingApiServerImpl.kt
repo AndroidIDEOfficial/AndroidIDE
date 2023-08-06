@@ -43,7 +43,6 @@ import com.itsaky.androidide.tooling.impl.sync.ModelBuilderException
 import com.itsaky.androidide.tooling.impl.sync.RootModelBuilder
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
 import org.gradle.tooling.CancellationTokenSource
@@ -71,7 +70,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
-    return CompletableFutures.computeAsync {
+    return CompletableFuture.supplyAsync {
       try {
         if (initialized && connector != null) {
           connector?.disconnect()
@@ -91,11 +90,8 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         stopWatch.lap("Connector created")
 
         if (this.connector == null) {
-          throw CompletionException(
-            RuntimeException(
-              "Unable to create gradle connector for project directory: ${params.directory}"
-            )
-          )
+          throw IllegalStateException(
+            "Unable to create gradle connector for project directory: ${params.directory}")
         }
 
         notifyBeforeBuild(BuildInfo(emptyList()))
@@ -103,11 +99,17 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         val connection = this.connector!!.connect()
         stopWatch.lapFromLast("Project connection established")
 
-        val project = RootModelBuilder.build(connection to "debug") as? ProjectImpl?
-        project ?: throw ModelBuilderException("Failed to build project model")
-        stopWatch.lapFromLast("Project read successful")
+        val project = try {
+          val impl = RootModelBuilder.build(connection to "debug") as? ProjectImpl?
+            ?: throw ModelBuilderException("Failed to build project model")
+          impl
+        } catch (err: Throwable) {
+          throw err
+        } finally {
+          connection.close()
+        }
 
-        connection.close()
+        stopWatch.lapFromLast("Project read successful")
         stopWatch.log()
 
         this.project.rootProject = project.rootProject
@@ -115,13 +117,12 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         initialized = true
 
         notifyBuildSuccess(emptyList())
-        return@computeAsync InitializeResult(emptyMap())
+        return@supplyAsync InitializeResult(true)
       } catch (err: Throwable) {
-        log.error(err)
+        log.error("Failed to initialize project", err)
         notifyBuildFailure(emptyList())
+        return@supplyAsync InitializeResult(false)
       }
-
-      return@computeAsync InitializeResult(emptyMap())
     }
   }
 
@@ -130,14 +131,14 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun getRootProject(): CompletableFuture<IProject> {
-    return CompletableFutures.computeAsync {
+    return CompletableFuture.supplyAsync {
       assertProjectInitialized()
-      return@computeAsync this.project
+      return@supplyAsync this.project
     }
   }
 
   override fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult> {
-    return CompletableFutures.computeAsync {
+    return CompletableFuture.supplyAsync {
       assertProjectInitialized()
 
       log.debug("Received request to run tasks.", message)
@@ -177,10 +178,10 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         builder.run()
         this.buildCancellationToken = null
         notifyBuildSuccess(message.tasks)
-        return@computeAsync TaskExecutionResult(true, null)
+        return@supplyAsync TaskExecutionResult(true, null)
       } catch (error: Throwable) {
         notifyBuildFailure(message.tasks)
-        return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
+        return@supplyAsync TaskExecutionResult(false, getTaskFailureType(error))
       }
     }
   }
@@ -222,9 +223,9 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult> {
-    return CompletableFutures.computeAsync {
+    return CompletableFuture.supplyAsync {
       if (this.buildCancellationToken == null) {
-        return@computeAsync BuildCancellationRequestResult(
+        return@supplyAsync BuildCancellationRequestResult(
           false,
           BuildCancellationRequestResult.Reason.NO_RUNNING_BUILD
         )
@@ -235,10 +236,10 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
       } catch (e: Exception) {
         val failureReason = CANCELLATION_ERROR
         failureReason.message = "${failureReason.message}: ${e.message}"
-        return@computeAsync BuildCancellationRequestResult(false, failureReason)
+        return@supplyAsync BuildCancellationRequestResult(false, failureReason)
       }
 
-      return@computeAsync BuildCancellationRequestResult(true, null)
+      return@supplyAsync BuildCancellationRequestResult(true, null)
     }
   }
 
@@ -270,7 +271,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
     }
 
   private fun assertProjectInitialized() {
-    if (!isServerInitialized().get() || project == null) {
+    if (!isServerInitialized().get()) {
       throw CompletionException(IllegalStateException("Project is not initialized!"))
     }
   }
