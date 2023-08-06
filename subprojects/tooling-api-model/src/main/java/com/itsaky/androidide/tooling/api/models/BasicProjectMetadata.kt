@@ -37,5 +37,5 @@ open class BasicProjectMetadata(
 ) : Serializable {
 
   protected val gsonType: String = javaClass.name
-  private val serialVersionUID = 1L
+  protected val serialVersionUID = 1L
 }

@@ -52,8 +52,9 @@ import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.projects.api.GradleProject;
 
+import com.itsaky.androidide.projects.api.Project;
 import java.nio.file.Path;
 import java.util.Collections;
 

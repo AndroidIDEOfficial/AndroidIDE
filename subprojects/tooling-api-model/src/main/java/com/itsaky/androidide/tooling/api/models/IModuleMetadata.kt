@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.models.result
+package com.itsaky.androidide.tooling.api.models
 
 import java.io.File
 

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.tooling.impl
 
-import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
@@ -34,7 +33,6 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.BUILD_FAILED
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_CLOSED
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_ERROR
-import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_NOT_FOUND
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNKNOWN
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
@@ -55,7 +53,8 @@ import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
 import java.io.File
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionException
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -104,21 +103,19 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         val connection = this.connector!!.connect()
         stopWatch.lapFromLast("Project connection established")
 
-        val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
         val project = RootModelBuilder.build(connection to "debug") as? ProjectImpl?
         project ?: throw ModelBuilderException("Failed to build project model")
-
-        this.project.rootProject = project.rootProject
-        this.project.projects = project.projects
         stopWatch.lapFromLast("Project read successful")
 
         connection.close()
         stopWatch.log()
 
+        this.project.rootProject = project.rootProject
+        this.project.projects = project.projects
         initialized = true
 
         notifyBuildSuccess(emptyList())
-        return@computeAsync InitializeResult(issues)
+        return@computeAsync InitializeResult(emptyMap())
       } catch (err: Throwable) {
         log.error(err)
         notifyBuildFailure(emptyList())
@@ -151,10 +148,10 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         projectPath = IProject.ROOT_PROJECT_PATH
       }
 
-      val project = this.project!!.run {
+      val project = this.project.run {
         selectProject(StringParameter(projectPath)).get()
         asGradleProject()
-      } ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
+      }
 
       this.connector!!.forProjectDirectory(project.getMetadata().get().projectDir)
       setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)

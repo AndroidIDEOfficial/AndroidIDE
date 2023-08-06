@@ -30,6 +30,4 @@ open class AndroidVariantMetadata(
   name: String,
   mainArtifact: AndroidArtifactMetadata,
   val otherArtifacts: Map<String, AndroidArtifactMetadata>
-) : BasicAndroidVariantMetadata(name, mainArtifact), Serializable {
-  private val serialVersionUID = 1L
-}
+) : BasicAndroidVariantMetadata(name, mainArtifact)

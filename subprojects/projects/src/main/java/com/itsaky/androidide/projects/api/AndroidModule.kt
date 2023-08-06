@@ -32,7 +32,6 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.ProjectType.Android
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
@@ -47,7 +46,7 @@ import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
- * A [Project] model implementation for Android modules which is exposed to other modules and
+ * A [GradleProject] model implementation for Android modules which is exposed to other modules and
  * provides additional helper methods.
  *
  * @param name The display name of the project.
@@ -190,11 +189,11 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileClasspaths(): Set<File> {
-    val root = ProjectManager.rootProject ?: return emptySet()
+    val project = ProjectManager.rootProject ?: return emptySet()
     val result = mutableSetOf<File>()
     result.addAll(getModuleClasspaths())
 
-    collectLibraries(root, this.libraries, result)
+    collectLibraries(project, this.libraries, result)
     return result
   }
 

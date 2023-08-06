@@ -196,11 +196,11 @@ object ToolingApiLauncher {
   }
 
   private fun <T> GsonBuilder.runtimeTypeAdapter(baseClass: Class<T>,
-    vararg subtype: Class<out T>) {
+    vararg subtypes: Class<out T>) {
     registerTypeAdapterFactory(
       RuntimeTypeAdapterFactory.of(baseClass, "gsonType", true)
-        .registerSubtype(baseClass).also { factory ->
-          subtype.forEach { subtype ->
+        .registerSubtype(baseClass, baseClass.name).also { factory ->
+          subtypes.forEach { subtype ->
             factory.registerSubtype(subtype, subtype.name)
           }
         }

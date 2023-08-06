@@ -72,7 +72,7 @@ internal class ToolingServerRunner(
         "java.base/java.io=ALL-UNNAMED", // The JAR file to run
         "-jar", Environment.TOOLING_API_JAR.absolutePath)
 
-      val launcher = ToolingApiLauncher.newClientLauncher(observer?.getClient(),
+      val launcher = ToolingApiLauncher.newClientLauncher(observer!!.getClient(),
         serverStreams.`in`, serverStreams.out)
 
       val future = launcher.startListening()

@@ -22,7 +22,6 @@ import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultJavaCompileOptions : IJavaCompilerSettings(), JavaCompileOptions, Serializable {
-  private val serialVersionUID = 1L
   override var encoding: String = ""
   override var isCoreLibraryDesugaringEnabled: Boolean = false
 

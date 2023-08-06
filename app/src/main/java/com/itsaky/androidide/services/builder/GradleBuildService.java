@@ -220,7 +220,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     this.server = server;
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy);
     this.isToolingServerStarted = true;
-    ProjectManager.INSTANCE.setupProject(projectProxy);
+    ProjectManager.INSTANCE.setupProject(projectProxy, false);
   }
   
   @Override

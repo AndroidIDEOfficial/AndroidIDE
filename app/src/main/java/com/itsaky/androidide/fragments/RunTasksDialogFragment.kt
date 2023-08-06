@@ -49,7 +49,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.SingleTextWatcher
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
@@ -183,10 +183,11 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     viewModel.displayedChild = CHILD_LOADING
 
     executeAsync({
+      val project = ProjectManager.rootProject
       val rootProject =
-        ProjectManager.rootProject ?: return@executeAsync emptyList<Checkable<GradleTask>>()
+        project?.rootProject ?: return@executeAsync emptyList<Checkable<GradleTask>>()
       val tasks = rootProject.tasks.map { Checkable(false, it) }.toMutableList()
-      tasks.addAll(rootProject.subModules.flatMap { it.tasks }.map { Checkable(false, it) })
+      tasks.addAll(project.subProjects.flatMap { it.tasks }.map { Checkable(false, it) })
       return@executeAsync tasks
     }) { tasks ->
       viewModel.tasks = tasks ?: emptyList()

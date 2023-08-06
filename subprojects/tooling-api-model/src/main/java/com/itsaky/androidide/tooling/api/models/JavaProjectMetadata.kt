@@ -19,7 +19,6 @@ package com.itsaky.androidide.tooling.api.models
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.models.result.IModuleMetadata
 import java.io.File
 
 /**
@@ -38,7 +37,8 @@ class JavaProjectMetadata(
   type: ProjectType,
   val compilerSettings: IJavaCompilerSettings,
   override val classesJar: File?
-) : ProjectMetadata(name, path, projectDir, buildDir, description, buildScript, type), IModuleMetadata {
+) : ProjectMetadata(name, path, projectDir, buildDir, description, buildScript, type),
+  IModuleMetadata {
 
   constructor(base: ProjectMetadata, compilerSettings: IJavaCompilerSettings, classesJar: File?) :
       this(

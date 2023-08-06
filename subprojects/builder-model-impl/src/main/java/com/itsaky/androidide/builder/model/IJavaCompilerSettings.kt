@@ -25,6 +25,7 @@ package com.itsaky.androidide.builder.model
 abstract class IJavaCompilerSettings {
   
   private val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
 
   /** Source java version. */
   abstract val javaSourceVersion: String

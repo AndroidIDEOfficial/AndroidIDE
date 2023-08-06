@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author Akash Yadav
  */
-internal open class GradleProjectImpl(
+internal open class GradleProjectImpl (
   protected val gradleProject: GradleProject
 ) : IGradleProject, Serializable {
 

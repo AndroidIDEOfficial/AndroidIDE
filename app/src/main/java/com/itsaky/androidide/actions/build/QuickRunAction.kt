@@ -67,7 +67,7 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
           return@execTasks
         }
 
-        val (_, main) = foundVariant.get()
+        val main = foundVariant.get().mainArtifact
         val outputListingFile = main.assembleTaskOutputListingFile
         if (outputListingFile == null) {
           log.error("No output listing file provided with project model")

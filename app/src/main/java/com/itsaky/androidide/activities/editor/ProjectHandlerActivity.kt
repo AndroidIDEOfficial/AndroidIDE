@@ -44,7 +44,7 @@ import com.itsaky.androidide.projects.ProjectManager.projectInitialized
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.ProjectManager.rootProject
 import com.itsaky.androidide.projects.ProjectManager.setupProject
-import com.itsaky.androidide.projects.api.Project
+import com.itsaky.androidide.projects.api.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection
@@ -214,7 +214,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   override fun initializeProject() {
     val projectDir = File(projectPath)
     if (!projectDir.exists()) {
-      log.error("Project directory does not exist. Cannot initialize project")
+      log.error("GradleProject directory does not exist. Cannot initialize project")
       return
     }
 
@@ -250,7 +250,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
         // In this case, we should not start another project initialization
         log.debug("Using cached initialize result as the project is already initialized")
         CompletableFuture.supplyAsync {
-          log.warn("Project has already been initialized. Skipping initialization process.")
+          log.warn("GradleProject has already been initialized. Skipping initialization process.")
           cachedInitResult
         }
       }
@@ -336,7 +336,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
 
     val moduleDirs =
       try {
-        rootProject!!.subModules.stream().map(Project::projectDir).collect(Collectors.toList())
+        rootProject!!.subProjects.stream().map(GradleProject::projectDir).collect(Collectors.toList())
       } catch (e: Throwable) {
         flashError(getString(string.msg_no_modules))
         emptyList()
@@ -429,13 +429,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
   private fun initialSetup() {
     lastOpenedProject = getProjectDirPath()
     try {
-      val rootProject = rootProject
-      if (rootProject == null) {
-        log.warn("Project not initialized. Skipping initial setup...")
+      val project = rootProject
+      if (project == null) {
+        log.warn("GradleProject not initialized. Skipping initial setup...")
         return
       }
 
-      var projectName = rootProject.name
+      var projectName = project.rootProject.name
       if (projectName.isEmpty()) {
         projectName = File(getProjectDirPath()).name
       }

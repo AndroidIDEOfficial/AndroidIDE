@@ -44,8 +44,8 @@ import com.itsaky.androidide.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.androidide.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.progress.ICancelChecker;
-import com.itsaky.androidide.projects.api.Project;
 
+import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

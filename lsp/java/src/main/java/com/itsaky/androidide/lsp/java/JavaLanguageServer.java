@@ -63,6 +63,7 @@ import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.FileManager;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.api.GradleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
@@ -164,7 +165,7 @@ public class JavaLanguageServer implements ILanguageServer {
     JavaCompilerProvider.getInstance().destroy();
 
     // Cache classpath locations
-    for (final Project subModule : project.getSubModules()) {
+    for (final GradleProject subModule : project.getSubProjects()) {
       if (!(subModule instanceof ModuleProject)) {
         continue;
       }
@@ -284,7 +285,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return JavaCompilerService.NO_MODULE_COMPILER;
     }
 
-    final Project root = ProjectManager.INSTANCE.getRootProject();
+    final var root = ProjectManager.INSTANCE.getRootProject();
     if (root == null) {
       return JavaCompilerService.NO_MODULE_COMPILER;
     }

@@ -35,16 +35,16 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode.ASYNC
+import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.pathString
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode.ASYNC
-import org.greenrobot.eventbus.ThreadMode.BACKGROUND
 
 /**
  * Manages projects in AndroidIDE.
@@ -52,6 +52,7 @@ import org.greenrobot.eventbus.ThreadMode.BACKGROUND
  * @author Akash Yadav
  */
 object ProjectManager : EventReceiver {
+
   private val log = ILogger.newInstance(javaClass.simpleName)
   lateinit var projectPath: String
 
@@ -62,12 +63,14 @@ object ProjectManager : EventReceiver {
   var cachedInitResult: InitializeResult? = null
 
   @JvmOverloads
-  fun setupProject(project: IProject = Lookup.getDefault().lookup(BuildService.KEY_PROJECT_PROXY)!!) {
-    val caching = CachingProject(project)
-    this.rootProject = ProjectTransformer().transform(caching)
+  fun setupProject(
+    project: IProject = Lookup.getDefault().lookup(BuildService.KEY_PROJECT_PROXY)!!,
+    isInitialized: Boolean = true
+  ) {
+    this.rootProject = if (isInitialized) ProjectTransformer().transform(CachingProject(project)) else null
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
-      this.rootProject!!.subModules.filterIsInstance(ModuleProject::class.java).forEach {
+      this.rootProject!!.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
         it.indexSourcesAndClasspaths()
         if (it is AndroidModule) {
           it.readResources()
@@ -155,7 +158,7 @@ object ProjectManager : EventReceiver {
     executeAsync {
       if (rootProject != null) {
         // Update the source file index
-        rootProject!!.subModules.forEach {
+        rootProject!!.subProjects.forEach {
           if (it is ModuleProject) {
             it.indexSources()
           }
@@ -191,7 +194,7 @@ object ProjectManager : EventReceiver {
       return false
     }
 
-    for (module in this.rootProject!!.subModules) {
+    for (module in this.rootProject!!.subProjects) {
       if (module !is ModuleProject) {
         continue
       }
@@ -212,7 +215,7 @@ object ProjectManager : EventReceiver {
       return true
     }
 
-    log.warn("Project is not initialized yet!")
+    log.warn("GradleProject is not initialized yet!")
     return false
   }
 

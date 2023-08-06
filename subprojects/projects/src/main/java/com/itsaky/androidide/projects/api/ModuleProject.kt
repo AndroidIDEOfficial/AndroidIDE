@@ -23,7 +23,6 @@ import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
 import com.itsaky.androidide.projects.util.BootClasspathProvider
-import com.itsaky.androidide.tooling.api.IModuleProject
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.DocumentUtils
@@ -49,7 +48,7 @@ abstract class ModuleProject(
   buildScript: File,
   tasks: List<GradleTask>
 ) :
-  Project(name, description, path, projectDir, buildDir, buildScript, tasks) {
+  GradleProject(name, description, path, projectDir, buildDir, buildScript, tasks) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 

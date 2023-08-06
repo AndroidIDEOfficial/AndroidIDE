@@ -28,7 +28,7 @@ import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
 import java.io.File
 
 /**
- * A [Project] model implementation for Java library modules which is exposed to other modules and
+ * A [GradleProject] model implementation for Java library modules which is exposed to other modules and
  * provides additional helper methods.
  *
  * @param name The display name of the project.

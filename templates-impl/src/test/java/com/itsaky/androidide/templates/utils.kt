@@ -93,7 +93,7 @@ private fun generateTemplateProject(name: String, languages: Array<Language>,
   for (language in languages) {
     val packageName = "com.itsaky.androidide.template.${language.lang}"
     run {
-      val projectName = "${name}Project${language.name}WithoutKts"
+      val projectName = "${name}GradleProject${language.name}WithoutKts"
 
       File(testProjectsDir, projectName).apply {
         if (exists()) deleteRecursively()
@@ -108,7 +108,7 @@ private fun generateTemplateProject(name: String, languages: Array<Language>,
     }
 
     run {
-      val projectName = "${name}Project${language.name}WithKts"
+      val projectName = "${name}GradleProject${language.name}WithKts"
 
       File(testProjectsDir, projectName).apply {
         if (exists()) deleteRecursively()

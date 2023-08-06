@@ -228,7 +228,7 @@ class LayoutInflaterTest {
   }
 
   private fun layoutFile(name: String): File {
-    val app = ProjectManager.app ?: throw IllegalStateException("Project is not initialized")
+    val app = ProjectManager.app ?: throw IllegalStateException("GradleProject is not initialized")
     return File(app.projectDir, "src/main/res/layout/$name.xml")
   }
 

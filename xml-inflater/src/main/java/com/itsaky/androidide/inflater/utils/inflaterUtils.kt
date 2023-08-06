@@ -93,7 +93,7 @@ fun processXmlFile(file: File, expectedType: AaptResourceType): Pair<XmlProcesso
   }
 
   if (ProjectManager.rootProject == null) {
-    throw InflateException("Project is not initialized!")
+    throw InflateException("GradleProject is not initialized!")
   }
 
   val module =

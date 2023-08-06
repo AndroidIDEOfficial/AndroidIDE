@@ -17,55 +17,29 @@
 
 package com.itsaky.androidide.projects.api
 
-import com.android.builder.model.v2.ide.ProjectType.APPLICATION
-import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.models.GradleTask
+import com.android.builder.model.v2.ide.ProjectType
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 import java.io.File
 import java.nio.file.Path
-import java.util.concurrent.*
 
 /**
- * A Gradle project model which is identical to [IProject]. This project module caches all the data
- * from an [IProject] eliminating the use of [CompletableFuture] s.
+ * Model for representing the whole project that is opened in the IDE (including the root project).
  *
- * @param name The display name of the project.
- * @param description The project description.
- * @param path The project path (same as Gradle project paths). For example, `:app`,
- *   `:module:submodule`, etc. Root project is always represented by path `:`.
- * @param projectDir The project directory.
- * @param buildDir The build directory of the project.
- * @param buildScript The Gradle buildscript file of the project.
- * @param parentPath The parent project path. Always `null` for root project.
- * @param tasks The tasks of the project.
- * @param subModules The submodules of the project.
+ * @property rootProject The root Gradle project.
+ * @property subProjects List of all project that are included the project.
+ * @property syncIssues The issues that occurred while syncing the project.
  * @author Akash Yadav
  */
-open class Project(
-  val name: String,
-  val description: String,
-  val path: String,
-  val projectDir: File,
-  val buildDir: File,
-  val buildScript: File,
-  val tasks: List<GradleTask>,
-  val subModules: List<Project> = mutableListOf()
-) {
-
-  var type: ProjectType = ProjectType.Gradle
-    protected set
+data class Project(val rootProject: GradleProject, val subProjects: List<GradleProject>,
+  val syncIssues: Map<String, DefaultProjectSyncIssues>) {
 
   /**
    * Finds the project by the given path.
    *
    * @return The project with the given path or `null` if no project is available with that path.
    */
-  fun findByPath(path: String): Project? {
-    if (path == this.path) {
-      return this
-    }
-
-    return this.subModules.find { it.path == path }
+  fun findByPath(path: String): GradleProject? {
+    return this.subProjects.find { it.path == path }
   }
 
   /**
@@ -75,10 +49,7 @@ open class Project(
    * @return The first Android module.
    */
   fun findFirstAndroidModule(): AndroidModule? {
-    if (this is AndroidModule) {
-      return this
-    }
-    val android = this.subModules.find { it is AndroidModule }
+    val android = this.subProjects.find { it is AndroidModule }
     if (android != null) {
       return android as AndroidModule
     }
@@ -93,10 +64,7 @@ open class Project(
    * @return The first Android module.
    */
   fun findFirstAndroidAppModule(): AndroidModule? {
-    if (this is AndroidModule && this.projectType == APPLICATION) {
-      return this
-    }
-    val app = this.subModules.find { it is AndroidModule && it.projectType == APPLICATION }
+    val app = this.subProjects.find { it is AndroidModule && it.projectType == ProjectType.APPLICATION }
 
     if (app != null) {
       return app as AndroidModule
@@ -111,12 +79,7 @@ open class Project(
    * @return The list of android modules.
    */
   fun findAndroidModules(): List<AndroidModule> {
-    val androidModules = this.subModules.filterIsInstance(AndroidModule::class.java).toMutableList()
-
-    if (this is AndroidModule) {
-      androidModules.add(0, this)
-    }
-    return androidModules
+    return subProjects.filterIsInstance(AndroidModule::class.java).toMutableList()
   }
 
   fun findModuleForFile(file: Path): ModuleProject? {
@@ -134,7 +97,7 @@ open class Project(
     var longestPath = ""
     var moduleWithLongestPath: ModuleProject? = null
 
-    for (module in subModules) {
+    for (module in subProjects) {
       if (module !is ModuleProject) {
         continue
       }

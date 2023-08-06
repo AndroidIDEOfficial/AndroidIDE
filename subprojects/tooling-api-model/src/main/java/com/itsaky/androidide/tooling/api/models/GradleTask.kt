@@ -37,4 +37,4 @@ open class GradleTask(
   displayName: String?,
   isPublic: Boolean?,
   val projectPath: String?
-) : Launchable(displayName, isPublic ?: false), Serializable
+) : Launchable(displayName, isPublic ?: false)

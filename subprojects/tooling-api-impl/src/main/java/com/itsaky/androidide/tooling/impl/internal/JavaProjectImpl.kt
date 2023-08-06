@@ -106,7 +106,10 @@ internal class JavaProjectImpl(
   }
 
   private fun getClassesJar(): File {
-    val metadata = getMetadata().get()
+    return getClassesJar(getMetadata().get())
+  }
+
+  private fun getClassesJar(metadata: ProjectMetadata): File {
     var jar = File(metadata.buildDir, "libs/${metadata.name}.jar")
     if (jar.exists()) {
       return jar
@@ -128,7 +131,11 @@ internal class JavaProjectImpl(
   override fun getMetadata(): CompletableFuture<ProjectMetadata> {
     return CompletableFuture.supplyAsync {
       val base = super.getMetadata().get()
-      return@supplyAsync JavaProjectMetadata(base, compilerSettings, getClassesJar())
+
+      // do not call getClassesJar() here
+      // it'll try to fetch metadata which will in return call this method
+      // this will result in an infinite loop
+      return@supplyAsync JavaProjectMetadata(base, compilerSettings, getClassesJar(base))
     }
   }
 }

@@ -22,7 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.models.Checkable
-import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.models.GradleTask
 
 /** @author Akash Yadav */
 class RunTasksViewModel : ViewModel() {

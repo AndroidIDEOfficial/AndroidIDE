@@ -40,5 +40,6 @@ data class AndroidArtifactMetadata(
   val compileTaskName: String,
   val targetSdkVersionOverride: Int
 ) : Serializable {
+  private val gsonType: String = javaClass.name
   private val serialVersionUID = 1L
 }

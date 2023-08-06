@@ -17,10 +17,15 @@
 
 package com.itsaky.androidide.tooling.api.models
 
+import java.io.Serializable
+
 /**
  * Represents a Gradle dependency artifact.
  *
  * @author Akash Yadav
  */
-data class GradleArtifact(val group: String, val name: String, val version: String) :
-  java.io.Serializable
+data class GradleArtifact(val group: String, val name: String, val version: String) : Serializable {
+
+  private val gsonType: String = javaClass.name
+  private val serialVersionUID = 1L
+}

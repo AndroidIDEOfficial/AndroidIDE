@@ -457,6 +457,7 @@ abstract class BaseEditorActivity :
   }
 
   private fun onBuildStatusChanged() {
+    log.debug("onBuildStatusChanged: isInitializing: ${viewModel.isInitializing}, isBuildInProgress: ${viewModel.isBuildInProgress}")
     val visible = viewModel.isBuildInProgress || viewModel.isInitializing
     binding.buildProgressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()

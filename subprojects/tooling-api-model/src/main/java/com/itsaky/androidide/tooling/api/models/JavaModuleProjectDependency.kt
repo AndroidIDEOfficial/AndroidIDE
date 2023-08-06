@@ -37,4 +37,4 @@ class JavaModuleProjectDependency(
 
   /** Whether the dependency is exported. */
   exported: Boolean
-) : JavaModuleDependency(null, scope, exported), Serializable {}
+) : JavaModuleDependency(null, scope, exported), Serializable

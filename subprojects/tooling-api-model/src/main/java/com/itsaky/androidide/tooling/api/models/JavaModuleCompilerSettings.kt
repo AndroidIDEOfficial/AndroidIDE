@@ -29,8 +29,6 @@ class JavaModuleCompilerSettings(
   override val javaBytecodeVersion: String
 ) : IJavaCompilerSettings(), java.io.Serializable {
 
-  private val serialVersionUID = 1L
-
   // IMPORTANT
   // Do not use javax.lang.model.SourceVersion reference here
   // When running on Android, this class is preset as jdkx.lang.model.SourceVersion

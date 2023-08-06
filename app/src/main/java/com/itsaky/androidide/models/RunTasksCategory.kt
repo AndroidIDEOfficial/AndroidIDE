@@ -18,7 +18,7 @@
 package com.itsaky.androidide.models
 
 import androidx.annotation.StringRes
-import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.models.GradleTask
 
 /** @author Akash Yadav */
 data class RunTasksCategory(@StringRes val title: Int, val tasks: List<Checkable<GradleTask>>)

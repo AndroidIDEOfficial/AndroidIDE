@@ -18,9 +18,11 @@
 package com.itsaky.androidide.projects.util
 
 import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.api.GradleProject
 import com.itsaky.androidide.projects.api.JavaModule
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.tooling.api.IAndroidProject
+import com.itsaky.androidide.tooling.api.IGradleProject
 import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.ProjectType
@@ -49,30 +51,34 @@ class ProjectTransformer {
       }
 
       val rootProject = when (project.getType().get()) {
-        ProjectType.Gradle -> project.asGradleProject()
-        ProjectType.Android -> project.asGradleProject()
+        ProjectType.Gradle -> transform(project.asGradleProject())
+        ProjectType.Android -> transform(project.asAndroidProject())
         else -> throw IllegalStateException(
           "Root project must be either an Android project or a Gradle project")
       }
 
-      val metadata = rootProject.getMetadata().get()
-      return Project(
-        name = metadata.name ?: IProject.PROJECT_UNKNOWN,
-        description = metadata.description ?: "",
-        path = metadata.projectPath,
-        projectDir = metadata.projectDir,
-        buildDir = metadata.buildDir,
-        buildScript = metadata.buildScript,
-
-        // As these lists will never change, we could make these thread-safe with
-        // CopyOnWriteArrayList
-        tasks = CopyOnWriteArrayList(rootProject.getTasks().get() ?: listOf()),
-        subModules = CopyOnWriteArrayList(transform(allProjects, project))
-      )
+      return Project(rootProject, CopyOnWriteArrayList(transform(allProjects, project)),
+        project.getProjectSyncIssues().get())
     } catch (error: Throwable) {
       log.error("Unable to transform project", error)
       return null
     }
+  }
+
+  private fun transform(rootProject: IGradleProject): GradleProject {
+    val metadata = rootProject.getMetadata().get()
+    return GradleProject(
+      name = metadata.name ?: IProject.PROJECT_UNKNOWN,
+      description = metadata.description ?: "",
+      path = metadata.projectPath,
+      projectDir = metadata.projectDir,
+      buildDir = metadata.buildDir,
+      buildScript = metadata.buildScript,
+
+      // The list will never change, we could make these thread-safe with
+      // CopyOnWriteArrayList
+      tasks = CopyOnWriteArrayList(rootProject.getTasks().get() ?: listOf()),
+    )
   }
 
   private fun transform(
@@ -109,7 +115,7 @@ class ProjectTransformer {
   }
 
   private fun transform(project: IJavaProject): JavaModule {
-    val metadata = project.getMetadata() as JavaProjectMetadata
+    val metadata = project.getMetadata().get() as JavaProjectMetadata
     return JavaModule(
       name = metadata.name ?: IProject.PROJECT_UNKNOWN,
       description = metadata.description ?: "",
@@ -125,15 +131,15 @@ class ProjectTransformer {
     )
   }
 
-  private fun transform(modules: List<BasicProjectMetadata>, root: IProject): List<Project> {
-    return mutableListOf<Project>().apply {
+  private fun transform(modules: List<BasicProjectMetadata>, root: IProject): List<GradleProject> {
+    return mutableListOf<GradleProject>().apply {
       for (module in modules) {
         add(createProject(module, root))
       }
     }
   }
 
-  private fun createProject(moduleMetadata: BasicProjectMetadata, root: IProject): Project {
+  private fun createProject(moduleMetadata: BasicProjectMetadata, root: IProject): GradleProject {
     val selectionResult = root.selectProject(StringParameter(moduleMetadata.projectPath)).get()
     check(selectionResult.isSuccessful) {
       "Selection failed for project '${moduleMetadata.projectPath}' but it is included in all projects."
@@ -143,9 +149,10 @@ class ProjectTransformer {
 
     return when (type) {
       ProjectType.Gradle,
-      ProjectType.Unknown -> transform(project)!!
-      ProjectType.Android -> transform(project as IAndroidProject)
-      ProjectType.Java -> transform(project as IJavaProject)
+      ProjectType.Unknown -> transform(root.asGradleProject())
+
+      ProjectType.Android -> transform(root.asAndroidProject())
+      ProjectType.Java -> transform(root.asJavaProject())
     }
   }
 }

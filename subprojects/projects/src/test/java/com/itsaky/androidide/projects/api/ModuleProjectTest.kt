@@ -24,6 +24,7 @@ import com.itsaky.androidide.eventbus.events.file.FileRenameEvent
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
@@ -51,15 +52,20 @@ class ModuleProjectTest {
 
     verifyProjectManagerAPIs()
 
-    val root = ProjectManager.rootProject
+    assertThat(project).isNotNull()
+
+    val rootProject = ProjectManager.rootProject
+    assertThat(rootProject).isNotNull()
+
+    val root = rootProject!!.rootProject
     assertThat(root).isNotNull()
-    assertThat(root!!.name).isEqualTo("TestApp")
+    assertThat(root.name).isEqualTo("TestApp")
 
     val rootDir = root.projectDir
     assertThat(rootDir).isNotNull()
     assertThat(Files.isSameFile(rootDir.toPath(), FileProvider.testProjectRoot())).isTrue()
 
-    val app = root.findByPath(":app")
+    val app = rootProject.findByPath(":app")
     assertThat(app).isNotNull()
     assertThat(app).isInstanceOf(AndroidModule::class.java)
 
@@ -75,7 +81,7 @@ class ModuleProjectTest {
     assertThat(app.compilerSettings.javaBytecodeVersion)
       .isEqualTo(app.compilerSettings.targetCompatibility)
 
-    val anotherAndroidLib = root.findByPath(":another-android-library")
+    val anotherAndroidLib = rootProject.findByPath(":another-android-library")
     assertThat(anotherAndroidLib).isNotNull()
     assertThat(anotherAndroidLib).isInstanceOf(AndroidModule::class.java)
 
@@ -90,11 +96,11 @@ class ModuleProjectTest {
       .containsAtLeast(
         File(
           anotherAndroidLibDir,
-          "build/${com.itsaky.androidide.tooling.api.model.AndroidModule.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
+          "build/${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
         ),
         File(
           anotherAndroidLibDir,
-          "build/${com.itsaky.androidide.tooling.api.model.AndroidModule.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
+          "build/${IAndroidProject.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
         )
       )
     assertThat(
@@ -129,15 +135,15 @@ class ModuleProjectTest {
         .containsAtLeast(
           File(
             anotherAndroidLibDir,
-            "build/${com.itsaky.androidide.tooling.api.model.AndroidModule.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
+            "build/${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/debug/classes.jar"
           ),
           File(
             app.projectDir,
-            "build/${com.itsaky.androidide.tooling.api.model.AndroidModule.FD_INTERMEDIATES}/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar"
+            "build/${IAndroidProject.FD_INTERMEDIATES}/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar"
           ),
           File(
             anotherAndroidLibDir,
-            "build/${com.itsaky.androidide.tooling.api.model.AndroidModule.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
+            "build/${IAndroidProject.FD_INTERMEDIATES}/compile_r_class_jar/debug/R.jar"
           )
         )
       assertThat(
@@ -150,7 +156,7 @@ class ModuleProjectTest {
         .hasSize(3)
     }
 
-    val javaLibrary = root.findByPath(":java-library")
+    val javaLibrary = rootProject.findByPath(":java-library")
     assertThat(javaLibrary).isNotNull()
     assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
 
@@ -172,7 +178,7 @@ class ModuleProjectTest {
     assertThat(classes.map { it::class.java })
       .containsExactly(SourceNode::class.java, SourceNode::class.java)
 
-    root.findByPath(":another-java-library").run {
+    rootProject.findByPath(":another-java-library").run {
       assertThat(this).isInstanceOf(JavaModule::class.java)
       assertThat((this as JavaModule).compilerSettings).isNotNull()
       assertThat(compilerSettings.javaSourceVersion).isEqualTo("1.8")
@@ -199,13 +205,16 @@ class ModuleProjectTest {
 
     ProjectManager.setupProject()
 
-    val root = ProjectManager.rootProject
+    val rootProject = ProjectManager.rootProject
+    assertThat(rootProject).isNotNull()
+
+    val root = rootProject?.rootProject
     assertThat(root).isNotNull()
     assertThat(root!!.path).isEqualTo(":")
 
     val source =
       root.projectDir.toPath().resolve("app/src/main/java/com/itsaky/test/app/MainActivity.java")
-    val module = root.findModuleForFile(source)
+    val module = rootProject.findModuleForFile(source)
     assertThat(module).isNotNull()
     assertThat(module!!.path).isEqualTo(":app")
     assertThat(module.projectDir.path).isEqualTo(File(root.projectDir, "app").path)

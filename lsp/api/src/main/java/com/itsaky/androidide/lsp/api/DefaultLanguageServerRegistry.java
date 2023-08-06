@@ -21,8 +21,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.eventbus.events.project.ProjectInitializedEvent;
-import com.itsaky.androidide.projects.api.Project;
+import com.itsaky.androidide.projects.api.GradleProject;
 
+import com.itsaky.androidide.projects.api.Project;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;

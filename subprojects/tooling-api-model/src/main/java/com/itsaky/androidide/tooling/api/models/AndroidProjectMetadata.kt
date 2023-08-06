@@ -21,7 +21,6 @@ import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlag
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.models.result.IModuleMetadata
 import java.io.File
 
 /**
