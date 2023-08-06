@@ -41,6 +41,7 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
         "IdeaProject model could not be created")
 
       val ideaModules = ideaProject.modules
+      val modulePaths = mapOf(*ideaModules.map { it.name to it.gradleProject.path }.toTypedArray())
       val rootModule = ideaModules.find { it.gradleProject.path == ":" }
         ?: throw ModelBuilderException(
           "No GradleProject model is associated with project path: ':'")
@@ -56,7 +57,8 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
       }
 
       val projects = ideaModules.map { ideaModule ->
-        ModuleProjectModelBuilder(androidVariant).build(controller to ideaModule)
+        ModuleProjectModelBuilder(androidVariant).build(
+          ModuleProjectModelBuilderParams(controller, ideaProject, ideaModule, modulePaths))
       }
 
       ProjectImpl(rootProject, projects)

@@ -25,12 +25,16 @@ import com.itsaky.androidide.tooling.api.IModuleProject
  * @author Akash Yadav
  */
 class ModuleProjectModelBuilder(androidVariant: String = VARIANT_DEBUG) :
-  AbstractModelBuilder<BuildControllderAndIdeaModule, IModuleProject>(androidVariant) {
+  AbstractModelBuilder<ModuleProjectModelBuilderParams, IModuleProject>(androidVariant) {
 
-  override fun build(param: BuildControllderAndIdeaModule): IModuleProject {
-    val (controller, module) = param
-    val isAndroidProject = getAndroidVersions(module, controller) != null
-    return if (isAndroidProject) AndroidProjectModelBuilder(androidVariant).build(
-      controller to module) else JavaProjectModelBuilder().build(module)
+  override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {
+    val isAndroidProject = getAndroidVersions(param.module, param.controller) != null
+    return if (isAndroidProject) {
+      AndroidProjectModelBuilder(androidVariant).build(
+        param.controller to param.module)
+    } else {
+      JavaProjectModelBuilder().build(
+        JavaProjectModelBuilderParams(param))
+    }
   }
 }

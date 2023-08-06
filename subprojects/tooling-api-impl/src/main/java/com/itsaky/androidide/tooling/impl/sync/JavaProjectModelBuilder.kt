@@ -17,18 +17,46 @@
 
 package com.itsaky.androidide.tooling.impl.sync
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IJavaProject
+import com.itsaky.androidide.tooling.api.models.JavaModuleCompilerSettings
 import com.itsaky.androidide.tooling.impl.internal.JavaProjectImpl
 import org.gradle.tooling.model.idea.IdeaModule
+import org.gradle.tooling.model.idea.IdeaProject
 
 /**
  * Builds model for Java library projects.
  *
  * @author Akash Yadav
  */
-class JavaProjectModelBuilder : AbstractModelBuilder<IdeaModule, IJavaProject>() {
+class JavaProjectModelBuilder :
+  AbstractModelBuilder<JavaProjectModelBuilderParams, IJavaProject>() {
 
-  override fun build(param: IdeaModule): IJavaProject {
-    return JavaProjectImpl(param.gradleProject)
+  override fun build(param: JavaProjectModelBuilderParams): IJavaProject {
+    val compilerSettings = createCompilerSettings(param.project, param.module)
+    return JavaProjectImpl(param.module, compilerSettings, param.modulePaths)
+  }
+
+  private fun createCompilerSettings(
+    ideaProject: IdeaProject, module: IdeaModule): IJavaCompilerSettings {
+    val javaLanguageSettings = module.javaLanguageSettings
+      ?: return createCompilerSettings(ideaProject)
+    val languageLevel = javaLanguageSettings.languageLevel
+    val targetBytecodeVersion = javaLanguageSettings.targetBytecodeVersion
+    if (languageLevel == null || targetBytecodeVersion == null) {
+      return createCompilerSettings(ideaProject)
+    }
+    val source = languageLevel.toString()
+    val target = targetBytecodeVersion.toString()
+    return JavaModuleCompilerSettings(source, target)
+  }
+
+  private fun createCompilerSettings(ideaProject: IdeaProject): IJavaCompilerSettings {
+    val settings = ideaProject.javaLanguageSettings ?: return JavaModuleCompilerSettings()
+    val source = settings.languageLevel
+    val target = settings.targetBytecodeVersion
+    return if (source == null || target == null) {
+      JavaModuleCompilerSettings()
+    } else JavaModuleCompilerSettings(source.toString(), target.toString())
   }
 }

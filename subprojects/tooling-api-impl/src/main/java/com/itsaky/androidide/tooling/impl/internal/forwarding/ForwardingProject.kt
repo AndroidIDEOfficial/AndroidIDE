@@ -25,7 +25,6 @@ import com.itsaky.androidide.tooling.api.IGradleProject
 import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.models.AndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
-import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.models.JavaContentRoot
 import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
@@ -103,7 +102,7 @@ internal class ForwardingProject(var project: IGradleProject? = null) : IGradleP
       UnsupportedOperationException())
   }
 
-  override fun getMetadata(): CompletableFuture<BasicProjectMetadata> {
+  override fun getMetadata(): CompletableFuture<ProjectMetadata> {
     return this.project?.getMetadata() ?: CompletableFuture.failedFuture(
       UnsupportedOperationException())
   }

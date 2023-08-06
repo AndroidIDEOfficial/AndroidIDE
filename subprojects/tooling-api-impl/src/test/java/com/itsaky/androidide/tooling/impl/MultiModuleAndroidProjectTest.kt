@@ -21,11 +21,15 @@ import com.android.builder.model.v2.ide.LibraryType
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.tooling.api.IAndroidProject
+import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
+import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
@@ -122,42 +126,54 @@ class MultiModuleAndroidProjectTest {
     assertThat(metadata.javaCompileOptions.javaBytecodeVersion).isEqualTo("11")
 
     selectionResult = project.selectProject(StringParameter(":java-library")).get()
+    assertThat(selectionResult.isSuccessful).isTrue()
+
     val javaLibrary = project.asJavaProject()
-//    assertThat(javaLibrary).isNotNull()
-//    assertThat(javaLibrary).isInstanceOf(JavaModule::class.java)
-//    assertThat((javaLibrary as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("11")
-//    assertThat(javaLibrary.compilerSettings.javaBytecodeVersion).isEqualTo("11")
-//    assertThat(
-//      javaLibrary.javaDependencies.firstOrNull {
-//        it is JavaModuleExternalDependency &&
-//            it.gradleArtifact != null &&
-//            it.run {
-//              gradleArtifact!!.group == "io.github.itsaky" &&
-//                  gradleArtifact!!.name == "nb-javac-android" &&
-//                  gradleArtifact!!.version == "17.0.0.0"
-//            }
-//      }
-//    )
-//      .isNotNull()
-//    assertThat(
-//      javaLibrary.javaDependencies.firstOrNull {
-//        it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
-//      }
-//    )
-//      .isNotNull()
-//    // In case we have multiple dependencies with same name but different path
-//    val nested =
-//      javaLibrary.javaDependencies
-//        .filterIsInstance(JavaModuleProjectDependency::class.java)
-//        .filter { it.moduleName.endsWith("nested-java-library") }
-//    assertThat(nested).hasSize(2)
-//    assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
-//    assertThat(project.findByPath(":does-not-exist").get()).isNull()
-//    val anotherJavaLib = project.findByPath(":another-java-library").get()
-//    assertThat(anotherJavaLib).isNotNull()
-//    assertThat(anotherJavaLib).isInstanceOf(JavaModule::class.java)
-//    assertThat((anotherJavaLib as JavaModule).compilerSettings.javaSourceVersion).isEqualTo("1.8")
-//    assertThat(anotherJavaLib.compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
+    assertThat(javaLibrary).isNotNull()
+    assertThat(javaLibrary!!).isInstanceOf(IJavaProject::class.java)
+
+    var javaMetadata = javaLibrary.getMetadata().get() as JavaProjectMetadata
+    assertThat(javaMetadata.compilerSettings.javaSourceVersion).isEqualTo("11")
+    assertThat(javaMetadata.compilerSettings.javaBytecodeVersion).isEqualTo("11")
+
+    val javaDependencies = javaLibrary.getDependencies().get()
+    assertThat(
+      javaDependencies.firstOrNull {
+        it is JavaModuleExternalDependency &&
+            it.gradleArtifact != null &&
+            it.run {
+              gradleArtifact!!.group == "io.github.itsaky" &&
+                  gradleArtifact!!.name == "nb-javac-android" &&
+                  gradleArtifact!!.version == "17.0.0.0"
+            }
+      }
+    )
+      .isNotNull()
+    assertThat(
+      javaDependencies.firstOrNull {
+        it is JavaModuleProjectDependency && it.moduleName == "another-java-library"
+      }
+    )
+      .isNotNull()
+    // In case we have multiple dependencies with same name but different path
+    val nested =
+      javaDependencies
+        .filterIsInstance(JavaModuleProjectDependency::class.java)
+        .filter { it.moduleName.endsWith("nested-java-library") }
+    assertThat(nested).hasSize(2)
+    assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
+    assertThat(project.selectProject(StringParameter(":does-not-exist")).get().isSuccessful).isFalse()
+
+    selectionResult = project.selectProject(StringParameter(":another-java-library")).get()
+    assertThat(selectionResult.isSuccessful).isTrue()
+
+    val anotherJavaLib = project.asJavaProject()
+    assertThat(anotherJavaLib).isNotNull()
+    assertThat(anotherJavaLib!!).isInstanceOf(IJavaProject::class.java)
+
+    javaMetadata = anotherJavaLib.getMetadata().get() as JavaProjectMetadata
+    assertThat(javaMetadata.compilerSettings.javaSourceVersion).isEqualTo("1.8")
+    assertThat(javaMetadata.compilerSettings.javaBytecodeVersion).isEqualTo("1.8")
   }
 
   /**

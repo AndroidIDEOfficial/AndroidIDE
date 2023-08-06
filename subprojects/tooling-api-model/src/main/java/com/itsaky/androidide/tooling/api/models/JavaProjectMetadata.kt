@@ -18,23 +18,35 @@
 package com.itsaky.androidide.tooling.api.models
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
+import com.itsaky.androidide.tooling.api.ProjectType
+import java.io.File
 
 /**
- * Compiler settings for [JavaModule].
+ * Metadata about a Java project.
  *
+ * @property compilerSettings Compiler settings for this project.
  * @author Akash Yadav
  */
-class JavaModuleCompilerSettings(
-  override val javaSourceVersion: String,
-  override val javaBytecodeVersion: String
-) : IJavaCompilerSettings(), java.io.Serializable {
+class JavaProjectMetadata(
+  name: String?,
+  path: String,
+  projectDir: File,
+  buildDir: File,
+  description: String?,
+  buildScript: File,
+  type: ProjectType,
+  val compilerSettings: IJavaCompilerSettings
+) : ProjectMetadata(name, path, projectDir, buildDir, description, buildScript, type) {
 
-  private val serialVersionUID = 1L
-
-  // IMPORTANT
-  // Do not use javax.lang.model.SourceVersion reference here
-  // When running on Android, this class is preset as jdkx.lang.model.SourceVersion
-  // Using the 'javax' reference will result a 'ClassNotFoundException' while deserializing the
-  // JSONRpc data received from the Tooling API server
-  constructor() : this("RELEASE_11", "RELEASE_11")
+  constructor(base: ProjectMetadata, compilerSettings: IJavaCompilerSettings) :
+      this(
+        base.name,
+        base.projectPath,
+        base.projectDir,
+        base.buildDir,
+        base.description,
+        base.buildScript,
+        base.type,
+        compilerSettings
+      )
 }

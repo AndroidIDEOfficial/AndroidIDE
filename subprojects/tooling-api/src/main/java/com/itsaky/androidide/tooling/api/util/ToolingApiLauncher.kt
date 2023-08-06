@@ -31,6 +31,7 @@ import com.itsaky.androidide.tooling.api.models.JavaModuleCompilerSettings
 import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.Launchable
 import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import com.itsaky.androidide.tooling.events.OperationDescriptor
@@ -102,10 +103,19 @@ object ToolingApiLauncher {
   @JvmStatic
   fun configureGson(builder: GsonBuilder) {
     builder.registerTypeAdapter(File::class.java, FileTypeAdapter())
+
+    // some methods return BasicProjectMetadata while some return ProjectMetadata
+    // so we need to register type adapter for both of them
     builder.runtimeTypeAdapter(
       BasicProjectMetadata::class.java,
       ProjectMetadata::class.java,
-      AndroidProjectMetadata::class.java
+      AndroidProjectMetadata::class.java,
+      JavaProjectMetadata::class.java
+    )
+    builder.runtimeTypeAdapter(
+      ProjectMetadata::class.java,
+      AndroidProjectMetadata::class.java,
+      JavaProjectMetadata::class.java
     )
     builder.runtimeTypeAdapter(
       BasicAndroidVariantMetadata::class.java,

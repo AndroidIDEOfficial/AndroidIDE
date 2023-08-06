@@ -19,7 +19,6 @@ package com.itsaky.androidide.tooling.impl.internal
 
 import com.itsaky.androidide.tooling.api.IGradleProject
 import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import org.gradle.tooling.model.GradleProject
@@ -35,7 +34,7 @@ internal open class GradleProjectImpl(
 
   private val serialVersionUID = 1L
 
-  override fun getMetadata(): CompletableFuture<BasicProjectMetadata> {
+  override fun getMetadata(): CompletableFuture<ProjectMetadata> {
     return CompletableFuture.supplyAsync {
       ProjectMetadata(
         gradleProject.name,

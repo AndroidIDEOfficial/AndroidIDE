@@ -35,7 +35,6 @@ import com.itsaky.androidide.tooling.api.models.AndroidArtifactMetadata
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
 import com.itsaky.androidide.tooling.api.models.AndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
-import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
@@ -176,7 +175,7 @@ internal class AndroidProjectImpl(
     }
   }
 
-  override fun getMetadata(): CompletableFuture<BasicProjectMetadata> {
+  override fun getMetadata(): CompletableFuture<ProjectMetadata> {
     return CompletableFuture.supplyAsync {
       val gradleMetadata = super.getMetadata().get()
 
@@ -185,7 +184,7 @@ internal class AndroidProjectImpl(
         ?: DefaultViewBindingOptions()
 
       return@supplyAsync AndroidProjectMetadata(
-        gradleMetadata as ProjectMetadata,
+        gradleMetadata,
         packageName,
         basicAndroidProject.projectType,
         copy(androidProject.flags),

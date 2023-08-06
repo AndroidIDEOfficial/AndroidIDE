@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.itsaky.androidide.tooling.api.models.BasicProjectMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
@@ -38,16 +37,11 @@ interface IGradleProject {
    * @see [ProjectMetadata].
    */
   @JsonRequest
-  fun getMetadata(): CompletableFuture<BasicProjectMetadata>
+  fun getMetadata(): CompletableFuture<ProjectMetadata>
 
   /**
    * Get this project's tasks.
    */
   @JsonRequest
   fun getTasks(): CompletableFuture<List<GradleTask>>
-
-  companion object {
-
-    const val FILE_PATH_NOT_AVAILABLE = "<not_available>"
-  }
 }

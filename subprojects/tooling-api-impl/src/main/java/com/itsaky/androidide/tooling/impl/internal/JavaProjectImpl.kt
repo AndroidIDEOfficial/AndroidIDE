@@ -17,12 +17,19 @@
 
 package com.itsaky.androidide.tooling.impl.internal
 
+import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IJavaProject
-import com.itsaky.androidide.tooling.api.models.GradleTask
+import com.itsaky.androidide.tooling.api.models.GradleArtifact
 import com.itsaky.androidide.tooling.api.models.JavaContentRoot
 import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
+import com.itsaky.androidide.tooling.api.models.JavaSourceDirectory
 import com.itsaky.androidide.tooling.api.models.ProjectMetadata
-import org.gradle.tooling.model.GradleProject
+import org.gradle.tooling.model.idea.IdeaModule
+import org.gradle.tooling.model.idea.IdeaModuleDependency
+import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.CompletableFuture
@@ -30,24 +37,100 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author Akash Yadav
  */
-internal class JavaProjectImpl(gradleProject: GradleProject) : GradleProjectImpl(gradleProject),
+internal class JavaProjectImpl(
+  private val ideaModule: IdeaModule,
+  private val compilerSettings: IJavaCompilerSettings,
+  private var allModulePaths: Map<String, String> = emptyMap()
+) : GradleProjectImpl(ideaModule.gradleProject),
   IJavaProject, Serializable {
 
   private val serialVersionUID = 1L
 
   override fun getContentRoots(): CompletableFuture<List<JavaContentRoot>> {
-    TODO("Not yet implemented")
+    return CompletableFuture.supplyAsync {
+      val list = ArrayList<JavaContentRoot>()
+      for (contentRoot in ideaModule.contentRoots) {
+        val thisRoot = JavaContentRoot()
+        for (sourceDir in contentRoot!!.sourceDirectories) {
+          (thisRoot.sourceDirectories as MutableList).add(
+            JavaSourceDirectory(sourceDir!!.directory, sourceDir.isGenerated))
+        }
+        for (testDir in contentRoot.testDirectories) {
+          (thisRoot.testDirectories as MutableList).add(
+            JavaSourceDirectory(testDir!!.directory, testDir.isGenerated))
+        }
+        list.add(thisRoot)
+      }
+
+      return@supplyAsync list
+    }
   }
 
   override fun getDependencies(): CompletableFuture<List<JavaModuleDependency>> {
-    TODO("Not yet implemented")
+    return CompletableFuture.supplyAsync {
+      val list = ArrayList<JavaModuleDependency>()
+      for (dependency in ideaModule.dependencies) {
+        // TODO There might be unresolved dependencies here. We need to handle them too.
+        if (dependency is IdeaSingleEntryLibraryDependency) {
+          val file = dependency.file
+          val source = dependency.source
+          val javadoc = dependency.javadoc
+          val artifact = getGradleArtifact(dependency)
+          list.add(
+            JavaModuleExternalDependency(
+              file,
+              source,
+              javadoc,
+              artifact,
+              dependency.getScope().scope,
+              dependency.getExported()))
+        } else if (dependency is IdeaModuleDependency) {
+          val moduleName = dependency.targetModuleName
+          list.add(
+            JavaModuleProjectDependency(
+              moduleName,
+              allModulePaths[moduleName] ?: "",
+              dependency.scope.scope,
+              dependency.exported))
+        }
+      }
+
+      return@supplyAsync list
+    }
+  }
+
+  private fun getGradleArtifact(external: IdeaSingleEntryLibraryDependency): GradleArtifact? {
+    val moduleVersion = external.gradleModuleVersion ?: return null
+    return GradleArtifact(
+      moduleVersion.group, moduleVersion.name, moduleVersion.version)
   }
 
   override fun getClassesJar(): CompletableFuture<File> {
-    TODO("Not yet implemented")
+    return CompletableFuture.supplyAsync {
+      val metadata = getMetadata().get()
+      var jar = File(metadata.buildDir, "libs/${metadata.name}.jar")
+      if (jar.exists()) {
+        return@supplyAsync jar
+      }
+
+      jar =
+        File(metadata.buildDir, "libs").listFiles()?.first { metadata.name?.let(it.name::startsWith) ?: false }
+          ?: File("module-jar-does-not-exist.jar")
+
+      return@supplyAsync jar
+    }
   }
 
   override fun getClasspaths(): CompletableFuture<List<File>> {
-    TODO("Not yet implemented")
+    return CompletableFuture.supplyAsync {
+      getDependencies().get().mapNotNull { it.jarFile }.toMutableList().apply { add(getClassesJar().get()) }
+    }
+  }
+
+  override fun getMetadata(): CompletableFuture<ProjectMetadata> {
+    return CompletableFuture.supplyAsync {
+      val base = super.getMetadata().get()
+      return@supplyAsync JavaProjectMetadata(base, compilerSettings)
+    }
   }
 }

@@ -20,7 +20,18 @@ package com.itsaky.androidide.tooling.impl.sync
 import org.gradle.tooling.BuildController
 import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.model.idea.IdeaModule
+import org.gradle.tooling.model.idea.IdeaProject
 
 
 typealias BuildControllderAndIdeaModule = Pair<BuildController, IdeaModule>
+
+class ModuleProjectModelBuilderParams(val controller: BuildController, project: IdeaProject,
+  module: IdeaModule, modulePaths: Map<String, String>) : JavaProjectModelBuilderParams(
+  project, module, modulePaths)
+
+open class JavaProjectModelBuilderParams(val project: IdeaProject, val module: IdeaModule,
+  val modulePaths: Map<String, String>) {
+  constructor(base: ModuleProjectModelBuilderParams) : this(base.project, base.module, base.modulePaths)
+}
+
 typealias ProjectConnectionAndAndroidVariant = Pair<ProjectConnection, String>
