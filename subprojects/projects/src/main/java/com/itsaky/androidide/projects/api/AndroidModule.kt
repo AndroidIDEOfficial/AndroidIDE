@@ -32,12 +32,11 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.tooling.api.IProject.Type.Android
-import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
-import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import com.itsaky.androidide.tooling.api.model.AndroidModule.Companion.FD_INTERMEDIATES
-import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.tooling.api.model.util.findPackageName
+import com.itsaky.androidide.tooling.api.IAndroidProject
+import com.itsaky.androidide.tooling.api.ProjectType.Android
+import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
+import com.itsaky.androidide.tooling.api.models.GradleTask
+import com.itsaky.androidide.tooling.api.util.findPackageName
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -68,7 +67,7 @@ import java.util.concurrent.CompletableFuture
  * @param projectType The type of Android project. See [ProjectType].
  * @param mainSourceSet The main source of this module.
  * @param flags The Android Gradle Plugin flags. No-op currently.
- * @param javaCompileOptions The java compilation options as configured in buildscript.
+ * @param compilerSettings The java compilation options as configured in buildscript.
  * @param viewBindingOptions The view binding options of this module.
  * @param bootClassPaths The boot class paths of the project. Usually contains the path to the
  * `android.jar` file.
@@ -97,15 +96,15 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val projectType: ProjectType,
   val mainSourceSet: DefaultSourceSetContainer?,
   val flags: DefaultAndroidGradlePluginProjectFlags,
-  val javaCompileOptions: DefaultJavaCompileOptions,
+  override val compilerSettings: DefaultJavaCompileOptions,
   val viewBindingOptions: DefaultViewBindingOptions,
   val bootClassPaths: Collection<File>,
   val libraries: Set<String>,
   val libraryMap: Map<String, DefaultLibrary>,
-  val dynamicFeatures: Collection<String>?,
   val lintCheckJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
-  val variants: List<SimpleVariantData> = listOf()
+  val variants: List<BasicAndroidVariantMetadata> = listOf(),
+  val classesJar: File?
 ) :
   ModuleProject(
     name,
@@ -114,27 +113,24 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     projectDir,
     buildDir,
     buildScript,
-    tasks,
-    javaCompileOptions
-  ),
-  WithModuleData {
+    tasks
+  ) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
-  override var moduleData: SimpleModuleData? = null
 
   init {
     type = Android
   }
 
-  override fun getGeneratedJar(variant: String): File {
-    return File(buildDir, "${FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
+  fun getGeneratedJar(variant: String): File {
+    return classesJar ?: File("does-not-exist.jar")
   }
 
   override fun getClassPaths(): Set<File> {
     return getModuleClasspaths()
   }
 
-  fun getVariant(name: String): SimpleVariantData? {
+  fun getVariant(name: String): BasicAndroidVariantMetadata? {
     return this.variants.firstOrNull { it.name == name }
   }
 
@@ -355,8 +351,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
         libraryMap.values
           .filter { library ->
             library.type == ANDROID_LIBRARY &&
-              library.androidLibraryData!!.resFolder.exists() &&
-              library.findPackageName() != UNKNOWN_PACKAGE
+                library.androidLibraryData!!.resFolder.exists() &&
+                library.findPackageName() != UNKNOWN_PACKAGE
           }
           .mapNotNull { library ->
             ResourceTableRegistry.getInstance()

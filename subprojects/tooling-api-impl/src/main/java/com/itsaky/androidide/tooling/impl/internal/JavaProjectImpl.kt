@@ -105,32 +105,30 @@ internal class JavaProjectImpl(
       moduleVersion.group, moduleVersion.name, moduleVersion.version)
   }
 
-  override fun getClassesJar(): CompletableFuture<File> {
-    return CompletableFuture.supplyAsync {
-      val metadata = getMetadata().get()
-      var jar = File(metadata.buildDir, "libs/${metadata.name}.jar")
-      if (jar.exists()) {
-        return@supplyAsync jar
-      }
-
-      jar =
-        File(metadata.buildDir, "libs").listFiles()?.first { metadata.name?.let(it.name::startsWith) ?: false }
-          ?: File("module-jar-does-not-exist.jar")
-
-      return@supplyAsync jar
+  private fun getClassesJar(): File {
+    val metadata = getMetadata().get()
+    var jar = File(metadata.buildDir, "libs/${metadata.name}.jar")
+    if (jar.exists()) {
+      return jar
     }
+
+    jar =
+      File(metadata.buildDir, "libs").listFiles()?.first { metadata.name?.let(it.name::startsWith) ?: false }
+        ?: File("module-jar-does-not-exist.jar")
+
+    return jar
   }
 
   override fun getClasspaths(): CompletableFuture<List<File>> {
     return CompletableFuture.supplyAsync {
-      getDependencies().get().mapNotNull { it.jarFile }.toMutableList().apply { add(getClassesJar().get()) }
+      getDependencies().get().mapNotNull { it.jarFile }.toMutableList().apply { add(getClassesJar()) }
     }
   }
 
   override fun getMetadata(): CompletableFuture<ProjectMetadata> {
     return CompletableFuture.supplyAsync {
       val base = super.getMetadata().get()
-      return@supplyAsync JavaProjectMetadata(base, compilerSettings)
+      return@supplyAsync JavaProjectMetadata(base, compilerSettings, getClassesJar())
     }
   }
 }

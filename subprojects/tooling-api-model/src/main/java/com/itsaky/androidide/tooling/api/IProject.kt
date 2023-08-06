@@ -44,4 +44,17 @@ interface IProject : IProjectQueries {
    */
   @JsonRequest
   fun getProjectSyncIssues(): CompletableFuture<Map<String, DefaultProjectSyncIssues>>
+
+  companion object {
+
+    /**
+     * Gradle project path for the root project.
+     */
+    const val ROOT_PROJECT_PATH = ":"
+
+    /**
+     * Name that can be used for project whose [BasicProjectMetadata.name] property is null.
+     */
+    const val PROJECT_UNKNOWN = "Unknown"
+  }
 }

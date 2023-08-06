@@ -52,7 +52,7 @@ internal class ProjectImpl(var rootProject: IGradleProject? = null,
   }
 
   private fun getProject(path: String): IGradleProject? {
-    return if (":" == path) rootProject else projects.find {
+    return if (IProject.ROOT_PROJECT_PATH == path) rootProject else projects.find {
       it.getMetadata().get().projectPath == path
     }
   }

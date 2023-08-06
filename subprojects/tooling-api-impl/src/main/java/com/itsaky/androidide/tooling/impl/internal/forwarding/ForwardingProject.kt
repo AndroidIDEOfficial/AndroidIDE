@@ -92,11 +92,6 @@ internal class ForwardingProject(var project: IGradleProject? = null) : IGradleP
       UnsupportedOperationException())
   }
 
-  override fun getClassesJar(): CompletableFuture<File> {
-    return this.javaProject?.getClassesJar() ?: CompletableFuture.failedFuture(
-      UnsupportedOperationException())
-  }
-
   override fun getClasspaths(): CompletableFuture<List<File>> {
     return this.javaProject?.getClasspaths() ?: CompletableFuture.failedFuture(
       UnsupportedOperationException())

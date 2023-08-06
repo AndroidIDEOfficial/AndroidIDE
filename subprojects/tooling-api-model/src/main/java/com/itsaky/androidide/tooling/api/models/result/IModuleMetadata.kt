@@ -15,21 +15,19 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api
+package com.itsaky.androidide.tooling.api.models.result
 
 import java.io.File
-import java.util.concurrent.CompletableFuture
 
 /**
- * Common APIs for module projects.
+ * Common metadata for module projects.
  *
  * @author Akash Yadav
  */
-interface IModuleProject : IGradleProject {
+interface IModuleMetadata {
 
   /**
-   * Get the classpaths for this module project. The returned list always included the
-   * `classes.jar`.
+   * The JAR file for this module project.
    */
-  fun getClasspaths(): CompletableFuture<List<File>>
+  val classesJar: File?
 }

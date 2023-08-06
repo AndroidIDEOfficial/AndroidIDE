@@ -19,12 +19,12 @@ package com.itsaky.androidide.projects.api
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.tooling.api.IProject.Type.Java
-import com.itsaky.androidide.tooling.api.model.GradleTask
-import com.itsaky.androidide.tooling.api.model.JavaContentRoot
-import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
-import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency
-import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.ProjectType.Java
+import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
+import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
+import com.itsaky.androidide.tooling.api.models.GradleTask
+import com.itsaky.androidide.tooling.api.models.JavaContentRoot
+import com.itsaky.androidide.tooling.api.models.JavaModuleDependency
 import java.io.File
 
 /**
@@ -51,9 +51,10 @@ class JavaModule(
   buildDir: File,
   buildScript: File,
   tasks: List<GradleTask>,
-  compilerSettings: IJavaCompilerSettings,
+  override val compilerSettings: IJavaCompilerSettings,
   val contentRoots: List<JavaContentRoot>,
   val dependencies: List<JavaModuleDependency>,
+  val classesJar: File?
 ) :
   ModuleProject(
     name,
@@ -62,30 +63,17 @@ class JavaModule(
     projectDir,
     buildDir,
     buildScript,
-    tasks,
-    compilerSettings
+    tasks
   ) {
 
   companion object {
+
     const val SCOPE_COMPILE = "COMPILE"
     const val SCOPE_RUNTIME = "RUNTIME"
   }
 
   init {
     type = Java
-  }
-
-  override fun getGeneratedJar(variant: String): File {
-    var jar = File(buildDir, "libs/$name.jar")
-    if (jar.exists()) {
-      return jar
-    }
-
-    jar =
-      File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
-        ?: File("module-jar-does-not-exist.jar")
-
-    return jar
   }
 
   override fun getClassPaths(): Set<File> {
@@ -107,7 +95,7 @@ class JavaModule(
   }
 
   override fun getModuleClasspaths(): Set<File> {
-    return mutableSetOf(getGeneratedJar(""))
+    return mutableSetOf(classesJar ?: File("does-not-exist.jar"))
   }
 
   override fun getCompileClasspaths(): Set<File> {
@@ -116,7 +104,7 @@ class JavaModule(
     classpaths.addAll(getDependencyClasspaths())
     return classpaths
   }
-  
+
   override fun getCompileModuleProjects(): List<ModuleProject> {
     val root = ProjectManager.rootProject ?: return emptyList()
     return this.dependencies
@@ -125,8 +113,9 @@ class JavaModule(
       .mapNotNull { root.findByPath(it.projectPath) }
       .filterIsInstance(ModuleProject::class.java)
   }
-  
+
   fun getDependencyClasspaths(): Set<File> {
-    return this.dependencies.filterIsInstance<JavaModuleExternalDependency>().mapNotNull { it.jarFile }.toHashSet()
+    return this.dependencies.filterIsInstance<JavaModuleExternalDependency>()
+      .mapNotNull { it.jarFile }.toHashSet()
   }
 }

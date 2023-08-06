@@ -158,18 +158,16 @@ internal class AndroidProjectImpl(
     return CompletableFuture.supplyAsync { copy(androidProject.modelSyncFiles) }
   }
 
-  override fun getClassesJar(): CompletableFuture<File> {
+  private fun getClassesJar(): File {
     // TODO(itsaky): this should handle product flavors as well
-    return CompletableFuture.supplyAsync {
-      File(gradleProject.buildDirectory,
-        "${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
-    }
+    return File(gradleProject.buildDirectory,
+      "${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
   }
 
   override fun getClasspaths(): CompletableFuture<List<File>> {
     return CompletableFuture.supplyAsync {
       mutableListOf<File>().apply {
-        add(getClassesJar().get())
+        add(getClassesJar())
         getVariant(StringParameter(variant)).get()?.mainArtifact?.classJars?.let(this::addAll)
       }
     }
@@ -193,7 +191,8 @@ internal class AndroidProjectImpl(
         androidProject.resourcePrefix,
         androidProject.namespace,
         androidProject.androidTestNamespace,
-        androidProject.testFixturesNamespace
+        androidProject.testFixturesNamespace,
+        getClassesJar()
       )
     }
   }

@@ -19,9 +19,8 @@ package com.itsaky.androidide.projects.api
 
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.itsaky.androidide.tooling.api.IProject
-import com.itsaky.androidide.tooling.api.IProject.Type
-import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
-import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.ProjectType
+import com.itsaky.androidide.tooling.api.models.GradleTask
 import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.*
@@ -53,7 +52,7 @@ open class Project(
   val subModules: List<Project> = mutableListOf()
 ) {
 
-  var type: Type = Gradle
+  var type: ProjectType = ProjectType.Gradle
     protected set
 
   /**

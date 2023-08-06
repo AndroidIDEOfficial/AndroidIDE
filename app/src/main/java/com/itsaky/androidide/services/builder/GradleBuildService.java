@@ -412,7 +412,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
     checkServerStarted();
     final var message =
-        new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationDir());
+        new TaskExecutionMessage(IProject.ROOT_PROJECT_PATH, Arrays.asList(tasks), getGradleInstallationDir());
     return performBuildTasks(server.executeTasks(message));
   }
 

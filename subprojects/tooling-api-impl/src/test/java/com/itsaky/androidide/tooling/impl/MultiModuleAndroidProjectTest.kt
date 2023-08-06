@@ -59,7 +59,7 @@ class MultiModuleAndroidProjectTest {
     val isInitialized = server.isServerInitialized().get()
     assertThat(isInitialized).isTrue()
 
-    var selectionResult = project.selectProject(StringParameter(":")).get()
+    var selectionResult = project.selectProject(StringParameter(IProject.ROOT_PROJECT_PATH)).get()
     assertThat(selectionResult.isSuccessful).isTrue()
     assertThat(project.getType().get()).isEqualTo(ProjectType.Gradle)
 

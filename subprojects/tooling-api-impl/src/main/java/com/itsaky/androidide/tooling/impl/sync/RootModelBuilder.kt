@@ -42,9 +42,9 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
 
       val ideaModules = ideaProject.modules
       val modulePaths = mapOf(*ideaModules.map { it.name to it.gradleProject.path }.toTypedArray())
-      val rootModule = ideaModules.find { it.gradleProject.path == ":" }
+      val rootModule = ideaModules.find { it.gradleProject.path == IProject.ROOT_PROJECT_PATH }
         ?: throw ModelBuilderException(
-          "No GradleProject model is associated with project path: ':'")
+          "No GradleProject model is associated with project path: '${IProject.ROOT_PROJECT_PATH}'")
 
       val rootProjectVersions = getAndroidVersions(rootModule, controller)
 

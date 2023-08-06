@@ -21,6 +21,7 @@ import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlag
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.ProjectType
+import com.itsaky.androidide.tooling.api.models.result.IModuleMetadata
 import java.io.File
 
 /**
@@ -44,8 +45,10 @@ class AndroidProjectMetadata(
   val resourcePrefix: String?,
   val namespace: String?,
   val androidTestNamespace: String?,
-  val testFixtureNamespace: String?
-) : ProjectMetadata(name, path, projectDir, buildDir, description, buildScript, type) {
+  val testFixtureNamespace: String?,
+  override val classesJar: File?
+) : ProjectMetadata(name, path, projectDir, buildDir, description, buildScript, type),
+  IModuleMetadata {
 
   constructor(
     base: ProjectMetadata,
@@ -57,7 +60,8 @@ class AndroidProjectMetadata(
     resourcePrefix: String?,
     namespace: String?,
     androidTestNamespace: String?,
-    testFixtureNamespace: String?) :
+    testFixtureNamespace: String?,
+    classesJar: File?) :
 
       this(
         base.name,
@@ -75,7 +79,8 @@ class AndroidProjectMetadata(
         resourcePrefix,
         namespace,
         androidTestNamespace,
-        testFixtureNamespace
+        testFixtureNamespace,
+        classesJar
       )
 }
 

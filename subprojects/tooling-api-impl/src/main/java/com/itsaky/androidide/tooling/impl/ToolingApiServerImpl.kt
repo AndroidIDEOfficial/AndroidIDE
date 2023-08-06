@@ -148,7 +148,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
       var projectPath = message.projectPath
       if (projectPath == null) {
-        projectPath = ":"
+        projectPath = IProject.ROOT_PROJECT_PATH
       }
 
       val project = this.project!!.run {

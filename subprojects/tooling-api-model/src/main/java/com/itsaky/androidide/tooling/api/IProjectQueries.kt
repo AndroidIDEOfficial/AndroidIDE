@@ -65,17 +65,17 @@ interface IProjectQueries {
    * Get the selected project as Gradle project.
    */
   @JsonDelegate
-  fun asGradleProject(): IGradleProject?
+  fun asGradleProject(): IGradleProject
 
   /**
    * Get the selected project as Android project.
    */
   @JsonDelegate
-  fun asAndroidProject(): IAndroidProject?
+  fun asAndroidProject(): IAndroidProject
 
   /**
    * Get the selected project as Java project.
    */
   @JsonDelegate
-  fun asJavaProject(): IJavaProject?
+  fun asJavaProject(): IJavaProject
 }

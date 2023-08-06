@@ -71,9 +71,9 @@ class ModuleProjectTest {
     assertThat(app.compilerSettings.javaSourceVersion).isEqualTo("11")
     assertThat(app.compilerSettings.javaBytecodeVersion).isEqualTo("11")
     assertThat(app.compilerSettings.javaSourceVersion)
-      .isEqualTo(app.javaCompileOptions.sourceCompatibility)
+      .isEqualTo(app.compilerSettings.sourceCompatibility)
     assertThat(app.compilerSettings.javaBytecodeVersion)
-      .isEqualTo(app.javaCompileOptions.targetCompatibility)
+      .isEqualTo(app.compilerSettings.targetCompatibility)
 
     val anotherAndroidLib = root.findByPath(":another-android-library")
     assertThat(anotherAndroidLib).isNotNull()

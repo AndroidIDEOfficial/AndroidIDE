@@ -23,7 +23,8 @@ import com.itsaky.androidide.javac.services.fs.CacheFSInfoSingleton
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.classpath.JarFsClasspathReader
 import com.itsaky.androidide.projects.util.BootClasspathProvider
-import com.itsaky.androidide.tooling.api.model.GradleTask
+import com.itsaky.androidide.tooling.api.IModuleProject
+import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.utils.ClassTrie
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
@@ -46,20 +47,24 @@ abstract class ModuleProject(
   projectDir: File,
   buildDir: File,
   buildScript: File,
-  tasks: List<GradleTask>,
-  override val compilerSettings: IJavaCompilerSettings
+  tasks: List<GradleTask>
 ) :
-  Project(name, description, path, projectDir, buildDir, buildScript, tasks),
-  com.itsaky.androidide.tooling.api.model.ModuleProject {
+  Project(name, description, path, projectDir, buildDir, buildScript, tasks) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
+  abstract val compilerSettings: IJavaCompilerSettings
+
   companion object {
-    @JvmStatic val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
+
+    @JvmStatic
+    val COMPLETION_MODULE_KEY = Lookup.Key<ModuleProject>()
   }
 
-  @JvmField val compileJavaSourceClasses = SourceClassTrie()
-  @JvmField val compileClasspathClasses = ClassTrie()
+  @JvmField
+  val compileJavaSourceClasses = SourceClassTrie()
+  @JvmField
+  val compileClasspathClasses = ClassTrie()
 
   /**
    * Get the source directories of this module (non-transitive i.e for this module only).
@@ -75,6 +80,12 @@ abstract class ModuleProject(
    * @return The source directories.
    */
   abstract fun getCompileSourceDirectories(): Set<File>
+
+  /**
+   * Get the classpaths for this module project. The returned list always included the
+   * `classes.jar`.
+   */
+  abstract fun getClassPaths() : Set<File>
 
   /**
    * Get the JAR files for this module. This does not include JAR files of any dependencies.
