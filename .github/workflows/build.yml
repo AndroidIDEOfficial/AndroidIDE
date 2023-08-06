@@ -2,7 +2,7 @@ name: Build and test
 
 on:
   push:
-    branches: [ "dev", "main" ]
+    branches: [ "dev", "main", "rework-tooling-api" ]
     paths-ignore:
       - '**.md'
       - 'fastlane/**'
