@@ -52,7 +52,7 @@
   <string name="clean_amp_build">Limpar &amp; construir</string>
   <string name="clean_project">Limpar</string>
   <string name="quick_run_debug">Executar</string>
-  <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
+  <string name="msg_sync_needed">Os arquivos do Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
   <string name="preparing">Preparando</string>
   <string name="preparing_first">Preparando. A primeira compilação pode levar até 10-15 minutos!</string>
   <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão. Gradle v7.4 será baixado se necessário.</string>
@@ -181,7 +181,7 @@
   <string name="title_change_text_size">Tamanho da fonte do editor</string>
   <string name="idepref_about_title">Sobre o AndroidIDE</string>
   <string name="idepref_build_clearCache_title">Limpar caches do Gradle</string>
-  <string name="idepref_build_clearCache_summary">Limpar o diretório de caches Gradle. Isto excluirá todas as dependências baixadas pela Gradle. Os arquivos requeridos serão baixados novamente na próxima compilação.</string>
+  <string name="idepref_build_clearCache_summary">Limpar o diretório de caches do Gradle. Isso excluirá todas as dependências baixadas pelo Gradle. Os arquivos necessários serão baixados novamente na próxima compilação.</string>
   <string name="idepref_build_customgradlecommands_title">Comandos adicionais do Gradle</string>
   <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
   <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
