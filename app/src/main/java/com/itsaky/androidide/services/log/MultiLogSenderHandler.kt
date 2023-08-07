@@ -95,6 +95,16 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
     clients.remove(senderId)?.closeAndLogError()
   }
 
+  private fun removeAllClients() {
+    synchronized(this.clients)  {
+      val iterator = this.clients.iterator()
+      while(iterator.hasNext()) {
+        iterator.next().value.closeAndLogError()
+        iterator.remove()
+      }
+    }
+  }
+
   override fun start() {
     keepAlive.set(true)
     super.start()
@@ -102,7 +112,8 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
 
   override fun close() {
     this.keepAlive.set(false)
-    clients.forEach { (_, client) -> client?.closeAndLogError() }
+    this.removeAllClients()
+    this.consumer = null
   }
 
   private fun LogSenderHandler.closeAndLogError() {
