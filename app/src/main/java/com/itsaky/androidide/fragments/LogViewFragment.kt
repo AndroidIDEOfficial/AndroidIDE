@@ -242,6 +242,7 @@ abstract class LogViewFragment :
 
   override fun onDestroyView() {
     _binding?.editor?.release()
+    logHandler.removeCallbacks(logRunnable)
     super.onDestroyView()
   }
 
