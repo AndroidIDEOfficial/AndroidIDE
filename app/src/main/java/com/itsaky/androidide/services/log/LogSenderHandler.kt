@@ -35,6 +35,7 @@ class LogSenderHandler(
   internal var onClose: (String) -> Unit = {}
 ) : Thread("LogSenderHandler"), AutoCloseable {
 
+  private var manuallyClosed = false
   private val log = ILogger.newInstance("LogSenderHandler")
 
   override fun run() {
@@ -45,11 +46,15 @@ class LogSenderHandler(
             LogLine.forLogString(reader.readLine())?.let { line -> consumer?.invoke(line) }
           } catch (interrupt: InterruptedException) {
             currentThread().interrupt()
+            break
           }
         }
       }
     } catch (err: SocketException) {
-      log.error("An error occurred while reading from socket", err)
+      log.error("An error occurred while reading from socket")
+      if (!manuallyClosed) {
+        log.error(err)
+      }
     } finally {
       close()
     }
@@ -57,6 +62,8 @@ class LogSenderHandler(
 
   override fun close() {
     try {
+      manuallyClosed = true
+
       if (!socket.isClosed) {
         log.debug("Closing log sender handler...")
         socket.close()
