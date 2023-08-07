@@ -147,13 +147,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
     this.binding = null
     this.hierarchyHandler.release()
     this.attrHandler.release()
-    
-    endParse()
 
-    if (!childFragmentManager.isDestroyed) {
-      val viewInfo = childFragmentManager.findFragmentByTag(ViewInfoSheet.TAG) as? ViewInfoSheet?
-      viewInfo?.dismiss()
-    }
+    endParse()
   }
 
   internal fun setupView(view: IView) {
