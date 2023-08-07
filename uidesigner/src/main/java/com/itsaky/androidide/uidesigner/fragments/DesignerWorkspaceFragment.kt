@@ -28,6 +28,8 @@ import com.blankj.utilcode.util.SizeUtils
 import com.itsaky.androidide.fragments.BaseFragment
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.internal.LayoutFile
+import com.itsaky.androidide.inflater.utils.endParse
+import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.uidesigner.databinding.FragmentDesignerWorkspaceBinding
@@ -117,6 +119,7 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
     val inflated =
       try {
+        startParse(viewModel.file)
         inflater.inflate(viewModel.file, workspaceView).also {
           viewModel.layoutHasError = false
         }
@@ -144,6 +147,8 @@ class DesignerWorkspaceFragment : BaseFragment() {
     this.binding = null
     this.hierarchyHandler.release()
     this.attrHandler.release()
+    
+    endParse()
 
     if (!childFragmentManager.isDestroyed) {
       val viewInfo = childFragmentManager.findFragmentByTag(ViewInfoSheet.TAG) as? ViewInfoSheet?
