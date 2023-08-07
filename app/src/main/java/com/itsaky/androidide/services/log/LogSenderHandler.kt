@@ -32,7 +32,7 @@ class LogSenderHandler(
   private val sender: SenderInfoCommand,
   private val socket: Socket,
   internal var consumer: ((LogLine) -> Unit)? = null,
-  internal var onClose: (String) -> Unit = {}
+  private var onClose: ((String) -> Unit)? = null
 ) : Thread("LogSenderHandler"), AutoCloseable {
 
   private var manuallyClosed = false
@@ -71,7 +71,9 @@ class LogSenderHandler(
     } catch (err: Throwable) {
       log.error("Failed to close socket", err)
     } finally {
-      onClose(this.sender.senderId)
+      onClose?.invoke(this.sender.senderId)
+      this.consumer = null
+      this.onClose = null
     }
   }
 }
