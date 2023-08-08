@@ -76,7 +76,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        ${if (!isComposeModule) "viewBinding = true" else ""}
         ${if (isComposeModule) "compose = true" else ""}
     }
     ${if(isComposeModule) composeConfigKts() else ""}
@@ -125,7 +125,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        ${if (!isComposeModule) "viewBinding true" else ""}
         ${if (isComposeModule) "compose true" else ""}
     }
     ${if(isComposeModule) composeConfigGroovy() else ""}
