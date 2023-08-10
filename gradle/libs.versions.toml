@@ -1,6 +1,6 @@
 [versions]
-agp = "8.0.2"
-agp-tooling = "8.0.2"
+agp = "8.1.0"
+agp-tooling = "8.1.0"
 gradle-tooling = "8.1.1"
 kotlin = "1.8.21"
 tree-sitter = "3.2.0"

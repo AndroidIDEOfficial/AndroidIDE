@@ -27,6 +27,9 @@ class DefaultLibrary : Library, Serializable {
   private val serialVersionUID = 1L
   override var androidLibraryData: DefaultAndroidLibraryData? = null
   override var artifact: File? = null
+  override var srcJar: File? = null
+  override var docJar: File? = null
+  override var samplesJar: File? = null
   override var key: String = ""
   override var libraryInfo: DefaultLibraryInfo? = null
   override var lintJar: File? = null

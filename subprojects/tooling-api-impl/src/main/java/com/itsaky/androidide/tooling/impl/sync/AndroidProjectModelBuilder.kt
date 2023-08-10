@@ -51,7 +51,10 @@ class AndroidProjectModelBuilder(androidVariant: String) :
     log("Selected build variant '$selectedVariant' for project '$projectpath'")
 
     val variantDependencies = controller.getModelAndLog(module, VariantDependencies::class.java,
-      ModelBuilderParameter::class.java) { it.variantName = selectedVariant }
+      ModelBuilderParameter::class.java) {
+      it.variantName = selectedVariant
+      it.dontBuildRuntimeClasspath = false
+    }
 
     return AndroidProjectImpl(
       module.gradleProject,

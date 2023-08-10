@@ -270,7 +270,7 @@ object AndroidModulePropertyCopier {
       }
 
       this.compileDependencies = copy(artifact.compileDependencies)
-      this.runtimeDependencies = copy(artifact.runtimeDependencies)
+      this.runtimeDependencies = copy(artifact.runtimeDependencies ?: emptyList())
       this.unresolvedDependencies = copy(artifact.unresolvedDependencies)
     }
 
@@ -284,6 +284,9 @@ object AndroidModulePropertyCopier {
 
   @JvmName("copyGraphItems")
   fun copy(graphs: List<GraphItem>): List<DefaultGraphItem> {
+    if (graphs.isEmpty()) {
+      return emptyList()
+    }
     return graphs.map { copy(it) }
   }
 
