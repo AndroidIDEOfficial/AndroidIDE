@@ -24,7 +24,6 @@ description = "LogSender is used to read logs from applications built with Andro
 
 android {
   namespace = "${BuildConfig.packageName}.logsender"
-  buildFeatures.aidl = true
 
   defaultConfig {
     minSdk = 16
@@ -33,6 +32,12 @@ android {
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
+  @Suppress("UnstableApiUsage")
+  buildFeatures.apply {
+    aidl = true
+    viewBinding = false
   }
 }
 
