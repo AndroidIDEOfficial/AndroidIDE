@@ -22,7 +22,7 @@ import com.itsaky.androidide.logsender.socket.SocketCommandParser
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
 import java.net.ServerSocket
-import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -35,7 +35,7 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
   Thread("MultiLogSenderHandler"), AutoCloseable {
 
   private val log = ILogger.newInstance("MultiLogSenderHandler")
-  private val clients = Collections.synchronizedMap(HashMap<String, LogSenderHandler>())
+  private val clients = ConcurrentHashMap<String, LogSenderHandler>()
   private val port = AtomicInteger(-1)
   private var keepAlive = AtomicBoolean(false)
 
@@ -67,7 +67,8 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
         val senderInfoLine = clientSocket.getInputStream().bufferedReader().readLine()
         val command = SocketCommandParser.parse(senderInfoLine)
         if (command == null || command !is SenderInfoCommand) {
-          log.error("Cannot accept log sender client. A sender must send the /sender command first.")
+          log.error(
+            "Cannot accept log sender client. A sender must send the /sender command first.")
           clientSocket.use {}
           continue
         }
@@ -96,13 +97,11 @@ class MultiLogSenderHandler(consumer: ((LogLine) -> Unit)? = null) :
   }
 
   private fun removeAllClients() {
-    synchronized(this.clients)  {
-      val iterator = this.clients.iterator()
-      while(iterator.hasNext()) {
-        iterator.next().value.closeAndLogError()
-        iterator.remove()
-      }
+    this.clients.forEach { (_, handler) ->
+      handler.closeAndLogError()
     }
+
+    this.clients.clear()
   }
 
   override fun start() {
