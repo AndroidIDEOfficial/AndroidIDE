@@ -17,9 +17,6 @@
 
 package com.itsaky.androidide.logsender.socket;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * Base class for socket commands.
  *
@@ -27,12 +24,10 @@ import androidx.annotation.Nullable;
  */
 public abstract class AbstractSocketCommand implements ISocketCommand {
 
-  @Nullable
   protected String[] getParams() {
     return null;
   }
 
-  @NonNull
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("/");

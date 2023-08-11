@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.logsender.socket;
 
-import androidx.annotation.Nullable;
 import java.util.UUID;
 
 /**
@@ -25,7 +24,6 @@ import java.util.UUID;
  */
 public final class SocketCommandParser {
 
-  @Nullable
   public static ISocketCommand parse(String line) {
     // remove leading '/'
     line = line.substring(1);
@@ -41,7 +39,6 @@ public final class SocketCommandParser {
     return null;
   }
 
-  @Nullable
   private static ISocketCommand create(String name) {
     if (name.equals(SignalCommand.STOP.getName())) {
       return SignalCommand.STOP;
@@ -50,7 +47,6 @@ public final class SocketCommandParser {
     return null;
   }
 
-  @Nullable
   private static ISocketCommand createParameterized(String[] segments) {
     final String command = segments[0];
     if (SenderInfoCommand.NAME.equals(command)) {

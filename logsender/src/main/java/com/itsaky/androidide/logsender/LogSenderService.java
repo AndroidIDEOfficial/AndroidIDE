@@ -21,7 +21,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
 import com.itsaky.androidide.logsender.utils.Logger;
 
 /**
@@ -33,7 +32,6 @@ public class LogSenderService extends Service {
 
   private final LogSender logSender = new LogSender();
 
-  @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     return null;

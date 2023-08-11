@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.logsender.socket;
 
-import androidx.annotation.Nullable;
-
 /**
  * Command containing information about the log sender.
  *
@@ -40,7 +38,6 @@ public class SenderInfoCommand extends AbstractSocketCommand {
     return NAME;
   }
 
-  @Nullable
   @Override
   protected String[] getParams() {
     return new String[]{this.senderId, this.packageName};
