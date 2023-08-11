@@ -23,17 +23,17 @@
   <string name="title_terminal">Terminal</string>
   <string name="reset">Redefinir</string>
   <string name="app_logs">Logs do aplicativo</string>
-  <string name="ide_logs">Registros da IDE</string>
+  <string name="ide_logs">Logs da IDE</string>
   <!-- LSP, Diagnostics & Completions -->
   <string name="label_splash_image">Imagem inicial</string>
   <string name="get_started">Vamos começar</string>
-  <string name="msg_cannot_perform_fix">Incapaz de realizar uma correção rápida</string>
+  <string name="msg_cannot_perform_fix">Não foi possível realizar a correção rápida</string>
   <string name="msg_performing_actions">Executando ação de código…</string>
   <string name="msg_api_info_since">Desde a API %d</string>
   <string name="msg_api_info_removed">Removido na API %d</string>
   <string name="msg_api_info_deprecated">Obsoleto na API %d</string>
-  <string name="msg_finding_references">Encontrando referências…</string>
-  <string name="msg_finding_definition">Encontrando definição…</string>
+  <string name="msg_finding_references">Procurando referências…</string>
+  <string name="msg_finding_definition">Procurando definição…</string>
   <string name="msg_no_definition">Definição não encontrada</string>
   <!-- Build Tools Installation -->
   <string name="msg_no_references">Nenhuma referência encontrada</string>
@@ -52,7 +52,7 @@
   <string name="clean_amp_build">Limpar &amp; construir</string>
   <string name="clean_project">Limpar</string>
   <string name="quick_run_debug">Executar</string>
-  <string name="msg_sync_needed">Os arquivos Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
+  <string name="msg_sync_needed">Os arquivos do Gradle mudaram. Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
   <string name="preparing">Preparando</string>
   <string name="preparing_first">Preparando. A primeira compilação pode levar até 10-15 minutos!</string>
   <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão. Gradle v7.4 será baixado se necessário.</string>
@@ -60,7 +60,7 @@
   <string name="gradle_daemon_status">Status do daemon Gradle</string>
   <string name="title_install_apks">Instalar APK(s)</string>
   <string name="title_clear_output">Limpar logs</string>
-  <string name="run">Compilar</string>
+  <string name="run">Executar</string>
   <!-- Project -->
   <string name="title_first_build">Primeira compilação</string>
   <string name="msg_first_build">Esta é a primeira vez que se compila depois de instalar o AndroidIDE. A primeira compilação geralmente leva tempo, pois a Gradle baixa todas as dependências e plugins. Este processo pode demorar cerca de 10-15 minutos. Mas isto depende totalmente de sua conexão de rede.\n\nPor favor, seja paciente...</string>
@@ -181,7 +181,7 @@
   <string name="title_change_text_size">Tamanho da fonte do editor</string>
   <string name="idepref_about_title">Sobre o AndroidIDE</string>
   <string name="idepref_build_clearCache_title">Limpar caches do Gradle</string>
-  <string name="idepref_build_clearCache_summary">Limpar o diretório de caches Gradle. Isto excluirá todas as dependências baixadas pela Gradle. Os arquivos requeridos serão baixados novamente na próxima compilação.</string>
+  <string name="idepref_build_clearCache_summary">Limpar o diretório de caches do Gradle. Isso excluirá todas as dependências baixadas pelo Gradle. Os arquivos necessários serão baixados novamente na próxima compilação.</string>
   <string name="idepref_build_customgradlecommands_title">Comandos adicionais do Gradle</string>
   <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
   <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
@@ -192,21 +192,21 @@
   <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
   <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
   <string name="idepref_editor_word_wrap_summary">Usa quebra de linha no editor</string>
-  <string name="idepref_editor_hide_file_tree_button_title">Ocultar o botão Árvore de Arquivos</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Mover o botão \"Árvore de Arquivos\" para o menu flutuante da barra de ferramentas do editor.</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Ocultar o botão Lista de Arquivos</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Mover o botão \"Lista de Arquivos\" para o menu flutuante da barra de ferramentas do editor.</string>
   <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
   <string name="idepref_editor_use_magnifier_summary">Ampliar o texto na posição do cursor ao selecionar o texto no editor</string>
   <string name="idepref_editor_title">Editor</string>
   <string name="idepref_build_title">Compilação &amp; Execução</string>
   <string name="title_open_projects">Abrir último projeto</string>
   <string name="msg_open_projects">Se habilitado, a IDE se lembrará do último projeto aberto e será reaberto na próxima vez.</string>
-  <string name="title_confirm_project_open">Confirme a abertura do projeto</string>
-  <string name="msg_confirm_project_open">Pergunte antes de abrir o último projeto aberto.</string>
+  <string name="title_confirm_project_open">Confirmar abertura do projeto</string>
+  <string name="msg_confirm_project_open">Perguntar antes de abrir o último projeto aberto.</string>
   <string name="title_default_shell">Usar shell do sistema no terminal</string>
   <string name="msg_default_shell">Se habilitado, \'/system/bin/sh\' será usado no terminal.</string>
   <string name="title_general">Geral</string>
   <string name="title_tab_size">Tamanho da tabulação</string>
-  <string name="msg_tab_size">Especifique o número de espaços para TAB</string>
+  <string name="msg_tab_size">Especifique o número de espaços para o TAB</string>
   <string name="msg_preferences">Configurações</string>
   <string name="pref_changelog">Registro de alterações</string>
   <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
@@ -226,7 +226,7 @@
   <string name="msg_no_view_parent">Esta view não tem um pai</string>
   <string name="msg_yesno_def_title">Por favor, confirme</string>
   <string name="msg_yesno_def_message">Tem certeza?</string>
-  <string name="msg_view_deletion_failed">Não foi possível excluir a visualização.</string>
+  <string name="msg_view_deletion_failed">Não foi possível excluir a view.</string>
   <string name="msg_empty_ui_layout">Nenhuma visualização foi adicionada. Clique para adicionar.</string>
   <string name="msg_no_attr_format">Nenhum formato de atributo está disponível para este atributo.</string>
   <string name="msg_generate_xml_failed">Falha ao gerar código XML</string>
@@ -342,7 +342,7 @@
   <string name="idepref_xml_trimFinalNewLine_summary">Remover linha extra vazia no final do arquivo</string>
   <string name="idepref_xml_insertFinalNewLine_summary">Insere uma nova linha vazia no final do arquivo.</string>
   <string name="idepref_xml_splitAttributes_title">Dividir atributos</string>
-  <string name="idepref_xml_splitAttributes_summary">Atributos de formato na nova linha</string>
+  <string name="idepref_xml_splitAttributes_summary">Formatar atributos na nova linha</string>
   <string name="idepref_xml_joinCDataLines_title">Juntar as linhas CDATA</string>
   <string name="idepref_xml_joinCDataLines_summary">Normalizar o conteúdo dentro da CDATA.</string>
   <string name="idepref_xml_joinComment_title">Juntar linhas de comentário</string>
@@ -423,9 +423,9 @@
   <string name="action_generate_missing_constructor">Gerar construtor ausente</string>
   <string name="msg_cannot_generate_constructor">Não foi possível gerar um construtor</string>
   <string name="msg_constructor_available">Um construtor com os mesmos tipos de parâmetro já está disponível</string>
-  <string name="msg_cannot_create_view">Não foi possível criar visualização para a tag: %s</string>
+  <string name="msg_cannot_create_view">Não foi possível criar a view para a tag: %s</string>
   <string name="err_no_attr_adapter">Nenhuma implementação de adaptador de atributo encontrada para %s</string>
-  <string name="msg_view_not_supported">A visualização %s não é suportada atualmente.</string>
+  <string name="msg_view_not_supported">View %s não é suportada atualmente.</string>
   <string name="replace">Substituir</string>
   <string name="replaceAll">Substituir tudo</string>
   <string name="title_run_tasks">Executar tarefas</string>

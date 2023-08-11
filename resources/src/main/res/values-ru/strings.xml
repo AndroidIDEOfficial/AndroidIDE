@@ -504,9 +504,9 @@
   <string name="idepref_group_debugging">Отладка</string>
   <string name="idepref_devOptions_dumpLogs_title">Дамп логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Дамп логов AndroidIDE в $HOME/.androidide/logs</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
-  <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
-  <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
-  <string name="msg_emptyview_buildoutput">"Build the application or run a task to see its build output here. "</string>
-  <string name="msg_codeaction_failed">Failed to perform code action</string>
+  <string name="msg_emptyview_applogs">Запустите отладочный вариант вашего приложения, чтобы увидеть его логи здесь.</string>
+  <string name="msg_emptyview_idelogs">Логи IDE отображаются здесь.</string>
+  <string name="msg_emptyview_diagnostics">Откройте файл, чтобы показать результаты его диагностики</string>
+  <string name="msg_emptyview_buildoutput">"Соберите приложение или запустите задачу, чтобы увидеть результаты сборки здесь. "</string>
+  <string name="msg_codeaction_failed">Не удалось выполнить действие с кодом</string>
 </resources>
