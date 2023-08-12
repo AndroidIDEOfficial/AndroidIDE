@@ -16,7 +16,7 @@
   <string name="need_help">需要帮助？</string>
   <string name="other">其他</string>
   <string name="share_with_friends">分享给朋友</string>
-  <string name="ide_preferences">环境设置</string>
+  <string name="ide_preferences">IDE 首选项</string>
   <string name="discussions_on_telegram">在 Telegram 上讨论</string>
   <string name="official_tg_channel">官方 Telegram 频道</string>
   <string name="msg_empty_view">没有数据</string>
@@ -207,7 +207,7 @@
   <string name="title_general">常规</string>
   <string name="title_tab_size">Tab 宽度</string>
   <string name="msg_tab_size">指定制表符代表的空格数</string>
-  <string name="msg_preferences">偏好</string>
+  <string name="msg_preferences">首选项</string>
   <string name="pref_changelog">变更日志</string>
   <string name="msg_editor_font_size">请选择编辑器的默认字体大小：</string>
   <string name="msg_clear_cache">这将删除 Gradle 创建的缓存目录。如果删除，下一次的构建可能需要更长的时间，因为 Gradle 将再次下载所需的文件。\n\n您确定要删除缓存吗？</string>
@@ -505,11 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">转储日志</string>
   <string name="idepref_devOptions_dumpLogs_summary">将 AndroidIDE 日志转储到 $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">运行应用程序的调试变体以在此处查看其日志。</string>
-  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
+  <string name="msg_logsender_disabled">LogSender 已禁用。您可以在首选项中启用它。</string>
   <string name="msg_emptyview_idelogs">IDE 中的日志显示在这里。</string>
   <string name="msg_emptyview_diagnostics">打开文件以显示其诊断结果</string>
   <string name="msg_emptyview_buildoutput">"构建应用程序或运行任务以在此处查看其构建输出。"</string>
   <string name="msg_codeaction_failed">无法执行代码操作</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_title">启用 LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">禁用后，应用程序的日志将不会显示在 AndroidIDE 中</string>
 </resources>
