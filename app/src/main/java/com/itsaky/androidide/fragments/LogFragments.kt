@@ -20,6 +20,7 @@ package com.itsaky.androidide.fragments
 import android.os.Bundle
 import android.view.View
 import com.itsaky.androidide.R
+import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -27,6 +28,7 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class IDELogFragment : LogViewFragment() {
+
   private var logListener: ILogger.LogListener? =
     ILogger.LogListener { priority, tag, message ->
       if (message.contains("\n")) {
@@ -63,11 +65,16 @@ class IDELogFragment : LogViewFragment() {
  * @author Akash Yadav
  */
 class AppLogFragment : LogViewFragment() {
+
   override fun isSimpleFormattingEnabled() = false
   override fun getFilename() = "app_logs"
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    emptyStateViewModel.emptyMessage.value = getString(R.string.msg_emptyview_applogs)
+    emptyStateViewModel.emptyMessage.value = if (logsenderEnabled) {
+      getString(R.string.msg_emptyview_applogs)
+    } else {
+      getString(R.string.msg_logsender_disabled)
+    }
   }
 }

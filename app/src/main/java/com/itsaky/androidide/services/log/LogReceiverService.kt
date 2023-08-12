@@ -23,6 +23,7 @@ import android.os.IBinder
 import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.utils.ILogger
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -50,7 +51,7 @@ class LogReceiverService : Service() {
   }
 
   override fun onBind(intent: Intent?): IBinder? {
-    if (intent?.action != LogSender.SERVICE_ACTION) {
+    if (!logsenderEnabled || intent?.action != LogSender.SERVICE_ACTION) {
       return null
     }
 

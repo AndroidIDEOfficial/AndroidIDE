@@ -24,6 +24,7 @@ import kotlinx.parcelize.Parcelize
 internal const val KEY_DEVOPTS = "ide.prefs.developerOptions"
 internal const val KEY_DEVOPTS_DEBUGGING = "${KEY_DEVOPTS}.debugging"
 internal const val KEY_DEVOPTS_DEBUGGING_DUMPLOGS = "${KEY_DEVOPTS_DEBUGGING}.dumpLogs"
+internal const val KEY_DEVOPTS_DEBUGGING_ENABLE_LOGSENDER = "${KEY_DEVOPTS_DEBUGGING}.enableLogsender"
 
 @Parcelize
 internal class DeveloperOptionsScreen(override val key: String = KEY_DEVOPTS,
@@ -44,6 +45,7 @@ internal class DebuggingPreferences(
 
   init {
     addPreference(DumpLogsPreference())
+    addPreference(EnableLogSenderPreference())
   }
 }
 
@@ -59,3 +61,16 @@ internal class DumpLogsPreference(
   override val title: Int = R.string.idepref_devOptions_dumpLogs_title,
   override val summary: Int? = R.string.idepref_devOptions_dumpLogs_summary) :
   SwitchPreference(setValue = ::dumpLogs::set, getValue = ::dumpLogs::get)
+
+internal var logsenderEnabled: Boolean
+  get() = prefManager.getBoolean(KEY_DEVOPTS_DEBUGGING_ENABLE_LOGSENDER, true)
+  set(value) {
+    prefManager.putBoolean(KEY_DEVOPTS_DEBUGGING_ENABLE_LOGSENDER, value)
+  }
+
+@Parcelize
+internal class EnableLogSenderPreference(
+  override val key: String = KEY_DEVOPTS_DEBUGGING_ENABLE_LOGSENDER,
+  override val title: Int = R.string.idepref_devOptions_enableLogsender_title,
+  override val summary: Int? = R.string.idepref_devOptions_enableLogsender_summary) :
+  SwitchPreference(setValue = ::logsenderEnabled::set, getValue = ::logsenderEnabled::get)

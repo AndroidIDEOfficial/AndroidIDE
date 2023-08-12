@@ -76,6 +76,7 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
+import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
@@ -174,6 +175,12 @@ abstract class BaseEditorActivity :
     installationCallback = null
 
     try {
+      if (!logsenderEnabled) {
+        // make sure the listener is released
+        logServiceConnection.onConnected = null
+        return
+      }
+
       lookupLogService()?.setConsumer(null)
       logServiceConnection.onConnected = null
       unbindService(logServiceConnection)
@@ -635,6 +642,14 @@ abstract class BaseEditorActivity :
 
   private fun startLogReceiver() {
     try {
+      if (!logsenderEnabled) {
+        log.info("LogSender is disabled. LogReceiver service won't be started...")
+
+        // release the connection listener
+        logServiceConnection.onConnected = null
+        return
+      }
+
       val intent = Intent(this, LogReceiverService::class.java)
         .setAction(LogSender.SERVICE_ACTION)
       check(bindService(intent, logServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT))
