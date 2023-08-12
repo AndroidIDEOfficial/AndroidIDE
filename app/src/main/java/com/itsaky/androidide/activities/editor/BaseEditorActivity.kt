@@ -19,6 +19,7 @@ package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -54,14 +55,13 @@ import com.itsaky.androidide.R.id
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
 import com.itsaky.androidide.activities.PreferencesActivity
-import com.itsaky.androidide.activities.TerminalActivity
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
 import com.itsaky.androidide.app.IDEActivity
 import com.itsaky.androidide.databinding.ActivityEditorBinding
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
-import com.itsaky.androidide.fragments.FileTreeFragment
+import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
 import com.itsaky.androidide.fragments.SearchResultFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
@@ -75,6 +75,10 @@ import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.services.log.LogReceiverService
+import com.itsaky.androidide.services.log.LogReceiverServiceConnection
+import com.itsaky.androidide.services.log.lookupLogService
+import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
@@ -92,10 +96,9 @@ import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
-import java.io.File
-import java.util.Objects
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
 
 /**
  * Base class for EditorActivity which handles most of the view related things.
@@ -127,9 +130,7 @@ abstract class BaseEditorActivity :
   private val onBackPressedCallback: OnBackPressedCallback =
     object : OnBackPressedCallback(true) {
       override fun handleOnBackPressed() {
-        if (binding.root.isDrawerOpen(GravityCompat.END)) {
-          binding.root.closeDrawer(GravityCompat.END)
-        } else if (binding.root.isDrawerOpen(GravityCompat.START)) {
+        if (binding.root.isDrawerOpen(GravityCompat.START)) {
           binding.root.closeDrawer(GravityCompat.START)
         } else if (editorBottomSheet?.state != BottomSheetBehavior.STATE_COLLAPSED) {
           editorBottomSheet?.setState(BottomSheetBehavior.STATE_COLLAPSED)
@@ -140,6 +141,7 @@ abstract class BaseEditorActivity :
     }
 
   companion object {
+
     const val EDITOR_CONTAINER_SCALE_FACTOR = 0.87f
     const val KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown"
     const val KEY_PROJECT_PATH = "saved_projectPath"
@@ -155,9 +157,9 @@ abstract class BaseEditorActivity :
 
   protected abstract fun doDismissSearchProgress()
 
-  protected abstract fun doConfirmProjectClose()
-
   protected abstract fun getOpenedFiles(): List<OpenedFile>
+
+  internal abstract fun doConfirmProjectClose()
 
   protected open fun preDestroy() {
     installationCallback?.destroy()
@@ -208,7 +210,7 @@ abstract class BaseEditorActivity :
 
     setSupportActionBar(binding.editorToolbar)
 
-    setupDrawerToggle()
+    setupDrawers()
     binding.tabs.addOnTabSelectedListener(this)
 
     setupViews()
@@ -266,8 +268,6 @@ abstract class BaseEditorActivity :
       id.editornav_settings -> startActivity(Intent(this, PreferencesActivity::class.java))
       id.editornav_share ->
         startActivity(IntentUtils.getShareTextIntent(getString(string.msg_share_app)))
-      id.editornav_close_project -> doConfirmProjectClose()
-      id.editornav_terminal -> openTerminal()
     }
 
     binding.root.closeDrawer(GravityCompat.START)
@@ -373,10 +373,10 @@ abstract class BaseEditorActivity :
     if (buildService == null || buildService.isBuildInProgress) return
 
     flashbarBuilder(
-        duration = DURATION_INDEFINITE,
-        backgroundColor = resolveAttr(attr.colorSecondaryContainer),
-        messageColor = resolveAttr(attr.colorOnSecondaryContainer)
-      )
+      duration = DURATION_INDEFINITE,
+      backgroundColor = resolveAttr(attr.colorSecondaryContainer),
+      messageColor = resolveAttr(attr.colorOnSecondaryContainer)
+    )
       .withIcon(drawable.ic_sync, colorFilter = resolveAttr(attr.colorOnSecondaryContainer))
       .message(string.msg_sync_needed)
       .positiveActionText(string.btn_sync)
@@ -440,7 +440,7 @@ abstract class BaseEditorActivity :
     text.replace(0, 0, endLine, text.getColumnCount(endLine), generated)
   }
 
-  private fun setupDrawerToggle() {
+  private fun setupDrawers() {
     val toggle =
       ActionBarDrawerToggle(
         this,
@@ -453,11 +453,19 @@ abstract class BaseEditorActivity :
     binding.editorDrawerLayout.addDrawerListener(toggle)
     binding.startNav.setNavigationItemSelectedListener(this)
     toggle.syncState()
-    binding.editorDrawerLayout.childId = binding.realContainer.id
+    binding.apply {
+      editorDrawerLayout.apply {
+        childId = binding.realContainer.id
+        translationBehaviorStart = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
+        translationBehaviorEnd = ContentTranslatingDrawerLayout.TranslationBehavior.FULL
+        setScrimColor(Color.TRANSPARENT)
+      }
+    }
   }
 
   private fun onBuildStatusChanged() {
-    log.debug("onBuildStatusChanged: isInitializing: ${viewModel.isInitializing}, isBuildInProgress: ${viewModel.isBuildInProgress}")
+    log.debug(
+      "onBuildStatusChanged: isInitializing: ${viewModel.isInitializing}, isBuildInProgress: ${viewModel.isBuildInProgress}")
     val visible = viewModel.isBuildInProgress || viewModel.isInitializing
     binding.buildProgressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()
@@ -485,7 +493,7 @@ abstract class BaseEditorActivity :
 
     if (
       !app.prefManager.getBoolean(KEY_BOTTOM_SHEET_SHOWN) &&
-        editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
+      editorBottomSheet?.state != BottomSheetBehavior.STATE_EXPANDED
     ) {
       editorBottomSheet?.state = BottomSheetBehavior.STATE_EXPANDED
       ThreadUtils.runOnUiThreadDelayed(
@@ -503,7 +511,7 @@ abstract class BaseEditorActivity :
     val filesSpan: ClickableSpan =
       object : ClickableSpan() {
         override fun onClick(widget: View) {
-          binding.root.openDrawer(GravityCompat.END)
+//          binding.root.openDrawer(GravityCompat.END)
         }
       }
     val bottomSheetSpan: ClickableSpan =

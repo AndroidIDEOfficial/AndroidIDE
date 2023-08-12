@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsaky.androidide.ui.ContentTranslatingDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/editor_drawerLayout"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:animateLayoutChanges="true"
-  tools:ignore="DuplicateIncludedIds">
+  tools:ignore="DuplicateIncludedIds"
+  tools:openDrawer="start">
 
   <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:id="@+id/realContainer"
@@ -109,26 +109,16 @@
 
   <com.google.android.material.navigation.NavigationView
     android:id="@+id/startNav"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    app:headerLayout="@layout/layout_nav_header"
-    app:menu="@menu/menu_editor_nav" />
+    app:elevation="8dp">
 
-  <com.google.android.material.navigation.NavigationView
-    android:id="@+id/endNav"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:layout_gravity="end"
-    android:fitsSystemWindows="false">
-
-    <!-- When changing android:tag here, also change it in FileTreeFragment.kt -->
     <androidx.fragment.app.FragmentContainerView
-      android:id="@+id/file_tree"
-      android:name="com.itsaky.androidide.fragments.FileTreeFragment"
+      android:id="@+id/drawer_sidebar"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:tag="editor.fileTree" />
+      android:name="com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment" />
 
   </com.google.android.material.navigation.NavigationView>
 

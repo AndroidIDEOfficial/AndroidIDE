@@ -11,6 +11,9 @@ android {
 dependencies {
     kapt(libs.google.auto.service)
 
+    api(libs.androidx.nav.fragment)
+    api(libs.androidx.nav.ui)
+
     implementation(projects.common)
     implementation(projects.resources)
     implementation(libs.common.editor)

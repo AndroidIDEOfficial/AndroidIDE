@@ -4,22 +4,11 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="200dp"
-  android:background="?attr/colorSurface"
   tools:ignore="Overdraw">
-
-  <com.google.android.material.imageview.ShapeableImageView
-    android:id="@+id/icon"
-    android:layout_width="50dp"
-    android:layout_height="50dp"
-    android:layout_centerVertical="true"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:src="@drawable/ic_launcher_fg_vector"
-    app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo"
-    app:tint="?attr/colorOnSurface" />
 
   <TextView
     android:id="@+id/title"
+    android:textStyle="bold"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
@@ -27,8 +16,18 @@
     android:elevation="8dp"
     android:text="@string/app_name"
     android:textColor="?attr/colorOnSurface"
-    android:textSize="20sp"
-    android:textStyle="bold" />
+    android:textSize="20sp" />
+
+  <com.google.android.material.imageview.ShapeableImageView
+    android:id="@+id/icon"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_centerVertical="true"
+    android:src="@drawable/ic_launcher_fg_vector"
+    app:shapeAppearance="@style/AppTheme.ShapeAppearance.MainFragment.Logo"
+    app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>
 

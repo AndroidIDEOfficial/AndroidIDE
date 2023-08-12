@@ -42,6 +42,7 @@ import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.EditorActionItem
+import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.editor.R.*
 import com.itsaky.androidide.editor.databinding.LayoutPopupMenuItemBinding
 import com.itsaky.androidide.editor.ui.EditorActionsMenu.ActionsListAdapter.VH
@@ -74,6 +75,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   MenuBuilder.Callback {
 
   companion object {
+
     const val DELAY: Long = 200
   }
 
@@ -158,9 +160,9 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
       var show = false
       if (
         event.cause == SelectionChangeEvent.CAUSE_TAP &&
-          event.left.index == mLastPosition &&
-          !isShowing &&
-          !editor.text.isInBatchEdit
+        event.left.index == mLastPosition &&
+        !isShowing &&
+        !editor.text.isInBatchEdit
       ) {
         editor.post(::displayWindow)
         show = true
@@ -214,8 +216,8 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
         override fun run() {
           if (
             !touchHandler.hasAnyHeldHandle() &&
-              System.currentTimeMillis() - mLastScroll > DELAY &&
-              touchHandler.scroller.isFinished
+            System.currentTimeMillis() - mLastScroll > DELAY &&
+            touchHandler.scroller.isFinished
           ) {
             displayWindow()
           } else {
@@ -289,7 +291,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
   }
 
   protected open fun onFillMenu(registry: ActionsRegistry, data: ActionData) {
-    registry.fillMenu(data, onGetActionLocation(), getMenu())
+    registry.fillMenu(FillMenuParams(data, onGetActionLocation(), getMenu()))
   }
 
   protected open fun onGetActionLocation() = location
@@ -308,12 +310,12 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     data.put(
       JavaLanguageServer::class.java,
       ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
-        as JavaLanguageServer
+          as JavaLanguageServer
     )
     data.put(
       XMLLanguageServer::class.java,
       ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
-        as XMLLanguageServer
+          as XMLLanguageServer
     )
     return data
   }
@@ -362,7 +364,7 @@ open class EditorActionsMenu constructor(val editor: IDEEditor) :
     var widest = 0
     val text =
       LayoutInflater.from(editor.context).inflate(layout.layout_popup_menu_item, null)
-        as MaterialButton
+          as MaterialButton
     val dp30 = SizeUtils.dp2px(30f)
     val paddingHorizontal = text.paddingStart + text.paddingEnd
     val drawablePadding = text.iconPadding

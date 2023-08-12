@@ -73,11 +73,19 @@ abstract class ActionsRegistry {
   abstract fun findAction(location: ActionItem.Location, id: String): ActionItem?
 
   /**
+   * Find the action with the given unique item ID.
+   *
+   * @param itemId The ID of the action to find.
+   * @return The found action or `null`.
+   */
+  abstract fun findAction(location: ActionItem.Location, itemId: Int): ActionItem?
+
+  /**
    * Fill the given menu with the registered actions.
    *
    * Subclasses must first call [ActionItem.prepare] to update the action.
    */
-  abstract fun fillMenu(data: ActionData, location: ActionItem.Location, menu: Menu)
+  abstract fun fillMenu(params: FillMenuParams)
 
   /** Get all the registered actions at the given location. */
   abstract fun getActions(location: ActionItem.Location): Map<String, ActionItem>

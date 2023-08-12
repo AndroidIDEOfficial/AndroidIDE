@@ -36,10 +36,10 @@ import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.flashError
 import com.unnamed.b.atv.model.TreeNode
-import java.io.File
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
+import java.io.File
 
 /**
  * Handles events related to files in filetree.
@@ -52,6 +52,7 @@ class FileTreeActionHandler : BaseEventHandler() {
   private var lastHeld: TreeNode? = null
 
   companion object {
+
     const val TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment"
     const val MB_10: Long = 10 * 1024 * 1024
   }
@@ -68,7 +69,7 @@ class FileTreeActionHandler : BaseEventHandler() {
     }
 
     val context = event[Context::class.java]!! as EditorHandlerActivity
-    context.binding.root.closeDrawer(GravityCompat.END)
+    context.binding.root.closeDrawer(GravityCompat.START)
     if (event.file.name.endsWith(".apk")) {
       ApkInstaller.installApk(
         context,
@@ -81,10 +82,11 @@ class FileTreeActionHandler : BaseEventHandler() {
 
     if (MB_10 < event.file.length()) {
       flashError("File is too big!")
-      log.warn("Cannot open ${event.file.name} as it is too big. File size: ${event.file.length()} bytes")
+      log.warn(
+        "Cannot open ${event.file.name} as it is too big. File size: ${event.file.length()} bytes")
       return
     }
-    
+
     context.openFile(event.file)
   }
 

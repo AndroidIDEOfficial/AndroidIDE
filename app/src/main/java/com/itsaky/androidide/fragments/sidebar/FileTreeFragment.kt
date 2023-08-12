@@ -1,21 +1,20 @@
 /*
- * This file is part of AndroidIDE.
+ *  This file is part of AndroidIDE.
  *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.fragments
+package com.itsaky.androidide.fragments.sidebar
 
 import android.content.Context
 import android.os.Bundle
@@ -25,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
 import androidx.core.view.updatePadding
+import androidx.fragment.app.viewModels
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionManager
 import com.blankj.utilcode.util.SizeUtils
@@ -41,8 +41,8 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.callables.FileTreeCallable
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFileName
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFolder
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
+import com.itsaky.androidide.viewmodel.FileTreeViewModel
 import com.unnamed.b.atv.model.TreeNode
 import com.unnamed.b.atv.model.TreeNode.TreeNodeClickListener
 import com.unnamed.b.atv.model.TreeNode.TreeNodeLongClickListener
@@ -53,18 +53,24 @@ import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
 import java.util.Arrays
 
-class FileTreeFragment :
-  BottomSheetDialogFragment(), TreeNodeClickListener, TreeNodeLongClickListener {
+class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
+  TreeNodeLongClickListener {
+
   private var binding: LayoutEditorFileTreeBinding? = null
-  private var mFileTreeView: AndroidTreeView? = null
-  private var mRoot: TreeNode? = null
-  private var mTreeState: String? = null
+  private var fileTreeView: AndroidTreeView? = null
+  private var rootNode: TreeNode? = null
+
+  private val viewModel by viewModels<FileTreeViewModel>()
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
+    if (!EventBus.getDefault().isRegistered(this)) {
+      EventBus.getDefault().register(this)
+    }
+
     binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false)
     binding?.root?.doOnApplyWindowInsets { view, insets, _, _ ->
       insets.getInsets(statusBars()).apply { view.updatePadding(top = top + SizeUtils.dp2px(8f)) }
@@ -74,44 +80,23 @@ class FileTreeFragment :
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    if (savedInstanceState != null && savedInstanceState.containsKey(KEY_STORED_TREE_STATE)) {
-      mTreeState = savedInstanceState.getString(KEY_STORED_TREE_STATE, null)
-    }
     listProjectFiles()
-  }
-
-  override fun onStart() {
-    super.onStart()
-    if (!EventBus.getDefault().isRegistered(this)) {
-      EventBus.getDefault().register(this)
-    }
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     saveTreeState()
-    outState.putString(KEY_STORED_TREE_STATE, mTreeState)
-  }
-
-  override fun onStop() {
-    super.onStop()
-    EventBus.getDefault().unregister(this)
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
+    EventBus.getDefault().unregister(this)
     binding = null
-    mFileTreeView = null
+    fileTreeView = null
   }
 
   fun saveTreeState() {
-    mTreeState =
-      if (mFileTreeView != null) {
-        mFileTreeView!!.saveState
-      } else {
-        LOG.error("Unable to save tree state. TreeView is null.")
-        null
-      }
+    viewModel.saveState(fileTreeView)
   }
 
   override fun onClick(node: TreeNode, p2: Any) {
@@ -132,27 +117,31 @@ class FileTreeFragment :
     EventBus.getDefault().post(event)
   }
 
-  private fun collapseNode(node: TreeNode) {
-    if (mFileTreeView == null) {
-      return
-    }
-    TransitionManager.beginDelayedTransition(binding!!.root, ChangeBounds())
-    mFileTreeView!!.collapseNode(node)
-    updateChevron(node)
-  }
-
   private fun updateChevron(node: TreeNode) {
     if (node.viewHolder is FileTreeViewHolder) {
       (node.viewHolder as FileTreeViewHolder).updateChevron(node.isExpanded)
     }
   }
 
-  private fun expandNode(node: TreeNode) {
-    if (mFileTreeView == null) {
+  private fun expandNode(node: TreeNode, animate: Boolean = true) {
+    if (fileTreeView == null) {
       return
     }
-    TransitionManager.beginDelayedTransition(binding!!.root, ChangeBounds())
-    mFileTreeView!!.expandNode(node)
+    if (animate) {
+      TransitionManager.beginDelayedTransition(binding!!.root, ChangeBounds())
+    }
+    fileTreeView!!.expandNode(node)
+    updateChevron(node)
+  }
+
+  private fun collapseNode(node: TreeNode, animate: Boolean = true) {
+    if (fileTreeView == null) {
+      return
+    }
+    if (animate) {
+      TransitionManager.beginDelayedTransition(binding!!.root, ChangeBounds())
+    }
+    fileTreeView!!.collapseNode(node)
     updateChevron(node)
   }
 
@@ -227,12 +216,12 @@ class FileTreeFragment :
     }
     val projectDirPath = getProjectDirPath()
     val projectDir = File(projectDirPath)
-    mRoot = TreeNode(File(""))
-    mRoot!!.viewHolder = FileTreeViewHolder(requireContext())
+    rootNode = TreeNode(File(""))
+    rootNode!!.viewHolder = FileTreeViewHolder(requireContext())
 
     val projectRoot = TreeNode.root(projectDir)
     projectRoot.viewHolder = FileTreeViewHolder(context)
-    mRoot!!.addChild(projectRoot)
+    rootNode!!.addChild(projectRoot)
 
     binding!!.horizontalCroll.visibility = View.GONE
     binding!!.horizontalCroll.visibility = View.VISIBLE
@@ -243,7 +232,7 @@ class FileTreeFragment :
       }
       binding!!.horizontalCroll.visibility = View.VISIBLE
       binding!!.loading.visibility = View.GONE
-      val tree = createTreeView(mRoot)
+      val tree = createTreeView(rootNode)
       if (tree != null) {
         tree.setUseAutoToggle(false)
         tree.setDefaultNodeClickListener(this@FileTreeFragment)
@@ -259,20 +248,20 @@ class FileTreeFragment :
   private fun createTreeView(node: TreeNode?): AndroidTreeView? {
     return if (context == null) {
       null
-    } else AndroidTreeView(context, node, drawable.bg_ripple).also { mFileTreeView = it }
+    } else AndroidTreeView(context, node, drawable.bg_ripple).also { fileTreeView = it }
   }
 
-  private fun tryRestoreState(state: String? = mTreeState) {
-    if (!TextUtils.isEmpty(state) && mFileTreeView != null) {
-      mFileTreeView!!.collapseAll()
+  private fun tryRestoreState(state: String? = viewModel.savedState) {
+    if (!TextUtils.isEmpty(state) && fileTreeView != null) {
+      fileTreeView!!.collapseAll()
       val openNodes =
         state!!.split(AndroidTreeView.NODES_PATH_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
-      restoreNodeState(mRoot!!, HashSet(openNodes))
+      restoreNodeState(rootNode!!, HashSet(openNodes))
     }
 
-    mRoot?.let { rootNode ->
+    rootNode?.let { rootNode ->
       if (rootNode.children.isNotEmpty()) {
-        rootNode.childAt(0)?.let { projectRoot -> expandNode(projectRoot) }
+        rootNode.childAt(0)?.let { projectRoot -> expandNode(projectRoot, false) }
       }
     }
   }
@@ -285,7 +274,7 @@ class FileTreeFragment :
       val node = children[i]
       if (openNodes.contains(node.path)) {
         listNode(node) {
-          expandNode(node)
+          expandNode(node, false)
           restoreNodeState(node, openNodes)
         }
       }
@@ -297,8 +286,7 @@ class FileTreeFragment :
 
     // Should be same as defined in layout/activity_editor.xml
     const val TAG = "editor.fileTree"
-    private const val KEY_STORED_TREE_STATE = "fileTree_state"
-    private val LOG = ILogger.newInstance("FileTreeFragment")
+
     @JvmStatic
     fun newInstance(): FileTreeFragment {
       return FileTreeFragment()

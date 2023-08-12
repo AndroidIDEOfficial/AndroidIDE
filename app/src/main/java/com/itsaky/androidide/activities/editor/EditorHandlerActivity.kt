@@ -31,6 +31,7 @@ import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
+import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.editor.language.java.JavaLanguage
 import com.itsaky.androidide.editor.language.json.JsonLanguage
 import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage
@@ -102,9 +103,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     super.onCreate(savedInstanceState)
 
     viewModel._displayedFile.observe(this) { this.binding.editorContainer.displayedChild = it }
-    viewModel._fileTreeDrawerOpened.observe(this) { opened ->
+    viewModel._startDrawerOpened.observe(this) { opened ->
       this.binding.editorDrawerLayout.apply {
-        if (opened) openDrawer(GravityCompat.END) else closeDrawer(GravityCompat.END)
+        if (opened) openDrawer(GravityCompat.START) else closeDrawer(GravityCompat.START)
       }
     }
 
@@ -251,7 +252,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       tab.select()
     }
 
-    viewModel.fileTreeDrawerOpened = false
+    viewModel.startDrawerOpened = false
     viewModel.displayedFileIndex = index
 
     return try {
@@ -478,7 +479,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       data.put(File::class.java, currentEditor.editor.file)
     }
 
-    getInstance().fillMenu(data, EDITOR_TOOLBAR, menu)
+    getInstance().fillMenu(FillMenuParams(data, EDITOR_TOOLBAR, menu))
     binding.editorToolbar.updateMenuDisplay()
   }
 

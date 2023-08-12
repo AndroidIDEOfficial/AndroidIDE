@@ -30,6 +30,7 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class ContentTranslatingDrawerLayout : InterceptableDrawerLayout {
+
   constructor(context: Context) : super(context)
   constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
   constructor(
@@ -38,27 +39,68 @@ class ContentTranslatingDrawerLayout : InterceptableDrawerLayout {
     defStyleAttr: Int
   ) : super(context, attrs, defStyleAttr)
 
-  private val log = ILogger.newInstance("ContentTranslatingDrawerLayout")
-
   companion object {
-    const val MAX_SCALE = 0.2f
+
+    private val log = ILogger.newInstance("ContentTranslatingDrawerLayout")
   }
 
+  /**
+   * The ID of the child view which will be translated when the navigation views are expanded/collapsed.
+   *
+   * Set this value to `-1` to disable transition.
+   */
   var childId: Int = -1
+
+  /**
+   * The [TranslationBehavior] for the start navigation view.
+   */
+  var translationBehaviorStart: TranslationBehavior = TranslationBehavior.DEFAULT
+
+  /**
+   * The [TranslationBehavior] for the end navigation view.
+   */
+  var translationBehaviorEnd: TranslationBehavior = TranslationBehavior.DEFAULT
+
   private val mListener =
     object : SimpleDrawerListener() {
       override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
         if (childId == -1) {
           return
         }
+
         val gravity = (drawerView.layoutParams as LayoutParams).gravity
         val view = findViewById<View>(childId) ?: return
-        val offset = (drawerView.width * slideOffset) * MAX_SCALE
-        view.translationX = (if (gravity == GravityCompat.START) 1 else -1) * offset
+        val (direction, maxOffset) = if (gravity == GravityCompat.START) {
+          1 to translationBehaviorStart.maxOffset
+        } else {
+          -1 to translationBehaviorEnd.maxOffset
+        }
+
+        val offset = (drawerView.width * slideOffset) * maxOffset
+        view.translationX = direction * offset
       }
     }
 
   init {
     addDrawerListener(mListener)
+  }
+
+  /**
+   * Translation behavior for content view of [ContentTranslatingDrawerLayout].
+   */
+  enum class TranslationBehavior(val maxOffset: Float) {
+
+    /**
+     * The default translation behavior. This makes the child view translate partially according to
+     * the slide offset of the [NavigationView][com.google.android.material.navigation.NavigationView]
+     */
+    DEFAULT(0.2f),
+
+    /**
+     * Makes the child child view translate according to the slide offset of the
+     * [NavigationView][com.google.android.material.navigation.NavigationView]. The translation offset
+     * is always equal to the slide offset in this behavior.
+     */
+    FULL(0.95f);
   }
 }

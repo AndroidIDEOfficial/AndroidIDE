@@ -18,6 +18,7 @@
 package com.itsaky.androidide.actions
 
 import android.graphics.drawable.Drawable
+import android.view.Menu
 import android.view.View
 
 /**
@@ -28,13 +29,54 @@ import android.view.View
  */
 interface ActionItem {
 
+  /**
+   * A unique ID for this action.
+   */
   val id: String
+
+  /**
+   * The label for this action.
+   */
   var label: String
+
+  /**
+   * Whether the action should be visible to the user or not.
+   */
   var visible: Boolean
+
+  /**
+   * Whether the action should be enabled.
+   */
   var enabled: Boolean
+
+  /**
+   * Icon for this action.
+   */
   var icon: Drawable?
+
+  /**
+   * Whether the [execAction] method of this action must be executed on UI thread.
+   */
   var requiresUIThread: Boolean
+
+  /**
+   * The location of this [ActionItem].
+   */
   var location: Location
+
+  /**
+   * The order of this action item. This is used only at some locations and not everywhere.
+   *
+   * @see android.view.MenuItem.getOrder
+   */
+  val order: Int
+    get() = Menu.NONE
+
+  /**
+   * The item ID that will be set to the menu item.
+   */
+  val itemId: Int
+    get() = id.hashCode()
 
   /**
    * Prepare the action. Subclasses can modify the visual properties of this action here.
@@ -85,8 +127,15 @@ interface ActionItem {
     /** Location marker for action items shown in editor activity's toolbar. */
     EDITOR_TOOLBAR("ide.editor.toolbar"),
 
-    /** Location marker for action items shown in UI Designer activity's toolbar. */
-    UI_DESIGNER_TOOLBAR("ide.uidesigner.toolbar"),
+    /**
+     * Location marker for action items shown in editor activity's sidebar (navigation rail in the drawer).
+     */
+    EDITOR_SIDEBAR("ide.editor.sidebar"),
+
+    /**
+     * Location marker for action items shown in the default category of editor activity's sidebar (navigation rail in the drawer).
+     */
+    EDITOR_SIDEBAR_DEFAULT_ITEMS("ide.editor.sidebar.defaultItems"),
 
     /** Location marker for action items shown in editor's text action menu. */
     EDITOR_TEXT_ACTIONS("ide.editor.textActions"),
@@ -104,7 +153,10 @@ interface ActionItem {
      * Location marker for action items that are shown when the files in the editor activity's file
      * tree are long clicked.
      */
-    EDITOR_FILE_TREE("ide.editor.fileTree");
+    EDITOR_FILE_TREE("ide.editor.fileTree"),
+
+    /** Location marker for action items shown in UI Designer activity's toolbar. */
+    UI_DESIGNER_TOOLBAR("ide.uidesigner.toolbar");
 
     override fun toString(): String {
       return id

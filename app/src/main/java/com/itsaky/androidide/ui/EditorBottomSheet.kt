@@ -109,7 +109,7 @@ constructor(
 
     mediator.attach()
     binding.pager.isUserInputEnabled = false
-    binding.pager.offscreenPageLimit = pagerAdapter.itemCount - 1 // DO not remove any views
+    binding.pager.offscreenPageLimit = pagerAdapter.itemCount - 1 // Do not remove any views
 
     binding.tabs.addOnTabSelectedListener(
       object : OnTabSelectedListener {

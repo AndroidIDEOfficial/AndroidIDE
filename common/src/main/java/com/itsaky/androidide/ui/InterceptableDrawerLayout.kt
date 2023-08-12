@@ -31,6 +31,7 @@ import androidx.drawerlayout.widget.DrawerLayout
  * @author Akash Yadav
  */
 open class InterceptableDrawerLayout : DrawerLayout {
+
   private val rect: Rect = Rect()
 
   constructor(context: Context) : super(context)
@@ -47,7 +48,7 @@ open class InterceptableDrawerLayout : DrawerLayout {
       false
     } else super.onInterceptTouchEvent(event)
   }
-  
+
   private fun findScrollingChild(parent: ViewGroup, x: Float, y: Float): View? {
     val n = parent.childCount
     if (parent === this && n <= 1) {
@@ -66,15 +67,23 @@ open class InterceptableDrawerLayout : DrawerLayout {
       }
 
       child.getHitRect(rect)
-      if (rect.contains(x.toInt(), y.toInt())) {
-        if (child.canScrollHorizontally(-1)) {
-          return child
-        } else if (child is ViewGroup) {
-          val v = findScrollingChild(child, x - rect.left, y - rect.top)
-          if (v != null) {
-            return v
-          }
-        }
+      if (!rect.contains(x.toInt(), y.toInt())) {
+        continue
+      }
+
+      if (child.canScrollHorizontally(-1) // left
+        || child.canScrollHorizontally(1) // right
+        ) {
+        return child
+      }
+
+      if (child !is ViewGroup) {
+        continue
+      }
+
+      val v = findScrollingChild(child, x - rect.left, y - rect.top)
+      if (v != null) {
+        return v
       }
     }
     return null

@@ -138,7 +138,7 @@
     <!-- When changing android:tag here, also change it in FileTreeFragment.kt -->
     <androidx.fragment.app.FragmentContainerView
       android:id="@+id/file_tree"
-      android:name="com.itsaky.androidide.fragments.FileTreeFragment"
+      android:name="com.itsaky.androidide.fragments.sidebar.FileTreeFragment"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:tag="editor.fileTree" />

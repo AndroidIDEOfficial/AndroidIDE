@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.UI_DESIGNER_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.app.BaseIDEActivity
 import com.itsaky.androidide.uidesigner.actions.clearUiDesignerActions
 import com.itsaky.androidide.uidesigner.actions.registerUiDesignerActions
@@ -181,7 +182,7 @@ class UIDesignerActivity : BaseIDEActivity() {
     data.put(Context::class.java, this)
     data.put(Fragment::class.java, workspace())
 
-    ActionsRegistry.getInstance().fillMenu(data, UI_DESIGNER_TOOLBAR, menu)
+    ActionsRegistry.getInstance().fillMenu(FillMenuParams(data, UI_DESIGNER_TOOLBAR, menu))
   }
 
   private fun workspace(): DesignerWorkspaceFragment? {

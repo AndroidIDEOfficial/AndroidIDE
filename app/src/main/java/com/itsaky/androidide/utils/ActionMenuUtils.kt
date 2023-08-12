@@ -24,6 +24,7 @@ import androidx.core.widget.PopupMenuCompat.getDragToOpenListener
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.FillMenuParams
 
 /**
  * Utility class to show a popup menu with [com.itsaky.androidide.actions.ActionsRegistry].
@@ -43,7 +44,7 @@ object ActionMenuUtils {
     return PopupMenu(context, anchor).apply {
       val data = ActionData()
       data.put(Context::class.java, context)
-      ActionsRegistry.getInstance().fillMenu(data, location, menu)
+      ActionsRegistry.getInstance().fillMenu(FillMenuParams(data, location, menu))
 
       if (dragToOpen) {
         anchor.setOnTouchListener(getDragToOpenListener(this))
