@@ -465,9 +465,9 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_deleteEmptyLines_title">Supprimer les lignes vides après un retour à la ligne</string>
   <string name="idepref_deleteEmptyLines_summary">Si l\'éditeur doit supprimer des lignes vides sur un seul événement de clé de rétro-espace.</string>
   <string name="idepref_deleteTabs_title">Supprimer la tabulation après un retour à la ligne</string>
-  <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
+  <string name="idepref_deleteTabs_summary">Activé, l\'éditeur supprimera les espaces vides égales à la longueur de la tabulation quand le bouton retour à la ligne est enclenché.</string>
   <string name="btn_sync">Synchroniser</string>
-  <string name="btn_ignore_changes">Ignore these changes</string>
+  <string name="btn_ignore_changes">Ignorer les modifications</string>
   <string name="title_fix_imports">Corriger les importations</string>
   <string name="msg_no_unresolved_classes">No unresolved class names found</string>
   <string name="title_class_chooser">Quel %1$s ?</string>
