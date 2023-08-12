@@ -340,7 +340,7 @@
   <string name="idepref_xml_trimFinalNewLine_title">删除末尾新行</string>
   <string name="idepref_xml_insertFinalNewLine_title">插入末尾新行</string>
   <string name="idepref_xml_trimFinalNewLine_summary">删除文件末尾多余的空行</string>
-  <string name="idepref_xml_insertFinalNewLine_summary">在文件末尾插入新的空行。</string>
+  <string name="idepref_xml_insertFinalNewLine_summary">在文件末尾插入空行。</string>
   <string name="idepref_xml_splitAttributes_title">拆分属性</string>
   <string name="idepref_xml_splitAttributes_summary">在新行上格式化属性</string>
   <string name="idepref_xml_joinCDataLines_title">加入 CDATA 行</string>
@@ -371,7 +371,7 @@
   <string name="xml_formatting_options">XML 格式化选项</string>
   <string name="xml_formatting_options_summary">XML 格式化配置</string>
   <string name="idepref_customFont_title">使用自定义字体</string>
-  <string name="idepref_customFont_summary">如果启用，位于“/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf”的文件将用作编辑器字体。</string>
+  <string name="idepref_customFont_summary">如果启用，文件“/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf”将用作编辑器字体。</string>
   <string name="idepref_chooseFont_title">选择自定义字体</string>
   <string name="idepref_chooseFont_summary">选择要在终端（或编辑器）中使用的字体。</string>
   <string name="msg_installing_apk">正在安装 APK...</string>
