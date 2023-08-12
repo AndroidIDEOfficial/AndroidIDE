@@ -21,8 +21,8 @@ import android.util.Log
 import com.itsaky.androidide.logsender.ILogReceiver
 import com.itsaky.androidide.logsender.ILogSender
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -58,58 +58,64 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   }
 
   override fun ping() {
-    Log.d("LogRecevier", "ping: Received a ping request")
+    doAsync("ping") {
+      Log.d("LogRecevier", "ping: Received a ping request")
+    }
   }
 
   override fun connect(sender: ILogSender?) {
-    val port = senderHandler.getPort()
-    if (port == -1) {
-      log.error("A log sender is trying to connect, but log receiver is not started")
-      return
-    }
-
-    sender?.let { newSender ->
-
-      val existingSender = senders.getByPackage(newSender.packageName)
-
-      if (existingSender != null) {
-        senderHandler.removeClient(existingSender.id)
+    doAsync("connect") {
+      val port = senderHandler.getPort()
+      if (port == -1) {
+        log.error("A log sender is trying to connect, but log receiver is not started")
+        return@doAsync
       }
 
-      if (existingSender?.isAlive() == true) {
-        log.warn(
-          "Client '${existingSender.packageName}' has been restarted with process ID '${newSender.pid}'" +
-              " Previous connection with process ID '${existingSender.pid}' will be closed...")
-        existingSender.onDisconnect()
+      sender?.let { newSender ->
+
+        val existingSender = senders.getByPackage(newSender.packageName)
+
+        if (existingSender != null) {
+          senderHandler.removeClient(existingSender.id)
+        }
+
+        if (existingSender?.isAlive() == true) {
+          log.warn(
+            "Client '${existingSender.packageName}' has been restarted with process ID '${newSender.pid}'" +
+                " Previous connection with process ID '${existingSender.pid}' will be closed...")
+          existingSender.onDisconnect()
+        }
+
+        log.info("Connecting to client ${newSender.packageName}")
+
+        this.senders.put(CachingLogSender(newSender))
+
+        newSender.startReader(port)
+
+        logTotalConnected()
       }
-
-      log.info("Connecting to client ${newSender.packageName}")
-
-      this.senders.put(CachingLogSender(newSender))
-
-      newSender.startReader(port)
-
-      logTotalConnected()
     }
   }
 
   override fun disconnect(packageName: String, senderId: String) {
-    val port = senderHandler.getPort()
-    if (port == -1) {
-      return
+    doAsync("disconnect") {
+      val port = senderHandler.getPort()
+      if (port == -1) {
+        return@doAsync
+      }
+
+      if (!senders.containsKey(packageName)) {
+        log.warn(
+          "Received disconnect request from a log sender which is not connected: '${packageName}'")
+        return@doAsync
+      }
+
+      log.info("Disconnecting from client: '${packageName}'")
+      this.senderHandler.removeClient(senderId)
+      this.senders.remove(packageName)
+
+      logTotalConnected()
     }
-
-    if (!senders.containsKey(packageName)) {
-      log.warn(
-        "Received disconnect request from a log sender which is not connected: '${packageName}'")
-      return
-    }
-
-    log.info("Disconnecting from client: '${packageName}'")
-    this.senderHandler.removeClient(senderId)
-    this.senders.remove(packageName)
-
-    logTotalConnected()
   }
 
   override fun close() {
@@ -117,6 +123,14 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
     senderHandler.close()
     consumer = null
     senders.clear()
+  }
+
+  private fun doAsync(actionName: String, action: () -> Unit) {
+    executeAsyncProvideError(action::invoke) { _, error ->
+      if (error != null) {
+        log.error("Failed to perform action '$actionName'", error)
+      }
+    }
   }
 
   private fun logTotalConnected() {

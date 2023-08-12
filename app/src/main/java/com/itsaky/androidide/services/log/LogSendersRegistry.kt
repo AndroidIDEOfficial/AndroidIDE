@@ -18,15 +18,15 @@
 package com.itsaky.androidide.services.log
 
 import com.itsaky.androidide.logsender.ILogSender
-import java.util.Collections.synchronizedMap
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * @author Akash Yadav
  */
 internal class LogSendersRegistry {
 
-  private val senders = synchronizedMap(HashMap<String, ILogSender>())
-  private val idToPck = synchronizedMap(HashMap<String, String>())
+  private val senders = ConcurrentHashMap<String, ILogSender>()
+  private val idToPck = ConcurrentHashMap<String, String>()
 
   val size: Int
     get() = this.senders.size
@@ -56,12 +56,9 @@ internal class LogSendersRegistry {
     this.senders.remove(packageName)
 
     val iterator = this.idToPck.iterator()
-
-    synchronized(this.idToPck) {
-      for (entry in iterator) {
-        if (entry.value == packageName) {
-          iterator.remove()
-        }
+    for (entry in iterator) {
+      if (entry.value == packageName) {
+        iterator.remove()
       }
     }
   }
