@@ -505,8 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">转储日志</string>
   <string name="idepref_devOptions_dumpLogs_summary">将 AndroidIDE 日志转储到 $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">运行应用程序的调试变体以在此处查看其日志。</string>
+  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
   <string name="msg_emptyview_idelogs">IDE 中的日志显示在这里。</string>
   <string name="msg_emptyview_diagnostics">打开文件以显示其诊断结果</string>
   <string name="msg_emptyview_buildoutput">"构建应用程序或运行任务以在此处查看其构建输出。"</string>
   <string name="msg_codeaction_failed">无法执行代码操作</string>
+  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
 </resources>
