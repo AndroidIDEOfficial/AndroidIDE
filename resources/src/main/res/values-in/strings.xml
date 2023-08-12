@@ -505,8 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">Dump log</string>
   <string name="idepref_devOptions_dumpLogs_summary">Dump log AndroidIDE ke $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">Jalankan varian debug aplikasi Anda untuk melihat lognya di sini.</string>
+  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
   <string name="msg_emptyview_idelogs">Log dari IDE ditampilkan di sini.</string>
   <string name="msg_emptyview_diagnostics">Buka file untuk menampilkan hasil diagnosisnya</string>
   <string name="msg_emptyview_buildoutput">"Buat aplikasi atau jalankan tugas untuk melihat hasil pembuatannya di sini. "</string>
   <string name="msg_codeaction_failed">Gagal melakukan tindakan kode</string>
+  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
 </resources>
