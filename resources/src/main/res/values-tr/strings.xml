@@ -505,8 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">Günlükleri kaydet</string>
   <string name="idepref_devOptions_dumpLogs_summary">$HOME/.androidide/logs içine AndroidIDE günlüklerini kaydet</string>
   <string name="msg_emptyview_applogs">Uygulamanızın günlüklerini burada görüntülemek için debug varyantını çalıştırın.</string>
+  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
   <string name="msg_emptyview_idelogs">IDE\'den günlükler burada görünür.</string>
   <string name="msg_emptyview_diagnostics">Bir dosyanın analiz raporlarını görmek için dosyayı açın</string>
   <string name="msg_emptyview_buildoutput">"İnşa çıktısını burada görmek için uygulamayı inşa edin ya da bir görev çalıştırın. "</string>
   <string name="msg_codeaction_failed">Kod eylemi gerçekleştirilemedi</string>
+  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
 </resources>
