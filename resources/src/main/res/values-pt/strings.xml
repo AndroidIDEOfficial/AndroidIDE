@@ -505,11 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">Despejar registros</string>
   <string name="idepref_devOptions_dumpLogs_summary">Despejar registros do AndroidIDE para $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">Execute a variante de depuração do seu aplicativo para ver os logs aqui.</string>
-  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
+  <string name="msg_logsender_disabled">LogSender está desativado. Você pode ativá-lo nas configurações.</string>
   <string name="msg_emptyview_idelogs">Os logs da IDE são exibidos aqui.</string>
   <string name="msg_emptyview_diagnostics">Abra um arquivo para exibir os resultados do diagnóstico</string>
   <string name="msg_emptyview_buildoutput">"Construa o aplicativo ou execute uma tarefa para ver sua saída de compilação aqui. "</string>
   <string name="msg_codeaction_failed">Falha ao executar a ação de código</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_title">Ativar LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">Quando desativado, os logs do aplicativo não serão exibidos no AndroidIDE</string>
 </resources>
