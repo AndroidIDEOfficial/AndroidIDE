@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="copy" tools:override="true">Copier</string>
+  <string name="text_to_search">Texte à chercher</string>
   <string name="title_open_source_licenses">licence Open Source</string>
   <string name="msg_about_licensed_under">licence sous:&#x20;</string>
   <string name="about_option_email">Émail</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">Préférences de l\'IDE</string>
   <string name="discussions_on_telegram">Discuter sur Telegram (anglais)</string>
   <string name="official_tg_channel">Channel Telegram Officiel</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view">Aucune donnée</string>
   <string name="title_terminal">Terminal</string>
   <string name="reset">Réinitialiser</string>
   <string name="app_logs">Logs App</string>
@@ -101,7 +101,7 @@ Dernier projet ouvert : \n%s</string>
   <string name="template_no_activity">Pas d\'activité</string>
   <string name="template_no_activity_description">Créer un nouveau projet sans activité </string>
   <!-- Files -->
-  <string name="template_no_AndroidX">No AndroidX</string>
+  <string name="template_no_AndroidX">Sans AndroidX</string>
   <string name="template_description_noAndroidX">Créer un projet sans la librairie AndroidX</string>
   <string name="save">Sauvegarder</string>
   <string name="menu_find">Trouver</string>
@@ -193,8 +193,8 @@ Dernier projet ouvert : \n%s</string>
   <string name="idepref_editor_drawhexcolors_summary">L\'éditeur doit-il afficher les couleurs hex ?</string>
   <string name="idepref_editor_word_wrap_title">Word Wrap</string>
   <string name="idepref_editor_word_wrap_summary">Utiliser le Word Wrap de l\'éditeur </string>
-  <string name="idepref_editor_hide_file_tree_button_title">Hide the File Tree button</string>
-  <string name="idepref_editor_hide_file_tree_button_summary">Move the \"File Tree\" button into the overflow menu of the editor\'s toolbar.</string>
+  <string name="idepref_editor_hide_file_tree_button_title">Cacher le bouton du gestionnaire des fichiers</string>
+  <string name="idepref_editor_hide_file_tree_button_summary">Déplace le bouton du gestionnaire des fichiers dans la barre du haut de l\'éditeur.</string>
   <string name="idepref_editor_use_magnifier_title">Activer Magnifier</string>
   <string name="idepref_editor_use_magnifier_summary">Agrandir le texte à la position du curseur lors de la sélection du texte dans l\'éditeur</string>
   <string name="idepref_editor_title">Éditeur</string>
@@ -463,8 +463,8 @@ Dernier projet ouvert : \n%s</string>
   <string name="msg_dir_picker_failed">Failed to start directory picker : %1$s</string>
   <string name="msg_tooling_server_unavailable">Tooling API server is unavailable. Check build output and IDE logs for errors.</string>
   <string name="idepref_deleteEmptyLines_title">Supprimer les lignes vides après un retour à la ligne</string>
-  <string name="idepref_deleteEmptyLines_summary">Whether the editor should delete empty lines on a single backspace key event.</string>
-  <string name="idepref_deleteTabs_title">Delete tab on backspace</string>
+  <string name="idepref_deleteEmptyLines_summary">Si l\'éditeur doit supprimer des lignes vides sur un seul événement de clé de rétro-espace.</string>
+  <string name="idepref_deleteTabs_title">Supprimer la tabulation après un retour à la ligne</string>
   <string name="idepref_deleteTabs_summary">When enabled, the editor will delete spaces equal to the tab width when the backspace key is pressed.</string>
   <string name="btn_sync">Synchroniser</string>
   <string name="btn_ignore_changes">Ignore these changes</string>
