@@ -342,7 +342,7 @@
   <string name="idepref_xml_trimFinalNewLine_summary">删除文件末尾多余的空行</string>
   <string name="idepref_xml_insertFinalNewLine_summary">在文件末尾插入空行。</string>
   <string name="idepref_xml_splitAttributes_title">拆分属性</string>
-  <string name="idepref_xml_splitAttributes_summary">在新行上格式化属性</string>
+  <string name="idepref_xml_splitAttributes_summary">安排属性到新行</string>
   <string name="idepref_xml_joinCDataLines_title">加入 CDATA 行</string>
   <string name="idepref_xml_joinCDataLines_summary">规范 CDATA 内容。</string>
   <string name="idepref_xml_joinComment_title">加入注释行</string>
@@ -354,7 +354,7 @@
   <string name="idepref_xml_preserveEmptyContent_title">保留空内容</string>
   <string name="idepref_xml_preserveEmptyContent_summary">保留元素内的空内容（空格、换行符、制表符等）。</string>
   <string name="idepref_xml_preserveAttrLineBreaks_title">保留属性换行符</string>
-  <string name="idepref_xml_preserveAttrLineBreaks_summary">保留属性之间的换行符</string>
+  <string name="idepref_xml_preserveAttrLineBreaks_summary">保留属性之间的换行符。</string>
   <string name="idepref_xml_closingBrackNewLine_title">新行右括号</string>
   <string name="idepref_xml_closingBrackNewLine_summary">将右括号放在新的一行上。</string>
   <string name="idepref_xml_trimTrailingWs_title">删除行末空格</string>
