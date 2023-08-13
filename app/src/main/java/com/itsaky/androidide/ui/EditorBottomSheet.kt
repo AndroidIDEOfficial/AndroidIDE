@@ -46,7 +46,7 @@ import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
 import com.itsaky.androidide.databinding.LayoutBottomActionBinding
 import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding
-import com.itsaky.androidide.fragments.ShareableOutputFragment
+import com.itsaky.androidide.fragments.output.ShareableOutputFragment
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.TaskExecutor.CallbackWithError

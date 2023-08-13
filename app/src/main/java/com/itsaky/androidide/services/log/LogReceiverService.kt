@@ -20,6 +20,7 @@ package com.itsaky.androidide.services.log
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.itsaky.androidide.logsender.LogSender
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
@@ -36,10 +37,14 @@ class LogReceiverService : Service() {
 
   private val binder = LogReceiverImpl()
   private val started = AtomicBoolean(false)
+  private val isBoundToConsumer = AtomicBoolean(false)
 
   private val log = ILogger.newInstance("LogReceiverService")
 
   companion object {
+
+    internal const val ACTION_CONNECT_LOG_CONSUMER = "com.itsaky.androidide.logrecevier.CONNECT_LOG_CONSUMER"
+    internal const val ACTION_CONNECTION_UPDATE = "com.itsaky.androidide.logreceiver.CONNECTION_UPDATE"
 
     @JvmStatic
     internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
@@ -48,29 +53,79 @@ class LogReceiverService : Service() {
   override fun onCreate() {
     super.onCreate()
     Lookup.getDefault().update(LOOKUP_KEY, this)
+    log.info("LogReceiverService has been created")
   }
 
   override fun onBind(intent: Intent?): IBinder? {
-    if (!logsenderEnabled || intent?.action != LogSender.SERVICE_ACTION) {
+    log.debug("Received bind request: $intent")
+
+    if (!logsenderEnabled) {
+      log.debug("Rejecting bind request. LogReceiver is disabled.")
       return null
     }
 
-    return binder.also { binder ->
+    // TODO: Handle the case where a log consumer unbinds from the service while senders
+    //   are connected to the service. In this case, we should disconnect from the senders
+    //   and stop this service.
+    if (intent?.action == ACTION_CONNECT_LOG_CONSUMER) {
+      // a log consumer has been bound to the service
+
+      if (isBoundToConsumer.get()) {
+        log.warn("LogReceiverService is limited to one consumer only.")
+        return null
+      }
+
+      // start accepting senders
+      log.info("Log consumer has been bound")
+      return startBinderAndGet().also { binder ->
+        binder.startReaders()
+        isBoundToConsumer.set(true)
+      }
+    }
+
+    // TODO: When a log sender binds to this service, it isn't guaranteed that a log consumer
+    //   will bind to the service as well. For example, a log sender application may be started
+    //   when the AndroidIDE is not in background or foreground. In this case, no other
+    //   log consumer will bind to this service, so there is no point in keeping this service alive
+    //   in reading logs in the sender application.
+    //
+    //   This issue could be handled like this :
+    //     If the log consumer does not bind to the service in a given amount of time
+    //     after the sender is bound to the service, we should disconnect from the senders
+    //     and stop this service.
+    if (intent?.action != LogSender.SERVICE_ACTION) {
+      log.debug("Rejecting bind request: action=${intent?.action}")
+      return null
+    }
+
+    log.debug("Accepting bind request...")
+    return startBinderAndGet()
+  }
+
+  private fun startBinderAndGet(): LogReceiverImpl {
+    return binder.also {
       if (!started.getAndSet(true)) {
         binder.acceptSenders()
+        binder.connectionObserver = this::onConnectionUpdated
       }
     }
   }
 
   override fun onDestroy() {
     super.onDestroy()
-    log.debug("LogReceiverService is being destroyed...");
+    log.debug("LogReceiverService is being destroyed...")
     binder.close()
     Lookup.getDefault().unregister(LOOKUP_KEY)
   }
 
   fun setConsumer(consumer: ((LogLine) -> Unit)?) {
     binder.consumer = consumer
+  }
+
+  private fun onConnectionUpdated(params: ConnectionObserverParams) {
+    val intent = Intent(ACTION_CONNECTION_UPDATE)
+    intent.putExtras(params.bundle())
+    LocalBroadcastManager.getInstance(this).sendBroadcastSync(intent)
   }
 }
 

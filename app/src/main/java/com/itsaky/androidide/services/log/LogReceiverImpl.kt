@@ -23,6 +23,7 @@ import com.itsaky.androidide.logsender.ILogSender
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -37,6 +38,9 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   private val senderHandler = MultiLogSenderHandler()
   private val senders = LogSendersRegistry()
   private val consumerLock = ReentrantLock(true)
+  private val shouldStartReaders = AtomicBoolean(false)
+
+  internal var connectionObserver: ((ConnectionObserverParams) -> Unit)? = null
 
   internal var consumer: ((LogLine) -> Unit)? = consumer
     set(value) {
@@ -86,13 +90,33 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
           existingSender.onDisconnect()
         }
 
-        log.info("Connecting to client ${newSender.packageName}")
+        connectSender(newSender, port)
+      }
+    }
+  }
 
-        this.senders.put(CachingLogSender(newSender))
+  private fun connectSender(sender: ILogSender, port: Int) {
+    log.info("Connecting to client ${sender.packageName}")
+    val caching = CachingLogSender(sender, port, false)
+    this.senders.put(caching)
 
-        newSender.startReader(port)
+    if (shouldStartReaders.get()) {
+      sender.startReader(port)
+      caching.isStarted = true
+    }
 
-        logTotalConnected()
+    logTotalConnected()
+
+    connectionObserver?.invoke(ConnectionObserverParams(sender.id, this.senders.size))
+  }
+
+  internal fun startReaders() {
+    this.shouldStartReaders.set(true)
+
+    doAsync("startReaders") {
+      senders.getPendingSenders().forEach { sender ->
+        log.info("Notifying sender '${sender.packageName}' to start reading logs...")
+        sender.startReader(sender.port)
       }
     }
   }
@@ -110,18 +134,24 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
         return@doAsync
       }
 
-      log.info("Disconnecting from client: '${packageName}'")
-      this.senderHandler.removeClient(senderId)
-      this.senders.remove(packageName)
-
-      logTotalConnected()
+      disconnectSender(packageName, senderId)
     }
+  }
+
+  private fun disconnectSender(packageName: String, senderId: String) {
+    log.info("Disconnecting from client: '${packageName}'")
+    this.senderHandler.removeClient(senderId)
+    this.senders.remove(packageName)
+    logTotalConnected()
+
+    connectionObserver?.invoke(ConnectionObserverParams(senderId, this.senders.size))
   }
 
   override fun close() {
     // TODO : Send close request to clients
     senderHandler.close()
     consumer = null
+    connectionObserver = null
     senders.clear()
   }
 

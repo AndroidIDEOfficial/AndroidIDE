@@ -25,11 +25,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.itsaky.androidide.resources.R;
-import com.itsaky.androidide.fragments.AppLogFragment;
+import com.itsaky.androidide.fragments.output.AppLogFragment;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
-import com.itsaky.androidide.fragments.IDELogFragment;
+import com.itsaky.androidide.fragments.output.IDELogFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
-import com.itsaky.androidide.fragments.BuildOutputFragment;
+import com.itsaky.androidide.fragments.output.BuildOutputFragment;
 import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;

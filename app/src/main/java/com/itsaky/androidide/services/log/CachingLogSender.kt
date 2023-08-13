@@ -24,7 +24,11 @@ import com.itsaky.androidide.logsender.ILogSender
  *
  * @author Akash Yadav
  */
-class CachingLogSender(private val sender: ILogSender) : ILogSender by sender {
+class CachingLogSender(
+  private val sender: ILogSender,
+  internal val port: Int,
+  internal var isStarted: Boolean
+) : ILogSender by sender {
 
   private var cachedPid: Int = -1
   private var cachedId: String? = null

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.services.log
 
-import com.itsaky.androidide.logsender.ILogSender
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -25,13 +24,17 @@ import java.util.concurrent.ConcurrentHashMap
  */
 internal class LogSendersRegistry {
 
-  private val senders = ConcurrentHashMap<String, ILogSender>()
+  private val senders = ConcurrentHashMap<String, CachingLogSender>()
   private val idToPck = ConcurrentHashMap<String, String>()
 
   val size: Int
     get() = this.senders.size
 
-  fun getByPackage(packageName: String): ILogSender? {
+  fun getPendingSenders(): List<CachingLogSender> {
+    return this.senders.mapNotNull { (_, sender) -> if (sender.isStarted) null else sender }
+  }
+
+  fun getByPackage(packageName: String): CachingLogSender? {
     return this.senders[packageName]
   }
 
@@ -43,11 +46,11 @@ internal class LogSendersRegistry {
     return getById(packageOrId) != null
   }
 
-  fun getById(senderId: String): ILogSender? {
+  fun getById(senderId: String): CachingLogSender? {
     return this.idToPck[senderId]?.let(senders::get)
   }
 
-  fun put(sender: ILogSender) {
+  fun put(sender: CachingLogSender) {
     this.senders[sender.packageName] = sender
     this.idToPck[sender.id] = sender.packageName
   }

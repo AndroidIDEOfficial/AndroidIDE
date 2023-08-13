@@ -15,12 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.fragments
+package com.itsaky.androidide.fragments.output
 
 import android.os.Bundle
 import android.view.View
 import com.itsaky.androidide.R
-import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -57,24 +56,5 @@ class IDELogFragment : LogViewFragment() {
     super.onDestroy()
     ILogger.removeLogListener(logListener)
     logListener = null
-  }
-}
-
-/**
- * Fragment to show application logs.
- * @author Akash Yadav
- */
-class AppLogFragment : LogViewFragment() {
-
-  override fun isSimpleFormattingEnabled() = false
-  override fun getFilename() = "app_logs"
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    emptyStateViewModel.emptyMessage.value = if (logsenderEnabled) {
-      getString(R.string.msg_emptyview_applogs)
-    } else {
-      getString(R.string.msg_logsender_disabled)
-    }
   }
 }

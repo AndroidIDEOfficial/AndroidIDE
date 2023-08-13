@@ -21,7 +21,6 @@ import android.content.Intent
 import android.content.pm.PackageInstaller.SessionCallback
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.StrictMode
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
@@ -49,7 +48,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
-import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.R.attr
 import com.itsaky.androidide.R.drawable
 import com.itsaky.androidide.R.id
@@ -124,9 +122,6 @@ abstract class BaseEditorActivity :
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
-  protected val logServiceConnection = LogReceiverServiceConnection {
-    lookupLogService()?.setConsumer(this::appendApkLog)
-  }
 
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
@@ -173,20 +168,6 @@ abstract class BaseEditorActivity :
   protected open fun preDestroy() {
     installationCallback?.destroy()
     installationCallback = null
-
-    try {
-      if (!logsenderEnabled) {
-        // make sure the listener is released
-        logServiceConnection.onConnected = null
-        return
-      }
-
-      lookupLogService()?.setConsumer(null)
-      logServiceConnection.onConnected = null
-      unbindService(logServiceConnection)
-    } catch (e: Exception) {
-      log.error("Failed to unbind LogReceiver service")
-    }
   }
 
   protected open fun postDestroy() {
@@ -239,7 +220,6 @@ abstract class BaseEditorActivity :
     setupViews()
 
     KeyboardUtils.registerSoftInputChangedListener(this) { onSoftInputChanged() }
-    startLogReceiver()
     setupContainers()
     setupDiagnosticInfo()
 
@@ -328,10 +308,6 @@ abstract class BaseEditorActivity :
   override fun onDiagnosticClick(file: File, diagnostic: DiagnosticItem) {
     doOpenFile(file, diagnostic.range)
     hideBottomSheet()
-  }
-
-  open fun appendApkLog(line: LogLine) {
-    binding.bottomSheet.appendApkLog(line)
   }
 
   open fun handleSearchResults(map: Map<File, List<SearchResult>>?) {
@@ -638,25 +614,6 @@ abstract class BaseEditorActivity :
       Objects.requireNonNull(getProjectDirPath())
     )
     startActivity(intent)
-  }
-
-  private fun startLogReceiver() {
-    try {
-      if (!logsenderEnabled) {
-        log.info("LogSender is disabled. LogReceiver service won't be started...")
-
-        // release the connection listener
-        logServiceConnection.onConnected = null
-        return
-      }
-
-      val intent = Intent(this, LogReceiverService::class.java)
-        .setAction(LogSender.SERVICE_ACTION)
-      check(bindService(intent, logServiceConnection, BIND_AUTO_CREATE or BIND_IMPORTANT))
-      log.info("LogReceiver service is being started")
-    } catch (err: Throwable) {
-      log.error("Failed to start LogReceiver service", err)
-    }
   }
 
   private fun showNeedHelpDialog() {

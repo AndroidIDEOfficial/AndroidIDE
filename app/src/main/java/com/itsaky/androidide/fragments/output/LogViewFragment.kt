@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.fragments
+package com.itsaky.androidide.fragments.output
 
 import android.os.Bundle
 import android.os.Handler
@@ -26,6 +26,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.editor.language.log.LogLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
+import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
