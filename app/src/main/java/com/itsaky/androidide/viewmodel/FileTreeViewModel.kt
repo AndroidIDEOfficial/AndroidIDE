@@ -20,6 +20,7 @@ package com.itsaky.androidide.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tasks.runOnUiThread
 import com.unnamed.b.atv.view.AndroidTreeView
 
 /**
@@ -36,10 +37,14 @@ internal class FileTreeViewModel : ViewModel() {
 
   fun saveState(treeView: AndroidTreeView?) {
     treeView?.let { tree ->
-      executeAsync {
+      executeAsync({
         // if a large number of directories have been expanded in the tree
         // this could block teh UI thread
-        treeState.value = tree.saveState
+        return@executeAsync tree.saveState
+      }) { result ->
+        runOnUiThread {
+          treeState.value = result
+        }
       }
     }
   }

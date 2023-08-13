@@ -98,3 +98,7 @@ fun <R : Any?> executeAsyncProvideError(
   callback: (R?, Throwable?) -> Unit
 ): CompletableFuture<R?> =
   TaskExecutor.executeAsyncProvideError(callable, callback)
+
+fun runOnUiThread(action : () -> Unit) {
+  ThreadUtils.runOnUiThread(action)
+}
