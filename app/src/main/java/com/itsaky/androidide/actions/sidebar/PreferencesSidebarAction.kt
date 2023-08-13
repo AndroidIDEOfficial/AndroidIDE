@@ -18,28 +18,34 @@
 package com.itsaky.androidide.actions.sidebar
 
 import android.content.Context
+import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.itsaky.androidide.R
-import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
+import com.itsaky.androidide.actions.ActionData
+import com.itsaky.androidide.actions.requireContext
+import com.itsaky.androidide.activities.PreferencesActivity
 import kotlin.reflect.KClass
 
 /**
- * Sidebar action for showing file tree.
+ * A sidebar action to navigate the user to IDE Preferences.
  *
  * @author Akash Yadav
  */
-class FileTreeSidebarAction(context: Context, override val order: Int) : AbstractSidebarAction() {
+class PreferencesSidebarAction(context: Context, override val order: Int) : AbstractSidebarAction() {
 
-  companion object {
-    const val ID ="ide.editor.sidebar.projectFiles"
-  }
+  override val id: String = "ide.editor.sidebar.preferences"
 
-  override val id: String = ID
-  override val fragmentClass: KClass<out Fragment> = FileTreeFragment::class
+  // TODO : Should we show the preferences in the sidebar itself?
+  override val fragmentClass: KClass<out Fragment>? = null
 
   init {
-    label = context.getString(R.string.msg_file_tree)
-    icon = ContextCompat.getDrawable(context, R.drawable.ic_folder)
+    label = context.getString(R.string.ide_preferences)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_settings)
+  }
+
+  override fun execAction(data: ActionData): Any {
+    val context = data.requireContext()
+    return context.startActivity(Intent(context, PreferencesActivity::class.java))
   }
 }

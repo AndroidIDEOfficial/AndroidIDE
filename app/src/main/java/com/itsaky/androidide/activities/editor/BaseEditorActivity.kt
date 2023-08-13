@@ -109,7 +109,6 @@ import java.io.File
 abstract class BaseEditorActivity :
   IDEActivity(),
   TabLayout.OnTabSelectedListener,
-  NavigationView.OnNavigationItemSelectedListener,
   DiagnosticClickListener {
 
   protected val mLifecycleObserver = EditorActivityLifecyclerObserver()
@@ -257,21 +256,6 @@ abstract class BaseEditorActivity :
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putString(KEY_PROJECT_PATH, getProjectDirPath())
     super.onSaveInstanceState(outState)
-  }
-
-  override fun onNavigationItemSelected(item: MenuItem): Boolean {
-    when (item.itemId) {
-      id.editornav_discuss -> app.openTelegramGroup()
-      id.editornav_channel -> app.openTelegramChannel()
-      id.editornav_suggest -> app.openGitHub()
-      id.editornav_needHelp -> showNeedHelpDialog()
-      id.editornav_settings -> startActivity(Intent(this, PreferencesActivity::class.java))
-      id.editornav_share ->
-        startActivity(IntentUtils.getShareTextIntent(getString(string.msg_share_app)))
-    }
-
-    binding.root.closeDrawer(GravityCompat.START)
-    return false
   }
 
   override fun onTabSelected(tab: Tab) {
@@ -451,7 +435,6 @@ abstract class BaseEditorActivity :
       )
 
     binding.editorDrawerLayout.addDrawerListener(toggle)
-    binding.startNav.setNavigationItemSelectedListener(this)
     toggle.syncState()
     binding.apply {
       editorDrawerLayout.apply {
@@ -511,7 +494,7 @@ abstract class BaseEditorActivity :
     val filesSpan: ClickableSpan =
       object : ClickableSpan() {
         override fun onClick(widget: View) {
-//          binding.root.openDrawer(GravityCompat.END)
+          binding.root.openDrawer(GravityCompat.START)
         }
       }
     val bottomSheetSpan: ClickableSpan =

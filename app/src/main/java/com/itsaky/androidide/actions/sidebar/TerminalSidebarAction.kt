@@ -34,11 +34,10 @@ import kotlin.reflect.KClass
  *
  * @author Akash Yadav
  */
-class TerminalSidebarAction(context: Context) : AbstractSidebarAction() {
+class TerminalSidebarAction(context: Context, override val order: Int) : AbstractSidebarAction() {
 
   override val id: String = "ide.editor.sidebar.terminal"
   override val fragmentClass: KClass<out Fragment>? = null
-  override val order: Int = 2
 
   init {
     label = context.getString(R.string.title_terminal)

@@ -39,6 +39,7 @@ import com.itsaky.androidide.actions.SidebarActionItem
 import com.itsaky.androidide.actions.internal.DefaultActionsRegistry
 import com.itsaky.androidide.actions.sidebar.CloseProjectSidebarAction
 import com.itsaky.androidide.actions.sidebar.FileTreeSidebarAction
+import com.itsaky.androidide.actions.sidebar.PreferencesSidebarAction
 import com.itsaky.androidide.actions.sidebar.TerminalSidebarAction
 import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
 
@@ -54,9 +55,11 @@ internal object EditorSidebarActions {
   @JvmStatic
   fun registerActions(context: Context) {
     val registry = ActionsRegistry.getInstance()
-    registry.registerAction(FileTreeSidebarAction(context))
-    registry.registerAction(TerminalSidebarAction(context))
-    registry.registerAction(CloseProjectSidebarAction(context))
+    var order = -1
+    registry.registerAction(FileTreeSidebarAction(context, ++order))
+    registry.registerAction(TerminalSidebarAction(context, ++order))
+    registry.registerAction(PreferencesSidebarAction(context, ++order))
+    registry.registerAction(CloseProjectSidebarAction(context, ++order))
   }
 
   @JvmStatic

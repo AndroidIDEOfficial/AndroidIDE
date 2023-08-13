@@ -20,7 +20,7 @@ package com.itsaky.androidide.actions.sidebar
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.itsaky.androidide.R
+import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireContext
 import com.itsaky.androidide.activities.editor.BaseEditorActivity
@@ -31,15 +31,15 @@ import kotlin.reflect.KClass
  *
  * @author Akash Yadav
  */
-class CloseProjectSidebarAction(context: Context) : AbstractSidebarAction() {
+class CloseProjectSidebarAction(context: Context, override val order: Int) :
+  AbstractSidebarAction() {
 
   override val id: String = "ide.editor.sidebar.closeProject"
   override val fragmentClass: KClass<out Fragment>? = null
-  override val order: Int = 3
 
   init {
     label = context.getString(R.string.title_close_project)
-    icon = ContextCompat.getDrawable(context, R.drawable.ic_close)
+    icon = ContextCompat.getDrawable(context, R.drawable.ic_folder_close)
   }
 
   override fun execAction(data: ActionData): Any {
