@@ -39,7 +39,6 @@ import com.itsaky.androidide.actions.SidebarActionItem
 import com.itsaky.androidide.actions.internal.DefaultActionsRegistry
 import com.itsaky.androidide.actions.sidebar.CloseProjectSidebarAction
 import com.itsaky.androidide.actions.sidebar.FileTreeSidebarAction
-import com.itsaky.androidide.actions.sidebar.HomeSidebarAction
 import com.itsaky.androidide.actions.sidebar.TerminalSidebarAction
 import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
 
@@ -55,7 +54,6 @@ internal object EditorSidebarActions {
   @JvmStatic
   fun registerActions(context: Context) {
     val registry = ActionsRegistry.getInstance()
-    registry.registerAction(HomeSidebarAction(context))
     registry.registerAction(FileTreeSidebarAction(context))
     registry.registerAction(TerminalSidebarAction(context))
     registry.registerAction(CloseProjectSidebarAction(context))
@@ -119,7 +117,7 @@ internal object EditorSidebarActions {
 
     registry.fillMenu(params)
 
-    controller.graph = controller.createGraph(startDestination = HomeSidebarAction.ID) {
+    controller.graph = controller.createGraph(startDestination = FileTreeSidebarAction.ID) {
       actions.forEach { (actionId, action) ->
         if (action !is SidebarActionItem) {
           throw IllegalStateException(
@@ -146,7 +144,7 @@ internal object EditorSidebarActions {
     rail.setupWithNavController(controller)
 
     // make sure the 'Home' item is checked by default
-    rail.menu.findItem(HomeSidebarAction.ID.hashCode())?.isChecked = true
+    rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.isChecked = true
   }
 
   /**

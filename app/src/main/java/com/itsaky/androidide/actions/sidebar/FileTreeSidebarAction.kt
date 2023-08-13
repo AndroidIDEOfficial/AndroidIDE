@@ -31,7 +31,11 @@ import kotlin.reflect.KClass
  */
 class FileTreeSidebarAction(context: Context) : AbstractSidebarAction() {
 
-  override val id: String = "ide.editor.sidebar.projectFiles"
+  companion object {
+    const val ID ="ide.editor.sidebar.projectFiles"
+  }
+
+  override val id: String = ID
   override val fragmentClass: KClass<out Fragment> = FileTreeFragment::class
   override val order: Int = 1
 

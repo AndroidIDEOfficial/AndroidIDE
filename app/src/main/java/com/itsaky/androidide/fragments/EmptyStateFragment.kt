@@ -31,8 +31,10 @@ import com.itsaky.androidide.viewmodel.EmptyStateFragmentViewModel
  *
  * @author Akash Yadav
  */
-abstract class EmptyStateFragment<T : ViewBinding>(layout: Int,
-  bind: (View) -> T) : FragmentWithBinding<T>(layout, bind) {
+abstract class EmptyStateFragment<T : ViewBinding> : FragmentWithBinding<T> {
+
+  constructor(layout: Int, bind: (View) -> T) : super(layout, bind)
+  constructor(inflate: (LayoutInflater, ViewGroup?, Boolean) -> T) : super(inflate)
 
   protected var emptyStateBinding: FragmentEmptyStateBinding? = null
     private set

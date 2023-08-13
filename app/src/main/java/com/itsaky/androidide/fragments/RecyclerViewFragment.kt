@@ -31,8 +31,7 @@ import com.itsaky.androidide.databinding.FragmentRecyclerviewBinding
  * @author Akash Yadav
  */
 abstract class RecyclerViewFragment<A : RecyclerView.Adapter<*>> :
-  EmptyStateFragment<FragmentRecyclerviewBinding>(R.layout.fragment_recyclerview,
-    FragmentRecyclerviewBinding::bind) {
+  EmptyStateFragment<FragmentRecyclerviewBinding>(FragmentRecyclerviewBinding::inflate) {
 
   private var unsavedAdapter: A? = null
 

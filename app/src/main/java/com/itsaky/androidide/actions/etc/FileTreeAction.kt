@@ -45,10 +45,10 @@ class FileTreeAction(context: Context) : EditorActivityAction() {
     val context = data.getActivity() ?: return false
 
     context.binding.root.apply {
-//      if (!isDrawerOpen(GravityCompat.END)) {
-//        openDrawer(GravityCompat.END)
-//        return true
-//      }
+      if (!isDrawerOpen(GravityCompat.START)) {
+        openDrawer(GravityCompat.START)
+        return true
+      }
     }
 
     return false
