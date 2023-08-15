@@ -75,39 +75,41 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
         return@doAsync
       }
 
-      sender?.let { newSender ->
+      val caching = sender?.let { CachingLogSender(it, port, false) } ?: return@doAsync
 
-        val existingSender = senders.getByPackage(newSender.packageName)
+      val existingSender = senders.getByPackage(caching.packageName)
 
-        if (existingSender != null) {
-          senderHandler.removeClient(existingSender.id)
-        }
-
-        if (existingSender?.isAlive() == true) {
-          log.warn(
-            "Client '${existingSender.packageName}' has been restarted with process ID '${newSender.pid}'" +
-                " Previous connection with process ID '${existingSender.pid}' will be closed...")
-          existingSender.onDisconnect()
-        }
-
-        connectSender(newSender, port)
+      if (existingSender != null) {
+        senderHandler.removeClient(existingSender.id)
       }
+
+      if (existingSender?.isAlive() == true) {
+        log.warn(
+          "Client '${existingSender.packageName}' has been restarted with process ID '${caching.pid}'" +
+              " Previous connection with process ID '${existingSender.pid}' will be closed...")
+        existingSender.onDisconnect()
+      }
+
+      connectSender(caching, port)
     }
   }
 
-  private fun connectSender(sender: ILogSender, port: Int) {
-    log.info("Connecting to client ${sender.packageName}")
-    val caching = CachingLogSender(sender, port, false)
+  private fun connectSender(caching: CachingLogSender, port: Int) {
+    // logging this also makes sure that the package name, pid and sender ID are
+    // cached when the sender binds to the service
+    // these fields are then used on disconnectAll()
+    log.info("Connecting to client ${caching.packageName}:${caching.id}:${caching.pid}")
+
     this.senders.put(caching)
 
     if (shouldStartReaders.get()) {
-      sender.startReader(port)
+      caching.startReader(port)
       caching.isStarted = true
     }
 
     logTotalConnected()
 
-    connectionObserver?.invoke(ConnectionObserverParams(sender.id, this.senders.size))
+    notifyConnectionObserver(caching.id)
   }
 
   internal fun startReaders() {
@@ -138,13 +140,25 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
     }
   }
 
+  internal fun disconnectAll() {
+    log.debug("Disconnecting from all senders...")
+    this.senders.forEach { sender ->
+      try {
+        sender.onDisconnect()
+        disconnectSender(sender.packageName, sender.id)
+      } catch (e: Exception) {
+        log.error("Failed to disconnect from sender", e)
+      }
+    }
+  }
+
   private fun disconnectSender(packageName: String, senderId: String) {
     log.info("Disconnecting from client: '${packageName}'")
     this.senderHandler.removeClient(senderId)
     this.senders.remove(packageName)
     logTotalConnected()
 
-    connectionObserver?.invoke(ConnectionObserverParams(senderId, this.senders.size))
+    notifyConnectionObserver(senderId)
   }
 
   override fun close() {
@@ -161,6 +175,10 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
         log.error("Failed to perform action '$actionName'", error)
       }
     }
+  }
+
+  private fun notifyConnectionObserver(senderId: String) {
+    connectionObserver?.invoke(ConnectionObserverParams(senderId, this.senders.size))
   }
 
   private fun logTotalConnected() {

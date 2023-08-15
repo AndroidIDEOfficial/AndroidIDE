@@ -70,4 +70,8 @@ internal class LogSendersRegistry {
     this.senders.clear()
     this.idToPck.clear()
   }
+
+  fun forEach(action: (CachingLogSender) -> Unit) {
+    this.senders.forEachValue(1, action::invoke)
+  }
 }

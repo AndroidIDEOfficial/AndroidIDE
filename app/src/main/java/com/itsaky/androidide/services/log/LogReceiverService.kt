@@ -26,6 +26,8 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -39,12 +41,15 @@ class LogReceiverService : Service() {
   private val started = AtomicBoolean(false)
   private val isBoundToConsumer = AtomicBoolean(false)
 
+  private val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
   private val log = ILogger.newInstance("LogReceiverService")
 
   companion object {
 
     internal const val ACTION_CONNECT_LOG_CONSUMER = "com.itsaky.androidide.logrecevier.CONNECT_LOG_CONSUMER"
     internal const val ACTION_CONNECTION_UPDATE = "com.itsaky.androidide.logreceiver.CONNECTION_UPDATE"
+
+    private const val LOG_CONSUMER_WAIT_DURATION = 10 // seconds
 
     @JvmStatic
     internal val LOOKUP_KEY = Lookup.Key<LogReceiverService>()
@@ -82,24 +87,21 @@ class LogReceiverService : Service() {
         isBoundToConsumer.set(true)
       }
     }
-
-    // TODO: When a log sender binds to this service, it isn't guaranteed that a log consumer
-    //   will bind to the service as well. For example, a log sender application may be started
-    //   when the AndroidIDE is not in background or foreground. In this case, no other
-    //   log consumer will bind to this service, so there is no point in keeping this service alive
-    //   in reading logs in the sender application.
-    //
-    //   This issue could be handled like this :
-    //     If the log consumer does not bind to the service in a given amount of time
-    //     after the sender is bound to the service, we should disconnect from the senders
-    //     and stop this service.
+    
     if (intent?.action != LogSender.SERVICE_ACTION) {
       log.debug("Rejecting bind request: action=${intent?.action}")
       return null
     }
 
     log.debug("Accepting bind request...")
-    return startBinderAndGet()
+    return startBinderAndGet().also {
+      if (!isBoundToConsumer.get()) {
+        // if there are no consumers bound to this service
+        // listen for consumers to bind to the service for next LOG_CONSUMER_WAIT_DURATION
+        // if the consumer still does not connect, disconnect from all senders and stop the service
+        listenForConsumer()
+      }
+    }
   }
 
   private fun startBinderAndGet(): LogReceiverImpl {
@@ -115,6 +117,11 @@ class LogReceiverService : Service() {
     super.onDestroy()
     log.debug("LogReceiverService is being destroyed...")
     binder.close()
+    try {
+      scheduledExecutor.shutdownNow()
+    } catch (e: Exception) {
+      // ignored
+    }
     Lookup.getDefault().unregister(LOOKUP_KEY)
   }
 
@@ -126,6 +133,17 @@ class LogReceiverService : Service() {
     val intent = Intent(ACTION_CONNECTION_UPDATE)
     intent.putExtras(params.bundle())
     LocalBroadcastManager.getInstance(this).sendBroadcastSync(intent)
+  }
+
+  private fun listenForConsumer() {
+    log.debug("Waiting for log consumer...")
+    scheduledExecutor.schedule({
+      if (!isBoundToConsumer.get()) {
+        // ask senders to disconnect
+        log.debug("No log consumer has been bound to the log receiver service")
+        binder.disconnectAll()
+      }
+    }, LOG_CONSUMER_WAIT_DURATION.toLong(), TimeUnit.SECONDS)
   }
 }
 
