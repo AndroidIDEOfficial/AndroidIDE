@@ -72,7 +72,7 @@
   <string name="project_app_name">Имя приложения</string>
   <string name="msg_create_new_project_greeting">Начните свой новый замечательный проект!</string>
   <string name="title_confirm_open_project">Открыть последний проект?</string>
-  <string name="msg_confirm_open_project">Вы хотите открыть последний открытый проект? Открытым проектом был:\n%s</string>
+  <string name="msg_confirm_open_project">Хотите открыть последний проект? Последний раз вы работали над:\n%s</string>
   <string name="group_project">Проект</string>
   <string name="title_close_project">Закрыть этот проект</string>
   <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
@@ -322,7 +322,7 @@
   <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
-  <string name="btn_donate">Пожертвовать</string>
+  <string name="btn_donate">Поддержать</string>
   <string name="btn_docs">Документация</string>
   <string name="btn_close">Закрыть</string>
   <string name="msg_ignore_case">Игнорировать регистр</string>
@@ -476,7 +476,7 @@
   <string name="wizard_module_type">Тип модуля</string>
   <string name="msg_invalid_module_name">Неверное имя модуля Gradle</string>
   <string name="msg_invalid_class_name">Неверное имя класса</string>
-  <string name="msg_value_empty">Значение пустое</string>
+  <string name="msg_value_empty">Пустое значение</string>
   <string name="msg_file_not_exist">Файл не существует</string>
   <string name="msg_path_must_be_file">Должен быть путь к файлу</string>
   <string name="msg_classname_with_keywords">Имя класса содержит ключевые слова</string>
@@ -505,11 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">Дамп логов</string>
   <string name="idepref_devOptions_dumpLogs_summary">Дамп логов AndroidIDE в $HOME/.androidide/logs</string>
   <string name="msg_emptyview_applogs">Запустите отладочный вариант вашего приложения, чтобы увидеть его логи здесь.</string>
-  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
+  <string name="msg_logsender_disabled">LogSender отключен. Вы можете включить его в настройках.</string>
   <string name="msg_emptyview_idelogs">Логи IDE отображаются здесь.</string>
   <string name="msg_emptyview_diagnostics">Откройте файл, чтобы показать результаты его диагностики</string>
   <string name="msg_emptyview_buildoutput">"Соберите приложение или запустите задачу, чтобы увидеть результаты сборки здесь. "</string>
   <string name="msg_codeaction_failed">Не удалось выполнить действие с кодом</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_title">Включить LogSender</string>
+  <string name="idepref_devOptions_enableLogsender_summary">Если отключено, журналы из приложений не будут отображаться в AndroidIDE</string>
 </resources>
