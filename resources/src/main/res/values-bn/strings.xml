@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">অনুকরন</string>
-  <string name="text_to_search">পাঠ্য অনুসন্ধান</string>
+  <string name="text_to_search">অনুসন্ধান করার জন্য পাঠ্য</string>
   <string name="title_open_source_licenses">ওপেন সোর্স লাইসেন্সগুলি</string>
   <string name="msg_about_licensed_under">দত্তাধিকার: </string>
   <string name="about_option_email">ইমেল</string>
@@ -511,6 +511,6 @@
   <string name="msg_emptyview_diagnostics">কোনো ফাইল এর ডায়গনিস্টিক ফলাফল দেখার জন্য, সেটিকে খুলুন</string>
   <string name="msg_emptyview_buildoutput">"এখানে বিল্ড আউটপুট দেখতে অ্যাপ্লিকেশনটি তৈরি করুন বা একটি টাস্ক চালান। "</string>
   <string name="msg_codeaction_failed">কোড ক্রিয়া সম্পাদন করতে ব্যর্থ হয়েছে৷</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_title">LogSender সক্রিয় করুন</string>
+  <string name="idepref_devOptions_enableLogsender_summary">নিষ্ক্রিয় করা হলে, অ্যাপ্লিকেশান থেকে লগগুলি AndroidIDE-এ দেখানো হবে না৷</string>
 </resources>
