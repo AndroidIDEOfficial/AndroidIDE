@@ -98,6 +98,13 @@ For translations, visit the [Crowdin project page](https://crowdin.com/project/a
 
 Thanks to all the developers who have contributed to this project.
 
+<p>This project is supported by:</p>
+<p>
+  <a href="https://m.do.co/c/54add371d1d7">
+    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
+  </a>
+</p>
+
 ## Contact Us
 
 - [Website](https://androidide.com)
