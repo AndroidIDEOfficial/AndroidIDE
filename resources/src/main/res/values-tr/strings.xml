@@ -72,7 +72,7 @@
   <string name="project_app_name">Uygulama Adı</string>
   <string name="msg_create_new_project_greeting">Yeni harika projenize başlayın!</string>
   <string name="title_confirm_open_project">En son proje açılsın mı?</string>
-  <string name="msg_confirm_open_project">En son açık olan projeyi açmak ister misiniz? Açık olan proje:\n%s</string>
+  <string name="msg_confirm_open_project">En son açık kalan projeyi açmak ister misiniz? Açık olan proje:\n%s</string>
   <string name="group_project">Proje</string>
   <string name="title_close_project">Bu projeyi kapat</string>
   <string name="msg_opened_project_does_not_exist">En son açılmış proje mevcut değil!</string>
@@ -134,7 +134,7 @@
   <string name="msg_layout_file_exists">Düzen dosyası zaten mevcut!</string>
   <string name="msg_invalid_name">Geçersiz Ad!</string>
   <string name="text_create">Oluştur</string>
-  <string name="msg_can_contain_slashes">Eğer yol dosya ayırıcı (\'/\') içeriyorsa gerekli (üst) dizinler oluşturulur.</string>
+  <string name="msg_can_contain_slashes">Yol Dosya ayırıcısında (\'/\') varsa, gerekli olan (ana) dizinler oluşturulacaktır.</string>
   <string name="folder_name">Klasör Adı</string>
   <string name="file_name">Dosya Adı</string>
   <string name="new_name">Yeni ad</string>
@@ -166,9 +166,9 @@
   <string name="restype_menu">Menü</string>
   <string name="restype_other">Diğer</string>
   <string name="classtype_class">Sınıf</string>
-  <string name="classtype_activity">Etkinlik</string>
+  <string name="classtype_activity">Aktivite</string>
   <string name="title_interface">Arayüz</string>
-  <string name="classtype_enum">Enum</string>
+  <string name="classtype_enum">Numaralandırma</string>
   <string name="msg_checking_storage_permissions">Depolama izni kontrol ediliyor</string>
   <string name="msg_failed_list_files">Proje dosyalarını listelerken hata!</string>
   <string name="msg_storage_denied">Depolama izni olmadan devam edilemez</string>
@@ -505,11 +505,11 @@
   <string name="idepref_devOptions_dumpLogs_title">Günlükleri kaydet</string>
   <string name="idepref_devOptions_dumpLogs_summary">$HOME/.androidide/logs içine AndroidIDE günlüklerini kaydet</string>
   <string name="msg_emptyview_applogs">Uygulamanızın günlüklerini burada görüntülemek için debug varyantını çalıştırın.</string>
-  <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
+  <string name="msg_logsender_disabled">LogSender devre dışı. Ayarlardan etkinleştirebilirsiniz.</string>
   <string name="msg_emptyview_idelogs">IDE\'den günlükler burada görünür.</string>
   <string name="msg_emptyview_diagnostics">Bir dosyanın analiz raporlarını görmek için dosyayı açın</string>
   <string name="msg_emptyview_buildoutput">"İnşa çıktısını burada görmek için uygulamayı inşa edin ya da bir görev çalıştırın. "</string>
   <string name="msg_codeaction_failed">Kod eylemi gerçekleştirilemedi</string>
-  <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
-  <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="idepref_devOptions_enableLogsender_title">LogSender\'ı Etkinleştir</string>
+  <string name="idepref_devOptions_enableLogsender_summary">Devre dışı bırakıldığında, uygulamalardan gelen logolar Android\'de de görüntülenmeyecek</string>
 </resources>
