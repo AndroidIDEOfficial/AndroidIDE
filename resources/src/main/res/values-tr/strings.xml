@@ -198,18 +198,18 @@
   <string name="idepref_editor_use_magnifier_summary">Düzenleyicide metin seçerken imleç konumundaki metni büyütün</string>
   <string name="idepref_editor_title">Editör</string>
   <string name="idepref_build_title">&amp; \'yi inşa et çalıştır</string>
-  <string name="title_open_projects">En son projeyi aç</string>
+  <string name="title_open_projects">Son projeyi aç</string>
   <string name="msg_open_projects">Eğer etkinleştirilirse IDE en son açılan projeyi hatırlayacak ve diğer başlatmada tekrar açılacak.</string>
   <string name="title_confirm_project_open">Projenin açılmasını onayla</string>
-  <string name="msg_confirm_project_open">En son projeyi açmadan önce sor.</string>
-  <string name="title_default_shell">Uçbirim içinde sistem kabuğunu kullan</string>
-  <string name="msg_default_shell">Eğer etkinleştirilirse \'/system/bin/sh\' uçbirim içinde kullanılacak.</string>
+  <string name="msg_confirm_project_open">Son projeyi açmadan önce sor.</string>
+  <string name="title_default_shell">Terminalde sistem kabuğunu kullan</string>
+  <string name="msg_default_shell">Eğer etkinleştirilirse \'/system/bin/sh\' terminalde kullanılacak.</string>
   <string name="title_general">Genel</string>
   <string name="title_tab_size">Tab boyutu</string>
   <string name="msg_tab_size">TAB için boşluk sayısını ayarla</string>
-  <string name="msg_preferences">Tercihler</string>
-  <string name="pref_changelog">Değişim günlüğü</string>
-  <string name="msg_editor_font_size">Düzenleyicinin varsayılan yazı tipi boyutunu seçin:</string>
+  <string name="msg_preferences">Ayarlar</string>
+  <string name="pref_changelog">Değişiklikler</string>
+  <string name="msg_editor_font_size">Lütfen editörün varsayılan font büyüklüğünü seçin:</string>
   <string name="msg_clear_cache">Bu işlem Gradle tarafından oluşturulan bütün önbelleği temizleyecek. Eğer bunu silerseniz Gradle bütün gerekli dosyaları tekrar indireceğinden normal inşa süresinden daha uzun bir sürede derleme alacaksınız.\n\nÖnbelleği temizlemek istediğinize emin misiniz?</string>
   <!-- Error Messages used while Logging -->
   <string name="err_init_sdkinfo">SDK bilgisi getirilemedi</string>
@@ -228,7 +228,7 @@
   <string name="msg_yesno_def_message">Emin misiniz?</string>
   <string name="msg_view_deletion_failed">View silinemiyor.</string>
   <string name="msg_empty_ui_layout">Herhangi bir View eklenmedi. Eklemek için tıklayın.</string>
-  <string name="msg_no_attr_format">Bu öznitelik için hiçbir öznitelik biçimi mevcut değil.</string>
+  <string name="msg_no_attr_format">Bu özellik için hiçbir özellik biçimi mevcut değil.</string>
   <string name="msg_generate_xml_failed">XML kodu oluşturulamadı</string>
   <string name="title_generating_xml">XML kodu oluşturuluyor</string>
   <string name="title_code_generation_failed">Kod oluşturma başarısız</string>
