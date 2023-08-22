@@ -27,7 +27,6 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.activity.OnBackPressedCallback
@@ -40,29 +39,25 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.FileUtils
-import com.blankj.utilcode.util.IntentUtils
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
-import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
 import com.itsaky.androidide.R.attr
 import com.itsaky.androidide.R.drawable
-import com.itsaky.androidide.R.id
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
-import com.itsaky.androidide.activities.PreferencesActivity
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
 import com.itsaky.androidide.app.IDEActivity
 import com.itsaky.androidide.databinding.ActivityEditorBinding
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
 import com.itsaky.androidide.events.InstallationResultEvent
-import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
 import com.itsaky.androidide.fragments.SearchResultFragment
+import com.itsaky.androidide.fragments.sidebar.FileTreeFragment
 import com.itsaky.androidide.handlers.EditorActivityLifecyclerObserver
 import com.itsaky.androidide.handlers.LspHandler.registerLanguageServers
 import com.itsaky.androidide.interfaces.DiagnosticClickListener
@@ -75,9 +70,6 @@ import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.services.log.LogReceiverService
-import com.itsaky.androidide.services.log.LogReceiverServiceConnection
-import com.itsaky.androidide.services.log.lookupLogService
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
@@ -591,15 +583,6 @@ abstract class BaseEditorActivity :
   private fun onSoftInputChanged() {
     invalidateOptionsMenu()
     binding.bottomSheet.onSoftInputChanged()
-  }
-
-  private fun openTerminal() {
-    val intent = Intent(this, TerminalActivity::class.java)
-    intent.putExtra(
-      TerminalActivity.KEY_WORKING_DIRECTORY,
-      Objects.requireNonNull(getProjectDirPath())
-    )
-    startActivity(intent)
   }
 
   private fun showNeedHelpDialog() {
