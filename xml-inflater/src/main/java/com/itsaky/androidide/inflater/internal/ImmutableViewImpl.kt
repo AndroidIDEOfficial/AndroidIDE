@@ -28,7 +28,7 @@ import com.itsaky.androidide.inflater.IView.AttributeChangeListener
  */
 class ImmutableViewImpl(private val src: ViewImpl) : IView by src {
   
-  override fun addAttribute(attribute: IAttribute, update: Boolean) {
+  override fun addAttribute(attribute: IAttribute, apply: Boolean, update: Boolean) {
     throw UnsupportedOperationException("Immutable!")
   }
   

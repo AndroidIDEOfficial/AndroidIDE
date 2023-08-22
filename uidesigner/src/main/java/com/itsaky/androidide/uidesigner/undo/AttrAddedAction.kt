@@ -33,6 +33,6 @@ internal class AttrAddedAction(view: com.itsaky.androidide.inflater.IView, attr:
   }
 
   override fun redo() {
-    view.addAttribute(attr, true)
+    view.addAttribute(attr, update = true)
   }
 }

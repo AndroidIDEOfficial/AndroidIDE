@@ -38,6 +38,7 @@ import com.itsaky.androidide.inflater.IAttribute
 import com.itsaky.androidide.inflater.INamespace
 import com.itsaky.androidide.inflater.IView
 import com.itsaky.androidide.inflater.IViewAdapter
+import com.itsaky.androidide.inflater.internal.IncludeView
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.inflater.models.UiWidget
 import com.itsaky.androidide.inflater.utils.newAttribute
@@ -143,6 +144,10 @@ open class ViewAdapter<T : View> : IViewAdapter<T>() {
   }
 
   override fun applyBasic(view: IView) {
+    if (view is IncludeView) {
+      return
+    }
+
     view.addAttribute(newAttribute(view = view, name = "layout_height", value = "wrap_content"))
     view.addAttribute(newAttribute(view = view, name = "layout_width", value = "wrap_content"))
   }

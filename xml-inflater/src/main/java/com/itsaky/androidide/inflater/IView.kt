@@ -52,8 +52,11 @@ interface IView {
    * Add and apply the given attribute to this view.
    *
    * @param attribute The attribute to apply.
+   * @param apply Whether the attribute should be applied to the attribute. If this `false` then the
+   * attribute will be simply added to the attributes list.
+   * @param update Whether the attribute's value should be updated if the attribute is already applied to this view.
    */
-  fun addAttribute(attribute: IAttribute, update: Boolean = false)
+  fun addAttribute(attribute: IAttribute, apply: Boolean = true, update: Boolean = false)
 
   /**
    * Remove the given attribute and update the view accordingly.
@@ -185,7 +188,7 @@ interface IView {
     override fun onAttributeAdded(view: IView, attribute: IAttribute) {}
     override fun onAttributeRemoved(view: IView, attribute: IAttribute) {}
     override fun onAttributeUpdated(view: IView, attribute: IAttribute,
-                                    oldValue: String
+      oldValue: String
     ) {
     }
   }

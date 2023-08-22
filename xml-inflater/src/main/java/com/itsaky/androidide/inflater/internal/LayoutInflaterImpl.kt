@@ -217,7 +217,7 @@ open class LayoutInflaterImpl : ILayoutInflater {
     view: ViewImpl,
     parent: IViewGroup,
     attachToParent: Boolean = true,
-    checkAttr: (XmlAttribute) -> Boolean = { true }
+    shouldApplyAttr: (XmlAttribute) -> Boolean = { true }
   ) {
     val parentView = parent.view as ViewGroup
     val adapter =
@@ -233,16 +233,13 @@ open class LayoutInflaterImpl : ILayoutInflater {
 
     if (element.attributeCount > 0) {
       for (xmlAttribute in element.attributeList) {
-        if (!checkAttr(xmlAttribute)) {
-          continue
-        }
 
         val namespace =
           if (xmlAttribute.namespaceUri.isNullOrBlank()) null
           else view.findNamespaceByUri(xmlAttribute.namespaceUri)
 
         val attr = onCreateAttribute(view, namespace, xmlAttribute.name, xmlAttribute.value)
-        view.addAttribute(attribute = attr, update = true)
+        view.addAttribute(attribute = attr, apply = shouldApplyAttr(xmlAttribute), update = true)
         inflationEventListener?.onEvent(OnApplyAttributeEvent(view, attr))
       }
     }

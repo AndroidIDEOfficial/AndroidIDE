@@ -56,7 +56,7 @@ constructor(
   override val attributes: List<IAttribute>
     get() = this._attributes
 
-  override fun addAttribute(attribute: IAttribute, update: Boolean) {
+  override fun addAttribute(attribute: IAttribute, apply: Boolean, update: Boolean) {
     if (hasAttribute(attribute)) {
       if (!update) {
         return
@@ -64,6 +64,12 @@ constructor(
       updateAttribute(attribute)
     } else {
       this._attributes.add(attribute)
+
+      if (!apply) {
+        // attribute should not be applied
+        return
+      }
+
       applyAttribute(attribute)
       notifyAttrAdded(attribute)
     }
