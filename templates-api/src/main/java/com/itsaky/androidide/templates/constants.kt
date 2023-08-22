@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.templates
 
-import com.itsaky.androidide.utils.VMUtils
-
 /**
  * @author Akash Yadav
  */
@@ -29,7 +27,7 @@ const val KOTLIN_VERSION = "1.8.21"
 
 val TARGET_SDK_VERSION = Sdk.Tiramisu
 val COMPILE_SDK_VERSION = Sdk.Tiramisu
-val BUILD_TOOLS_VERSION = if (!VMUtils.isJvm()) "33.0.3" else "33.0.2"
+val BUILD_TOOLS_VERSION = "33.0.2"
 
 const val JAVA_SOURCE_VERSION = "11"
 const val JAVA_TARGET_VERSION = "11"
