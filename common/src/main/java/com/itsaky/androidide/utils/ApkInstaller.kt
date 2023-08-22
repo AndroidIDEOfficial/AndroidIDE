@@ -96,6 +96,7 @@ object ApkInstaller {
         }
       }
     } catch (io: IOException) {
+      session?.abandon()
       log.error("Package installation failed", io)
     } catch (runtime: RuntimeException) {
       session?.abandon()

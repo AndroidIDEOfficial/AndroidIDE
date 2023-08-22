@@ -26,9 +26,11 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
   SingleSessionCallback() {
 
   private val log = ILogger.newInstance("InstallationSessionCallback")
+  private var sessionId = -1
 
   override fun onCreated(sessionId: Int) {
-    log.debug("on session created:", sessionId)
+    this.sessionId = sessionId
+    log.debug("Created package installation session:", sessionId)
     activity?.binding?.apply {
       bottomSheet.setActionText(activity!!.getString(string.msg_installing_apk))
       bottomSheet.setActionProgress(0)
@@ -56,6 +58,12 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
   }
 
   fun destroy() {
+    this.activity?.let {
+      if (this.sessionId != -1) {
+        it.packageManager?.packageInstaller?.abandonSession(this.sessionId)
+      }
+    }
     this.activity = null
+    this.sessionId = -1
   }
 }
