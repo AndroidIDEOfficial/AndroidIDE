@@ -7,13 +7,14 @@ import com.itsaky.androidide.actions.hasRequiredData
 import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireEditor
 import com.itsaky.androidide.lsp.java.JavaLanguageServer
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.JavaServerSettings
+import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.widget.CodeEditor
 
 class OrganizeImportsAction : BaseJavaCodeAction() {
+
   private val log = ILogger.newInstance(javaClass.simpleName)
   override val id: String = "lsp_java_organizeImports"
   override var label: String = ""
@@ -55,7 +56,10 @@ class OrganizeImportsAction : BaseJavaCodeAction() {
     if (result is String) {
       if (result.isNotEmpty()) {
         val editor = data.requireEditor()
-        editor.setText(result)
+        editor.text.apply {
+          val endLine = getLine(lineCount - 1)
+          replace(0, 0, lineCount - 1, endLine.length + endLine.lineSeparator.length, result)
+        }
       }
     }
   }
