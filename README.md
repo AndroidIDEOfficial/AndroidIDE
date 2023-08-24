@@ -42,7 +42,7 @@
     - [x] Java
     - [x] XML
     - [ ] Kotlin
-- [ ] UI Designer
+- [x] UI Designer
     - [x] Layout inflater
     - [x] Resolve resource references
     - [x] Auto-complete resource values when user edits attributes using the attribute editor
