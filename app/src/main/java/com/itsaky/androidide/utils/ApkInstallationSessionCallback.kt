@@ -49,7 +49,7 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
       if (!success) {
         activity?.flashError(string.title_installation_failed)
       }
-      
+
       activity?.let {
         it.installationCallback?.destroy()
         it.installationCallback = null
@@ -58,9 +58,12 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
   }
 
   fun destroy() {
-    this.activity?.let {
-      if (this.sessionId != -1) {
-        it.packageManager?.packageInstaller?.abandonSession(this.sessionId)
+    if (this.sessionId != -1) {
+      this.activity?.packageManager?.packageInstaller?.let { packageInstaller ->
+        packageInstaller.mySessions.find { session -> session.sessionId == this.sessionId }
+          ?.also { info ->
+            packageInstaller.abandonSession(info.sessionId)
+          }
       }
     }
     this.activity = null
