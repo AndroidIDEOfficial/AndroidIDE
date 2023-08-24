@@ -86,8 +86,8 @@ private fun Project.createParserOptions(): List<String> {
     }
 
     val destPath =
-      it.path.substringAfter("src/main/resources").substringBeforeLast('/') +
-        "/" +
+      it.path.substringAfter("src/main/resources").substringBeforeLast(File.separatorChar) +
+        File.separator +
         ClassGenerator.toplevelName(it) +
         ".java"
     val destFile = File(propsDir, destPath)
