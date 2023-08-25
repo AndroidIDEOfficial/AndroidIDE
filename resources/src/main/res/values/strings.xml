@@ -594,4 +594,5 @@
   <string name="msg_codeaction_failed">Failed to perform code action</string>
   <string name="idepref_devOptions_enableLogsender_title">Enable LogSender</string>
   <string name="idepref_devOptions_enableLogsender_summary">When disabled, logs from applications won\'t be shown in AndroidIDE</string>
+  <string name="title_build_variants">Build variants</string>
 </resources>

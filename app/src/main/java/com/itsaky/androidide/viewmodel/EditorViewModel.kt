@@ -27,6 +27,7 @@ import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.Environment
 import java.io.File
 
@@ -51,6 +52,8 @@ class EditorViewModel : ViewModel() {
    * index of the editor opened. Second value is the file that is opened.
    */
   private val mCurrentFile = MutableLiveData<Pair<Int, File?>?>(null)
+
+  internal val _buildVariants = MutableLiveData<List<BuildVariantInfo>>(null)
 
   var openedFilesCache: OpenedFilesCache?
     get() = _openedFiles.value
@@ -98,6 +101,12 @@ class EditorViewModel : ViewModel() {
     get() = _startDrawerOpened.value ?: false
     set(value) {
       _startDrawerOpened.value = value
+    }
+
+  var buildVariants: List<BuildVariantInfo>
+    get() = this._buildVariants.value ?: emptyList()
+    set(value) {
+      this._buildVariants.value = value
     }
 
   /**

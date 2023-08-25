@@ -40,10 +40,12 @@ import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.actions.SidebarActionItem
 import com.itsaky.androidide.actions.internal.DefaultActionsRegistry
+import com.itsaky.androidide.actions.sidebar.BuildVariantsSidebarAction
 import com.itsaky.androidide.actions.sidebar.CloseProjectSidebarAction
 import com.itsaky.androidide.actions.sidebar.FileTreeSidebarAction
 import com.itsaky.androidide.actions.sidebar.PreferencesSidebarAction
 import com.itsaky.androidide.actions.sidebar.TerminalSidebarAction
+import com.itsaky.androidide.fragments.sidebar.BuildVariantsFragment
 import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
 import java.lang.ref.WeakReference
 
@@ -60,7 +62,10 @@ internal object EditorSidebarActions {
   fun registerActions(context: Context) {
     val registry = ActionsRegistry.getInstance()
     var order = -1
+
+    @Suppress("KotlinConstantConditions")
     registry.registerAction(FileTreeSidebarAction(context, ++order))
+    registry.registerAction(BuildVariantsSidebarAction(context, ++order))
     registry.registerAction(TerminalSidebarAction(context, ++order))
     registry.registerAction(PreferencesSidebarAction(context, ++order))
     registry.registerAction(CloseProjectSidebarAction(context, ++order))
@@ -88,6 +93,7 @@ internal object EditorSidebarActions {
     val data = ActionData()
     data.put(Context::class.java, context) // needed for inflating the menu
 
+    val titleRef = WeakReference(binding.title)
     val params = FillMenuParams(data, ActionItem.Location.EDITOR_SIDEBAR,
       rail.menu) { actionsRegistry, action, item, actionsData ->
 
@@ -104,18 +110,15 @@ internal object EditorSidebarActions {
         controller.navigate(action.id, navOptions {
           launchSingleTop = true
           restoreState = true
-
-          popUpTo(controller.graph.findStartDestination().id) {
-            inclusive = false
-            saveState = true
-          }
         })
 
         // Return true only if the destination we've navigated to matches the MenuItem
         val result = controller.currentDestination?.matchDestination(action.id) == true
         if (result) {
           item.isChecked = true
+          titleRef.get()?.text = item.title
         }
+
         result
       } catch (e: IllegalArgumentException) {
         false
@@ -147,36 +150,6 @@ internal object EditorSidebarActions {
         destination(builder)
       }
     }
-
-    val railRef = WeakReference(rail)
-    val titleRef = WeakReference(binding.title)
-    controller.addOnDestinationChangedListener(
-      object : NavController.OnDestinationChangedListener {
-        override fun onDestinationChanged(
-          controller: NavController,
-          destination: NavDestination,
-          arguments: Bundle?
-        ) {
-          val railView = railRef.get()
-          if (railView == null) {
-            controller.removeOnDestinationChangedListener(this)
-            return
-          }
-
-          railView.menu.forEach { item ->
-            if (destination.matchDestination(item.itemId)) {
-              item.isChecked = true
-              titleRef.get()?.text = item.title
-            }
-          }
-        }
-      })
-
-    // make sure the 'File tree' item is checked by default
-    rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.also {
-      it.isChecked = true
-      binding.title.text = it.title
-    }
   }
 
   /**
@@ -187,15 +160,6 @@ internal object EditorSidebarActions {
   @JvmStatic
   internal fun NavDestination.matchDestination(route: String): Boolean =
     hierarchy.any { it.route == route }
-
-  /**
-   * Determines whether the given `destId` matches the NavDestination. This handles
-   * both the default case (the destination's id matches the given id) and the nested case where
-   * the given id is a parent/grandparent/etc of the destination.
-   */
-  @JvmStatic
-  internal fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
-    hierarchy.any { it.id == destId }
 
   @JvmStatic
   internal fun ShapeAppearanceModel.roundedOnRight(cornerSize: Float = 28f): ShapeAppearanceModel {

@@ -22,7 +22,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.FragmentRecyclerviewBinding
 
 /**
@@ -47,12 +46,19 @@ abstract class RecyclerViewFragment<A : RecyclerView.Adapter<*>> :
     return LinearLayoutManager(requireContext())
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+  /**
+   * Sets up the recycler view in the fragment.
+   */
+  protected open fun onSetupRecyclerView() {
     binding.root.apply {
       layoutManager = onCreateLayoutManager()
       adapter = unsavedAdapter ?: onCreateAdapter()
     }
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    onSetupRecyclerView()
 
     unsavedAdapter = null
 

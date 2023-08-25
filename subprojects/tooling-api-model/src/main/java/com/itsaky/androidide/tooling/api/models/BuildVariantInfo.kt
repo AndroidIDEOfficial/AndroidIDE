@@ -15,15 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.fragments.sidebar
-
-import com.itsaky.androidide.fragments.EmptyStateFragment
-import com.itsaky.androidide.fragments.RecyclerViewFragment
+package com.itsaky.androidide.tooling.api.models
 
 /**
- * A fragment to show the list of modules and the selected build variants in the
+ * Information about the build variants of an Android module.
  *
+ * @property modulePath The project path of the Android module project.
+ * @property buildVariants The build variants of the Android module project.
+ * @property selectedVariantIndex The index of the build variant in the [buildVariants] list which is currently selected.
  * @author Akash Yadav
  */
-class BulidVariantsFragment  {
-}
+data class BuildVariantInfo(val modulePath: String, val buildVariants: List<String>,
+  val selectedVariantIndex: Int)
