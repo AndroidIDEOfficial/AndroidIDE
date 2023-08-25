@@ -41,7 +41,6 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.callables.FileTreeCallable
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFileName
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFolder
-import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
 import com.itsaky.androidide.viewmodel.FileTreeViewModel
 import com.unnamed.b.atv.model.TreeNode
@@ -59,7 +58,6 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
 
   private var binding: LayoutEditorFileTreeBinding? = null
   private var fileTreeView: AndroidTreeView? = null
-  private var rootNode: TreeNode? = null
 
   private val viewModel by viewModels<FileTreeViewModel>(ownerProducer = { requireActivity() })
 
@@ -92,7 +90,6 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
 
     binding = null
     fileTreeView = null
-    // release root node instance
   }
 
   fun saveTreeState() {
@@ -216,12 +213,12 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
     }
     val projectDirPath = getProjectDirPath()
     val projectDir = File(projectDirPath)
-    rootNode = TreeNode(File(""))
-    rootNode!!.viewHolder = FileTreeViewHolder(requireContext())
+    val rootNode = TreeNode(File(""))
+    rootNode.viewHolder = FileTreeViewHolder(requireContext())
 
     val projectRoot = TreeNode.root(projectDir)
     projectRoot.viewHolder = FileTreeViewHolder(context)
-    rootNode!!.addChild(projectRoot)
+    rootNode.addChild(projectRoot)
 
     binding!!.horizontalCroll.visibility = View.GONE
     binding!!.horizontalCroll.visibility = View.VISIBLE
@@ -240,29 +237,27 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
         binding!!.horizontalCroll.removeAllViews()
         val view = tree.view
         binding!!.horizontalCroll.addView(view)
-        view.post { tryRestoreState() }
+        view.post { tryRestoreState(rootNode) }
       }
     }
   }
 
-  private fun createTreeView(node: TreeNode?): AndroidTreeView? {
+  private fun createTreeView(node: TreeNode): AndroidTreeView? {
     return if (context == null) {
       null
     } else AndroidTreeView(context, node, drawable.bg_ripple).also { fileTreeView = it }
   }
 
-  private fun tryRestoreState(state: String? = viewModel.savedState) {
+  private fun tryRestoreState(rootNode: TreeNode, state: String? = viewModel.savedState) {
     if (!TextUtils.isEmpty(state) && fileTreeView != null) {
       fileTreeView!!.collapseAll()
       val openNodes =
         state!!.split(AndroidTreeView.NODES_PATH_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }
-      restoreNodeState(rootNode!!, HashSet(openNodes))
+      restoreNodeState(rootNode, HashSet(openNodes))
     }
 
-    rootNode?.let { rootNode ->
-      if (rootNode.children.isNotEmpty()) {
-        rootNode.childAt(0)?.let { projectRoot -> expandNode(projectRoot, false) }
-      }
+    if (rootNode.children.isNotEmpty()) {
+      rootNode.childAt(0)?.let { projectRoot -> expandNode(projectRoot, false) }
     }
   }
 
