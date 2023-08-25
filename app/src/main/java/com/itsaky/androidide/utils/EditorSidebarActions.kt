@@ -18,6 +18,10 @@
 package com.itsaky.androidide.utils
 
 import android.content.Context
+import android.os.Bundle
+import androidx.annotation.IdRes
+import androidx.core.view.forEach
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,7 +31,6 @@ import androidx.navigation.fragment.FragmentNavigatorDestinationBuilder
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.get
 import androidx.navigation.navOptions
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -42,6 +45,7 @@ import com.itsaky.androidide.actions.sidebar.FileTreeSidebarAction
 import com.itsaky.androidide.actions.sidebar.PreferencesSidebarAction
 import com.itsaky.androidide.actions.sidebar.TerminalSidebarAction
 import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
+import java.lang.ref.WeakReference
 
 
 /**
@@ -144,10 +148,35 @@ internal object EditorSidebarActions {
       }
     }
 
-    rail.setupWithNavController(controller)
+    val railRef = WeakReference(rail)
+    val titleRef = WeakReference(binding.title)
+    controller.addOnDestinationChangedListener(
+      object : NavController.OnDestinationChangedListener {
+        override fun onDestinationChanged(
+          controller: NavController,
+          destination: NavDestination,
+          arguments: Bundle?
+        ) {
+          val railView = railRef.get()
+          if (railView == null) {
+            controller.removeOnDestinationChangedListener(this)
+            return
+          }
 
-    // make sure the 'Home' item is checked by default
-    rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.isChecked = true
+          railView.menu.forEach { item ->
+            if (destination.matchDestination(item.itemId)) {
+              item.isChecked = true
+              titleRef.get()?.text = item.title
+            }
+          }
+        }
+      })
+
+    // make sure the 'File tree' item is checked by default
+    rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.also {
+      it.isChecked = true
+      binding.title.text = it.title
+    }
   }
 
   /**
@@ -158,6 +187,15 @@ internal object EditorSidebarActions {
   @JvmStatic
   internal fun NavDestination.matchDestination(route: String): Boolean =
     hierarchy.any { it.route == route }
+
+  /**
+   * Determines whether the given `destId` matches the NavDestination. This handles
+   * both the default case (the destination's id matches the given id) and the nested case where
+   * the given id is a parent/grandparent/etc of the destination.
+   */
+  @JvmStatic
+  internal fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
+    hierarchy.any { it.id == destId }
 
   @JvmStatic
   internal fun ShapeAppearanceModel.roundedOnRight(cornerSize: Float = 28f): ShapeAppearanceModel {
