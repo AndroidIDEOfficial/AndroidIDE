@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
@@ -36,7 +36,7 @@ import java.util.concurrent.*
 interface IToolingApiServer {
 
   /** Initialize the server with the project directory. */
-  @JsonRequest fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult>
+  @JsonRequest fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult>
 
   /** Is the server initialized? */
   @JsonRequest fun isServerInitialized(): CompletableFuture<Boolean>

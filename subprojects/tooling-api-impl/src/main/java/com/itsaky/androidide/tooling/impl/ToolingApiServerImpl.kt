@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult.Reason.CANCELLATION_ERROR
@@ -69,7 +69,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
+  override fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult> {
     return CompletableFuture.supplyAsync {
       try {
         if (initialized && connector != null) {

@@ -56,7 +56,7 @@ import com.itsaky.androidide.tooling.api.ForwardingToolingApiClient;
 import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult;
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo;
@@ -403,7 +403,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   @Override
   public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
     checkServerStarted();
-    final var message = new InitializeProjectMessage(rootDir, "", getGradleInstallationDir());
+    final var message = new InitializeProjectParams(rootDir, "", getGradleInstallationDir());
     return performBuildTasks(server.initialize(message));
   }
 

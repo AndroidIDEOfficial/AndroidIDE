@@ -24,7 +24,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
 import org.junit.Ignore
@@ -45,7 +45,7 @@ object XmlInflaterTest {
 
     val (server, project) =
       ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString, "")).get()
+    server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString, "")).get()
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
     ProjectManager.setupProject()

@@ -22,4 +22,8 @@ package com.itsaky.androidide.tooling.api.messages
  *
  * @author Akash Yadav
  */
-data class InitializeProjectMessage(val directory: String, val androidVariant: String, val gradleInstallation: String = "")
+data class InitializeProjectParams(
+  val directory: String,
+  val androidVariant: String,
+  val gradleInstallation: String = ""
+)

@@ -35,7 +35,7 @@ import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.FileProvider
@@ -92,7 +92,7 @@ abstract class LSPTest {
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
 
     server
-      .initialize(InitializeProjectMessage(FileProvider.testProjectRoot().toFile().absolutePath,
+      .initialize(InitializeProjectParams(FileProvider.testProjectRoot().toFile().absolutePath,
         ""))
       .get()
 

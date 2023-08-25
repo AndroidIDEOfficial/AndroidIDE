@@ -25,7 +25,7 @@ import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
@@ -47,7 +47,7 @@ class MultiModuleAndroidProjectTest {
   @Test
   fun `test simple multi module project initialization`() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString, "")).get()
+    server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString, "")).get()
     doAssertions(project, server)
   }
 
@@ -197,7 +197,7 @@ class MultiModuleAndroidProjectTest {
         client.agpVersion = agpVersion
         client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-        server.initialize(InitializeProjectMessage(FileProvider.testProjectRoot().pathString,
+        server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString,
           "")).get()
         doAssertions(project = project, server = server)
         FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
