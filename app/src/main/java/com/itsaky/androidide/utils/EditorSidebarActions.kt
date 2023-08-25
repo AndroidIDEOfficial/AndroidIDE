@@ -24,7 +24,6 @@ import androidx.core.view.forEach
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.FragmentNavigator
 import androidx.navigation.fragment.FragmentNavigatorDestinationBuilder
@@ -45,7 +44,6 @@ import com.itsaky.androidide.actions.sidebar.CloseProjectSidebarAction
 import com.itsaky.androidide.actions.sidebar.FileTreeSidebarAction
 import com.itsaky.androidide.actions.sidebar.PreferencesSidebarAction
 import com.itsaky.androidide.actions.sidebar.TerminalSidebarAction
-import com.itsaky.androidide.fragments.sidebar.BuildVariantsFragment
 import com.itsaky.androidide.fragments.sidebar.EditorSidebarFragment
 import java.lang.ref.WeakReference
 
@@ -150,6 +148,33 @@ internal object EditorSidebarActions {
         destination(builder)
       }
     }
+
+    val railRef = WeakReference(rail)
+    controller.addOnDestinationChangedListener(
+      object : NavController.OnDestinationChangedListener {
+        override fun onDestinationChanged(
+          controller: NavController,
+          destination: NavDestination,
+          arguments: Bundle?
+        ) {
+          val railView = railRef.get()
+          if (railView == null) {
+            controller.removeOnDestinationChangedListener(this)
+            return
+          }
+          railView.menu.forEach { item ->
+            if (destination.matchDestination(item.itemId)) {
+              item.isChecked = true
+              titleRef.get()?.text = item.title
+            }
+          }
+        }
+      })
+    // make sure the 'File tree' item is checked by default
+    rail.menu.findItem(FileTreeSidebarAction.ID.hashCode())?.also {
+      it.isChecked = true
+      binding.title.text = it.title
+    }
   }
 
   /**
@@ -160,6 +185,10 @@ internal object EditorSidebarActions {
   @JvmStatic
   internal fun NavDestination.matchDestination(route: String): Boolean =
     hierarchy.any { it.route == route }
+
+  @JvmStatic
+  internal fun NavDestination.matchDestination(@IdRes destId: Int): Boolean =
+    hierarchy.any { it.id == destId }
 
   @JvmStatic
   internal fun ShapeAppearanceModel.roundedOnRight(cornerSize: Float = 28f): ShapeAppearanceModel {

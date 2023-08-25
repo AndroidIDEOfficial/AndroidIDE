@@ -41,6 +41,7 @@ import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.callables.FileTreeCallable
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFileName
 import com.itsaky.androidide.tasks.callables.FileTreeCallable.SortFolder
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.doOnApplyWindowInsets
 import com.itsaky.androidide.viewmodel.FileTreeViewModel
 import com.unnamed.b.atv.model.TreeNode
@@ -60,7 +61,7 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
   private var fileTreeView: AndroidTreeView? = null
   private var rootNode: TreeNode? = null
 
-  private val viewModel by viewModels<FileTreeViewModel>()
+  private val viewModel by viewModels<FileTreeViewModel>(ownerProducer = { requireActivity() })
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -83,16 +84,15 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
     listProjectFiles()
   }
 
-  override fun onSaveInstanceState(outState: Bundle) {
-    super.onSaveInstanceState(outState)
-    saveTreeState()
-  }
-
   override fun onDestroyView() {
     super.onDestroyView()
     EventBus.getDefault().unregister(this)
+
+    saveTreeState()
+
     binding = null
     fileTreeView = null
+    // release root node instance
   }
 
   fun saveTreeState() {
