@@ -236,7 +236,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
     if (buildService == null || buildService.isBuildInProgress) return
 
-    flashbarBuilder(
+    this.syncNotificationFlashbar?.dismiss()
+
+    this.syncNotificationFlashbar = flashbarBuilder(
       duration = DURATION_INDEFINITE,
       backgroundColor = resolveAttr(R.attr.colorSecondaryContainer),
       messageColor = resolveAttr(R.attr.colorOnSecondaryContainer)
@@ -250,7 +252,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       }
       .negativeActionText(string.btn_ignore_changes)
       .negativeActionTapListener(Flashbar::dismiss)
-      .showOnUiThread()
+      .build()
+
+    this.syncNotificationFlashbar?.showOnUiThread()
+
   }
 
   fun startServices() {
