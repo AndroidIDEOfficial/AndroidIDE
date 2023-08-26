@@ -37,6 +37,12 @@ import java.util.concurrent.CompletableFuture
 interface IAndroidProject : IModuleProject {
 
   /**
+   * Get the variant that was selected while building the model for this project.
+   */
+  @JsonRequest
+  fun getSelectedVariant(): CompletableFuture<String>
+
+  /**
    * Get the metadata about all variants of this Android project.
    */
   @JsonRequest
@@ -86,6 +92,11 @@ interface IAndroidProject : IModuleProject {
 
   @Suppress("unused")
   companion object {
+
+    /**
+     * The name of the Android project build variant that is used by default.
+     */
+    const val DEFAULT_VARIANT = "debug"
 
     const val ANDROID_NAMESPACE = "http://schemas.android.com/res/android"
 

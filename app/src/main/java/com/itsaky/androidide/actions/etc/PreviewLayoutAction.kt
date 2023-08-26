@@ -46,7 +46,7 @@ class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
   override fun prepare(data: ActionData) {
     super.prepare(data)
 
-    val viewModel = data.getActivity()!!.viewModel
+    val viewModel = data.requireActivity().editorViewModel
     if (viewModel.isInitializing) {
       visible = true
       enabled = false
@@ -61,12 +61,12 @@ class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
     val file = editor.file!!
 
     val isXml = file.name.endsWith(".xml")
-    
+
     if (!isXml) {
       markInvisible()
       return
     }
-    
+
     val type = try {
       extractPathData(file).type
     } catch (err: Throwable) {

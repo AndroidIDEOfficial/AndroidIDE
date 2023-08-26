@@ -20,10 +20,37 @@ package com.itsaky.androidide.tooling.api.models
 /**
  * Information about the build variants of an Android module.
  *
- * @property modulePath The project path of the Android module project.
+ * @property projectPath The project path of the Android module project.
  * @property buildVariants The build variants of the Android module project.
- * @property selectedVariantIndex The index of the build variant in the [buildVariants] list which is currently selected.
+ * @property selectedVariant The name of the selected build variant.
  * @author Akash Yadav
  */
-data class BuildVariantInfo(val modulePath: String, val buildVariants: List<String>,
-  val selectedVariantIndex: Int)
+data class BuildVariantInfo(
+  val projectPath: String,
+  val buildVariants: List<String>,
+  val selectedVariant: String
+) {
+
+  companion object {
+
+    /**
+     * Creates a new [BuildVariantInfo] object with the given selected variants. All the properties
+     * of this [BuildVariantInfo] is copied to the new [BuildVariantInfo] and the [newSelection] is
+     * set as the [BuildVariantInfo.selectedVariant].
+     */
+    @JvmStatic
+    fun BuildVariantInfo.withSelection(newSelection: String): BuildVariantInfo {
+      require(this.buildVariants.indexOf(newSelection) != -1) {
+        "'$newSelection' is not a valid variant name. Available variants: ${this.buildVariants}"
+      }
+      return BuildVariantInfo(this.projectPath, this.buildVariants, newSelection)
+    }
+  }
+}
+
+/**
+ * Maps the values to the selected variant names.
+ */
+fun Map<String, BuildVariantInfo>.mapToSelectedVariants(): Map<String, String> {
+  return mapValues { it.value.selectedVariant }
+}

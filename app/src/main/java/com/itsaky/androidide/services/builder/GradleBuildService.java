@@ -401,10 +401,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @NonNull
   @Override
-  public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
+  public CompletableFuture<InitializeResult> initializeProject(@NonNull InitializeProjectParams params) {
     checkServerStarted();
-    final var message = new InitializeProjectParams(rootDir, "", getGradleInstallationDir());
-    return performBuildTasks(server.initialize(message));
+    Objects.requireNonNull(params);
+    return performBuildTasks(server.initialize(params));
   }
 
   @NonNull

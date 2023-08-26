@@ -18,22 +18,23 @@
 package com.itsaky.androidide.tooling.impl.sync
 
 import com.itsaky.androidide.tooling.api.IModuleProject
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 
 /**
  * Builds models for module projects (either Android app/library or Java library projects).
  *
  * @author Akash Yadav
  */
-class ModuleProjectModelBuilder(androidVariant: String = "") :
-  AbstractModelBuilder<ModuleProjectModelBuilderParams, IModuleProject>(androidVariant) {
+class ModuleProjectModelBuilder(initializationParams: InitializeProjectParams) :
+  AbstractModelBuilder<ModuleProjectModelBuilderParams, IModuleProject>(initializationParams) {
 
   override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {
     val isAndroidProject = getAndroidVersions(param.module, param.controller) != null
     return if (isAndroidProject) {
-      AndroidProjectModelBuilder(androidVariant).build(
+      AndroidProjectModelBuilder(initializationParams).build(
         param.controller to param.module)
     } else {
-      JavaProjectModelBuilder().build(
+      JavaProjectModelBuilder(initializationParams).build(
         JavaProjectModelBuilderParams(param))
     }
   }

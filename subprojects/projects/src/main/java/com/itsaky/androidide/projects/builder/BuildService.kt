@@ -20,6 +20,7 @@ package com.itsaky.androidide.projects.builder
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lookup.Lookup.Key
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
@@ -54,11 +55,11 @@ interface BuildService {
   /**
    * Initialize the project.
    *
-   * @param rootDir The root directory of the project to initialize.
+   * @param params Parameters for the project initialization.
    * @return A [CompletableFuture] which returns an [InitializeResult] when the project
    *   initialization process finishes.
    */
-  fun initializeProject(rootDir: String): CompletableFuture<InitializeResult>
+  fun initializeProject(params: InitializeProjectParams): CompletableFuture<InitializeResult>
 
   /**
    * Execute the given tasks.

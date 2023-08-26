@@ -19,22 +19,27 @@ package com.itsaky.androidide.activities.editor
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.CheckBox
+import androidx.activity.viewModels
 import androidx.annotation.GravityInt
 import androidx.appcompat.app.AlertDialog
 import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.google.common.collect.ImmutableList
+import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding
+import com.itsaky.androidide.flashbar.Flashbar
 import com.itsaky.androidide.fragments.sheets.ProgressSheet
 import com.itsaky.androidide.handlers.EditorBuildEventListener
 import com.itsaky.androidide.handlers.LspHandler.connectClient
 import com.itsaky.androidide.handlers.LspHandler.destroyLanguageServers
-import com.itsaky.androidide.interfaces.IProjectHandler
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
+import com.itsaky.androidide.preferences.internal.gradleInstallationDir
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
 import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.projects.ProjectManager.cachedInitResult
@@ -44,14 +49,28 @@ import com.itsaky.androidide.projects.ProjectManager.projectInitialized
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.projects.ProjectManager.rootProject
 import com.itsaky.androidide.projects.ProjectManager.setupProject
+import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection
+import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.tasks.executeWithProgress
+import com.itsaky.androidide.tooling.api.IAndroidProject
+import com.itsaky.androidide.tooling.api.messages.AndroidInitializationParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
+import com.itsaky.androidide.tooling.api.models.mapToSelectedVariants
+import com.itsaky.androidide.utils.DURATION_INDEFINITE
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.RecursiveFileSearcher
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.flashbarBuilder
+import com.itsaky.androidide.utils.resolveAttr
+import com.itsaky.androidide.utils.showOnUiThread
+import com.itsaky.androidide.utils.withIcon
+import com.itsaky.androidide.viewmodel.BuildVariantsViewModel
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
@@ -59,10 +78,13 @@ import java.util.stream.Collectors
 
 /** @author Akash Yadav */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
+abstract class ProjectHandlerActivity : BaseEditorActivity() {
+
+  protected val buildVariantsViewModel by viewModels<BuildVariantsViewModel>()
 
   protected var mSearchingProgress: ProgressSheet? = null
   protected var mFindInProjectDialog: AlertDialog? = null
+  protected var syncNotificationFlashbar: Flashbar? = null
 
   protected var isFromSavedInstance = false
   protected var shouldInitialize = false
@@ -114,13 +136,28 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
         this.isFromSavedInstance = false
       }
 
+    editorViewModel._isSyncNeeded.observe(this) { isSyncNeeded ->
+      if (!isSyncNeeded) {
+        // dismiss if already showing
+        syncNotificationFlashbar?.dismiss()
+        return@observe
+      }
+
+      if (syncNotificationFlashbar?.isShowing() == true) {
+        // already shown
+        return@observe
+      }
+
+      notifySyncNeeded()
+    }
+
     startServices()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     outState.apply {
-      putBoolean(STATE_KEY_SHOULD_INITIALIZE, !viewModel.isInitializing)
+      putBoolean(STATE_KEY_SHOULD_INITIALIZE, !editorViewModel.isInitializing)
       putBoolean(STATE_KEY_FROM_SAVED_INSTANACE, true)
     }
   }
@@ -133,12 +170,16 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
       // of the project
       ProjectManager.destroy()
 
-      viewModel.isInitializing = false
-      viewModel.isBuildInProgress = false
+      editorViewModel.isInitializing = false
+      editorViewModel.isBuildInProgress = false
     }
   }
 
   override fun preDestroy() {
+
+    syncNotificationFlashbar?.dismiss()
+    syncNotificationFlashbar = null
+
     if (isDestroying) {
       releaseServerListener()
       this.initializingFuture?.cancel(true)
@@ -170,26 +211,51 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
         (Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
           ?.setEventListener(null)
         Lookup.getDefault().unregister(BuildService.KEY_BUILD_SERVICE)
-        viewModel.isBoundToBuildSerice = false
+        editorViewModel.isBoundToBuildSerice = false
       }
     }
   }
 
-  override fun setStatus(status: CharSequence, @GravityInt gravity: Int) {
+  fun setStatus(status: CharSequence) {
+    setStatus(status, Gravity.CENTER)
+  }
+
+  fun setStatus(status: CharSequence, @GravityInt gravity: Int) {
     doSetStatus(status, gravity)
   }
 
-  override fun appendBuildOutput(str: String) {
+  fun appendBuildOutput(str: String) {
     binding.bottomSheet.appendBuildOut(str)
   }
 
-  override fun notifySyncNeeded() {
+  fun notifySyncNeeded() {
     notifySyncNeeded { initializeProject() }
   }
 
-  override fun startServices() {
+  private fun notifySyncNeeded(onConfirm: () -> Unit) {
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
+    if (buildService == null || buildService.isBuildInProgress) return
+
+    flashbarBuilder(
+      duration = DURATION_INDEFINITE,
+      backgroundColor = resolveAttr(R.attr.colorSecondaryContainer),
+      messageColor = resolveAttr(R.attr.colorOnSecondaryContainer)
+    )
+      .withIcon(R.drawable.ic_sync, colorFilter = resolveAttr(R.attr.colorOnSecondaryContainer))
+      .message(string.msg_sync_needed)
+      .positiveActionText(string.btn_sync)
+      .positiveActionTapListener {
+        onConfirm()
+        it.dismiss()
+      }
+      .negativeActionText(string.btn_ignore_changes)
+      .negativeActionTapListener(Flashbar::dismiss)
+      .showOnUiThread()
+  }
+
+  fun startServices() {
     val service = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as GradleBuildService?
-    if (viewModel.isBoundToBuildSerice && service != null) {
+    if (editorViewModel.isBoundToBuildSerice && service != null) {
       log.info("Reusing already started Gradle build service")
       onGradleBuildServiceConnected(service)
       return
@@ -214,7 +280,74 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     initLspClient()
   }
 
-  override fun initializeProject() {
+  /**
+   * Initialize (sync) the project.
+   *
+   * @param buildVariantsProvider A function which returns the map of project paths to the selected build variants.
+   *    This function is called asynchronously.
+   */
+  fun initializeProject(buildVariantsProvider: () -> Map<String, String>) {
+    executeWithProgress { progress ->
+      executeAsyncProvideError(buildVariantsProvider::invoke) { result, error ->
+        com.itsaky.androidide.tasks.runOnUiThread {
+          progress.dismiss()
+        }
+
+        if (result == null || error != null) {
+          val msg = getString(string.msg_build_variants_fetch_failed)
+          flashError(msg)
+          log.error(msg, error)
+          return@executeAsyncProvideError
+        }
+
+        com.itsaky.androidide.tasks.runOnUiThread {
+          initializeProject(result)
+        }
+      }
+    }
+  }
+
+  fun initializeProject() {
+    val currentVariants = buildVariantsViewModel._buildVariants.value
+
+    // no information about the build variants is available
+    // use the default variant selections
+    if (currentVariants == null) {
+      log.debug(
+        "No variant selection information available. Default build variants will be selected.")
+      initializeProject(emptyMap())
+      return
+    }
+
+    // variant selection information is available
+    // but there are updated & unsaved variant selections
+    // use the updated variant selections to initialize the project
+    if (buildVariantsViewModel.updatedBuildVariants.isNotEmpty()) {
+      val newSelections = currentVariants.toMutableMap()
+      newSelections.putAll(buildVariantsViewModel.updatedBuildVariants)
+      initializeProject {
+        newSelections.mapToSelectedVariants().also {
+          log.debug("Initializing project with new build variant selections: $it")
+        }
+      }
+      return
+    }
+
+    // variant selection information is available but no variant selections have been updated
+    // the user might be trying to sync the project from options menu
+    // initialize the project with the existing selected variants
+    initializeProject {
+      log.debug("Re-initializing project with existing build variant selections")
+      currentVariants.mapToSelectedVariants()
+    }
+  }
+
+  /**
+   * Initialize (sync) the project.
+   *
+   * @param buildVariants A map of project paths to the selected build variants.
+   */
+  fun initializeProject(buildVariants: Map<String, String>) {
     val projectDir = File(projectPath)
     if (!projectDir.exists()) {
       log.error("GradleProject directory does not exist. Cannot initialize project")
@@ -247,7 +380,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     this.initializingFuture =
       if (shouldInitialize || (!isFromSavedInstance && !initialized)) {
         log.debug("Sending init request to tooling server..")
-        buildService.initializeProject(projectDir.absolutePath)
+        buildService.initializeProject(createProjectInitParams(projectDir, buildVariants))
       } else {
         // The project initialization was in progress before the configuration change
         // In this case, we should not start another project initialization
@@ -273,13 +406,30 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
   }
 
+  private fun createProjectInitParams(projectDir: File,
+    buildVariants: Map<String, String>): InitializeProjectParams {
+    return InitializeProjectParams(
+      projectDir.absolutePath,
+      gradleInstallationDir,
+      createAndroidParams(buildVariants)
+    )
+  }
+
+  private fun createAndroidParams(buildVariants: Map<String, String>): AndroidInitializationParams {
+    if (buildVariants.isEmpty()) {
+      return AndroidInitializationParams.DEFAULT
+    }
+
+    return AndroidInitializationParams(buildVariants)
+  }
+
   private fun releaseServerListener() {
     // Release reference to server listener in order to prevent memory leak
     (Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE) as? GradleBuildService?)
       ?.setServerListener(null)
   }
 
-  override fun stopLanguageServers() {
+  fun stopLanguageServers() {
     try {
       destroyLanguageServers(isChangingConfigurations)
     } catch (err: Throwable) {
@@ -291,7 +441,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     log.info("Connected to Gradle build service")
 
     buildServiceConnection.onConnected = null
-    viewModel.isBoundToBuildSerice = true
+    editorViewModel.isBoundToBuildSerice = true
     Lookup.getDefault().update(BuildService.KEY_BUILD_SERVICE, service)
     service.setEventListener(mBuildEventListener)
 
@@ -311,26 +461,28 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     cachedInitResult = result
     setupProject()
     notifyProjectUpdate()
+    updateBuildVariants()
+
     ThreadUtils.runOnUiThread { postProjectInit(true) }
   }
 
   protected open fun preProjectInit() {
     setStatus(getString(string.msg_initializing_project))
-    viewModel.isInitializing = true
+    editorViewModel.isInitializing = true
   }
 
   protected open fun postProjectInit(isSuccessful: Boolean) {
     if (!isSuccessful) {
       setStatus(getString(string.msg_project_initialization_failed))
       flashError(string.msg_project_initialization_failed)
-      viewModel.isInitializing = false
+      editorViewModel.isInitializing = false
       projectInitialized = false
       return
     }
 
     initialSetup()
     setStatus(getString(string.msg_project_initialized))
-    viewModel.isInitializing = false
+    editorViewModel.isInitializing = false
     projectInitialized = true
 
     if (mFindInProjectDialog?.isShowing == true) {
@@ -338,6 +490,41 @@ abstract class ProjectHandlerActivity : BaseEditorActivity(), IProjectHandler {
     }
 
     mFindInProjectDialog = null // Create the dialog again if needed
+  }
+
+  private fun updateBuildVariants() {
+    executeAsyncProvideError({
+      rootProject?.run {
+        val buildVariants = mutableMapOf<String, BuildVariantInfo>()
+        subProjects.forEach { subproject ->
+          if (subproject is AndroidModule) {
+
+            // variant names are not expected to be modified
+            val variantNames = ImmutableList.builder<String>()
+              .addAll(subproject.variants.map { variant -> variant.name }).build()
+
+            val variantName = subproject.selectedVariant?.name
+              ?: IAndroidProject.DEFAULT_VARIANT
+
+            buildVariants[subproject.path] =
+              BuildVariantInfo(subproject.path, variantNames, variantName)
+          }
+        }
+
+        buildVariants
+      }
+    }) { buildVariants, err ->
+      if (buildVariants == null || err != null) {
+        log.error("Failed to update build variants list", err)
+        return@executeAsyncProvideError
+      }
+
+      // avoid using the 'runOnUiThread' method defined in the activity
+      com.itsaky.androidide.tasks.runOnUiThread {
+        buildVariantsViewModel.buildVariants = buildVariants
+        buildVariantsViewModel.resetUpdatedSelections()
+      }
+    }
   }
 
   protected open fun createFindInProjectDialog(): AlertDialog? {

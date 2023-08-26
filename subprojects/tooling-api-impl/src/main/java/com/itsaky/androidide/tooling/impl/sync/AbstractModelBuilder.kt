@@ -17,6 +17,7 @@
 package com.itsaky.androidide.tooling.impl.sync
 
 import com.android.builder.model.v2.models.Versions
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
@@ -33,8 +34,9 @@ import org.gradle.tooling.model.Model
  * @property androidVariant The name of the variant for which the Android models will be built.
  * @author Akash Yadav
  */
-abstract class AbstractModelBuilder<P, R>(protected val androidVariant: String = "") :
-  IModelBuilder<P, R> {
+abstract class AbstractModelBuilder<P, R>(
+  protected val initializationParams: InitializeProjectParams
+) : IModelBuilder<P, R> {
 
   companion object {
 

@@ -19,7 +19,11 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content">
+  android:layout_height="wrap_content"
+  android:paddingTop="4dp"
+  android:paddingBottom="4dp"
+  android:paddingStart="16dp"
+  android:paddingEnd="16dp">
 
   <TextView
     android:id="@+id/module_name"
@@ -38,6 +42,8 @@
     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    app:boxStrokeWidth="0dp"
+    app:boxStrokeColor="@android:color/transparent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toEndOf="@id/module_name"
     app:layout_constraintTop_toTopOf="parent"

@@ -40,6 +40,7 @@ class EditorViewModel : ViewModel() {
   internal val _statusText = MutableLiveData<Pair<CharSequence, @GravityInt Int>>("" to CENTER)
   internal val _displayedFile = MutableLiveData(-1)
   internal val _startDrawerOpened = MutableLiveData(false)
+  internal val _isSyncNeeded = MutableLiveData(false)
 
   private val _openedFiles = MutableLiveData<OpenedFilesCache>()
   private val _isBoundToBuildService = MutableLiveData(false)
@@ -52,8 +53,6 @@ class EditorViewModel : ViewModel() {
    * index of the editor opened. Second value is the file that is opened.
    */
   private val mCurrentFile = MutableLiveData<Pair<Int, File?>?>(null)
-
-  internal val _buildVariants = MutableLiveData<List<BuildVariantInfo>>(null)
 
   var openedFilesCache: OpenedFilesCache?
     get() = _openedFiles.value
@@ -103,10 +102,10 @@ class EditorViewModel : ViewModel() {
       _startDrawerOpened.value = value
     }
 
-  var buildVariants: List<BuildVariantInfo>
-    get() = this._buildVariants.value ?: emptyList()
+  var isSyncNeeded: Boolean
+    get() = _isSyncNeeded.value ?: false
     set(value) {
-      this._buildVariants.value = value
+      _isSyncNeeded.value = value
     }
 
   /**

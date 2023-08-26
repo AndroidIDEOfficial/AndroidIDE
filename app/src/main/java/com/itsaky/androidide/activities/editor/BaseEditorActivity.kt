@@ -46,8 +46,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.Tab
-import com.itsaky.androidide.R.attr
-import com.itsaky.androidide.R.drawable
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_FILE_TABS
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
@@ -69,21 +67,15 @@ import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
 import com.itsaky.androidide.projects.ProjectManager.projectPath
-import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import com.itsaky.androidide.utils.ActionMenuUtils.createMenu
 import com.itsaky.androidide.utils.ApkInstallationSessionCallback
-import com.itsaky.androidide.utils.DURATION_INDEFINITE
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
 import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.flashbarBuilder
-import com.itsaky.androidide.utils.resolveAttr
-import com.itsaky.androidide.utils.showOnUiThread
-import com.itsaky.androidide.utils.withIcon
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -114,7 +106,8 @@ abstract class BaseEditorActivity :
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
   var uiDesignerResultLauncher: ActivityResultLauncher<Intent>? = null
-  val viewModel by viewModels<EditorViewModel>()
+  val editorViewModel by viewModels<EditorViewModel>()
+
   lateinit var binding: ActivityEditorBinding
     protected set
 
@@ -252,12 +245,12 @@ abstract class BaseEditorActivity :
 
   override fun onTabSelected(tab: Tab) {
     val position = tab.position
-    viewModel.displayedFileIndex = position
+    editorViewModel.displayedFileIndex = position
 
     val editorView = provideEditorAt(position)!!
     editorView.onEditorSelected()
 
-    viewModel.setCurrentFile(position, editorView.file)
+    editorViewModel.setCurrentFile(position, editorView.file)
     refreshSymbolInput(editorView)
     invalidateOptionsMenu()
   }
@@ -344,27 +337,6 @@ abstract class BaseEditorActivity :
       .show()
   }
 
-  fun notifySyncNeeded(onConfirm: () -> Unit) {
-    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
-    if (buildService == null || buildService.isBuildInProgress) return
-
-    flashbarBuilder(
-      duration = DURATION_INDEFINITE,
-      backgroundColor = resolveAttr(attr.colorSecondaryContainer),
-      messageColor = resolveAttr(attr.colorOnSecondaryContainer)
-    )
-      .withIcon(drawable.ic_sync, colorFilter = resolveAttr(attr.colorOnSecondaryContainer))
-      .message(string.msg_sync_needed)
-      .positiveActionText(string.btn_sync)
-      .positiveActionTapListener {
-        onConfirm()
-        it.dismiss()
-      }
-      .negativeActionText(string.btn_ignore_changes)
-      .negativeActionTapListener { it.dismiss() }
-      .showOnUiThread()
-  }
-
   open fun getFileTreeFragment(): FileTreeFragment? {
     if (filesTreeFragment == null) {
       filesTreeFragment =
@@ -374,8 +346,8 @@ abstract class BaseEditorActivity :
   }
 
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
-    viewModel.statusText = text
-    viewModel.statusGravity = gravity
+    editorViewModel.statusText = text
+    editorViewModel.statusGravity = gravity
   }
 
   private fun tryLaunchApp(packageName: String) {
@@ -440,18 +412,18 @@ abstract class BaseEditorActivity :
 
   private fun onBuildStatusChanged() {
     log.debug(
-      "onBuildStatusChanged: isInitializing: ${viewModel.isInitializing}, isBuildInProgress: ${viewModel.isBuildInProgress}")
-    val visible = viewModel.isBuildInProgress || viewModel.isInitializing
+      "onBuildStatusChanged: isInitializing: ${editorViewModel.isInitializing}, isBuildInProgress: ${editorViewModel.isBuildInProgress}")
+    val visible = editorViewModel.isBuildInProgress || editorViewModel.isInitializing
     binding.buildProgressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()
   }
 
   private fun setupViews() {
-    viewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
-    viewModel._isInitializing.observe(this) { onBuildStatusChanged() }
-    viewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
+    editorViewModel._isBuildInProgress.observe(this) { onBuildStatusChanged() }
+    editorViewModel._isInitializing.observe(this) { onBuildStatusChanged() }
+    editorViewModel._statusText.observe(this) { binding.bottomSheet.setStatus(it.first, it.second) }
 
-    viewModel.observeFiles(this) { files ->
+    editorViewModel.observeFiles(this) { files ->
       binding.apply {
         if (files.isNullOrEmpty()) {
           tabs.visibility = View.GONE

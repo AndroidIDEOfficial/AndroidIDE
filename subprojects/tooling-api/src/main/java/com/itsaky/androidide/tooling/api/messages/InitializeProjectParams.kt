@@ -17,13 +17,36 @@
 
 package com.itsaky.androidide.tooling.api.messages
 
+import java.io.Serializable
+
 /**
  * Message sent from client to server to initialize the tooling API client in the given directory.
  *
+ * @property directory The absolute path to the root directory of the project to initialize.
+ * @property gradleInstallation The installation path of the Gradle distribution to use.
+ * @property androidParams The [AndroidInitializationParams] for initializing the Android module projects.
  * @author Akash Yadav
  */
-data class InitializeProjectParams(
+data class InitializeProjectParams @JvmOverloads constructor(
   val directory: String,
-  val androidVariant: String,
-  val gradleInstallation: String = ""
-)
+  val gradleInstallation: String = "",
+  val androidParams: AndroidInitializationParams = AndroidInitializationParams.DEFAULT
+) : Serializable
+
+/**
+ * Initialization params for Android project/modules.
+ *
+ * @property variantSelections The map of module paths to the name of the variants which should
+ *            be fetched/initialized.
+ */
+data class AndroidInitializationParams(val variantSelections: Map<String, String>) : Serializable {
+
+  companion object {
+
+    /**
+     * Default initialization params. This initializes the Android modules with default values.
+     */
+    @JvmStatic
+    val DEFAULT = AndroidInitializationParams(emptyMap())
+  }
+}

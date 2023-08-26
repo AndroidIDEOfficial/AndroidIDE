@@ -100,7 +100,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         stopWatch.lapFromLast("Project connection established")
 
         val project = try {
-          val impl = RootModelBuilder.build(connection to params.androidVariant) as? ProjectImpl?
+          val impl = RootModelBuilder(params).build(connection) as? ProjectImpl?
             ?: throw ModelBuilderException("Failed to build project model")
           impl
         } catch (err: Throwable) {

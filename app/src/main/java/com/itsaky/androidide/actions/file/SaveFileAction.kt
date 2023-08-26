@@ -50,7 +50,7 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
           return
         }
 
-    visible = context.viewModel.getOpenedFiles().isNotEmpty()
+    visible = context.editorViewModel.getOpenedFiles().isNotEmpty()
     enabled = context.areFilesModified()
   }
 
@@ -81,7 +81,7 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
       }
 
       if (saveResult.gradleSaved) {
-        context.notifySyncNeeded()
+        context.editorViewModel.isSyncNeeded = true
       }
 
       context.invalidateOptionsMenu()

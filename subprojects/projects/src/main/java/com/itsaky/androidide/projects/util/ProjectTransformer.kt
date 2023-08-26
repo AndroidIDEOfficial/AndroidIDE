@@ -86,6 +86,8 @@ class ProjectTransformer {
   ): AndroidModule {
     val metadata = project.getMetadata().get() as AndroidProjectMetadata
     val libraryMap = project.getLibraryMap().get()
+    val variants = project.getVariants().get()
+    val selectedVariant = project.getSelectedVariant().get()
     return AndroidModule(
       name = metadata.name ?: IProject.PROJECT_UNKNOWN,
       description = metadata.description ?: "",
@@ -109,7 +111,8 @@ class ProjectTransformer {
       libraryMap = libraryMap,
       lintCheckJars = project.getLintCheckJars().get(),
       modelSyncFiles = project.getModelSyncFiles().get(),
-      variants = project.getVariants().get(),
+      variants = variants,
+      selectedVariant = variants.find { it.name == selectedVariant },
       classesJar = metadata.classesJar
     )
   }

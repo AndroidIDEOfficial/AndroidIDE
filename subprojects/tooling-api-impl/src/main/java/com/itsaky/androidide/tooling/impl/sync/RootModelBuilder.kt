@@ -19,23 +19,32 @@ package com.itsaky.androidide.tooling.impl.sync
 
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.Main.finalizeLauncher
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
 import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.ConfigurableLauncher
+import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.model.idea.IdeaProject
+import java.io.Serializable
 
 /**
  * Utility class to build the project models.
  *
  * @author Akash Yadav
  */
-object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVariant, IProject>("") {
+class RootModelBuilder(initializationParams: InitializeProjectParams) :
+  AbstractModelBuilder<ProjectConnection, IProject>(initializationParams), Serializable {
 
-  override fun build(param: ProjectConnectionAndAndroidVariant): IProject {
-    val (connection, androidVariant) = param
-    val executor = connection.action { controller ->
+  private val serialVersionUID = 1L
+
+  override fun build(param: ProjectConnection): IProject {
+
+    // do not reference the 'initializationParams' field in the
+    val initializationParams = initializationParams
+
+    val executor = param.action { controller ->
       val ideaProject = controller.getModelAndLog(IdeaProject::class.java)
 
       val ideaModules = ideaProject.modules
@@ -49,17 +58,17 @@ object RootModelBuilder : AbstractModelBuilder<ProjectConnectionAndAndroidVarian
       val rootProject = if (rootProjectVersions != null) {
         // Root project is an Android project
         assertMinimumAgp(rootProjectVersions)
-        AndroidProjectModelBuilder(androidVariant).build(controller to rootModule)
+        AndroidProjectModelBuilder(initializationParams).build(controller to rootModule)
       } else {
-        GradleProjectModelBuilder().build(rootModule.gradleProject)
+        GradleProjectModelBuilder(initializationParams).build(rootModule.gradleProject)
       }
 
       val projects = ideaModules.map { ideaModule ->
-        ModuleProjectModelBuilder(androidVariant).build(
+        ModuleProjectModelBuilder(initializationParams).build(
           ModuleProjectModelBuilderParams(controller, ideaProject, ideaModule, modulePaths))
       }
 
-      ProjectImpl(rootProject, projects)
+      return@action ProjectImpl(rootProject, projects)
     }
 
     finalizeLauncher(executor)

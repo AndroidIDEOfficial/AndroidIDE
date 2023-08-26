@@ -95,33 +95,33 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   override fun preDestroy() {
     super.preDestroy()
     TSLanguageRegistry.instance.destroy()
-    viewModel.removeAllFiles()
+    editorViewModel.removeAllFiles()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     mBuildEventListener.setActivity(this)
     super.onCreate(savedInstanceState)
 
-    viewModel._displayedFile.observe(this) { this.binding.editorContainer.displayedChild = it }
-    viewModel._startDrawerOpened.observe(this) { opened ->
+    editorViewModel._displayedFile.observe(this) { this.binding.editorContainer.displayedChild = it }
+    editorViewModel._startDrawerOpened.observe(this) { opened ->
       this.binding.editorDrawerLayout.apply {
         if (opened) openDrawer(GravityCompat.START) else closeDrawer(GravityCompat.START)
       }
     }
 
-    viewModel.observeFiles(this) {
+    editorViewModel.observeFiles(this) {
       // rewrite the cached files index if there are any opened files
       val currentFile =
         getCurrentEditor()?.editor?.file?.absolutePath
           ?: run {
-            viewModel.writeOpenedFiles(null)
-            viewModel.openedFilesCache = null
+            editorViewModel.writeOpenedFiles(null)
+            editorViewModel.openedFilesCache = null
             return@observeFiles
           }
       getOpenedFiles().also {
         val cache = OpenedFilesCache(currentFile, it)
-        viewModel.writeOpenedFiles(cache)
-        viewModel.openedFilesCache = cache
+        editorViewModel.writeOpenedFiles(cache)
+        editorViewModel.openedFilesCache = cache
       }
     }
 
@@ -165,8 +165,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   private fun writeOpenedFilesCache(openedFiles: List<OpenedFile>, selectedFile: File?) {
     if (selectedFile == null || openedFiles.isEmpty()) {
-      viewModel.writeOpenedFiles(null)
-      viewModel.openedFilesCache = null
+      editorViewModel.writeOpenedFiles(null)
+      editorViewModel.openedFilesCache = null
       log.debug("[onPause]", "No opened files.", "Opened files cache reset to null.")
       isOpenedFilesSaved.set(true)
       return
@@ -174,9 +174,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
     val cache = OpenedFilesCache(selectedFile = selectedFile.absolutePath, allFiles = openedFiles)
 
-    viewModel.writeOpenedFiles(cache)
-    viewModel.openedFilesCache = if (!isDestroying) cache else null
-    log.debug("[onPause]", "Opened files cache reset to ${viewModel.openedFilesCache}")
+    editorViewModel.writeOpenedFiles(cache)
+    editorViewModel.openedFilesCache = if (!isDestroying) cache else null
+    log.debug("[onPause]", "Opened files cache reset to ${editorViewModel.openedFilesCache}")
     isOpenedFilesSaved.set(true)
   }
 
@@ -184,17 +184,17 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     super.onStart()
 
     try {
-      if (viewModel.openedFilesCache != null) {
-        viewModel.openedFilesCache?.let { cache ->
+      if (editorViewModel.openedFilesCache != null) {
+        editorViewModel.openedFilesCache?.let { cache ->
           onReadOpenedFilesCache(cache)
         }
       } else {
-        viewModel.readOpenedFiles { cache ->
+        editorViewModel.readOpenedFiles { cache ->
           cache ?: return@readOpenedFiles
           onReadOpenedFilesCache(cache)
         }
       }
-      viewModel.openedFilesCache = null
+      editorViewModel.openedFilesCache = null
     } catch (err: Throwable) {
       log.error("Failed to reopen recently opened files", err)
     }
@@ -213,8 +213,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getCurrentEditor(): CodeEditorView? {
-    return if (viewModel.getCurrentFileIndex() != -1) {
-      getEditorAtIndex(viewModel.getCurrentFileIndex())
+    return if (editorViewModel.getCurrentFileIndex() != -1) {
+      getEditorAtIndex(editorViewModel.getCurrentFileIndex())
     } else null
   }
 
@@ -252,8 +252,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       tab.select()
     }
 
-    viewModel.startDrawerOpened = false
-    viewModel.displayedFileIndex = index
+    editorViewModel.startDrawerOpened = false
+    editorViewModel.displayedFileIndex = index
 
     return try {
       getEditorAtIndex(index)
@@ -274,7 +274,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return -1
     }
 
-    val position = viewModel.getOpenedFileCount()
+    val position = editorViewModel.getOpenedFileCount()
 
     log.info("Opening file at index:", position, "file: ", file)
 
@@ -284,8 +284,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     binding.editorContainer.addView(editor)
     binding.tabs.addTab(binding.tabs.newTab())
 
-    viewModel.addFile(file)
-    viewModel.setCurrentFile(position, file)
+    editorViewModel.addFile(file)
+    editorViewModel.setCurrentFile(position, file)
 
     updateTabs()
 
@@ -293,7 +293,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getEditorForFile(file: File): CodeEditorView? {
-    for (i in 0 until viewModel.getOpenedFileCount()) {
+    for (i in 0 until editorViewModel.getOpenedFileCount()) {
       val editor = binding.editorContainer.getChildAt(i) as CodeEditorView
       if (file == editor.file) {
         return editor
@@ -308,8 +308,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       return -1
     }
 
-    for (i in 0 until viewModel.getOpenedFileCount()) {
-      val opened: File = viewModel.getOpenedFile(i)
+    for (i in 0 until editorViewModel.getOpenedFileCount()) {
+      val opened: File = editorViewModel.getOpenedFile(i)
       if (opened == file) {
         return i
       }
@@ -326,7 +326,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     if (result.gradleSaved) {
-      notifySyncNeeded()
+      editorViewModel.isSyncNeeded = true
     }
 
     if (processResources) {
@@ -338,14 +338,14 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun saveAllResult(): SaveResult {
     val result = SaveResult()
-    for (i in 0 until viewModel.getOpenedFileCount()) {
+    for (i in 0 until editorViewModel.getOpenedFileCount()) {
       saveResult(i, result)
     }
     return result
   }
 
   override fun saveResult(index: Int, result: SaveResult) {
-    if (index < 0 || index >= viewModel.getOpenedFileCount()) {
+    if (index < 0 || index >= editorViewModel.getOpenedFileCount()) {
       return
     }
 
@@ -373,14 +373,14 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     var modified = false
-    for (file in viewModel.getOpenedFiles()) {
+    for (file in editorViewModel.getOpenedFiles()) {
       val editor = getEditorForFile(file) ?: continue
       modified = modified || editor.isModified
     }
 
     val finalModified = modified
     ThreadUtils.runOnUiThread {
-      viewModel.setFilesModified(finalModified)
+      editorViewModel.setFilesModified(finalModified)
 
       // set tab as unmodified
       val tab = binding.tabs.getTabAt(index) ?: return@runOnUiThread
@@ -391,17 +391,17 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   private fun onEditorContentChanged() {
-    viewModel.setFilesModified(true)
+    editorViewModel.setFilesModified(true)
     invalidateOptionsMenu()
   }
 
   override fun areFilesModified(): Boolean {
-    return viewModel.areFilesModified()
+    return editorViewModel.areFilesModified()
   }
 
   override fun closeFile(index: Int) {
-    if (index >= 0 && index < viewModel.getOpenedFileCount()) {
-      val opened: File = viewModel.getOpenedFile(index)
+    if (index >= 0 && index < editorViewModel.getOpenedFileCount()) {
+      val opened: File = editorViewModel.getOpenedFile(index)
       log.info("Closing file:", opened)
       val editor = getEditorAtIndex(index)
       if (editor != null && editor.isModified) {
@@ -418,7 +418,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
         log.error("Cannot save file before close. Editor instance is null")
       }
 
-      viewModel.removeFile(index)
+      editorViewModel.removeFile(index)
       binding.apply {
         tabs.removeTabAt(index)
         editorContainer.removeViewAt(index)
@@ -437,15 +437,15 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun closeOthers() {
     val unsavedFiles =
-      viewModel.getOpenedFiles().map(::getEditorForFile).filter { it != null && it.isModified }
+      editorViewModel.getOpenedFiles().map(::getEditorForFile).filter { it != null && it.isModified }
 
     if (unsavedFiles.isEmpty()) {
-      val file = viewModel.getCurrentFile()
+      val file = editorViewModel.getCurrentFile()
       var index = 0
 
       // keep closing the file at index 0
       // if openedFiles[0] == file, then keep closing files at index 1
-      while (viewModel.getOpenedFileCount() != 1) {
+      while (editorViewModel.getOpenedFileCount() != 1) {
         val editor = getEditorAtIndex(index)
 
         // Index of files changes as we keep close files
@@ -484,9 +484,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   private fun closeAll(runAfter: () -> Unit = {}) {
-    val count = viewModel.getOpenedFileCount()
+    val count = editorViewModel.getOpenedFileCount()
     val unsavedFiles =
-      viewModel.getOpenedFiles().map(this::getEditorForFile).filter { it != null && it.isModified }
+      editorViewModel.getOpenedFiles().map(this::getEditorForFile).filter { it != null && it.isModified }
 
     if (unsavedFiles.isNotEmpty()) {
       // There are unsaved files
@@ -505,7 +505,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       }
     }
 
-    viewModel.removeAllFiles()
+    editorViewModel.removeAllFiles()
     binding.apply {
       tabs.removeAllTabs()
       tabs.requestLayout()
@@ -516,7 +516,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   }
 
   override fun getOpenedFiles() =
-    viewModel.getOpenedFiles().mapNotNull {
+    editorViewModel.getOpenedFiles().mapNotNull {
       val editor = getEditorForFile(it)?.editor ?: return@mapNotNull null
       OpenedFile(it.absolutePath, editor.cursorLSPRange)
     }
@@ -562,7 +562,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     val editor = getEditorAtIndex(index) ?: return
-    viewModel.updateFile(index, event.newFile)
+    editorViewModel.updateFile(index, event.newFile)
     editor.updateFile(event.newFile)
 
     updateTabs()
@@ -589,7 +589,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   private fun updateTabs() {
     executeAsyncProvideError({
-      val files = viewModel.getOpenedFiles()
+      val files = editorViewModel.getOpenedFiles()
       val dupliCount = mutableMapOf<String, Int>()
       val names = mutableMapOf<Int, String>()
       val nameBuilder = UniqueNameBuilder<File>("", File.separator)

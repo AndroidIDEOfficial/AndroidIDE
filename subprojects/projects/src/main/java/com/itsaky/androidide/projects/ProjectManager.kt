@@ -30,8 +30,10 @@ import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -67,7 +69,8 @@ object ProjectManager : EventReceiver {
     project: IProject = Lookup.getDefault().lookup(BuildService.KEY_PROJECT_PROXY)!!,
     isInitialized: Boolean = true
   ) {
-    this.rootProject = if (isInitialized) ProjectTransformer().transform(CachingProject(project)) else null
+    this.rootProject = if (isInitialized) ProjectTransformer().transform(
+      CachingProject(project)) else null
     if (this.rootProject != null) {
       this.app = this.rootProject!!.findFirstAndroidAppModule()
       this.rootProject!!.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
@@ -156,11 +159,10 @@ object ProjectManager : EventReceiver {
   fun notifyProjectUpdate() {
 
     executeAsync {
-      if (rootProject != null) {
-        // Update the source file index
-        rootProject!!.subProjects.forEach {
-          if (it is ModuleProject) {
-            it.indexSources()
+      rootProject?.apply {
+        subProjects.forEach { subproject ->
+          if (subproject is ModuleProject) {
+            subproject.indexSources()
           }
         }
       }

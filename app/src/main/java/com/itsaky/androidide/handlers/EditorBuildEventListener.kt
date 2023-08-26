@@ -51,7 +51,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
       activity().showFirstBuildNotice()
     }
 
-    activity().viewModel.isBuildInProgress = true
+    activity().editorViewModel.isBuildInProgress = true
     activity().binding.bottomSheet.clearBuildOutput()
 
     if (buildInfo.tasks.isNotEmpty()) {
@@ -64,7 +64,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     analyzeCurrentFile()
 
     isFirstBuild = false
-    activity().viewModel.isBuildInProgress = false
+    activity().editorViewModel.isBuildInProgress = false
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
@@ -77,7 +77,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     analyzeCurrentFile()
 
     isFirstBuild = false
-    activity().viewModel.isBuildInProgress = false
+    activity().editorViewModel.isBuildInProgress = false
   }
 
   override fun onOutput(line: String?) {

@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.impl.sync
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
 import com.itsaky.androidide.tooling.api.IJavaProject
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.models.JavaModuleCompilerSettings
 import com.itsaky.androidide.tooling.impl.internal.JavaProjectImpl
 import org.gradle.tooling.model.idea.IdeaModule
@@ -29,8 +30,8 @@ import org.gradle.tooling.model.idea.IdeaProject
  *
  * @author Akash Yadav
  */
-class JavaProjectModelBuilder :
-  AbstractModelBuilder<JavaProjectModelBuilderParams, IJavaProject>() {
+class JavaProjectModelBuilder(initializationParams: InitializeProjectParams) :
+  AbstractModelBuilder<JavaProjectModelBuilderParams, IJavaProject>(initializationParams) {
 
   override fun build(param: JavaProjectModelBuilderParams): IJavaProject {
     val compilerSettings = createCompilerSettings(param.project, param.module)

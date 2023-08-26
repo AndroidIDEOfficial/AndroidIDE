@@ -48,7 +48,7 @@ abstract class FileTabAction : EditorActivityAction() {
           return
         }
 
-    visible = activity.viewModel.getOpenedFiles().isNotEmpty()
+    visible = activity.editorViewModel.getOpenedFiles().isNotEmpty()
     enabled = visible
   }
 

@@ -17,6 +17,7 @@
 package com.itsaky.androidide.tooling.impl.sync
 
 import com.itsaky.androidide.tooling.api.IGradleProject
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.internal.GradleProjectImpl
 import org.gradle.tooling.model.GradleProject
 
@@ -25,7 +26,9 @@ import org.gradle.tooling.model.GradleProject
  *
  * @author Akash Yadav
  */
-class GradleProjectModelBuilder : AbstractModelBuilder<GradleProject, IGradleProject>() {
+class GradleProjectModelBuilder(initializationParams: InitializeProjectParams) :
+  AbstractModelBuilder<GradleProject, IGradleProject>(
+    initializationParams) {
 
   @Throws(ModelBuilderException::class)
   override fun build(param: GradleProject): IGradleProject {

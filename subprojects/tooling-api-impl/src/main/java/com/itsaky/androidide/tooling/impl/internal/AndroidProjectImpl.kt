@@ -50,7 +50,7 @@ import java.util.concurrent.CompletableFuture
  */
 internal class AndroidProjectImpl(
   gradleProject: GradleProject,
-  private val variant: String,
+  private val selectedVariant: String,
   private val basicAndroidProject: BasicAndroidProject,
   private val androidProject: AndroidProject,
   private val variantDependencies: VariantDependencies
@@ -68,7 +68,9 @@ internal class AndroidProjectImpl(
       return field
     }
 
-
+  override fun getSelectedVariant(): CompletableFuture<String> {
+    return CompletableFuture.completedFuture(this.selectedVariant)
+  }
 
   override fun getVariants(): CompletableFuture<List<BasicAndroidVariantMetadata>> {
     return CompletableFuture.supplyAsync {
@@ -161,14 +163,15 @@ internal class AndroidProjectImpl(
   private fun getClassesJar(): File {
     // TODO(itsaky): this should handle product flavors as well
     return File(gradleProject.buildDirectory,
-      "${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
+      "${IAndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$selectedVariant/classes.jar")
   }
 
   override fun getClasspaths(): CompletableFuture<List<File>> {
     return CompletableFuture.supplyAsync {
       mutableListOf<File>().apply {
         add(getClassesJar())
-        getVariant(StringParameter(variant)).get()?.mainArtifact?.classJars?.let(this::addAll)
+        getVariant(StringParameter(selectedVariant)).get()?.mainArtifact?.classJars?.let(
+          this::addAll)
       }
     }
   }

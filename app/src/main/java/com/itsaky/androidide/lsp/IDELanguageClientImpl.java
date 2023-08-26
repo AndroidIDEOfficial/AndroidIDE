@@ -380,7 +380,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
   @NonNull
   private Set<File> findOpenFiles(final Set<File> files, final int max) {
-    final var openedFiles = activity().getViewModel().getOpenedFiles();
+    final var openedFiles = activity().getEditorViewModel().getOpenedFiles();
     final var result = new TreeSet<File>();
     for (int i = 0; i < openedFiles.size(); i++) {
       final var opened = openedFiles.get(i);

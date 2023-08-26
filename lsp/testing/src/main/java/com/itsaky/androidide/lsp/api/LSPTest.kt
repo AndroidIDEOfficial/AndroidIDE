@@ -92,8 +92,7 @@ abstract class LSPTest {
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
 
     server
-      .initialize(InitializeProjectParams(FileProvider.testProjectRoot().toFile().absolutePath,
-        ""))
+      .initialize(InitializeProjectParams(FileProvider.testProjectRoot().toFile().absolutePath))
       .get()
 
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
