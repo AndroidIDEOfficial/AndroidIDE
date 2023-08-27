@@ -44,7 +44,13 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
     log(
       "${variantNames.size} build variants found for project '$projectPath': $variantNames")
 
-    val androidVariant = androidParams.variantSelections[projectPath]
+    var androidVariant = androidParams.variantSelections[projectPath]
+
+    if (androidVariant != null && !variantNames.contains(androidVariant)) {
+      log("Configured variant '$androidVariant' not found for project '$projectPath'. Falling back to default variant.")
+      androidVariant = null
+    }
+
     val selectedVariant = androidVariant ?: variantNames.firstOrNull()
     if (selectedVariant.isNullOrBlank()) {
       throw ModelBuilderException(
