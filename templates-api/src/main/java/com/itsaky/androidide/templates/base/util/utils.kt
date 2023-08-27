@@ -82,3 +82,21 @@ fun moduleNameToDirName(name: String): String {
 
   return result.trim { it == ' ' || it == '-' }.toString()
 }
+
+/**
+ * Get the name of a new project. This checks for existence of existent files/directories
+ * until a non-existent project name is found.
+ *
+ * @param baseDir The base project directory.
+ * @param name The current project name.
+ */
+fun getNewProjectName(baseDir: String, name: String) : String {
+  var i = 1
+  var projectDir = File(baseDir, name)
+  while (projectDir.exists()) {
+    projectDir = File(baseDir, name + i)
+    ++i
+  }
+
+  return projectDir.name
+}

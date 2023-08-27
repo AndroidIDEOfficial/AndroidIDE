@@ -28,7 +28,6 @@ import com.itsaky.androidide.templates.ModuleTemplateData
 import com.itsaky.androidide.templates.ModuleType
 import com.itsaky.androidide.templates.ModuleType.AndroidApp
 import com.itsaky.androidide.templates.ModuleType.AndroidLibrary
-import com.itsaky.androidide.templates.ModuleVersionData
 import com.itsaky.androidide.templates.ParameterConstraint.DIRECTORY
 import com.itsaky.androidide.templates.ParameterConstraint.EXISTS
 import com.itsaky.androidide.templates.ParameterConstraint.MODULE_NAME
@@ -41,6 +40,7 @@ import com.itsaky.androidide.templates.Sdk
 import com.itsaky.androidide.templates.SpinnerWidget
 import com.itsaky.androidide.templates.StringParameter
 import com.itsaky.androidide.templates.TextFieldWidget
+import com.itsaky.androidide.templates.base.util.getNewProjectName
 import com.itsaky.androidide.templates.base.util.moduleNameToDir
 import com.itsaky.androidide.templates.enumParameter
 import com.itsaky.androidide.templates.minSdkParameter
@@ -61,12 +61,12 @@ typealias AndroidModuleTemplateConfigurator = AndroidModuleTemplateBuilder.() ->
  * @param block Function to configure the template.
  */
 fun baseProject(projectName: StringParameter = projectNameParameter(),
-                packageName: StringParameter = packageNameParameter(),
-                useKts: BooleanParameter = useKtsParameter(),
-                minSdk: EnumParameter<Sdk> = minSdkParameter(),
-                language: EnumParameter<Language> = projectLanguageParameter(),
-                projectVersionData: ProjectVersionData = ProjectVersionData(),
-                block: ProjectTemplateBuilder.() -> Unit
+  packageName: StringParameter = packageNameParameter(),
+  useKts: BooleanParameter = useKtsParameter(),
+  minSdk: EnumParameter<Sdk> = minSdkParameter(),
+  language: EnumParameter<Language> = projectLanguageParameter(),
+  projectVersionData: ProjectVersionData = ProjectVersionData(),
+  block: ProjectTemplateBuilder.() -> Unit
 ): ProjectTemplate {
   return ProjectTemplateBuilder().apply {
 
@@ -76,7 +76,7 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
         AndroidUtils.appNameToPackageName(name.value, packageName.value)
       packageName.setValue(newPackage)
     }
-    
+
     Environment.mkdirIfNotExits(Environment.PROJECTS_DIR)
 
     val saveLocation = stringParameter {
@@ -85,6 +85,8 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
       endIcon = { R.drawable.ic_folder }
       constraints = listOf(NONEMPTY, DIRECTORY, EXISTS)
     }
+
+    projectName.setValue(getNewProjectName(saveLocation.value, projectName.value))
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
       TextFieldWidget(saveLocation), SpinnerWidget(language),
@@ -145,7 +147,7 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
  * @param block The module configurator.
  */
 fun baseAndroidModule(isLibrary: Boolean = false,
-                      block: AndroidModuleTemplateConfigurator
+  block: AndroidModuleTemplateConfigurator
 ): ModuleTemplate {
   return AndroidModuleTemplateBuilder().apply {
 
@@ -198,7 +200,7 @@ fun baseAndroidModule(isLibrary: Boolean = false,
  * @return The [FileTemplate].
  */
 fun <R : FileTemplateRecipeResult> baseFile(dir: File,
-                                            configurator: FileTemplateBuilder<R>.() -> Unit
+  configurator: FileTemplateBuilder<R>.() -> Unit
 ): FileTemplate<R> {
   return FileTemplateBuilder<R>(dir).apply(configurator)
     .build() as FileTemplate<R>

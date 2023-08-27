@@ -69,7 +69,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
   override fun <T> createView(context: Context, widget: Widget<T>): View {
     if (widget is ParameterWidget<T>) {
-      widget.parameter.setValue(widget.parameter.default, false)
+      widget.parameter.setValue(widget.parameter.value, false)
     }
     return when (widget) {
       is TextFieldWidget -> createTextField(context, widget)
@@ -83,7 +83,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
     return LayoutCheckboxBinding.inflate(LayoutInflater.from(context)).apply {
       val param = widget.parameter as BooleanParameter
       root.setText(param.name)
-      root.isChecked = param.default
+      root.isChecked = param.value
 
       val observer = object : DefaultObserver<Boolean>() {
         override fun onChanged(parameter: Parameter<Boolean>) {
@@ -130,7 +130,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
       }
 
-      input.setText(param.default)
+      input.setText(param.value)
       param.observe(observer)
 
     }.root
@@ -142,7 +142,7 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
       val nameToEnum = mutableMapOf<String, Enum<*>>()
       val enumToName = mutableMapOf<Enum<*>, String>()
-      param.default.javaClass.enumConstants?.forEach {
+      param.value.javaClass.enumConstants?.forEach {
 
         // remove the elements for which the filter fails
         if (param.filter?.invoke(it) == false) {
