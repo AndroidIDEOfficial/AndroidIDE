@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.xml
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.api.LSPTest
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
@@ -38,7 +38,7 @@ object XMLLSPTest : LSPTest() {
     }
     super.initProjectIfNeeded()
     try {
-      val module = ProjectManager.app!!
+      val module = IProjectManager.getInstance().app!!
       val lookup = Lookup.getDefault()
       
       lookup.update(ModuleProject.COMPLETION_MODULE_KEY, module)

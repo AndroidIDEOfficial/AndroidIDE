@@ -31,7 +31,7 @@ import com.itsaky.androidide.lsp.java.rewrite.AddImport
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
 import com.itsaky.androidide.lsp.models.CodeActionItem
 import com.itsaky.androidide.lsp.models.DiagnosticItem
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import jdkx.tools.Diagnostic
@@ -63,7 +63,7 @@ class AddImportAction : BaseJavaCodeAction() {
 
     val file = data.requireFile()
     val module =
-      ProjectManager.findModuleForFile(file)
+      IProjectManager.getInstance().findModuleForFile(file, false)
         ?: run {
           markInvisible()
           return
@@ -95,7 +95,7 @@ class AddImportAction : BaseJavaCodeAction() {
       )!!
     val file = data.requireFile()
     val module =
-      ProjectManager.findModuleForFile(file)
+      IProjectManager.getInstance().findModuleForFile(file, false)
         ?: run {
           markInvisible()
           return Any()
@@ -136,7 +136,7 @@ class AddImportAction : BaseJavaCodeAction() {
 
     val file = data.requireFile()
     val module =
-      ProjectManager.findModuleForFile(file)
+      IProjectManager.getInstance().findModuleForFile(file, false)
         ?: run {
           markInvisible()
           return
@@ -158,9 +158,11 @@ class AddImportAction : BaseJavaCodeAction() {
       0 -> {
         log.warn("No rewrites found. Cannot perform action")
       }
+
       1 -> {
         client.performCodeAction(actions[0])
       }
+
       else -> {
         val builder = newDialogBuilder(data)
         builder.setTitle(label)

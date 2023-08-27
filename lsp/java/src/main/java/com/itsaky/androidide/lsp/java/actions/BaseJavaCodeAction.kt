@@ -32,7 +32,7 @@ import com.itsaky.androidide.lsp.java.JavaLanguageServer
 import com.itsaky.androidide.lsp.java.R
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.java.rewrite.Rewrite
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -104,7 +104,7 @@ abstract class BaseJavaCodeAction : EditorActionItem {
   }
 
   protected fun ActionData.requireCompiler(): JavaCompilerService {
-    val module = ProjectManager.findModuleForFile(requireFile())
+    val module = IProjectManager.getInstance().findModuleForFile(requireFile(), false)
     requireNotNull(module) {
       "Cannot get compiler instance. Unable to find module for file: ${requireFile().name}"
     }

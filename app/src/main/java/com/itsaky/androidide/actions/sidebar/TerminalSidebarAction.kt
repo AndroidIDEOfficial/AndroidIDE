@@ -25,7 +25,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.requireContext
 import com.itsaky.androidide.activities.TerminalActivity
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import java.util.Objects
 import kotlin.reflect.KClass
 
@@ -49,7 +49,7 @@ class TerminalSidebarAction(context: Context, override val order: Int) : Abstrac
     val intent = Intent(context, TerminalActivity::class.java)
     intent.putExtra(
       TerminalActivity.KEY_WORKING_DIRECTORY,
-      Objects.requireNonNull(ProjectManager.getProjectDirPath())
+      Objects.requireNonNull(IProjectManager.getInstance().projectDirPath)
     )
     context.startActivity(intent)
     return true

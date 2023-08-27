@@ -18,7 +18,7 @@
 package com.itsaky.androidide.projects.api
 
 import com.itsaky.androidide.builder.model.IJavaCompilerSettings
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.tooling.api.ProjectType.Java
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
@@ -106,7 +106,7 @@ class JavaModule(
   }
 
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    val root = ProjectManager.rootProject ?: return emptyList()
+    val root = IProjectManager.getInstance().rootProject ?: return emptyList()
     return this.dependencies
       .filterIsInstance(JavaModuleProjectDependency::class.java)
       .filter { it.scope == SCOPE_COMPILE }

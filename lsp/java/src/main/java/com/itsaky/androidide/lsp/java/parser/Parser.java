@@ -21,9 +21,17 @@ import com.itsaky.androidide.lsp.java.compiler.SourceFileManager;
 import com.itsaky.androidide.lsp.java.compiler.SourceFileObject;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.IProjectManager;
 import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.utils.ILogger;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import jdkx.tools.JavaCompiler;
+import jdkx.tools.JavaFileObject;
 import openjdk.source.tree.ClassTree;
 import openjdk.source.tree.CompilationUnitTree;
 import openjdk.source.tree.LineMap;
@@ -35,16 +43,6 @@ import openjdk.source.util.SourcePositions;
 import openjdk.source.util.TreePath;
 import openjdk.source.util.Trees;
 import openjdk.tools.javac.api.JavacTool;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import jdkx.tools.JavaCompiler;
-import jdkx.tools.JavaFileObject;
 
 public class Parser {
 
@@ -75,9 +73,12 @@ public class Parser {
     this.trees = Trees.instance(task);
   }
 
-  /** Create a task that compiles a single file */
+  /**
+   * Create a task that compiles a single file
+   */
   private static JavacTask singleFileTask(JavaFileObject file) {
-    final ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(Paths.get(file.toUri()));
+    final ModuleProject module = IProjectManager.getInstance()
+        .findModuleForFile(Paths.get(file.toUri()));
     if (module != null) {
       FILE_MANAGER = SourceFileManager.forModule(module);
     }

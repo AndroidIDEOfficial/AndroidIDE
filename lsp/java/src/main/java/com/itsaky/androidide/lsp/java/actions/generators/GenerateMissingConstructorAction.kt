@@ -27,7 +27,7 @@ import com.itsaky.androidide.lsp.java.actions.BaseJavaCodeAction
 import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.GenerateRecordConstructor
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
@@ -59,7 +59,8 @@ class GenerateMissingConstructorAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
     val file = data.requirePath()
     return compiler.compile(file).get { task ->
       val needsConstructor =

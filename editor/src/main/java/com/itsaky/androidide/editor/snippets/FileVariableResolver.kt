@@ -18,7 +18,7 @@
 package com.itsaky.androidide.editor.snippets
 
 import com.itsaky.androidide.editor.ui.IDEEditor
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import io.github.rosemoe.sora.widget.snippet.variable.FileBasedSnippetVariableResolver
 
 /**
@@ -46,7 +46,7 @@ class FileVariableResolver(editor: IDEEditor) : FileBasedSnippetVariableResolver
       TM_FILENAME_BASE -> file.nameWithoutExtension
       TM_DIRECTORY -> file.parentFile?.absolutePath ?: ""
       TM_FILEPATH -> file.absolutePath
-      RELATIVE_FILEPATH -> file.relativeTo(ProjectManager.getProjectDir()).absolutePath
+      RELATIVE_FILEPATH -> file.relativeTo(IProjectManager.getInstance().projectDir).absolutePath
       else -> ""
     }
   }

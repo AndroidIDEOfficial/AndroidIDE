@@ -31,7 +31,7 @@ import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.utils.EditHelper
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.ILogger
@@ -80,7 +80,8 @@ class GenerateToStringMethodAction : FieldBasedAction() {
 
   private fun generateToString(data: ActionData, selected: MutableSet<String>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = data.requirePath()
 

@@ -29,8 +29,8 @@ class ModuleProjectModelBuilder(initializationParams: InitializeProjectParams) :
   AbstractModelBuilder<ModuleProjectModelBuilderParams, IModuleProject>(initializationParams) {
 
   override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {
-    val isAndroidProject = getAndroidVersions(param.module, param.controller) != null
-    return if (isAndroidProject) {
+    val versions = getAndroidVersions(param.module, param.controller)
+    return if (versions != null) {
       AndroidProjectModelBuilder(initializationParams).build(
         param.controller to param.module)
     } else {

@@ -17,12 +17,9 @@
 
 package com.itsaky.androidide.tooling.impl.sync
 
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import org.gradle.tooling.BuildController
-import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.model.idea.IdeaModule
 import org.gradle.tooling.model.idea.IdeaProject
-
 
 typealias BuildControllderAndIdeaModule = Pair<BuildController, IdeaModule>
 

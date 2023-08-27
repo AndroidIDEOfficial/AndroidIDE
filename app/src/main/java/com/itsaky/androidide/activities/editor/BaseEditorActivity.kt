@@ -65,8 +65,8 @@ import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
-import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
-import com.itsaky.androidide.projects.ProjectManager.projectPath
+import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
@@ -186,7 +186,8 @@ abstract class BaseEditorActivity :
     registerLanguageServers()
 
     if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PROJECT_PATH)) {
-      projectPath = savedInstanceState.getString(KEY_PROJECT_PATH)!!
+      ProjectManagerImpl.getInstance().projectPath = savedInstanceState.getString(
+        KEY_PROJECT_PATH)!!
     }
 
     onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -239,7 +240,7 @@ abstract class BaseEditorActivity :
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
-    outState.putString(KEY_PROJECT_PATH, getProjectDirPath())
+    outState.putString(KEY_PROJECT_PATH, IProjectManager.getInstance().projectDirPath)
     super.onSaveInstanceState(outState)
   }
 

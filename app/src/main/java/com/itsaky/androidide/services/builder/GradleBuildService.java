@@ -47,7 +47,8 @@ import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.projects.IProjectManager;
+import com.itsaky.androidide.projects.ProjectManagerImpl;
 import com.itsaky.androidide.projects.builder.BuildService;
 import com.itsaky.androidide.resources.R;
 import com.itsaky.androidide.services.ToolingServerNotStartedException;
@@ -220,7 +221,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     this.server = server;
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy);
     this.isToolingServerStarted = true;
-    ProjectManager.INSTANCE.setupProject(projectProxy, false);
   }
   
   @Override
@@ -328,12 +328,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   }
 
   public boolean isGradleWrapperAvailable() {
-    final var projectDir = ProjectManager.INSTANCE.getProjectDirPath();
+    final var projectDir = IProjectManager.getInstance().getProjectDirPath();
     if (TextUtils.isEmpty(projectDir)) {
       return false;
     }
 
-    final var projectRoot = Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir());
+    final var projectRoot = Objects.requireNonNull(ProjectManagerImpl.getInstance().getProjectDir());
     if (!projectRoot.exists()) {
       return false;
     }
@@ -372,7 +372,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     try {
-      final var projectDir = ProjectManager.INSTANCE.getProjectDir();
+      final var projectDir = ProjectManagerImpl.getInstance().getProjectDir();
       final var files = ZipUtils.unzipFile(extracted, projectDir);
       if (files != null && !files.isEmpty()) {
         return new GradleWrapperCheckResult(true);

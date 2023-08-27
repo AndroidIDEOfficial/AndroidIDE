@@ -29,7 +29,7 @@ import com.itsaky.androidide.inflater.internal.ViewGroupImpl
 import com.itsaky.androidide.inflater.internal.ViewImpl
 import com.itsaky.androidide.inflater.internal.utils.IDTable
 import com.itsaky.androidide.inflater.utils.newAttribute
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import org.junit.Before
 import java.io.File
@@ -228,7 +228,7 @@ class LayoutInflaterTest {
   }
 
   private fun layoutFile(name: String): File {
-    val app = ProjectManager.app ?: throw IllegalStateException("GradleProject is not initialized")
+    val app = IProjectManager.getInstance().app ?: throw IllegalStateException("GradleProject is not initialized")
     return File(app.projectDir, "src/main/res/layout/$name.xml")
   }
 

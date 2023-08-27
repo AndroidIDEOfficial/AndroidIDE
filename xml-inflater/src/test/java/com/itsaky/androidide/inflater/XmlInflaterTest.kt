@@ -21,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.itsaky.androidide.inflater.utils.endParse
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
@@ -48,15 +48,16 @@ object XmlInflaterTest {
     server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
-    ProjectManager.setupProject()
+    IProjectManager.getInstance().setupProject()
     init.set(true)
   }
 }
 
 fun inflaterTest(block: (AndroidModule) -> Unit) {
   XmlInflaterTest.initIfNeeded()
-  startParse(ProjectManager.app!!)
-  block(ProjectManager.app!!)
+  val app = IProjectManager.getInstance().app!!
+  startParse(app)
+  block(app)
   endParse()
 }
 

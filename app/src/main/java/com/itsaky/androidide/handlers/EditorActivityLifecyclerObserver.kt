@@ -20,8 +20,6 @@ package com.itsaky.androidide.handlers
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.fragment.NavHostFragment
-import com.itsaky.androidide.activities.editor.BaseEditorActivity
 import com.itsaky.androidide.eventbus.events.Event
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.OnCreateEvent
@@ -30,13 +28,13 @@ import com.itsaky.androidide.eventbus.events.editor.OnPauseEvent
 import com.itsaky.androidide.eventbus.events.editor.OnResumeEvent
 import com.itsaky.androidide.eventbus.events.editor.OnStartEvent
 import com.itsaky.androidide.eventbus.events.editor.OnStopEvent
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.util.BootClasspathProvider
 import com.itsaky.androidide.utils.EditorActivityActions
 import com.itsaky.androidide.utils.EditorSidebarActions
 import com.itsaky.androidide.utils.Environment
-import java.util.concurrent.CompletableFuture
 import org.greenrobot.eventbus.EventBus
+import java.util.concurrent.CompletableFuture
 
 /**
  * Observes lifecycle events if [com.itsaky.androidide.EditorActivityKt].
@@ -55,7 +53,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
 
   override fun onStart(owner: LifecycleOwner) {
     CompletableFuture.runAsync(this::initBootclasspathProvider)
-    register(fileActionsHandler, ProjectManager)
+    register(fileActionsHandler, ProjectManagerImpl.getInstance())
 
     dispatchEvent(OnStartEvent())
   }
@@ -71,7 +69,7 @@ class EditorActivityLifecyclerObserver : DefaultLifecycleObserver {
   }
 
   override fun onStop(owner: LifecycleOwner) {
-    unregister(fileActionsHandler, ProjectManager)
+    unregister(fileActionsHandler, ProjectManagerImpl.getInstance())
     dispatchEvent(OnStopEvent())
   }
 

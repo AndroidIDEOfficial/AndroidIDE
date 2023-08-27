@@ -61,9 +61,9 @@ import com.itsaky.androidide.lsp.util.LSPEditorActions;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.progress.ICancelChecker;
 import com.itsaky.androidide.projects.FileManager;
-import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.projects.api.ModuleProject;
+import com.itsaky.androidide.projects.IProjectManager;
 import com.itsaky.androidide.projects.api.GradleProject;
+import com.itsaky.androidide.projects.api.ModuleProject;
 import com.itsaky.androidide.projects.api.Project;
 import com.itsaky.androidide.utils.DocumentUtils;
 import com.itsaky.androidide.utils.ILogger;
@@ -285,7 +285,7 @@ public class JavaLanguageServer implements ILanguageServer {
       return JavaCompilerService.NO_MODULE_COMPILER;
     }
 
-    final var root = ProjectManager.INSTANCE.getRootProject();
+    final var root = IProjectManager.getInstance().getRootProject();
     if (root == null) {
       return JavaCompilerService.NO_MODULE_COMPILER;
     }
@@ -326,7 +326,8 @@ public class JavaLanguageServer implements ILanguageServer {
     // TODO Find an alternative to efficiently update changeDelta in JavaCompilerService instance
     JavaCompilerService.NO_MODULE_COMPILER.onDocumentChange(event);
 
-    final ModuleProject module = ProjectManager.INSTANCE.findModuleForFile(event.getChangedFile());
+    final ModuleProject module = IProjectManager.getInstance()
+        .findModuleForFile(event.getChangedFile());
     if (module != null) {
       final JavaCompilerService compiler = JavaCompilerProvider.get(module);
       compiler.onDocumentChange(event);

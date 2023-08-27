@@ -35,7 +35,6 @@ package com.itsaky.androidide.lsp.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.lsp.models.CodeFormatResult;
 import com.itsaky.androidide.lsp.models.CompletionParams;
 import com.itsaky.androidide.lsp.models.CompletionResult;
@@ -51,9 +50,6 @@ import com.itsaky.androidide.lsp.models.SignatureHelp;
 import com.itsaky.androidide.lsp.models.SignatureHelpParams;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.progress.ICancelChecker;
-import com.itsaky.androidide.projects.ProjectManager;
-import com.itsaky.androidide.projects.api.GradleProject;
-
 import com.itsaky.androidide.projects.api.Project;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -105,8 +101,9 @@ public interface ILanguageServer {
 
   /**
    * Setup this language server with the given project. Servers are not expected to keep a reference
-   * to the provided project. Instead, use {@link ProjectManager#getRootProject()} to obtain the
-   * project instance.
+   * to the provided project. Instead, use
+   * {@link com.itsaky.androidide.projects.IProjectManager#getRootProject getRootProject()} to
+   * obtain the project instance.
    *
    * @param project The initialized project.
    */
@@ -165,7 +162,7 @@ public interface ILanguageServer {
    *
    * @param file The file to analyze.
    * @return The diagnostic result. Points to {@link DiagnosticResult#NO_UPDATE} if no diagnotic
-   *     items are available.
+   * items are available.
    */
   @NonNull
   DiagnosticResult analyze(@NonNull Path file);

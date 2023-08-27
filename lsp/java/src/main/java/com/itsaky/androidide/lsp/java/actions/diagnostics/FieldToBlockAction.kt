@@ -28,7 +28,7 @@ import com.itsaky.androidide.lsp.java.models.DiagnosticCode
 import com.itsaky.androidide.lsp.java.rewrite.ConvertFieldToBlock
 import com.itsaky.androidide.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.androidide.lsp.models.DiagnosticItem
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.ILogger
 
 /** @author Akash Yadav */
@@ -62,7 +62,8 @@ class FieldToBlockAction : BaseJavaCodeAction() {
 
   override fun execAction(data: ActionData): Any {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
     val diagnostic = data[DiagnosticItem::class.java]!!
     val file = data.requirePath()
 

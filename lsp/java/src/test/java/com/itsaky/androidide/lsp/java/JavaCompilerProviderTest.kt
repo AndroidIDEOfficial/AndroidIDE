@@ -19,7 +19,7 @@ package com.itsaky.androidide.lsp.java
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.ModuleProject
 import org.junit.Before
 import org.junit.Test
@@ -39,7 +39,7 @@ class JavaCompilerProviderTest {
 
   @Test
   fun `test module specific compilers`() {
-    val rootProject = ProjectManager.rootProject!!
+    val rootProject = IProjectManager.getInstance().rootProject!!
     val appModule = rootProject.findByPath(":app")!! as ModuleProject
     val androidLib = rootProject.findByPath(":android-library")!! as ModuleProject
     val anotherAndroidLib = rootProject.findByPath(":another-android-library")!! as ModuleProject

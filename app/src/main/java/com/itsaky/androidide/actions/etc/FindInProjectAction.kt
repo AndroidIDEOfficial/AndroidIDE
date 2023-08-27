@@ -23,7 +23,7 @@ import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorActivityAction
 import com.itsaky.androidide.actions.markInvisible
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 
 /** @author Akash Yadav */
 class FindInProjectAction() : EditorActivityAction() {
@@ -44,7 +44,7 @@ class FindInProjectAction() : EditorActivityAction() {
         return
       }
 
-    val project = ProjectManager.rootProject
+    val project = IProjectManager.getInstance().rootProject
     if (project == null || project.subProjects.isEmpty()) {
       markInvisible()
       return

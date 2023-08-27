@@ -36,7 +36,7 @@ import com.itsaky.androidide.lsp.java.utils.JavaParserUtils
 import com.itsaky.androidide.lsp.java.utils.TypeUtils.toType
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -82,7 +82,8 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
 
   private fun generateForFields(data: ActionData, names: MutableSet<String>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = data.requirePath()
 

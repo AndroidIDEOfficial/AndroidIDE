@@ -31,7 +31,8 @@ import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
@@ -98,14 +99,14 @@ abstract class LSPTest {
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
     Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
     registerServer()
-    ProjectManager.register()
-    ProjectManager.setupProject()
+    ProjectManagerImpl.getInstance().register()
+    ProjectManagerImpl.getInstance().setupProject()
 
     // We need to manually setup the language server with the project here
     // ProjectManager.notifyProjectUpdate()
     ILanguageServerRegistry.getDefault()
       .getServer(getServerId())!!
-      .setupWithProject(ProjectManager.rootProject!!)
+      .setupWithProject(IProjectManager.getInstance().rootProject!!)
 
     isInitialized = true
   }

@@ -24,7 +24,7 @@ import com.itsaky.androidide.lsp.models.DiagnosticResult
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.progress.ProgressManager.Companion.abortIfCancelled
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.utils.ILogger
 import java.nio.file.Path
 import java.time.Instant
@@ -45,7 +45,8 @@ class JavaDiagnosticProvider {
 
   fun analyze(file: Path): DiagnosticResult {
 
-    val module = ProjectManager.findModuleForFile(file) ?: return DiagnosticResult.NO_UPDATE
+    val module = IProjectManager.getInstance().findModuleForFile(file, false)
+      ?: return DiagnosticResult.NO_UPDATE
     val compiler = JavaCompilerService(module)
 
     abortIfCancelled()

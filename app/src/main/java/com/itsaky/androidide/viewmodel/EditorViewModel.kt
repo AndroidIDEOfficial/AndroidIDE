@@ -25,9 +25,8 @@ import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.OpenedFilesCache
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.Environment
 import java.io.File
 
@@ -234,7 +233,7 @@ class EditorViewModel : ViewModel() {
   }
 
   private fun getOpenedFilesCache(forWrite: Boolean = false): File {
-    var file = Environment.getProjectCacheDir(ProjectManager.projectPath)
+    var file = Environment.getProjectCacheDir(IProjectManager.getInstance().projectDir)
     file = File(file, "editor/openedFiles.json")
     if (file.exists() && forWrite) {
       FileUtils.rename(file, "${file.name}.bak")

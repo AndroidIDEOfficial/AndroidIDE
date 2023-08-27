@@ -31,7 +31,7 @@ import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.builder.model.UNKNOWN_PACKAGE
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.tooling.api.ProjectType.Android
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
@@ -190,7 +190,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileClasspaths(): Set<File> {
-    val project = ProjectManager.rootProject ?: return emptySet()
+    val project = IProjectManager.getInstance().rootProject ?: return emptySet()
     val result = mutableSetOf<File>()
     result.addAll(getModuleClasspaths())
 
@@ -219,7 +219,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   }
 
   override fun getCompileModuleProjects(): List<ModuleProject> {
-    val root = ProjectManager.rootProject ?: return emptyList()
+    val root = IProjectManager.getInstance().rootProject ?: return emptyList()
     val result = mutableListOf<ModuleProject>()
 
     for (library in this.libraries) {

@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.requirePath
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.CompileTask
 import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashInfo
@@ -57,7 +57,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
           com.itsaky.androidide.models.Range::class.java,
           CodeEditor::class.java
         ) ||
-        ProjectManager.rootProject == null
+        IProjectManager.getInstance().rootProject == null
     ) {
       markInvisible()
       return
@@ -70,7 +70,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = data.requirePath()
-    val module = ProjectManager.findModuleForFile(file) ?: return Any()
+    val module = IProjectManager.getInstance().findModuleForFile(file, false) ?: return Any()
 
     return JavaCompilerProvider.get(module).compile(file).get { task ->
       val triple = findFields(task, file, range)

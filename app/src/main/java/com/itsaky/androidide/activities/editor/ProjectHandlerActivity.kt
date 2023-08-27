@@ -41,14 +41,7 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.gradleInstallationDir
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
-import com.itsaky.androidide.projects.ProjectManager
-import com.itsaky.androidide.projects.ProjectManager.cachedInitResult
-import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
-import com.itsaky.androidide.projects.ProjectManager.notifyProjectUpdate
-import com.itsaky.androidide.projects.ProjectManager.projectInitialized
-import com.itsaky.androidide.projects.ProjectManager.projectPath
-import com.itsaky.androidide.projects.ProjectManager.rootProject
-import com.itsaky.androidide.projects.ProjectManager.setupProject
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
@@ -168,7 +161,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       // reset these values here
       // sometimes, when the IDE closed and reopened instantly, these values prevent initialization
       // of the project
-      ProjectManager.destroy()
+      ProjectManagerImpl.getInstance().destroy()
 
       editorViewModel.isInitializing = false
       editorViewModel.isBuildInProgress = false
@@ -353,13 +346,14 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
    * @param buildVariants A map of project paths to the selected build variants.
    */
   fun initializeProject(buildVariants: Map<String, String>) {
-    val projectDir = File(projectPath)
+    val manager = ProjectManagerImpl.getInstance()
+    val projectDir = File(manager.projectPath)
     if (!projectDir.exists()) {
       log.error("GradleProject directory does not exist. Cannot initialize project")
       return
     }
 
-    val initialized = projectInitialized && cachedInitResult != null
+    val initialized = manager.projectInitialized && manager.cachedInitResult != null
     log.debug("Is project initialized: $initialized")
     // When returning after a configuration change between the initialization process,
     // we do not want to start another project initialization
@@ -392,7 +386,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
         log.debug("Using cached initialize result as the project is already initialized")
         CompletableFuture.supplyAsync {
           log.warn("GradleProject has already been initialized. Skipping initialization process.")
-          cachedInitResult
+          manager.cachedInitResult
         }
       }
 
@@ -458,14 +452,15 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   protected open fun onProjectInitialized(result: InitializeResult) {
-    if (isFromSavedInstance && projectInitialized && result == cachedInitResult) {
+    val manager = ProjectManagerImpl.getInstance()
+    if (isFromSavedInstance && manager.projectInitialized && result == manager.cachedInitResult) {
       log.debug("Not setting up project as this a configuration change")
       return
     }
 
-    cachedInitResult = result
-    setupProject()
-    notifyProjectUpdate()
+    manager.cachedInitResult = result
+    manager.setupProject()
+    manager.notifyProjectUpdate()
     updateBuildVariants()
 
     ThreadUtils.runOnUiThread { postProjectInit(true) }
@@ -477,18 +472,19 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   protected open fun postProjectInit(isSuccessful: Boolean) {
+    val manager = ProjectManagerImpl.getInstance()
     if (!isSuccessful) {
       setStatus(getString(string.msg_project_initialization_failed))
       flashError(string.msg_project_initialization_failed)
       editorViewModel.isInitializing = false
-      projectInitialized = false
+      manager.projectInitialized = false
       return
     }
 
     initialSetup()
     setStatus(getString(string.msg_project_initialized))
     editorViewModel.isInitializing = false
-    projectInitialized = true
+    manager.projectInitialized = true
 
     if (mFindInProjectDialog?.isShowing == true) {
       mFindInProjectDialog!!.dismiss()
@@ -498,8 +494,9 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   private fun updateBuildVariants() {
+    val manager = ProjectManagerImpl.getInstance()
     executeAsyncProvideError({
-      rootProject?.run {
+      manager.rootProject?.run {
         val buildVariants = mutableMapOf<String, BuildVariantInfo>()
         subProjects.forEach { subproject ->
           if (subproject is AndroidModule) {
@@ -533,7 +530,8 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   protected open fun createFindInProjectDialog(): AlertDialog? {
-    if (rootProject == null) {
+    val manager = ProjectManagerImpl.getInstance()
+    if (manager.rootProject == null) {
       log.warn("No root project model found. Is the project initialized?")
       flashError(getString(string.msg_project_not_initialized))
       return null
@@ -541,7 +539,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
     val moduleDirs =
       try {
-        rootProject!!.subProjects.stream().map(GradleProject::projectDir)
+        manager.rootProject!!.subProjects.stream().map(GradleProject::projectDir)
           .collect(Collectors.toList())
       } catch (e: Throwable) {
         flashError(getString(string.msg_no_modules))
@@ -633,9 +631,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
   }
 
   private fun initialSetup() {
-    lastOpenedProject = getProjectDirPath()
+    val manager = ProjectManagerImpl.getInstance()
+    lastOpenedProject = manager.projectDirPath
     try {
-      val project = rootProject
+      val project = manager.rootProject
       if (project == null) {
         log.warn("GradleProject not initialized. Skipping initial setup...")
         return
@@ -643,7 +642,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
       var projectName = project.rootProject.name
       if (projectName.isEmpty()) {
-        projectName = File(getProjectDirPath()).name
+        projectName = manager.projectDir.name
       }
 
       supportActionBar!!.subtitle = projectName

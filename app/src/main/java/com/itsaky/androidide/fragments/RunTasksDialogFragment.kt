@@ -45,7 +45,7 @@ import com.itsaky.androidide.databinding.LayoutRunTaskBinding
 import com.itsaky.androidide.databinding.LayoutRunTaskDialogBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.Checkable
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsync
@@ -183,7 +183,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
     viewModel.displayedChild = CHILD_LOADING
 
     executeAsync({
-      val project = ProjectManager.rootProject
+      val project = IProjectManager.getInstance().rootProject
       val rootProject =
         project?.rootProject ?: return@executeAsync emptyList<Checkable<GradleTask>>()
       val tasks = rootProject.tasks.map { Checkable(false, it) }.toMutableList()

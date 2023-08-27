@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.models.ApkMetadata
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.InstallationResultHandler
@@ -53,8 +53,8 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
 
         log.debug("Installing APK(s) for variant: debug")
         // TODO Handle multiple application modules
-        val projectManager = ProjectManager
-        val app = projectManager.getApplicationModule()
+        val projectManager = ProjectManagerImpl.getInstance()
+        val app = projectManager.app
         if (app == null) {
           log.warn("No application module found. Cannot install APKs")
           return@execTasks

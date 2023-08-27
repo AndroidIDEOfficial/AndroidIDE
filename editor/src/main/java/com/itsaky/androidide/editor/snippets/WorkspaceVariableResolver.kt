@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.editor.snippets
 
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import io.github.rosemoe.sora.widget.snippet.variable.WorkspaceBasedSnippetVariableResolver
 
 /**
@@ -29,12 +29,13 @@ class WorkspaceVariableResolver :
   WorkspaceBasedSnippetVariableResolver(), AbstractSnippetVariableResolver {
 
   companion object {
+
     private const val WORKSPACE_NAME = "WORKSPACE_NAME"
     private const val WORKSPACE_FOLDER = "WORKSPACE_FOLDER"
   }
 
   override fun resolve(name: String): String {
-    val directory = ProjectManager.getProjectDir()
+    val directory = IProjectManager.getInstance().projectDir
     return when (name) {
       WORKSPACE_NAME -> directory.name
       WORKSPACE_FOLDER -> directory.absolutePath

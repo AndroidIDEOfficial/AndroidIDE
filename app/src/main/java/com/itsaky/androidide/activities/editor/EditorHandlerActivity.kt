@@ -47,7 +47,7 @@ import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.OpenedFilesCache
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
-import com.itsaky.androidide.projects.ProjectManager.generateSources
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.ui.editor.CodeEditorView
@@ -330,7 +330,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     }
 
     if (processResources) {
-      generateSources()
+      ProjectManagerImpl.getInstance().generateSources()
     }
 
     return result.gradleSaved

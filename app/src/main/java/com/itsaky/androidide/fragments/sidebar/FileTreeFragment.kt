@@ -35,7 +35,7 @@ import com.itsaky.androidide.eventbus.events.filetree.FileClickEvent
 import com.itsaky.androidide.eventbus.events.filetree.FileLongClickEvent
 import com.itsaky.androidide.events.ExpandTreeNodeRequestEvent
 import com.itsaky.androidide.events.ListProjectFilesRequestEvent
-import com.itsaky.androidide.projects.ProjectManager.getProjectDirPath
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.tasks.TaskExecutor.executeAsync
 import com.itsaky.androidide.tasks.callables.FileTreeCallable
@@ -211,7 +211,7 @@ class FileTreeFragment : BottomSheetDialogFragment(), TreeNodeClickListener,
       // Fragment has been destroyed
       return
     }
-    val projectDirPath = getProjectDirPath()
+    val projectDirPath = IProjectManager.getInstance().projectDirPath
     val projectDir = File(projectDirPath)
     val rootNode = TreeNode(File(""))
     rootNode.viewHolder = FileTreeViewHolder(requireContext())

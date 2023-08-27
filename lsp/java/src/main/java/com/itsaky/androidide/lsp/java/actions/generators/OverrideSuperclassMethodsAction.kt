@@ -38,7 +38,7 @@ import com.itsaky.androidide.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.utils.indentationString
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -90,7 +90,8 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
   override fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return Any())
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())
     val file = data.requirePath()
 
     return compiler.compile(file).get { task ->
@@ -197,7 +198,8 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
 
   private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
     val file = data.requirePath()
 
     compiler.compile(file).run { task ->
@@ -263,7 +265,8 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     position: Position,
   ) {
     val compiler =
-      JavaCompilerProvider.get(ProjectManager.findModuleForFile(data.requireFile()) ?: return)
+      JavaCompilerProvider.get(
+        IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return)
     val editor = data[CodeEditor::class.java]!!
     val file = data.requirePath()
     val text = editor.text

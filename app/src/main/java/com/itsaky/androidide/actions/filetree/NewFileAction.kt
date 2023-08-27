@@ -27,7 +27,7 @@ import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
@@ -82,7 +82,7 @@ class NewFileAction(context: Context) :
       return
     }
 
-    val projectDir = ProjectManager.getProjectDirPath()
+    val projectDir = IProjectManager.getInstance().projectDirPath
     Objects.requireNonNull(projectDir)
     val isJava =
       Pattern.compile(Pattern.quote(projectDir) + JAVA_PATH_REGEX).matcher(file.absolutePath).find()

@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.inflater.utils
 
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import java.io.File
 
@@ -33,7 +33,7 @@ fun startParse(file: File) {
   if (isParsing) {
     return
   }
-  (ProjectManager.findModuleForFile(file) as? AndroidModule)?.let {
+  (IProjectManager.getInstance().findModuleForFile(file, false) as? AndroidModule)?.let {
     startParse(it)
   }
 }

@@ -22,7 +22,7 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.models.SaveResult
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -77,7 +77,7 @@ class SaveFileAction(context: Context) : EditorRelatedAction() {
 
       val saveResult = result.result
       if (saveResult.xmlSaved) {
-        ProjectManager.generateSources()
+        ProjectManagerImpl.getInstance().generateSources()
       }
 
       if (saveResult.gradleSaved) {

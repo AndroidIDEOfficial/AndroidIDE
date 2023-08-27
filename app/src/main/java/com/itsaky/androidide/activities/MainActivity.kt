@@ -42,7 +42,7 @@ import com.itsaky.androidide.preferences.internal.confirmProjectOpen
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
-import com.itsaky.androidide.projects.ProjectManager.projectPath
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
@@ -284,7 +284,7 @@ class MainActivity : LimitlessIDEActivity() {
   }
 
   internal fun openProject(root: File) {
-    projectPath = root.absolutePath
+    ProjectManagerImpl.getInstance().projectPath = root.absolutePath
     startActivity(Intent(this, EditorActivityKt::class.java))
   }
 

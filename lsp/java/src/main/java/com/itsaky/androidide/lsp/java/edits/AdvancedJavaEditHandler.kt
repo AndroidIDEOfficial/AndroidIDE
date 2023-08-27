@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java.edits
 import com.itsaky.androidide.lsp.java.JavaCompilerProvider
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
 import com.itsaky.androidide.lsp.models.CompletionItem
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -40,7 +40,8 @@ abstract class AdvancedJavaEditHandler(protected val file: Path) : BaseJavaEditH
     column: Int,
     index: Int
   ) {
-    val compiler = JavaCompilerProvider.get(ProjectManager.findModuleForFile(file) ?: return)
+    val compiler = JavaCompilerProvider.get(
+      IProjectManager.getInstance().findModuleForFile(file, false) ?: return)
     performEdits(compiler, editor, item)
 
     executeCommand(editor, item.command)

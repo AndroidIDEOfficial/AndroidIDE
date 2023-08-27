@@ -20,7 +20,7 @@ package com.itsaky.androidide.lsp.java
 import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
 import com.itsaky.androidide.lsp.api.LSPTest
 import com.itsaky.androidide.lsp.java.compiler.JavaCompilerService
-import com.itsaky.androidide.projects.ProjectManager
+import com.itsaky.androidide.projects.IProjectManager
 import org.junit.Before
 import org.junit.Ignore
 
@@ -46,7 +46,7 @@ object JavaLSPTest : LSPTest() {
   override fun getServerId() = JavaLanguageServer.SERVER_ID
 
   fun getCompiler(): JavaCompilerService {
-    return JavaCompilerProvider.get(ProjectManager.app)
+    return JavaCompilerProvider.get(IProjectManager.getInstance().app)
   }
 
   override fun test() {}
