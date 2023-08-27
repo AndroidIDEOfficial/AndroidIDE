@@ -39,12 +39,9 @@ interface ITemplateProvider {
     @JvmStatic
     @JvmOverloads
     fun getInstance(reload: Boolean = false): ITemplateProvider {
-      if (reload) {
-        provider?.clear()
-        provider = null
-      }
 
-      return provider ?: ServiceLoader.load(ITemplateProvider::class.java)
+      return provider?.also { if (reload) it.reload() } ?: ServiceLoader.load(
+        ITemplateProvider::class.java)
         .findFirstOrThrow()
         .also { provider = it }
     }
@@ -72,7 +69,12 @@ interface ITemplateProvider {
   fun getTemplate(templateId: String): Template<*>?
 
   /**
+   * Reloads the templates.
+   */
+  fun reload()
+
+  /**
    * Clear all the templates stored in the provider.
    */
-  fun clear()
+  fun release()
 }

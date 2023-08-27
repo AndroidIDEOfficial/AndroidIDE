@@ -29,6 +29,7 @@ import com.itsaky.androidide.adapters.TemplateListAdapter
 import com.itsaky.androidide.databinding.FragmentTemplateListBinding
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.templates.ProjectTemplate
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.viewmodel.MainViewModel
 import kotlin.math.ceil
 
@@ -51,21 +52,10 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    // Show only project templates
-    val templates = ITemplateProvider.getInstance(true)
-      .getTemplates()
-      .filterIsInstance<ProjectTemplate>()
-
     layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
     layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
 
-    adapter = TemplateListAdapter(templates) { template, _ ->
-      viewModel.template.value = template
-      viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_DETAILS)
-    }
-
     binding.list.layoutManager = layoutManager
-    binding.list.adapter = adapter
 
     // This makes sure that the items are evenly distributed in the list
     // and the last row is always aligned to the start
@@ -98,12 +88,40 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
     binding.exitButton.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_MAIN)
     }
+
+    viewModel.currentScreen.observe(viewLifecycleOwner) { current ->
+      if (current == MainViewModel.SCREEN_TEMPLATE_DETAILS) {
+        return@observe
+      }
+
+      reloadTemplates()
+    }
   }
 
   override fun onDestroyView() {
     binding.list.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
-    ITemplateProvider.getInstance().clear()
     super.onDestroyView()
   }
 
+  private val log = ILogger.newInstance("TemplateListFragment")
+
+  private fun reloadTemplates() {
+    _binding ?: return
+
+    log.debug("Reloading templates...")
+
+    // Show only project templates
+    // reloading the tempaltes also makes sure that the resources are
+    // released from template parameter widgets
+    val templates = ITemplateProvider.getInstance(reload = true)
+      .getTemplates()
+      .filterIsInstance<ProjectTemplate>()
+
+    adapter = TemplateListAdapter(templates) { template, _ ->
+      viewModel.template.value = template
+      viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_DETAILS)
+    }
+
+    binding.list.adapter = adapter
+  }
 }

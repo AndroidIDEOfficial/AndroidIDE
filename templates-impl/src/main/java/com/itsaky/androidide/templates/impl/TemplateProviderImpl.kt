@@ -42,9 +42,7 @@ class TemplateProviderImpl : ITemplateProvider {
   private val templates = mutableMapOf<String, Template<*>>()
 
   init {
-    templates().forEach { template ->
-      templates[template.templateId] = template
-    }
+    initializeTemplates()
   }
 
   private fun templates() =
@@ -59,6 +57,12 @@ class TemplateProviderImpl : ITemplateProvider {
       noAndroidXActivityProject(),
       composeActivityProject()
     )
+
+  private fun initializeTemplates() {
+    templates().forEach { template ->
+      templates[template.templateId] = template
+    }
+  }
   //@formatter:on
 
   override fun getTemplates(): List<Template<*>> {
@@ -69,7 +73,12 @@ class TemplateProviderImpl : ITemplateProvider {
     return templates[templateId]
   }
 
-  override fun clear() {
+  override fun reload() {
+    release()
+    initializeTemplates()
+  }
+
+  override fun release() {
     templates.forEach { it.value.release() }
     templates.clear()
   }

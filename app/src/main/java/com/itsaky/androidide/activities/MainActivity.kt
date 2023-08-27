@@ -44,6 +44,7 @@ import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.flashError
@@ -292,6 +293,7 @@ class MainActivity : LimitlessIDEActivity() {
   }
 
   override fun onDestroy() {
+    ITemplateProvider.getInstance().release()
     super.onDestroy()
     _binding = null
   }

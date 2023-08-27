@@ -86,7 +86,9 @@ fun baseProject(projectName: StringParameter = projectNameParameter(),
       constraints = listOf(NONEMPTY, DIRECTORY, EXISTS)
     }
 
-    projectName.setValue(getNewProjectName(saveLocation.value, projectName.value))
+    projectName.doBeforeCreateView {
+      it.setValue(getNewProjectName(saveLocation.value, projectName.value))
+    }
 
     widgets(TextFieldWidget(projectName), TextFieldWidget(packageName),
       TextFieldWidget(saveLocation), SpinnerWidget(language),

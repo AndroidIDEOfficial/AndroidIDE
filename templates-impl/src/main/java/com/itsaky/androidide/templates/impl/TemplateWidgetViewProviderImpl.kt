@@ -69,13 +69,21 @@ class TemplateWidgetViewProviderImpl : ITemplateWidgetViewProvider {
 
   override fun <T> createView(context: Context, widget: Widget<T>): View {
     if (widget is ParameterWidget<T>) {
-      widget.parameter.setValue(widget.parameter.value, false)
+      widget.parameter.apply {
+        beforeCreateView()
+        setValue(value, false)
+      }
     }
+
     return when (widget) {
       is TextFieldWidget -> createTextField(context, widget)
       is CheckBoxWidget -> createCheckBox(context, widget)
       is SpinnerWidget -> createSpinner(context, widget)
       else -> throw IllegalArgumentException("Unknown widget type : $widget")
+    }.also {
+      if (widget is ParameterWidget<T>) {
+        widget.parameter.afterCreateView()
+      }
     }
   }
 

@@ -73,8 +73,10 @@ class TemplateDetailsFragment :
 
     binding.finish.setOnClickListener {
       viewModel.creatingProject.value = true
-      val template = checkNotNull(
-        viewModel.template.value) { "Cannot create project. Template not found." }
+      val template = viewModel.template.value ?: run {
+        viewModel.setScreen(MainViewModel.SCREEN_MAIN)
+        return@setOnClickListener
+      }
 
       val isValid = template.parameters.fold(true) { isValid, param ->
         if (param is StringParameter) {
