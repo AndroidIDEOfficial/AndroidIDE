@@ -17,11 +17,12 @@
 
 package com.itsaky.androidide.tooling.impl.sync
 
+import com.android.builder.model.v2.models.Versions
 import org.gradle.tooling.BuildController
 import org.gradle.tooling.model.idea.IdeaModule
 import org.gradle.tooling.model.idea.IdeaProject
 
-typealias BuildControllderAndIdeaModule = Pair<BuildController, IdeaModule>
+typealias AndroidProjectModelBuilderParams = Triple<BuildController, IdeaModule, Versions>
 
 class ModuleProjectModelBuilderParams(val controller: BuildController, project: IdeaProject,
   module: IdeaModule, modulePaths: Map<String, String>) : JavaProjectModelBuilderParams(

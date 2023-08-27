@@ -30,10 +30,10 @@ import com.itsaky.androidide.tooling.impl.internal.AndroidProjectImpl
  * @author Akash Yadav
  */
 class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) :
-  AbstractModelBuilder<BuildControllderAndIdeaModule, IAndroidProject>(initializationParams) {
+  AbstractModelBuilder<AndroidProjectModelBuilderParams, IAndroidProject>(initializationParams) {
 
-  override fun build(param: BuildControllderAndIdeaModule): IAndroidProject {
-    val (controller, module) = param
+  override fun build(param: AndroidProjectModelBuilderParams): IAndroidProject {
+    val (controller, module, versions) = param
 
     val androidParams = initializationParams.androidParams
     val projectPath = module.gradleProject.path
@@ -70,7 +70,8 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       selectedVariant,
       basicModel,
       androidModel,
-      variantDependencies
+      variantDependencies,
+      versions
     )
   }
 }

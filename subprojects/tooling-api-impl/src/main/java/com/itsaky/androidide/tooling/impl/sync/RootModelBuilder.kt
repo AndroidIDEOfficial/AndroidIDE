@@ -58,7 +58,7 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
       val rootProject = if (rootProjectVersions != null) {
         // Root project is an Android project
         assertMinimumAgp(rootProjectVersions)
-        AndroidProjectModelBuilder(initializationParams).build(controller to rootModule)
+        AndroidProjectModelBuilder(initializationParams).build(Triple(controller, rootModule, rootProjectVersions))
       } else {
         GradleProjectModelBuilder(initializationParams).build(rootModule.gradleProject)
       }

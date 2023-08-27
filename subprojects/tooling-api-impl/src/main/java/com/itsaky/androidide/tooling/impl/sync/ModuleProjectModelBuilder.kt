@@ -31,8 +31,8 @@ class ModuleProjectModelBuilder(initializationParams: InitializeProjectParams) :
   override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {
     val versions = getAndroidVersions(param.module, param.controller)
     return if (versions != null) {
-      AndroidProjectModelBuilder(initializationParams).build(
-        param.controller to param.module)
+      AndroidProjectModelBuilder(initializationParams)
+        .build(Triple(param.controller, param.module, versions))
     } else {
       JavaProjectModelBuilder(initializationParams).build(
         JavaProjectModelBuilderParams(param))

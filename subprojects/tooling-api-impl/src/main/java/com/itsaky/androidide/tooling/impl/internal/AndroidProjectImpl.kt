@@ -24,6 +24,7 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.models.AndroidProject
 import com.android.builder.model.v2.models.BasicAndroidProject
 import com.android.builder.model.v2.models.VariantDependencies
+import com.android.builder.model.v2.models.Versions
 import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceProvider
@@ -39,6 +40,7 @@ import com.itsaky.androidide.tooling.api.models.ProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
 import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier.copy
+import com.itsaky.androidide.tooling.api.util.compareSemanticVersions
 import com.itsaky.androidide.tooling.api.util.extractPackageName
 import org.gradle.tooling.model.GradleProject
 import java.io.File
@@ -53,7 +55,8 @@ internal class AndroidProjectImpl(
   private val selectedVariant: String,
   private val basicAndroidProject: BasicAndroidProject,
   private val androidProject: AndroidProject,
-  private val variantDependencies: VariantDependencies
+  private val variantDependencies: VariantDependencies,
+  private val versions: Versions
 ) : GradleProjectImpl(gradleProject), IAndroidProject, Serializable {
 
   private val serialVersionUID = 1L
@@ -157,7 +160,13 @@ internal class AndroidProjectImpl(
   }
 
   override fun getModelSyncFiles(): CompletableFuture<List<DefaultModelSyncFile>> {
-    return CompletableFuture.supplyAsync { copy(androidProject.modelSyncFiles) }
+    return CompletableFuture.supplyAsync {
+
+      // model sync files available only in v7.3.0 and later
+      return@supplyAsync if (compareSemanticVersions(versions.agp, "7.3.0") >= 0)
+        copy(androidProject.modelSyncFiles)
+      else emptyList()
+    }
   }
 
   private fun getClassesJar(): File {
