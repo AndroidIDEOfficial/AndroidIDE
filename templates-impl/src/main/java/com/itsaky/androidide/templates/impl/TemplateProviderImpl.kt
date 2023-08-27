@@ -39,9 +39,11 @@ import com.itsaky.androidide.templates.impl.tabbedActivity.tabbedActivityProject
 @AutoService(ITemplateProvider::class)
 class TemplateProviderImpl : ITemplateProvider {
 
-  private val templates = mutableMapOf<String, Template<*>>().apply {
+  private val templates = mutableMapOf<String, Template<*>>()
+
+  init {
     templates().forEach { template ->
-      this[template.templateId] = template
+      templates[template.templateId] = template
     }
   }
 

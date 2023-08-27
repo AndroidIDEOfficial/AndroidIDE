@@ -102,6 +102,7 @@ class TemplateListFragment : FragmentWithBinding<FragmentTemplateListBinding>(
 
   override fun onDestroyView() {
     binding.list.viewTreeObserver.removeOnGlobalLayoutListener(globalLayoutListener)
+    ITemplateProvider.getInstance().clear()
     super.onDestroyView()
   }
 

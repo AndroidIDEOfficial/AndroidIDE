@@ -44,7 +44,6 @@ import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManager.projectPath
 import com.itsaky.androidide.resources.R.string
-import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.flashError
@@ -154,18 +153,6 @@ class MainActivity : LimitlessIDEActivity() {
   override fun onInsetsUpdated(insets: Rect) {
     super.onInsetsUpdated(insets)
     binding.fragmentContainersParent.setPadding(insets.left, 0, insets.right, insets.bottom)
-  }
-
-  override fun onStart() {
-    super.onStart()
-    ITemplateProvider.getInstance(reload = true)
-  }
-
-  override fun onStop() {
-    super.onStop()
-    if (ITemplateProvider.isLoaded()) {
-      ITemplateProvider.getInstance().clear()
-    }
   }
 
   private fun onScreenChanged(screen: Int?) {
