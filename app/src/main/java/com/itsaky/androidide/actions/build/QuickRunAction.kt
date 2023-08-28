@@ -57,20 +57,9 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
       val activity = data.requireActivity()
       val projectManager = IProjectManager.getInstance()
 
-      val info = projectManager.androidBuildVariants[module.path]
-      if (info == null) {
-        log.error(
-          "Cannnot run application. Failed to find selected build variant for module: '${module.path}'")
-        activity.flashError(activity.getString(R.string.err_no_selected_variant, module.path))
-        return@chooseApplication
-      }
-
-      val variant = module.getVariant(info.selectedVariant)
-      if (variant == null) {
-        log.error(
-          "Cannot run application. Build variant with name '${info.selectedVariant}' not found.")
+      val variant = module.getSelectedVariant() ?: run {
         activity.flashError(
-          activity.getString(R.string.err_selected_variant_not_found, info.selectedVariant))
+          activity.getString(R.string.err_selected_variant_not_found))
         return@chooseApplication
       }
 

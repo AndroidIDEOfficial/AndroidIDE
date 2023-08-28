@@ -465,5 +465,29 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     return ResourceTableRegistry.getInstance().getFeatures(getPlatformDir() ?: return emptyList())
   }
 
+  /**
+   * Returns the build variant that is selected by the user. This may return `null` in
+   * some misconfiguration scenarios.
+   */
+  fun getSelectedVariant(): BasicAndroidVariantMetadata? {
+    val projectManager = IProjectManager.getInstance()
+
+    val info = projectManager.androidBuildVariants[this.path]
+    if (info == null) {
+      log.error(
+        "Failed to find selected build variant for module: '${this.path}'")
+      return null
+    }
+
+    val variant = this.getVariant(info.selectedVariant)
+    if (variant == null) {
+      log.error(
+        "Build variant with name '${info.selectedVariant}' not found.")
+      return null
+    }
+
+    return variant
+  }
+
   private fun getPlatformDir() = bootClassPaths.firstOrNull { it.name == "android.jar" }?.parentFile
 }

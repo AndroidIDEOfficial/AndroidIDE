@@ -46,6 +46,7 @@ import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.Locale
 import kotlin.io.path.extension
 import kotlin.io.path.isDirectory
 import kotlin.io.path.pathString
@@ -184,33 +185,37 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       return
     }
 
-    val debug = app!!.getVariant("debug")
-    if (debug == null) {
-      log.warn("No debug variant found in application project ${app!!.name}")
-      return
+    val tasks = getAndroidModules().flatMap { module ->
+      val variant = module.getSelectedVariant()
+      if (variant == null) {
+        log.error(
+          "Selected build variant for project '${module.path}' not found")
+        return@flatMap emptyList()
+      }
+
+      val mainArtifact = variant.mainArtifact
+      val variantNameCapitalized = variant.name.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+      }
+
+      return@flatMap listOf(
+        mainArtifact.resGenTaskName,
+        mainArtifact.sourceGenTaskName,
+        if(module.viewBindingOptions.isEnabled) "dataBindingGenBaseClasses$variantNameCapitalized" else null,
+        "process${variantNameCapitalized}Resources"
+      ).mapNotNull { it?.let { "${module.path}:${it}" } }
     }
 
-    val mainArtifact = debug.mainArtifact
-    val genResourcesTask = mainArtifact.resGenTaskName
-    val genSourcesTask = mainArtifact.sourceGenTaskName
-    val genDataBinding = // If view binding is enabled, generate the view binding classes too
-      if (app!!.viewBindingOptions.isEnabled) {
-        "dataBindingGenBaseClassesDebug"
-      } else {
-        ""
-      }
+
     builder
       .executeProjectTasks(
         app!!.path,
-        genResourcesTask ?: "",
-        genSourcesTask,
-        "processDebugResources",
-        genDataBinding
+        *tasks.toTypedArray()
       )
       .whenComplete { result, taskErr ->
-        if (taskErr != null || !result.isSuccessful) {
+        if (result == null || !result.isSuccessful || taskErr != null) {
           log.warn(
-            "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
+            "Execution for tasks failed: $tasks",
             taskErr ?: ""
           )
         } else {
