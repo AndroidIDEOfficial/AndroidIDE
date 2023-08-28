@@ -122,7 +122,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
     type = Android
   }
 
-  fun getGeneratedJar(variant: String): File {
+  fun getGeneratedJar(): File {
     return classesJar ?: File("does-not-exist.jar")
   }
 
@@ -168,9 +168,9 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
     // build/generated/**
     // AIDL, ViewBinding, Renderscript, BuildConfig i.e every generated source sources
-    val debugVariant = getVariant("debug")
-    if (debugVariant != null) {
-      sources.addAll(debugVariant.mainArtifact.generatedSourceFolders)
+    val selectedVariant = getSelectedVariant()
+    if (selectedVariant != null) {
+      sources.addAll(selectedVariant.mainArtifact.generatedSourceFolders)
     }
     return sources
   }
@@ -184,8 +184,8 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
 
   override fun getModuleClasspaths(): Set<File> {
     return mutableSetOf<File>().apply {
-      add(getGeneratedJar("debug"))
-      addAll(getVariant("debug")?.mainArtifact?.classJars ?: emptyList())
+      add(getGeneratedJar())
+      addAll(getSelectedVariant()?.mainArtifact?.classJars ?: emptyList())
     }
   }
 
