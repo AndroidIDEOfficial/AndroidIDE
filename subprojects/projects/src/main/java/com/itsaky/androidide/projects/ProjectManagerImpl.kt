@@ -34,7 +34,9 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -64,6 +66,8 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   override var rootProject: Project? = null
   override var app: AndroidModule? = null
 
+  override var androidBuildVariants: Map<String, BuildVariantInfo> = emptyMap()
+
   override val projectDirPath: String
     get() = projectPath
 
@@ -91,6 +95,25 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
         it.readResources()
       }
     }
+  }
+
+  override fun getAndroidModules(): List<AndroidModule> {
+    val rootProject = this.rootProject ?: return emptyList()
+    return rootProject.subProjects.mapNotNull { module ->
+      if (module.type != ProjectType.Android) {
+        return@mapNotNull null
+      }
+
+      return@mapNotNull module as AndroidModule
+    }
+  }
+
+  override fun getAndroidAppModules(): List<AndroidModule> {
+    return getAndroidModules().filter { it.projectType == com.android.builder.model.v2.ide.ProjectType.APPLICATION }
+  }
+
+  override fun getAndroidLibraryModules(): List<AndroidModule> {
+    return getAndroidModules().filter { it.projectType == com.android.builder.model.v2.ide.ProjectType.LIBRARY }
   }
 
   override fun findModuleForFile(file: File, checkExistance: Boolean): ModuleProject? {
@@ -138,6 +161,8 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     this.app = null
     this.cachedInitResult = null
     this.projectInitialized = false
+
+    (this.androidBuildVariants as? MutableMap?)?.clear()
   }
 
   @JvmOverloads

@@ -25,6 +25,7 @@ import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.R.style
 import org.jetbrains.annotations.Contract
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Utility class for creating dialogs.
@@ -129,5 +130,38 @@ object DialogUtils {
   @Contract("_ -> new")
   fun newMaterialDialogBuilder(context: Context): MaterialAlertDialogBuilder {
     return MaterialAlertDialogBuilder(context, style.AppTheme_MaterialAlertDialog)
+  }
+
+  /**
+   * Creates a new single-choice material alert dialog builder.
+   *
+   * @param context The context used to build the [MaterialAlertDialogBuilder].
+   * @param title The title for the dialog.
+   * @param choices The choices for the dialog.
+   * @param checkedChoice The index of the item which should be checked.
+   * @param cancelable Whether the dialog should be cancellable or not.
+   * @param onSelected The function which will be called once the user confirms the selection.
+   */
+  @JvmStatic
+  fun newSingleChoiceDialog(
+    context: Context,
+    title: String,
+    choices: Array<CharSequence>,
+    checkedChoice: Int,
+    cancelable: Boolean = false,
+    onSelected: (Int) -> Unit
+  ): MaterialAlertDialogBuilder {
+    val selection = AtomicInteger(checkedChoice)
+    return newMaterialDialogBuilder(context)
+      .setTitle(title)
+      .setSingleChoiceItems(choices, checkedChoice) { _, which ->
+        selection.set(which)
+      }
+      .setPositiveButton(android.R.string.ok) { dialog, _ ->
+        dialog.dismiss()
+        onSelected(selection.get())
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .setCancelable(cancelable)
   }
 }

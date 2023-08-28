@@ -21,11 +21,18 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
+import com.itsaky.androidide.actions.requireContext
 import com.itsaky.androidide.models.ApkMetadata
-import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.projects.IProjectManager
+import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.utils.ApkInstaller
+import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.InstallationResultHandler
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 
 /**
@@ -42,55 +49,113 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
 
   override val id: String = "ide.editor.build.quickRun"
 
+  // Execute on UI thread as this action might try to show dialogs to the user
+  override var requiresUIThread: Boolean = true
+
   override fun execAction(data: ActionData): Boolean {
-    execTasks(
-      data,
-      resultHandler = { result ->
-        if (result == null || !result.isSuccessful) {
-          log.debug("Cannot install APK. Task execution result:", result)
-          return@execTasks
-        }
+    chooseApplication(data) { module ->
+      val activity = data.requireActivity()
+      val projectManager = IProjectManager.getInstance()
 
-        log.debug("Installing APK(s) for variant: debug")
-        // TODO Handle multiple application modules
-        val projectManager = ProjectManagerImpl.getInstance()
-        val app = projectManager.app
-        if (app == null) {
-          log.warn("No application module found. Cannot install APKs")
-          return@execTasks
-        }
+      val info = projectManager.androidBuildVariants[module.path]
+      if (info == null) {
+        log.error(
+          "Cannnot run application. Failed to find selected build variant for module: '${module.path}'")
+        activity.flashError(activity.getString(R.string.err_no_selected_variant, module.path))
+        return@chooseApplication
+      }
 
-        val foundVariant = app.variants.stream().filter { it.name == "debug" }.findFirst()
+      val variant = module.getVariant(info.selectedVariant)
+      if (variant == null) {
+        log.error(
+          "Cannot run application. Build variant with name '${info.selectedVariant}' not found.")
+        activity.flashError(
+          activity.getString(R.string.err_selected_variant_not_found, info.selectedVariant))
+        return@chooseApplication
+      }
 
-        if (!foundVariant.isPresent) {
-          log.error("No debug variant found in application module", app.path)
-          return@execTasks
-        }
+      val taskName = "${module.path}:${variant.mainArtifact.assembleTaskName}"
+      log.info(
+        "Running task '$taskName' to assemble variant '${variant.name}' of project '${module.path}'")
 
-        val main = foundVariant.get().mainArtifact
-        val outputListingFile = main.assembleTaskOutputListingFile
-        if (outputListingFile == null) {
-          log.error("No output listing file provided with project model")
-          return@execTasks
-        }
-
-        log.verbose("Parsing metadata")
-        val apkFile = ApkMetadata.findApkFile(outputListingFile)
-        if (apkFile == null) {
-          log.error("No apk file specified in output listing file:", outputListingFile)
-          return@execTasks
-        }
-
-        if (!apkFile.exists()) {
-          log.error("APK file specified in output listing file does not exist!", apkFile)
-          return@execTasks
-        }
-
-        install(data, apkFile)
-      },
-      "assembleDebug"
-    )
+      execTasks(
+        data,
+        resultHandler = { result ->
+          executeAsyncProvideError({ handleResult(data, result, module, variant) }) { _, error ->
+            if (error != null) {
+              log.error("Failed to process task execution result", error)
+            }
+          }
+        },
+        taskName
+      )
+    }
     return true
+  }
+
+  private fun handleResult(
+    data: ActionData,
+    result: TaskExecutionResult?,
+    module: AndroidModule,
+    variant: BasicAndroidVariantMetadata
+  ) {
+    if (result == null || !result.isSuccessful) {
+      log.debug("Cannot install APK. Task execution result:", result)
+      return
+    }
+
+    log.debug("Installing APK(s) for project: '${module.path}' variant: '${variant.name}'")
+
+    val main = variant.mainArtifact
+    val outputListingFile = main.assembleTaskOutputListingFile
+    if (outputListingFile == null) {
+      log.error("No output listing file provided with project model")
+      return
+    }
+
+    log.verbose("Parsing metadata")
+    val apkFile = ApkMetadata.findApkFile(outputListingFile)
+    if (apkFile == null) {
+      log.error("No apk file specified in output listing file:", outputListingFile)
+      return
+    }
+
+    if (!apkFile.exists()) {
+      log.error("APK file specified in output listing file does not exist!", apkFile)
+      return
+    }
+
+    install(data, apkFile)
+  }
+
+  private fun chooseApplication(data: ActionData, callback: (AndroidModule) -> Unit) {
+    val projectManager = IProjectManager.getInstance()
+    val applications = projectManager.getAndroidAppModules()
+    if (applications.isEmpty()) {
+      log.error("Cannot run application. No application modules found in project.")
+      return
+    }
+
+    if (applications.size == 1) {
+      // Only one application module in available in the project.
+      callback(applications.first())
+      return
+    }
+
+    // there are multiple application modules in the project
+    // ask the user to select the application module to build
+    val context = data.requireContext()
+    val builder = DialogUtils.newSingleChoiceDialog(
+      context,
+      context.getString(com.itsaky.androidide.R.string.title_choose_application),
+      applications.map { it.path }.toTypedArray(),
+      0) { selection ->
+      val app = applications[selection]
+      log.info("Selected application: '${app.path}'")
+      callback(app)
+    }
+
+    builder.show()
   }
 
   private fun install(data: ActionData, apk: File) {

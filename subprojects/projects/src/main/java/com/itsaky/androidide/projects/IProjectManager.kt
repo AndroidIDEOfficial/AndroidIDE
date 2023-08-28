@@ -24,6 +24,7 @@ import com.itsaky.androidide.projects.api.ModuleProject
 import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.ServiceLoader
 import java.io.File
 import java.nio.file.Path
@@ -73,6 +74,13 @@ interface IProjectManager {
     get() = File(projectDirPath)
 
   /**
+   * Build variant information about Android modules in the project.
+   *
+   * The entries in this map are the Gradle project paths mapped to the corresponding [BuildVariantInfo]s.
+   */
+  val androidBuildVariants: Map<String, BuildVariantInfo>
+
+  /**
    * Setup the project with the given [project proxy][project] from the Tooling API.
    *
    * @param project The project proxy.
@@ -83,12 +91,33 @@ interface IProjectManager {
   )
 
   /**
+   * Get the list of the modules in this project which are Android projects.
+   *
+   * @return The list of Android modules.
+   */
+  fun getAndroidModules(): List<AndroidModule>
+
+  /**
+   * Get the list of modules in this project which are Android application modules.
+   *
+   * @return The list of Android application modules.
+   */
+  fun getAndroidAppModules() : List<AndroidModule>
+
+  /**
+   * Get the list of modules in this project which are Android library modules.
+   *
+   * @return The list of Android library modules.
+   */
+  fun getAndroidLibraryModules() : List<AndroidModule>
+
+  /**
    * Find the module for the given file.
    *
    * @param file The file to find the module for.
    * @return The module project, or `null` if not found.
    */
-  fun findModuleForFile(file: File) : ModuleProject? {
+  fun findModuleForFile(file: File): ModuleProject? {
     return findModuleForFile(file, true)
   }
 
@@ -107,7 +136,7 @@ interface IProjectManager {
    * @param file The file to find the module for.
    * @return The module project, or `null` if not found.
    */
-  fun findModuleForFile(file: Path) : ModuleProject? {
+  fun findModuleForFile(file: Path): ModuleProject? {
     return findModuleForFile(file, true)
   }
 

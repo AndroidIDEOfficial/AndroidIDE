@@ -598,4 +598,9 @@
   <string name="title_apply">Apply</string>
   <string name="title_discard">Discard</string>
   <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
+  <string name="title_choose_application">Choose application</string>
+  <string name="err_no_selected_variant">Failed to find selected build variant for module: %1$s</string>
+
+  <!--  Build variant with name 'something' not found-->
+  <string name="err_selected_variant_not_found">Build variant with name \'%1$s\' not found.</string>
 </resources>

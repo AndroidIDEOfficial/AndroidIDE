@@ -19,6 +19,7 @@ package com.itsaky.androidide.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 
 /**
@@ -35,6 +36,7 @@ class BuildVariantsViewModel : ViewModel() {
     get() = this._buildVariants.value ?: emptyMap()
     set(value) {
       this._buildVariants.value = value
+      ProjectManagerImpl.getInstance().androidBuildVariants = value
     }
 
   var updatedBuildVariants: MutableMap<String, BuildVariantInfo>
