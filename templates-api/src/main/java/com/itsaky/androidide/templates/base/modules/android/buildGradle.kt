@@ -49,7 +49,6 @@ plugins {
 android {
     namespace = "${data.packageName}"
     compileSdk = ${data.versions.compileSdk.api}
-    buildToolsVersion = "${data.versions.buildTools}"
 
     defaultConfig {
         applicationId = "${data.packageName}"
