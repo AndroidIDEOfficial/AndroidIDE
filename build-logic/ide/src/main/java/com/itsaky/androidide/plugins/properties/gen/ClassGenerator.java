@@ -316,7 +316,7 @@ public class ClassGenerator {
      */
     String packageName(File file) {
         String path = file.getAbsolutePath();
-        int begin = path.indexOf("src/main/resources") + "src/main/resources".length();
+        int begin = path.indexOf("src/main/resources".replace('/', File.separatorChar)) + "src/main/resources".length();
         String packagePath = path.substring(begin + 1, path.lastIndexOf(File.separatorChar));
         return packagePath.replace(File.separatorChar, '.');
     }
