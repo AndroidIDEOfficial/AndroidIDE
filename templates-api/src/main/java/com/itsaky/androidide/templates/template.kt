@@ -175,12 +175,12 @@ data class ProjectVersionData(
  * @property targetSdk The target SDK version for modules.
  * @property buildTools The build tools version for modules.
  */
-data class ModuleVersionData(val minSdk: Sdk,
-                             val targetSdk: Sdk = TARGET_SDK_VERSION,
-                             val compileSdk: Sdk = COMPILE_SDK_VERSION,
-                             val buildTools: String = BUILD_TOOLS_VERSION,
-                             val javaSource: String = JAVA_SOURCE_VERSION,
-                             val javaTarget: String = JAVA_TARGET_VERSION
+data class ModuleVersionData(
+  val minSdk: Sdk,
+  val targetSdk: Sdk = TARGET_SDK_VERSION,
+  val compileSdk: Sdk = COMPILE_SDK_VERSION,
+  val javaSource: String = JAVA_SOURCE_VERSION,
+  val javaTarget: String = JAVA_TARGET_VERSION
 ) {
 
   /**
