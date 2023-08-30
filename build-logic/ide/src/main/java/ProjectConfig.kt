@@ -32,18 +32,13 @@ object ProjectConfig {
   const val PROJECT_SITE = "https://androidide.com"
 }
 
-private var simpleVersion: String? = null
-
 val Project.simpleVersionName: String
   get() {
-    if (simpleVersion != null) {
-      return simpleVersion!!
-    }
 
     val version = rootProject.version.toString()
     val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
 
-    simpleVersion = regex.find(version)?.value?.substring(1)?.also {
+    val simpleVersion = regex.find(version)?.value?.substring(1)?.also {
       logger.warn("Simple version name is '$it' (from version $version)")
     }
 
@@ -56,47 +51,34 @@ val Project.simpleVersionName: String
         "Cannot extract simple version name. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
     }
 
-    return simpleVersion!!
+    return simpleVersion
   }
 
-private var versionCode: Int? = null
 val Project.projectVersionCode: Int
   get() {
-    if (versionCode != null) {
-      return versionCode!!
-    }
 
     val version = simpleVersionName
     val regex = Regex("^\\d+\\.?\\d+\\.?\\d+")
 
-    versionCode = regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
+    val versionCode = regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
       logger.warn("Version code is '$it' (from version ${version}).")
     }
-
-    if (versionCode == null) {
-      throw IllegalStateException(
+      ?: throw IllegalStateException(
         "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
-    }
 
-    return versionCode!!
+    return versionCode
   }
 
-private var publishing: String? = null
 val Project.publishingVersion: String
   get() {
-    if (publishing != null) {
-      return publishing!!
-    }
 
-    publishing = simpleVersionName
+    var publishing = simpleVersionName
     if (CI.isCiBuild && CI.branchName != "main") {
       publishing += "-${CI.commitHash}-SNAPSHOT"
     }
 
-    return publishing!!
+    return publishing
   }
-
-private var download: String? = null
 
 /**
  * The version name which is used to download the artifacts at runtime.
@@ -107,15 +89,9 @@ private var download: String? = null
  */
 val Project.downloadVersion: String
   get() {
-    if (download != null) {
-      return download!!
-    }
-
-    download = if (CI.isCiBuild) {
+    return if (CI.isCiBuild) {
       publishingVersion
     } else {
       "latest.integration"
     }
-
-    return download!!
   }
