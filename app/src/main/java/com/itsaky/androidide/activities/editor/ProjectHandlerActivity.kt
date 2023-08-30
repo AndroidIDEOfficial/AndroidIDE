@@ -505,7 +505,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
             val variantNames = ImmutableList.builder<String>()
               .addAll(subproject.variants.map { variant -> variant.name }).build()
 
-            val variantName = subproject.selectedVariant?.name
+            val variantName = subproject.configuredVariant?.name
               ?: IAndroidProject.DEFAULT_VARIANT
 
             buildVariants[subproject.path] =

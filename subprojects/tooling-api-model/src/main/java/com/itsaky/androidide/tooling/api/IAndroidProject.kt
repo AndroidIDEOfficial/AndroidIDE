@@ -37,10 +37,10 @@ import java.util.concurrent.CompletableFuture
 interface IAndroidProject : IModuleProject {
 
   /**
-   * Get the variant that was selected while building the model for this project.
+   * Get the variant that was configured/selected while building the model for this project.
    */
   @JsonRequest
-  fun getSelectedVariant(): CompletableFuture<String>
+  fun getConfiguredVariant(): CompletableFuture<String>
 
   /**
    * Get the metadata about all variants of this Android project.

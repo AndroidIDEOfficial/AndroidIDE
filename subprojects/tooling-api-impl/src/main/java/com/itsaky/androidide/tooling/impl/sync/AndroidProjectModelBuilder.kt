@@ -51,23 +51,23 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       androidVariant = null
     }
 
-    val selectedVariant = androidVariant ?: variantNames.firstOrNull()
-    if (selectedVariant.isNullOrBlank()) {
+    val configurationVariant = androidVariant ?: variantNames.firstOrNull()
+    if (configurationVariant.isNullOrBlank()) {
       throw ModelBuilderException(
         "No variant found for project '$projectPath'. providedVariant=$androidVariant")
     }
 
-    log("Selected build variant '$selectedVariant' for project '$projectPath'")
+    log("Selected build variant '$configurationVariant' for project '$projectPath'")
 
     val variantDependencies = controller.getModelAndLog(module, VariantDependencies::class.java,
       ModelBuilderParameter::class.java) {
-      it.variantName = selectedVariant
+      it.variantName = configurationVariant
       it.dontBuildRuntimeClasspath = false
     }
 
     return AndroidProjectImpl(
       module.gradleProject,
-      selectedVariant,
+      configurationVariant,
       basicModel,
       androidModel,
       variantDependencies,

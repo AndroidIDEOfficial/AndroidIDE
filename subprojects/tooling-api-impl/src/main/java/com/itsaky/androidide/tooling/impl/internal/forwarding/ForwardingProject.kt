@@ -57,8 +57,8 @@ internal class ForwardingProject(var project: IGradleProject? = null) : IGradleP
       UnsupportedOperationException())
   }
 
-  override fun getSelectedVariant(): CompletableFuture<String> {
-    return this.androidProject?.getSelectedVariant() ?: CompletableFuture.failedFuture(
+  override fun getConfiguredVariant(): CompletableFuture<String> {
+    return this.androidProject?.getConfiguredVariant() ?: CompletableFuture.failedFuture(
       UnsupportedOperationException()
     )
   }

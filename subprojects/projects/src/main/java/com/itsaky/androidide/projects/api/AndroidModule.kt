@@ -103,7 +103,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   val lintCheckJars: List<File>,
   val modelSyncFiles: List<DefaultModelSyncFile>,
   val variants: List<BasicAndroidVariantMetadata> = listOf(),
-  val selectedVariant: BasicAndroidVariantMetadata?,
+  val configuredVariant: BasicAndroidVariantMetadata?,
   val classesJar: File?
 ) :
   ModuleProject(
