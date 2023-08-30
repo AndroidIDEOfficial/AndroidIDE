@@ -25,7 +25,7 @@ description = "Gradle Plugin for projects that are built with AndroidIDE"
 
 dependencies {
   implementation(projects.buildInfo)
-  compileOnly(libs.tooling.agp)
+  implementation(libs.tooling.agp)
 }
 
 gradlePlugin {
