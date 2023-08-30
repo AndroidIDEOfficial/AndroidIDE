@@ -29,7 +29,6 @@
     android:background="?attr/colorSurface"
     android:clickable="false"
     android:focusable="false"
-    android:gravity="center"
-/>
+    android:gravity="center"/>
 
 </ViewFlipper>
