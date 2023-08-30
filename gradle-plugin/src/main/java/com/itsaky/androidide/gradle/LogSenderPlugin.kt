@@ -22,6 +22,7 @@ import com.android.build.gradle.AppExtension
 import com.itsaky.androidide.buildinfo.BuildInfo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import java.util.concurrent.TimeUnit
 
 /**
  * Plugin to manage LogSender in Android applications.
@@ -69,7 +70,10 @@ class LogSenderPlugin : Plugin<Project> {
                 " to variant '${variant.name}' of project '${project.path}'"
           )
 
-          variant.runtimeConfiguration.dependencies.add(dependencies.create(LOGSENDER_DEPENDENCY))
+          variant.runtimeConfiguration.apply {
+            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+            dependencies.add(project.dependencies.create(LOGSENDER_DEPENDENCY))
+          }
         }
       }
     }
