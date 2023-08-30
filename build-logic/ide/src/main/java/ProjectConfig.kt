@@ -32,6 +32,8 @@ object ProjectConfig {
   const val PROJECT_SITE = "https://androidide.com"
 }
 
+private var shouldPrintVersionName = true
+
 val Project.simpleVersionName: String
   get() {
 
@@ -39,7 +41,10 @@ val Project.simpleVersionName: String
     val regex = Regex("^v\\d+\\.?\\d+\\.?\\d+-\\w+")
 
     val simpleVersion = regex.find(version)?.value?.substring(1)?.also {
-      logger.warn("Simple version name is '$it' (from version $version)")
+      if (shouldPrintVersionName) {
+        logger.warn("Simple version name is '$it' (from version $version)")
+        shouldPrintVersionName = false
+      }
     }
 
     if (simpleVersion == null) {
@@ -54,6 +59,7 @@ val Project.simpleVersionName: String
     return simpleVersion
   }
 
+private var shouldPrintVersionCode = true
 val Project.projectVersionCode: Int
   get() {
 
@@ -61,7 +67,10 @@ val Project.projectVersionCode: Int
     val regex = Regex("^\\d+\\.?\\d+\\.?\\d+")
 
     val versionCode = regex.find(version)?.value?.replace(".", "")?.toInt()?.also {
-      logger.warn("Version code is '$it' (from version ${version}).")
+      if (shouldPrintVersionCode) {
+        logger.warn("Version code is '$it' (from version ${version}).")
+        shouldPrintVersionCode = false
+      }
     }
       ?: throw IllegalStateException(
         "Cannot extract version code. Invalid version string '$version'. Version names must be SEMVER with 'v' prefix")
