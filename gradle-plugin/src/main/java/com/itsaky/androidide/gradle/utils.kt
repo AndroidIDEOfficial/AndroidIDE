@@ -14,27 +14,9 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.gradle
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-
-/**
- * Gradle Plugin for projects built in AndroidIDE.
- *
- * @author Akash Yadav
- */
-class AndroidIDEGradlePlugin : Plugin<Project> {
-
-  override fun apply(target: Project) {
-    ideLog("Applying ${javaClass.simpleName}")
-
-    target.run {
-      check(plugins.hasPlugin(APP_PLUGIN)) {
-        "${javaClass.simpleName} can only be applied to Android application projects"
-      }
-
-      plugins.apply(LogSenderPlugin::class.java)
-    }
-  }
+internal fun ideLog(message: String) {
+  System.err.println("[AndroidIDE] $message")
 }

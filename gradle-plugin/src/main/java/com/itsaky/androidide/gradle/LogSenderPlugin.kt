@@ -17,9 +17,7 @@
 
 package com.itsaky.androidide.gradle
 
-import com.android.build.api.variant.AndroidComponentsExtension
-import com.android.build.gradle.AppExtension
-import com.itsaky.androidide.buildinfo.BuildInfo
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.util.concurrent.TimeUnit
@@ -32,47 +30,54 @@ import java.util.concurrent.TimeUnit
 class LogSenderPlugin : Plugin<Project> {
 
   companion object {
-
     private const val LOGSENDER_DEPENDENCY_ARTIFACT = "logsender"
-    private const val LOGSENDER_DEPENDENCY =
-      "${BuildInfo.MVN_GROUP_ID}:${LOGSENDER_DEPENDENCY_ARTIFACT}:${BuildInfo.VERSION_NAME_DOWNLOAD}"
   }
 
   override fun apply(target: Project) {
+    ideLog("Applying ${javaClass.simpleName}")
+
     target.run {
+
       check(plugins.hasPlugin(APP_PLUGIN)) {
         "${javaClass.simpleName} can only be applied to Android application projects."
       }
 
-      val debuggableBuilds = hashSetOf<String>()
+      (extensions.getByName(
+        "androidComponents") as ApplicationAndroidComponentsExtension).apply {
 
-      val appExtension = extensions.getByType(AppExtension::class.java)
-      appExtension.buildTypes.forEach {
-        if (it.isDebuggable) {
-          logger.debug("Found debuggable build type : '${it.name}'")
-          debuggableBuilds.add(it.name)
-        }
-      }
+        finalizeDsl { appExtension ->
+          logger.warn("On finalize DSL")
 
-      logger.debug("Found ${debuggableBuilds.size} debuggable builds in project '${project.path}': $debuggableBuilds")
+          val debuggableBuilds = hashSetOf<String>()
 
-      if (debuggableBuilds.isEmpty()) {
-        logger.warn("No debuggable builds found in project '${project.path}'")
-        return@run
-      }
+          appExtension.buildTypes.forEach {
+            if (it.isDebuggable) {
+              logger.debug("Found debuggable build type : '${it.name}'")
+              debuggableBuilds.add(it.name)
+            }
+          }
 
-      val androidComponents = extensions.getByType(AndroidComponentsExtension::class.java)
-      androidComponents.onVariants { variant ->
-        val buildType = variant.buildType ?: return@onVariants
-        if (buildType in debuggableBuilds) {
-          logger.info(
-            "Adding LogSender dependency ('${LOGSENDER_DEPENDENCY}')" +
-                " to variant '${variant.name}' of project '${project.path}'"
-          )
+          logger.debug(
+            "Found ${debuggableBuilds.size} debuggable builds in project '${project.path}': $debuggableBuilds")
 
-          variant.runtimeConfiguration.apply {
-            resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
-            dependencies.add(project.dependencies.create(LOGSENDER_DEPENDENCY))
+          if (debuggableBuilds.isEmpty()) {
+            logger.warn("No debuggable builds found in project '${project.path}'")
+          }
+
+          onVariants { variant ->
+            logger.warn("on variant -> ${variant.name} ${variant.buildType}")
+            val buildType = variant.buildType ?: return@onVariants
+            if (buildType in debuggableBuilds) {
+              logger.info(
+                "Adding LogSender dependency ('${LOGSENDER_DEPENDENCY_ARTIFACT}')" +
+                    " to variant '${variant.name}' of project '${project.path}'"
+              )
+
+              variant.runtimeConfiguration.apply {
+                resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+                dependencies.add(project.dependencies.ideDependency(LOGSENDER_DEPENDENCY_ARTIFACT))
+              }
+            }
           }
         }
       }

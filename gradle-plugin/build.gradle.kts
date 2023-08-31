@@ -23,9 +23,24 @@ plugins {
 
 description = "Gradle Plugin for projects that are built with AndroidIDE"
 
+tasks.named<Test>("test") {
+  useJUnitPlatform()
+}
+
+tasks.withType<Test> {
+  dependsOn("publishToMavenLocal")
+}
+
 dependencies {
   implementation(projects.buildInfo)
-  implementation(libs.tooling.agp)
+  implementation(libs.tooling.agpApi)
+
+  testImplementation(gradleTestKit())
+  testImplementation(libs.tests.junit.jupiter)
+  testImplementation(libs.tests.google.truth)
+  testImplementation(projects.shared)
+
+  testRuntimeOnly(libs.tests.junit.platformLauncher)
 }
 
 gradlePlugin {
@@ -33,12 +48,28 @@ gradlePlugin {
   vcsUrl.set(ProjectConfig.REPO_URL)
 
   plugins {
+    create("initScriptPlugin") {
+      id = "${BuildConfig.packageName}.init.gradle"
+      implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEInitScriptPlugin"
+      displayName = "AndroidIDE Init Script Gradle Plugin"
+      description = "Init script Gradle plugin for projects that are built with AndroidIDE"
+      tags.set(setOf("androidide", "init"))
+    }
+
     create("gradlePlugin") {
       id = "${BuildConfig.packageName}.gradle"
       implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEGradlePlugin"
       displayName = "AndroidIDE Gradle Plugin"
       description = "Gradle plugin for projects that are built with AndroidIDE"
-      tags.set(setOf("androidide"))
+      tags.set(setOf("androidide", "gradle"))
+    }
+
+    create("logsenderPlugin") {
+      id = "${BuildConfig.packageName}.logsender.gradle"
+      implementationClass = "${BuildConfig.packageName}.gradle.LogSenderPlugin"
+      displayName = "AndroidIDE LogSender Gradle Plugin"
+      description = "Gradle plugin for applying LogSender-specific configuration to projects that are built with AndroidIDE"
+      tags.set(setOf("androidide", "logsender"))
     }
   }
 }

@@ -19,6 +19,9 @@ package com.itsaky.androidide.buildinfo;
 
 public class BuildInfo {
 
+  // ---------- Basic info -----------------
+  public static final String PACKAGE_NAME = "@@PACKAGE_NAME@@";
+
   // ---------- Version info ----------------
 
   public static final String MVN_GROUP_ID = "@@MVN_GROUP_ID@@";

@@ -222,38 +222,22 @@ tasks.create("generateInitScript") {
       it.write(
         """
       initscript {
-        repositories {
-          maven {
-            mavenCentral()
-            
-            // Add snapshots repository for AndroidIDE CI builds
-            url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+          repositories {
+              maven {
+                  mavenCentral()
+                  google()
+
+                  // Add snapshots repository for AndroidIDE CI builds
+                  url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+              }
           }
-        }
-    
-        dependencies {
-          classpath '${BuildConfig.packageName}:gradle-plugin:${downloadVersion}'
-        }
-      }
-      
-      gradle.settingsEvaluated { settings ->
-        settings.dependencyResolutionManagement.repositories {
-          // For release builds
-          mavenCentral()
-          
-          // For AndroidIDE CI builds
-          maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
-        }
-      }
-      
-      gradle.projectsLoaded {
-        rootProject.subprojects.forEach {sub ->
-          sub.afterEvaluate {
-            sub.apply plugin: com.itsaky.androidide.gradle.AndroidIDEGradlePlugin
+
+          dependencies {
+              classpath '${BuildConfig.packageName}:gradle-plugin:${downloadVersion}'
           }
-        }
       }
       
+      apply plugin: com.itsaky.androidide.gradle.AndroidIDEInitScriptPlugin
     """
           .trimIndent()
       )

@@ -49,9 +49,11 @@ class FileProvider {
       }
     }
 
-    @JvmStatic fun currentDir(): Path = Paths.get(System.getProperty("user.dir")!!)
+    @JvmStatic
+    fun currentDir(): Path = Paths.get(System.getProperty("user.dir")!!)
 
-    @JvmStatic fun implModule(): Path = projectRoot().resolve("subprojects/tooling-api-impl")
+    @JvmStatic
+    fun implModule(): Path = projectRoot().resolve("subprojects/tooling-api-impl")
 
     @JvmStatic
     fun projectRoot(): Path =
@@ -59,7 +61,14 @@ class FileProvider {
         "Unable to file project root. Check if '${PROJECT_ROOT_FILE}' file exists in the project root directory."
       }
 
-    @JvmStatic fun testProjectRoot(): Path = projectRoot().resolve("tests/test-project")
+    @JvmStatic
+    private fun testsDir(): Path = projectRoot().resolve("tests")
+
+    @JvmStatic
+    fun testHomeDir(): Path = testsDir().resolve("test-home")
+
+    @JvmStatic
+    fun testProjectRoot(): Path = testsDir().resolve("test-project")
 
     /**
      * Get the path to the 'resources' directory.
@@ -82,7 +91,8 @@ class FileProvider {
       return resources().resolve("${name}_template.$extension").normalize()
     }
 
-    @JvmStatic fun contents(file: Path): StringBuilder = StringBuilder(file.readText())
+    @JvmStatic
+    fun contents(file: Path): StringBuilder = StringBuilder(file.readText())
   }
 }
 

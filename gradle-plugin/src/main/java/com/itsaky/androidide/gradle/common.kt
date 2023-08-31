@@ -17,8 +17,21 @@
 
 package com.itsaky.androidide.gradle
 
+import com.itsaky.androidide.buildinfo.BuildInfo
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.dsl.DependencyHandler
+
 /**
  * @author Akash Yadav
  */
 
 const val APP_PLUGIN = "com.android.application"
+
+fun Project.ideDependency(artifact: String): Dependency {
+  return dependencies.ideDependency(artifact)
+}
+
+fun DependencyHandler.ideDependency(artifact: String): Dependency {
+  return create("${BuildInfo.MVN_GROUP_ID}:${artifact}:${BuildInfo.VERSION_NAME_DOWNLOAD}")
+}
