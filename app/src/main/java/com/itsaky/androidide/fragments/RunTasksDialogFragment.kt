@@ -19,8 +19,10 @@ package com.itsaky.androidide.fragments
 
 import android.app.Dialog
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -83,7 +85,7 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
   }
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-    return object : BottomSheetDialog(requireContext(), theme) {
+    val dialog = object : BottomSheetDialog(requireContext(), theme) {
       override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         window?.apply {
@@ -104,6 +106,8 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
         }
       }
     }
+    dialog.behavior.peekHeight = (getWindowHeight() * 0.7).toInt()
+    return dialog
   }
 
   override fun onCreateView(
@@ -199,5 +203,16 @@ class RunTasksDialogFragment : BottomSheetDialogFragment() {
 
       run.tasks.adapter = RunTasksListAdapter(viewModel.tasks, onCheckChanged)
     }
+  }
+
+  private fun getWindowHeight(): Int {
+    val height = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      activity?.windowManager?.currentWindowMetrics?.bounds?.height()!!
+    } else {
+      val displayMetrics = DisplayMetrics()
+      activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+      displayMetrics.heightPixels
+    }
+    return height
   }
 }
