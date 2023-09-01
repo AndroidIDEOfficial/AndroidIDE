@@ -38,7 +38,10 @@ class CloseFileAction(context: Context) : FileTabAction() {
   }
 
   override fun EditorHandlerActivity.doAction(data: ActionData): Boolean {
-    binding.tabs.selectedTabPosition.let { closeFile(it) }
+    binding.tabs.selectedTabPosition.let {
+      closeFile(it)
+      this.invalidateOptionsMenu()
+    }
     return true
   }
 }
