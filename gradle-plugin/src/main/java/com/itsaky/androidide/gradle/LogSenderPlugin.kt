@@ -72,15 +72,17 @@ class LogSenderPlugin : Plugin<Project> {
           }
 
           if (variant.name in debuggableBuilds) {
-            logger.lifecycle(
-              "Adding LogSender dependency to variant '${variant.name}' of project '${project.path}'"
-            )
 
             variant.runtimeConfiguration.apply {
               resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 
               val logsenderDependency = project.dependencies.ideDependency(
                 LOGSENDER_DEPENDENCY_ARTIFACT, project.isTestEnv)
+
+              logger.lifecycle(
+                "Adding LogSender dependency (version '${logsenderDependency.version}')" +
+                    " to variant '${variant.name}' of project '${project.path}'"
+              )
 
               logger.debug("Adding logsender dependency: $logsenderDependency")
               dependencies.add(logsenderDependency)
