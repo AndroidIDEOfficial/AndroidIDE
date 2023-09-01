@@ -18,6 +18,7 @@
 package com.itsaky.androidide.gradle
 
 import com.itsaky.androidide.buildinfo.BuildInfo
+import com.itsaky.androidide.gradle.AndroidIDEInitScriptPlugin.Companion.PROPERTY_IS_TEST_ENV
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -27,11 +28,22 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
  */
 
 const val APP_PLUGIN = "com.android.application"
+const val LIBRARY_PLUGIN = "com.android.library"
+
+internal val Project.isTestEnv: Boolean
+  get() = hasProperty(PROPERTY_IS_TEST_ENV) && property(
+    PROPERTY_IS_TEST_ENV).toString().toBoolean()
 
 fun Project.ideDependency(artifact: String): Dependency {
-  return dependencies.ideDependency(artifact)
+  return dependencies.ideDependency(artifact, isTestEnv)
 }
 
-fun DependencyHandler.ideDependency(artifact: String): Dependency {
-  return create("${BuildInfo.MVN_GROUP_ID}:${artifact}:${BuildInfo.VERSION_NAME_DOWNLOAD}")
+fun DependencyHandler.ideDependency(artifact: String, testEnv: Boolean): Dependency {
+  val version = if (testEnv) {
+    BuildInfo.VERSION_NAME_SIMPLE
+  } else {
+    BuildInfo.VERSION_NAME_DOWNLOAD
+  }
+
+  return create("${BuildInfo.MVN_GROUP_ID}:${artifact}:${version}")
 }

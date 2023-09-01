@@ -20,6 +20,7 @@ package com.itsaky.androidide.gradle
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.FileProvider
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.junit.jupiter.api.Test
 import kotlin.io.path.pathString
 
@@ -32,23 +33,49 @@ class AndroidIDEInitScriptPluginTest {
   fun `test init script plugin is applied`() {
     val projectRoot = openProject()
     val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
+    val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local")
 
     val runner = GradleRunner.create()
       .withProjectDir(projectRoot.toFile())
-      .withPluginClasspath()
       .withArguments(
         ":app:tasks", // run any task, as long as it applies the plugins
         "--init-script", initScript.pathString,
-        "-Pandroidide.plugins.internal.testing.enableMavenLocal=true", // plugins should be published to maven local first
+        "-Pandroidide.plugins.internal.isTestEnv=true", // plugins should be published to maven local first
+        "-Pandroidide.plugins.internal.mavenLocalRepository=${mavenLocal.pathString}",
         "--stacktrace"
       )
 
-    writeInitScript(initScript.toFile(), runner.pluginClasspath)
+    writeInitScript(initScript.toFile(),
+      PluginUnderTestMetadataReading.readImplementationClasspath())
 
     val result = runner.build()
 
-    assertThat(result.output).contains(
-      "[AndroidIDE] Applying ${AndroidIDEInitScriptPlugin::class.java.simpleName}"
-    )
+    // These plugins must be applied to the
+    for ((project, plugins) in mapOf(
+      ":app" to arrayOf(AndroidIDEGradlePlugin::class, LogSenderPlugin::class))) {
+      for (plugin in plugins) {
+        assertThat(result.output).contains(
+          "Applying ${plugin.simpleName} to project '${project}'"
+        )
+      }
+    }
+
+    // LogSender should be applied to these
+    for ((project, variants) in mapOf(":app" to arrayOf("demoDebug", "fullDebug"))) {
+      for (variant in variants) {
+        assertThat(result.output).contains(
+          "Adding LogSender dependency to variant '${variant}' of project '${project}'"
+        )
+      }
+    }
+
+    // LogSender should not be applied to these
+    for ((project, variants) in mapOf(":app" to arrayOf("demoRelease", "fullRelease"))) {
+      for (variant in variants) {
+        assertThat(result.output).doesNotContain(
+          "Adding LogSender dependency to variant '${variant}' of project '${project}'"
+        )
+      }
+    }
   }
 }

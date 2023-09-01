@@ -20,8 +20,12 @@ package com.itsaky.androidide.gradle
 import com.itsaky.androidide.buildinfo.BuildInfo
 import org.gradle.api.Plugin
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
+import org.gradle.api.logging.Logging
+import java.io.File
+import java.io.FileNotFoundException
 import java.net.URI
 
 /**
@@ -33,53 +37,68 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
 
   companion object {
 
+    private val logger = Logging.getLogger(AndroidIDEInitScriptPlugin::class.java)
+
     /**
-     * Property that is set in tests to indicate that the subprojects must be configured to use `mavenLocal()` instead of
-     * `mavenCentral()` and maven snapshots repository.
+     * Property that is set in tests to indicate that the plugin is being applied in a test environment.
      *
      * **This is an internal property and should not be manually set by users.**
      */
-    private const val PROPERTY_ENABLE_MAVEN_LOCAL = "androidide.plugins.internal.testing.enableMavenLocal"
+    internal const val PROPERTY_IS_TEST_ENV = "androidide.plugins.internal.isTestEnv"
+
+    /**
+     * Property that is set in tests to provide path to the local maven repository.
+     * If this property is empty, `null` or not set at all, the default maven local repository is used.
+     *
+     * **This is an internal property and should not be manually set by users.**
+     */
+    internal const val PROPERTY_MAVEN_LOCAL_REPOSITORY = "androidide.plugins.internal.mavenLocalRepository"
   }
 
   override fun apply(target: Gradle) {
-    ideLog("Applying ${javaClass.simpleName}")
     target.settingsEvaluated { settings ->
-      val isMavenLocalEnabled = settings.startParameter.run {
-        projectProperties.containsKey(PROPERTY_ENABLE_MAVEN_LOCAL)
-            && projectProperties[PROPERTY_ENABLE_MAVEN_LOCAL].toString().toBoolean()
+      val (isTestEnv, mavenLocalRepo) = settings.startParameter.run {
+        val isTestEnv = projectProperties.containsKey(PROPERTY_IS_TEST_ENV)
+            && projectProperties[PROPERTY_IS_TEST_ENV].toString().toBoolean()
+        val mavenLocalRepo = projectProperties.getOrDefault(PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
+        isTestEnv to mavenLocalRepo
       }
 
-      settings.addDependencyRepositories(isMavenLocalEnabled)
+      settings.addDependencyRepositories(isTestEnv, mavenLocalRepo)
     }
+
     target.projectsLoaded { gradle ->
-      gradle.rootProject.subprojects.forEach { sub ->
+      gradle.rootProject.subprojects { sub ->
         sub.buildscript.dependencies.apply {
-          add("classpath", ideDependency("gradle-plugin"))
+          add("classpath", sub.ideDependency("gradle-plugin"))
         }
 
         sub.afterEvaluate {
-          sub.pluginManager.apply("${BuildInfo.PACKAGE_NAME}.gradle")
+          logger.info("Trying to apply plugin '${BuildInfo.PACKAGE_NAME}' to project '${sub.path}'")
+          sub.pluginManager.apply(BuildInfo.PACKAGE_NAME)
         }
       }
     }
   }
 
   @Suppress("UnstableApiUsage")
-  private fun Settings.addDependencyRepositories(isMavenLocalEnabled: Boolean) {
+  private fun Settings.addDependencyRepositories(isMavenLocalEnabled: Boolean,
+    mavenLocalRepo: String) {
     dependencyResolutionManagement.run {
-      repositories.configureRepositories(isMavenLocalEnabled)
+      repositories.configureRepositories(isMavenLocalEnabled, mavenLocalRepo)
     }
 
     pluginManagement.apply {
-      repositories.configureRepositories(isMavenLocalEnabled)
+      repositories.configureRepositories(isMavenLocalEnabled, mavenLocalRepo)
     }
   }
 
-  private fun RepositoryHandler.configureRepositories(isMavenLocalEnabled: Boolean) {
+  private fun RepositoryHandler.configureRepositories(
+    isMavenLocalEnabled: Boolean,
+    mavenLocalRepo: String
+  ) {
+
     if (!isMavenLocalEnabled) {
-      // For release builds
-      mavenCentral()
 
       // For AndroidIDE CI builds
       maven { repository ->
@@ -88,11 +107,35 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
         )
       }
     } else {
-      // maven local has been enabled explicitly
-      mavenLocal()
+      logger.info("Using local maven repository for classpath resolution...")
+
+      if (mavenLocalRepo.isBlank()) {
+        mavenLocal(::includeGroupId)
+      } else {
+        logger.info("Local repository path: $mavenLocalRepo")
+
+        val repo = File(mavenLocalRepo)
+        if (!repo.exists() || !repo.isDirectory) {
+          throw FileNotFoundException("Maven local repository '$mavenLocalRepo' not found")
+        }
+
+        maven { repository ->
+          repository.url = repo.toURI()
+          includeGroupId(repository)
+        }
+      }
     }
 
     // for AGP API dependency
     google()
+
+    mavenCentral()
+  }
+
+  @Suppress("UnstableApiUsage")
+  private fun includeGroupId(repository: ArtifactRepository) {
+    repository.content { contentDescriptor ->
+      contentDescriptor.includeGroupAndSubgroups(BuildInfo.MVN_GROUP_ID)
+    }
   }
 }

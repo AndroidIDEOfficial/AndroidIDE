@@ -27,8 +27,27 @@ tasks.named<Test>("test") {
   useJUnitPlatform()
 }
 
+tasks.create<Delete>("deleteBuildMavenLocal") {
+  delete("$buildDir/maven-local")
+}
+
+afterEvaluate {
+  tasks.getByName("jar") {
+    dependsOn("deleteBuildMavenLocal")
+  }
+}
+
 tasks.withType<Test> {
-  dependsOn("publishToMavenLocal")
+  dependsOn("publishAllPublicationsToBuildMavenLocalRepository")
+}
+
+extensions.findByType(PublishingExtension::class)?.run {
+  repositories {
+    maven {
+      name = "buildMavenLocal"
+      url = uri("$buildDir/maven-local")
+    }
+  }
 }
 
 dependencies {
@@ -49,7 +68,7 @@ gradlePlugin {
 
   plugins {
     create("initScriptPlugin") {
-      id = "${BuildConfig.packageName}.init.gradle"
+      id = "${BuildConfig.packageName}.init"
       implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEInitScriptPlugin"
       displayName = "AndroidIDE Init Script Gradle Plugin"
       description = "Init script Gradle plugin for projects that are built with AndroidIDE"
@@ -57,7 +76,7 @@ gradlePlugin {
     }
 
     create("gradlePlugin") {
-      id = "${BuildConfig.packageName}.gradle"
+      id = BuildConfig.packageName
       implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEGradlePlugin"
       displayName = "AndroidIDE Gradle Plugin"
       description = "Gradle plugin for projects that are built with AndroidIDE"
@@ -65,7 +84,7 @@ gradlePlugin {
     }
 
     create("logsenderPlugin") {
-      id = "${BuildConfig.packageName}.logsender.gradle"
+      id = "${BuildConfig.packageName}.logsender"
       implementationClass = "${BuildConfig.packageName}.gradle.LogSenderPlugin"
       displayName = "AndroidIDE LogSender Gradle Plugin"
       description = "Gradle plugin for applying LogSender-specific configuration to projects that are built with AndroidIDE"

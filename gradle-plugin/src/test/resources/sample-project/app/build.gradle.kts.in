@@ -37,12 +37,25 @@ android {
         viewBinding = true
         
     }
-    
+
+    // LogSender must be applied to all the debuggable product flavors
+    flavorDimensions += "version"
+    productFlavors {
+        create("demo") {
+            dimension = "version"
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo"
+        }
+
+        create("full") {
+            dimension = "version"
+            applicationIdSuffix = ".full"
+            versionNameSuffix = "-full"
+        }
+    }
 }
 
 dependencies {
-
-
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.android.material:material:1.9.0")

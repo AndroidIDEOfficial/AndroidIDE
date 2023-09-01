@@ -18,6 +18,7 @@ package com.itsaky.androidide.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 
 /**
  * Gradle Plugin for projects built in AndroidIDE.
@@ -26,15 +27,22 @@ import org.gradle.api.Project
  */
 class AndroidIDEGradlePlugin : Plugin<Project> {
 
+  companion object {
+    private val logger = Logging.getLogger(AndroidIDEGradlePlugin::class.java)
+  }
+
   override fun apply(target: Project) {
-    ideLog("Applying ${javaClass.simpleName}")
+    if (target.isTestEnv) {
+      logger.lifecycle("Applying ${javaClass.simpleName} to project '${target.path}'")
+    }
 
     target.run {
       check(plugins.hasPlugin(APP_PLUGIN)) {
         "${javaClass.simpleName} can only be applied to Android application projects"
       }
 
-      plugins.apply(LogSenderPlugin::class.java)
+      logger.info("Trying to apply LogSender plugin to project '${project.path}'")
+      pluginManager.apply(LogSenderPlugin::class.java)
     }
   }
 }

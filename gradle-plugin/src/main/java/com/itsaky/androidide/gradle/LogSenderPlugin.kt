@@ -20,6 +20,7 @@ package com.itsaky.androidide.gradle
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logging
 import java.util.concurrent.TimeUnit
 
 /**
@@ -30,11 +31,16 @@ import java.util.concurrent.TimeUnit
 class LogSenderPlugin : Plugin<Project> {
 
   companion object {
+
     private const val LOGSENDER_DEPENDENCY_ARTIFACT = "logsender"
+
+    private val logger = Logging.getLogger(LogSenderPlugin::class.java)
   }
 
   override fun apply(target: Project) {
-    ideLog("Applying ${javaClass.simpleName}")
+    if (target.isTestEnv) {
+      logger.lifecycle("Applying ${javaClass.simpleName} to project '${target.path}'")
+    }
 
     target.run {
 
@@ -45,38 +51,39 @@ class LogSenderPlugin : Plugin<Project> {
       (extensions.getByName(
         "androidComponents") as ApplicationAndroidComponentsExtension).apply {
 
-        finalizeDsl { appExtension ->
-          logger.warn("On finalize DSL")
+        val debuggableBuilds = hashSetOf<String>()
 
-          val debuggableBuilds = hashSetOf<String>()
-
-          appExtension.buildTypes.forEach {
-            if (it.isDebuggable) {
-              logger.debug("Found debuggable build type : '${it.name}'")
-              debuggableBuilds.add(it.name)
-            }
-          }
-
+        beforeVariants { variantBuilder ->
           logger.debug(
-            "Found ${debuggableBuilds.size} debuggable builds in project '${project.path}': $debuggableBuilds")
+            "Variant :'${variantBuilder.name}' isDebuggable: ${variantBuilder.debuggable}")
+          if (variantBuilder.debuggable) {
+            debuggableBuilds.add(variantBuilder.name)
+          }
+        }
+
+        onVariants { variant ->
+          logger.info(
+            "Found ${debuggableBuilds.size} debuggable builds in project '${project.path}'" +
+                ": $debuggableBuilds"
+          )
 
           if (debuggableBuilds.isEmpty()) {
             logger.warn("No debuggable builds found in project '${project.path}'")
           }
 
-          onVariants { variant ->
-            logger.warn("on variant -> ${variant.name} ${variant.buildType}")
-            val buildType = variant.buildType ?: return@onVariants
-            if (buildType in debuggableBuilds) {
-              logger.info(
-                "Adding LogSender dependency ('${LOGSENDER_DEPENDENCY_ARTIFACT}')" +
-                    " to variant '${variant.name}' of project '${project.path}'"
-              )
+          if (variant.name in debuggableBuilds) {
+            logger.lifecycle(
+              "Adding LogSender dependency to variant '${variant.name}' of project '${project.path}'"
+            )
 
-              variant.runtimeConfiguration.apply {
-                resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
-                dependencies.add(project.dependencies.ideDependency(LOGSENDER_DEPENDENCY_ARTIFACT))
-              }
+            variant.runtimeConfiguration.apply {
+              resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+
+              val logsenderDependency = project.dependencies.ideDependency(
+                LOGSENDER_DEPENDENCY_ARTIFACT, project.isTestEnv)
+
+              logger.debug("Adding logsender dependency: $logsenderDependency")
+              dependencies.add(logsenderDependency)
             }
           }
         }

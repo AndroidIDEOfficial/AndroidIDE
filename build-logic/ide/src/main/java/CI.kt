@@ -27,13 +27,13 @@ object CI {
 
   /** The short commit hash. */
   val commitHash by lazy {
-    val sha = System.getenv("GITHUB_SHA") ?: return@lazy ""
-    shortSha(sha)
+    val sha = System.getenv("GITHUB_SHA") ?: "HEAD"
+    cmdOutput("git", "rev-parse", "--short", sha)
   }
 
   /** Name of the current branch. */
   val branchName by lazy {
-    System.getenv("GITHUB_REF_NAME") ?: "main" // by default, 'main'
+    System.getenv("GITHUB_REF_NAME") ?: cmdOutput("git", "rev-parse", "--abbrev-ref", "HEAD") // by default, 'main'
   }
 
   /** Whether the current build is a CI build. */
@@ -42,8 +42,8 @@ object CI {
   /** Whether the current build is for tests. This is set ONLY in CI builds. */
   val isTestEnv by lazy { "true" == System.getenv("ANDROIDIDE_TEST") }
 
-  private fun shortSha(sha: String): String {
-    return ProcessBuilder("git", "rev-parse", "--short", sha)
+  private fun cmdOutput(vararg args: String): String {
+    return ProcessBuilder(*args)
       .directory(File("."))
       .redirectErrorStream(true)
       .start()
