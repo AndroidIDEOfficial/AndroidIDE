@@ -1,0 +1,40 @@
+<!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:height="24dp"
+  android:viewportHeight="16"
+  android:viewportWidth="16"
+  android:width="24dp">
+
+  <path
+    android:fillColor="#fff"
+    android:fillType="nonZero"
+    android:pathData="M9,16l3.512,-3.512l3.488,3.512z" />
+  <path
+    android:fillColor="#fff"
+    android:fillType="nonZero"
+    android:pathData="M9,9l3.512,0l-3.512,3.792z" />
+  <path
+    android:fillColor="#fff"
+    android:fillType="nonZero"
+    android:pathData="M12.512,9l-3.512,3.698l0,3.302l3.512,-3.512l3.488,-3.488z" />
+  <path
+    android:fillColor="#fff"
+    android:fillType="evenOdd"
+    android:pathData="M8,11.884C7.348,11.994 6.828,12.518 6.738,13.193C6.724,13.304 6.63,13.388 6.518,13.389L5.505,13.389C5.393,13.389 5.298,13.305 5.285,13.193C5.184,12.431 4.535,11.862 3.766,11.862C2.998,11.862 2.349,12.431 2.248,13.193C2.238,13.311 2.138,13.4 2.019,13.397L0.984,13.397C0.877,13.397 0.785,13.32 0.765,13.214C0.181,10.175 1.259,7.775 3.015,6.525L3.933,8.109C4.153,8.489 4.56,8.722 4.999,8.721C5.208,8.721 5.413,8.668 5.595,8.566L6.025,8.325L6.04,8.325C6.547,8.009 7.026,7.649 7.47,7.249C7.516,7.206 7.541,7.145 7.539,7.082C7.537,7.019 7.509,6.96 7.46,6.919C7.369,6.846 7.239,6.85 7.152,6.929C6.73,7.304 6.277,7.642 5.797,7.94L5.372,8.177L5.39,8.164L5.367,8.177C5.001,8.383 4.538,8.256 4.329,7.892L3.358,6.215C3.25,6.031 3.224,5.809 3.286,5.604C3.349,5.399 3.494,5.23 3.687,5.137C9.345,2.441 11.837,7.673 13.704,5.807C14.23,5.31 14.271,4.488 13.797,3.942C13.323,3.396 12.502,3.321 11.937,3.773C11.848,3.84 11.723,3.832 11.644,3.753L11.36,3.463C11.315,3.42 11.29,3.36 11.29,3.298C11.29,3.235 11.315,3.176 11.36,3.133C12.287,2.268 13.733,2.293 14.629,3.189C15.364,3.924 16.184,5.755 14.174,8L8,8L8,11.884ZM10.78,7.453L10.78,7.455C10.951,7.328 11.011,7.1 10.923,6.906C10.835,6.712 10.624,6.605 10.416,6.65C10.208,6.695 10.06,6.88 10.06,7.092L10.78,7.453Z" />
+</vector>
