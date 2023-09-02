@@ -18,7 +18,9 @@
 package com.itsaky.androidide.gradle
 
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.utils.FileProvider
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.junit.jupiter.api.Test
@@ -30,8 +32,16 @@ import kotlin.io.path.pathString
 class AndroidIDEInitScriptPluginTest {
 
   @Test
-  fun `test init script plugin is applied`() {
-    val projectRoot = openProject()
+  fun `test plugins are applied and log sender dependency is added properly`() {
+    val result = buildProject()
+    assertBasics(result)
+  }
+
+  private fun buildProject(
+    agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
+    vararg plugins: String
+  ): BuildResult {
+    val projectRoot = openProject(agpVersion, *plugins)
     val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
     val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local")
 
@@ -48,8 +58,10 @@ class AndroidIDEInitScriptPluginTest {
     writeInitScript(initScript.toFile(),
       PluginUnderTestMetadataReading.readImplementationClasspath())
 
-    val result = runner.build()
+    return runner.build()
+  }
 
+  private fun assertBasics(result: BuildResult) {
     // These plugins must be applied to the
     for ((project, plugins) in mapOf(
       ":app" to arrayOf(AndroidIDEGradlePlugin::class, LogSenderPlugin::class))) {
@@ -64,7 +76,7 @@ class AndroidIDEInitScriptPluginTest {
     for ((project, variants) in mapOf(":app" to arrayOf("demoDebug", "fullDebug"))) {
       for (variant in variants) {
         assertThat(result.output).contains(
-          "Adding LogSender dependency to variant '${variant}' of project '${project}'"
+          "Adding LogSender dependency (version '${BuildInfo.VERSION_NAME_SIMPLE}') to variant '${variant}' of project '${project}'"
         )
       }
     }

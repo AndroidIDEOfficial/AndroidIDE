@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.gradle
 
+import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.utils.FileProvider
 import java.io.File
 import java.nio.file.Path
@@ -46,7 +47,10 @@ internal fun writeInitScript(file: File, deps: List<File>) {
   }
 }
 
-internal fun openProject(agpVersion: String = "", vararg plugins: String): Path {
+internal fun openProject(
+  agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
+  vararg plugins: String
+): Path {
   val projectRoot = FileProvider.projectRoot()
     .resolve("gradle-plugin/src/test/resources/sample-project")
 
@@ -67,7 +71,11 @@ internal fun openProject(agpVersion: String = "", vararg plugins: String): Path 
 private fun File.replaceAllPlaceholders(entries: Map<String, String>) {
   val sb = StringBuilder(parentFile.resolve("${name}.in").readText())
   for ((placeholder, value) in entries) {
-    sb.replace("@@${placeholder}@@".toRegex(RegexOption.LITERAL), value)
+    val regex = Regex.escape("@@${placeholder}@@").toRegex()
+    val result = regex.findAll(sb)
+    for (matchResult in result) {
+      sb.replace(matchResult.range.first, matchResult.range.last + 1, value)
+    }
   }
   writeText(sb.toString())
 }
