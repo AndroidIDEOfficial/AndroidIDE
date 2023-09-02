@@ -31,6 +31,7 @@ class ModuleProjectModelBuilder(initializationParams: InitializeProjectParams) :
   override fun build(param: ModuleProjectModelBuilderParams): IModuleProject {
     val versions = getAndroidVersions(param.module, param.controller)
     return if (versions != null) {
+      checkAgpVersion(versions)
       AndroidProjectModelBuilder(initializationParams)
         .build(Triple(param.controller, param.module, versions))
     } else {

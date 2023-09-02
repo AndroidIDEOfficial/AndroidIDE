@@ -18,8 +18,10 @@ package com.itsaky.androidide.tooling.impl.sync
 
 import com.android.builder.model.v2.models.Versions
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.util.StopWatch
+import com.itsaky.androidide.utils.AndroidPluginVersion
+import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.LATEST_TESTED
+import com.itsaky.androidide.utils.AndroidPluginVersion.Companion.MINIMUM_SUPPORTED
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.LogUtils
 import org.gradle.api.Action
@@ -27,6 +29,7 @@ import org.gradle.tooling.BuildController
 import org.gradle.tooling.UnknownModelException
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.model.Model
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Abstract class for [IModelBuilder] implementations.
@@ -40,23 +43,44 @@ abstract class AbstractModelBuilder<P, R>(
 
   companion object {
 
+    private val newerAgpWarned = AtomicBoolean(false)
+
     /**
      * Checks the Android Gradle Plugin version from the given [Versions] model and compares
-     * it with [Main.MIN_SUPPORTED_AGP_VERSION]. If the version is less than the [Main.MIN_SUPPORTED_AGP_VERSION],
-     * throws an [UnsupportedOperationException].
+     * it with [AndroidPluginVersion.MINIMUM_SUPPORTED] and [AndroidPluginVersion.LATEST_TESTED].
+     *
+     * If the version is less than the [AndroidPluginVersion.MINIMUM_SUPPORTED],
+     * throws an [UnsupportedOperationException]. If the version is greater than the
+     * [AndroidPluginVersion.LATEST_TESTED], warns the user.
      *
      * @param versions The [Versions] model.
      */
     @JvmStatic
-    protected fun assertMinimumAgp(versions: Versions) {
-      if (versions.agp < Main.MIN_SUPPORTED_AGP_VERSION) {
+    protected fun checkAgpVersion(versions: Versions) {
+
+      val agpVersion = AndroidPluginVersion.parse(versions.agp)
+
+      // The build should fail if the user is using an older version of AGP
+      if (agpVersion < MINIMUM_SUPPORTED) {
         throw ModelBuilderException(
-          "Android Gradle Plugin version "
-              + versions.agp
+          agpVersion.toString()
               + " is not supported by AndroidIDE. "
-              + "Please update your project to use at least v"
-              + Main.MIN_SUPPORTED_AGP_VERSION
-              + " of Android Gradle Plugin to build this project.")
+              + "Please update your project to use at least "
+              + MINIMUM_SUPPORTED
+              + " to build this project.")
+      }
+
+      // Warn the user if the project is using a newer AGP version
+      if (!newerAgpWarned.get() && agpVersion > LATEST_TESTED) {
+        log()
+        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log("You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
+        log("Newer versions may not work properly!")
+        log("Current version : ${agpVersion.toStringSimple()}")
+        log("Latest tested   : ${LATEST_TESTED.toStringSimple()}")
+        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        log()
+        newerAgpWarned.set(true)
       }
     }
 

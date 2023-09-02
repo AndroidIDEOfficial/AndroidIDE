@@ -17,11 +17,12 @@
 
 @Suppress("JavaPluginLanguageLevel")
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+  id("java-library")
+  id("org.jetbrains.kotlin.jvm")
 }
 
 dependencies {
-    implementation(libs.common.jkotlin)
-    api(libs.tooling.builderModel)
+  implementation(libs.common.jkotlin)
+  implementation(projects.buildInfo)
+  api(libs.tooling.builderModel)
 }

@@ -19,7 +19,6 @@ package com.itsaky.androidide.tooling.impl;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
-import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
@@ -39,7 +38,6 @@ import org.gradle.tooling.events.OperationType;
 
 public class Main {
 
-  public static final String MIN_SUPPORTED_AGP_VERSION = BuildInfo.AGP_VERSION_MININUM;
   private static final ILogger LOG = newInstance("ToolingApiMain");
   public static IToolingApiClient client;
   public static Future<Void> future;

@@ -55,6 +55,7 @@ project.tasks.getByName("jar") {
 project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
 
 dependencies {
+  implementation(projects.shared)
   implementation(projects.subprojects.toolingApi)
 
   implementation(libs.common.jkotlin)

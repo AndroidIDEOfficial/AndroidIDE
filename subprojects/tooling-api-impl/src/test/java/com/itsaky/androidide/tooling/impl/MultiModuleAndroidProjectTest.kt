@@ -20,12 +20,14 @@ package com.itsaky.androidide.tooling.impl
 import com.android.builder.model.v2.ide.LibraryType
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
@@ -34,6 +36,7 @@ import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
 import com.itsaky.androidide.utils.FileProvider
+import com.itsaky.androidide.utils.ILogger
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -47,7 +50,7 @@ class MultiModuleAndroidProjectTest {
   @Test
   fun `test simple multi module project initialization`() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
+    server.initializeTestProject()
     doAssertions(project, server)
   }
 
@@ -69,7 +72,7 @@ class MultiModuleAndroidProjectTest {
 
     val app = project.asAndroidProject()
     assertThat(app).isNotNull()
-    assertThat(app!!).isInstanceOf(IAndroidProject::class.java)
+    assertThat(app).isInstanceOf(IAndroidProject::class.java)
 
     var metadata = app.getMetadata().get() as AndroidProjectMetadata
     assertThat(metadata).isNotNull()
@@ -107,7 +110,7 @@ class MultiModuleAndroidProjectTest {
 
     val androidLib = project.asAndroidProject()
     assertThat(androidLib).isNotNull()
-    assertThat(androidLib!!).isInstanceOf(IAndroidProject::class.java)
+    assertThat(androidLib).isInstanceOf(IAndroidProject::class.java)
     // Make sure that transitive dependencies are included here because :android-library includes
     // :java-library project which further includes :another-java-libraries project with 'api'
     // configuration
@@ -130,7 +133,7 @@ class MultiModuleAndroidProjectTest {
 
     val javaLibrary = project.asJavaProject()
     assertThat(javaLibrary).isNotNull()
-    assertThat(javaLibrary!!).isInstanceOf(IJavaProject::class.java)
+    assertThat(javaLibrary).isInstanceOf(IJavaProject::class.java)
 
     var javaMetadata = javaLibrary.getMetadata().get() as JavaProjectMetadata
     assertThat(javaMetadata.compilerSettings.javaSourceVersion).isEqualTo("11")
@@ -162,14 +165,15 @@ class MultiModuleAndroidProjectTest {
         .filter { it.moduleName.endsWith("nested-java-library") }
     assertThat(nested).hasSize(2)
     assertThat(nested[0].projectPath).isNotEqualTo(nested[1].projectPath)
-    assertThat(project.selectProject(StringParameter(":does-not-exist")).get().isSuccessful).isFalse()
+    assertThat(
+      project.selectProject(StringParameter(":does-not-exist")).get().isSuccessful).isFalse()
 
     selectionResult = project.selectProject(StringParameter(":another-java-library")).get()
     assertThat(selectionResult.isSuccessful).isTrue()
 
     val anotherJavaLib = project.asJavaProject()
     assertThat(anotherJavaLib).isNotNull()
-    assertThat(anotherJavaLib!!).isInstanceOf(IJavaProject::class.java)
+    assertThat(anotherJavaLib).isInstanceOf(IJavaProject::class.java)
 
     javaMetadata = anotherJavaLib.getMetadata().get() as JavaProjectMetadata
     assertThat(javaMetadata.compilerSettings.javaSourceVersion).isEqualTo("1.8")
@@ -188,8 +192,8 @@ class MultiModuleAndroidProjectTest {
       val versions =
         listOf(
           // AGP to Gradle
-          "7.2.0" to "7.3.3",
-          "8.0.2" to "8.2"
+          BuildInfo.AGP_VERSION_MININUM to "7.3.3",
+          BuildInfo.AGP_VERSION_LATEST to "8.2"
         )
 
       val client = MultiVersionTestClient()
@@ -197,11 +201,46 @@ class MultiModuleAndroidProjectTest {
         client.agpVersion = agpVersion
         client.gradleVersion = gradleVersion
         val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-        server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
+        server.initializeTestProject()
         doAssertions(project = project, server = server)
         FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
       }
     }
+  }
+
+  @Test
+  @Throws(CIOnlyException::class)
+  fun `test CI-only latest tested AGP version warning`() {
+    val log = CollectingLogger()
+    val agpVersion = "8.1.1"
+    val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "8.2", log = log)
+    val (server, _) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+    val result = server.initializeTestProject()
+    val output = log.toString()
+
+    if (result?.isSuccessful != true) {
+      // print the output if the initialization fails
+      println(output)
+    }
+
+    assertThat(result?.isSuccessful).isTrue()
+    assertThat(output).contains(
+      "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
+  }
+
+  @Test
+  @Throws(CIOnlyException::class)
+  fun `test CI-only minimum AGP version failure`() {
+    val log = CollectingLogger()
+    val agpVersion = "7.1.0"
+    val client = MultiVersionTestClient(agpVersion = agpVersion, log = log)
+    val (server, _) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+    val result = server.initializeTestProject()
+    assertThat(result?.isSuccessful).isFalse()
+
+    val output = log.toString()
+    assertThat(output).contains(
+      "Android Gradle Plugin version $agpVersion is not supported by AndroidIDE.")
   }
 
   private fun ciOnlyTest(test: () -> Unit) {
@@ -223,6 +262,23 @@ class MultiModuleAndroidProjectTest {
 
   private fun shouldTestMultipleVersions(): Boolean {
     return System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
+  }
+
+  private fun IToolingApiServer.initializeTestProject(): InitializeResult? {
+    return initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
+  }
+
+  internal class CollectingLogger() : ILogger(CollectingLogger::class.simpleName) {
+
+    private val string = StringBuilder()
+
+    override fun doLog(priority: Priority?, message: String?) {
+      string.append("${message?.trim()}${System.lineSeparator()}")
+    }
+
+    override fun toString(): String {
+      return string.toString()
+    }
   }
 
   private class CIOnlyException : IllegalStateException()

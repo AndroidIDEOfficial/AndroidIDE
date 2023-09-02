@@ -62,6 +62,7 @@ class ToolingApiTestLauncher {
 
   fun launchServer(
     client: IToolingApiClient = MultiVersionTestClient(),
+    log: ILogger = ILogger.newInstance("BuildOutputLogger")
   ): Pair<IToolingApiServer, IProject> {
     val builder = ProcessBuilder(createProcessCmd(FileProvider.implModule()
       .resolve("build/libs/tooling-api-all.jar").pathString))
@@ -71,7 +72,7 @@ class ToolingApiTestLauncher {
     builder.environment()["ANDROID_HOME"] = androidHome
     val proc = builder.start()
 
-    Thread(Reader(proc.errorStream)).start()
+    Thread(Reader(proc.errorStream, log)).start()
     val launcher =
       ToolingApiLauncher.newClientLauncher(client, proc.inputStream,
         proc.outputStream)
@@ -113,7 +114,8 @@ class ToolingApiTestLauncher {
   class MultiVersionTestClient(
     private val projectDir: Path = FileProvider.testProjectRoot(),
     var agpVersion: String = DEFAULT_AGP_VERSION,
-    var gradleVersion: String = DEFAULT_GRADLE_VERSION
+    var gradleVersion: String = DEFAULT_GRADLE_VERSION,
+    val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName)
   ) : IToolingApiClient {
 
     companion object {
@@ -129,8 +131,6 @@ class ToolingApiTestLauncher {
 
       const val GENERATED_FILE_WARNING =
         "DO NOT EDIT - Automatically generated file"
-
-      private val log = ILogger.newInstance("MultiVersionTestClient")
     }
 
     override fun logMessage(line: LogLine) {
@@ -156,8 +156,17 @@ class ToolingApiTestLauncher {
           candidate = "@@GRADLE_VERSION@@" to this.gradleVersion)
     }
 
-    override fun onBuildSuccessful(result: BuildResult) {}
-    override fun onBuildFailed(result: BuildResult) {}
+    override fun onBuildSuccessful(result: BuildResult) {
+      onBuildResult(result)
+    }
+    override fun onBuildFailed(result: BuildResult) {
+      onBuildResult(result)
+    }
+
+    private fun onBuildResult(result: BuildResult) {
+      projectDir.resolve(buildFile).deleteIfExists()
+      projectDir.resolve(gradlewProps).deleteIfExists()
+    }
 
     override fun onProgressEvent(event: ProgressEvent) {}
 
@@ -199,9 +208,8 @@ class ToolingApiTestLauncher {
     }
   }
 
-  private class Reader(val input: InputStream) : Runnable {
+  private class Reader(val input: InputStream, val log: ILogger) : Runnable {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
     override fun run() {
       try {
         val reader = BufferedReader(InputStreamReader(input))
