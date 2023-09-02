@@ -58,11 +58,6 @@ interface IProjectManager {
   val rootProject: Project?
 
   /**
-   * The Android application module in the project.
-   */
-  val app: AndroidModule?
-
-  /**
    * The path to the project's root directory.
    */
   val projectDirPath: String
@@ -102,14 +97,14 @@ interface IProjectManager {
    *
    * @return The list of Android application modules.
    */
-  fun getAndroidAppModules() : List<AndroidModule>
+  fun getAndroidAppModules(): List<AndroidModule>
 
   /**
    * Get the list of modules in this project which are Android library modules.
    *
    * @return The list of Android library modules.
    */
-  fun getAndroidLibraryModules() : List<AndroidModule>
+  fun getAndroidLibraryModules(): List<AndroidModule>
 
   /**
    * Find the module for the given file.

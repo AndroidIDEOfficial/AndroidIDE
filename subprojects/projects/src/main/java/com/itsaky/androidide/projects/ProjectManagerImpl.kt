@@ -34,7 +34,6 @@ import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tasks.executeAsync
-import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.ProjectType
@@ -69,8 +68,6 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
 
   override var rootProject: Project? = null
     private set
-  override var app: AndroidModule? = null
-    private set
 
   override var androidBuildVariants: Map<String, BuildVariantInfo> = emptyMap()
     private set
@@ -99,8 +96,6 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     updateBuildVariants { buildVariants ->
       androidBuildVariants = buildVariants
     }
-
-    this.app = this.rootProject!!.findFirstAndroidAppModule()
 
     this.rootProject!!.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
       it.indexSourcesAndClasspaths()
@@ -171,7 +166,6 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   override fun destroy() {
     log.info("Destroying project manager")
     this.rootProject = null
-    this.app = null
     this.cachedInitResult = null
     this.projectInitialized = false
 
@@ -189,11 +183,6 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
 
     if (!builder.isToolingServerStarted()) {
       flashError(R.string.msg_tooling_server_unavailable)
-      return
-    }
-
-    if (app == null) {
-      log.warn("Cannot run resource and source generation task. No application module found.")
       return
     }
 
@@ -220,10 +209,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
 
 
     builder
-      .executeProjectTasks(
-        app!!.path,
-        *tasks.toTypedArray()
-      )
+      .executeTasks(*tasks.toTypedArray())
       .whenComplete { result, taskErr ->
         if (result == null || !result.isSuccessful || taskErr != null) {
           log.warn(

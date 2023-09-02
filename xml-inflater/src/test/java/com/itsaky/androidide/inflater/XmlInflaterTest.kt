@@ -24,6 +24,7 @@ import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
+import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
@@ -55,7 +56,7 @@ object XmlInflaterTest {
 
 fun inflaterTest(block: (AndroidModule) -> Unit) {
   XmlInflaterTest.initIfNeeded()
-  val app = IProjectManager.getInstance().app!!
+  val app = findAppModule()!!
   startParse(app)
   block(app)
   endParse()
