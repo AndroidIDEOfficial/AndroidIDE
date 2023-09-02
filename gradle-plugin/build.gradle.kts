@@ -50,9 +50,25 @@ extensions.findByType(PublishingExtension::class)?.run {
   }
 }
 
+configurations {
+  val androidBuildTool = create("androidBuildTool")
+
+  getByName("compileOnly") {
+    extendsFrom(androidBuildTool)
+  }
+  getByName("testImplementation") {
+    extendsFrom(androidBuildTool)
+  }
+  findByName("integrationTestImplementation")?.run {
+    extendsFrom(androidBuildTool)
+  }
+}
+
 dependencies {
   implementation(projects.buildInfo)
-  implementation(libs.tooling.agpApi)
+
+  add("androidBuildTool", libs.tooling.builderModel)
+  add("androidBuildTool", libs.tooling.agpApi)
 
   testImplementation(gradleTestKit())
   testImplementation(libs.tests.junit.jupiter)
