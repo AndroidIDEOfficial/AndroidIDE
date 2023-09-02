@@ -38,6 +38,7 @@
 - [x] Custom environment variables (for Build & Terminal).
 - [x] SDK Manager (Available via terminal).
 - [x] API information for classes and their members (since, removed, deprecated).
+- [x] Log reader (shows your app's logs in real-time)
 - [ ] Language servers
     - [x] Java
     - [x] XML
