@@ -22,6 +22,7 @@ plugins {
 }
 
 dependencies {
+    api(projects.buildInfo)
     api(projects.logger)
     api(projects.subprojects.toolingApiModel)
     api(projects.subprojects.toolingApiEvents)

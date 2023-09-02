@@ -52,6 +52,9 @@ tasks.create("generateBuildInfo") {
           "REPO_OWNER" to ProjectConfig.REPO_OWNER,
           "REPO_NAME" to ProjectConfig.REPO_NAME,
           "PROJECT_SITE" to ProjectConfig.PROJECT_SITE,
+
+          "AGP_VERSION_MININUM" to AGP_VERSION_MINIMUM,
+          "AGP_VERSION_LATEST" to libs.versions.agp.tooling.get()
         )
     )
   }

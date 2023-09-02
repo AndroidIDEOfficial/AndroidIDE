@@ -19,18 +19,14 @@ package com.itsaky.androidide.tooling.impl;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
+import com.itsaky.androidide.buildinfo.BuildInfo;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.tooling.api.IGradleProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
-
-import org.gradle.tooling.ConfigurableLauncher;
-import org.gradle.tooling.events.OperationType;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -38,9 +34,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import org.gradle.tooling.ConfigurableLauncher;
+import org.gradle.tooling.events.OperationType;
 
 public class Main {
-  public static final String MIN_SUPPORTED_AGP_VERSION = "7.2.0";
+
+  public static final String MIN_SUPPORTED_AGP_VERSION = BuildInfo.AGP_VERSION_MININUM;
   private static final ILogger LOG = newInstance("ToolingApiMain");
   public static IToolingApiClient client;
   public static Future<Void> future;
@@ -112,14 +111,14 @@ public class Main {
       client.logMessage(line);
     }
   }
-  
+
   public static Set<OperationType> progressUpdateTypes() {
     final Set<OperationType> types = new HashSet<>();
-    
+
     // AndroidIDE currently does not handle any other type of events
     types.add(OperationType.TASK);
     types.add(OperationType.PROJECT_CONFIGURATION);
-    
+
     return types;
   }
 }

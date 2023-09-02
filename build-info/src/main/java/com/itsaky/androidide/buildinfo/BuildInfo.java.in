@@ -22,7 +22,11 @@ public class BuildInfo {
   // ---------- Basic info -----------------
   public static final String PACKAGE_NAME = "@@PACKAGE_NAME@@";
 
-  // ---------- Version info ----------------
+  // ---------- Tooling version info --------------
+  public static final String AGP_VERSION_MININUM = "@@AGP_VERSION_MININUM@@";
+  public static final String AGP_VERSION_LATEST = "@@AGP_VERSION_LATEST@@";
+
+  // ---------- Maven version info ----------------
 
   public static final String MVN_GROUP_ID = "@@MVN_GROUP_ID@@";
 
