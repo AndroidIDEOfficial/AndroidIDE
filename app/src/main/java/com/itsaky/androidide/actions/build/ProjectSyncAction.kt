@@ -19,10 +19,11 @@ package com.itsaky.androidide.actions.build
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.itsaky.androidide.resources.R
-import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
+import com.itsaky.androidide.resources.R
+import com.itsaky.androidide.resources.R.string
+import com.itsaky.androidide.utils.flashSuccess
 
 /**
  * Triggers a project sync request.
@@ -40,6 +41,11 @@ class ProjectSyncAction(context: Context) : BaseBuildAction() {
   }
 
   override fun execAction(data: ActionData): Any {
-    return data.getActivity()!!.initializeProject()
+    return data.getActivity()!!.apply {
+      saveAllResult()
+      flashSuccess(string.all_saved)
+      
+      initializeProject()
+    }
   }
 }
