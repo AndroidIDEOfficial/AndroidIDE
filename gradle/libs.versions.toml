@@ -43,7 +43,7 @@ common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", 
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
 common-ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 common-jsonrpc = { module = "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc", version = "0.21.0" }
-common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.12"}
+common-leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version = "2.12" }
 common-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 
@@ -81,7 +81,7 @@ google-auto-service-annotations = { module = "com.google.auto.service:auto-servi
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
 google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.23.2" }
-google-java-format = { module ="com.google.googlejavaformat:google-java-format", version="1.17.0" }
+google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.17.0" }
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
@@ -116,9 +116,9 @@ tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version =
 tests-mockk = { module = "io.mockk:mockk", version = "1.13.5" }
 
 # Tooling
-tooling-agpApi = { module="com.android.tools.build:gradle-api", version.ref = "agp-tooling" }
-tooling-builderModel = { module="com.android.tools.build:builder-model", version.ref = "agp-tooling" }
-tooling-gradleApi = { module="org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
+tooling-agpApi = { module = "com.android.tools.build:gradle-api", version.ref = "agp-tooling" }
+tooling-builderModel = { module = "com.android.tools.build:builder-model", version.ref = "agp-tooling" }
+tooling-gradleApi = { module = "org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
 tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.7" }
 
 [plugins]

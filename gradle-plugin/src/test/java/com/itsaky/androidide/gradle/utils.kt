@@ -46,17 +46,28 @@ internal fun writeInitScript(file: File, deps: List<File>) {
   }
 }
 
-internal fun openProject(vararg plugins: String): Path {
+internal fun openProject(agpVersion: String = "", vararg plugins: String): Path {
   val projectRoot = FileProvider.projectRoot()
     .resolve("gradle-plugin/src/test/resources/sample-project")
-  val buildGradle = projectRoot.resolve("app/build.gradle.kts").toFile()
 
-  val pluginsText = plugins.joinToString(separator = "\n") { "id(\"$it\")" }
-  buildGradle.parentFile.resolve("${buildGradle.name}.in")
-    .readText()
-    .replace("@@PLUGINS@@", pluginsText)
-    .also {
-      buildGradle.writeText(it)
-    }
+  run {
+    projectRoot.resolve("build.gradle.kts").toFile()
+      .replaceAllPlaceholders(mapOf("AGP_VERSION" to agpVersion))
+  }
+
+  run {
+    val pluginsText = plugins.joinToString(separator = "\n") { "id(\"$it\")" }
+    projectRoot.resolve("app/build.gradle.kts").toFile()
+      .replaceAllPlaceholders(mapOf("PLUGINS" to pluginsText))
+  }
+
   return projectRoot
+}
+
+private fun File.replaceAllPlaceholders(entries: Map<String, String>) {
+  val sb = StringBuilder(parentFile.resolve("${name}.in").readText())
+  for ((placeholder, value) in entries) {
+    sb.replace("@@${placeholder}@@".toRegex(RegexOption.LITERAL), value)
+  }
+  writeText(sb.toString())
 }

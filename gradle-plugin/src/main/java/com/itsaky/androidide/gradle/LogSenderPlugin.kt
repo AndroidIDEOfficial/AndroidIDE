@@ -17,9 +17,12 @@
 
 package com.itsaky.androidide.gradle
 
+import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ApplicationVariant
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.logging.Logging
 import java.util.concurrent.TimeUnit
 
@@ -72,8 +75,7 @@ class LogSenderPlugin : Plugin<Project> {
           }
 
           if (variant.name in debuggableBuilds) {
-
-            variant.runtimeConfiguration.apply {
+            withRuntimeConfiguration(variant) {
               resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 
               val logsenderDependency = project.dependencies.ideDependency(
@@ -91,5 +93,18 @@ class LogSenderPlugin : Plugin<Project> {
         }
       }
     }
+  }
+
+  private fun ApplicationAndroidComponentsExtension.withRuntimeConfiguration(
+    variant: ApplicationVariant,
+    action: Configuration.() -> Unit
+  ) {
+    val versionWithConfigsApi = AndroidPluginVersion(7, 3)
+    if (pluginVersion < versionWithConfigsApi) {
+      // The version of AGP that the project uses doesn't provide access to the configurations
+      TODO("Find a way to fetch configurations or drop support for such version")
+    }
+
+    variant.runtimeConfiguration.action()
   }
 }
