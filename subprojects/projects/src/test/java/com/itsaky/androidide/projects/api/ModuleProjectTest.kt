@@ -47,7 +47,9 @@ class ModuleProjectTest {
   @Test
   fun test() {
     val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
+    val result = server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString))
+      .get()
+    assertThat(result?.isSuccessful).isTrue()
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
 

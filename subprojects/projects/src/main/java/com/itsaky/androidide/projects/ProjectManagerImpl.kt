@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects
 
 import androidx.annotation.RestrictTo
 import com.google.auto.service.AutoService
+import com.google.common.collect.ImmutableList
 import com.itsaky.androidide.eventbus.events.EventReceiver
 import com.itsaky.androidide.eventbus.events.editor.DocumentSaveEvent
 import com.itsaky.androidide.eventbus.events.file.FileCreationEvent
@@ -33,6 +34,8 @@ import com.itsaky.androidide.projects.api.Project
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.ProjectTransformer
 import com.itsaky.androidide.tasks.executeAsync
+import com.itsaky.androidide.tasks.executeAsyncProvideError
+import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.ProjectType
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
@@ -65,9 +68,12 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   var cachedInitResult: InitializeResult? = null
 
   override var rootProject: Project? = null
+    private set
   override var app: AndroidModule? = null
+    private set
 
   override var androidBuildVariants: Map<String, BuildVariantInfo> = emptyMap()
+    private set
 
   override val projectDirPath: String
     get() = projectPath
@@ -89,7 +95,13 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       return
     }
 
+    // build variants must be updated before the sources and classpaths are indexed
+    updateBuildVariants { buildVariants ->
+      androidBuildVariants = buildVariants
+    }
+
     this.app = this.rootProject!!.findFirstAndroidAppModule()
+
     this.rootProject!!.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
       it.indexSourcesAndClasspaths()
       if (it is AndroidModule) {
@@ -201,7 +213,7 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       return@flatMap listOf(
         mainArtifact.resGenTaskName,
         mainArtifact.sourceGenTaskName,
-        if(module.viewBindingOptions.isEnabled) "dataBindingGenBaseClasses$variantNameCapitalized" else null,
+        if (module.viewBindingOptions.isEnabled) "dataBindingGenBaseClasses$variantNameCapitalized" else null,
         "process${variantNameCapitalized}Resources"
       ).mapNotNull { it?.let { "${module.path}:${it}" } }
     }
@@ -239,6 +251,30 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
       event.put(Project::class.java, rootProject)
       EventBus.getDefault().post(event)
     }
+  }
+
+  private fun updateBuildVariants(onUpdated: (Map<String, BuildVariantInfo>) -> Unit = {}) {
+    val rootProject = checkNotNull(this.rootProject) {
+      "Cannot update build variants. Root project model is null."
+    }
+
+    val buildVariants = mutableMapOf<String, BuildVariantInfo>()
+    rootProject.subProjects.forEach { subproject ->
+      if (subproject is AndroidModule) {
+
+        // variant names are not expected to be modified
+        val variantNames = ImmutableList.builder<String>()
+          .addAll(subproject.variants.map { variant -> variant.name }).build()
+
+        val variantName = subproject.configuredVariant?.name
+          ?: IAndroidProject.DEFAULT_VARIANT
+
+        buildVariants[subproject.path] =
+          BuildVariantInfo(subproject.path, variantNames, variantName)
+      }
+    }
+
+    onUpdated(buildVariants)
   }
 
   private fun isInitialized() = rootProject != null

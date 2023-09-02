@@ -461,7 +461,7 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     manager.cachedInitResult = result
     manager.setupProject()
     manager.notifyProjectUpdate()
-    updateBuildVariants()
+    updateBuildVariants(manager.androidBuildVariants)
 
     ThreadUtils.runOnUiThread { postProjectInit(true) }
   }
@@ -493,39 +493,11 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     mFindInProjectDialog = null // Create the dialog again if needed
   }
 
-  private fun updateBuildVariants() {
-    val manager = ProjectManagerImpl.getInstance()
-    executeAsyncProvideError({
-      manager.rootProject?.run {
-        val buildVariants = mutableMapOf<String, BuildVariantInfo>()
-        subProjects.forEach { subproject ->
-          if (subproject is AndroidModule) {
-
-            // variant names are not expected to be modified
-            val variantNames = ImmutableList.builder<String>()
-              .addAll(subproject.variants.map { variant -> variant.name }).build()
-
-            val variantName = subproject.configuredVariant?.name
-              ?: IAndroidProject.DEFAULT_VARIANT
-
-            buildVariants[subproject.path] =
-              BuildVariantInfo(subproject.path, variantNames, variantName)
-          }
-        }
-
-        buildVariants
-      }
-    }) { buildVariants, err ->
-      if (buildVariants == null || err != null) {
-        log.error("Failed to update build variants list", err)
-        return@executeAsyncProvideError
-      }
-
-      // avoid using the 'runOnUiThread' method defined in the activity
-      com.itsaky.androidide.tasks.runOnUiThread {
-        buildVariantsViewModel.buildVariants = buildVariants
-        buildVariantsViewModel.resetUpdatedSelections()
-      }
+  private fun updateBuildVariants(buildVariants: Map<String, BuildVariantInfo>) {
+    // avoid using the 'runOnUiThread' method defined in the activity
+    com.itsaky.androidide.tasks.runOnUiThread {
+      buildVariantsViewModel.buildVariants = buildVariants
+      buildVariantsViewModel.resetUpdatedSelections()
     }
   }
 

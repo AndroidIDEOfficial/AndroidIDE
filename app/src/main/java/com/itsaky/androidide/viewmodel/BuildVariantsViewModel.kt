@@ -36,7 +36,6 @@ class BuildVariantsViewModel : ViewModel() {
     get() = this._buildVariants.value ?: emptyMap()
     set(value) {
       this._buildVariants.value = value
-      ProjectManagerImpl.getInstance().androidBuildVariants = value
     }
 
   var updatedBuildVariants: MutableMap<String, BuildVariantInfo>
