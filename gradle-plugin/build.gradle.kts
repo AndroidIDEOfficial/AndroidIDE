@@ -67,8 +67,8 @@ configurations {
 dependencies {
   implementation(projects.buildInfo)
 
-  add("androidBuildTool", libs.tooling.builderModel)
-  add("androidBuildTool", libs.tooling.agpApi)
+  // use the AGP APIs from the minimum supported AGP version
+  add("androidBuildTool", "com.android.tools.build:gradle:${AGP_VERSION_MINIMUM}")
 
   testImplementation(gradleTestKit())
   testImplementation(libs.tests.junit.jupiter)

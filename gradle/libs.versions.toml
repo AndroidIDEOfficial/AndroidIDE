@@ -116,7 +116,6 @@ tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version =
 tests-mockk = { module = "io.mockk:mockk", version = "1.13.5" }
 
 # Tooling
-tooling-agpApi = { module = "com.android.tools.build:gradle-api", version.ref = "agp-tooling" }
 tooling-builderModel = { module = "com.android.tools.build:builder-model", version.ref = "agp-tooling" }
 tooling-gradleApi = { module = "org.gradle:gradle-tooling-api", version.ref = "gradle-tooling" }
 tooling-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.7" }

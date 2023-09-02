@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.gradle
 
-import com.android.build.api.AndroidPluginVersion
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ApplicationVariant
+import com.android.build.api.variant.impl.ApplicationVariantImpl
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -57,7 +57,7 @@ class LogSenderPlugin : Plugin<Project> {
         val debuggableBuilds = hashSetOf<String>()
 
         beforeVariants { variantBuilder ->
-          logger.debug(
+          logger.info(
             "Variant :'${variantBuilder.name}' isDebuggable: ${variantBuilder.debuggable}")
           if (variantBuilder.debuggable) {
             debuggableBuilds.add(variantBuilder.name)
@@ -75,7 +75,7 @@ class LogSenderPlugin : Plugin<Project> {
           }
 
           if (variant.name in debuggableBuilds) {
-            withRuntimeConfiguration(variant) {
+            variant.withRuntimeConfiguration {
               resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 
               val logsenderDependency = project.dependencies.ideDependency(
@@ -95,16 +95,10 @@ class LogSenderPlugin : Plugin<Project> {
     }
   }
 
-  private fun ApplicationAndroidComponentsExtension.withRuntimeConfiguration(
-    variant: ApplicationVariant,
+  private fun ApplicationVariant.withRuntimeConfiguration(
     action: Configuration.() -> Unit
   ) {
-    val versionWithConfigsApi = AndroidPluginVersion(7, 3)
-    if (pluginVersion < versionWithConfigsApi) {
-      // The version of AGP that the project uses doesn't provide access to the configurations
-      TODO("Find a way to fetch configurations or drop support for such version")
-    }
-
-    variant.runtimeConfiguration.action()
+    this as ApplicationVariantImpl
+    variantDependencies.runtimeClasspath.action()
   }
 }

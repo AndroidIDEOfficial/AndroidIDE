@@ -37,6 +37,12 @@ class AndroidIDEInitScriptPluginTest {
     assertBasics(result)
   }
 
+  @Test
+  fun `test behavior on minimum supported version`() {
+    val result = buildProject(agpVersion = BuildInfo.AGP_VERSION_MININUM)
+    assertBasics(result)
+  }
+
   private fun buildProject(
     agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
     vararg plugins: String
