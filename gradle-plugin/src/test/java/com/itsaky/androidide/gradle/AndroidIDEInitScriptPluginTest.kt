@@ -24,6 +24,8 @@ import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.junit.jupiter.api.Test
+import java.io.File
+import java.io.FileNotFoundException
 import kotlin.io.path.pathString
 
 /**
@@ -39,25 +41,40 @@ class AndroidIDEInitScriptPluginTest {
 
   @Test
   fun `test behavior on minimum supported version`() {
-    val result = buildProject(agpVersion = BuildInfo.AGP_VERSION_MININUM)
+    val result = buildProject(agpVersion = BuildInfo.AGP_VERSION_MININUM, gradleVersion = "7.5.1")
     assertBasics(result)
   }
 
   private fun buildProject(
     agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
+    gradleVersion: String = "8.2",
     vararg plugins: String
   ): BuildResult {
     val projectRoot = openProject(agpVersion, *plugins)
     val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
-    val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local")
+    val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local/repos.txt").toFile()
+
+    if (!(mavenLocal.exists() && mavenLocal.isFile)) {
+      throw FileNotFoundException("repos.txt file not found")
+    }
+
+    val repositories = mavenLocal.readText()
+
+    for (repo in repositories.split(':')) {
+      val file = File(repo)
+      if (!(file.exists() && file.isDirectory)) {
+        throw FileNotFoundException("Maven local repository does not exist : $repo")
+      }
+    }
 
     val runner = GradleRunner.create()
       .withProjectDir(projectRoot.toFile())
+      .withGradleVersion(gradleVersion)
       .withArguments(
         ":app:tasks", // run any task, as long as it applies the plugins
         "--init-script", initScript.pathString,
         "-Pandroidide.plugins.internal.isTestEnv=true", // plugins should be published to maven local first
-        "-Pandroidide.plugins.internal.mavenLocalRepository=${mavenLocal.pathString}",
+        "-Pandroidide.plugins.internal.mavenLocalRepositories=$repositories",
         "--stacktrace"
       )
 
@@ -82,7 +99,7 @@ class AndroidIDEInitScriptPluginTest {
     for ((project, variants) in mapOf(":app" to arrayOf("demoDebug", "fullDebug"))) {
       for (variant in variants) {
         assertThat(result.output).contains(
-          "Adding LogSender dependency (version '${BuildInfo.VERSION_NAME_SIMPLE}') to variant '${variant}' of project '${project}'"
+          "Adding LogSender dependency (version '${depVersion(true)}') to variant '${variant}' of project '${project}'"
         )
       }
     }

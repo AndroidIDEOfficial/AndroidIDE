@@ -132,13 +132,17 @@ subprojects {
   }
 
   project.afterEvaluate {
-    if (project.plugins.hasPlugin("com.vanniktech.maven.publish.base") && project.description.isNullOrBlank()) {
+    if (project.plugins.hasPlugin(
+        "com.vanniktech.maven.publish.base") && project.description.isNullOrBlank()
+    ) {
       throw GradleException("Project ${project.path} must have a description")
     }
   }
 
   plugins.withId("com.vanniktech.maven.publish.base") {
     configure<MavenPublishBaseExtension> {
+
+      project.configureMavenLocal()
 
       pom {
         name.set(project.name)
@@ -190,6 +194,55 @@ subprojects {
 
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = BuildConfig.javaVersion.toString()
+  }
+
+  gradle.projectsEvaluated {
+    rootProject.subprojects {
+      if (project.path in projectsRequiringMavenLocalForTests) {
+        tasks.withType<Test> {
+          for ((project, _) in mavenLocalRepos) {
+            dependsOn(project(project).tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
+          }
+        }
+      }
+    }
+  }
+}
+
+val projectsRequiringMavenLocalForTests = arrayOf(":gradle-plugin")
+val mavenLocalRepos = hashMapOf<String, String>()
+
+fun Project.configureMavenLocal() {
+  val mavenLocalPath = "${buildDir}/maven-local"
+  mavenLocalRepos[project.path] = mavenLocalPath
+
+  extensions.findByType(PublishingExtension::class.java)?.run {
+    repositories {
+      maven {
+        name = "buildMavenLocal"
+        url = uri(mavenLocalPath)
+      }
+    }
+  }
+
+  tasks.create<Delete>("deleteBuildMavenLocal") {
+    delete(mavenLocalPath)
+  }
+
+  if (project.path in projectsRequiringMavenLocalForTests) {
+    tasks.withType<Test> {
+      dependsOn(tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository"))
+      doFirst {
+        val file = File(mavenLocalPath, "repos.txt")
+        file.writeText(mavenLocalRepos.values.joinToString(separator = File.pathSeparator))
+      }
+    }
+  }
+
+  afterEvaluate {
+    tasks.getByName("publishAllPublicationsToBuildMavenLocalRepository") {
+      dependsOn(tasks.getByName("deleteBuildMavenLocal"))
+    }
   }
 }
 

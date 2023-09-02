@@ -27,29 +27,6 @@ tasks.named<Test>("test") {
   useJUnitPlatform()
 }
 
-tasks.create<Delete>("deleteBuildMavenLocal") {
-  delete("$buildDir/maven-local")
-}
-
-afterEvaluate {
-  tasks.getByName("jar") {
-    dependsOn("deleteBuildMavenLocal")
-  }
-}
-
-tasks.withType<Test> {
-  dependsOn("publishAllPublicationsToBuildMavenLocalRepository")
-}
-
-extensions.findByType(PublishingExtension::class)?.run {
-  repositories {
-    maven {
-      name = "buildMavenLocal"
-      url = uri("$buildDir/maven-local")
-    }
-  }
-}
-
 configurations {
   val androidBuildTool = create("androidBuildTool")
 

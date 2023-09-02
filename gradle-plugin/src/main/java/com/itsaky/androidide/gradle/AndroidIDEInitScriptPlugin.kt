@@ -52,19 +52,19 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
      *
      * **This is an internal property and should not be manually set by users.**
      */
-    internal const val PROPERTY_MAVEN_LOCAL_REPOSITORY = "androidide.plugins.internal.mavenLocalRepository"
+    internal const val PROPERTY_MAVEN_LOCAL_REPOSITORY = "androidide.plugins.internal.mavenLocalRepositories"
   }
 
   override fun apply(target: Gradle) {
     target.settingsEvaluated { settings ->
-      val (isTestEnv, mavenLocalRepo) = settings.startParameter.run {
+      val (isTestEnv, mavenLocalRepos) = settings.startParameter.run {
         val isTestEnv = projectProperties.containsKey(PROPERTY_IS_TEST_ENV)
             && projectProperties[PROPERTY_IS_TEST_ENV].toString().toBoolean()
-        val mavenLocalRepo = projectProperties.getOrDefault(PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
-        isTestEnv to mavenLocalRepo
+        val mavenLocalRepos = projectProperties.getOrDefault(PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
+        isTestEnv to mavenLocalRepos
       }
 
-      settings.addDependencyRepositories(isTestEnv, mavenLocalRepo)
+      settings.addDependencyRepositories(isTestEnv, mavenLocalRepos)
     }
 
     target.projectsLoaded { gradle ->
@@ -95,7 +95,7 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
 
   private fun RepositoryHandler.configureRepositories(
     isMavenLocalEnabled: Boolean,
-    mavenLocalRepo: String
+    mavenLocalRepos: String
   ) {
 
     if (!isMavenLocalEnabled) {
@@ -109,19 +109,20 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     } else {
       logger.info("Using local maven repository for classpath resolution...")
 
-      if (mavenLocalRepo.isBlank()) {
-        mavenLocal(::includeGroupId)
-      } else {
-        logger.info("Local repository path: $mavenLocalRepo")
+      for (mavenLocalRepo in mavenLocalRepos.split(':')) {
+        if (mavenLocalRepo.isBlank()) {
+          mavenLocal()
+        } else {
+          logger.info("Local repository path: $mavenLocalRepo")
 
-        val repo = File(mavenLocalRepo)
-        if (!repo.exists() || !repo.isDirectory) {
-          throw FileNotFoundException("Maven local repository '$mavenLocalRepo' not found")
-        }
+          val repo = File(mavenLocalRepo)
+          if (!repo.exists() || !repo.isDirectory) {
+            throw FileNotFoundException("Maven local repository '$mavenLocalRepo' not found")
+          }
 
-        maven { repository ->
-          repository.url = repo.toURI()
-          includeGroupId(repository)
+          maven { repository ->
+            repository.url = repo.toURI()
+          }
         }
       }
     }
@@ -130,12 +131,5 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     google()
 
     mavenCentral()
-  }
-
-  @Suppress("UnstableApiUsage")
-  private fun includeGroupId(repository: ArtifactRepository) {
-    repository.content { contentDescriptor ->
-      contentDescriptor.includeGroupAndSubgroups(BuildInfo.MVN_GROUP_ID)
-    }
   }
 }
