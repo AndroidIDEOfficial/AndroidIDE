@@ -147,7 +147,7 @@ jobs:
           path: '**/build/reports/tests/'
 
   unit_test_tooling_api:
-    name: Run Tooling API tests
+    name: Build and test Tooling API
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -171,7 +171,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Run debug tests
-        run: ./gradlew :subprojects:tooling-api-impl:test --continue
+        run: ./gradlew :subprojects:tooling-api-impl:build --continue
         env:
           ANDROIDIDE_TEST: true
           TEST_TOOLING_API_IMPL: true
