@@ -85,17 +85,16 @@ abstract class LSPTest {
     mockkStatic(::tabSize)
     every { tabSize } returns 4
 
-    val (server, project) =
+    val (server, project, result) =
       ToolingApiTestLauncher()
         .launchServer()
+
+    assertThat(result?.isSuccessful).isTrue()
+
     this.toolingProject = project
     this.toolingServer = server
 
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, project)
-
-    server
-      .initialize(InitializeProjectParams(FileProvider.testProjectRoot().toFile().absolutePath))
-      .get()
 
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
     Environment.JAVA_HOME = File(System.getProperty("java.home")!!)

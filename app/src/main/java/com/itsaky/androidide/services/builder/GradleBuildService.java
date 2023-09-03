@@ -18,7 +18,6 @@
 package com.itsaky.androidide.services.builder;
 
 import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
-import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.getGradleInstallationDir;
 import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isBuildCacheEnabled;
 import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isDebugEnabled;
 import static com.itsaky.androidide.preferences.internal.BuildPreferencesKt.isInfoEnabled;
@@ -36,10 +35,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ZipUtils;
@@ -68,9 +65,6 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,13 +74,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A foreground service that handles interaction with the Gradle Tooling API.
  *
  * @author Akash Yadav
  */
-public class GradleBuildService extends Service implements BuildService, IToolingApiClient, ToolingServerRunner.Observer {
+public class GradleBuildService extends Service implements BuildService, IToolingApiClient,
+    ToolingServerRunner.Observer {
 
   private static final ILogger LOG = newInstance("GradleBuildService");
   private static final int NOTIFICATION_ID = R.string.app_name;
@@ -95,11 +91,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   private GradleServiceBinder mBinder = null;
   private boolean isToolingServerStarted = false;
   private boolean isBuildInProgress = false;
-  
+
   /**
    * We do not provide direct access to GradleBuildService instance to the Tooling API launcher as
-   * it may cause memory leaks. Instead, we create another client object which forwards all calls to us.
-   * So, when the service is destroyed, we release the reference to the service from this client.
+   * it may cause memory leaks. Instead, we create another client object which forwards all calls to
+   * us. So, when the service is destroyed, we release the reference to the service from this
+   * client.
    */
   private ForwardingToolingApiClient _toolingApiClient;
   private ToolingServerRunner toolingServerThread;
@@ -175,7 +172,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     if (server != null) {
       server.cancelCurrentBuild();
       final var shutdown = server.shutdown();
-  
+
       //noinspection ConstantConditions
       if (shutdown != null) {
         try {
@@ -192,12 +189,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       toolingServerThread.interrupt();
       toolingServerThread = null;
     }
-    
+
     if (_toolingApiClient != null) {
       _toolingApiClient.setClient(null);
       _toolingApiClient = null;
     }
-    
+
     if (outputReader != null) {
       outputReader.interrupt();
       outputReader = null;
@@ -214,21 +211,22 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
     return mBinder;
   }
-  
+
   @Override
-  public void onListenerStarted(@NotNull final IToolingApiServer server, @NotNull IProject projectProxy, @NotNull final ProcessStreamsHolder streams) {
+  public void onListenerStarted(@NotNull final IToolingApiServer server,
+      @NotNull IProject projectProxy, @NotNull final ProcessStreamsHolder streams) {
     startServerOutputReader(streams.err);
     this.server = server;
     Lookup.getDefault().update(BuildService.KEY_PROJECT_PROXY, projectProxy);
     this.isToolingServerStarted = true;
   }
-  
+
   @Override
   public void onServerExited(int exitCode) {
     LOG.warn("Tooling API process terminated with exit code:", exitCode);
     stopForeground(true);
   }
-  
+
   @NonNull
   @Override
   public IToolingApiClient getClient() {
@@ -237,7 +235,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
     return _toolingApiClient;
   }
-  
+
   @Override
   public void logMessage(@NonNull LogLine line) {
     SERVER_LOGGER.log(line.priority, line.formattedTagAndMessage());
@@ -333,7 +331,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       return false;
     }
 
-    final var projectRoot = Objects.requireNonNull(ProjectManagerImpl.getInstance().getProjectDir());
+    final var projectRoot = Objects.requireNonNull(
+        ProjectManagerImpl.getInstance().getProjectDir());
     if (!projectRoot.exists()) {
       return false;
     }
@@ -346,7 +345,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     return gradlew.exists() && gradleWrapperJar.exists() && gradleWrapperProps.exists();
   }
 
-  public void setServerListener (@Nullable ToolingServerRunner.OnServerStartListener listener) {
+  public void setServerListener(@Nullable ToolingServerRunner.OnServerStartListener listener) {
     if (this.toolingServerThread != null) {
       this.toolingServerThread.setListener(listener);
     }
@@ -401,7 +400,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @NonNull
   @Override
-  public CompletableFuture<InitializeResult> initializeProject(@NonNull InitializeProjectParams params) {
+  public CompletableFuture<InitializeResult> initializeProject(
+      @NonNull InitializeProjectParams params) {
     checkServerStarted();
     Objects.requireNonNull(params);
     return performBuildTasks(server.initialize(params));
@@ -412,7 +412,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
   public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
     checkServerStarted();
     final var message =
-        new TaskExecutionMessage(IProject.ROOT_PROJECT_PATH, Arrays.asList(tasks), getGradleInstallationDir());
+        new TaskExecutionMessage(IProject.ROOT_PROJECT_PATH, Arrays.asList(tasks),
+            UtilKt.getGradleDistributionParams());
     return performBuildTasks(server.executeTasks(message));
   }
 
@@ -422,7 +423,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       @NonNull String projectPath, @NonNull String... tasks) {
     checkServerStarted();
     final var message =
-        new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationDir());
+        new TaskExecutionMessage(projectPath, Arrays.asList(tasks),
+            UtilKt.getGradleDistributionParams());
     return performBuildTasks(server.executeTasks(message));
   }
 
@@ -496,7 +498,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       this.eventListener = null;
       return this;
     }
-    
+
     this.eventListener = wrap(eventListener);
     return this;
   }
@@ -544,13 +546,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     if (outputReader == null) {
       outputReader = new OutputReaderThread(err, SERVER_System_err::error);
     }
-    
+
     if (!outputReader.isAlive()) {
       outputReader.start();
     }
   }
-  
-  /** Handles events received from a Gradle build. */
+
+  /**
+   * Handles events received from a Gradle build.
+   */
   public interface EventListener {
 
     /**

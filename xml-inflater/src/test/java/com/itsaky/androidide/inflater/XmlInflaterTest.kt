@@ -18,6 +18,7 @@
 package com.itsaky.androidide.inflater
 
 import androidx.appcompat.app.AppCompatActivity
+import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.inflater.utils.endParse
 import com.itsaky.androidide.inflater.utils.startParse
 import com.itsaky.androidide.lookup.Lookup
@@ -25,13 +26,10 @@ import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.findAppModule
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
-import com.itsaky.androidide.utils.FileProvider
 import org.junit.Ignore
 import org.robolectric.Robolectric
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.io.path.pathString
 
 @Ignore("Test utility provider")
 object XmlInflaterTest {
@@ -44,12 +42,12 @@ object XmlInflaterTest {
       return
     }
 
-    val (server, project) =
+    val (_, project, result) =
       ToolingApiTestLauncher().launchServer()
-    server.initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
+    assertThat(result?.isSuccessful).isTrue()
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
-    IProjectManager.getInstance().setupProject()
+    IProjectManager.getInstance().setupProject(project)
     init.set(true)
   }
 }

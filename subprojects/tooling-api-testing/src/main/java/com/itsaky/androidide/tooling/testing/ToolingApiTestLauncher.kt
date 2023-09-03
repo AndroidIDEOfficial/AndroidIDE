@@ -21,9 +21,12 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
+import com.itsaky.androidide.tooling.api.messages.GradleDistributionParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.FileProvider
@@ -60,10 +63,16 @@ class ToolingApiTestLauncher {
       "jdk.compiler" to "com.sun.tools.javac.tree",
       "jdk.compiler" to "com.sun.tools.javac.util")
 
+  @JvmOverloads
   fun launchServer(
-    client: IToolingApiClient = MultiVersionTestClient(),
+    projectDir: Path = FileProvider.testProjectRoot(),
+    client: MultiVersionTestClient = MultiVersionTestClient(),
+    initParams: InitializeProjectParams = InitializeProjectParams(
+      projectDir.pathString,
+      GradleDistributionParams.forVersion(client.gradleVersion)
+    ),
     log: ILogger = ILogger.newInstance("BuildOutputLogger")
-  ): Pair<IToolingApiServer, IProject> {
+  ): Triple<IToolingApiServer, IProject, InitializeResult?> {
     val builder = ProcessBuilder(createProcessCmd(FileProvider.implModule()
       .resolve("build/libs/tooling-api-all.jar").pathString))
     val androidHome = findAndroidHome()
@@ -79,7 +88,10 @@ class ToolingApiTestLauncher {
 
     launcher.startListening()
 
-    return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
+    val server = launcher.remoteProxy as IToolingApiServer
+    val project = launcher.remoteProxy as IProject
+    val result = server.initialize(initParams).get()
+    return Triple(server, project, result)
   }
 
   private fun createProcessCmd(jar: String): List<String> {
@@ -94,7 +106,7 @@ class ToolingApiTestLauncher {
         cmd[0] = java.absolutePath
       }
     }
-//    cmd.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000")
+
     for (open in opens) {
       cmd.add("--add-opens=${open.key}/${open.value}=ALL-UNNAMED")
     }
@@ -123,11 +135,8 @@ class ToolingApiTestLauncher {
       const val buildFile = "build.gradle"
       const val buildFileIn = "$buildFile.in"
 
-      const val gradlewProps = "gradle/wrapper/gradle-wrapper.properties"
-      const val gradlewPropsIn = "$gradlewProps.in"
-
       const val DEFAULT_AGP_VERSION = "7.2.0"
-      const val DEFAULT_GRADLE_VERSION = "7.5.1"
+      const val DEFAULT_GRADLE_VERSION = "7.3.3"
 
       const val GENERATED_FILE_WARNING =
         "DO NOT EDIT - Automatically generated file"
@@ -150,22 +159,18 @@ class ToolingApiTestLauncher {
       projectDir.resolve(buildFileIn)
         .replaceContents(dest = projectDir.resolve(buildFile),
           candidate = "@@TOOLING_API_TEST_AGP_VERSION@@" to this.agpVersion)
-
-      projectDir.resolve(gradlewPropsIn)
-        .replaceContents(comment = "#", dest = projectDir.resolve(gradlewProps),
-          candidate = "@@GRADLE_VERSION@@" to this.gradleVersion)
     }
 
     override fun onBuildSuccessful(result: BuildResult) {
       onBuildResult(result)
     }
+
     override fun onBuildFailed(result: BuildResult) {
       onBuildResult(result)
     }
 
     private fun onBuildResult(result: BuildResult) {
       projectDir.resolve(buildFile).deleteIfExists()
-      projectDir.resolve(gradlewProps).deleteIfExists()
     }
 
     override fun onProgressEvent(event: ProgressEvent) {}

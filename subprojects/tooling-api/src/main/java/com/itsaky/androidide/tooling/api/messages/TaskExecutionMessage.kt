@@ -24,5 +24,5 @@ package com.itsaky.androidide.tooling.api.messages
 data class TaskExecutionMessage(
   val projectPath: String?,
   val tasks: List<String>,
-  val gradleInstallation: String = ""
+  val gradleDistribution: GradleDistributionParams = GradleDistributionParams.WRAPPER
 )

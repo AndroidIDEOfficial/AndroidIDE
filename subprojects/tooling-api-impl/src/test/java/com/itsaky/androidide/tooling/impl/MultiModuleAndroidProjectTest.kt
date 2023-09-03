@@ -49,8 +49,8 @@ class MultiModuleAndroidProjectTest {
 
   @Test
   fun `test simple multi module project initialization`() {
-    val (server, project) = ToolingApiTestLauncher().launchServer()
-    server.initializeTestProject()
+    val (server, project, result) = ToolingApiTestLauncher().launchServer()
+    assertThat(result?.isSuccessful).isTrue()
     doAssertions(project, server)
   }
 
@@ -200,10 +200,9 @@ class MultiModuleAndroidProjectTest {
       for ((agpVersion, gradleVersion) in versions) {
         client.agpVersion = agpVersion
         client.gradleVersion = gradleVersion
-        val (server, project) = ToolingApiTestLauncher().launchServer(client = client)
-        server.initializeTestProject()
+        val (server, project, result) = ToolingApiTestLauncher().launchServer(client = client)
+        assertThat(result?.isSuccessful).isTrue()
         doAssertions(project = project, server = server)
-        FileProvider.testProjectRoot().resolve(MultiVersionTestClient.buildFile).deleteExisting()
       }
     }
   }
@@ -211,36 +210,38 @@ class MultiModuleAndroidProjectTest {
   @Test
   @Throws(CIOnlyException::class)
   fun `test CI-only latest tested AGP version warning`() {
-    val log = CollectingLogger()
-    val agpVersion = "8.1.1"
-    val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "8.2", log = log)
-    val (server, _) = ToolingApiTestLauncher().launchServer(client = client, log = log)
-    val result = server.initializeTestProject()
-    val output = log.toString()
+    ciOnlyTest {
+      val log = CollectingLogger()
+      val agpVersion = "8.1.1"
+      val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "8.1", log = log)
+      val (_, _, result) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+      val output = log.toString()
 
-    if (result?.isSuccessful != true) {
-      // print the output if the initialization fails
-      println(output)
+      if (result?.isSuccessful != true) {
+        // print the output if the initialization fails
+        println(output)
+      }
+
+      assertThat(result?.isSuccessful).isTrue()
+      assertThat(output).contains(
+        "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
     }
-
-    assertThat(result?.isSuccessful).isTrue()
-    assertThat(output).contains(
-      "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
   }
 
   @Test
   @Throws(CIOnlyException::class)
   fun `test CI-only minimum AGP version failure`() {
-    val log = CollectingLogger()
-    val agpVersion = "7.1.0"
-    val client = MultiVersionTestClient(agpVersion = agpVersion, log = log)
-    val (server, _) = ToolingApiTestLauncher().launchServer(client = client, log = log)
-    val result = server.initializeTestProject()
-    assertThat(result?.isSuccessful).isFalse()
+    ciOnlyTest {
+      val log = CollectingLogger()
+      val agpVersion = "7.1.0"
+      val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "7.2", log = log)
+      val (_, _, result) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+      assertThat(result?.isSuccessful).isFalse()
 
-    val output = log.toString()
-    assertThat(output).contains(
-      "Android Gradle Plugin version $agpVersion is not supported by AndroidIDE.")
+      val output = log.toString()
+      assertThat(output).contains(
+        "Android Gradle Plugin version $agpVersion is not supported by AndroidIDE.")
+    }
   }
 
   private fun ciOnlyTest(test: () -> Unit) {
@@ -264,11 +265,7 @@ class MultiModuleAndroidProjectTest {
     return System.getenv("TEST_TOOLING_API_IMPL").let { it == "true" }
   }
 
-  private fun IToolingApiServer.initializeTestProject(): InitializeResult? {
-    return initialize(InitializeProjectParams(FileProvider.testProjectRoot().pathString)).get()
-  }
-
-  internal class CollectingLogger() : ILogger(CollectingLogger::class.simpleName) {
+  internal class CollectingLogger : ILogger(CollectingLogger::class.simpleName) {
 
     private val string = StringBuilder()
 

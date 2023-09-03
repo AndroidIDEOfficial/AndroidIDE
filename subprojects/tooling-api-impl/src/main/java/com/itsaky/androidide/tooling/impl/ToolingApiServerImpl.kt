@@ -20,6 +20,8 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
+import com.itsaky.androidide.tooling.api.messages.GradleDistributionParams
+import com.itsaky.androidide.tooling.api.messages.GradleDistributionType
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
@@ -86,7 +88,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         log.debug("Got initialize request", params)
         val stopWatch = StopWatch("Connection to project")
         this.connector = GradleConnector.newConnector().forProjectDirectory(File(params.directory))
-        setupConnectorForGradleInstallation(this.connector!!, params.gradleInstallation)
+        setupConnectorForGradleInstallation(this.connector!!, params.gradleDistribution)
         stopWatch.lap("Connector created")
 
         if (this.connector == null) {
@@ -155,7 +157,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
       }
 
       this.connector!!.forProjectDirectory(project.getMetadata().get().projectDir)
-      setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)
+      setupConnectorForGradleInstallation(this.connector!!, message.gradleDistribution)
 
       val connection = this.connector!!.connect()
       val builder = connection.newBuild()
@@ -188,20 +190,29 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
   private fun setupConnectorForGradleInstallation(
     connector: GradleConnector,
-    gradleDistribution: String?
+    params: GradleDistributionParams
   ) {
-    if (gradleDistribution.isNullOrBlank()) {
-      log.info("Using Gradle wrapper for build...")
-      return
-    }
-    val file = File(gradleDistribution)
-    if (!file.exists() || !file.isDirectory) {
-      log.error("Specified Gradle installation does not exist:", gradleDistribution)
-      return
-    }
+    when (params.type) {
+      GradleDistributionType.GRADLE_WRAPPER -> {
+        log.info("Using Gradle wrapper for build...")
+      }
 
-    log.info("Using Gradle installation:", file.canonicalPath)
-    connector.useInstallation(file)
+      GradleDistributionType.GRADLE_INSTALLATION -> {
+        val file = File(params.value)
+        if (!file.exists() || !file.isDirectory) {
+          log.error("Specified Gradle installation does not exist:", params)
+          return
+        }
+
+        log.info("Using Gradle installation:", file.canonicalPath)
+        connector.useInstallation(file)
+      }
+
+      GradleDistributionType.GRADLE_VERSION -> {
+        log.info("Using Gradle version '${params.value}'")
+        connector.useGradleVersion(params.value)
+      }
+    }
   }
 
   private fun notifyBuildFailure(tasks: List<String>) {

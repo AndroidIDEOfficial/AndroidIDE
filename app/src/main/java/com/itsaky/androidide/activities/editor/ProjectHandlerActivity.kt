@@ -27,7 +27,6 @@ import androidx.annotation.GravityInt
 import androidx.appcompat.app.AlertDialog
 import com.blankj.utilcode.util.SizeUtils
 import com.blankj.utilcode.util.ThreadUtils
-import com.google.common.collect.ImmutableList
 import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding
@@ -39,17 +38,15 @@ import com.itsaky.androidide.handlers.LspHandler.destroyLanguageServers
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.IDELanguageClientImpl
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
-import com.itsaky.androidide.preferences.internal.gradleInstallationDir
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
 import com.itsaky.androidide.projects.ProjectManagerImpl
-import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.GradleProject
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.services.builder.GradleBuildService
 import com.itsaky.androidide.services.builder.GradleBuildServiceConnnection
+import com.itsaky.androidide.services.builder.gradleDistributionParams
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tasks.executeWithProgress
-import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.messages.AndroidInitializationParams
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
@@ -405,11 +402,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     }
   }
 
-  private fun createProjectInitParams(projectDir: File,
-    buildVariants: Map<String, String>): InitializeProjectParams {
+  private fun createProjectInitParams(
+    projectDir: File,
+    buildVariants: Map<String, String>
+  ): InitializeProjectParams {
     return InitializeProjectParams(
       projectDir.absolutePath,
-      gradleInstallationDir,
+      gradleDistributionParams,
       createAndroidParams(buildVariants)
     )
   }
