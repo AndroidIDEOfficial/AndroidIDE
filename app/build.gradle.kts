@@ -219,21 +219,24 @@ tasks.create("generateInitScript") {
 
   doLast {
     out.bufferedWriter().use {
+
       it.write(
         """
       initscript {
           repositories {
+              
+              // Always specify the snapshots repository first
               maven {
-                  mavenCentral()
-                  google()
-
                   // Add snapshots repository for AndroidIDE CI builds
-                  url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                  url "${VersionUtils.SNAPSHOTS_REPO}"
               }
+              
+              mavenCentral()
+              google()
           }
 
           dependencies {
-              classpath '${BuildConfig.packageName}:gradle-plugin:${downloadVersion}'
+              classpath '${BuildConfig.packageName}:gradle-plugin:$downloadVersion'
           }
       }
       

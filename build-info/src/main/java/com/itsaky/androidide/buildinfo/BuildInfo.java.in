@@ -52,4 +52,5 @@ public class BuildInfo {
 
   // ------- Misc ------------------------
   public static final String PROJECT_SITE = "@@PROJECT_SITE@@";
+  public static final String SNAPSHOTS_REPOSITORY = "@@SNAPSHOTS_REPOSITORY@@";
 }

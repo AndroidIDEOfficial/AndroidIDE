@@ -54,7 +54,9 @@ tasks.create("generateBuildInfo") {
           "PROJECT_SITE" to ProjectConfig.PROJECT_SITE,
 
           "AGP_VERSION_MININUM" to AGP_VERSION_MINIMUM,
-          "AGP_VERSION_LATEST" to libs.versions.agp.tooling.get()
+          "AGP_VERSION_LATEST" to libs.versions.agp.tooling.get(),
+
+          "SNAPSHOTS_REPOSITORY" to VersionUtils.SNAPSHOTS_REPO,
         )
     )
   }

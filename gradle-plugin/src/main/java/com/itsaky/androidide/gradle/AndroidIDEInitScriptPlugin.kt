@@ -102,9 +102,7 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
 
       // For AndroidIDE CI builds
       maven { repository ->
-        repository.url = URI.create(
-          "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-        )
+        repository.url = URI.create(BuildInfo.SNAPSHOTS_REPOSITORY)
       }
     } else {
       logger.info("Using local maven repository for classpath resolution...")
