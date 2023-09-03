@@ -31,7 +31,6 @@ import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.projects.FileManager
-import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.tooling.api.IProject
@@ -72,7 +71,9 @@ abstract class LSPTest {
   protected val log = ILogger.newInstance(javaClass.simpleName)
 
   companion object {
-    @JvmStatic protected var isInitialized: Boolean = false
+
+    @JvmStatic
+    protected var isInitialized: Boolean = false
   }
 
   @Before
@@ -99,14 +100,16 @@ abstract class LSPTest {
     Environment.ANDROID_JAR = FileProvider.resources().resolve("android.jar").toFile()
     Environment.JAVA_HOME = File(System.getProperty("java.home")!!)
     registerServer()
-    ProjectManagerImpl.getInstance().register()
-    ProjectManagerImpl.getInstance().setupProject()
+
+    val projectManager = ProjectManagerImpl.getInstance()
+    projectManager.register()
+    projectManager.setupProject(project)
 
     // We need to manually setup the language server with the project here
     // ProjectManager.notifyProjectUpdate()
     ILanguageServerRegistry.getDefault()
       .getServer(getServerId())!!
-      .setupWithProject(IProjectManager.getInstance().rootProject!!)
+      .setupWithProject(projectManager.rootProject!!)
 
     isInitialized = true
   }

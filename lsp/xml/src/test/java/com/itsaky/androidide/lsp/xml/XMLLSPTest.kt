@@ -33,9 +33,6 @@ object XMLLSPTest : LSPTest() {
 
   @Before
   override fun initProjectIfNeeded() {
-    if (isInitialized) {
-      return
-    }
     super.initProjectIfNeeded()
     try {
       val module = findAppModule()!!
