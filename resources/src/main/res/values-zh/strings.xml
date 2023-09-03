@@ -40,7 +40,7 @@
   <string name="view_diags">诊断信息</string>
   <string name="title_installation_failed">安装失败</string>
   <string name="get_ready_for_something_awesome">让我们准备迎接很棒的东西!</string>
-  <string name="msg_picked_isnt_dir">选择的路径不是文件夹!</string>
+  <string name="msg_picked_isnt_dir">所选文件不是目录！</string>
   <string name="msg_pick_single_file">请只选择一个文件夹</string>
   <string name="please_wait">请稍等片刻…</string>
   <!-- Project Builder -->
@@ -70,7 +70,7 @@
   <string name="new_project">新项目</string>
   <string name="package_name">软件包名称</string>
   <string name="project_app_name">应用名称</string>
-  <string name="msg_create_new_project_greeting">创建您令人惊讶的新项目!</string>
+  <string name="msg_create_new_project_greeting">开始创建你的惊人项目！</string>
   <string name="title_confirm_open_project">打开上一次的项目？</string>
   <string name="msg_confirm_open_project">您要打开上次打开的项目吗？打开的项目是：\n%s</string>
   <string name="group_project">项目</string>
@@ -363,7 +363,7 @@
   <string name="idepref_maxLineWidth_title">最大行宽</string>
   <string name="idepref_maxLineWidth_summary">每行字符数最高上限</string>
   <string name="idepref_splitAttrIndentSize_title">拆分属性缩进大小</string>
-  <string name="idepref_splitAttrIndentSize_summary">The number of spaces to indent for split attributes.</string>
+  <string name="idepref_splitAttrIndentSize_summary">分割属性缩进的空格数。</string>
   <string name="idepref_preservedNewLines_title">保留新行</string>
   <string name="idepref_preservedNewLines_summary">应保留的最大连续换行数。</string>
   <string name="idepref_emptyElements_title">空元素行为</string>
@@ -433,7 +433,7 @@
   <string name="title_selected_tasks">选定的任务</string>
   <string name="msg_err_select_tasks">请选择要运行的任务</string>
   <string name="title_confirmation">确认</string>
-  <string name="msg_tasks_to_run">以下任务将按顺序运行。 再次点击“运行”按钮进行确认。\n\n%1$s</string>
+  <string name="msg_tasks_to_run">将按顺序运行以下任务，再次单击“运行”按钮进行确认。\n\n%1$s</string>
   <string name="msg_loading_tasks">加载任务...</string>
   <string name="title_all_tasks">所有任务</string>
   <string name="msg_feature_unimplemented">此功能尚未实现。</string>
@@ -471,7 +471,7 @@
   <string name="msg_no_unresolved_classes">找不到未解析的类名</string>
   <string name="title_class_chooser">哪个 %1$s？</string>
   <string name="permlab_bind_logger_service">绑定日志服务</string>
-  <string name="permdesc_bind_logger_service">允许此应用绑定到 AndroidIDE 的日志记录服务。 AndroidIDE 需要此权限才能读取此应用的日志。</string>
+  <string name="permdesc_bind_logger_service">允许该应用绑定到 AndroidIDE 的日志记录服务。 AndroidIDE 需要此权限才能读取该应用的日志。</string>
   <string name="wizard_module_name">模块名称</string>
   <string name="wizard_module_type">模块类型</string>
   <string name="msg_invalid_module_name">无效的 Gradle 模块名称</string>
