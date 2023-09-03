@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
-  <string name="copy" tools:override="true">Copy</string>
+  <string name="copy" tools:override="true">نسخ</string>
   <string name="text_to_search">Text to search</string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
@@ -100,7 +100,7 @@
   <string name="template_no_activity">لا يوجد نشاط</string>
   <string name="template_no_activity_description">إنشاء مشروع جديد بدون نشاط</string>
   <!-- Files -->
-  <string name="template_no_AndroidX">No AndroidX</string>
+  <string name="template_no_AndroidX">دون AndroidX</string>
   <string name="template_description_noAndroidX">إنشاء مشروع جديد بدون مكتبة AndroidX</string>
   <string name="save">حفظ</string>
   <string name="menu_find">البحث</string>
