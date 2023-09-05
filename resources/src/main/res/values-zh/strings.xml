@@ -516,6 +516,6 @@
   <string name="title_apply">应用</string>
   <string name="title_discard">放弃</string>
   <string name="msg_build_variants_fetch_failed">无法获取构建变体</string>
-  <string name="title_choose_application">选择应用程序</string>
+  <string name="title_choose_application">选择应用项</string>
   <string name="err_selected_variant_not_found">找不到选定的构建变体</string>
 </resources>
