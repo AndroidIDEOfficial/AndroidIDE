@@ -513,4 +513,10 @@
   <string name="msg_codeaction_failed">কোড ক্রিয়া সম্পাদন করতে ব্যর্থ হয়েছে৷</string>
   <string name="idepref_devOptions_enableLogsender_title">LogSender সক্রিয় করুন</string>
   <string name="idepref_devOptions_enableLogsender_summary">নিষ্ক্রিয় করা হলে, অ্যাপ্লিকেশান থেকে লগগুলি AndroidIDE-এ দেখানো হবে না৷</string>
+  <string name="title_build_variants">Build variants</string>
+  <string name="title_apply">Apply</string>
+  <string name="title_discard">Discard</string>
+  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
+  <string name="title_choose_application">Choose application</string>
+  <string name="err_selected_variant_not_found">Selected build variant not found</string>
 </resources>
