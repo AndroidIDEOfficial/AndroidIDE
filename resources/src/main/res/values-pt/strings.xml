@@ -512,4 +512,10 @@
   <string name="msg_codeaction_failed">Falha ao executar a ação de código</string>
   <string name="idepref_devOptions_enableLogsender_title">Ativar LogSender</string>
   <string name="idepref_devOptions_enableLogsender_summary">Quando desativado, os logs do aplicativo não serão exibidos no AndroidIDE</string>
+  <string name="title_build_variants">Build variants</string>
+  <string name="title_apply">Apply</string>
+  <string name="title_discard">Discard</string>
+  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
+  <string name="title_choose_application">Choose application</string>
+  <string name="err_selected_variant_not_found">Selected build variant not found</string>
 </resources>
