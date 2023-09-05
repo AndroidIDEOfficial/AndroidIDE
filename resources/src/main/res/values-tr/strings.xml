@@ -228,7 +228,7 @@
   <string name="msg_yesno_def_message">Emin misiniz?</string>
   <string name="msg_view_deletion_failed">View silinemiyor.</string>
   <string name="msg_empty_ui_layout">Herhangi bir View eklenmedi. Eklemek için tıklayın.</string>
-  <string name="msg_no_attr_format">Bu özellik için hiçbir özellik biçimi mevcut değil.</string>
+  <string name="msg_no_attr_format">Bu öznitelik için hiçbir öznitelik biçimi mevcut değil.</string>
   <string name="msg_generate_xml_failed">XML kodu oluşturulamadı</string>
   <string name="title_generating_xml">XML kodu oluşturuluyor</string>
   <string name="title_code_generation_failed">Kod oluşturma başarısız</string>
@@ -512,4 +512,10 @@
   <string name="msg_codeaction_failed">Kod eylemi gerçekleştirilemedi</string>
   <string name="idepref_devOptions_enableLogsender_title">LogSender\'ı Etkinleştir</string>
   <string name="idepref_devOptions_enableLogsender_summary">Devre dışı bırakıldığında, uygulamalardan gelen logolar Android\'de de görüntülenmeyecek</string>
+  <string name="title_build_variants">Build variants</string>
+  <string name="title_apply">Apply</string>
+  <string name="title_discard">Discard</string>
+  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
+  <string name="title_choose_application">Choose application</string>
+  <string name="err_selected_variant_not_found">Selected build variant not found</string>
 </resources>
