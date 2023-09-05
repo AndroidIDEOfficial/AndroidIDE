@@ -322,7 +322,7 @@
   <string name="msg_swipe_for_output">Проведите вверх для просмотра @@вывода сборки@@.</string>
   <string name="idepref_editor_useSoftTabs_title">Используйте программную вкладку</string>
   <string name="idepref_editor_useSoftTabs_summary">Выберите, следует ли использовать пробелы вместо символа табуляции (\\t).</string>
-  <string name="btn_donate">Поддержать</string>
+  <string name="btn_donate">Пожертвовать</string>
   <string name="btn_docs">Документация</string>
   <string name="btn_close">Закрыть</string>
   <string name="msg_ignore_case">Игнорировать регистр</string>
@@ -512,10 +512,10 @@
   <string name="msg_codeaction_failed">Не удалось выполнить действие с кодом</string>
   <string name="idepref_devOptions_enableLogsender_title">Включить LogSender</string>
   <string name="idepref_devOptions_enableLogsender_summary">Если отключено, журналы из приложений не будут отображаться в AndroidIDE</string>
-  <string name="title_build_variants">Build variants</string>
-  <string name="title_apply">Apply</string>
-  <string name="title_discard">Discard</string>
-  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
-  <string name="title_choose_application">Choose application</string>
-  <string name="err_selected_variant_not_found">Selected build variant not found</string>
+  <string name="title_build_variants">Варианты сборки</string>
+  <string name="title_apply">Применить</string>
+  <string name="title_discard">Отменить</string>
+  <string name="msg_build_variants_fetch_failed">Не удалось получить варианты сборки</string>
+  <string name="title_choose_application">Выберите приложение</string>
+  <string name="err_selected_variant_not_found">Выбранный вариант сборки не найден</string>
 </resources>
