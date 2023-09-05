@@ -512,10 +512,10 @@
   <string name="msg_codeaction_failed">Gagal melakukan tindakan kode</string>
   <string name="idepref_devOptions_enableLogsender_title">Aktifkan LogSender</string>
   <string name="idepref_devOptions_enableLogsender_summary">Saat dinonaktifkan, log dari aplikasi tidak akan ditampilkan di AndroidIDE</string>
-  <string name="title_build_variants">Build variants</string>
-  <string name="title_apply">Apply</string>
-  <string name="title_discard">Discard</string>
-  <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
-  <string name="title_choose_application">Choose application</string>
-  <string name="err_selected_variant_not_found">Selected build variant not found</string>
+  <string name="title_build_variants">Bangun varian</string>
+  <string name="title_apply">Terapkan</string>
+  <string name="title_discard">Buang</string>
+  <string name="msg_build_variants_fetch_failed">Gagal mengambil varian build</string>
+  <string name="title_choose_application">Pilih aplikasi</string>
+  <string name="err_selected_variant_not_found">Varian build yang dipilih tidak ditemukan</string>
 </resources>
