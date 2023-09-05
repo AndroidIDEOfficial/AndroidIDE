@@ -28,6 +28,7 @@ import org.gradle.api.logging.Logging
 class AndroidIDEGradlePlugin : Plugin<Project> {
 
   companion object {
+
     private val logger = Logging.getLogger(AndroidIDEGradlePlugin::class.java)
   }
 
@@ -37,12 +38,11 @@ class AndroidIDEGradlePlugin : Plugin<Project> {
     }
 
     target.run {
-      check(plugins.hasPlugin(APP_PLUGIN)) {
-        "${javaClass.simpleName} can only be applied to Android application projects"
-      }
 
-      logger.info("Trying to apply LogSender plugin to project '${project.path}'")
-      pluginManager.apply(LogSenderPlugin::class.java)
+      if (plugins.hasPlugin(APP_PLUGIN)) {
+        logger.info("Trying to apply LogSender plugin to project '${project.path}'")
+        pluginManager.apply(LogSenderPlugin::class.java)
+      }
     }
   }
 }
