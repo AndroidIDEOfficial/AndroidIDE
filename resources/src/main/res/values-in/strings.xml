@@ -518,4 +518,5 @@
   <string name="msg_build_variants_fetch_failed">Gagal mengambil varian build</string>
   <string name="title_choose_application">Pilih aplikasi</string>
   <string name="err_selected_variant_not_found">Varian build yang dipilih tidak ditemukan</string>
+  <string name="title_disconnect_log_senders">Disconnect log senders</string>
 </resources>
