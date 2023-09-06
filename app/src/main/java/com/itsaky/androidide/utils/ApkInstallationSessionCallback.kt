@@ -62,7 +62,11 @@ class ApkInstallationSessionCallback(private var activity: BaseEditorActivity?) 
       this.activity?.packageManager?.packageInstaller?.let { packageInstaller ->
         packageInstaller.mySessions.find { session -> session.sessionId == this.sessionId }
           ?.also { info ->
-            packageInstaller.abandonSession(info.sessionId)
+            try {
+              packageInstaller.abandonSession(info.sessionId)
+            } catch (ex: Exception) {
+              log.error("Failed to abandon session ${info.sessionId} : ${ex.cause?.message ?: ex.message}")
+            }
           }
       }
     }
