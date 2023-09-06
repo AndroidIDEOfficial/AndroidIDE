@@ -399,13 +399,13 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     return editorViewModel.areFilesModified()
   }
 
-  override fun closeFile(index: Int) {
+  override fun closeFile(index: Int, runAfter: () -> Unit) {
     if (index >= 0 && index < editorViewModel.getOpenedFileCount()) {
       val opened: File = editorViewModel.getOpenedFile(index)
       log.info("Closing file:", opened)
       val editor = getEditorAtIndex(index)
       if (editor != null && editor.isModified) {
-        notifyFilesUnsaved(listOf(editor)) { closeFile(index) }
+        notifyFilesUnsaved(listOf(editor)) { closeFile(index, runAfter) }
         return
       }
 
@@ -429,10 +429,8 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       log.error("Invalid file index. Cannot close.")
       return
     }
-  }
 
-  override fun closeAll() {
-    closeAll {}
+    runAfter()
   }
 
   override fun closeOthers() {
@@ -483,7 +481,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     binding.editorToolbar.updateMenuDisplay()
   }
 
-  private fun closeAll(runAfter: () -> Unit = {}) {
+  override fun closeAll(runAfter: () -> Unit) {
     val count = editorViewModel.getOpenedFileCount()
     val unsavedFiles =
       editorViewModel.getOpenedFiles().map(this::getEditorForFile).filter { it != null && it.isModified }

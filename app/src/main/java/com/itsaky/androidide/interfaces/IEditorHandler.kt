@@ -46,7 +46,9 @@ interface IEditorHandler {
   fun saveAllResult() : SaveResult
   fun saveResult(index: Int, result: SaveResult)
   
-  fun closeFile(index: Int)
-  fun closeAll()
+  fun closeFile(index: Int) = closeFile(index) {}
+  fun closeFile(index: Int, runAfter: () -> Unit)
+  fun closeAll() = closeAll {}
+  fun closeAll(runAfter: () -> Unit)
   fun closeOthers()
 }
