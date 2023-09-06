@@ -91,13 +91,12 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
   protected val mBuildEventListener = EditorBuildEventListener()
 
+  private val buildServiceConnection = GradleBuildServiceConnnection()
+
   companion object {
 
     const val STATE_KEY_FROM_SAVED_INSTANACE = "ide.editor.isFromSavedInstance"
     const val STATE_KEY_SHOULD_INITIALIZE = "ide.editor.isInitializing"
-
-    @JvmStatic
-    private val buildServiceConnection = GradleBuildServiceConnnection()
   }
 
   abstract fun doCloseAll(runAfter: () -> Unit)
