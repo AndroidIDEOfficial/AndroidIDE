@@ -16,9 +16,9 @@
  */
 package com.itsaky.androidide.editor.adapters
 
-import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -29,7 +29,6 @@ import com.itsaky.androidide.editor.R
 import com.itsaky.androidide.editor.databinding.LayoutCompletionItemBinding
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.lsp.models.ClassCompletionData
-import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.androidide.lsp.models.CompletionItemKind.CONSTRUCTOR
 import com.itsaky.androidide.lsp.models.CompletionItemKind.ENUM
@@ -49,26 +48,19 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.customOrJBMono
-import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.Info
-import io.github.rosemoe.sora.lang.completion.CompletionItem
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import com.itsaky.androidide.lsp.models.CompletionItem as LspCompletionItem
 
 class CompletionListAdapter : EditorCompletionAdapter() {
 
-  override fun attachValues(window: EditorAutoCompletion, items: List<CompletionItem>) {
-    super.attachValues(window, items)
-  }
-
   override fun getItemHeight(): Int {
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        40f,
-        Resources.getSystem().displayMetrics
-      )
+      TypedValue.COMPLEX_UNIT_DIP,
+      40f,
+      Resources.getSystem().displayMetrics
+    )
       .toInt()
   }
 
@@ -97,12 +89,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     if (desc.isEmpty()) {
       binding.completionDetail.visibility = View.GONE
     }
-    binding.root.setBackgroundColor(
-      context.resolveAttr(
-        if (isCurrentCursorPosition) R.color.completionList_backgroundSelected
-        else R.color.completionList_background
-      )
-    )
+
     binding.completionApiInfo.visibility = View.GONE
 
     applyColorScheme(binding, isCurrentCursorPosition)
@@ -111,15 +98,8 @@ class CompletionListAdapter : EditorCompletionAdapter() {
   }
 
   private fun applyColorScheme(binding: LayoutCompletionItemBinding, isCurrent: Boolean) {
-    var color =
-      if (isCurrent) getThemeColor(SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM)
-      else getThemeColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)
-    if (color != 0) {
-      binding.root.backgroundTintList = ColorStateList.valueOf(color)
-      binding.completionIconText.backgroundTintList = ColorStateList.valueOf(color)
-    }
-
-    color = getThemeColor(COMPLETION_WND_TEXT_LABEL)
+    setItemBackground(binding, isCurrent)
+    var color = getThemeColor(COMPLETION_WND_TEXT_LABEL)
     if (color != 0) {
       binding.completionLabel.setTextColor(color)
       binding.completionIconText.setTextColor(color)
@@ -139,6 +119,22 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     if (color != 0) {
       binding.completionType.setTextColor(color)
     }
+  }
+
+  private fun setItemBackground(binding: LayoutCompletionItemBinding, isCurrent: Boolean) {
+    val color =
+      if (isCurrent) getThemeColor(SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM)
+      else 0
+
+    val cornerRadius = binding.root.context.resources
+      .getDimensionPixelSize(R.dimen.completion_window_corner_radius).toFloat()
+
+    val gd = GradientDrawable().apply {
+      setColor(color)
+      setCornerRadius(cornerRadius)
+    }
+
+    binding.root.background = gd
   }
 
   private fun showApiInfoIfNeeded(item: LspCompletionItem, textView: TextView) {
@@ -212,15 +208,15 @@ class CompletionListAdapter : EditorCompletionAdapter() {
     val data = item.data
     return if ( // These represent a class type
       (type === CLASS ||
-        type === INTERFACE ||
-        type === ENUM ||
+          type === INTERFACE ||
+          type === ENUM ||
 
-        // These represent a method type
-        type === METHOD ||
-        type === CONSTRUCTOR ||
+          // These represent a method type
+          type === METHOD ||
+          type === CONSTRUCTOR ||
 
-        // A field type
-        type === FIELD) && data != null
+          // A field type
+          type === FIELD) && data != null
     ) {
       val className =
         when (data) {

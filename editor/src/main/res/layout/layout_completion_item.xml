@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  This file is part of AndroidIDE.
   ~
   ~  AndroidIDE is free software: you can redistribute it and/or modify
@@ -22,7 +21,6 @@
   android:id="@+id/relativeLayout2"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:background="?attr/colorPrimaryContainer"
   android:gravity="center_vertical"
   android:minHeight="40dp"
   tools:ignore="SmallSp">
@@ -44,10 +42,11 @@
 
   <TextView
     android:id="@+id/completion_label"
+    android:textStyle="bold"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp"
     android:layout_marginTop="2dp"
+    android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp"
     android:ellipsize="end"
     android:gravity="center_vertical"
@@ -55,7 +54,6 @@
     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
     android:textColor="?attr/colorOnPrimaryContainer"
     android:textSize="13sp"
-    android:textStyle="bold"
     app:layout_constraintEnd_toStartOf="@id/completion_type"
     app:layout_constraintStart_toEndOf="@id/completion_iconText"
     app:layout_constraintTop_toTopOf="parent"
@@ -81,9 +79,9 @@
     android:id="@+id/completion_api_info"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="2dp"
     android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp"
-    android:layout_marginBottom="2dp"
     android:ellipsize="end"
     android:gravity="center_vertical"
     android:singleLine="true"

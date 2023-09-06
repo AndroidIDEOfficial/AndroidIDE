@@ -72,6 +72,10 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
       "completion.window.text.type",
       SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
     ),
+    COMPLETION_WND_BG_CURRENT_ITEM(
+      "completion.window.item.current",
+      SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM
+    ),
     NON_PRINTABLE_CHAR("non_printable_char", EditorColorScheme.NON_PRINTABLE_CHAR),
     HIGHLIGHTED_DELIMITERS_UNDERLINE(
       "highlighted.delimiters.underline",

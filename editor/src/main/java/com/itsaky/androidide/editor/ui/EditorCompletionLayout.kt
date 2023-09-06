@@ -19,7 +19,9 @@ package com.itsaky.androidide.editor.ui
 
 import android.graphics.drawable.GradientDrawable
 import android.view.ViewGroup
-import com.blankj.utilcode.util.SizeUtils.dp2px
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.updateLayoutParams
+import com.itsaky.androidide.editor.R
 import io.github.rosemoe.sora.widget.component.DefaultCompletionLayout
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
@@ -32,14 +34,27 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 class EditorCompletionLayout : DefaultCompletionLayout() {
 
   override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
-    super.onApplyColorScheme(colorScheme)
 
-    val gd =
-      (completionList.parent as? ViewGroup?)?.background as? GradientDrawable?
-        ?: throw RuntimeException(
-          "CompletionLayout implementation changed. Please report this issue."
-        )
+    val resources = completionList.context.resources
+    val cornerRadius = resources.getDimensionPixelSize(R.dimen.completion_window_corner_radius)
+      .toFloat()
 
-    gd.setStroke(dp2px(1f), colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
+    val strokeWidth = resources
+      .getDimensionPixelSize(R.dimen.completion_window_stroke_width)
+
+    (completionList.parent as? ViewGroup?)?.background = GradientDrawable().apply {
+      setCornerRadius(cornerRadius)
+      setStroke(strokeWidth, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
+      setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND))
+    }
+
+    if (completionList.layoutParams is MarginLayoutParams) {
+      completionList.updateLayoutParams<MarginLayoutParams> {
+        marginStart = strokeWidth
+        topMargin = strokeWidth
+        marginEnd = strokeWidth
+        bottomMargin = strokeWidth
+      }
+    }
   }
 }

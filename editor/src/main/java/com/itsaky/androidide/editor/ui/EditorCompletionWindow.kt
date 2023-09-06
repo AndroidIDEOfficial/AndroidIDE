@@ -27,8 +27,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
-import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import java.util.concurrent.atomic.AtomicReference
+import java.lang.ref.WeakReference
 import kotlin.math.min
 
 /**
@@ -37,24 +36,23 @@ import kotlin.math.min
  * @author Akash Yadav
  */
 class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(editor) {
-  private var mListView: ListView? = null
-  private var mAdapter: EditorCompletionAdapter? = null
-  private val mItems: MutableList<CompletionItem> = mutableListOf()
+
+  private var listView: ListView? = null
+  private val items: MutableList<CompletionItem> = mutableListOf()
   private val log = ILogger.newInstance(javaClass.simpleName)
-  
+
   init {
-    mAdapter = super.adapter
     setLayout(EditorCompletionLayout())
   }
-  
+
   override fun setLayout(layout: CompletionLayout) {
     super.setLayout(layout)
     (layout.completionList as? ListView)?.let {
-      mListView = it
-      it.adapter = mAdapter
+      listView = it
+      it.adapter = this.adapter
       it.setOnItemLongClickListener { _, view, position, _ ->
         val data =
-          (mItems[position] as? com.itsaky.androidide.lsp.models.CompletionItem)?.data
+          (items[position] as? com.itsaky.androidide.lsp.models.CompletionItem)?.data
             ?: return@setOnItemLongClickListener false
         val url =
           DocumentationReferenceProvider.getUrl(data) ?: return@setOnItemLongClickListener false
@@ -68,17 +66,9 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       }
     }
   }
-  
-  override fun setAdapter(adapter: EditorCompletionAdapter?) {
-    super.setAdapter(adapter)
-    mAdapter = adapter
-    mAdapter!!.attachValues(this, mItems)
-    mAdapter!!.notifyDataSetInvalidated()
-    mListView!!.adapter = adapter
-  }
-  
+
   override fun select(pos: Int): Boolean {
-    if (pos > mAdapter!!.count) {
+    if (pos > adapter!!.count) {
       return false
     }
     return try {
@@ -88,7 +78,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       false
     }
   }
-  
+
   override fun select(): Boolean {
     return try {
       super.select()
@@ -97,7 +87,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       false
     }
   }
-  
+
   override fun cancelCompletion() {
     if (completionThread != null) {
       ProgressManager.instance.cancel(completionThread)
@@ -105,54 +95,71 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     super.cancelCompletion()
     popup.dismiss()
   }
-  
+
   override fun requireCompletion() {
     if (cancelShowUp || !isEnabled) {
       return
     }
+
     val text = editor.text
-    if (text.cursor.isSelected) {
+    if (text.cursor.isSelected || checkNoCompletion()) {
       hide()
       return
     }
+
     if (System.nanoTime() - requestTime < editor.props.cancelCompletionNs) {
       hide()
       requestTime = System.nanoTime()
       return
     }
+
     cancelCompletion()
     requestTime = System.nanoTime()
-    super.currentSelection = -1
-    val reference = AtomicReference<List<CompletionItem>>()
-    val publisher =
+    currentSelection = -1
+
+    publisher =
       CompletionPublisher(
         editor.handler,
         {
-          val newItems = reference.get()
-          mItems.clear()
-          mItems.addAll(newItems)
-          mAdapter!!.notifyDataSetChanged()
-          val newHeight = (mAdapter!!.itemHeight * mAdapter!!.count).toFloat()
+          val items = publisher.items
+          this.items.apply {
+            clear()
+            addAll(items)
+          }
+
+          if (lastAttachedItems == null || lastAttachedItems.get() != items) {
+            adapter.attachValues(this, this.items)
+            adapter.notifyDataSetInvalidated()
+            lastAttachedItems = WeakReference(items)
+          } else {
+            adapter.notifyDataSetChanged()
+          }
+
+          val newHeight = (adapter!!.itemHeight * adapter!!.count).toFloat()
+          if (newHeight == 0F) {
+            hide()
+          }
+
           setSize(width, min(newHeight, maxHeight.toFloat()).toInt())
           if (!popup.isShowing) {
-            dismiss()
             show()
           }
-          if (mAdapter!!.count >= 1) {
-            super.currentSelection = 0
+
+          if (adapter!!.count >= 1) {
+            currentSelection = 0
           }
         },
         editor.editorLanguage.interruptionLevel
       )
+
     publisher.setUpdateThreshold(1)
-    reference.set(publisher.items)
-    
+
     completionThread = CompletionThread(requestTime, publisher)
     completionThread.name = "CompletionThread-$requestTime"
-    
+
     setLoading(true)
-    
+
     completionThread.start()
   }
-  
+
 }
