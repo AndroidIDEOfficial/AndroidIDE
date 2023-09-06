@@ -23,6 +23,7 @@ internal fun ProjectTemplateBuilder.settingsGradleSrcStr(): String {
   return """
 pluginManagement {
   repositories {
+    gradlePluginPortal()
     google()
     mavenCentral()
   }
