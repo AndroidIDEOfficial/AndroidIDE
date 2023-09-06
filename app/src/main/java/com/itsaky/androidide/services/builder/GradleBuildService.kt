@@ -368,9 +368,9 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   private fun <T> performBuildTasks(future: CompletableFuture<T>): CompletableFuture<T> {
-    return CompletableFuture.runAsync(this::onPrepareBuildRequest).handle { _, _ ->
+    return CompletableFuture.runAsync(this::onPrepareBuildRequest).handleAsync { _, _ ->
       try {
-        return@handle future.get()
+        return@handleAsync future.get()
       } catch (e: Throwable) {
         throw CompletionException(e)
       }
