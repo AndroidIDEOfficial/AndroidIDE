@@ -518,4 +518,5 @@
   <string name="msg_build_variants_fetch_failed">Failed to fetch build variants</string>
   <string name="title_choose_application">Choose application</string>
   <string name="err_selected_variant_not_found">Selected build variant not found</string>
+  <string name="title_disconnect_log_senders">Disconnect log senders</string>
 </resources>
