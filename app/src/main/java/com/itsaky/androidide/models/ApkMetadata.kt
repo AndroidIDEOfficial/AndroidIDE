@@ -41,27 +41,31 @@ class ApkMetadata {
         // So we have to handle this case too.
         val redirectedFile = getListingFile(listingFIle).absoluteFile
         val dir = redirectedFile.parentFile
-        val metadata = gson.fromJson(FileReader(redirectedFile), ApkMetadata::class.java)
-        if (!isValid(metadata)) {
-          log.warn("Invalid APK metadata:", metadata)
-          return null
-        }
 
-        for (element in metadata.elements!!) {
-          if (element.outputFile == null) {
-            log.warn("No output file specified in APK metadata element:", element)
-            continue
+        FileReader(redirectedFile).use {
+          val metadata = gson.fromJson(it, ApkMetadata::class.java)
+          if (!isValid(metadata)) {
+            log.warn("Invalid APK metadata:", metadata)
+            return@use null
           }
 
-          if (element.outputFile!!.endsWith(".apk")) {
-            val apk = element.outputFile?.let { File(dir, it) } ?: continue
-            if (apk.exists() && apk.isFile) {
-              log.info("Found apk in metadata:", apk)
-              return apk
+          for (element in metadata.elements!!) {
+            if (element.outputFile == null) {
+              log.warn("No output file specified in APK metadata element:", element)
+              continue
+            }
+
+            if (element.outputFile!!.endsWith(".apk")) {
+              val apk = element.outputFile?.let { File(dir, it) } ?: continue
+              if (apk.exists() && apk.isFile) {
+                log.info("Found apk in metadata:", apk)
+                return@use apk
+              }
             }
           }
+
+          return@use null
         }
-        null
       } catch (e: FileNotFoundException) {
         log.error("Metadata file not found...", e)
         null
