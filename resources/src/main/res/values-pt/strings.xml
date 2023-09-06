@@ -518,5 +518,5 @@
   <string name="msg_build_variants_fetch_failed">Falha ao obter variantes de compilação</string>
   <string name="title_choose_application">Escolha o aplicativo</string>
   <string name="err_selected_variant_not_found">Variante de compilação selecionada não encontrada</string>
-  <string name="title_disconnect_log_senders">Disconnect log senders</string>
+  <string name="title_disconnect_log_senders">Desconectar remetentes de log</string>
 </resources>
