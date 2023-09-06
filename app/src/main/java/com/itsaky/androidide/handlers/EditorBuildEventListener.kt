@@ -60,7 +60,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
   }
 
-  override fun onBuildSuccessful(tasks: MutableList<String>) {
+  override fun onBuildSuccessful(tasks: List<String?>) {
     analyzeCurrentFile()
 
     isFirstBuild = false
@@ -73,7 +73,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     }
   }
 
-  override fun onBuildFailed(tasks: MutableList<String>) {
+  override fun onBuildFailed(tasks: List<String?>) {
     analyzeCurrentFile()
 
     isFirstBuild = false
