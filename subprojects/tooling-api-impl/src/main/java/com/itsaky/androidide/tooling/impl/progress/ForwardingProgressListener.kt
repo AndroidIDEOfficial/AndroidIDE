@@ -45,7 +45,6 @@ import org.gradle.tooling.events.work.WorkItemStartEvent
  * A [ProgressListener] which forwards all of its event to [IToolingApiClient].
  * @author Akash Yadav
  */
-@Suppress("UnstableApiUsage")
 class ForwardingProgressListener : ProgressListener {
 
   override fun statusChanged(event: ProgressEvent?) {
@@ -66,30 +65,35 @@ class ForwardingProgressListener : ProgressListener {
             is ProjectConfigurationFinishEvent -> EventTransformer.projectConfigurationFinish(event)
             else -> EventTransformer.projectConfigurationProgress(event)
           }
+
         is TaskProgressEvent ->
           when (event) {
             is TaskStartEvent -> EventTransformer.taskStart(event)
             is TaskFinishEvent -> EventTransformer.taskFinish(event)
             else -> EventTransformer.taskProgress(event)
           }
+
         is TestProgressEvent ->
           when (event) {
             is TestStartEvent -> EventTransformer.testStart(event)
             is TestFinishEvent -> EventTransformer.testFinish(event)
             else -> EventTransformer.testProgress(event)
           }
+
         is TransformProgressEvent ->
           when (event) {
             is TransformStartEvent -> EventTransformer.transformStart(event)
             is TransformFinishEvent -> EventTransformer.transformFinish(event)
             else -> EventTransformer.transformProgress(event)
           }
+
         is WorkItemProgressEvent ->
           when (event) {
             is WorkItemStartEvent -> EventTransformer.workStart(event)
             is WorkItemFinishEvent -> EventTransformer.workFinish(event)
             else -> EventTransformer.workProgress(event)
           }
+
         is StatusEvent -> EventTransformer.statusEvent(event)
         else ->
           when (event) {

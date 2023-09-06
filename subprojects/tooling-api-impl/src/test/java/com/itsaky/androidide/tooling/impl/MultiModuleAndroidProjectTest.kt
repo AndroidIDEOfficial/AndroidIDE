@@ -26,22 +26,21 @@ import com.itsaky.androidide.tooling.api.IJavaProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.ProjectType
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.models.AndroidProjectMetadata
 import com.itsaky.androidide.tooling.api.models.JavaModuleExternalDependency
 import com.itsaky.androidide.tooling.api.models.JavaModuleProjectDependency
 import com.itsaky.androidide.tooling.api.models.JavaProjectMetadata
 import com.itsaky.androidide.tooling.api.models.params.StringParameter
+import com.itsaky.androidide.tooling.events.ProgressEvent
+import com.itsaky.androidide.tooling.events.task.TaskStartEvent
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher.MultiVersionTestClient
-import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.ILogger
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
-import kotlin.io.path.deleteExisting
-import kotlin.io.path.pathString
+import java.util.concurrent.CompletableFuture
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -52,6 +51,63 @@ class MultiModuleAndroidProjectTest {
     val (server, project, result) = ToolingApiTestLauncher().launchServer()
     assertThat(result?.isSuccessful).isTrue()
     doAssertions(project, server)
+  }
+
+  @Test
+  fun `test task name should be shown if gradle configuration cache is enabled`() {
+
+    // Issue #1173
+
+    val taskPaths = mutableListOf<String>()
+    val client = object : MultiVersionTestClient() {
+
+      override fun getBuildArguments(): CompletableFuture<List<String>> {
+        return CompletableFuture.completedFuture(super.getBuildArguments().get().toMutableList()
+          .also { it.add("--configuration-cache") })
+      }
+
+      override fun onProgressEvent(event: ProgressEvent) {
+        if (event is TaskStartEvent) {
+          taskPaths.add(event.descriptor.taskPath)
+        }
+      }
+    }
+
+    val (server, project, result) = ToolingApiTestLauncher().launchServer(client = client)
+    assertThat(server).isNotNull()
+    assertThat(project).isNotNull()
+    assertThat(result?.isSuccessful).isTrue()
+
+    println("Executed tasks during initialization : " + taskPaths.joinToString(
+      separator = System.lineSeparator()))
+    taskPaths.clear()
+
+    val (isSuccessful, failure) = server.executeTasks(TaskExecutionMessage(
+      projectPath = ":android-library",
+      tasks = listOf("assembleDebug"),
+      gradleDistribution = client.gradleDistParams
+    )).get()
+
+    if (failure != null) {
+      println("Failure: $failure")
+    }
+
+    assertThat(isSuccessful).isTrue()
+    assertThat(failure).isNull()
+
+    assertThat(taskPaths).isNotNull()
+    assertThat(taskPaths.size).isGreaterThan(10)
+    assertThat(taskPaths).containsAtLeastElementsIn(
+      arrayOf(
+        "preBuild",
+        "generateDebugResources",
+        "compileDebugJavaWithJavac",
+        "assembleDebug"
+      ).map { ":android-library:$it" }
+    )
+    println(
+      "Executed tasks during build : " + taskPaths.joinToString(separator = System.lineSeparator())
+    )
   }
 
   private fun doAssertions(project: IProject, server: IToolingApiServer) {

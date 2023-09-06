@@ -69,7 +69,7 @@ class ToolingApiTestLauncher {
     client: MultiVersionTestClient = MultiVersionTestClient(),
     initParams: InitializeProjectParams = InitializeProjectParams(
       projectDir.pathString,
-      GradleDistributionParams.forVersion(client.gradleVersion)
+      client.gradleDistParams
     ),
     log: ILogger = ILogger.newInstance("BuildOutputLogger")
   ): Triple<IToolingApiServer, IProject, InitializeResult?> {
@@ -123,12 +123,16 @@ class ToolingApiTestLauncher {
     return cmd
   }
 
-  class MultiVersionTestClient(
+  open class MultiVersionTestClient(
     private val projectDir: Path = FileProvider.testProjectRoot(),
     var agpVersion: String = DEFAULT_AGP_VERSION,
     var gradleVersion: String = DEFAULT_GRADLE_VERSION,
-    val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName)
+    private val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName),
+    private val extraArgs : List<String> = emptyList()
   ) : IToolingApiClient {
+
+    val gradleDistParams: GradleDistributionParams
+      get() = GradleDistributionParams.forVersion(this.gradleVersion)
 
     companion object {
 
@@ -176,7 +180,7 @@ class ToolingApiTestLauncher {
     override fun onProgressEvent(event: ProgressEvent) {}
 
     override fun getBuildArguments(): CompletableFuture<List<String>> {
-      return CompletableFuture.completedFuture(listOf("--stacktrace", "--info"))
+      return CompletableFuture.completedFuture(mutableListOf("--stacktrace", "--info").also { it.addAll(extraArgs) })
     }
 
     override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
