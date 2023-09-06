@@ -518,5 +518,5 @@
   <string name="msg_build_variants_fetch_failed">İnşa türleri alınamadı</string>
   <string name="title_choose_application">Uygulama seç</string>
   <string name="err_selected_variant_not_found">Seçili inşa türü bulunamadı</string>
-  <string name="title_disconnect_log_senders">Disconnect log senders</string>
+  <string name="title_disconnect_log_senders">Günlük göndericilerinin bağlantısını kes</string>
 </resources>
