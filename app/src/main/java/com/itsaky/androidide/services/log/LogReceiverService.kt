@@ -87,7 +87,7 @@ class LogReceiverService : Service() {
         isBoundToConsumer.set(true)
       }
     }
-    
+
     if (intent?.action != LogSender.SERVICE_ACTION) {
       log.debug("Rejecting bind request: action=${intent?.action}")
       return null
@@ -117,6 +117,7 @@ class LogReceiverService : Service() {
     super.onDestroy()
     log.debug("LogReceiverService is being destroyed...")
     binder.close()
+    started.set(false)
     try {
       scheduledExecutor.shutdownNow()
     } catch (e: Exception) {
@@ -145,8 +146,23 @@ class LogReceiverService : Service() {
       }
     }, LOG_CONSUMER_WAIT_DURATION.toLong(), TimeUnit.SECONDS)
   }
+
+  /**
+   * Disconnects all connected log senders. Disconnecting all senders will eventually lead
+   * to this service being destroyed.
+   */
+  internal fun disconnectAll() {
+    if (started.get()) {
+      binder.disconnectAll()
+    }
+  }
 }
 
+/**
+ * Lookup the instance of [LogReceiverService] in the [Lookup] registry.
+ *
+ * @return The [LogReceiverService] instance or `null` it the service is not registered.
+ */
 fun lookupLogService(): LogReceiverService? {
   return Lookup.getDefault().lookup(LogReceiverService.LOOKUP_KEY)
 }

@@ -55,7 +55,6 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
   override fun execAction(data: ActionData): Boolean {
     chooseApplication(data) { module ->
       val activity = data.requireActivity()
-      val projectManager = IProjectManager.getInstance()
 
       val variant = module.getSelectedVariant() ?: run {
         activity.flashError(

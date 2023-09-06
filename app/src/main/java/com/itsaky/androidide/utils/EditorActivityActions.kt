@@ -30,6 +30,7 @@ import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction
 import com.itsaky.androidide.actions.editor.PasteAction
 import com.itsaky.androidide.actions.editor.SelectAllAction
+import com.itsaky.androidide.actions.etc.DisconnectLogSendersAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
 import com.itsaky.androidide.actions.etc.PreviewLayoutAction
@@ -54,7 +55,9 @@ import com.itsaky.androidide.actions.text.UndoAction
  * @author Akash Yadav
  */
 class EditorActivityActions {
+
   companion object {
+
     @JvmStatic
     fun register(context: Context) {
       clear()
@@ -72,6 +75,7 @@ class EditorActivityActions {
       registry.registerAction(CancelBuildAction(context))
       registry.registerAction(ProjectSyncAction(context))
       registry.registerAction(ReloadColorSchemesAction(context))
+      registry.registerAction(DisconnectLogSendersAction(context))
 
       // editor text actions
       registry.registerAction(ExpandSelectionAction(context))
