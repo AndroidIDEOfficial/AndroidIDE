@@ -176,7 +176,6 @@ fun downloadSigningKey() {
   }
 
   getEnvOrProp(KEY_BIN)?.let { bin ->
-    logger.info("Using $KEY_BIN for writing signing key")
     val contents = Base64.getDecoder().decode(bin)
     signingKey.writeBytes(contents)
     return
