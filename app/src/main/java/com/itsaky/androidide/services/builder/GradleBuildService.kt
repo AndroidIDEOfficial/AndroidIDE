@@ -37,6 +37,7 @@ import com.itsaky.androidide.preferences.internal.isOfflineEnabled
 import com.itsaky.androidide.preferences.internal.isScanEnabled
 import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
 import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
+import com.itsaky.androidide.preferences.logsenderEnabled
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
@@ -48,6 +49,7 @@ import com.itsaky.androidide.tooling.api.ForwardingToolingApiClient
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
+import com.itsaky.androidide.tooling.api.LogSenderConfig.PROPERTY_LOGSENDER_ENABLED
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
@@ -261,6 +263,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     // Override AAPT2 binary
     // The one downloaded from Maven is not built for Android
     extraArgs.add("-Pandroid.aapt2FromMavenOverride=" + Environment.AAPT2.absolutePath)
+    extraArgs.add("-P${PROPERTY_LOGSENDER_ENABLED}=${logsenderEnabled}")
     if (isStacktraceEnabled) {
       extraArgs.add("--stacktrace")
     }

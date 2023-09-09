@@ -45,45 +45,6 @@ class AndroidIDEInitScriptPluginTest {
     assertBasics(result)
   }
 
-  private fun buildProject(
-    agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
-    gradleVersion: String = "8.2",
-    vararg plugins: String
-  ): BuildResult {
-    val projectRoot = openProject(agpVersion, *plugins)
-    val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
-    val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local/repos.txt").toFile()
-
-    if (!(mavenLocal.exists() && mavenLocal.isFile)) {
-      throw FileNotFoundException("repos.txt file not found")
-    }
-
-    val repositories = mavenLocal.readText()
-
-    for (repo in repositories.split(':')) {
-      val file = File(repo)
-      if (!(file.exists() && file.isDirectory)) {
-        throw FileNotFoundException("Maven local repository does not exist : $repo")
-      }
-    }
-
-    val runner = GradleRunner.create()
-      .withProjectDir(projectRoot.toFile())
-      .withGradleVersion(gradleVersion)
-      .withArguments(
-        ":app:tasks", // run any task, as long as it applies the plugins
-        "--init-script", initScript.pathString,
-        "-Pandroidide.plugins.internal.isTestEnv=true", // plugins should be published to maven local first
-        "-Pandroidide.plugins.internal.mavenLocalRepositories=$repositories",
-        "--stacktrace"
-      )
-
-    writeInitScript(initScript.toFile(),
-      PluginUnderTestMetadataReading.readImplementationClasspath())
-
-    return runner.build()
-  }
-
   private fun assertBasics(result: BuildResult) {
     // These plugins must be applied to the
     for ((project, plugins) in mapOf(

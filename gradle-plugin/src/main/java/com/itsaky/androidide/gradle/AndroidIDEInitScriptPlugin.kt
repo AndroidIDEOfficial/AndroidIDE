@@ -18,9 +18,10 @@
 package com.itsaky.androidide.gradle
 
 import com.itsaky.androidide.buildinfo.BuildInfo
+import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_IS_TEST_ENV
+import com.itsaky.androidide.tooling.api.LogSenderConfig._PROPERTY_MAVEN_LOCAL_REPOSITORY
 import org.gradle.api.Plugin
 import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.Logging
@@ -38,29 +39,14 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
   companion object {
 
     private val logger = Logging.getLogger(AndroidIDEInitScriptPlugin::class.java)
-
-    /**
-     * Property that is set in tests to indicate that the plugin is being applied in a test environment.
-     *
-     * **This is an internal property and should not be manually set by users.**
-     */
-    internal const val PROPERTY_IS_TEST_ENV = "androidide.plugins.internal.isTestEnv"
-
-    /**
-     * Property that is set in tests to provide path to the local maven repository.
-     * If this property is empty, `null` or not set at all, the default maven local repository is used.
-     *
-     * **This is an internal property and should not be manually set by users.**
-     */
-    internal const val PROPERTY_MAVEN_LOCAL_REPOSITORY = "androidide.plugins.internal.mavenLocalRepositories"
   }
 
   override fun apply(target: Gradle) {
     target.settingsEvaluated { settings ->
       val (isTestEnv, mavenLocalRepos) = settings.startParameter.run {
-        val isTestEnv = projectProperties.containsKey(PROPERTY_IS_TEST_ENV)
-            && projectProperties[PROPERTY_IS_TEST_ENV].toString().toBoolean()
-        val mavenLocalRepos = projectProperties.getOrDefault(PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
+        val isTestEnv = projectProperties.containsKey(_PROPERTY_IS_TEST_ENV)
+            && projectProperties[_PROPERTY_IS_TEST_ENV].toString().toBoolean()
+        val mavenLocalRepos = projectProperties.getOrDefault(_PROPERTY_MAVEN_LOCAL_REPOSITORY, "")
         isTestEnv to mavenLocalRepos
       }
 

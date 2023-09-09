@@ -19,9 +19,59 @@ package com.itsaky.androidide.gradle
 
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.utils.FileProvider
+import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import java.io.File
+import java.io.FileNotFoundException
 import java.nio.file.Path
 import kotlin.io.path.pathString
+
+internal fun buildProject(
+  agpVersion: String = BuildInfo.AGP_VERSION_LATEST,
+  gradleVersion: String = "8.2",
+  configureArgs: (MutableList<String>) -> Unit = {},
+  vararg plugins: String
+): BuildResult {
+  val projectRoot = openProject(agpVersion, *plugins)
+  val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
+  val mavenLocal = FileProvider.projectRoot().resolve("gradle-plugin/build/maven-local/repos.txt").toFile()
+
+  if (!(mavenLocal.exists() && mavenLocal.isFile)) {
+    throw FileNotFoundException("repos.txt file not found")
+  }
+
+  val repositories = mavenLocal.readText()
+
+  for (repo in repositories.split(':')) {
+    val file = File(repo)
+    if (!(file.exists() && file.isDirectory)) {
+      throw FileNotFoundException("Maven local repository does not exist : $repo")
+    }
+  }
+
+  val args = mutableListOf(
+    ":app:tasks", // run any task, as long as it applies the plugins
+    "--init-script", initScript.pathString,
+    "-Pandroidide.plugins.internal.isTestEnv=true", // plugins should be published to maven local first
+    "-Pandroidide.plugins.internal.mavenLocalRepositories=$repositories",
+    "--stacktrace"
+  )
+
+  configureArgs(args)
+
+  val runner = GradleRunner.create()
+    .withProjectDir(projectRoot.toFile())
+    .withGradleVersion(gradleVersion)
+    .withArguments(
+      *args.toTypedArray()
+    )
+
+  writeInitScript(initScript.toFile(),
+    PluginUnderTestMetadataReading.readImplementationClasspath())
+
+  return runner.build()
+}
 
 internal fun writeInitScript(file: File, deps: List<File>) {
   file.parentFile.mkdirs()

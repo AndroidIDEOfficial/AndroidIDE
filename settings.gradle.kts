@@ -54,6 +54,7 @@ include(
   ":eventbus-android",
   ":eventbus-events",
   ":gradle-plugin",
+  ":gradle-plugin-config",
   ":idestats",
   ":lexers",
   ":logger",

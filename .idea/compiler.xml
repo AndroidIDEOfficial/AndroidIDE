@@ -122,6 +122,9 @@
       <module name="AndroidIDE.subprojects.classfile.test" target="11" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.main" target="8" />
       <module name="AndroidIDE.subprojects.java-compiler-utils.test" target="8" />
+      <module name="AndroidIDE.subprojects.tooling-api-config" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-config.main" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-config.test" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-model2" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-model2.main" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-model2.test" target="11" />

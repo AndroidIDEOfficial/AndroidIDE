@@ -42,6 +42,7 @@ configurations {
 }
 
 dependencies {
+  implementation(projects.gradlePluginConfig)
   implementation(projects.buildInfo)
 
   // use the AGP APIs from the minimum supported AGP version
