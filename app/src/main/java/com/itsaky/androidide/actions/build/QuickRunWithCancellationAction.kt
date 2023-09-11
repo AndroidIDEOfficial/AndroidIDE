@@ -18,13 +18,20 @@
 package com.itsaky.androidide.actions.build
 
 import android.content.Context
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import androidx.core.content.ContextCompat
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
+import com.itsaky.androidide.actions.getContext
+import com.itsaky.androidide.actions.markInvisible
 import com.itsaky.androidide.actions.requireContext
+import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.ApkMetadata
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
+import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
@@ -33,18 +40,23 @@ import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.resolveAttr
 import java.io.File
 
 /**
- * The 'Quick Run' action in the editor activity.
+ * The 'Quick Run' and 'Cancel build' action in the editor activity.
+ *
+ * If a build is in progress, executing this action cancels the build. Otherwise, the selected
+ * build variant is built and installed to the device.
  *
  * @author Akash Yadav
  */
-class QuickRunAction(context: Context) : BaseBuildAction() {
+class QuickRunWithCancellationAction(context: Context) : BaseBuildAction() {
 
   init {
     label = context.getString(R.string.quick_run_debug)
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
+    enabled = false
   }
 
   override val id: String = "ide.editor.build.quickRun"
@@ -52,7 +64,44 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
   // Execute on UI thread as this action might try to show dialogs to the user
   override var requiresUIThread: Boolean = true
 
+  override fun prepare(data: ActionData) {
+
+    val context = data.getActivity() ?: run {
+      markInvisible()
+      return
+    }
+
+    if (data.isBuildInProgress()) {
+      label = context.getString(R.string.title_cancel_build)
+      icon = ContextCompat.getDrawable(context, R.drawable.ic_stop_daemons)
+
+      visible = true
+      enabled = true
+    } else {
+      label = context.getString(R.string.quick_run_debug)
+      icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
+    }
+  }
+
+  override fun createColorFilter(data: ActionData): ColorFilter? {
+    return data.getContext()?.let {
+      PorterDuffColorFilter(it.resolveAttr(
+        if (data.isBuildInProgress())
+          R.attr.colorError
+        else R.attr.colorSuccess
+      ), PorterDuff.Mode.SRC_ATOP)
+    }
+  }
+
   override fun execAction(data: ActionData): Boolean {
+    if (data.isBuildInProgress()) {
+      return cancelBuild()
+    }
+
+    return quickRun(data)
+  }
+
+  private fun quickRun(data: ActionData): Boolean {
     chooseApplication(data) { module ->
       val activity = data.requireActivity()
 
@@ -78,6 +127,36 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
         taskName
       )
     }
+    return true
+  }
+
+  private fun cancelBuild(): Boolean {
+    log.info("Sending build cancellation request...")
+    val builder = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
+    if (builder?.isToolingServerStarted() != true) {
+      flashError(com.itsaky.androidide.projects.R.string.msg_tooling_server_unavailable)
+      return false
+    }
+
+    builder.cancelCurrentBuild().whenComplete { result,
+      error ->
+      if (error != null) {
+        log.error("Failed to send build cancellation request", error)
+        return@whenComplete
+      }
+
+      if (!result.wasEnqueued) {
+        log.warn(
+          "Unable to enqueue cancellation request",
+          result.failureReason,
+          result.failureReason!!.message
+        )
+        return@whenComplete
+      }
+
+      log.info("Build cancellation request was successfully enqueued...")
+    }
+
     return true
   }
 
@@ -169,5 +248,11 @@ class QuickRunAction(context: Context) : BaseBuildAction() {
         activity.installationSessionCallback()
       )
     }
+  }
+
+  private fun ActionData.isBuildInProgress(): Boolean {
+    val context = getActivity()
+    val buildService = Lookup.getDefault().lookup(BuildService.KEY_BUILD_SERVICE)
+    return context?.editorViewModel?.let { it.isInitializing || it.isBuildInProgress } == true || buildService?.isBuildInProgress == true
   }
 }

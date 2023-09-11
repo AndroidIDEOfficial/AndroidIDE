@@ -18,8 +18,11 @@
   -->
 
 <resources>
+  <!--  Color used for success drawables-->
+  <attr format="color" name="colorSuccess" />
+
   <declare-styleable name="VectorMasterView">
-    <attr name="vector_src" format="reference" />
-    <attr name="use_legacy_parser" format="boolean" />
+    <attr format="reference" name="vector_src" />
+    <attr format="boolean" name="use_legacy_parser" />
   </declare-styleable>
 </resources>

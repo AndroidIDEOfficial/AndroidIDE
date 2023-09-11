@@ -17,9 +17,13 @@
 
 package com.itsaky.androidide.actions
 
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.Drawable
 import android.view.Menu
 import android.view.View
+import com.itsaky.androidide.utils.resolveAttr
 
 /**
  * An action that can be registered using the [ActionsRegistry]
@@ -120,6 +124,17 @@ interface ActionItem {
    * @return The custom action view or `null`.
    */
   fun createActionView(data: ActionData): View? = null
+
+  /**
+   * Creates the color filter for this action's icon drawable.
+   *
+   * The default implementation returns a [PorterDuffColorFilter] instance with color [R.attr.colorOnSurface].
+   */
+  fun createColorFilter(data: ActionData): ColorFilter? {
+    return data.getContext()?.let {
+      PorterDuffColorFilter(it.resolveAttr(R.attr.colorOnSurface), PorterDuff.Mode.SRC_ATOP)
+    }
+  }
 
   /** Location where an action item will be shown. */
   enum class Location(val id: String) {
