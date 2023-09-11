@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.xml.versions
 
+import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
 import com.itsaky.androidide.xml.versions.internal.DefaultApiVersionsRegistry
 
@@ -33,6 +34,8 @@ interface ApiVersionsRegistry : XmlRegistry<ApiVersions> {
   companion object {
 
     /** Get the default instance of [ApiVersionsRegistry]. */
-    @JvmStatic fun getInstance(): ApiVersionsRegistry = DefaultApiVersionsRegistry
+    @JvmStatic fun getInstance(): ApiVersionsRegistry {
+      return ServiceLoader.load(ApiVersionsRegistry::class.java).findFirstOrThrow()
+    }
   }
 }

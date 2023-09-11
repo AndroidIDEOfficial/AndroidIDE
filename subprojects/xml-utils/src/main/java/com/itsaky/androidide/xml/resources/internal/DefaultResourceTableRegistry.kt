@@ -32,6 +32,7 @@ import com.android.aaptcompiler.Source
 import com.android.aaptcompiler.TableExtractor
 import com.android.aaptcompiler.TableExtractorOptions
 import com.android.aaptcompiler.extractPathData
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
@@ -50,7 +51,8 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Akash Yadav
  */
-internal object DefaultResourceTableRegistry : ResourceTableRegistry {
+@AutoService(ResourceTableRegistry::class)
+internal class DefaultResourceTableRegistry : ResourceTableRegistry {
 
   /**
    * Represents the type of single line entries read from files.

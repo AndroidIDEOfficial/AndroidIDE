@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.xml.versions.internal
 
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
@@ -24,17 +25,18 @@ import com.itsaky.androidide.xml.versions.ClassInfo
 import com.itsaky.androidide.xml.versions.FieldInfo
 import com.itsaky.androidide.xml.versions.Info
 import com.itsaky.androidide.xml.versions.MethodInfo
-import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
+import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Default implementation of [ApiVersionsRegistry].
  *
  * @author Akash Yadav
  */
-internal object DefaultApiVersionsRegistry : ApiVersionsRegistry {
+@AutoService(ApiVersionsRegistry::class)
+internal class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val versions = ConcurrentHashMap<String, ApiVersions>()
@@ -128,11 +130,11 @@ internal object DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private fun readClassInfo(parser: XmlPullParser): ClassInfo {
     return DefaultClassInfo(
-        name = parser.readName(),
-        since = parser.readSince(),
-        removed = parser.readRemoved(),
-        deprecated = parser.readDeprecated()
-      )
+      name = parser.readName(),
+      since = parser.readSince(),
+      removed = parser.readRemoved(),
+      deprecated = parser.readDeprecated()
+    )
       .apply {
         val depth = parser.depth
         var event = parser.next()

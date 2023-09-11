@@ -20,6 +20,7 @@ package com.itsaky.androidide.xml.resources
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
 import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import java.io.File
@@ -38,7 +39,9 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
     @JvmStatic val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
     @JvmStatic val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
 
-    @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
+    @JvmStatic fun getInstance(): ResourceTableRegistry {
+      return ServiceLoader.load(ResourceTableRegistry::class.java).findFirstOrThrow()
+    }
   }
 
   /**
