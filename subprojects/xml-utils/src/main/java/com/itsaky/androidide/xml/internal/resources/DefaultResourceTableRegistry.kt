@@ -75,6 +75,12 @@ internal class DefaultResourceTableRegistry : ResourceTableRegistry {
   private val singleLineValueEntries =
     ConcurrentHashMap<String, ConcurrentHashMap<SingleLineValueEntryType, List<String>>>()
 
+  override var isLoggingEnabled: Boolean
+    get() = log.isEnabled
+    set(value) {
+      log.isEnabled = value
+    }
+
   override fun forPackage(name: String, vararg resDirs: File): ResourceTable? {
 
     if (name == PCK_ANDROID) {
