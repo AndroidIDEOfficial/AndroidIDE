@@ -518,5 +518,5 @@
   <string name="msg_build_variants_fetch_failed">Не удалось получить варианты сборки</string>
   <string name="title_choose_application">Выберите приложение</string>
   <string name="err_selected_variant_not_found">Выбранный вариант сборки не найден</string>
-  <string name="title_disconnect_log_senders">Отключить модуль отправки огов</string>
+  <string name="title_disconnect_log_senders">Отключить модуль отправки логов</string>
 </resources>
