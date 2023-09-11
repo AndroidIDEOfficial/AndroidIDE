@@ -158,7 +158,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     item.isEnabled = action.enabled
 
     item.icon = action.icon?.apply {
-      colorFilter = PorterDuffColorFilter(context!!.resolveAttr(R.attr.colorOnSurface), SRC_ATOP)
+      colorFilter = action.createColorFilter(data)
     }
 
     if (item.icon != null) {
