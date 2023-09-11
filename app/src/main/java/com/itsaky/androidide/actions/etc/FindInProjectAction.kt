@@ -29,10 +29,12 @@ import com.itsaky.androidide.projects.IProjectManager
 class FindInProjectAction() : EditorActivityAction() {
 
   override var requiresUIThread: Boolean = true
+  override var order: Int = 0
 
-  constructor(context: Context) : this() {
-    label = context.getString(R.string.menu_find_project)
-    icon = ContextCompat.getDrawable(context, R.drawable.ic_search_project)
+  constructor(context: Context, order: Int) : this() {
+    this.label = context.getString(R.string.menu_find_project)
+    this.icon = ContextCompat.getDrawable(context, R.drawable.ic_search_project)
+    this.order = order
   }
 
   override val id: String = "editor_findInProject"

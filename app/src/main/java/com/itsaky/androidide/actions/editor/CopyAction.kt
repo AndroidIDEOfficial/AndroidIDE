@@ -23,7 +23,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
-class CopyAction(context: Context) : BaseEditorAction() {
+class CopyAction(context: Context, override val order: Int) : BaseEditorAction() {
 
   init {
     label = context.getString(R.string.copy)

@@ -27,7 +27,7 @@ import com.itsaky.androidide.actions.EditorActivityAction
 import com.itsaky.androidide.preferences.internal.hideFileTreeButton
 
 /** @author Akash Yadav */
-class FileTreeAction(context: Context) : EditorActivityAction() {
+class FileTreeAction(context: Context, override val order: Int) : EditorActivityAction() {
 
   override val id: String = "editor_fileTree"
 

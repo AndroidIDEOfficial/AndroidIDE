@@ -35,7 +35,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class NewFolderAction(context: Context) :
+class NewFolderAction(context: Context, override val order: Int) :
   BaseDirNodeAction(
     context = context,
     labelRes = R.string.new_folder,

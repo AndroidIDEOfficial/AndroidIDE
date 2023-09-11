@@ -22,7 +22,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction
 
 /** @author Akash Yadav */
-class PasteAction(context: Context) : BaseEditorAction() {
+class PasteAction(context: Context, override val order: Int) : BaseEditorAction() {
 
   init {
     label = context.getString(android.R.string.paste)
