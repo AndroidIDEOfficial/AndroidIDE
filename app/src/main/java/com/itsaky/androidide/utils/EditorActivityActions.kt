@@ -61,40 +61,41 @@ class EditorActivityActions {
     fun register(context: Context) {
       clear()
       val registry = ActionsRegistry.getInstance()
+      var order = 0
 
       // Toolbar actions
-      registry.registerAction(UndoAction(context))
-      registry.registerAction(RedoAction(context))
-      registry.registerAction(QuickRunWithCancellationAction(context))
-      registry.registerAction(RunTasksAction(context))
-      registry.registerAction(SaveFileAction(context))
-      registry.registerAction(PreviewLayoutAction(context))
-      registry.registerAction(FindActionMenu(context))
-      registry.registerAction(FileTreeAction(context))
-      registry.registerAction(ProjectSyncAction(context))
-      registry.registerAction(ReloadColorSchemesAction(context))
-      registry.registerAction(DisconnectLogSendersAction(context))
+      registry.registerAction(UndoAction(context, order++))
+      registry.registerAction(RedoAction(context, order++))
+      registry.registerAction(QuickRunWithCancellationAction(context, order++))
+      registry.registerAction(RunTasksAction(context, order++))
+      registry.registerAction(SaveFileAction(context, order++))
+      registry.registerAction(PreviewLayoutAction(context, order++))
+      registry.registerAction(FindActionMenu(context, order++))
+      registry.registerAction(FileTreeAction(context, order++))
+      registry.registerAction(ProjectSyncAction(context, order++))
+      registry.registerAction(ReloadColorSchemesAction(context, order++))
+      registry.registerAction(DisconnectLogSendersAction(context, order++))
 
       // editor text actions
-      registry.registerAction(ExpandSelectionAction(context))
-      registry.registerAction(SelectAllAction(context))
-      registry.registerAction(CutAction(context))
-      registry.registerAction(CopyAction(context))
-      registry.registerAction(PasteAction(context))
-      registry.registerAction(FormatCodeAction(context))
+      registry.registerAction(ExpandSelectionAction(context, order++))
+      registry.registerAction(SelectAllAction(context, order++))
+      registry.registerAction(CutAction(context, order++))
+      registry.registerAction(CopyAction(context, order++))
+      registry.registerAction(PasteAction(context, order++))
+      registry.registerAction(FormatCodeAction(context, order++))
 
       // file tab actions
-      registry.registerAction(CloseFileAction(context))
-      registry.registerAction(CloseOtherFilesAction(context))
-      registry.registerAction(CloseAllFilesAction(context))
+      registry.registerAction(CloseFileAction(context, order++))
+      registry.registerAction(CloseOtherFilesAction(context, order++))
+      registry.registerAction(CloseAllFilesAction(context, order++))
 
       // file tree actions
-      registry.registerAction(CopyPathAction(context))
-      registry.registerAction(DeleteAction(context))
-      registry.registerAction(NewFileAction(context))
-      registry.registerAction(NewFolderAction(context))
-      registry.registerAction(OpenWithAction(context))
-      registry.registerAction(RenameAction(context))
+      registry.registerAction(CopyPathAction(context, order++))
+      registry.registerAction(DeleteAction(context, order++))
+      registry.registerAction(NewFileAction(context, order++))
+      registry.registerAction(NewFolderAction(context, order++))
+      registry.registerAction(OpenWithAction(context, order++))
+      registry.registerAction(RenameAction(context, order++))
     }
 
     @JvmStatic

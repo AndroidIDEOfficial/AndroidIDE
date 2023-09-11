@@ -37,7 +37,7 @@ import org.greenrobot.eventbus.EventBus
  *
  * @author Akash Yadav
  */
-class DeleteAction(context: Context) :
+class DeleteAction(context: Context, override val order: Int) :
   BaseFileTreeAction(context, labelRes = R.string.delete_file, iconRes = R.drawable.ic_delete) {
 
   override val id: String = "ide.editor.fileTree.delete"

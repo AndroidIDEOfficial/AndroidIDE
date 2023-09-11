@@ -39,7 +39,7 @@ import org.greenrobot.eventbus.EventBus
  *
  * @author Akash Yadav
  */
-class RenameAction(context: Context) :
+class RenameAction(context: Context, override val order: Int) :
   BaseFileTreeAction(
     context,
     labelRes = R.string.rename_file,

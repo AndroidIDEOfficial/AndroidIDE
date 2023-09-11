@@ -51,7 +51,7 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class QuickRunWithCancellationAction(context: Context) : BaseBuildAction() {
+class QuickRunWithCancellationAction(context: Context, override val order: Int) : BaseBuildAction() {
 
   init {
     label = context.getString(R.string.quick_run_debug)

@@ -27,7 +27,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 
 /** @author Akash Yadav */
-class RedoAction(context: Context) : EditorRelatedAction() {
+class RedoAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
   init {
     label = context.getString(R.string.redo)

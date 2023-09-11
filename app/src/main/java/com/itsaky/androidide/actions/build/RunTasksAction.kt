@@ -25,7 +25,7 @@ import com.itsaky.androidide.fragments.RunTasksDialogFragment
 import com.itsaky.androidide.resources.R
 
 /** @author Akash Yadav */
-class RunTasksAction(context: Context) : BaseBuildAction() {
+class RunTasksAction(context: Context, override val order: Int) : BaseBuildAction() {
   override val id: String = "ide.build.runTasks"
   private var dialog: RunTasksDialogFragment? = null
 

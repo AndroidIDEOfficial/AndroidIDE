@@ -29,7 +29,7 @@ import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 
 /** @author Akash Yadav */
-class SaveFileAction(context: Context) : EditorRelatedAction() {
+class SaveFileAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
   private val log = ILogger.newInstance("SaveFileAction")
 

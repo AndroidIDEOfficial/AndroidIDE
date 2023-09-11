@@ -34,7 +34,7 @@ import com.itsaky.androidide.uidesigner.UIDesignerActivity
 import java.io.File
 
 /** @author Akash Yadav */
-class PreviewLayoutAction(context: Context) : EditorRelatedAction() {
+class PreviewLayoutAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
   override val id: String = "editor_previewLayout"
 
