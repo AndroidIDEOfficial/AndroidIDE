@@ -135,7 +135,7 @@ public abstract class ILogger {
       // logger is disabled
       return;
     }
-    
+
     doLog(priority, msg);
     for (final var listener : logListeners) {
       listener.log(priority, TAG, msg);

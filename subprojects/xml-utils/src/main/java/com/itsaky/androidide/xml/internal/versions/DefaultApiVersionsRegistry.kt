@@ -41,6 +41,12 @@ internal class DefaultApiVersionsRegistry : ApiVersionsRegistry {
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val versions = ConcurrentHashMap<String, ApiVersions>()
 
+  override var isLoggingEnabled: Boolean
+    get() = log.isEnabled
+    set(value) {
+      log.isEnabled = value
+    }
+
   override fun forPlatformDir(platform: File): ApiVersions? {
     var version = versions[platform.path]
     if (version != null) {
