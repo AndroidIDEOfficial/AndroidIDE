@@ -101,7 +101,11 @@ class TemplateDetailsFragment :
           err?.printStackTrace()
           log.error(
             "Failed to create project. result=$result, err=${err?.message}")
-          flashError(string.project_creation_failed)
+          if (err != null) {
+            flashError(err.cause?.message ?: err.message)
+          } else {
+            flashError(string.project_creation_failed)
+          }
           return@executeAsyncProvideError
         }
 
