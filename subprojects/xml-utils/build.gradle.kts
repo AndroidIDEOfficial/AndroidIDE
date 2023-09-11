@@ -18,6 +18,7 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -25,7 +26,11 @@ android {
 }
 
 dependencies {
+    kapt(libs.google.auto.service)
+
     implementation(libs.common.kotlin)
+    implementation(libs.google.auto.service.annotations)
+    implementation(projects.common)
     implementation(projects.logger)
     implementation(projects.subprojects.jdt)
     
