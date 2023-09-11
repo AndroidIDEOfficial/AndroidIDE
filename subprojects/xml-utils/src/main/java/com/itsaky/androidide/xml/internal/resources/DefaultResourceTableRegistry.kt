@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.resources.internal
+package com.itsaky.androidide.xml.internal.resources
 
 import com.android.SdkConstants
 import com.android.SdkConstants.FN_INTENT_ACTIONS_ACTIVITY
@@ -38,11 +38,11 @@ import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 

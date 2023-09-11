@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets.internal.util
+package com.itsaky.androidide.xml.internal.widgets.util
 
 import com.itsaky.androidide.xml.widgets.WidgetType
 

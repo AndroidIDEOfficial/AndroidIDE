@@ -19,7 +19,6 @@ package com.itsaky.androidide.xml.versions
 
 import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.versions.internal.DefaultApiVersionsRegistry
 
 /**
  * Registry that reads information about the API versions of classes, their fields and methods.

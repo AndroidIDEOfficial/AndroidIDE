@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.versions.internal
+package com.itsaky.androidide.xml.internal.versions
 
 import com.itsaky.androidide.xml.versions.ClassInfo
 import com.itsaky.androidide.xml.versions.FieldInfo
