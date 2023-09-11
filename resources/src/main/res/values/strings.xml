@@ -87,6 +87,7 @@
   <string name="msg_opened_project_does_not_exist">Last opened project doesn\'t exist!</string>
   <string name="msg_create_new_project">Create new project</string>
   <string name="msg_open_existing_project">Open existing project</string>
+  <string name="msg_project_list">Project list</string>
   <string name="title_confirm_project_close">Close project</string>
 
   <!-- Templates -->

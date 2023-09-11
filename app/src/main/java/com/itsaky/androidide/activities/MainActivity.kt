@@ -51,6 +51,7 @@ import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashInfo
 import com.itsaky.androidide.viewmodel.MainViewModel
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_MAIN
+import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_PROJECT_LIST
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_DETAILS
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_LIST
 import java.io.File
@@ -162,9 +163,11 @@ class MainActivity : LimitlessIDEActivity() {
       // template list -> template details
       // ------- OR -------
       // template details -> template list
+      // ------- OR -------
+      // project list -> home
       val setAxisToX =
-        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
-            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
+        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS || previous == SCREEN_PROJECT_LIST ) &&
+            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS || screen == SCREEN_PROJECT_LIST)
 
       val axis = if (setAxisToX) {
         MaterialSharedAxis.X
@@ -188,10 +191,11 @@ class MainActivity : LimitlessIDEActivity() {
       SCREEN_MAIN -> binding.main
       SCREEN_TEMPLATE_LIST -> binding.templateList
       SCREEN_TEMPLATE_DETAILS -> binding.templateDetails
+      SCREEN_PROJECT_LIST -> binding.projectList
       else -> throw IllegalArgumentException("Invalid screen id: '$screen'")
     }
 
-    for (fragment in arrayOf(binding.main, binding.templateList, binding.templateDetails)) {
+    for (fragment in arrayOf(binding.main, binding.templateList, binding.templateDetails, binding.projectList)) {
       fragment.isVisible = fragment == currentFragment
     }
   }
