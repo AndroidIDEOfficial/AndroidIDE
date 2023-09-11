@@ -460,7 +460,7 @@
   <string name="idepref_java_diagnosticsEnabled_summary">(ЭКСПЕРЕМЕНТАЛЬНО) Анализировать исходные файлы Java на предмет ошибок.</string>
   <string name="title_reload_color_schemes">Перезагрузить цветовые схемы</string>
   <string name="msg_dir_picker_failed">Не удалось открыть файловый менеджер: %1$s</string>
-  <string name="msg_tooling_server_unavailable">Сервер Tooling API недоступен. Проверьте вывод сборки и логи IDE на наличие ошибок.</string>
+  <string name="msg_tooling_server_unavailable">Сервер Tooling API недоступен. Проверьте логи сборки и логи IDE на наличие ошибок.</string>
   <string name="idepref_deleteEmptyLines_title">Удалять пустые строки при нажатии клавиши \"backspace\"</string>
   <string name="idepref_deleteEmptyLines_summary">Должен ли редактор удалять пустые строки при одиночном нажатии клавиши \"backspace\".</string>
   <string name="idepref_deleteTabs_title">Удалять табуляцию при нажатии клавиши \"backspace\"</string>
@@ -518,5 +518,5 @@
   <string name="msg_build_variants_fetch_failed">Не удалось получить варианты сборки</string>
   <string name="title_choose_application">Выберите приложение</string>
   <string name="err_selected_variant_not_found">Выбранный вариант сборки не найден</string>
-  <string name="title_disconnect_log_senders">Disconnect log senders</string>
+  <string name="title_disconnect_log_senders">Отключить модуль отправки огов</string>
 </resources>
