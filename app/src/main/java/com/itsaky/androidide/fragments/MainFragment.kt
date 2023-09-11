@@ -89,7 +89,7 @@ class MainFragment : BaseFragment() {
     viewModel.setScreen(MainViewModel.SCREEN_TEMPLATE_LIST)
   }
   private fun showProjectList() {
-    viewModel.setScreen(MainViewModel.SCREEN_PROJECT_LIST)
+    viewModel.setScreen(MainViewModel.SCREEN_PROJECT_RECENT_LIST)
   }
 
   fun openProject(root: File) {

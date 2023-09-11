@@ -18,41 +18,59 @@
 package com.itsaky.androidide.models
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import com.itsaky.androidide.utils.getIcon
 import java.io.File
 import java.nio.file.Path
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
-data class ProjectItem(val path: Path, val name: String, val iconPath: String){
-}
-fun getProjects(path: String = "/storage/emulated/0/AndroidIDEProjects", context: Context): List<ProjectItem> {
-  val projects = mutableListOf<ProjectItem>()
+data class ProjectItem(val path: Path, val name: String, val iconPath: String, val cache: ProjectInfoCache){
 
-  fun searchProjectsRecursively(dir: File) {
-    val subDirectories = dir.listFiles()
-    if (subDirectories != null) {
+
+  companion object {
+
+    val projects = mutableListOf<ProjectItem>()
+    private fun searchProjects(dir: File) {
+      if (projects.size > 11) return
+
+      val subDirectories = dir.listFiles() ?: return
+
       for (subDir in subDirectories) {
-        if (subDir.isDirectory) {
-          val androidIdeFolder = File(subDir, ".androidide")
-          if (androidIdeFolder.exists() && androidIdeFolder.isDirectory) {
-            val projectItem = ProjectItem(
-              path = subDir.toPath(),
-              name = subDir.name,
-              iconPath = "${subDir.absolutePath}" +
-                  "" +
-                  "in/res/mipmap-hdpi/ic_launcher.webp")
-            projects.add(projectItem)
-          }
+        if (!subDir.isDirectory) continue
 
+        val androidIdeFolder = File(subDir, ".androidide")
+        if (androidIdeFolder.exists() && androidIdeFolder.isDirectory) {
+          val file = File(androidIdeFolder.path, "editor/projectInfo.json")
+
+          ProjectInfoCache.read(file) { cache ->
+            if (cache != null) {
+
+              val iconPath = "${subDir.absolutePath}/res/mipmap-hdpi/ic_launcher.webp"
+              val projectItem = ProjectItem(
+                path = subDir.toPath(),
+                name = subDir.name,
+                iconPath = iconPath,
+                cache = cache
+              )
+              projects.add(projectItem)
+            }
+          }
         }
       }
     }
-  }
+    fun getProjects(path: String = "/storage/emulated/0/AndroidIDEProjects", context: Context): List<ProjectItem> {
+      val rootDirectory = File(path)
+      if (rootDirectory.exists()) {
+        searchProjects(rootDirectory)
+      }
 
-  val rootDirectory = File(path)
-  if (rootDirectory.exists() && rootDirectory.isDirectory) {
-    searchProjectsRecursively(rootDirectory)
-  }
+      val sortedProjects = projects.sortedBy { projectItem ->
+        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val openTime = LocalDateTime.parse(projectItem.cache.lastOpened, formatter)
+        openTime
+      }
 
-  return projects
+      return sortedProjects
+    }
+
+  }
 }

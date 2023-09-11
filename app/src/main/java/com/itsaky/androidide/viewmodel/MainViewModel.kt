@@ -44,7 +44,7 @@ class MainViewModel : ViewModel() {
     const val SCREEN_MAIN = 0
     const val SCREEN_TEMPLATE_LIST = 1
     const val SCREEN_TEMPLATE_DETAILS = 2
-    const val SCREEN_PROJECT_LIST = 3
+    const val SCREEN_PROJECT_RECENT_LIST  = 3
   }
 
   private val _currentScreen = MutableLiveData(-1)

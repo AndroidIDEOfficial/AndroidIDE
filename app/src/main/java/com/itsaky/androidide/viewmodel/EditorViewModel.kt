@@ -25,9 +25,11 @@ import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.OpenedFilesCache
+import com.itsaky.androidide.models.ProjectInfoCache
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.utils.TimeUtils
 import java.io.File
 
 /** ViewModel for data used in [com.itsaky.androidide.activities.editor.EditorActivityKt] */
@@ -229,6 +231,8 @@ class EditorViewModel : ViewModel() {
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
       file.writeText(string)
+
+      writeProjectInfo()
     }
   }
 
@@ -247,4 +251,20 @@ class EditorViewModel : ViewModel() {
 
     return file
   }
+
+
+  fun writeProjectInfo() {
+    executeAsync {
+
+      val currentTime = TimeUtils.getCurrentTime()
+      val cache = ProjectInfoCache(currentTime)
+      val file = ProjectInfoCache.getProjectInfoCache()
+
+      val gson = GsonBuilder().setPrettyPrinting().create()
+      val string = gson.toJson(cache)
+
+      file.writeText(string)
+    }
+  }
+
 }

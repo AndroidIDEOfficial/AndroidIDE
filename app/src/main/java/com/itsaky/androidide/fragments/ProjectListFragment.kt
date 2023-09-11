@@ -18,15 +18,9 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -34,15 +28,14 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.adapters.ProjectListAdapter
 import com.itsaky.androidide.databinding.FragmentProjectListBinding
-import com.itsaky.androidide.models.getProjects
+import com.itsaky.androidide.models.ProjectItem
 import com.itsaky.androidide.viewmodel.MainViewModel
 import java.io.File
-import kotlin.math.ceil
 
 
-class ProjectListFragment : FragmentWithBinding<FragmentProjectListBinding>(
-  R.layout.fragment_project_list, FragmentProjectListBinding::bind
-) {
+class ProjectListFragment :
+  FragmentWithBinding<FragmentProjectListBinding>(R.layout.fragment_project_list,
+    FragmentProjectListBinding::bind) {
 
   private var adapter: ProjectListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
@@ -56,47 +49,22 @@ class ProjectListFragment : FragmentWithBinding<FragmentProjectListBinding>(
 
     layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
     layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
-
-   // binding.list.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
     binding.list.layoutManager = layoutManager
-    adapter = ProjectListAdapter(getProjects(context = requireContext())){ project, _ ->
-      openProject(project.path.toFile())
-    }
-    binding.list.adapter = adapter
+
+
+    reloadRecentProjects()
 
     binding.exitButton.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_MAIN)
     }
 
-   /*
-    globalLayoutListener = object  : OnGlobalLayoutListener {
-      override fun onGlobalLayout() {
-        val adapter = this@ProjectListFragment.adapter ?: return
-        val layoutManager = this@ProjectListFragment.layoutManager ?: return
+  }
 
-        val columns = layoutManager.flexLinesInternal.firstOrNull()?.itemCount ?: 0
-        if (columns == 0) {
-          return
-        }
-
-        val itemCount = adapter.itemCount
-        val rows = ceil(itemCount.toFloat() / columns.toFloat()).toInt()
-        if (itemCount % columns == 0) {
-          return
-        }
-
-        val diff = rows * columns - itemCount
-        if (diff <= 0) {
-          return
-        }
-
-        adapter.fillDiff(diff)
-      }
-
+  fun reloadRecentProjects() {
+    adapter = ProjectListAdapter(ProjectItem.getProjects(context = requireContext())) { project, _ ->
+      openProject(project.path.toFile())
     }
-*/
-
+    binding.list.adapter = adapter
   }
 
   fun openProject(root: File) {
