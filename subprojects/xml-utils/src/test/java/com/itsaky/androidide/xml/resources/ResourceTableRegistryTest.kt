@@ -28,7 +28,7 @@ import com.android.aaptcompiler.android.ResValue.DataType
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.xml.findAndroidJar
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry
 import java.io.File
 import org.junit.Test
 import org.junit.runner.RunWith

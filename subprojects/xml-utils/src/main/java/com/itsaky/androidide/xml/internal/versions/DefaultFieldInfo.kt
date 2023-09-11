@@ -15,18 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets.internal.util
+package com.itsaky.androidide.xml.internal.versions
 
-import com.itsaky.androidide.xml.widgets.Widget
-import com.itsaky.androidide.xml.widgets.WidgetType
+import com.itsaky.androidide.xml.versions.FieldInfo
 
-/**
- * Default implementation of [Widget].
- * @author Akash Yadav
- */
-class DefaultWidget(
-  override val simpleName: String,
-  override val qualifiedName: String,
-  override val type: WidgetType,
-  override val superclasses: List<String>
-) : Widget
+/** @author Akash Yadav */
+class DefaultFieldInfo(name: String, since: Int, removed: Int, deprecated: Int) :
+  DefaultInfo(name, since, removed, deprecated), FieldInfo

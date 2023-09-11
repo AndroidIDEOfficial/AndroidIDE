@@ -15,13 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets.internal
+package com.itsaky.androidide.xml.internal.widgets
 
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.widgets.Widget
 import com.itsaky.androidide.xml.widgets.WidgetTable
-import com.itsaky.androidide.xml.widgets.internal.util.DefaultWidget
-import com.itsaky.androidide.xml.widgets.internal.util.WidgetParser
+import com.itsaky.androidide.xml.internal.widgets.util.DefaultWidget
+import com.itsaky.androidide.xml.internal.widgets.util.WidgetParser
 
 /**
  * Default implementation of [WidgetTable].

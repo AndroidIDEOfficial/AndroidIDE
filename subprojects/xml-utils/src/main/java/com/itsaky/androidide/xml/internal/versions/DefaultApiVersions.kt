@@ -15,10 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.versions.internal
+package com.itsaky.androidide.xml.internal.versions
 
-import com.itsaky.androidide.xml.versions.FieldInfo
+import com.itsaky.androidide.xml.versions.ApiVersions
+import com.itsaky.androidide.xml.versions.ClassInfo
+import java.util.concurrent.ConcurrentHashMap
 
 /** @author Akash Yadav */
-class DefaultFieldInfo(name: String, since: Int, removed: Int, deprecated: Int) :
-  DefaultInfo(name, since, removed, deprecated), FieldInfo
+internal class DefaultApiVersions : ApiVersions {
+
+  val classes = ConcurrentHashMap<String, ClassInfo>()
+
+  override fun getClass(name: String): ClassInfo? {
+    return classes[name.replace('.', '/')]
+  }
+  
+  internal fun putClass(name: String, info: ClassInfo) {
+    classes[name] = info
+  }
+}

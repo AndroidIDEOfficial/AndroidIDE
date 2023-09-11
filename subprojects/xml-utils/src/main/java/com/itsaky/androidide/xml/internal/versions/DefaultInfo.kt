@@ -15,36 +15,39 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.versions.internal
+package com.itsaky.androidide.xml.internal.versions
 
-import com.itsaky.androidide.xml.versions.MethodInfo
+import com.itsaky.androidide.xml.versions.Info
 
 /** @author Akash Yadav */
-internal class DefaultMethodInfo(
-  override val simpleName: String,
-  name: String,
-  since: Int,
-  removed: Int,
-  deprecated: Int
-) : DefaultInfo(name, since, removed, deprecated), MethodInfo {
+open class DefaultInfo(
+  override val name: String,
+  override val since: Int,
+  override val removed: Int,
+  override val deprecated: Int
+) : Info {
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (other !is DefaultMethodInfo) return false
-    if (!super.equals(other)) return false
+    if (other !is DefaultInfo) return false
 
-    if (simpleName != other.simpleName) return false
+    if (name != other.name) return false
+    if (since != other.since) return false
+    if (removed != other.removed) return false
+    if (deprecated != other.deprecated) return false
 
     return true
   }
 
   override fun hashCode(): Int {
-    var result = super.hashCode()
-    result = 31 * result + simpleName.hashCode()
+    var result = name.hashCode()
+    result = 31 * result + since
+    result = 31 * result + removed
+    result = 31 * result + deprecated
     return result
   }
 
   override fun toString(): String {
-    return "DefaultMethodInfo(simpleName='$simpleName')"
+    return "DefaultInfo(name='$name', since=$since, removed=$removed, deprecated=$deprecated)"
   }
 }

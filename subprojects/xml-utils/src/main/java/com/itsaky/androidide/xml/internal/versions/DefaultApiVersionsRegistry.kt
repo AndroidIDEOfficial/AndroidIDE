@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.versions.internal
+package com.itsaky.androidide.xml.internal.versions
 
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.utils.ILogger
