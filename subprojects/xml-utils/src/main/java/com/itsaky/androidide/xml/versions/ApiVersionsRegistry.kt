@@ -34,7 +34,8 @@ interface ApiVersionsRegistry : XmlRegistry<ApiVersions> {
 
     /** Get the default instance of [ApiVersionsRegistry]. */
     @JvmStatic fun getInstance(): ApiVersionsRegistry {
-      return ServiceLoader.load(ApiVersionsRegistry::class.java).findFirstOrThrow()
+      val klass = ApiVersionsRegistry::class.java
+      return ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
     }
   }
 }

@@ -347,6 +347,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   /** Get the resource tables for external dependencies (not local module project dependencies). */
   fun getDependencyResourceTables(): Set<ResourceTable> {
     return mutableSetOf<ResourceTable>().also {
+      var deps = 0
       it.addAll(
         libraryMap.values
           .filter { library ->
@@ -354,14 +355,22 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
                 library.androidLibraryData!!.resFolder.exists() &&
                 library.findPackageName() != UNKNOWN_PACKAGE
           }
+          .also { libs -> deps = libs.size }
           .mapNotNull { library ->
             ResourceTableRegistry.getInstance()
-              .forPackage(
-                library.packageName,
-                library.androidLibraryData!!.resFolder,
-              )
+              .let { registry ->
+                registry.isLoggingEnabled = false
+                registry.forPackage(
+                  library.packageName,
+                  library.androidLibraryData!!.resFolder,
+                ).also {
+                  registry.isLoggingEnabled = true
+                }
+              }
           }
       )
+
+      log.info("Created ${it.size} resource tables for $deps dependencies of module '$path'")
     }
   }
 
