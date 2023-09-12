@@ -75,8 +75,8 @@ google-material = { module = "com.google.android.material:material", version = "
 google-gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
 google-guava = { module = "com.google.guava:guava", version = "31.1-android" }
 google-guava-jre = { module = "com.google.guava:guava", version = "31.1-jre" }
-google-auto-value-annotations = { module = "com.google.auto.value:auto-value-annotations", version = "1.10.2" }
-google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.2" }
+google-auto-value-annotations = { module = "com.google.auto.value:auto-value-annotations", version = "1.10.4" }
+google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = "1.10.4" }
 google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
