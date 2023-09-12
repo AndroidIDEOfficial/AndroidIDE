@@ -43,10 +43,12 @@ interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
     @JvmStatic
     val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
 
+    private var sInstance: ResourceTableRegistry? = null
+
     @JvmStatic
     fun getInstance(): ResourceTableRegistry {
       val klass = ResourceTableRegistry::class.java
-      return ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
+      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow().also { sInstance = it }
     }
   }
 
