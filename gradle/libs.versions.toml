@@ -48,7 +48,7 @@ common-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "r
 common-retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 
 # AndroidX
-androidx-annotation = { module = "androidx.annotation:annotation", version = "1.6.0" }
+androidx-annotation = { module = "androidx.annotation:annotation", version = "1.7.0" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.1.4" }
