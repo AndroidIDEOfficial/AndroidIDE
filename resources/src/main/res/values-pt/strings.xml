@@ -234,7 +234,7 @@
   <string name="title_code_generation_failed">Falha na geração do código</string>
   <string name="msg_code_generation_failed">Falha ao gerar código XML. Deseja sair mesmo assim?</string>
   <string name="msg_invalid_designer_result">UI Designer retornou resultado inválido</string>
-  <string name="msg_swipe_up">Deslize para cima para ver a saída de compilação, logs e muito mais.</string>
+  <string name="msg_swipe_up">Deslize para cima para ver a saída de compilação, logs e mais.</string>
   <string name="msg_ide_crashed">AndroidIDE parou</string>
   <string name="msg_report_crash">Abra um problema no github com o seguinte stacktrace:</string>
   <string name="msg_crash_report_hint">Clique no botão abaixo para copiar o registro e abrir a página de issues.</string>
