@@ -119,7 +119,7 @@ tests-androidx-test-rules = { module = "androidx.test:rules", version = "1.5.0" 
 tests-androidx-junit = { module = "androidx.test.ext:junit", version = "1.1.5" }
 tests-androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 tests-androidx-espresso = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
-tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.0.0" }
+tests-mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version = "5.1.0" }
 tests-mockk = { module = "io.mockk:mockk", version = "1.13.7" }
 
 # Tooling
