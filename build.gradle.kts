@@ -51,7 +51,6 @@ val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(BuildConfig.compileSdk)
-    buildToolsVersion = BuildConfig.buildTools
 
     defaultConfig {
       minSdk = BuildConfig.minSdk
