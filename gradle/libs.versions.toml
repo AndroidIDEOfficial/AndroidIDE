@@ -80,7 +80,7 @@ google-auto-value-ap = { module = "com.google.auto.value:auto-value", version = 
 google-auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version = "1.1.1" }
 google-auto-service = { module = "com.google.auto.service:auto-service", version = "1.1.1" }
 google-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.1" }
-google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.23.2" }
+google-protobuf = { module = "com.google.protobuf:protobuf-java", version = "3.24.3" }
 google-java-format = { module = "com.google.googlejavaformat:google-java-format", version = "1.17.0" }
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
