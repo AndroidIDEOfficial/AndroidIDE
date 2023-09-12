@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Akash Yadav
  */
 @AutoService(WidgetTableRegistry::class)
-internal class DefaultWidgetTableRegistry : WidgetTableRegistry {
+class DefaultWidgetTableRegistry : WidgetTableRegistry {
 
   private val tables = ConcurrentHashMap<String, WidgetTable>()
   private val log = ILogger.newInstance(WidgetTableRegistry::class.java.simpleName)

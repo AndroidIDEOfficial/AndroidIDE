@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Akash Yadav
  */
 @AutoService(ApiVersionsRegistry::class)
-internal class DefaultApiVersionsRegistry : ApiVersionsRegistry {
+class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
   private val versions = ConcurrentHashMap<String, ApiVersions>()

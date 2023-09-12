@@ -32,14 +32,21 @@ import java.io.File
 interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
-    const val PCK_ANDROID = "android"
-    @JvmStatic val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
-    @JvmStatic val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
 
-    @JvmStatic fun getInstance(): ResourceTableRegistry {
-      return ServiceLoader.load(ResourceTableRegistry::class.java).findFirstOrThrow()
+    const val PCK_ANDROID = "android"
+    @JvmStatic
+    val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic
+    val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic
+    val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
+    @JvmStatic
+    val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
+
+    @JvmStatic
+    fun getInstance(): ResourceTableRegistry {
+      val klass = ResourceTableRegistry::class.java
+      return ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
     }
   }
 

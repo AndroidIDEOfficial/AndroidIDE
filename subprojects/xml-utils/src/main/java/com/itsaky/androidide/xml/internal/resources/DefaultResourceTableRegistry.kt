@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Akash Yadav
  */
 @AutoService(ResourceTableRegistry::class)
-internal class DefaultResourceTableRegistry : ResourceTableRegistry {
+class DefaultResourceTableRegistry : ResourceTableRegistry {
 
   /**
    * Represents the type of single line entries read from files.
