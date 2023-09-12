@@ -9,10 +9,12 @@ editor = "0.21.1-5c3385c-SNAPSHOT"
 glide = "4.15.1"
 androidx-vectordrawable = "1.1.0"
 androidx-navigation = "2.5.3"
-ksp = "1.8.21-1.0.11"
+ksp = "1.9.10-1.0.13"
 antlr4 = "4.13.0"
 androidx-work = "2.8.1"
 retrofit = "2.9.0"
+room = "2.6.0-beta01"
+
 
 [libraries]
 
@@ -100,6 +102,11 @@ xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" 
 # GIT
 git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.201504261725-r" }
 
+# Room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+
 # Tests
 tests-junit = { module = "junit:junit", version = "4.13.2" }
 tests-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
@@ -126,3 +133,5 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 maven-publish = { id = "com.vanniktech.maven.publish.base", version = "0.25.3" }
 gradle-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
+kspAndroid = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
