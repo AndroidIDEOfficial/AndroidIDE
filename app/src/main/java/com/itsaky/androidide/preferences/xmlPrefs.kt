@@ -18,6 +18,8 @@
 package com.itsaky.androidide.preferences
 
 import android.content.Context
+import androidx.preference.Preference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.preferences.internal.CLOSING_BRACKET_NEW_LINE
 import com.itsaky.androidide.preferences.internal.EMPTY_ELEMENTS_BEHAVIOR
@@ -237,4 +239,10 @@ private class EmptyElementsBehavior(
   override fun onItemSelected(position: Int, isSelected: Boolean) {
     emptyElementsBehavior = EmptyElements.values()[position].toString()
   }
+  
+  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
+    super.onConfigureDialog(preference, dialog)
+    dialog.setCancelable(true)
+  }
+
 }

@@ -20,6 +20,7 @@ package com.itsaky.androidide.preferences
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.ENABLE_MATERIAL_YOU
@@ -117,6 +118,10 @@ class UiMode(
         }
       uiMode = mode
     }
+  }
+  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
+    super.onConfigureDialog(preference, dialog)
+    dialog.setCancelable(true)
   }
 }
 

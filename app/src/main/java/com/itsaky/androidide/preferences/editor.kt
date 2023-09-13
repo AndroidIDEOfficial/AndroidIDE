@@ -180,6 +180,11 @@ private class TabSize(
     tabSize = size
   }
 
+  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
+    super.onConfigureDialog(preference, dialog)
+    dialog.setCancelable(true)
+  }
+
   override fun getSelectedItem(): Int {
     var current = tabSize / 2 - 1
     if (current < 0 || current >= choices.size) {
