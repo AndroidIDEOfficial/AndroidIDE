@@ -12,7 +12,6 @@ plugins {
   id("kotlin-parcelize")
   id("com.google.android.gms.oss-licenses-plugin")
   id("androidx.navigation.safeargs.kotlin")
-  alias(libs.plugins.kspAndroid)
 
 }
 
@@ -102,7 +101,7 @@ dependencies {
 
   // Room
   implementation(libs.room.runtime)
-  ksp(libs.room.compiler)
+  kapt(libs.room.compiler)
   implementation(libs.room.ktx)
 
 

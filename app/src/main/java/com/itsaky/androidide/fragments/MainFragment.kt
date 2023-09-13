@@ -50,12 +50,10 @@ class MainFragment : BaseFragment() {
     super.onViewCreated(view, savedInstanceState)
     val createProject = MainScreenAction(string.create_project,
       R.drawable.ic_add) { showCreateProject() }
-
-    //change the icon
-    val projectList = MainScreenAction(string.msg_project_list,
-      R.drawable.ic_widget_list_view) { showProjectList() }
     val openProject = MainScreenAction(string.msg_open_existing_project,
       R.drawable.ic_folder) { pickDirectory() }
+    val projectList = MainScreenAction(string.msg_recently_opened_projects,
+      R.drawable.ic_widget_list_view) { showProjectList() }
     val cloneGitRepository = MainScreenAction(string.git_clone_repo,
       R.drawable.ic_git) { cloneGitRepo() }
     val openTerminal =

@@ -35,6 +35,8 @@ import com.itsaky.androidide.BuildConfig
 import com.itsaky.androidide.activities.CrashHandlerActivity
 import com.itsaky.androidide.activities.editor.IDELogcatReader
 import com.itsaky.androidide.buildinfo.BuildInfo
+import com.itsaky.androidide.data.common.IDEContainer
+import com.itsaky.androidide.data.common.IDEDataContainer
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.eventbus.events.preferences.PreferenceChangeEvent
 import com.itsaky.androidide.events.AppEventsIndex
@@ -69,6 +71,7 @@ class IDEApplication : BaseApplication() {
   private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
   private var ideLogcatReader: IDELogcatReader? = null
   private val log = ILogger.newInstance("IDEApplication")
+  lateinit var container: IDEContainer
 
   init {
     if (!VMUtils.isJvm()) {
@@ -82,6 +85,8 @@ class IDEApplication : BaseApplication() {
 
     Thread.setDefaultUncaughtExceptionHandler { thread, th -> handleCrash(thread, th) }
     super.onCreate()
+
+    container = IDEDataContainer(this)
 
     if (BuildConfig.DEBUG) {
       StrictMode.setVmPolicy(

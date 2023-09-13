@@ -19,7 +19,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="110dp"
+  android:layout_height="90dp"
   android:layout_margin="4dp"
   app:strokeWidth="0dp">
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,8 +28,8 @@
 
     <ImageView
       android:id="@+id/project_icon"
-      android:layout_width="80dp"
-      android:layout_height="80dp"
+      android:layout_width="70dp"
+      android:layout_height="70dp"
       android:layout_marginTop="8dp"
       android:layout_marginStart="8dp"
       android:scaleType="centerCrop"
@@ -44,7 +44,7 @@
       android:layout_marginTop="16dp"
       android:layout_marginStart="8dp"
       android:text="@string/app_name"
-      android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+      android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toEndOf="@+id/project_icon"

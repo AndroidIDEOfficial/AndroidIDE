@@ -36,6 +36,7 @@ import com.itsaky.androidide.activities.editor.EditorActivityKt
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
+import com.itsaky.androidide.models.toProjectInfoDetails
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
@@ -43,6 +44,7 @@ import com.itsaky.androidide.preferences.internal.lastOpenedProject
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.provider.IDEViewModelProvider
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.templates.ITemplateProvider
 import com.itsaky.androidide.utils.DialogUtils
@@ -54,11 +56,13 @@ import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_MAIN
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_PROJECT_RECENT_LIST
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_DETAILS
 import com.itsaky.androidide.viewmodel.MainViewModel.Companion.SCREEN_TEMPLATE_LIST
+import com.itsaky.androidide.viewmodel.ProjectInfoViewModel
 import java.io.File
 
 class MainActivity : LimitlessIDEActivity() {
 
   private val viewModel by viewModels<MainViewModel>()
+  private val projectInfoViewModel: ProjectInfoViewModel by viewModels { IDEViewModelProvider.Factory }
   private var _binding: ActivityMainBinding? = null
 
   private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -288,6 +292,7 @@ class MainActivity : LimitlessIDEActivity() {
   }
 
   internal fun openProject(root: File) {
+    projectInfoViewModel.saveProjectInfo(root.toProjectInfoDetails())
     ProjectManagerImpl.getInstance().projectPath = root.absolutePath
     startActivity(Intent(this, EditorActivityKt::class.java))
   }

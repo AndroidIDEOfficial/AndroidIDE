@@ -18,8 +18,12 @@
 package com.itsaky.androidide.fragments
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
-import android.view.ViewTreeObserver
+import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -28,8 +32,12 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.adapters.ProjectListAdapter
 import com.itsaky.androidide.databinding.FragmentProjectListBinding
-import com.itsaky.androidide.models.ProjectItem
+import com.itsaky.androidide.models.ProjectInfoDetails
+import com.itsaky.androidide.models.toProjectInfoDetails
+import com.itsaky.androidide.provider.IDEViewModelProvider
+import com.itsaky.androidide.utils.ProjectInfoDetailsUtils
 import com.itsaky.androidide.viewmodel.MainViewModel
+import com.itsaky.androidide.viewmodel.ProjectInfoViewModel
 import java.io.File
 
 
@@ -40,19 +48,16 @@ class ProjectListFragment :
   private var adapter: ProjectListAdapter? = null
   private var layoutManager: FlexboxLayoutManager? = null
 
-  private lateinit var globalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener
-
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
+  private val projectInfoViewModel: ProjectInfoViewModel by viewModels { IDEViewModelProvider.Factory }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
-    layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
-    binding.list.layoutManager = layoutManager
+    setupRecyclerView()
+    observeProjectInfoList()
 
-
-    reloadRecentProjects()
+    projectInfoViewModel.getAllProjectInfo()
 
     binding.exitButton.setOnClickListener {
       viewModel.setScreen(MainViewModel.SCREEN_MAIN)
@@ -60,14 +65,79 @@ class ProjectListFragment :
 
   }
 
-  fun reloadRecentProjects() {
-    adapter = ProjectListAdapter(ProjectItem.getProjects(context = requireContext())) { project, _ ->
-      openProject(project.path.toFile())
-    }
-    binding.list.adapter = adapter
+  private fun setupRecyclerView() {
+    layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
+    layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
+    binding.list.layoutManager = layoutManager
+
   }
 
-  fun openProject(root: File) {
+  private fun observeProjectInfoList() {
+    projectInfoViewModel.projectInfoList.observe(viewLifecycleOwner) {
+      val projectList = it.map { projectInfo ->
+        projectInfo.toProjectInfoDetails()
+      }
+
+      onFileListChanged(projectList)
+    }
+
+  }
+
+  private fun onFileListChanged(projectList: List<ProjectInfoDetails>) {
+    val sortOptions = ProjectInfoDetailsUtils.ProjectSortOptions(
+      ProjectInfoDetailsUtils.SortBy.OPEN_LAST, ProjectInfoDetailsUtils.Order.ASCENDING)
+      .createComparator()
+    val sortedProjectList = projectList.sortedWith(sortOptions)
+
+    adapter = ProjectListAdapter(sortedProjectList) { project, _ ->
+      openProject(project.file)
+    }
+
+    binding.list.adapter = adapter
+    setupNoProjectList(sortedProjectList.isEmpty())
+  }
+
+  private fun setupNoProjectList(isEmpty: Boolean) {
+    binding.list.visibility = if (isEmpty) View.GONE else View.VISIBLE
+    binding.noOpenProjectsSummary.visibility = if (isEmpty) View.VISIBLE else View.GONE
+
+    binding.noOpenProjectsSummary.movementMethod = LinkMovementMethod()
+    val openExistingProjectSpan: ClickableSpan = object : ClickableSpan() {
+      override fun onClick(widget: View) {
+        pickDirectory()
+      }
+    }
+
+    val sb = SpannableStringBuilder()
+    appendClickableSpan(sb, R.string.msg_empty_recent_projects, openExistingProjectSpan)
+    binding.noOpenProjectsSummary.text = sb
+  }
+
+  //Move this function to a utility class
+  private fun appendClickableSpan(
+    sb: SpannableStringBuilder,
+    @StringRes textRes: Int,
+    span: ClickableSpan,
+  ) {
+    val str = getString(textRes)
+    val split = str.split("@@", limit = 3)
+    if (split.size != 3) {
+      // Not a valid format
+      sb.append(str)
+      sb.append('\n')
+      return
+    }
+    sb.append(split[0])
+    sb.append(split[1], span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    sb.append(split[2])
+    sb.append('\n')
+  }
+
+  private fun openProject(root: File) {
     (requireActivity() as MainActivity).openProject(root)
+  }
+
+  private fun pickDirectory() {
+    pickDirectory(this::openProject)
   }
 }

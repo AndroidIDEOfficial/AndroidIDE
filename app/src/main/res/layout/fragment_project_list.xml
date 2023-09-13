@@ -28,7 +28,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:text="Projects"
+    android:text="@string/msg_recently_opened_projects"
     android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
     android:transitionName="title"
     app:layout_constraintStart_toStartOf="parent"
@@ -47,6 +47,22 @@
     tools:itemCount="10"
     tools:listitem="@layout/layout_project_list_item"
     tools:spanCount="3" />
+
+  <TextView
+    android:id="@+id/no_open_projects_summary"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+    android:textColor="?attr/colorSecondaryVariant"
+    android:textSize="13sp"
+    tools:text="@string/msg_empty_recent_projects"
+    app:layout_constraintBottom_toTopOf="@id/exit_button"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    tools:visibility="gone"
+    android:visibility="gone"
+    app:layout_constraintTop_toBottomOf="@id/title"/>
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/exit_button"

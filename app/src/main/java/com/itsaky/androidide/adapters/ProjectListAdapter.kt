@@ -25,13 +25,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.ProjectListAdapter.ViewHolder
 import com.itsaky.androidide.databinding.LayoutProjectListItemBinding
-import com.itsaky.androidide.models.ProjectItem
-import com.itsaky.androidide.utils.getIcon
-import kotlin.io.path.pathString
+import com.itsaky.androidide.models.ProjectInfoDetails
 
 class ProjectListAdapter(
-  projects: List<ProjectItem>,
-  private val onClick: ((ProjectItem, ViewHolder) -> Unit)? = null
+  projects: List<ProjectInfoDetails>,
+  private val onClick: ((ProjectInfoDetails, ViewHolder) -> Unit)? = null
 ) : RecyclerView.Adapter<ViewHolder>() {
 
   private val projects = projects.toMutableList()
@@ -52,15 +50,19 @@ class ProjectListAdapter(
       val project = projects[position]
       val context = root.context
 
+      val iconPath = project.file.absolutePath + "/app/src/main/res/mipmap-hdpi/ic_launcher.webp"
+      val name = project.file.name
+      val path = project.file.absolutePath
+
       Glide.with(context)
-        .load(project.iconPath)
+        .load(iconPath)
         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         .override(50, 50)
         .placeholder(R.drawable.ic_file_apk)
         .into(projectIcon)
 
-      projectName.text = project.name
-      projectPath.text = project.path.pathString
+      projectName.text = name
+      projectPath.text = path
 
 
       root.setOnClickListener {
@@ -73,6 +75,5 @@ class ProjectListAdapter(
   override fun getItemCount(): Int {
     return projects.size
   }
-
 
 }

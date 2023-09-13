@@ -231,8 +231,6 @@ class EditorViewModel : ViewModel() {
       val gson = GsonBuilder().setPrettyPrinting().create()
       val string = gson.toJson(cache)
       file.writeText(string)
-
-      writeProjectInfo()
     }
   }
 
@@ -250,21 +248,6 @@ class EditorViewModel : ViewModel() {
     file.createNewFile()
 
     return file
-  }
-
-
-  fun writeProjectInfo() {
-    executeAsync {
-
-      val currentTime = TimeUtils.getCurrentTime()
-      val cache = ProjectInfoCache(currentTime)
-      val file = ProjectInfoCache.getProjectInfoCache()
-
-      val gson = GsonBuilder().setPrettyPrinting().create()
-      val string = gson.toJson(cache)
-
-      file.writeText(string)
-    }
   }
 
 }

@@ -88,6 +88,7 @@
   <string name="msg_create_new_project">Create new project</string>
   <string name="msg_open_existing_project">Open existing project</string>
   <string name="msg_project_list">Project list</string>
+  <string name="msg_recently_opened_projects">Recently opened projects</string>
   <string name="title_confirm_project_close">Close project</string>
 
   <!-- Templates -->
@@ -344,6 +345,7 @@
   <!--There must be exactly two '@@' sorrounding the text that should be clickable.-->
   <string name="msg_swipe_for_files">Swipe left for @@files@@.</string>
   <string name="msg_swipe_for_output">Swipe up for @@build output@@.</string>
+  <string name="msg_empty_recent_projects">No recent projects have been opened.\n You can @@open an existing project@@ to get started.</string>
   <string name="idepref_editor_useSoftTabs_title">Use soft tab</string>
   <string name="idepref_editor_useSoftTabs_summary">Choose whether to use spaces instead of tab character (\\t).</string>
   <string name="btn_donate">Donate</string>
