@@ -60,7 +60,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-vectors = { module = "androidx.vectordrawable:vectordrawable", version.ref = "androidx-vectordrawable" }
 androidx-animated_vectors = { module = "androidx.vectordrawable:vectordrawable-animated", version.ref = "androidx-vectordrawable" }
 androidx-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
-androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.5.7" }
+androidx-fragment_ktx = { module = "androidx.fragment:fragment-ktx", version = "1.6.1" }
 androidx-lib_desugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.3" }
 androidx-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 androidx-transition = { module = "androidx.transition:transition-ktx", version = "1.4.1" }
