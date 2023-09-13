@@ -10,6 +10,12 @@
       "matchPackagePatterns": [
         "org.jetbrains.kotlin.*"
       ]
+    },
+    {
+      "groupName": "AndroidX Navigation",
+      "matchPackagePatterns": [
+        "androidx.navigation.*"
+      ]
     }
   ]
 }
