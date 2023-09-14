@@ -165,6 +165,7 @@ private class TabSize(
   override val summary: Int? = string.msg_tab_size,
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
+  override val dialogCancellable = true
 
   @IgnoredOnParcel private val choices = arrayOf("2", "4", "6", "8")
 
@@ -196,6 +197,7 @@ private class ColorSchemePreference(
   override val summary: Int? = R.string.idepref_editor_colorScheme_summary,
   override val icon: Int? = R.drawable.ic_color_scheme
 ) : SingleChoicePreference() {
+  override val dialogCancellable = true
 
   @IgnoredOnParcel private val schemes = IDEColorSchemeProvider.list()
 
@@ -211,11 +213,6 @@ private class ColorSchemePreference(
     if (isSelected) {
       colorScheme = schemes[position].key
     }
-  }
-
-  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
-    super.onConfigureDialog(preference, dialog)
-    dialog.setCancelable(true)
   }
 }
 

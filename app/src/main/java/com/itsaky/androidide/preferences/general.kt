@@ -91,6 +91,8 @@ class UiMode(
   override val summary: Int? = R.string.idepref_general_uiMode_summary,
   override val icon: Int? = R.drawable.ic_ui_mode
 ) : SingleChoicePreference() {
+  override val dialogCancellable = true
+
   override fun getChoices(context: Context): Array<String> {
     return arrayOf(
       context.getString(R.string.uiMode_light),

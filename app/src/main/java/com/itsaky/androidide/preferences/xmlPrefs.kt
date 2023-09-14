@@ -225,6 +225,7 @@ private class EmptyElementsBehavior(
   override val title: Int = string.idepref_emptyElements_title,
   override val summary: Int? = string.idepref_emptyElements_summary
 ) : SingleChoicePreference() {
+  override val dialogCancellable = true
 
   override fun getSelectedItem(): Int {
     return EmptyElements.valueOf(emptyElementsBehavior).ordinal
