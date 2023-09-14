@@ -25,9 +25,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.fragment.app.viewModels
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.itsaky.androidide.R
 import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.adapters.ProjectListAdapter
@@ -46,7 +44,6 @@ class ProjectListFragment :
     FragmentProjectListBinding::bind) {
 
   private var adapter: ProjectListAdapter? = null
-  private var layoutManager: FlexboxLayoutManager? = null
 
   private val viewModel by viewModels<MainViewModel>(ownerProducer = { requireActivity() })
   private val projectInfoViewModel: ProjectInfoViewModel by viewModels { IDEViewModelProvider.Factory }
@@ -66,8 +63,8 @@ class ProjectListFragment :
   }
 
   private fun setupRecyclerView() {
-    layoutManager = FlexboxLayoutManager(requireContext(), FlexDirection.ROW)
-    layoutManager!!.justifyContent = JustifyContent.SPACE_EVENLY
+    val layoutManager = LinearLayoutManager(requireContext())
+    layoutManager.orientation = LinearLayoutManager.VERTICAL
     binding.list.layoutManager = layoutManager
 
   }
