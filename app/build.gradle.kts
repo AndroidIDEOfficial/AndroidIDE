@@ -100,9 +100,9 @@ dependencies {
   implementation(libs.git.jgit)
 
   // Room
-  implementation(libs.room.runtime)
-  kapt(libs.room.compiler)
-  implementation(libs.room.ktx)
+  implementation(libs.androidx.room.runtime)
+  kapt(libs.androidx.room.compiler)
+  implementation(libs.androidx.room.ktx)
 
 
   // AndroidX
