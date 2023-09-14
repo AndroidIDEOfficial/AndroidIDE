@@ -170,8 +170,8 @@ class MainActivity : LimitlessIDEActivity() {
       // ------- OR -------
       // project list -> home
       val setAxisToX =
-        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS || previous == SCREEN_PROJECT_RECENT_LIST ) &&
-            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS || screen == SCREEN_PROJECT_RECENT_LIST)
+        (previous == SCREEN_TEMPLATE_LIST || previous == SCREEN_TEMPLATE_DETAILS) &&
+            (screen == SCREEN_TEMPLATE_LIST || screen == SCREEN_TEMPLATE_DETAILS)
 
       val axis = if (setAxisToX) {
         MaterialSharedAxis.X
@@ -179,7 +179,7 @@ class MainActivity : LimitlessIDEActivity() {
         MaterialSharedAxis.Y
       }
 
-      val isForward = (screen ?: 0) - previous == 1
+      val isForward = (screen ?: 0) - previous >= 1
 
       val transition = MaterialSharedAxis(axis, isForward)
       transition.doOnEnd {
