@@ -21,13 +21,13 @@ import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 interface ProjectInfoRepository {
+
   fun getAllProjectInfoStream(): Flow<List<ProjectInfo>>
 
   fun getProjectInfoStream(file: File): Flow<ProjectInfo?>
 
-  suspend fun insertProjectInfo(projectInfo: ProjectInfo)
+  suspend fun upsertProjectInfo(projectInfo: ProjectInfo)
 
   suspend fun deleteProjectInfo(projectInfo: ProjectInfo)
 
-  suspend fun updateProjectInfo(projectInfo: ProjectInfo)
 }

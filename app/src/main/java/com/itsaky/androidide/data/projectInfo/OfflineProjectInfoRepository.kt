@@ -27,10 +27,8 @@ class OfflineProjectInfoRepository(
   override fun getAllProjectInfoStream(): Flow<List<ProjectInfo>> = projectInfoDao.getAllProjectInfo()
 
   override fun getProjectInfoStream(file: File): Flow<ProjectInfo?> = projectInfoDao.getProjectInfo(file)
-  override suspend fun insertProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.insert(projectInfo)
+  override suspend fun upsertProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.upsert(projectInfo)
 
   override suspend fun deleteProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.delete(projectInfo)
-
-  override suspend fun updateProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.update(projectInfo)
 
 }

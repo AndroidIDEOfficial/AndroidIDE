@@ -19,11 +19,8 @@ package com.itsaky.androidide.data.projectInfo
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -32,12 +29,13 @@ interface ProjectInfoDao {
 
   @Query("SELECT * from project_info ORDER by name ASC")
   fun getAllProjectInfo(): Flow<List<ProjectInfo>>
+
   @Query("SELECT * from project_info WHERE file = :file")
   fun getProjectInfo(file: File): Flow<ProjectInfo>
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insert(projectInfo: ProjectInfo)
-  @Update
-  suspend fun update(projectInfo: ProjectInfo)
+
+  @Upsert
+  suspend fun upsert(projectInfo: ProjectInfo)
+
   @Delete
   suspend fun delete(projectInfo: ProjectInfo)
 }

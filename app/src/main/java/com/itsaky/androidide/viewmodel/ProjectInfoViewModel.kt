@@ -36,7 +36,7 @@ class ProjectInfoViewModel(private val projectInfoRepository: ProjectInfoReposit
 
   fun saveProjectInfo(projectInfoDetails: ProjectInfoDetails) {
     viewModelScope.launch {
-      projectInfoRepository.insertProjectInfo(projectInfoDetails.toProjectInfo())
+      projectInfoRepository.upsertProjectInfo(projectInfoDetails.toProjectInfo())
     }
   }
 
