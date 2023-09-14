@@ -18,13 +18,10 @@ package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.app.BaseApplication;
-
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -61,7 +58,9 @@ public final class Environment {
   public static File IDE_PROPS_FILE;
   public static File LIB_HOOK;
 
-  /** Used by Java LSP until the project is initialized. */
+  /**
+   * Used by Java LSP until the project is initialized.
+   */
   public static File ANDROID_JAR;
 
   public static File TOOLING_API_JAR;
@@ -77,10 +76,9 @@ public final class Environment {
   public static File BOOTCLASSPATH;
 
   public static void init() {
-    final BaseApplication app = BaseApplication.getBaseInstance();
-    ROOT = app.getIDEDataDir();
-    PREFIX = mkdirIfNotExits(new File(app.getIDEDataDir(), "usr"));
-    HOME = mkdirIfNotExits(app.getRootDir());
+    ROOT = mkdirIfNotExits(new File(DEFAULT_ROOT));
+    PREFIX = mkdirIfNotExits(new File(ROOT, "usr"));
+    HOME = mkdirIfNotExits(new File(ROOT, "home"));
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
     TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
     BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
@@ -262,11 +260,11 @@ public final class Environment {
     }
     return blacklist;
   }
-  
+
   public static File getProjectCacheDir(String projectDir) {
     return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
   }
-  
+
   public static File getProjectCacheDir(File projectDir) {
     return new File(projectDir, ANDROIDIDE_PROJECT_CACHE_DIR);
   }

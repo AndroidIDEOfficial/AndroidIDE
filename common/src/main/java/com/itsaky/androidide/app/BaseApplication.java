@@ -16,7 +16,6 @@
  */
 package com.itsaky.androidide.app;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -100,15 +99,6 @@ public class BaseApplication extends Application {
         getString(R.string.title_gradle_service_notification_channel),
         NotificationManager.IMPORTANCE_LOW);
     NotificationManagerCompat.from(this).createNotificationChannel(buildNotificationChannel);
-  }
-
-  public File getRootDir() {
-    return new File(getIDEDataDir(), "home");
-  }
-
-  @SuppressLint("SdCardPath")
-  public File getIDEDataDir() {
-    return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
   }
 
   public void writeException(Throwable th) {
