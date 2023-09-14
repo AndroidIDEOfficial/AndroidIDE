@@ -19,6 +19,8 @@ package com.itsaky.androidide.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -50,12 +52,13 @@ class ProjectListAdapter(
       val project = projects[position]
       val context = root.context
 
-      val iconPath = project.file.absolutePath + "/app/src/main/res/mipmap-hdpi/ic_launcher.webp"
+      //Choose another icon
+      val icon =  AppCompatResources.getDrawable(context, R.drawable.ic_file_apk)
       val name = project.file.name
       val path = project.file.absolutePath
 
       Glide.with(context)
-        .load(iconPath)
+        .load(icon)
         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
         .override(50, 50)
         .placeholder(R.drawable.ic_file_apk)
