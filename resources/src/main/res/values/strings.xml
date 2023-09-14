@@ -88,7 +88,7 @@
   <string name="msg_create_new_project">Create new project</string>
   <string name="msg_open_existing_project">Open existing project</string>
   <string name="msg_project_list">Project list</string>
-  <string name="msg_recently_opened_projects">Recently opened projects</string>
+  <string name="msg_recently_opened_projects">Recent Projects</string>
   <string name="title_confirm_project_close">Close project</string>
 
   <!-- Templates -->
