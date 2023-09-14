@@ -20,7 +20,6 @@ package com.itsaky.androidide.preferences
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.R
 import com.itsaky.androidide.preferences.internal.CONFIRM_PROJECT_OPEN
 import com.itsaky.androidide.preferences.internal.ENABLE_MATERIAL_YOU
@@ -92,6 +91,8 @@ class UiMode(
   override val summary: Int? = R.string.idepref_general_uiMode_summary,
   override val icon: Int? = R.drawable.ic_ui_mode
 ) : SingleChoicePreference() {
+  override val dialogCancellable = true
+
   override fun getChoices(context: Context): Array<String> {
     return arrayOf(
       context.getString(R.string.uiMode_light),
@@ -118,11 +119,6 @@ class UiMode(
         }
       uiMode = mode
     }
-  }
-  
-  override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
-    super.onConfigureDialog(preference, dialog)
-    dialog.setCancelable(true)
   }
 }
 
