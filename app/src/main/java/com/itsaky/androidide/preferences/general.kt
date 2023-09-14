@@ -119,6 +119,7 @@ class UiMode(
       uiMode = mode
     }
   }
+  
   override fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {
     super.onConfigureDialog(preference, dialog)
     dialog.setCancelable(true)
