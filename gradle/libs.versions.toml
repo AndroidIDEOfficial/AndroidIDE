@@ -103,9 +103,9 @@ xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" 
 git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.201504261725-r" }
 
 # Room
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 # Tests
 tests-junit = { module = "junit:junit", version = "4.13.2" }
