@@ -61,6 +61,8 @@ public abstract class ILogger {
   private static ILogger instance;
   protected final String TAG;
 
+  protected boolean isEnabled = true;
+
   protected ILogger(String tag) {
     TAG = preProcessLogTag(tag);
   }
@@ -129,6 +131,11 @@ public abstract class ILogger {
   }
 
   private void logAndNotify(Priority priority, String msg) {
+    if (!isEnabled()) {
+      // logger is disabled
+      return;
+    }
+
     doLog(priority, msg);
     for (final var listener : logListeners) {
       listener.log(priority, TAG, msg);
@@ -139,7 +146,7 @@ public abstract class ILogger {
    * Log the message to an appropriate stream where the user can see the log messages.
    *
    * @param priority The priority for this log message.
-   * @param message The full generated message for this log. Might contain new lines.
+   * @param message  The full generated message for this log. Might contain new lines.
    * @see ILogger.Priority#DEBUG
    * @see ILogger.Priority#ERROR
    * @see ILogger.Priority#WARNING
@@ -193,7 +200,9 @@ public abstract class ILogger {
     return log(Priority.INFO, messages);
   }
 
-  /** Logs the name of method and class which calls this method. */
+  /**
+   * Logs the name of method and class which calls this method.
+   */
   public void logThis() {
     debug(getCallerClassDescription());
   }
@@ -206,6 +215,24 @@ public abstract class ILogger {
    */
   public ILogger debug(Object... messages) {
     return log(Priority.DEBUG, messages);
+  }
+
+  /**
+   * Enable or disable this logger instance.
+   *
+   * @param enabled Whether this logger is enabled.
+   * @see #isEnabled()
+   */
+  public void setEnabled(boolean enabled) {
+    isEnabled = enabled;
+  }
+
+  /**
+   * @return Whether this logger is enabled.
+   * @see #setEnabled(boolean)
+   */
+  public boolean isEnabled() {
+    return isEnabled;
   }
 
   protected String getCallerClassDescription() {
@@ -224,17 +251,18 @@ public abstract class ILogger {
     return "<Logger> <Cannot get caller information>";
   }
 
-  /** Logging priority. */
+  /**
+   * Logging priority.
+   */
   public enum Priority {
-    DEBUG,
-    WARNING,
-    ERROR,
-    INFO,
-    VERBOSE
+    DEBUG, WARNING, ERROR, INFO, VERBOSE
   }
 
-  /** A listener which can be used to listen to log events. */
+  /**
+   * A listener which can be used to listen to log events.
+   */
   public interface LogListener {
+
     void log(Priority priority, String tag, String message);
   }
 }

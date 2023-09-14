@@ -28,6 +28,11 @@ import java.io.File
 interface XmlRegistry<T> {
 
   /**
+   * Whether the actions should be logged.
+   */
+  var isLoggingEnabled: Boolean
+
+  /**
    * Get data for the given platform directory.
    *
    * @param platform The platform directory.

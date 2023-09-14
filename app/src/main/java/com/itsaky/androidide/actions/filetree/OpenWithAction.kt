@@ -29,7 +29,7 @@ import com.itsaky.androidide.utils.IntentUtils
  *
  * @author Akash Yadav
  */
-class OpenWithAction(context: Context) :
+class OpenWithAction(context: Context, override val order: Int) :
   BaseFileTreeAction(
     context = context,
     labelRes = R.string.open_with,

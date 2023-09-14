@@ -29,9 +29,12 @@ class FindInFileAction() : EditorRelatedAction() {
   override val id: String = "editor_findInFile"
   override var requiresUIThread: Boolean = true
 
-  constructor(context: Context) : this() {
-    label = context.getString(R.string.menu_find_file)
-    icon = ContextCompat.getDrawable(context, R.drawable.ic_search_file)
+  override var order: Int = 0
+
+  constructor(context: Context, order: Int) : this() {
+    this.label = context.getString(R.string.menu_find_file)
+    this.icon = ContextCompat.getDrawable(context, R.drawable.ic_search_file)
+    this.order = order
   }
 
   override fun execAction(data: ActionData): Boolean {

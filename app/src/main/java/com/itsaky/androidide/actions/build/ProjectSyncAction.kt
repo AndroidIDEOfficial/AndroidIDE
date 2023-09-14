@@ -30,7 +30,7 @@ import com.itsaky.androidide.utils.flashSuccess
  *
  * @author Akash Yadav
  */
-class ProjectSyncAction(context: Context) : BaseBuildAction() {
+class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAction() {
 
   override val id: String = "action_editor_syncProject"
   override var requiresUIThread = true

@@ -20,8 +20,8 @@ package com.itsaky.androidide.xml.resources
 import com.android.aaptcompiler.ResourceGroup
 import com.android.aaptcompiler.ResourceTable
 import com.itsaky.androidide.lookup.Lookup
+import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry
 import java.io.File
 
 /**
@@ -32,13 +32,24 @@ import java.io.File
 interface ResourceTableRegistry : XmlRegistry<ResourceTable> {
 
   companion object {
-    const val PCK_ANDROID = "android"
-    @JvmStatic val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
-    @JvmStatic val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
-    @JvmStatic val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
 
-    @JvmStatic fun getInstance(): ResourceTableRegistry = DefaultResourceTableRegistry
+    const val PCK_ANDROID = "android"
+    @JvmStatic
+    val COMPLETION_MODULE_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic
+    val COMPLETION_DEP_RES = Lookup.Key<Set<ResourceTable>>()
+    @JvmStatic
+    val COMPLETION_FRAMEWORK_RES = Lookup.Key<ResourceTable>()
+    @JvmStatic
+    val COMPLETION_MANIFEST_ATTR_RES = Lookup.Key<ResourceTable>()
+
+    private var sInstance: ResourceTableRegistry? = null
+
+    @JvmStatic
+    fun getInstance(): ResourceTableRegistry {
+      val klass = ResourceTableRegistry::class.java
+      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow().also { sInstance = it }
+    }
   }
 
   /**

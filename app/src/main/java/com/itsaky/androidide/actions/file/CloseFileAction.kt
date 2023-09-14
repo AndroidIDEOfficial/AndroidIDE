@@ -28,7 +28,7 @@ import com.itsaky.androidide.actions.ActionData
  *
  * @author Akash Yadav
  */
-class CloseFileAction(context: Context) : FileTabAction() {
+class CloseFileAction(context: Context, override val order: Int) : FileTabAction() {
 
   override val id: String = "ide.editor.closeFile"
 

@@ -15,8 +15,9 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.widgets.internal
+package com.itsaky.androidide.xml.internal.widgets
 
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
@@ -28,10 +29,17 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Akash Yadav
  */
-internal object DefaultWidgetTableRegistry : WidgetTableRegistry {
+@AutoService(WidgetTableRegistry::class)
+class DefaultWidgetTableRegistry : WidgetTableRegistry {
 
   private val tables = ConcurrentHashMap<String, WidgetTable>()
   private val log = ILogger.newInstance(WidgetTableRegistry::class.java.simpleName)
+
+  override var isLoggingEnabled: Boolean
+    get() = log.isEnabled
+    set(value) {
+      log.isEnabled = value
+    }
 
   override fun forPlatformDir(platform: File): WidgetTable? {
     var table = tables[platform.path]
@@ -53,7 +61,7 @@ internal object DefaultWidgetTableRegistry : WidgetTableRegistry {
 
     log.info("Creating widget table for platform dir: $platformDir")
     return widgets.inputStream().bufferedReader().useLines {
-      val table =  DefaultWidgetTable()
+      val table = DefaultWidgetTable()
       it.forEach { line ->
         table.putWidget(line)
       }

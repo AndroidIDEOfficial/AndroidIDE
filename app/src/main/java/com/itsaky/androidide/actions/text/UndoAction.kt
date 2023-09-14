@@ -24,7 +24,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 
 /** @author Akash Yadav */
-class UndoAction(context: Context) : EditorRelatedAction() {
+class UndoAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
   override val id: String = "editor_undo"
 

@@ -25,7 +25,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17
@@ -201,7 +201,7 @@ jobs:
     if: ${{ always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.build_apk.result == 'success' && needs.unit_test_debug.result == 'success' && needs.unit_test_tooling_api.result == 'success' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17
@@ -252,7 +252,7 @@ jobs:
     if: ${{ always() && github.ref != 'refs/heads/main' && github.event_name != 'pull_request' && needs.build_apk.result == 'success' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up JDK 17

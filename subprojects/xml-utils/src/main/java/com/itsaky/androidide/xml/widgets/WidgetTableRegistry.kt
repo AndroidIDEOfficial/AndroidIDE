@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.xml.widgets
 
+import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.widgets.internal.DefaultWidgetTableRegistry
 
 /**
  * Information about widgets, layouts and layout params extracted from `widgets.txt` from the
@@ -30,7 +30,14 @@ interface WidgetTableRegistry : XmlRegistry<WidgetTable> {
 
   companion object {
 
+    private var sInstance: WidgetTableRegistry? = null
+
     /** Get the default instance of [WidgetTableRegistry]. */
-    @JvmStatic fun getInstance(): WidgetTableRegistry = DefaultWidgetTableRegistry
+    @JvmStatic
+    fun getInstance(): WidgetTableRegistry {
+      val klass = WidgetTableRegistry::class.java
+      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
+        .also { sInstance = it }
+    }
   }
 }
