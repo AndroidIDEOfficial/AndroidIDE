@@ -27,7 +27,7 @@ import com.itsaky.androidide.data.projectInfo.ProjectInfoDao
 import com.itsaky.androidide.utils.FileTypeConverter
 import com.itsaky.androidide.utils.ProjectInfoCacheTypeConverter
 
-@Database(entities = [ProjectInfo::class], version = 1, exportSchema = false)
+@Database(entities = [ProjectInfo::class], version = 1, exportSchema = true)
 @TypeConverters(FileTypeConverter::class, ProjectInfoCacheTypeConverter::class)
 abstract class IDEDatabase : RoomDatabase() {
 
@@ -37,15 +37,16 @@ abstract class IDEDatabase : RoomDatabase() {
 
     @Volatile
     private var Instance: IDEDatabase? = null
+    private const val IDE_DATABASE_NAME = "ide_database"
 
     fun getDatabase(context: Context): IDEDatabase {
       return Instance ?: synchronized(this) {
-        Room.databaseBuilder(context, IDEDatabase::class.java, "ide_database")
-          .fallbackToDestructiveMigrationFrom()
+        Room.databaseBuilder(context, IDEDatabase::class.java, IDE_DATABASE_NAME)
+          .addMigrations(IDESchemaMigrations.MIGRATION_1_2)
           .build()
           .also { Instance = it }
       }
     }
-    
+
   }
 }
