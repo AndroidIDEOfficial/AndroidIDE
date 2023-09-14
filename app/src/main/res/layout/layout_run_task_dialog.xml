@@ -35,7 +35,7 @@
     android:layout_marginEnd="16dp"
     android:tooltipText="@string/run"
     app:icon="@drawable/ic_run"
-    app:iconTint="@color/green_500" />
+    app:iconTint="?attr/colorSuccess" />
 
   <TextView
     android:layout_width="wrap_content"

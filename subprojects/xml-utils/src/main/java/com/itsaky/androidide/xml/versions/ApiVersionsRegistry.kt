@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.xml.versions
 
+import com.itsaky.androidide.utils.ServiceLoader
 import com.itsaky.androidide.xml.registry.XmlRegistry
-import com.itsaky.androidide.xml.versions.internal.DefaultApiVersionsRegistry
 
 /**
  * Registry that reads information about the API versions of classes, their fields and methods.
@@ -30,9 +30,17 @@ import com.itsaky.androidide.xml.versions.internal.DefaultApiVersionsRegistry
  * @author Akash Yadav
  */
 interface ApiVersionsRegistry : XmlRegistry<ApiVersions> {
+
   companion object {
 
+    private var sInstance: ApiVersionsRegistry? = null
+
     /** Get the default instance of [ApiVersionsRegistry]. */
-    @JvmStatic fun getInstance(): ApiVersionsRegistry = DefaultApiVersionsRegistry
+    @JvmStatic
+    fun getInstance(): ApiVersionsRegistry {
+      val klass = ApiVersionsRegistry::class.java
+      return sInstance ?: ServiceLoader.load(klass, klass.classLoader).findFirstOrThrow()
+        .also { sInstance = it }
+    }
   }
 }

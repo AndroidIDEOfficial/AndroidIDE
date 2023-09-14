@@ -15,22 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.versions.internal
+package com.itsaky.androidide.xml.internal.widgets.util
 
-import com.itsaky.androidide.xml.versions.ApiVersions
-import com.itsaky.androidide.xml.versions.ClassInfo
-import java.util.concurrent.ConcurrentHashMap
+import com.itsaky.androidide.xml.widgets.Widget
+import com.itsaky.androidide.xml.widgets.WidgetType
 
-/** @author Akash Yadav */
-internal class DefaultApiVersions : ApiVersions {
-
-  val classes = ConcurrentHashMap<String, ClassInfo>()
-
-  override fun getClass(name: String): ClassInfo? {
-    return classes[name.replace('.', '/')]
-  }
-  
-  internal fun putClass(name: String, info: ClassInfo) {
-    classes[name] = info
-  }
-}
+/**
+ * Default implementation of [Widget].
+ * @author Akash Yadav
+ */
+class DefaultWidget(
+  override val simpleName: String,
+  override val qualifiedName: String,
+  override val type: WidgetType,
+  override val superclasses: List<String>
+) : Widget

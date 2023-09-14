@@ -24,8 +24,12 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 import java.nio.file.Path
 
-fun ActionData.requireContext() : Context {
-  return get(Context::class.java) ?: throw IllegalArgumentException("No context instance provided")
+fun ActionData.getContext(): Context? {
+  return get(Context::class.java)
+}
+
+fun ActionData.requireContext(): Context {
+  return getContext() ?: throw IllegalArgumentException("No context instance provided")
 }
 
 fun ActionData.requireFile(): File {

@@ -70,6 +70,7 @@
     <item name="switchPreferenceStyle">@style/AppTheme.SwitchPreference</item>
     <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
     <item name="textAppearanceBodySmall">@style/TextAppearance.AndroidIDE.BodySmall</item>
+    <item name="colorSuccess">@color/green_500</item>
   </style>
 
   <style name="Theme.AndroidIDE" parent="Theme.AndroidIDE.Styled">

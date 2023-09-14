@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.xml.resources.internal
+package com.itsaky.androidide.xml.internal.resources
 
 import com.android.SdkConstants
 import com.android.SdkConstants.FN_INTENT_ACTIONS_ACTIVITY
@@ -32,16 +32,17 @@ import com.android.aaptcompiler.Source
 import com.android.aaptcompiler.TableExtractor
 import com.android.aaptcompiler.TableExtractorOptions
 import com.android.aaptcompiler.extractPathData
+import com.google.auto.service.AutoService
 import com.itsaky.androidide.aapt.logging.IDELogger
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility.PUBLIC
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry.Companion.PCK_ANDROID
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
-import com.itsaky.androidide.xml.resources.internal.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.ACTIVITY_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.BROADCAST_ACTIONS
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.CATEGORIES
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.FEATURES
+import com.itsaky.androidide.xml.internal.resources.DefaultResourceTableRegistry.SingleLineValueEntryType.SERVICE_ACTIONS
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
@@ -50,7 +51,8 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * @author Akash Yadav
  */
-internal object DefaultResourceTableRegistry : ResourceTableRegistry {
+@AutoService(ResourceTableRegistry::class)
+class DefaultResourceTableRegistry : ResourceTableRegistry {
 
   /**
    * Represents the type of single line entries read from files.
@@ -72,6 +74,12 @@ internal object DefaultResourceTableRegistry : ResourceTableRegistry {
   private val manifestAttrs = ConcurrentHashMap<String, ResourceTable>()
   private val singleLineValueEntries =
     ConcurrentHashMap<String, ConcurrentHashMap<SingleLineValueEntryType, List<String>>>()
+
+  override var isLoggingEnabled: Boolean
+    get() = log.isEnabled
+    set(value) {
+      log.isEnabled = value
+    }
 
   override fun forPackage(name: String, vararg resDirs: File): ResourceTable? {
 

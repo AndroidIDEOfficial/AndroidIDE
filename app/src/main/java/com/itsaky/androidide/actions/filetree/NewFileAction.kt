@@ -47,7 +47,7 @@ import java.util.regex.Pattern
  *
  * @author Akash Yadav
  */
-class NewFileAction(context: Context) :
+class NewFileAction(context: Context, override val order: Int) :
   BaseDirNodeAction(
     context = context,
     labelRes = R.string.new_file,

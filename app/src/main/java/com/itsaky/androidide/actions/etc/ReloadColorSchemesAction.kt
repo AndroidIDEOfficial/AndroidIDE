@@ -33,7 +33,7 @@ import com.itsaky.androidide.utils.ILogger
  *
  * @author Akash Yadav
  */
-class ReloadColorSchemesAction(context: Context) : EditorActivityAction() {
+class ReloadColorSchemesAction(context: Context, override val order: Int) : EditorActivityAction() {
 
   override val id: String = "ide.editor.colorScheme.reload"
 

@@ -41,7 +41,7 @@ plugins {
 buildscript {
   dependencies {
     classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.21")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
     classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.6.0")
   }
 }
@@ -51,7 +51,6 @@ val flavorsAbis = arrayOf("arm64-v8a", "armeabi-v7a")
 fun Project.configureBaseExtension() {
   extensions.findByType(BaseExtension::class)?.run {
     compileSdkVersion(BuildConfig.compileSdk)
-    buildToolsVersion = BuildConfig.buildTools
 
     defaultConfig {
       minSdk = BuildConfig.minSdk
