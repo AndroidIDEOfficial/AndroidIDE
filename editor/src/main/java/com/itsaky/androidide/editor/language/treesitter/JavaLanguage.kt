@@ -15,12 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.language.java
+package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
 import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
 import com.itsaky.androidide.editor.language.newline.TSCStyleBracketsHandler
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.lsp.api.ILanguageServer

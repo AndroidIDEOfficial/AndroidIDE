@@ -15,26 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.language.log
+package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
-import com.itsaky.androidide.treesitter.log.TSLanguageLog
+import com.itsaky.androidide.treesitter.json.TSLanguageJson
 
 /**
- * Tree Sitter language implementation for logs.
+ * [TreeSitterLanguage] implementation for JSON files.
  *
  * @author Akash Yadav
  */
-class LogLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageLog.getInstance(), TS_TYPE) {
-
+class JsonLanguage(context: Context) :
+  TreeSitterLanguage(context, TSLanguageJson.getInstance(), TS_TYPE) {
   companion object {
+    const val TS_TYPE = "json"
 
-    const val TS_TYPE = "log"
+    @JvmField val FACTORY = Factory { JsonLanguage(it) }
+  }
 
-    @JvmField
-    val FACTORY = Factory { LogLanguage(it) }
+  override fun getInterruptionLevel(): Int {
+    return INTERRUPTION_LEVEL_STRONG
   }
 }

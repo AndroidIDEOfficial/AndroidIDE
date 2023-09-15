@@ -32,12 +32,12 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR
 import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.FillMenuParams
-import com.itsaky.androidide.editor.language.java.JavaLanguage
-import com.itsaky.androidide.editor.language.json.JsonLanguage
-import com.itsaky.androidide.editor.language.kotlin.KotlinLanguage
-import com.itsaky.androidide.editor.language.log.LogLanguage
+import com.itsaky.androidide.editor.language.treesitter.JavaLanguage
+import com.itsaky.androidide.editor.language.treesitter.JsonLanguage
+import com.itsaky.androidide.editor.language.treesitter.KotlinLanguage
+import com.itsaky.androidide.editor.language.treesitter.LogLanguage
 import com.itsaky.androidide.editor.language.treesitter.TSLanguageRegistry
-import com.itsaky.androidide.editor.language.xml.XMLLanguage
+import com.itsaky.androidide.editor.language.treesitter.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.eventbus.events.editor.DocumentChangeEvent

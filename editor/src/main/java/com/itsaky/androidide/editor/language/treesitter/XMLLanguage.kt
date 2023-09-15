@@ -15,24 +15,38 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.language.json
+package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
 import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
-import com.itsaky.androidide.treesitter.json.TSLanguageJson
+import com.itsaky.androidide.lsp.api.ILanguageServer
+import com.itsaky.androidide.lsp.api.ILanguageServerRegistry
+import com.itsaky.androidide.lsp.xml.XMLLanguageServer
+import com.itsaky.androidide.treesitter.xml.TSLanguageXml
+import io.github.rosemoe.sora.util.MyCharacter
 
 /**
- * [TreeSitterLanguage] implementation for JSON files.
+ * Tree Sitter language XML language.
  *
  * @author Akash Yadav
  */
-class JsonLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageJson.getInstance(), TS_TYPE) {
-  companion object {
-    const val TS_TYPE = "json"
+class XMLLanguage(context: Context) :
+  TreeSitterLanguage(context, lang = TSLanguageXml.getInstance(), type = TS_TYPE) {
 
-    @JvmField val FACTORY = Factory { JsonLanguage(it) }
+  companion object {
+
+    const val TS_TYPE = "xml"
+
+    @JvmField
+    val FACTORY = Factory { XMLLanguage(it) }
+  }
+
+  override fun getLanguageServer(): ILanguageServer? {
+    return ILanguageServerRegistry.getDefault().getServer(XMLLanguageServer.SERVER_ID)
+  }
+
+  override fun checkIsCompletionChar(c: Char): Boolean {
+    return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/'
   }
 
   override fun getInterruptionLevel(): Int {

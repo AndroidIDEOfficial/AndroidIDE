@@ -24,7 +24,7 @@ import android.view.View
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.R
 import com.itsaky.androidide.databinding.FragmentLogBinding
-import com.itsaky.androidide.editor.language.log.LogLanguage
+import com.itsaky.androidide.editor.language.treesitter.LogLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.fragments.EmptyStateFragment
 import com.itsaky.androidide.models.LogLine

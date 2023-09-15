@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import com.itsaky.androidide.app.BaseIDEActivity
-import com.itsaky.androidide.editor.language.xml.XMLLanguage
+import com.itsaky.androidide.editor.language.treesitter.XMLLanguage
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.preferences.internal.fontSize

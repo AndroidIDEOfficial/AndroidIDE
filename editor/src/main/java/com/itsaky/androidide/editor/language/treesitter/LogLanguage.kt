@@ -15,27 +15,25 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.language.kotlin
+package com.itsaky.androidide.editor.language.treesitter
 
 import android.content.Context
-import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage
-import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
+import com.itsaky.androidide.editor.language.treesitter.TreeSitterLanguage.Factory
+import com.itsaky.androidide.treesitter.log.TSLanguageLog
 
 /**
- * [TreeSitterLanguage] implementation for Kotlin.
+ * Tree Sitter language implementation for logs.
  *
  * @author Akash Yadav
  */
-open class KotlinLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageKotlin.getInstance(), TS_TYPE_KT) {
+class LogLanguage(context: Context) :
+  TreeSitterLanguage(context, TSLanguageLog.getInstance(), TS_TYPE) {
 
   companion object {
-    val FACTORY = Factory { KotlinLanguage(it) }
-    const val TS_TYPE_KT = "kt"
-    const val TS_TYPE_KTS = "kts"
-  }
 
-  override fun getInterruptionLevel(): Int {
-    return INTERRUPTION_LEVEL_STRONG
+    const val TS_TYPE = "log"
+
+    @JvmField
+    val FACTORY = Factory { LogLanguage(it) }
   }
 }
