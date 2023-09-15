@@ -32,12 +32,14 @@ import io.github.rosemoe.sora.util.MyCharacter
  * @author Akash Yadav
  */
 class XMLLanguage(context: Context) :
-  TreeSitterLanguage(context, lang = TSLanguageXml.newInstance(), type = TS_TYPE) {
+  TreeSitterLanguage(context, lang = TSLanguageXml.getInstance(), type = TS_TYPE) {
 
   companion object {
+
     const val TS_TYPE = "xml"
 
-    @JvmField val FACTORY = Factory { XMLLanguage(it) }
+    @JvmField
+    val FACTORY = Factory { XMLLanguage(it) }
   }
 
   override fun getLanguageServer(): ILanguageServer? {

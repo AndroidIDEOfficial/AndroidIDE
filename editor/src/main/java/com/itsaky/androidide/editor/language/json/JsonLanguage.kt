@@ -28,7 +28,7 @@ import com.itsaky.androidide.treesitter.json.TSLanguageJson
  * @author Akash Yadav
  */
 class JsonLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageJson.newInstance(), TS_TYPE) {
+  TreeSitterLanguage(context, TSLanguageJson.getInstance(), TS_TYPE) {
   companion object {
     const val TS_TYPE = "json"
 

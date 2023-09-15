@@ -34,8 +34,8 @@ object TSMethodPruner {
 
   fun prune(content: StringBuilder, tree: TSTree, cursor: Int) {
     val root = tree.rootNode
-    TSQuery.create(TSLanguageJava.newInstance(), METHOD_BODIES_QUERY).use { query ->
-      check(query.isValid) { "Invalid method bodies query" }
+    TSQuery.create(TSLanguageJava.getInstance(), METHOD_BODIES_QUERY).use { query ->
+      check(query.canAccess()) { "Invalid method bodies query" }
       TSQueryCursor().use { queryCursor ->
         queryCursor.exec(query, root)
 

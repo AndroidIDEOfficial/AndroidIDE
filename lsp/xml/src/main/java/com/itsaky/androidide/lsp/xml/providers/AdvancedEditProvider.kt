@@ -154,7 +154,7 @@ object AdvancedEditProvider {
 
   private fun parseXml(content: String, action: (TSTree) -> Unit) {
     TSParser().use { parser ->
-      parser.language = TSLanguageXml.newInstance()
+      parser.language = TSLanguageXml.getInstance()
       parser.parseString(content).use(action)
     }
   }
@@ -164,8 +164,8 @@ object AdvancedEditProvider {
     queryString: String,
     action: (TSQuery, List<TSQueryMatch>) -> Unit
   ) {
-    TSQuery.create(TSLanguageXml.newInstance(), queryString).use { query ->
-      if (!query.isValid || query.errorType != TSQueryError.None) {
+    TSQuery.create(TSLanguageXml.getInstance(), queryString).use { query ->
+      if (!query.canAccess() || query.errorType != TSQueryError.None) {
         throw RuntimeException("Invalid query. Please open an issue on GitHub.")
       }
 

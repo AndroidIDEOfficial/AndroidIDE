@@ -36,7 +36,7 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch
  * @author Akash Yadav
  */
 class JavaLanguage(context: Context) :
-  TreeSitterLanguage(context, TSLanguageJava.newInstance(), TS_TYPE) {
+  TreeSitterLanguage(context, TSLanguageJava.getInstance(), TS_TYPE) {
 
   companion object {
 
