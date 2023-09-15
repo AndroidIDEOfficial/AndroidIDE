@@ -19,6 +19,7 @@ package com.itsaky.androidide.preferences
 
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itsaky.androidide.utils.DialogUtils
 
 /**
  * A preference which shows a dialog when clicked.
@@ -34,7 +35,7 @@ abstract class DialogPreference : SimplePreference() {
   open val dialogCancellable: Boolean = false
 
   override fun onPreferenceClick(preference: Preference): Boolean {
-    val dialog = newMaterialDialogBuilder(preference.context)
+    val dialog = DialogUtils.newMaterialDialogBuilder(preference.context)
     dialog.setTitle(this.dialogTitle)
     dialogMessage?.let { dialog.setMessage(it) }
     dialog.setCancelable(this.dialogCancellable)
@@ -43,5 +44,7 @@ abstract class DialogPreference : SimplePreference() {
     return true
   }
 
-  protected open fun onConfigureDialog(preference: Preference, dialog: MaterialAlertDialogBuilder) {}
+  protected open fun onConfigureDialog(preference: Preference,
+    dialog: MaterialAlertDialogBuilder) {
+  }
 }
