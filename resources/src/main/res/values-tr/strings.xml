@@ -5,7 +5,7 @@
   <string name="text_to_search">Aranacak metin</string>
   <string name="title_open_source_licenses">Açık kaynak lisansları</string>
   <string name="msg_about_licensed_under">Altında lisanlı</string>
-  <string name="about_option_email">E-posta</string>
+  <string name="about_option_email">Email</string>
   <string name="about_option_website">Web Sitesi</string>
   <string name="about_footer">AndroidIDE %1$s %2$s-için</string>
   <string name="about_subtitle">Basitçe, Android için bir IDE</string>
@@ -122,7 +122,7 @@
   <string name="asset_copy_failed">Şablonu hafızaya kopyalarken hata!</string>
   <string name="cannot_create_temp">Geçici proje dizini oluştururken hata!</string>
   <string name="project_created_successfully">Proje başarılı olarak oluşturuldu!</string>
-  <string name="project_creation_failed">Proje oluşturulamadı</string>
+  <string name="project_creation_failed">Proje oluşturalamadı</string>
   <string name="msg_begin_project_write">Yazma işlemi başlatılıyor</string>
   <string name="msg_folder_creation_failed">Klasö oluşturulamadı!</string>
   <string name="msg_file_creation_failed">Dosya oluşturma başarısız!</string>
@@ -134,7 +134,7 @@
   <string name="msg_layout_file_exists">Düzen dosyası zaten mevcut!</string>
   <string name="msg_invalid_name">Geçersiz Ad!</string>
   <string name="text_create">Oluştur</string>
-  <string name="msg_can_contain_slashes">Yol Dosya ayırıcısında (\'/\') varsa, gerekli olan (ana) dizinler oluşturulacaktır.</string>
+  <string name="msg_can_contain_slashes">Eğer yol dosya ayırıcı (\'/\') içeriyorsa gerekli (ana) dizinler oluşturulacaktır.</string>
   <string name="folder_name">Klasör Adı</string>
   <string name="file_name">Dosya Adı</string>
   <string name="new_name">Yeni ad</string>
