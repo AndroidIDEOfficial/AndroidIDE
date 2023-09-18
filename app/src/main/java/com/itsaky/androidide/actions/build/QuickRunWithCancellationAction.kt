@@ -74,13 +74,13 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     if (data.isBuildInProgress()) {
       label = context.getString(R.string.title_cancel_build)
       icon = ContextCompat.getDrawable(context, R.drawable.ic_stop_daemons)
-
-      visible = true
-      enabled = true
     } else {
       label = context.getString(R.string.quick_run_debug)
       icon = ContextCompat.getDrawable(context, R.drawable.ic_run_outline)
     }
+
+    visible = true
+    enabled = true
   }
 
   override fun createColorFilter(data: ActionData): ColorFilter? {
