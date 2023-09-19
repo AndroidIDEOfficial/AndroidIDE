@@ -32,8 +32,9 @@ import com.itsaky.androidide.preferences.internal.DELETE_TABS_ON_BACKSPACE
 import com.itsaky.androidide.preferences.internal.FLAG_PASSWORD
 import com.itsaky.androidide.preferences.internal.FONT_LIGATURES
 import com.itsaky.androidide.preferences.internal.FONT_SIZE
-import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
 import com.itsaky.androidide.preferences.internal.HIDE_FILE_TREE_BUTTON
+import com.itsaky.androidide.preferences.internal.PRINTABLE_CHARS
+import com.itsaky.androidide.preferences.internal.STICKY_SCROLL_ENABLED
 import com.itsaky.androidide.preferences.internal.TAB_SIZE
 import com.itsaky.androidide.preferences.internal.USE_CUSTOM_FONT
 import com.itsaky.androidide.preferences.internal.USE_ICU
@@ -53,6 +54,7 @@ import com.itsaky.androidide.preferences.internal.drawTrailingWs
 import com.itsaky.androidide.preferences.internal.fontLigatures
 import com.itsaky.androidide.preferences.internal.fontSize
 import com.itsaky.androidide.preferences.internal.hideFileTreeButton
+import com.itsaky.androidide.preferences.internal.stickyScrollEnabled
 import com.itsaky.androidide.preferences.internal.tabSize
 import com.itsaky.androidide.preferences.internal.useCustomFont
 import com.itsaky.androidide.preferences.internal.useIcu
@@ -72,6 +74,7 @@ class EditorPreferences(
   override val summary: Int? = string.idepref_editor_summary,
   override val children: List<IPreference> = mutableListOf(),
 ) : IPreferenceScreen() {
+
   init {
     addPreference(CommonConfigurations())
     addPreference(JavaCodeConfigurations())
@@ -85,6 +88,7 @@ private class CommonConfigurations(
   override val title: Int = string.idepref_editor_category_common,
   override val children: List<IPreference> = mutableListOf(),
 ) : IPreferenceGroup() {
+
   init {
     addPreference(TextSize())
     addPreference(TabSize())
@@ -101,6 +105,7 @@ private class CommonConfigurations(
     addPreference(VisibiblePasswordFlag())
     addPreference(DeleteEmptyLines())
     addPreference(DeleteTabs())
+    addPreference(StickyScrollEnabled())
     addPreference(CompletionsMatchLower())
   }
 }
@@ -165,9 +170,11 @@ private class TabSize(
   override val summary: Int? = string.msg_tab_size,
   override val icon: Int? = drawable.ic_font_ligatures,
 ) : SingleChoicePreference() {
+
   override val dialogCancellable = true
 
-  @IgnoredOnParcel private val choices = arrayOf("2", "4", "6", "8")
+  @IgnoredOnParcel
+  private val choices = arrayOf("2", "4", "6", "8")
 
   override fun getChoices(context: Context): Array<String> {
     return choices
@@ -197,9 +204,11 @@ private class ColorSchemePreference(
   override val summary: Int? = R.string.idepref_editor_colorScheme_summary,
   override val icon: Int? = R.drawable.ic_color_scheme
 ) : SingleChoicePreference() {
+
   override val dialogCancellable = true
 
-  @IgnoredOnParcel private val schemes = IDEColorSchemeProvider.list()
+  @IgnoredOnParcel
+  private val schemes = IDEColorSchemeProvider.list()
 
   override fun getChoices(context: Context): Array<String> {
     return schemes.map { it.name }.toTypedArray()
@@ -288,8 +297,8 @@ private class CompletionsMatchLower(
   override val summary: Int? = string.idepref_java_matchLower_summary,
   override val icon: Int? = drawable.ic_text_lower,
 ) : SwitchPreference(
-    setValue = ::completionsMatchLower::set,
-    getValue = ::completionsMatchLower::get
+  setValue = ::completionsMatchLower::set,
+  getValue = ::completionsMatchLower::get
 )
 
 @Parcelize
@@ -330,4 +339,13 @@ private class DeleteTabs(
   override val title: Int = R.string.idepref_deleteTabs_title,
   override val summary: Int? = R.string.idepref_deleteTabs_summary,
   override val icon: Int? = drawable.ic_backspace
-) : SwitchPreference(setValue = ::deleteTabsOnBackspace::set, getValue = ::deleteTabsOnBackspace::get)
+) :
+  SwitchPreference(setValue = ::deleteTabsOnBackspace::set, getValue = ::deleteTabsOnBackspace::get)
+
+@Parcelize
+private class StickyScrollEnabled(
+  override val key: String = STICKY_SCROLL_ENABLED,
+  override val title: Int = R.string.idepref_editor_stickScroll_title,
+  override val summary: Int? = R.string.idepref_editor_stickyScroll_summary,
+  override val icon: Int? = drawable.ic_sticky_scroll
+) : SwitchPreference(setValue = ::stickyScrollEnabled::set, getValue = ::stickyScrollEnabled::get)

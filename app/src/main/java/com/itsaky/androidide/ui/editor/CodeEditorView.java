@@ -26,6 +26,7 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLA
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FLAG_WS_TRAILING;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_LIGATURES;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.FONT_SIZE;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.STICKY_SCROLL_ENABLED;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_CUSTOM_FONT;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_ICU;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.USE_MAGNIFER;
@@ -39,6 +40,7 @@ import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.get
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getDrawTrailingWs;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontLigatures;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getFontSize;
+import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getStickyScrollEnabled;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseIcu;
 import static com.itsaky.androidide.preferences.internal.EditorPreferencesKt.getUseMagnifier;
 
@@ -93,7 +95,7 @@ public class CodeEditorView extends LinearLayout {
   private final EditorSearchLayout searchLayout;
 
   public CodeEditorView(
-    @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
+      @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
     super(context);
     this.file = file;
 
@@ -114,27 +116,27 @@ public class CodeEditorView extends LinearLayout {
 
     addView(this.binding.getRoot(), new LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
     addView(
-      this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        this.searchLayout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
     CompletableFuture.runAsync(
-      () -> {
-        final var contents = FileIOUtils.readFile2String(file);
-        final var editor = getEditor();
-        editor.post(() -> {
-          editor.setText(contents, createEditorArgs());
+        () -> {
+          final var contents = FileIOUtils.readFile2String(file);
+          final var editor = getEditor();
+          editor.post(() -> {
+            editor.setText(contents, createEditorArgs());
 
-          // editor.setText(...) sets the modified flag to true
-          // but in this case, file is read from disk and hence the contents are not modified at all
-          // so the flag must be changed to unmodified
-          // TODO: Find a better way to check content modification status
-          editor.markUnmodified();
-          postRead();
+            // editor.setText(...) sets the modified flag to true
+            // but in this case, file is read from disk and hence the contents are not modified at all
+            // so the flag must be changed to unmodified
+            // TODO: Find a better way to check content modification status
+            editor.markUnmodified();
+            postRead();
 
-          selection.validate();
-          editor.validateRange(selection);
-          editor.setSelection(selection);
+            selection.validate();
+            editor.validateRange(selection);
+            editor.setSelection(selection);
+          });
         });
-      });
 
     configureEditorIfNeeded();
   }
@@ -209,6 +211,7 @@ public class CodeEditorView extends LinearLayout {
     onUseIcuPrefChanged();
     onDeleteEmptyLinesPrefChanged();
     onDeleteTabsPrefChanged();
+    onStickyScrollEnabeldPrefChanged();
   }
 
   protected void onMagnifierPrefChanged() {
@@ -281,6 +284,10 @@ public class CodeEditorView extends LinearLayout {
     binding.editor.getProps().deleteMultiSpaces = getDeleteTabsOnBackspace() ? -1 : 1;
   }
 
+  protected void onStickyScrollEnabeldPrefChanged() {
+    binding.editor.getProps().stickyScroll = getStickyScrollEnabled();
+  }
+
   /**
    * For internal use only!
    *
@@ -341,6 +348,9 @@ public class CodeEditorView extends LinearLayout {
         break;
       case DELETE_TABS_ON_BACKSPACE:
         onDeleteTabsPrefChanged();
+        break;
+      case STICKY_SCROLL_ENABLED:
+        onStickyScrollEnabeldPrefChanged();
         break;
     }
   }

@@ -41,6 +41,7 @@ const val USE_SOFT_TAB = "idepref_editor_useSoftTab"
 const val USE_CUSTOM_FONT = "idepref_editor_useCustomFont"
 const val DELETE_EMPTY_LINES = "idepref_editor_deleteEmptyLines"
 const val DELETE_TABS_ON_BACKSPACE = "idepref_editor_deleteTab"
+const val STICKY_SCROLL_ENABLED = "idepref_editor_stickyScrollEnabled"
 
 const val COLOR_SCHEME = "idepref_editor_colorScheme"
 const val DEFAULT_COLOR_SCHEME = "default"
@@ -170,4 +171,10 @@ var deleteTabsOnBackspace : Boolean
   get() = prefManager.getBoolean(DELETE_TABS_ON_BACKSPACE, true)
   set(value) {
     prefManager.putBoolean(DELETE_TABS_ON_BACKSPACE, value)
+  }
+
+var stickyScrollEnabled : Boolean
+  get() = prefManager.getBoolean(STICKY_SCROLL_ENABLED, false)
+  set(value) {
+    prefManager.putBoolean(STICKY_SCROLL_ENABLED, value)
   }
