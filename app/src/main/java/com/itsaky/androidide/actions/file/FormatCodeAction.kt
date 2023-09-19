@@ -39,7 +39,7 @@ class FormatCodeAction(context: Context, override val order: Int) : EditorRelate
   }
 
   override fun execAction(data: ActionData): Any {
-    val editor = getEditor(data)!!
+    val editor = data.getEditor()!!
     val cursor = editor.text.cursor
 
     if (cursor.isSelected) {

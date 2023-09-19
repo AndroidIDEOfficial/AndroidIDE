@@ -27,6 +27,7 @@ import com.itsaky.androidide.actions.build.RunTasksAction
 import com.itsaky.androidide.actions.editor.CopyAction
 import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction
+import com.itsaky.androidide.actions.editor.LongSelectAction
 import com.itsaky.androidide.actions.editor.PasteAction
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.actions.etc.DisconnectLogSendersAction
@@ -79,6 +80,7 @@ class EditorActivityActions {
       // editor text actions
       registry.registerAction(ExpandSelectionAction(context, order++))
       registry.registerAction(SelectAllAction(context, order++))
+      registry.registerAction(LongSelectAction(context, order++))
       registry.registerAction(CutAction(context, order++))
       registry.registerAction(CopyAction(context, order++))
       registry.registerAction(PasteAction(context, order++))

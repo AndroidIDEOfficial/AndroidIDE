@@ -101,7 +101,7 @@ class PreviewLayoutAction(context: Context, override val order: Int) : EditorRel
   }
 
   private fun ActionData.requireEditor(): IDEEditor {
-    return getEditor(this)
+    return this.getEditor()
       ?: throw IllegalArgumentException("An editor instance is required but none was provided")
   }
 }

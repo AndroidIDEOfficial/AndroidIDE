@@ -40,12 +40,12 @@ class UndoAction(context: Context, override val order: Int) : EditorRelatedActio
       return
     }
 
-    val editor = getEditor(data)!!
+    val editor = data.getEditor()!!
     enabled = editor.canUndo()
   }
 
   override fun execAction(data: ActionData): Any {
-    val editor = getEditor(data)
+    val editor = data.getEditor()
     return if (editor != null) {
       editor.undo()
       data.getActivity()?.invalidateOptionsMenu()

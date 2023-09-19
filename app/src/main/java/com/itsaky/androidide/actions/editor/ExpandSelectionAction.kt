@@ -39,6 +39,6 @@ class ExpandSelectionAction(context: Context, override val order: Int) : EditorR
   }
 
   override fun execAction(data: ActionData): Any {
-    return getEditor(data)!!.expandSelection()
+    return data.getEditor()?.expandSelection() ?: false
   }
 }

@@ -44,7 +44,7 @@ class RedoAction(context: Context, override val order: Int) : EditorRelatedActio
       return
     }
 
-    val editor = getEditor(data) ?: run {
+    val editor = data.getEditor() ?: run {
       markInvisible()
       return
     }
@@ -53,11 +53,11 @@ class RedoAction(context: Context, override val order: Int) : EditorRelatedActio
   }
 
   override fun execAction(data: ActionData): Boolean {
-    val editor = getEditor(data) ?: run {
+    val editor = data.getEditor() ?: run {
       markInvisible()
       return false
     }
-    
+
     editor.redo()
     data.getActivity()?.invalidateOptionsMenu()
     return true
