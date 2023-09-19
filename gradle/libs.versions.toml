@@ -85,7 +85,7 @@ google-java-format = { module = "com.google.googlejavaformat:google-java-format"
 google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0.0" }
 
 # AAPT2
-aapt2-common = { module = "com.android.tools:common", version = "31.0.2" }
+aapt2-common = { module = "com.android.tools:common", version = "31.1.1" }
 aapt2-annotations = { module = "com.android.tools:annotations", version = "31.1.1" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
 aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.1.1-10154469" }
