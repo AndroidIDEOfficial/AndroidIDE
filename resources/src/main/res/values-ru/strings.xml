@@ -519,4 +519,7 @@
   <string name="title_choose_application">Выберите приложение</string>
   <string name="err_selected_variant_not_found">Выбранный вариант сборки не найден</string>
   <string name="title_disconnect_log_senders">Отключить модуль отправки логов</string>
+  <string name="title_begin_long_select">Begin long select</string>
+  <string name="idepref_editor_stickScroll_title">Sticky scroll</string>
+  <string name="idepref_editor_stickyScroll_summary">Show the current scope at the top while scrolling the editor.</string>
 </resources>
