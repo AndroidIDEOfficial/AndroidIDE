@@ -25,7 +25,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.AppUtils.getAppVersionCode
-import com.blankj.utilcode.util.AppUtils.getAppVersionName
 import com.blankj.utilcode.util.ClipboardUtils
 import com.blankj.utilcode.util.DeviceUtils.getManufacturer
 import com.blankj.utilcode.util.DeviceUtils.getModel
@@ -38,6 +37,58 @@ class CrashReportFragment : Fragment() {
 
   private var binding: LayoutCrashReportBinding? = null
   private var closeAppOnClick = true
+
+  companion object {
+
+    const val KEY_TITLE = "crash_title"
+    const val KEY_MESSAGE = "crash_message"
+    const val KEY_TRACE = "crash_trace"
+    const val KEY_CLOSE_APP_ON_CLICK = "close_on_app_click"
+
+    private val CRASH_REPORT_HEADER by lazy {
+      val map = mapOf(
+        "Version" to "v${BuildInfo.VERSION_NAME_SIMPLE} (${getAppVersionCode()})",
+        "CI Build" to BuildInfo.CI_BUILD,
+        "Branch" to BuildInfo.CI_GIT_BRANCH,
+        "Commit" to BuildInfo.CI_GIT_COMMIT_HASH,
+        "Variant" to "${BuildConfig.FLAVOR} (${BuildConfig.BUILD_TYPE})",
+        "SDK Version" to Build.VERSION.SDK_INT,
+        "Supported ABIs" to "[${Build.SUPPORTED_ABIS.joinToString(separator = ", ")}]",
+        "Manufacturer" to getManufacturer(),
+        "Device" to getModel()
+      )
+      """
+AndroidIDE Crash Report
+${map.entries.joinToString(separator = System.lineSeparator()) { "${it.key} : ${it.value}" }}
+
+Stacktrace:
+""".trim()
+    }
+
+    @JvmStatic
+    fun newInstance(trace: String): CrashReportFragment {
+      return newInstance(null, null, trace, true)
+    }
+
+    @JvmStatic
+    fun newInstance(
+      title: String?,
+      message: String?,
+      trace: String,
+      closeAppOnClick: Boolean
+    ): CrashReportFragment {
+      val frag = CrashReportFragment()
+      val args = Bundle().apply {
+        putString(KEY_TRACE, trace)
+        putBoolean(KEY_CLOSE_APP_ON_CLICK, closeAppOnClick)
+        title?.let { putString(KEY_TITLE, it) }
+        message?.let { putString(KEY_MESSAGE, it) }
+      }
+      frag.arguments = args
+      return frag
+    }
+  }
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -95,57 +146,14 @@ class CrashReportFragment : Fragment() {
   }
 
   private fun buildReportText(trace: String?): String {
-    val map = mapOf(
-      "App Version" to "${getAppVersionName()} (${getAppVersionCode()})",
-      "Variant" to "${BuildConfig.FLAVOR} (${BuildConfig.BUILD_TYPE})",
-      "SDK Version" to Build.VERSION.SDK_INT,
-      "Supported ABIs" to Build.SUPPORTED_ABIS,
-      "Manufacturer" to getManufacturer(),
-      "Device" to getModel()
-    )
-
     return """
-AndroidIDE Crash Report
-${map.entries.joinToString(separator = System.lineSeparator()) { "${it.key} : ${it.value}" }}
-
-Stacktrace:
+$CRASH_REPORT_HEADER
 $trace
-"""
+    """
   }
 
   override fun onDestroyView() {
     super.onDestroyView()
     binding = null
-  }
-
-  companion object {
-
-    const val KEY_TITLE = "crash_title"
-    const val KEY_MESSAGE = "crash_message"
-    const val KEY_TRACE = "crash_trace"
-    const val KEY_CLOSE_APP_ON_CLICK = "close_on_app_click"
-
-    @JvmStatic
-    fun newInstance(trace: String): CrashReportFragment {
-      return newInstance(null, null, trace, true)
-    }
-
-    @JvmStatic
-    fun newInstance(
-      title: String?,
-      message: String?,
-      trace: String,
-      closeAppOnClick: Boolean
-    ): CrashReportFragment {
-      val frag = CrashReportFragment()
-      val args = Bundle().apply {
-        putString(KEY_TRACE, trace)
-        putBoolean(KEY_CLOSE_APP_ON_CLICK, closeAppOnClick)
-        title?.let { putString(KEY_TITLE, it) }
-        message?.let { putString(KEY_MESSAGE, it) }
-      }
-      frag.arguments = args
-      return frag
-    }
   }
 }
