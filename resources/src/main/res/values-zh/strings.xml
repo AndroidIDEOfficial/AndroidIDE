@@ -520,6 +520,6 @@
   <string name="err_selected_variant_not_found">找不到选定的构建变体</string>
   <string name="title_disconnect_log_senders">断开日志发送器</string>
   <string name="title_begin_long_select">开始长选</string>
-  <string name="idepref_editor_stickScroll_title">Sticky scroll</string>
-  <string name="idepref_editor_stickyScroll_summary">Show the current scope at the top while scrolling the editor.</string>
+  <string name="idepref_editor_stickScroll_title">粘滞滚动</string>
+  <string name="idepref_editor_stickyScroll_summary">滚动编辑器时在顶部显示当前范围。</string>
 </resources>
