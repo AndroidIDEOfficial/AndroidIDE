@@ -82,7 +82,7 @@ class ProjectListFragment :
 
   private fun onFileListChanged(projectList: List<ProjectInfoDetails>) {
     val sortOptions = ProjectInfoDetailsUtils.ProjectSortOptions(
-      ProjectInfoDetailsUtils.SortBy.OPEN_LAST, ProjectInfoDetailsUtils.Order.ASCENDING)
+      ProjectInfoDetailsUtils.SortBy.OPEN_LAST, ProjectInfoDetailsUtils.Order.DESCENDING)
       .createComparator()
     val sortedProjectList = projectList.sortedWith(sortOptions)
 

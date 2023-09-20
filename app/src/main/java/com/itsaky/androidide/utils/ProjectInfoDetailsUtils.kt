@@ -26,7 +26,7 @@ data class ProjectSortOptions(val sortBy: SortBy, val order: Order) : Parcelable
 
   fun createComparator(): Comparator<ProjectInfoDetails> {
     val comparator = when (sortBy) {
-      SortBy.OPEN_LAST -> compareByDescending<ProjectInfoDetails> { it.cache.lastOpened }
+      SortBy.OPEN_LAST -> compareBy<ProjectInfoDetails> { it.cache.lastOpened }
     }
 
     return if (order == Order.DESCENDING) comparator.reversed() else comparator
