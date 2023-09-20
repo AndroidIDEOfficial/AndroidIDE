@@ -17,7 +17,6 @@
 
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="90dp"
   android:layout_margin="4dp"
@@ -33,7 +32,9 @@
       android:layout_marginTop="8dp"
       android:layout_marginStart="8dp"
       android:scaleType="centerCrop"
+      android:src="@drawable/ic_file_apk"
       app:layout_constraintBottom_toBottomOf="parent"
+      app:tint="?attr/colorOnBackground"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.0" />

@@ -19,12 +19,7 @@ package com.itsaky.androidide.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.ProjectListAdapter.ViewHolder
 import com.itsaky.androidide.databinding.LayoutProjectListItemBinding
 import com.itsaky.androidide.models.ProjectInfoDetails
@@ -50,23 +45,12 @@ class ProjectListAdapter(
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     holder.binding.apply {
       val project = projects[position]
-      val context = root.context
 
-      //Choose another icon
-      val icon =  AppCompatResources.getDrawable(context, R.drawable.ic_file_apk)
       val name = project.file.name
       val path = project.file.absolutePath
 
-      Glide.with(context)
-        .load(icon)
-        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-        .override(50, 50)
-        .placeholder(R.drawable.ic_file_apk)
-        .into(projectIcon)
-
       projectName.text = name
       projectPath.text = path
-
 
       root.setOnClickListener {
         onClick?.invoke(project, holder)
