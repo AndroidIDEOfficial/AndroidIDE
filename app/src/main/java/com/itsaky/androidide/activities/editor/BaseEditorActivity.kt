@@ -23,7 +23,6 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.TextUtils
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
@@ -35,7 +34,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.annotation.GravityInt
-import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.FileUtils
@@ -75,6 +73,7 @@ import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
+import com.itsaky.androidide.utils.appendClickableSpan
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -469,28 +468,9 @@ abstract class BaseEditorActivity :
         }
       }
     val sb = SpannableStringBuilder()
-    appendClickableSpan(sb, string.msg_swipe_for_files, filesSpan)
-    appendClickableSpan(sb, string.msg_swipe_for_output, bottomSheetSpan)
+    sb.appendClickableSpan(string.msg_swipe_for_files, filesSpan, this)
+    sb.appendClickableSpan(string.msg_swipe_for_output, bottomSheetSpan, this)
     binding.noEditorSummary.text = sb
-  }
-
-  private fun appendClickableSpan(
-    sb: SpannableStringBuilder,
-    @StringRes textRes: Int,
-    span: ClickableSpan,
-  ) {
-    val str = getString(textRes)
-    val split = str.split("@@", limit = 3)
-    if (split.size != 3) {
-      // Not a valid format
-      sb.append(str)
-      sb.append('\n')
-      return
-    }
-    sb.append(split[0])
-    sb.append(split[1], span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    sb.append(split[2])
-    sb.append('\n')
   }
 
   private fun setupBottomSheet() {
