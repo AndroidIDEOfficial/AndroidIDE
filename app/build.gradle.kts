@@ -77,7 +77,12 @@ android {
   }
 }
 
-kapt { arguments { arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex") } }
+kapt {
+  arguments {
+    arg("eventBusIndex", "${BuildConfig.packageName}.events.AppEventsIndex")
+    arg("room.schemaLocation", "$projectDir/dbSchemas")
+  }
+}
 
 dependencies {
   debugImplementation(libs.common.leakcanary)
