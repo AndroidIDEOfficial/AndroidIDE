@@ -18,13 +18,10 @@
 package com.itsaky.androidide.data.projectInfo
 
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 
 interface ProjectInfoRepository {
 
   fun getAllProjectInfoStream(): Flow<List<ProjectInfo>>
-
-  fun getProjectInfoStream(file: File): Flow<ProjectInfo?>
 
   suspend fun upsertProjectInfo(projectInfo: ProjectInfo)
 

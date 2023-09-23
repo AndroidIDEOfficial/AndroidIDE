@@ -18,7 +18,6 @@
 package com.itsaky.androidide.data.projectInfo
 
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 
 class OfflineProjectInfoRepository(
   private val projectInfoDao: ProjectInfoDao
@@ -26,7 +25,6 @@ class OfflineProjectInfoRepository(
 
   override fun getAllProjectInfoStream(): Flow<List<ProjectInfo>> = projectInfoDao.getAllProjectInfo()
 
-  override fun getProjectInfoStream(file: File): Flow<ProjectInfo?> = projectInfoDao.getProjectInfo(file)
   override suspend fun upsertProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.upsert(projectInfo)
 
   override suspend fun deleteProjectInfo(projectInfo: ProjectInfo) = projectInfoDao.delete(projectInfo)

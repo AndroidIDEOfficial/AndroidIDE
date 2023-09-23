@@ -22,16 +22,12 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
-import java.io.File
 
 @Dao
 interface ProjectInfoDao {
 
   @Query("SELECT * from project_info ORDER by name ASC")
   fun getAllProjectInfo(): Flow<List<ProjectInfo>>
-
-  @Query("SELECT * from project_info WHERE file = :file")
-  fun getProjectInfo(file: File): Flow<ProjectInfo>
 
   @Upsert
   suspend fun upsert(projectInfo: ProjectInfo)
