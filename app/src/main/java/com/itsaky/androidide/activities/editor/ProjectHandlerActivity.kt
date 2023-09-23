@@ -628,12 +628,14 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
       // this is needed because in this case, the opened files cache will be empty
       // when onPause will be called.
       saveOpenedFiles()
+
+      // reset the lastOpenedProject if the user explicitly chose to close the project
+      lastOpenedProject = NO_OPENED_PROJECT
     }
 
     // Make sure we close files
     // This will make sure that file contents are not erased.
     doCloseAll {
-      lastOpenedProject = NO_OPENED_PROJECT
       if (manualFinish) {
         finish()
       }
