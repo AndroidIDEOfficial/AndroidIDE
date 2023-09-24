@@ -123,7 +123,7 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
     currentSelection = -1
 
     publisher =
-      CompletionPublisher(
+      IDECompletionPublisher(
         editor.handler,
         {
           val items = publisher.items

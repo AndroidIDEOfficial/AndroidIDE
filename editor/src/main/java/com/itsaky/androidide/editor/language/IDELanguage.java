@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.language;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.itsaky.androidide.editor.api.IEditor;
+import com.itsaky.androidide.editor.ui.IDECompletionPublisher;
 import com.itsaky.androidide.lookup.Lookup;
 import com.itsaky.androidide.lsp.api.ILanguageServer;
 import com.itsaky.androidide.preferences.internal.EditorPreferencesKt;
@@ -84,7 +85,8 @@ public abstract class IDELanguage implements Language {
         completionProvider.complete(content, file, position, this::checkIsCompletionChar);
 
     publisher.setUpdateThreshold(1);
-    publisher.addItems(new ArrayList<>(completionItems));
+
+    ((IDECompletionPublisher) publisher).addLSPItems(completionItems);
   }
 
   protected ILanguageServer getLanguageServer() {
