@@ -43,6 +43,12 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
 
   init {
     setLayout(EditorCompletionLayout())
+    setEnabledAnimation(true)
+  }
+
+  override fun isShowing(): Boolean {
+    @Suppress("UNNECESSARY_SAFE_CALL", "USELESS_ELVIS")
+    return popup?.isShowing ?: false
   }
 
   override fun setLayout(layout: CompletionLayout) {
@@ -93,7 +99,6 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
       ProgressManager.instance.cancel(completionThread)
     }
     super.cancelCompletion()
-    popup.dismiss()
   }
 
   override fun requireCompletion() {
@@ -122,13 +127,14 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
         editor.handler,
         {
           val items = publisher.items
+
           this.items.apply {
             clear()
             addAll(items)
           }
 
           if (lastAttachedItems == null || lastAttachedItems.get() != items) {
-            adapter.attachValues(this, this.items)
+            adapter.attachValues(this, items)
             adapter.notifyDataSetInvalidated()
             lastAttachedItems = WeakReference(items)
           } else {
@@ -140,8 +146,9 @@ class EditorCompletionWindow(val editor: IDEEditor) : EditorAutoCompletion(edito
             hide()
           }
 
+          editor.updateCompletionWindowPosition()
           setSize(width, min(newHeight, maxHeight.toFloat()).toInt())
-          if (!popup.isShowing) {
+          if (!isShowing) {
             show()
           }
 

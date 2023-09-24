@@ -31,4 +31,9 @@ abstract class AbstractPopupWindow(editor: CodeEditor, features: Int) :
     (editor as? IDEEditor)?.ensureWindowsDismissed()
     super.show()
   }
+
+  override fun isShowing(): Boolean {
+    @Suppress("UNNECESSARY_SAFE_CALL", "USELESS_ELVIS")
+    return popup?.isShowing ?: false
+  }
 }
