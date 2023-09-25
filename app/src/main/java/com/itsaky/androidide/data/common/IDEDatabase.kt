@@ -24,8 +24,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.itsaky.androidide.data.projectInfo.ProjectInfo
 import com.itsaky.androidide.data.projectInfo.ProjectInfoDao
-import com.itsaky.androidide.utils.FileTypeConverter
-import com.itsaky.androidide.utils.ProjectInfoCacheTypeConverter
+import com.itsaky.androidide.data.converters.FileTypeConverter
+import com.itsaky.androidide.data.converters.ProjectInfoCacheTypeConverter
 
 @Database(entities = [ProjectInfo::class], version = 1, exportSchema = true)
 @TypeConverters(FileTypeConverter::class, ProjectInfoCacheTypeConverter::class)

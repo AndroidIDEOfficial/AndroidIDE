@@ -21,8 +21,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.itsaky.androidide.models.ProjectInfoCache
-import com.itsaky.androidide.utils.FileTypeConverter
-import com.itsaky.androidide.utils.ProjectInfoCacheTypeConverter
+import com.itsaky.androidide.data.converters.FileTypeConverter
+import com.itsaky.androidide.data.converters.ProjectInfoCacheTypeConverter
 import java.io.File
 
 @Entity(tableName = "project_info")
