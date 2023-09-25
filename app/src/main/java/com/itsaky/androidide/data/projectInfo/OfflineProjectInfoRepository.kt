@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.data.projectInfo
 
+import com.itsaky.androidide.data.entities.ProjectInfo
 import kotlinx.coroutines.flow.Flow
 
 class OfflineProjectInfoRepository(

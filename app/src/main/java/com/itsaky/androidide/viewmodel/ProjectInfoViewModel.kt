@@ -21,7 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itsaky.androidide.data.projectInfo.ProjectInfo
+import com.itsaky.androidide.data.entities.ProjectInfo
 import com.itsaky.androidide.data.projectInfo.ProjectInfoRepository
 import com.itsaky.androidide.models.ProjectInfoDetails
 import com.itsaky.androidide.models.toProjectInfo

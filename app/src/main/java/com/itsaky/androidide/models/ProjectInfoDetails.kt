@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.models
 
-import com.itsaky.androidide.data.projectInfo.ProjectInfo
+import com.itsaky.androidide.data.entities.ProjectInfo
 import com.itsaky.androidide.utils.TimeUtils
 import java.io.File
 

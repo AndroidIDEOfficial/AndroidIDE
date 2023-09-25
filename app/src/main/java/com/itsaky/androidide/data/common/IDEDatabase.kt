@@ -22,7 +22,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.itsaky.androidide.data.projectInfo.ProjectInfo
+import com.itsaky.androidide.data.entities.ProjectInfo
 import com.itsaky.androidide.data.projectInfo.ProjectInfoDao
 import com.itsaky.androidide.data.converters.FileTypeConverter
 import com.itsaky.androidide.data.converters.ProjectInfoCacheTypeConverter

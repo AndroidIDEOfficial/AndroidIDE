@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.data.projectInfo
+package com.itsaky.androidide.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
