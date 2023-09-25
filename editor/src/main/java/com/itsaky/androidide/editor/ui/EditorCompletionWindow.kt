@@ -24,7 +24,6 @@ import com.itsaky.androidide.lsp.util.DocumentationReferenceProvider
 import com.itsaky.androidide.progress.ProgressManager
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.completion.CompletionItem
-import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import java.lang.ref.WeakReference
