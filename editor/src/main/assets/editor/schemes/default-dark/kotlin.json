@@ -43,7 +43,8 @@
     },
     "string": {
       "fg": "@string",
-      "completion": false
+      "completion": false,
+      "maybeHexColor": true
     },
     "string.regex": {
       "fg": "@string",

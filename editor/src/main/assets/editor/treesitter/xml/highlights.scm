@@ -40,6 +40,8 @@
 (cdata_end) @cdata.end
 (cdata) @cdata.data
 
+(char_data) @text
+
 (eq) @operator
 
 ["<" "/" ">" "<?" "?>"] @operator

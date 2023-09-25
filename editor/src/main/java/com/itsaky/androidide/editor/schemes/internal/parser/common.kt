@@ -23,7 +23,6 @@ import com.google.gson.stream.JsonToken.STRING
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.editor.schemes.StyleDef
-import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser.EditorColors
 import java.io.File
 
 /** @author Akash Yadav */
@@ -126,6 +125,7 @@ fun IDEColorScheme.parseStyleDef(reader: JsonReader): StyleDef {
       "italic" -> def.italic = reader.nextBoolean()
       "strikethrough" -> def.strikeThrough = reader.nextBoolean()
       "completion" -> def.completion = reader.nextBoolean()
+      "maybeHexColor" -> def.maybeHexColor = reader.nextBoolean()
     }
   }
   if (def.fg == 0) {

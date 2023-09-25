@@ -2,7 +2,10 @@
   "types": ["json"],
   "styles": {
     "string.special.key": "@json.key",
-    "string" : "@string",
+    "string" : {
+      "fg": "@string",
+      "maybeHexColor": true
+    },
     "number" : "@number",
     "constant.builtin": "@keyword",
     "escape": "@json.escape",

@@ -28,6 +28,13 @@
     "xmlns.prefix": "@ns_prefix",
     "attr.prefix" : "@ns_prefix",
     "attr.name": "@onSurface",
-    "attr.value": "@string"
+    "attr.value": {
+      "fg": "@string",
+      "maybeHexColor": true
+    },
+    "text": {
+      "fg": "@onSurface",
+      "maybeHexColor": true
+    }
   }
 }

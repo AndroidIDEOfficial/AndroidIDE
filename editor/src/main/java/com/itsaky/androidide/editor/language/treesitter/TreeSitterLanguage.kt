@@ -23,6 +23,7 @@ import com.itsaky.androidide.editor.language.newline.TSBracketsHandler
 import com.itsaky.androidide.editor.language.utils.CommonSymbolPairs
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.IDEColorSchemeProvider
+import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.itsaky.androidide.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
 import com.itsaky.androidide.treesitter.TSLanguage
@@ -31,7 +32,6 @@ import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.itsaky.androidide.utils.ILogger
-import io.github.rosemoe.sora.editor.ts.TsAnalyzeManager
 import io.github.rosemoe.sora.editor.ts.TsTheme
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
 import io.github.rosemoe.sora.text.ContentReference
@@ -48,9 +48,10 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
 
   private lateinit var tsTheme: TsTheme
   private lateinit var languageSpec: TreeSitterLanguageSpec
-  private val analyzer by lazy { TsAnalyzeManager(languageSpec.spec, tsTheme) }
-
+  private val analyzer by lazy { TreeSitterAnalyzeManager(languageSpec.spec, tsTheme) }
   private val newlineHandlersLazy by lazy { createNewlineHandlers() }
+
+  private var languageScheme: LanguageScheme? = null
 
   private val log = ILogger.newInstance("TreeSitterLanguage")
 
@@ -69,6 +70,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
       }
 
       val langScheme = scheme.languages[type] ?: return@readScheme
+      this.languageScheme = langScheme
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
     }
   }
@@ -78,7 +80,11 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   }
 
   override fun getAnalyzeManager(): AnalyzeManager {
-    return this.analyzer
+    return this.analyzer.also {
+      if (it.langScheme == null) {
+        it.langScheme = this.languageScheme
+      }
+    }
   }
 
   override fun getSymbolPairs(): SymbolPairMatch {
@@ -152,7 +158,8 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   }
 
   override fun destroy() {
-    languageSpec.close()
+    this.languageSpec.close()
+    this.languageScheme = null
   }
 
   /** A [Factory] creates instance of a specific [TreeSitterLanguage] implementation. */

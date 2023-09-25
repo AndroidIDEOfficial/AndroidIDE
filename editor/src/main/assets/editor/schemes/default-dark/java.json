@@ -26,7 +26,8 @@
     },
     "string": {
       "fg": "@string",
-      "completion": false
+      "completion": false,
+      "maybeHexColor": true
     },
     "variable.builtin": {
       "fg": "@keyword",
