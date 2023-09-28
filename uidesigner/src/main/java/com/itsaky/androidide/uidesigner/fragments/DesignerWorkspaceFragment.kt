@@ -38,6 +38,7 @@ import com.itsaky.androidide.uidesigner.drag.WidgetTouchListener
 import com.itsaky.androidide.uidesigner.drawable.UiViewLayeredForeground
 import com.itsaky.androidide.uidesigner.models.CommonUiView
 import com.itsaky.androidide.uidesigner.models.PlaceholderView
+import com.itsaky.androidide.uidesigner.models.RootWorkspaceView
 import com.itsaky.androidide.uidesigner.models.UiViewGroup
 import com.itsaky.androidide.uidesigner.undo.UndoManager
 import com.itsaky.androidide.uidesigner.utils.UiLayoutInflater
@@ -62,7 +63,14 @@ class DesignerWorkspaceFragment : BaseFragment() {
 
   internal var isInflating = false
   internal val workspaceView by lazy {
-    UiViewGroup(LayoutFile(File(""), ""), LinearLayout::class.qualifiedName!!, binding!!.workspace)
+    RootWorkspaceView(
+      LayoutFile(
+        File("")
+        , ""
+      ),
+      LinearLayout::class.qualifiedName!!,
+      binding!!.workspace
+    )
   }
 
   val undoManager: UndoManager

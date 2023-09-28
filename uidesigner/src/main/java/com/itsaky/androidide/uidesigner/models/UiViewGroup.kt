@@ -29,7 +29,7 @@ import com.itsaky.androidide.inflater.viewAdapter
  *
  * @author Akash Yadav
  */
-internal class UiViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
+internal open class UiViewGroup(file: LayoutFile, name: String, view: ViewGroup) :
   ViewGroupImpl(file, name, view), CommonUiView by CommonUiViewImpl() {
 
   /**
