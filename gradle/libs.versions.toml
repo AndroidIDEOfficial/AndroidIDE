@@ -88,7 +88,7 @@ google-flexbox = { module = "com.google.android.flexbox:flexbox", version = "3.0
 aapt2-common = { module = "com.android.tools:common", version = "31.1.1" }
 aapt2-annotations = { module = "com.android.tools:annotations", version = "31.1.1" }
 aapt2-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
-aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.1.1-10154469" }
+aapt2-proto = { module = "com.android.tools.build:aapt2-proto", version = "8.1.2-10154469" }
 
 # XML
 xml-xercesImpl = { module = "xerces:xercesImpl", version = "2.12.2" }
