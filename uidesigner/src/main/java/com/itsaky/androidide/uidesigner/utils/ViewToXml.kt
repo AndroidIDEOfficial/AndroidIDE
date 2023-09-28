@@ -42,7 +42,12 @@ object ViewToXml {
 
   @JvmStatic
   @JvmOverloads
-  fun generateXml(context: Context, workspace: ViewGroupImpl, onGenerated: (String) -> Unit = {}) {
+  fun generateXml(
+    context: Context,
+    workspace: ViewGroupImpl,
+    onGenerated: (String) -> Unit = {},
+    onFailure: (result: String?, error: Throwable?) -> Unit
+  ) {
     context.apply {
       val future: CompletableFuture<String?> =
         executeAsyncProvideError({
@@ -59,8 +64,7 @@ object ViewToXml {
           }
 
           return@executeAsyncProvideError generateXml(workspace[0] as ViewImpl)
-        }) { _, _ ->
-        }
+        }) { _, _ -> }
 
       val progress =
         DialogUtils.newProgressDialog(
@@ -79,6 +83,7 @@ object ViewToXml {
 
           if (result.isNullOrBlank() || error != null) {
             log.error("Unable to generate XML code", error)
+            onFailure(result, error)
             return@runOnUiThread
           }
 

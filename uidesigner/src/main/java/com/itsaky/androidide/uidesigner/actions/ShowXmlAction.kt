@@ -28,6 +28,7 @@ import com.itsaky.androidide.uidesigner.R
 import com.itsaky.androidide.uidesigner.ShowXmlActivity
 import com.itsaky.androidide.uidesigner.utils.ViewToXml
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 
 /**
  * Navigates the user to [ShowXmlActivity].
@@ -35,6 +36,7 @@ import com.itsaky.androidide.utils.ILogger
  * @author Akash Yadav
  */
 class ShowXmlAction(context: Context) : UiDesignerAction() {
+
   override val id: String = "ide.uidesigner.showXml"
 
   private val log = ILogger.newInstance("ShowXmlAction")
@@ -59,10 +61,17 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
   override fun execAction(data: ActionData): Any {
     data.requireActivity().apply {
       val workspace = data.requireWorkspace().workspaceView
-      ViewToXml.generateXml(this, workspace) { result ->
+      ViewToXml.generateXml(this, workspace, { result ->
         val intent = Intent(this, ShowXmlActivity::class.java)
         intent.putExtra(ShowXmlActivity.KEY_XML, result)
         startActivity(intent)
+      }) { result, error ->
+        if (result == null || error != null) {
+          val message = "${
+            getString(R.string.msg_generate_xml_failed)
+          }: ${error?.cause?.message ?: error?.message ?: "Unknown error"}"
+          flashError(message)
+        }
       }
     }
     return true

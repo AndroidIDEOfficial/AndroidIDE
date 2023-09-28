@@ -41,6 +41,7 @@ import com.itsaky.androidide.uidesigner.fragments.DesignerWorkspaceFragment
 import com.itsaky.androidide.uidesigner.utils.ViewToXml
 import com.itsaky.androidide.uidesigner.viewmodel.WorkspaceViewModel
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.flashError
 import java.io.File
 
 /**
@@ -77,7 +78,21 @@ class UIDesignerActivity : BaseIDEActivity() {
           return
         }
 
-        ViewToXml.generateXml(frag.requireContext(), frag.workspaceView) { onXmlGenerated(it) }
+        ViewToXml.generateXml(
+          frag.requireContext(),
+          frag.workspaceView,
+          ::onXmlGenerated
+        ) { result, error ->
+          if (result != null && error == null) {
+            return@generateXml
+          }
+
+          // XML generation failed, notify user and exit activity
+          runOnUiThread {
+            flashError(R.string.msg_generate_xml_failed)
+            onFailedToReturnXml(error?.cause?.message ?: error?.message ?: "Unknown error")
+          }
+        }
       }
     }
 
