@@ -57,15 +57,15 @@ class TreeSitterSpanFactory(
     langScheme = null
   }
 
-  override fun createSpan(capture: TSQueryCapture, column: Int, spanStyle: Long): Span {
-    val content = this.content?.reference ?: return super.createSpan(capture, column, spanStyle)
-    val query = this.query ?: return super.createSpan(capture, column, spanStyle)
-    val langScheme = this.langScheme ?: return super.createSpan(capture, column, spanStyle)
+  override fun createSpans(capture: TSQueryCapture, column: Int, spanStyle: Long): List<Span> {
+    val content = this.content?.reference ?: return super.createSpans(capture, column, spanStyle)
+    val query = this.query ?: return super.createSpans(capture, column, spanStyle)
+    val langScheme = this.langScheme ?: return super.createSpans(capture, column, spanStyle)
 
     val captureName = query.getCaptureNameForId(capture.index)
     val styleDef = langScheme.getStyles()[captureName]
     if (styleDef?.maybeHexColor != true) {
-      return super.createSpan(capture, column, spanStyle)
+      return super.createSpans(capture, column, spanStyle)
     }
 
     val (start, end) = content.indexer.run {
@@ -73,47 +73,81 @@ class TreeSitterSpanFactory(
     }
 
     if (start.line != end.line || start.column != column) {
-      // A HEX color can only defined on a single line
-      return super.createSpan(capture, column, spanStyle)
+      // A HEX color can only be defined on a single line
+      return super.createSpans(capture, column, spanStyle)
     }
 
-    var text: CharSequence = content.subContent(start.line, start.column + 1, end.line, end.column)
-
-    // TODO(itsaky): update the API in sora-editor such that we can add multiple spans for this capture
-    //     This method should probably return a list of spans
-    val result = HEX_REGEX.find(text) ?: run {
-      // Does not contain a HEX color string
-      return super.createSpan(capture, column, spanStyle)
-    }
-
-    val color = try {
-      text = result.groupValues[1]
-      if (text.length == 3){
-        // HEX color is in the form of #FFF
-        // convert it to #FFFFFF format (6 character long)
-        val r = text[0]
-        val g = text[1]
-        val b = text[2]
-        text = "$r$r$g$g$b$b"
+    val text = content.subContent(start.line, start.column, end.line, end.column)
+    val results = HEX_REGEX.findAll(text)
+    val spans = mutableListOf<Span>()
+    var s = -1
+    var e = -1
+    results.forEach { result ->
+      if (e != -1 && e < result.range.first) {
+        // there is some interval between previous color span
+        // and this color span
+        // fill the gap
+        spans.add(Span.obtain(column + e + 1, spanStyle))
       }
 
-      if (text.length == 6) {
-        // Prepend alpha value
-        text = "FF${text}"
+      if (s == -1) {
+        s = result.range.first
+      }
+      e = result.range.last
+
+      var str = ""
+      val color = try {
+        str = result.groupValues[1]
+        if (str.length == 3) {
+          // HEX color is in the form of #FFF
+          // convert it to #FFFFFF format (6 character long)
+          val r = str[0]
+          val g = str[1]
+          val b = str[2]
+          str = "$r$r$g$g$b$b"
+        }
+
+        if (str.length == 6) {
+          // Prepend alpha value
+          str = "FF${str}"
+        }
+
+        java.lang.Long.parseLong(str, 16)
+      } catch (e: Exception) {
+        log.error("Failed to parse hex color. color=$str text=$text", e)
+        return@forEach
+      }.toInt()
+
+      val textColor = if (ColorUtils.calculateLuminance(color) > 0.5f) {
+        Color.BLACK
+      } else {
+        Color.WHITE
       }
 
-      java.lang.Long.parseLong(text, 16)
-    } catch (e: Exception) {
-      log.error("Failed to parse hex color. color=$text", e)
-      return super.createSpan(capture, column, spanStyle)
-    }.toInt()
+      val col = column + result.range.first
+      val span = StaticColorSpan.obtain(
+        color,
+        textColor,
+        col,
+        styleDef.makeStaticStyle()
+      )
 
-    val textColor = if (ColorUtils.calculateLuminance(color) > 0.5f) {
-      Color.BLACK
-    } else {
-      Color.WHITE
+      spans.add(span)
     }
 
-    return StaticColorSpan.obtain(color, textColor, column, styleDef.makeStaticStyle())
+    if (spans.isEmpty()) {
+      return super.createSpans(capture, column, spanStyle)
+    }
+
+    // make sure that the default style is used for unmatched regions
+    if (s != 0) {
+      spans.add(0, Span.obtain(column, spanStyle))
+    }
+
+    if (e != text.lastIndex) {
+      spans.add(Span.obtain(column + e + 1, spanStyle))
+    }
+
+    return spans
   }
 }
