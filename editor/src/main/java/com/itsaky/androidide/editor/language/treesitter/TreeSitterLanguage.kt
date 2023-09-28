@@ -83,6 +83,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     return this.analyzer.also {
       if (it.langScheme == null) {
         it.langScheme = this.languageScheme
+        it.rerun()
       }
     }
   }

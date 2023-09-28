@@ -45,6 +45,10 @@ class TreeSitterAnalyzeManager(
       resetSpanFactory(styles, value)
     }
 
+  init {
+    resetSpanFactory(styles, langScheme)
+  }
+
   private fun resetSpanFactory(styles: Styles, langScheme: LanguageScheme?) {
     spanFactory = TreeSitterSpanFactory(reference, languageSpec.tsQuery, styles, langScheme)
   }
