@@ -600,7 +600,6 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       final CompletableFuture<ReferenceResult> future,
       final ReferenceResult result, final Throwable error
   ) {
-    LOG.debug("onFindRefsResult");
     dismissOnUiThread(flashbar);
 
     if (result == null || languageClient == null || future.isCancelled() ||
@@ -615,15 +614,17 @@ public class IDEEditor extends CodeEditor implements IEditor, ILspEditor {
       return;
     }
 
-    if (result.getLocations().size() == 1) {
-      final var loc = result.getLocations().get(0);
-      if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
-        setSelection(loc.getRange());
-        return;
+    ThreadUtils.runOnUiThread(() -> {
+      if (result.getLocations().size() == 1) {
+        final var loc = result.getLocations().get(0);
+        if (DocumentUtils.isSameFile(loc.getFile(), getFile().toPath())) {
+          setSelection(loc.getRange());
+          return;
+        }
       }
-    }
 
-    ThreadUtils.runOnUiThread(() -> languageClient.showLocations(result.getLocations()));
+      languageClient.showLocations(result.getLocations());
+    });
   }
 
   /**
