@@ -65,6 +65,7 @@ import com.itsaky.androidide.models.DiagnosticGroup
 import com.itsaky.androidide.models.OpenedFile
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SearchResult
+import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
@@ -173,11 +174,19 @@ abstract class BaseEditorActivity :
     }
 
     val packageName = onResult(this, intent)
-    if (packageName != null) {
-      Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-        .setAction(string.yes) { tryLaunchApp(packageName) }
-        .show()
+    if (packageName == null) {
+      flashError(string.err_cannot_determine_package)
+      return
     }
+
+    if (launchAppAfterInstall) {
+      tryLaunchApp(packageName)
+      return
+    }
+
+    Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
+      .setAction(string.yes) { tryLaunchApp(packageName) }
+      .show()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

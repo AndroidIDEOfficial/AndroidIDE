@@ -23,10 +23,12 @@ import android.os.Build.VERSION_CODES
 import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
+import com.itsaky.androidide.R
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
 import com.itsaky.androidide.preferences.internal.GRADLE_CLEAR_CACHE
 import com.itsaky.androidide.preferences.internal.GRADLE_COMMANDS
+import com.itsaky.androidide.preferences.internal.LAUNCH_APP_AFTER_INSTALL
 import com.itsaky.androidide.preferences.internal.TP_FIX
 import com.itsaky.androidide.preferences.internal.gradleInstallationDir
 import com.itsaky.androidide.preferences.internal.isBuildCacheEnabled
@@ -36,6 +38,7 @@ import com.itsaky.androidide.preferences.internal.isOfflineEnabled
 import com.itsaky.androidide.preferences.internal.isScanEnabled
 import com.itsaky.androidide.preferences.internal.isStacktraceEnabled
 import com.itsaky.androidide.preferences.internal.isWarningModeAllEnabled
+import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.preferences.internal.tpFix
 import com.itsaky.androidide.resources.R.drawable
 import com.itsaky.androidide.resources.R.string
@@ -43,8 +46,8 @@ import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.utils.Environment.GRADLE_USER_HOME
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
-import java.io.File
 import kotlinx.parcelize.Parcelize
+import java.io.File
 
 @Parcelize
 class BuildAndRunPreferences(
@@ -53,8 +56,10 @@ class BuildAndRunPreferences(
   override val summary: Int? = string.idepref_buildnrun_summary,
   override val children: List<IPreference> = mutableListOf(),
 ) : IPreferenceScreen() {
+
   init {
     addPreference(GradleOptions())
+    addPreference(RunOptions())
   }
 }
 
@@ -64,6 +69,7 @@ private class GradleOptions(
   override val title: Int = string.gradle,
   override val children: List<IPreference> = mutableListOf(),
 ) : IPreferenceGroup() {
+
   init {
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
@@ -193,3 +199,23 @@ private class GradleClearCache(
     return false
   }
 }
+
+@Parcelize
+private class RunOptions(
+  override val key: String = "ide.build.runOptions",
+  override val title: Int = R.string.title_run_options,
+  override val children: List<IPreference> = mutableListOf()
+) : IPreferenceGroup() {
+
+  init {
+    addPreference(LaunchAppAfterInstall())
+  }
+}
+
+@Parcelize
+private class LaunchAppAfterInstall(
+  override val key: String = LAUNCH_APP_AFTER_INSTALL,
+  override val title: Int = R.string.idepref_launchAppAfterInstall_title,
+  override val summary: Int? = R.string.idepref_launchAppAfterInstall_summary,
+  override val icon: Int? = drawable.ic_open_external
+) : SwitchPreference(setValue = ::launchAppAfterInstall::set, getValue = ::launchAppAfterInstall::get)

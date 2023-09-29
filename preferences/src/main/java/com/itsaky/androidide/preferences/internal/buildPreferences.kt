@@ -31,6 +31,7 @@ const val OFFLINE_MODE = "idepref_gradleCmd_offlineMode"
 const val GRADLE_COMMANDS = "idepref_build_gradleCommands"
 const val GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache"
 const val CUSTOM_GRADLE_INSTALLATION = "idepref_build_customGradleInstallation"
+const val LAUNCH_APP_AFTER_INSTALL = "ide.build.run.launchAppAfterInstall"
 const val TP_FIX = KEY_TP_FIX
 
 /** Switch for Gradle `--debug` option. */
@@ -97,4 +98,13 @@ var tpFix: Boolean
   get() = prefManager.getBoolean(TP_FIX, false)
   set(value) {
     prefManager.putBoolean(TP_FIX, value)
+  }
+
+/**
+ * Whether the app should be launched automatically after installation (after build).
+ */
+var launchAppAfterInstall: Boolean
+  get() = prefManager.getBoolean(LAUNCH_APP_AFTER_INSTALL, false)
+  set(value) {
+    prefManager.putBoolean(LAUNCH_APP_AFTER_INSTALL, value)
   }
