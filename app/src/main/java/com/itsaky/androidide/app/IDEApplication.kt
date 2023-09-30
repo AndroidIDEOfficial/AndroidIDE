@@ -191,7 +191,7 @@ class IDEApplication : BaseApplication() {
 
   private fun stopLogcatReader() {
     log.info("Stopping logcat reader...")
-    ideLogcatReader?.interrupt()
+    ideLogcatReader?.stop()
     ideLogcatReader = null
   }
 

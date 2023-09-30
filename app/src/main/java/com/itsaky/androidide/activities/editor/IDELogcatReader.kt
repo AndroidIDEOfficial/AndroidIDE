@@ -19,39 +19,82 @@ package com.itsaky.androidide.activities.editor
 import android.os.Process
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.transferToStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 /**
  * Reads the logs from AndroidIDE and saves it to a file in the projects directory.
  *
  * @author Akash Yadav
  */
-class IDELogcatReader : Thread("IDELogcatReader") {
+class IDELogcatReader {
 
   private val log = ILogger.newInstance("IDELogcatReader")
+  private var job: Job? = null
+  private var shouldRun = false
 
-  override fun run() {
+  /**
+   * Start reading the logs.
+   */
+  fun start() {
+    shouldRun = true
+
+    check(job == null) {
+      "Logcat reader is already running"
+    }
+
+    job = CoroutineScope(Dispatchers.IO).launch {
+      run()
+    }
+  }
+
+  /**
+   * Stop the log reader.
+   */
+  fun stop() {
+    shouldRun = false
+    job?.cancel("User requested cancellation")
+    job = null
+  }
+
+  private fun run() {
     val date = Date()
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS")
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss.SSS", Locale.US)
     val outputFile = File(Environment.ANDROIDIDE_HOME,
       "logs/AndroidIDE-LOG-${dateFormat.format(date)}.txt")
+
     log.debug("Creating output file: $outputFile")
+
     outputFile.parentFile!!.mkdirs()
-    outputFile.createNewFile()
-    outputFile.outputStream().buffered().use {
+    try {
+      outputFile.createNewFile()
+    } catch (e: Exception) {
+      log.error("Failed to create output file for log", e)
+      return
+    }
+
+    outputFile.outputStream().buffered().use { writer ->
       try {
-        val process = ProcessBuilder("logcat", "--pid=${Process.myPid()}", "-v",
-          "threadtime").let { builder ->
+        val process = ProcessBuilder(
+          "logcat",
+          "--pid=${Process.myPid()}",
+          "-v",
+          "threadtime"
+        ).let { builder ->
           builder.redirectErrorStream(true)
           builder.start()
         }
 
-        process.inputStream.bufferedReader().forEachLine { line ->
-          it.write("$line\n".toByteArray())
-          it.flush()
-        }
+        process.inputStream.transferToStream(writer)
+        writer.flush()
 
         log.info("Process ended with exit code :", process.waitFor())
       } catch (err: Throwable) {
