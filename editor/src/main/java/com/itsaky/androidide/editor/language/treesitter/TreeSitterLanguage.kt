@@ -72,6 +72,9 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
       val langScheme = scheme.languages[type] ?: return@readScheme
       this.languageScheme = langScheme
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
+
+      analyzer.langScheme = languageScheme
+      analyzer.rerun()
     }
   }
 
@@ -80,12 +83,7 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
   }
 
   override fun getAnalyzeManager(): AnalyzeManager {
-    return this.analyzer.also {
-      if (it.langScheme == null) {
-        it.langScheme = this.languageScheme
-        it.rerun()
-      }
-    }
+    return this.analyzer
   }
 
   override fun getSymbolPairs(): SymbolPairMatch {
