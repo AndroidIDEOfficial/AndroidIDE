@@ -522,4 +522,8 @@
   <string name="title_begin_long_select">Mulai pilih yang panjang</string>
   <string name="idepref_editor_stickScroll_title">Gulir lengket</string>
   <string name="idepref_editor_stickyScroll_summary">Tampilkan cakupan saat ini di bagian atas sambil menggulir editor.</string>
+  <string name="idepref_launchAppAfterInstall_title">Luncurkan aplikasi setelah instalasi</string>
+  <string name="idepref_launchAppAfterInstall_summary">Jika diaktifkan, IDE akan (tanpa konfirmasi) meluncurkan aplikasi segera setelah diinstal.</string>
+  <string name="title_run_options">Jalankan opsi</string>
+  <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
 </resources>
