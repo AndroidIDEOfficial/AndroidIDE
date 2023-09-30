@@ -50,6 +50,7 @@ import org.gradle.tooling.BuildException
 import org.gradle.tooling.CancellationTokenSource
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.ProjectConnection
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
@@ -68,16 +69,14 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   private var initialized = false
   private var client: IToolingApiClient? = null
   private var connector: GradleConnector? = null
+  private var lastInitParams: InitializeProjectParams? = null
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   override fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult> {
     return CompletableFuture.supplyAsync {
       try {
-        if (initialized && connector != null) {
-          connector?.disconnect()
-          connector = null
-        }
+        log.debug("Got initialize request", params)
 
         Main.checkGradleWrapper()
 
@@ -85,15 +84,24 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
           cancelCurrentBuild().get()
         }
 
-        log.debug("Got initialize request", params)
         val stopWatch = StopWatch("Connection to project")
-        this.connector = GradleConnector.newConnector().forProjectDirectory(File(params.directory))
-        setupConnectorForGradleInstallation(this.connector!!, params.gradleDistribution)
-        stopWatch.lap("Connector created")
 
-        if (this.connector == null) {
-          throw IllegalStateException(
-            "Unable to create gradle connector for project directory: ${params.directory}")
+        if (connector != null && params == lastInitParams) {
+          log.info("Project is being reinitialized. Reusing connector instance...")
+        } else {
+          // a new project is being initialized
+          // or the project is being initialized with different parameters
+          connector?.disconnect()
+
+          connector = GradleConnector.newConnector().forProjectDirectory(File(params.directory))
+          setupConnectorForGradleInstallation(this.connector!!, params.gradleDistribution)
+          stopWatch.lap("Connector created")
+        }
+
+        lastInitParams = params
+
+        checkNotNull(connector) {
+          "Unable to create gradle connector for project directory: ${params.directory}"
         }
 
         notifyBeforeBuild(BuildInfo(emptyList()))
