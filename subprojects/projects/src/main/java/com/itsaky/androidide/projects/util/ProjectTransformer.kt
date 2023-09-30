@@ -45,9 +45,9 @@ class ProjectTransformer {
   fun transform(project: IProject): Project? {
     try {
       val allProjects = project.getProjects().get()
-      val selectionResult = project.selectProject(StringParameter(IProject.ROOT_PROJECT_PATH)).get()
+      val selectionResult = project.selectProject(StringParameter("")).get()
       check(selectionResult.isSuccessful) {
-        "Cannot find root project with path '${IProject.ROOT_PROJECT_PATH}'"
+        "Cannot find root project"
       }
 
       val rootProject = when (project.getType().get()) {

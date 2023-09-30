@@ -48,11 +48,6 @@ interface IProject : IProjectQueries {
   companion object {
 
     /**
-     * Gradle project path for the root project.
-     */
-    const val ROOT_PROJECT_PATH = ":"
-
-    /**
      * Name that can be used for project whose [BasicProjectMetadata.name] property is null.
      */
     const val PROJECT_UNKNOWN = "Unknown"

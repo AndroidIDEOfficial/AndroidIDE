@@ -50,7 +50,7 @@ interface IProjectQueries {
   /**
    * Select the project to work with. This overwrites the existing selection.
    *
-   * @param param A [StringParameter] with the project's path as the value.
+   * @param param A [StringParameter] with the project's path as the value. If the value is an empty string, the root project will be selected.
    */
   @JsonRequest
   fun selectProject(param: StringParameter): CompletableFuture<SelectProjectResult>

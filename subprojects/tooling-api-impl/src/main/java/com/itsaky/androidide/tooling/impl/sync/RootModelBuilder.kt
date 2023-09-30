@@ -49,9 +49,9 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
 
       val ideaModules = ideaProject.modules
       val modulePaths = mapOf(*ideaModules.map { it.name to it.gradleProject.path }.toTypedArray())
-      val rootModule = ideaModules.find { it.gradleProject.path == IProject.ROOT_PROJECT_PATH }
+      val rootModule = ideaModules.find { it.gradleProject.parent == null }
         ?: throw ModelBuilderException(
-          "No GradleProject model is associated with project path: '${IProject.ROOT_PROJECT_PATH}'")
+          "Unable to find root project")
 
       val rootProjectVersions = getAndroidVersions(rootModule, controller)
 
@@ -68,7 +68,7 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
           ModuleProjectModelBuilderParams(controller, ideaProject, ideaModule, modulePaths))
       }
 
-      return@action ProjectImpl(rootProject, projects)
+      return@action ProjectImpl(rootProject, rootModule.gradleProject.path, projects)
     }
 
     finalizeLauncher(executor)

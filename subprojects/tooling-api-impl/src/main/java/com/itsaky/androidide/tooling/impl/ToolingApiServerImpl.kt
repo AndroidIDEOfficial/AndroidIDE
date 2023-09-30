@@ -148,7 +148,11 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
       var projectPath = message.projectPath
       if (projectPath == null) {
-        projectPath = IProject.ROOT_PROJECT_PATH
+        projectPath = project.rootProjectPath
+      }
+
+      checkNotNull(projectPath) {
+        "Unable to determine root project path"
       }
 
       val project = this.project.run {

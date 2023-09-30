@@ -34,8 +34,11 @@ import java.util.concurrent.CompletableFuture
  * @author Akash Yadav
  */
 @Suppress("JoinDeclarationAndAssignment")
-internal class ProjectImpl(var rootProject: IGradleProject? = null,
-  var projects: List<IGradleProject> = emptyList()) : IProject, Serializable {
+internal class ProjectImpl(
+  var rootProject: IGradleProject? = null,
+  var rootProjectPath: String? = null,
+  var projects: List<IGradleProject> = emptyList()
+) : IProject, Serializable {
 
   private val serialVersionUID = 1L
 
@@ -48,11 +51,14 @@ internal class ProjectImpl(var rootProject: IGradleProject? = null,
   private val selectedProject: ForwardingProject
 
   init {
+    require((rootProject == null) == (rootProjectPath == null)) {
+      "rootProject, rootProjectPath: both must be specified or null"
+    }
     this.selectedProject = ForwardingProject()
   }
 
   private fun getProject(path: String): IGradleProject? {
-    return if (IProject.ROOT_PROJECT_PATH == path) rootProject else projects.find {
+    return if (path.isBlank()) rootProject else projects.find {
       it.getMetadata().get().projectPath == path
     }
   }
