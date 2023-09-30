@@ -4,6 +4,7 @@ agp-tooling = "8.1.0"
 gradle-tooling = "8.3"
 junit-jupiter = "5.10.0"
 kotlin = "1.9.10"
+kotlin-coroutines = "1.3.9"
 tree-sitter = "3.4.0"
 editor = "0.22.1-f7ee449-SNAPSHOT"
 glide = "4.16.0"
@@ -38,6 +39,7 @@ common-javaparser = { module = "com.github.javaparser:javaparser-symbol-solver-c
 common-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.13.0" }
 common-io = { module = "commons-io:commons-io", version = "2.13.0" }
 common-kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+common-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
 common-jkotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 common-eventbus_ap = { module = "org.greenrobot:eventbus-annotation-processor", version = "3.3.1" }
 common-javapoet = { module = "com.squareup:javapoet", version = "1.13.0" }
