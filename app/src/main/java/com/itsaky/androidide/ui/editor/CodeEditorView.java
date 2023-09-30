@@ -224,7 +224,7 @@ public class CodeEditorView extends LinearLayout {
   }
 
   protected void onInputTypePrefChanged() {
-    binding.editor.setInputType(IDEEditor.createInputFlags());
+    binding.editor.setInputType(IDEEditor.Companion.createInputTypeFlags());
   }
 
   protected void onPrintingFlagsPrefChanged() {
@@ -439,6 +439,6 @@ public class CodeEditorView extends LinearLayout {
       return;
     }
 
-    editor.updateFile(file);
+    editor.setFile(file);
   }
 }

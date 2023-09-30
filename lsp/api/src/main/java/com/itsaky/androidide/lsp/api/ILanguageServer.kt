@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 /*
  *  This file is part of AndroidIDE.
  *
@@ -31,83 +30,75 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.androidide.lsp.api;
+package com.itsaky.androidide.lsp.api
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.itsaky.androidide.lsp.models.CodeFormatResult;
-import com.itsaky.androidide.lsp.models.CompletionParams;
-import com.itsaky.androidide.lsp.models.CompletionResult;
-import com.itsaky.androidide.lsp.models.DefinitionParams;
-import com.itsaky.androidide.lsp.models.DefinitionResult;
-import com.itsaky.androidide.lsp.models.DiagnosticResult;
-import com.itsaky.androidide.lsp.models.ExpandSelectionParams;
-import com.itsaky.androidide.lsp.models.FormatCodeParams;
-import com.itsaky.androidide.lsp.models.LSPFailure;
-import com.itsaky.androidide.lsp.models.ReferenceParams;
-import com.itsaky.androidide.lsp.models.ReferenceResult;
-import com.itsaky.androidide.lsp.models.SignatureHelp;
-import com.itsaky.androidide.lsp.models.SignatureHelpParams;
-import com.itsaky.androidide.models.Range;
-import com.itsaky.androidide.progress.ICancelChecker;
-import com.itsaky.androidide.projects.api.Project;
-import java.nio.file.Path;
-import java.util.Collections;
+import com.itsaky.androidide.lsp.models.CodeFormatResult
+import com.itsaky.androidide.lsp.models.CompletionParams
+import com.itsaky.androidide.lsp.models.CompletionResult
+import com.itsaky.androidide.lsp.models.DefinitionParams
+import com.itsaky.androidide.lsp.models.DefinitionResult
+import com.itsaky.androidide.lsp.models.DiagnosticResult
+import com.itsaky.androidide.lsp.models.ExpandSelectionParams
+import com.itsaky.androidide.lsp.models.FormatCodeParams
+import com.itsaky.androidide.lsp.models.LSPFailure
+import com.itsaky.androidide.lsp.models.ReferenceParams
+import com.itsaky.androidide.lsp.models.ReferenceResult
+import com.itsaky.androidide.lsp.models.SignatureHelp
+import com.itsaky.androidide.lsp.models.SignatureHelpParams
+import com.itsaky.androidide.models.Range
+import com.itsaky.androidide.progress.ICancelChecker
+import com.itsaky.androidide.projects.api.Project
+import java.nio.file.Path
 
 /**
  * A language server provides API for providing functions related to a specific file type.
  *
  * @author Akash Yadav
  */
-public interface ILanguageServer {
+interface ILanguageServer {
 
-  /**
-   * Get the unique language server ID.
-   *
-   * @return The server ID.
-   */
-  String getServerId();
+  val serverId: String?
 
   /**
    * Called by client to notify the server to shutdown. Language servers must release all the
    * resources in use.
    *
-   * <p>After this is called, clients must re-initialize the server.
+   *
+   * After this is called, clients must re-initialize the server.
    */
-  void shutdown();
+  fun shutdown()
 
   /**
    * Set the client to whom notifications and events must be sent.
    *
    * @param client The client to set.
    */
-  void connectClient(@Nullable ILanguageClient client);
+  fun connectClient(client: ILanguageClient?)
 
   /**
    * Get the instance of the language client connected to this server.
    *
    * @return The language client.
    */
-  @Nullable
-  ILanguageClient getClient();
+  val client: ILanguageClient?
 
   /**
    * Apply settings to the language server. Its up to the language server how it applies these
    * settings to the language service providers.
    *
-   * @param settings The new settings to use. Pass {@code null} to use default settings.
+   * @param settings The new settings to use. Pass `null` to use default settings.
    */
-  void applySettings(@Nullable IServerSettings settings);
+  fun applySettings(settings: IServerSettings?)
 
   /**
    * Setup this language server with the given project. Servers are not expected to keep a reference
    * to the provided project. Instead, use
-   * {@link com.itsaky.androidide.projects.IProjectManager#getRootProject getRootProject()} to
+   * [getRootProject()][com.itsaky.androidide.projects.IProjectManager.rootProject] to
    * obtain the project instance.
    *
    * @param project The initialized project.
    */
-  void setupWithProject(@NonNull Project project);
+  fun setupWithProject(project: Project)
 
   /**
    * Compute code completions for the given completion params.
@@ -116,8 +107,7 @@ public interface ILanguageServer {
    * @param cancelChecker
    * @return The completion provider.
    */
-  @NonNull
-  CompletionResult complete(CompletionParams params, ICancelChecker cancelChecker);
+  fun complete(params: CompletionParams?, cancelChecker: ICancelChecker?): CompletionResult
 
   /**
    * Find references using the given params.
@@ -126,8 +116,7 @@ public interface ILanguageServer {
    * @param cancelChecker
    * @return The result of the computation.
    */
-  @NonNull
-  ReferenceResult findReferences(@NonNull ReferenceParams params, ICancelChecker cancelChecker);
+  suspend fun findReferences(params: ReferenceParams, cancelChecker: ICancelChecker?): ReferenceResult
 
   /**
    * Find definition using the given params.
@@ -136,8 +125,7 @@ public interface ILanguageServer {
    * @param cancelChecker
    * @return The result of the computation.
    */
-  @NonNull
-  DefinitionResult findDefinition(@NonNull DefinitionParams params, ICancelChecker cancelChecker);
+  suspend fun findDefinition(params: DefinitionParams, cancelChecker: ICancelChecker?): DefinitionResult
 
   /**
    * Request the server to provide an expanded selection range for the current selection.
@@ -145,8 +133,7 @@ public interface ILanguageServer {
    * @param params The params for computing the expanded selection range.
    * @return The expanded range or same selection range if computation was failed.
    */
-  @NonNull
-  Range expandSelection(@NonNull ExpandSelectionParams params);
+  suspend fun expandSelection(params: ExpandSelectionParams): Range
 
   /**
    * Compute signature help with the given params.
@@ -154,18 +141,16 @@ public interface ILanguageServer {
    * @param params The params to compute signature help.
    * @return The signature help.
    */
-  @NonNull
-  SignatureHelp signatureHelp(@NonNull SignatureHelpParams params);
+  suspend fun signatureHelp(params: SignatureHelpParams): SignatureHelp
 
   /**
    * Analyze the given file and provide diagnostics from the analyze result.
    *
    * @param file The file to analyze.
-   * @return The diagnostic result. Points to {@link DiagnosticResult#NO_UPDATE} if no diagnotic
+   * @return The diagnostic result. Points to [DiagnosticResult.NO_UPDATE] if no diagnotic
    * items are available.
    */
-  @NonNull
-  DiagnosticResult analyze(@NonNull Path file);
+  suspend fun analyze(file: Path): DiagnosticResult
 
   /**
    * Format the given source code input.
@@ -173,18 +158,17 @@ public interface ILanguageServer {
    * @param params The code formatting parameters.
    * @return The formatted source.
    */
-  @NonNull
-  default CodeFormatResult formatCode(FormatCodeParams params) {
-    return new CodeFormatResult(false, Collections.emptyList());
+  fun formatCode(params: FormatCodeParams?): CodeFormatResult {
+    return CodeFormatResult(false, mutableListOf())
   }
 
   /**
    * Handle failure caused by LSP
    *
-   * @param failure {@link LSPFailure} describing the failure.
-   * @return <code>true</code> if the failure was handled. <code>false</code> otherwise.
+   * @param failure [LSPFailure] describing the failure.
+   * @return `true` if the failure was handled. `false` otherwise.
    */
-  default boolean handleFailure(LSPFailure failure) {
-    return false;
+  fun handleFailure(failure: LSPFailure?): Boolean {
+    return false
   }
 }

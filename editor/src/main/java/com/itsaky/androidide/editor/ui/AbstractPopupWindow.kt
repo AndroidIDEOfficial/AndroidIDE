@@ -27,6 +27,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow
  */
 abstract class AbstractPopupWindow(editor: CodeEditor, features: Int) :
   EditorPopupWindow(editor, features) {
+
   override fun show() {
     (editor as? IDEEditor)?.ensureWindowsDismissed()
     super.show()

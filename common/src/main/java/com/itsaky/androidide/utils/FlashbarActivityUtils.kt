@@ -104,15 +104,19 @@ fun Activity.flashInfo(@StringRes msg: Int) {
 }
 
 @JvmOverloads
-fun Activity.flashProgress(configure: Consumer<Flashbar.Builder>? = null, action: Consumer<Flashbar>) {
+fun <R> Activity.flashProgress(
+  configure: (Flashbar.Builder.() -> Unit)? = null,
+  action: (Flashbar) -> R?
+) : R? {
   val builder = flashbarBuilder(gravity = TOP, duration = DURATION_INDEFINITE)
     .showProgress(Flashbar.ProgressPosition.LEFT)
 
-  configure?.accept(builder)
+  configure?.invoke(builder)
 
   val flashbar = builder.build()
   flashbar.show()
-  action.accept(flashbar)
+
+  return action(flashbar)
 }
 
 fun Flashbar.Builder.showOnUiThread() {

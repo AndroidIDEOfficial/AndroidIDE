@@ -79,7 +79,7 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
             1 -> SearchOptions(ignoreCase, it.isChecked)
             else -> searchOptions
           }
-        editor.searcher?.updateSearchOptions(searchOptions)
+        editor.searcher.updateSearchOptions(searchOptions)
 
         true
       } else false
@@ -115,7 +115,7 @@ class EditorSearchLayout(context: Context, val editor: IDEEditor) : FrameLayout(
       findInFileBinding.searchInput.removeTextChangedListener(this.searchInputTextWatcher)
       findInFileBinding.root.visibility = GONE
       this.searchInputTextWatcher = null
-      this.editor.searcher.onClose()
+      searcher.onClose()
     }
     if (!searcher.hasQuery()) {
       return

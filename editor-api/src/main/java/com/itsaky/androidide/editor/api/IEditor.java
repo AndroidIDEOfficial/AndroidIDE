@@ -19,6 +19,7 @@ package com.itsaky.androidide.editor.api;
 
 import androidx.annotation.NonNull;
 
+import androidx.annotation.Nullable;
 import com.itsaky.androidide.models.Position;
 import com.itsaky.androidide.models.Range;
 
@@ -38,6 +39,7 @@ public interface IEditor {
    *
    * @return The file instance.
    */
+  @Nullable
   File getFile();
 
   /**
@@ -59,7 +61,11 @@ public interface IEditor {
    *
    * @param range The range to select.
    */
-  void setSelection(@NonNull Range range);
+  default void setSelection(@NonNull Range range) {
+    setSelection(range.getStart(), range.getEnd());
+  }
+
+  void setSelection(@NonNull Position start, @NonNull Position end);
   
   /**
    * Get the cursor's selection range in the form of {@link Range}.
