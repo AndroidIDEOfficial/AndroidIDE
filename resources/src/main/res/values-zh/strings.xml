@@ -522,8 +522,8 @@
   <string name="title_begin_long_select">开始长选</string>
   <string name="idepref_editor_stickScroll_title">粘滞滚动</string>
   <string name="idepref_editor_stickyScroll_summary">滚动编辑器时在顶部显示当前范围。</string>
-  <string name="idepref_launchAppAfterInstall_title">Launch app after installation</string>
-  <string name="idepref_launchAppAfterInstall_summary">If enabled, the IDE will (without confirmation) launch the application right after it is installed.</string>
-  <string name="title_run_options">Run options</string>
-  <string name="err_cannot_determine_package">Cannot run app. Unable to determine package name.</string>
+  <string name="idepref_launchAppAfterInstall_title">安装后启动应用</string>
+  <string name="idepref_launchAppAfterInstall_summary">如果启用，IDE 安装应用程序后将（不经确认）立即启动该应用。</string>
+  <string name="title_run_options">运行选项</string>
+  <string name="err_cannot_determine_package">不能运行应用，无法确定软件包名称。</string>
 </resources>
