@@ -39,7 +39,6 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
-import com.itsaky.androidide.tooling.api.models.params.StringParameter
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
 import com.itsaky.androidide.tooling.impl.sync.ModelBuilderException
 import com.itsaky.androidide.tooling.impl.sync.RootModelBuilder
@@ -69,6 +68,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   private var initialized = false
   private var client: IToolingApiClient? = null
   private var connector: GradleConnector? = null
+  private var connection: ProjectConnection? = null
   private var lastInitParams: InitializeProjectParams? = null
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
@@ -85,9 +85,11 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         }
 
         val stopWatch = StopWatch("Connection to project")
+        val isReinitializing = connector != null && connection != null && params == lastInitParams
 
-        if (connector != null && params == lastInitParams) {
-          log.info("Project is being reinitialized. Reusing connector instance...")
+        if (isReinitializing) {
+          log.info("Project is being reinitialized")
+          log.info("Reusing connector instance...")
         } else {
           // a new project is being initialized
           // or the project is being initialized with different parameters
@@ -100,13 +102,22 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
         lastInitParams = params
 
-        checkNotNull(connector) {
+        val connector = checkNotNull(connector) {
           "Unable to create gradle connector for project directory: ${params.directory}"
         }
 
         notifyBeforeBuild(BuildInfo(emptyList()))
 
-        val connection = this.connector!!.connect()
+        if (isReinitializing) {
+          log.info("Reusing project connection...")
+        } else {
+          connection = connector.connect()
+        }
+
+        val connection = checkNotNull(this.connection) {
+          "Unable to create project connection for project directory: ${params.directory}"
+        }
+
         stopWatch.lapFromLast("Project connection established")
 
         val project = try {
@@ -115,8 +126,6 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
           impl
         } catch (err: Throwable) {
           throw err
-        } finally {
-          connection.close()
         }
 
         stopWatch.lapFromLast("Project read successful")
@@ -152,26 +161,13 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
       assertProjectInitialized()
 
       log.debug("Received request to run tasks.", message)
+
       Main.checkGradleWrapper()
 
-      var projectPath = message.projectPath
-      if (projectPath == null) {
-        projectPath = project.rootProjectPath
+      val connection = checkNotNull(this.connection) {
+        "ProjectConnection has not been initialized. Cannot execute tasks."
       }
 
-      checkNotNull(projectPath) {
-        "Unable to determine root project path"
-      }
-
-      val project = this.project.run {
-        selectProject(StringParameter(projectPath)).get()
-        asGradleProject()
-      }
-
-      this.connector!!.forProjectDirectory(project.getMetadata().get().projectDir)
-      setupConnectorForGradleInstallation(this.connector!!, message.gradleDistribution)
-
-      val connection = this.connector!!.connect()
       val builder = connection.newBuild()
 
       // System.in and System.out are used for communication between this server and the
@@ -228,21 +224,15 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   private fun notifyBuildFailure(tasks: List<String>) {
-    if (client != null) {
-      client!!.onBuildFailed(BuildResult((tasks)))
-    }
+    client?.onBuildFailed(BuildResult((tasks)))
   }
 
   private fun notifyBuildSuccess(tasks: List<String>) {
-    if (client != null) {
-      client!!.onBuildSuccessful(BuildResult(tasks))
-    }
+    client?.onBuildSuccessful(BuildResult(tasks))
   }
 
   private fun notifyBeforeBuild(buildInfo: BuildInfo) {
-    if (client != null) {
-      client!!.prepareBuild(buildInfo)
-    }
+    client?.prepareBuild(buildInfo)
   }
 
   override fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult> {
@@ -268,12 +258,15 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
   override fun shutdown(): CompletableFuture<Void> {
     return CompletableFuture.runAsync {
+      connection?.close()
       connector?.disconnect()
       Main.future?.cancel(true)
 
+      this.connection = null
       this.connector = null
       this.client = null
       this.buildCancellationToken = null
+      this.lastInitParams = null
       Main.future = null
       Main.client = null
 

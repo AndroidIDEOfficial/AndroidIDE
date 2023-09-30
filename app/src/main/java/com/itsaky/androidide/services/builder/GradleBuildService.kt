@@ -348,19 +348,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   override fun executeTasks(vararg tasks: String): CompletableFuture<TaskExecutionResult> {
     checkServerStarted()
-    val message = TaskExecutionMessage(null, listOf(*tasks),
-      gradleDistributionParams)
-    return performBuildTasks(
-      server!!.executeTasks(message))
-  }
-
-  override fun executeProjectTasks(
-    projectPath: String,
-    vararg tasks: String
-  ): CompletableFuture<TaskExecutionResult> {
-    checkServerStarted()
-    val message = TaskExecutionMessage(projectPath, listOf(*tasks),
-      gradleDistributionParams)
+    val message = TaskExecutionMessage(listOf(*tasks))
     return performBuildTasks(
       server!!.executeTasks(message))
   }
