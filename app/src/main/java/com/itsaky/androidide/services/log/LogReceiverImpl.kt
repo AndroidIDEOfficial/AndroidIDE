@@ -53,7 +53,7 @@ class LogReceiverImpl(consumer: ((LogLine) -> Unit)? = null) : ILogReceiver.Stub
   }
 
   fun acceptSenders() {
-    if (senderHandler.isAlive) {
+    if (senderHandler.isAlive()) {
       return
     }
 
