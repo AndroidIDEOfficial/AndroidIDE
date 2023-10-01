@@ -71,6 +71,7 @@ import com.itsaky.androidide.projects.FileManager.onDocumentContentChange
 import com.itsaky.androidide.projects.FileManager.onDocumentOpen
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
+import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
@@ -442,7 +443,7 @@ open class IDEEditor @JvmOverloads constructor(
 
     try {
       if (editorScope.isActive) {
-        editorScope.cancel("Editor is releasing resources.")
+        editorScope.cancelIfActive("Editor is releasing resources.")
       }
     } catch (e: Exception) {
       log.error("Failed to close coroutine dispatcher", e)
