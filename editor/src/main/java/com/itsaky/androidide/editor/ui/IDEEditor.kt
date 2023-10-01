@@ -651,6 +651,8 @@ open class IDEEditor @JvmOverloads constructor(
       it.init()
     }
 
+    markUnmodified()
+
     searcher = IDEEditorSearcher(this)
     colorScheme = SchemeAndroidIDE.newInstance(context)
     inputType = createInputTypeFlags()
@@ -662,6 +664,7 @@ open class IDEEditor @JvmOverloads constructor(
     getComponent(EditorTextActionWindow::class.java).isEnabled = false
 
     subscribeEvent(ContentChangeEvent::class.java) { event, _ ->
+      markModified()
       file ?: return@subscribeEvent
 
       editorScope.launch {
@@ -829,6 +832,7 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open fun dispatchDocumentSelectedEvent() {
+    markUnmodified()
     val file = file ?: return
     val selectedEvent = DocumentSelectedEvent(file.toPath())
     EventBus.getDefault().post(selectedEvent)
