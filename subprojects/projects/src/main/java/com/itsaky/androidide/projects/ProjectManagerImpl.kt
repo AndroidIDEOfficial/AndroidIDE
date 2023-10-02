@@ -42,6 +42,15 @@ import com.itsaky.androidide.tooling.api.models.BuildVariantInfo
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
+import com.itsaky.androidide.utils.withStopWatch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -88,20 +97,32 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
 
   override fun setupProject(project: IProject) {
     this.rootProject = ProjectTransformer().transform(CachingProject(project))
-    if (this.rootProject == null) {
-      return
-    }
+    val rootProject = this.rootProject ?: return
 
     // build variants must be updated before the sources and classpaths are indexed
     updateBuildVariants { buildVariants ->
       androidBuildVariants = buildVariants
     }
 
-    this.rootProject!!.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
-      it.indexSourcesAndClasspaths()
-      if (it is AndroidModule) {
-        it.readResources()
+    withStopWatch("Setup project") {
+      val indexerScope = CoroutineScope(Dispatchers.Default)
+      val modulesFlow = flow {
+        rootProject.subProjects.filterIsInstance(ModuleProject::class.java).forEach {
+          emit(it)
+        }
       }
+
+      val jobs = modulesFlow.map { module ->
+        indexerScope.async {
+          module.indexSourcesAndClasspaths()
+          if (module is AndroidModule) {
+            module.readResources()
+          }
+        }
+      }
+
+      // wait for the indexing to finish
+      runBlocking { jobs.toList().awaitAll() }
     }
   }
 

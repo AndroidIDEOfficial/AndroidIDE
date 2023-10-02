@@ -90,7 +90,7 @@ dependencies {
   implementation(libs.common.utilcode)
   implementation(libs.common.glide)
   implementation(libs.common.jsoup)
-  implementation(libs.common.kotlin.coroutines)
+  implementation(libs.common.kotlin.coroutines.android)
 
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.gson)

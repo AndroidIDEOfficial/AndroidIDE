@@ -48,3 +48,21 @@ constructor(
     lastLap = System.currentTimeMillis()
   }
 }
+
+/**
+ * Run the given action with a stopwatch to log the time the action took to execute.
+ *
+ * @see StopWatch
+ */
+inline fun <R> withStopWatch(
+  label: String,
+  start: Long = System.currentTimeMillis(),
+  lastLap: Long = start,
+  action: (StopWatch) -> R
+): R {
+  return StopWatch(label, start, lastLap).run {
+    action(this).also {
+      log()
+    }
+  }
+}

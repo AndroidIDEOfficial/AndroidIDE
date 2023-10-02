@@ -37,11 +37,20 @@ import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.tooling.api.models.GradleTask
 import com.itsaky.androidide.tooling.api.util.findPackageName
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.withStopWatch
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersions
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTable
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -244,25 +253,27 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
    * Reads the resource files are creates the [com.android.aaptcompiler.ResourceTable] instances for
    * the corresponding resource directories.
    */
-  fun readResources() {
+  suspend fun readResources() {
     // Read resources in parallel
-    val threads = mutableListOf<Thread>()
-    threads.add(
-      Thread {
-        getFrameworkResourceTable()
-        getResourceTable()
-        getDependencyResourceTables()
+    withStopWatch("Read resources for module : $path") {
+      val resourceReaderScope = CoroutineScope(
+        Dispatchers.IO + CoroutineName("ResourceReader($path)"))
+
+      val resourceFlow = flow {
+        emit(getFrameworkResourceTable())
+        emit(getResourceTable())
+        emit(getDependencyResourceTables())
+        emit(getApiVersions())
+        emit(getWidgetTable())
       }
-    )
-    threads.add(Thread(this::getApiVersions))
-    threads.add(Thread(this::getWidgetTable))
 
-    for (thread in threads) {
-      thread.start()
-    }
+      val jobs = resourceFlow.map { result ->
+        resourceReaderScope.async {
+          result
+        }
+      }
 
-    for (thread in threads) {
-      thread.join()
+      jobs.toList().awaitAll()
     }
   }
 
