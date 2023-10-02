@@ -100,7 +100,7 @@ xml-resolver = { module = "xml-resolver:xml-resolver", version = "1.2" }
 xml-jb-annotations = { module = "org.jetbrains:annotations", version = "24.0.1" }
 
 # GIT
-git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "3.7.1.201504261725-r" }
+git-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "6.6.1.202309021850-r" }
 
 # Tests
 tests-junit = { module = "junit:junit", version = "4.13.2" }
