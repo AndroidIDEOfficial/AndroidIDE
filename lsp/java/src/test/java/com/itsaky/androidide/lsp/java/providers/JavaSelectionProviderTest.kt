@@ -24,6 +24,7 @@ import com.itsaky.androidide.lsp.models.ExpandSelectionParams
 import com.itsaky.androidide.models.Position
 import com.itsaky.androidide.models.Range
 import io.github.rosemoe.sora.text.Content
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 
@@ -44,7 +45,7 @@ class JavaSelectionProviderTest {
       dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), contents.toString(),1, NEW_TEXT, 0, Range.NONE))
 
       val range = findRange()
-      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      val expanded = runBlocking { server.expandSelection(ExpandSelectionParams(file!!, range)) }
 
       assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
     }
@@ -59,7 +60,7 @@ class JavaSelectionProviderTest {
       val end = Position(5, 5)
       val range = Range(start, end)
 
-      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      val expanded = runBlocking { server.expandSelection(ExpandSelectionParams(file!!, range)) }
       assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
     }
   }
@@ -74,7 +75,7 @@ class JavaSelectionProviderTest {
       val end = Position(8, 9)
       val range = Range(start, end)
 
-      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      val expanded = runBlocking{ server.expandSelection(ExpandSelectionParams(file!!, range)) }
       assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
   }
@@ -89,7 +90,7 @@ class JavaSelectionProviderTest {
       val end = Position(10, 9)
       val range = Range(start, end)
 
-      val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+      val expanded = runBlocking{ server.expandSelection(ExpandSelectionParams(file!!, range)) }
       assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
   }

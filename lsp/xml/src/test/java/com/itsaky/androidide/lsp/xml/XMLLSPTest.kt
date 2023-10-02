@@ -79,7 +79,7 @@ object XMLLSPTest : LSPTest() {
   }
 
   override fun getServerId(): String {
-    return XMLLanguageServer.serverId
+    return XMLLanguageServer.SERVER_ID
   }
 
   override fun test() {}

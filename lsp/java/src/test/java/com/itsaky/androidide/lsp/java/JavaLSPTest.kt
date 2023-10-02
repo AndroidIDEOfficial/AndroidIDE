@@ -29,7 +29,7 @@ import org.junit.Ignore
 object JavaLSPTest : LSPTest() {
 
   val server by lazy {
-    ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.serverId)
+    ILanguageServerRegistry.getDefault().getServer(JavaLanguageServer.SERVER_ID)
         as JavaLanguageServer
   }
 
@@ -43,7 +43,7 @@ object JavaLSPTest : LSPTest() {
     ILanguageServerRegistry.getDefault().register(JavaLanguageServer())
   }
 
-  override fun getServerId() = JavaLanguageServer.serverId
+  override fun getServerId() = JavaLanguageServer.SERVER_ID
 
   fun getCompiler(): JavaCompilerService {
     return JavaCompilerProvider.get(findAppModule()!!)

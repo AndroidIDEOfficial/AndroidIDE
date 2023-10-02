@@ -20,6 +20,7 @@ package com.itsaky.androidide.lsp.java.actions
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lsp.java.JavaLSPTest
 import com.itsaky.androidide.lsp.java.actions.diagnostics.AddImportAction
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,8 +43,10 @@ class AddImportTest {
     JavaLSPTest.apply {
       openFile("actions/AddImportAction")
       val diagnostic =
-        server.analyze(file!!).diagnostics.firstOrNull {
-          it.code == "compiler.err.cant.resolve.location"
+        runBlocking {
+          server.analyze(file!!).diagnostics.firstOrNull {
+            it.code == "compiler.err.cant.resolve.location"
+          }
         }
 
       assertThat(diagnostic).isNotNull()

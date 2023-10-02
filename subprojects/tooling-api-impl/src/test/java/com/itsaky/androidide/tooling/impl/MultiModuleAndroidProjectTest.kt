@@ -83,9 +83,7 @@ class MultiModuleAndroidProjectTest {
     taskPaths.clear()
 
     val (isSuccessful, failure) = server.executeTasks(TaskExecutionMessage(
-      projectPath = ":android-library",
-      tasks = listOf("assembleDebug"),
-      gradleDistribution = client.gradleDistParams
+      tasks = listOf("assembleDebug")
     )).get()
 
     if (failure != null) {
