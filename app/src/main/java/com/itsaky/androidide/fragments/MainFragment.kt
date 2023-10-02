@@ -203,6 +203,10 @@ class MainFragment : BaseFragment() {
       ThreadUtils.runOnUiThread { progress.progress = completed }
     }
 
+    override fun showDuration(enabled: Boolean) {
+      // no-op
+    }
+
     override fun endTask() {}
 
     override fun isCancelled(): Boolean {
