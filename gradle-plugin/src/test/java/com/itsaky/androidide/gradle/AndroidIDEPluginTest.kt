@@ -47,4 +47,12 @@ class AndroidIDEPluginTest {
     })
     assertThat(result.output).contains("LogSender is disabled")
   }
+
+  @Test
+  fun `test logsender must be added as non-changing dependency`() {
+    val result = buildProject(configureArgs = {
+      it.add("--debug")
+    })
+    assertThat(result.output).contains("Marking logsender dependency as not-changing")
+  }
 }

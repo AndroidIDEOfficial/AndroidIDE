@@ -23,6 +23,8 @@ import com.android.build.api.variant.impl.ApplicationVariantImpl
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ExternalDependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.logging.Logging
 import java.util.concurrent.TimeUnit
 
@@ -76,10 +78,17 @@ class LogSenderPlugin : Plugin<Project> {
 
           if (variant.name in debuggableBuilds) {
             variant.withRuntimeConfiguration {
-              resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
 
               val logsenderDependency = project.dependencies.ideDependency(
                 LOGSENDER_DEPENDENCY_ARTIFACT, project.isTestEnv)
+
+              if (logsenderDependency is ExternalModuleDependency) {
+                // a new snapshot is published for each build
+                // therefore, we could mark this dependency as not changing
+                // so that Gradle does not try to download this dependency on each build
+                logger.debug("Marking logsender dependency as not-changing")
+                logsenderDependency.isChanging = false
+              }
 
               logger.lifecycle(
                 "Adding LogSender dependency (version '${logsenderDependency.version}')" +
