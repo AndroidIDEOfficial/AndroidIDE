@@ -150,7 +150,9 @@ internal class ToolingServerRunner(
 
       waitJob.join()
     } catch (e: Throwable) {
-      log.error("Unable to start tooling API server", e)
+      if (e !is CancellationException) {
+        log.error("Unable to start tooling API server", e)
+      }
     }
   }
 
