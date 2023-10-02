@@ -28,12 +28,12 @@
   <string name="label_splash_image">启动图</string>
   <string name="get_started">开始使用</string>
   <string name="msg_cannot_perform_fix">无法执行快速修复</string>
-  <string name="msg_performing_actions">正在执行代码操作&#8230;</string>
+  <string name="msg_performing_actions">正在执行快速修复…</string>
   <string name="msg_api_info_since">添加于 API %d</string>
   <string name="msg_api_info_removed">已在 API %d 中移除</string>
   <string name="msg_api_info_deprecated">已在 API %d 中弃用</string>
   <string name="msg_finding_references">查找引用&#8230;</string>
-  <string name="msg_finding_definition">跳转定义&#8230;</string>
+  <string name="msg_finding_definition">查找定义…</string>
   <string name="msg_no_definition">没有找到定义</string>
   <!-- Build Tools Installation -->
   <string name="msg_no_references">没有找到引用</string>
@@ -56,14 +56,14 @@
   <string name="preparing">准备中</string>
   <string name="preparing_first">准备中，首次构建可能需要 10-15 分钟！</string>
   <string name="msg_installing_gradlew">Gradle Wrapper 不可用！\n正在安装默认的包装器。如有需要，将下载 Gradle v7.4。</string>
-  <string name="msg_getting_daemom_status">正在获取守护进程状态，请稍候...</string>
+  <string name="msg_getting_daemom_status">正在获取守护进程状态，请稍候…</string>
   <string name="gradle_daemon_status">Gradle 守护进程状态</string>
   <string name="title_install_apks">安装 APK</string>
   <string name="title_clear_output">清空输出</string>
   <string name="run">运行</string>
   <!-- Project -->
   <string name="title_first_build">首次构建</string>
-  <string name="msg_first_build">这是安装 AndroidIDE 后的首次构建。首次构建通常需要一些时间，因为 Gradle 要下载所有依赖项和插件。此过程可能需要 10-15 分钟，但这完全取决于您的网络连接。\n\n请耐心等待...</string>
+  <string name="msg_first_build">这是安装 AndroidIDE 后的首次构建。首次构建通常需要一些时间，因为 Gradle 要下载所有依赖项和插件。此过程可能需要 10-15 分钟，不过这完全取决于您的网络。\n\n请耐心等待…</string>
   <string name="create_project">创建项目</string>
   <string name="minimum_sdk">最低 SDK 版本</string>
   <string name="target_sdk">目标 SDK 版本</string>
@@ -174,7 +174,7 @@
   <string name="msg_storage_denied">没有存储权限就无法继续</string>
   <!-- Code Editor -->
   <string name="msg_storage_granted">已授予存储权限！</string>
-  <string name="open_with">打开方式&#8230;</string>
+  <string name="open_with">打开为…</string>
   <string name="undo">撤销</string>
   <string name="redo">重做</string>
   <!-- Preferences -->
@@ -243,7 +243,7 @@
   <string name="msg_bootstrap_installation_error">因为以下异常，引导程序安装失败</string>
   <string name="title_translations">翻译</string>
   <string name="title_compiler_module_install">正在安装编译器模块</string>
-  <string name="msg_compiler_module_install">正在安装编译器模块，请稍候...</string>
+  <string name="msg_compiler_module_install">正在安装编译器模块，请稍候…</string>
   <string name="msg_compiler_module_install_failed">编译器模块安装失败。错误：\n%s</string>
   <string name="msg_compiler_module_installed">编译器模块安装成功！</string>
   <string name="action_expand_selection">扩选</string>
@@ -260,7 +260,7 @@
   <string name="no">否</string>
   <string name="msg_apk_install_intent_failed">无法启动 APK 安装程序</string>
   <string name="msg_viewaction_add_attr">添加属性</string>
-  <string name="msg_search_attrs">搜索属性...</string>
+  <string name="msg_search_attrs">搜索属性…</string>
   <string name="hint_dimension_val">尺寸值</string>
   <string name="hint_dimension_res">尺寸资源</string>
   <string name="hint_boolean_res">布尔资源</string>
@@ -270,7 +270,7 @@
   <string name="hint_attr_value">属性值</string>
   <string name="hint_string_resource">字符串资源</string>
   <string name="hint_resource_reference">任意资源引用</string>
-  <string name="msg_code_actions">操作</string>
+  <string name="msg_code_actions">快速修复</string>
   <string name="title_format_code">格式化代码</string>
   <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
   <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
@@ -305,7 +305,7 @@
   <string name="idepref_msg_customGradleInstallation">指定用于构建的自定义 Gradle 路径，这将会覆盖 gradle-wrapper.properties 中指定的版本</string>
   <string name="msg_gradle_installation_path">Gradle 安装路径</string>
   <string name="msg_gradle_installation_input_help">留空将使用 Gradle 包装器</string>
-  <string name="msg_require_install_jdk_and_android_sdk">您需要安装 JDK 和 Android SDK 才能使 IDE 工作。 要安装，请单击“是”并按照<![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">此处</a>]]>的说明进行操作</string>
+  <string name="msg_require_install_jdk_and_android_sdk">您需要安装 JDK 和 Android SDK 才能使 IDE 工作。要安装，请单击“是”并按照<![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">此处</a>]]>的说明进行操作</string>
   <string name="build_status_idle">无进行中构建</string>
   <string name="build_status_in_progress">正在构建&#8230;</string>
   <string name="build_status_failed">构建失败，请参阅构建输出以获取详情</string>
@@ -374,7 +374,7 @@
   <string name="idepref_customFont_summary">如果启用，文件“/data/data/com.itsaky.androidide/files/home/.androidide/ui/font.ttf”将用作编辑器字体。</string>
   <string name="idepref_chooseFont_title">选择自定义字体</string>
   <string name="idepref_chooseFont_summary">选择要在终端（或编辑器）中使用的字体。</string>
-  <string name="msg_installing_apk">正在安装 APK...</string>
+  <string name="msg_installing_apk">正在安装 APK …</string>
   <string name="msg_installed_successfully">安装成功</string>
   <string name="msg_action_open_application">您想打开该应用吗？</string>
   <string name="title_gradle_service_notification_channel">AndroidIDE Gradle 构建服务</string>
@@ -429,12 +429,12 @@
   <string name="replace">替换</string>
   <string name="replaceAll">全部替换</string>
   <string name="title_run_tasks">运行任务</string>
-  <string name="hint_search_tasks">搜索任务...</string>
+  <string name="hint_search_tasks">搜索任务…</string>
   <string name="title_selected_tasks">选定的任务</string>
   <string name="msg_err_select_tasks">请选择要运行的任务</string>
   <string name="title_confirmation">确认</string>
   <string name="msg_tasks_to_run">将按顺序运行以下任务，再次单击“运行”按钮进行确认。\n\n%1$s</string>
-  <string name="msg_loading_tasks">加载任务...</string>
+  <string name="msg_loading_tasks">正在加载任务…</string>
   <string name="title_all_tasks">所有任务</string>
   <string name="msg_feature_unimplemented">此功能尚未实现。</string>
   <!-- GIT -->
