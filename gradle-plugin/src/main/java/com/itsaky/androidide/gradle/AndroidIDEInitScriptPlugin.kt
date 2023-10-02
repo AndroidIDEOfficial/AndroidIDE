@@ -115,5 +115,6 @@ class AndroidIDEInitScriptPlugin : Plugin<Gradle> {
     google()
 
     mavenCentral()
+    gradlePluginPortal()
   }
 }
