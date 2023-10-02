@@ -21,7 +21,7 @@ import com.itsaky.androidide.templates.base.AndroidModuleTemplateBuilder
 import com.itsaky.androidide.templates.impl.base.baseLayoutContentMain
 import com.itsaky.androidide.templates.impl.base.materialAppBar
 import com.itsaky.androidide.templates.impl.base.materialFab
-import com.itsaky.androidide.templates.impl.indent
+import com.itsaky.androidide.templates.impl.indentToLevel
 
 internal fun AndroidModuleTemplateBuilder.basicActivitySrcJava() = """
 package ${data.packageName};
@@ -99,11 +99,11 @@ internal fun basicActivityLayout() = """
     android:layout_height="match_parent"
     tools:context=".MainActivity">
         
-    ${materialAppBar().indent(1)}
+    ${materialAppBar().indentToLevel(1)}
     
     <include layout="@layout/content_main"/>
 
-    ${materialFab().indent(1)}
+    ${materialFab().indentToLevel(1)}
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 """.trim()

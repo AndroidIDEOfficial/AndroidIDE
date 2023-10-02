@@ -37,7 +37,7 @@ import com.itsaky.androidide.templates.useKtsParameter
 /**
  * Indents the given string for the given [indentation level][level].
  */
-fun String.indent(level: Int): String {
+fun String.indentToLevel(level: Int): String {
   val lines = split(Regex("[\r\n]"))
   return StringBuilder().apply {
     for (line in lines) {
