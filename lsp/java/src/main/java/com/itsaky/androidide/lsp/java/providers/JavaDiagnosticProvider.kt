@@ -69,15 +69,15 @@ class JavaDiagnosticProvider {
 
     analyzing.set(true)
 
-    analyzingThread = AnalyzingThread(compiler, file)
-    analyzingThread!!.start()
-    analyzingThread!!.join()
+    val analyzingThread = AnalyzingThread(compiler, file).also {
+      analyzingThread = it
+      it.start()
+      it.join()
+    }
 
-    val result = analyzingThread!!.result
-
-    analyzingThread = null
-
-    return result
+    return analyzingThread.result.also {
+      this.analyzingThread = null
+    }
   }
 
   fun isAnalyzing(): Boolean {
@@ -119,7 +119,8 @@ class JavaDiagnosticProvider {
 
   inner class AnalyzingThread(val compiler: JavaCompilerService, val file: Path) :
     Thread("JavaAnalyzerThread") {
-    lateinit var result: DiagnosticResult
+
+    var result: DiagnosticResult = DiagnosticResult.NO_UPDATE
 
     fun cancel() {
       ProgressManager.instance.cancel(this)
@@ -128,18 +129,18 @@ class JavaDiagnosticProvider {
     override fun run() {
       result =
         try {
-            compiler.compile(file).get { task -> doAnalyze(file, task) }
-          } catch (err: Throwable) {
-            if (CancelChecker.isCancelled(err)) {
-              log.error("Analyze request cancelled")
-            } else {
-              log.warn("Unable to analyze file", err)
-            }
-            DiagnosticResult.NO_UPDATE
-          } finally {
-            compiler.destroy()
-            analyzing.set(false)
+          compiler.compile(file).get { task -> doAnalyze(file, task) }
+        } catch (err: Throwable) {
+          if (CancelChecker.isCancelled(err)) {
+            log.error("Analyze request cancelled")
+          } else {
+            log.warn("Unable to analyze file", err)
           }
+          DiagnosticResult.NO_UPDATE
+        } finally {
+          compiler.destroy()
+          analyzing.set(false)
+        }
           .also {
             cachedDiagnostics = it
             analyzeTimestamps[file] = Instant.now()
