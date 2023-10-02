@@ -10,7 +10,7 @@
   <string name="about_footer">AndroidIDE %1$s (%2$s)</string>
   <string name="about_subtitle">简而言之，一个适用于 Android 的 IDE</string>
   <string name="msg_get_package_failed">获取软件包名称失败！</string>
-  <string name="msg_share_app">AndroidIDE 是一个集成开发环境，用于在您的 Android 智能手机上构建 Android 应用程序。它支持：\n1. Gradle\n2. OpenJDK 17.0–22\n3. 高级 Java 自动补全\n4. XML 自动补全\n5. Kotlin 支持，以及更多\n\n从 https://androidide.com 下载 AndroidIDE</string>
+  <string name="msg_share_app">AndroidIDE 是一个集成开发环境，用于在您的 Android 智能手机上构建 Android 应用。它支持：\n1. Gradle\n2. OpenJDK 17.0–22\n3. 高级 Java 自动补全\n4. XML 自动补全\n5. Kotlin 支持，以及更多\n\n从 https://androidide.com 下载 AndroidIDE</string>
   <string name="msg_need_help">如果您在使用 AndroidIDE 或构建 Android 应用时遇到问题，您可以加入 Telegram 群组寻求帮助。\n\n您也可以发送建议到我们的电子邮件地址。</string>
   <string name="discuss_amp_help">讨论 &amp; 帮助</string>
   <string name="need_help">需要帮助？</string>
@@ -41,11 +41,11 @@
   <string name="title_installation_failed">安装失败</string>
   <string name="get_ready_for_something_awesome">让我们准备迎接很棒的东西!</string>
   <string name="msg_picked_isnt_dir">所选文件不是目录！</string>
-  <string name="msg_pick_single_file">请只选择一个文件夹</string>
+  <string name="msg_pick_single_file">请仅选择一个目录</string>
   <string name="please_wait">请稍等片刻…</string>
   <!-- Project Builder -->
   <string name="title_device_not_supported">设备不受支持</string>
-  <string name="msg_device_not_supported">很不幸，目前不支持您的设备。对于给您带来的不便，我们深表歉意。\n\n支持的 CPU 架构：aarch64 和 armeabi-v7a</string>
+  <string name="msg_device_not_supported">很遗憾，目前不支持您的设备。对于给您带来的不便，我们深表歉意。\n\n支持的 CPU 架构：aarch64 和 armeabi-v7a</string>
   <string name="build">构建</string>
   <string name="build_output">构建输出</string>
   <string name="lint_tasks">Lint 任务</string>
@@ -62,7 +62,7 @@
   <string name="title_clear_output">清空输出</string>
   <string name="run">运行</string>
   <!-- Project -->
-  <string name="title_first_build">第一次构建</string>
+  <string name="title_first_build">首次构建</string>
   <string name="msg_first_build">这是安装 AndroidIDE 后的首次构建。首次构建通常需要一些时间，因为 Gradle 要下载所有依赖项和插件。此过程可能需要 10-15 分钟，但这完全取决于您的网络连接。\n\n请耐心等待...</string>
   <string name="create_project">创建项目</string>
   <string name="minimum_sdk">最低 SDK 版本</string>
@@ -523,7 +523,7 @@
   <string name="idepref_editor_stickScroll_title">粘滞滚动</string>
   <string name="idepref_editor_stickyScroll_summary">滚动编辑器时在顶部显示当前范围。</string>
   <string name="idepref_launchAppAfterInstall_title">安装后启动应用</string>
-  <string name="idepref_launchAppAfterInstall_summary">如果启用，IDE 安装应用程序后将（不经确认）立即启动该应用。</string>
+  <string name="idepref_launchAppAfterInstall_summary">如果启用，IDE 安装应用程序后，将（不经确认）立即启动该应用程序。</string>
   <string name="title_run_options">运行选项</string>
-  <string name="err_cannot_determine_package">不能运行应用，无法确定软件包名称。</string>
+  <string name="err_cannot_determine_package">无法确定软件包名称，不能运行应用。</string>
 </resources>
