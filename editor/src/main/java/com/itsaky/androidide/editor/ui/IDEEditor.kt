@@ -86,6 +86,7 @@ import io.github.rosemoe.sora.widget.IDEEditorSearcher
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -441,12 +442,8 @@ open class IDEEditor @JvmOverloads constructor(
       EventBus.getDefault().unregister(this)
     }
 
-    try {
-      if (editorScope.isActive) {
-        editorScope.cancelIfActive("Editor is releasing resources.")
-      }
-    } catch (e: Exception) {
-      log.error("Failed to close coroutine dispatcher", e)
+    if (editorScope.isActive) {
+      editorScope.cancelIfActive("Editor is releasing resources.")
     }
   }
 
@@ -544,6 +541,7 @@ open class IDEEditor @JvmOverloads constructor(
    * Dispatches the [DocumentSaveEvent] for this editor.
    */
   open fun dispatchDocumentSaveEvent() {
+    markUnmodified()
     if (getFile() == null) {
       return
     }
@@ -832,7 +830,6 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open fun dispatchDocumentSelectedEvent() {
-    markUnmodified()
     val file = file ?: return
     val selectedEvent = DocumentSelectedEvent(file.toPath())
     EventBus.getDefault().post(selectedEvent)
