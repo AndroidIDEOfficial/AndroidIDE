@@ -26,6 +26,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildInfo
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
+import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
 import java.lang.ref.WeakReference
 
@@ -82,7 +83,7 @@ class EditorBuildEventListener : GradleBuildService.EventListener {
     isFirstBuild = false
     activity().editorViewModel.isBuildInProgress = false
 
-    activity().flashSuccess(R.string.build_status_failed)
+    activity().flashError(R.string.build_status_failed)
   }
 
   override fun onOutput(line: String?) {
