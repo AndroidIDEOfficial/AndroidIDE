@@ -55,7 +55,9 @@ inline fun Throwable.ifCancelledOrInterrupted(suppress: Boolean = false, action:
     is InterruptedException,
     is InterruptedIOException -> {
       action()
-      if (!suppress) { throw this }
+      if (!suppress) {
+        throw this
+      }
     }
   }
 }

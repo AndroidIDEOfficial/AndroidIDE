@@ -69,9 +69,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.io.InterruptedIOException
 import java.util.Objects
-import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import java.util.concurrent.TimeUnit
