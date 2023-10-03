@@ -43,6 +43,7 @@ import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.services.ToolingServerNotStartedException
 import com.itsaky.androidide.services.builder.ToolingServerRunner.OnServerStartListener
+import com.itsaky.androidide.tasks.ifCancelledOrInterrupted
 import com.itsaky.androidide.tasks.runOnUiThread
 import com.itsaky.androidide.tooling.api.ForwardingToolingApiClient
 import com.itsaky.androidide.tooling.api.IProject
@@ -68,9 +69,12 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.io.InterruptedIOException
 import java.util.Objects
+import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.TimeUnit
 
 /**
  * A foreground service that handles interaction with the Gradle Tooling API.
@@ -168,31 +172,36 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   override fun onDestroy() {
-    mBinder!!.release()
+    mBinder?.release()
     mBinder = null
+
     log.info("Service is being destroyed.", "Dismissing the shown notification...")
     notificationManager!!.cancel(NOTIFICATION_ID)
+
     val lookup = Lookup.getDefault()
     lookup.unregister(BuildService.KEY_BUILD_SERVICE)
     lookup.unregister(BuildService.KEY_PROJECT_PROXY)
 
     server?.also { server ->
-      server.cancelCurrentBuild()
-      val shutdown = server.shutdown()
       try {
         log.info("Shutting down Tooling API server...")
-        shutdown.get()
+        // send the shutdown request but do not wait for the server to respond
+        // the service should not block the onDestroy call in order to avoid timeouts
+        // the tooling server must release resources and exit automatically
+        server.shutdown().get(1, TimeUnit.SECONDS)
       } catch (e: Throwable) {
         log.error("Failed to shutdown Tooling API server", e)
       }
     }
 
+    log.debug("Cancelling tooling server runner...")
     toolingServerRunner?.release()
     toolingServerRunner = null
 
     _toolingApiClient?.client = null
     _toolingApiClient = null
 
+    log.debug("Cancelling tooling server output reader job...")
     outputReaderJob?.cancel()
     outputReaderJob = null
 
@@ -333,7 +342,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
 
   private fun doUpdateNotification(message: String, isProgress: Boolean) {
     (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).notify(NOTIFICATION_ID,
-        buildNotification(message, isProgress))
+      buildNotification(message, isProgress))
   }
 
   override fun initializeProject(
@@ -451,8 +460,18 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     outputReaderJob = buildServiceScope.launch(
       Dispatchers.IO + CoroutineName("ToolingServerErrorReader")) {
       val reader = input.bufferedReader()
-      reader.forEachLine { line ->
-        SERVER_System_err.error(line)
+      try {
+        reader.forEachLine { line ->
+          SERVER_System_err.error(line)
+        }
+      } catch (e: Throwable) {
+        e.ifCancelledOrInterrupted(suppress = true) {
+          // will be suppressed
+          return@launch
+        }
+
+        // log the error and fail silently
+        log.error("Failed to read tooling server output", e)
       }
     }
   }

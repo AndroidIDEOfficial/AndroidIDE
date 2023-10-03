@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import org.gradle.tooling.ConfigurableLauncher;
@@ -59,8 +60,26 @@ public class Main {
     LOG.debug("Server started. Will run until shutdown message is received...");
     try {
       Main.future.get();
+    } catch (CancellationException cancellationException) {
+      // ignored
     } catch (InterruptedException | ExecutionException e) {
       LOG.error("An error occurred while waiting for shutdown message", e);
+    } finally {
+
+      // Cleanup should be performed in ToolingApiServerImpl.shutdown()
+      // this is to make sure that the daemons are stopped in case the client doesn't call shutdown()
+      try {
+        if (server.isInitialized() || server.isConnected()) {
+          LOG.warn("Connection to tooling server closed without shutting it down!");
+          server.shutdown().get();
+        }
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+      } finally {
+        future = null;
+        client = null;
+        JvmLogger.interceptor = null;
+      }
     }
   }
 

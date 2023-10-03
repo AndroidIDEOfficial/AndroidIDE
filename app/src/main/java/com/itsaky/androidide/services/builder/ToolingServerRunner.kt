@@ -19,18 +19,23 @@ package com.itsaky.androidide.services.builder
 
 import com.itsaky.androidide.shell.executeProcessAsync
 import com.itsaky.androidide.tasks.cancelIfActive
+import com.itsaky.androidide.tasks.ifCancelledOrInterrupted
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.androidide.utils.ILogger
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.InputStream
-import java.util.concurrent.CancellationException
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -43,6 +48,7 @@ internal class ToolingServerRunner(
   private var observer: Observer?,
 ) {
 
+  private var _job: Job? = null
   private var _isStarted = AtomicBoolean(false)
 
   var isStarted: Boolean
@@ -63,6 +69,7 @@ internal class ToolingServerRunner(
   }
 
   fun startAsync() = runnerScope.launch {
+    var process: Process? = null
     try {
       log.info("Starting tooling API server...")
       val command = listOf(
@@ -87,7 +94,7 @@ internal class ToolingServerRunner(
         "-jar", Environment.TOOLING_API_JAR.absolutePath
       )
 
-      val process = executeProcessAsync {
+      process = executeProcessAsync {
         this.command = command
 
         // input and output is used for communication to the tooling server
@@ -102,7 +109,14 @@ internal class ToolingServerRunner(
       val errorStream = process.errorStream
 
       val processJob = launch(Dispatchers.IO) {
-        process.waitFor()
+        try {
+          process?.waitFor()
+          log.info("Tooling API process exited with code : ${process?.exitValue() ?: "<unknown>"}")
+          process = null
+        } finally {
+          log.info("Destroying Tooling API process...")
+          process?.destroyForcibly()
+        }
       }
 
       val launcher = ToolingApiLauncher.newClientLauncher(
@@ -132,33 +146,30 @@ internal class ToolingServerRunner(
         try {
           future.get()
         } catch (err: Throwable) {
-          when (err) {
-            is CancellationException,
-            is InterruptedException,
-            -> log.info("ToolingServerThread has been cancelled or interrupted.")
-
-            else -> throw err
+          err.ifCancelledOrInterrupted {
+            log.info("ToolingServerThread has been cancelled or interrupted.")
           }
+
+          // rethrow the error
+          throw err
         }
       }
 
-      val waitJob = launch(Dispatchers.IO) {
-        // wait for both, process and server job to complete
-        serverJob.join()
-        processJob.join()
-      }
-
-      waitJob.join()
+      processJob.join()
+      joinAll(serverJob, processJob)
     } catch (e: Throwable) {
       if (e !is CancellationException) {
         log.error("Unable to start tooling API server", e)
       }
     }
+  }.also {
+    _job = it
   }
 
   fun release() {
     this.listener = null
     this.observer = null
+    this._job?.cancel(CancellationException("Cancellation was requested"))
     this.runnerScope.cancelIfActive("Cancellation was requested")
   }
 

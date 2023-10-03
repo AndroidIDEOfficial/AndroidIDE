@@ -50,12 +50,17 @@ import org.gradle.tooling.CancellationTokenSource
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.ProjectConnection
+import org.gradle.tooling.ResultHandler
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
+import org.gradle.tooling.internal.consumer.BlockingResultHandler
+import org.gradle.tooling.internal.consumer.DefaultGradleConnector
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.system.exitProcess
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -65,13 +70,38 @@ import java.util.concurrent.CompletionException
 internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   IToolingApiServer {
 
-  private var initialized = false
+  private val _isInitialized = AtomicBoolean(false)
   private var client: IToolingApiClient? = null
   private var connector: GradleConnector? = null
   private var connection: ProjectConnection? = null
   private var lastInitParams: InitializeProjectParams? = null
   private var buildCancellationToken: CancellationTokenSource? = null
   private val log = ILogger.newInstance(javaClass.simpleName)
+
+  /**
+   * Whether the project has been initialized or not.
+   */
+  var isInitialized: Boolean
+    get() = _isInitialized.get()
+    private set(value) = _isInitialized.set(value)
+
+  /**
+   * Whether the server has a live connection to Gradle.
+   */
+  val isConnected: Boolean
+    get() = connector != null || connection != null
+
+  companion object {
+
+    /**
+     * Time duration for which the the Tooling API server waits after calling
+     * [DefaultGradleConnector.close] and before exiting the server's process.
+     *
+     * This delay should be long enough to let the tooling API stop the daemon but short enough so
+     * that the server's process is not kept alive for longer duration.
+     */
+    const val DELAY_BEFORE_EXIT_MS = 1000L
+  }
 
   override fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult> {
     return CompletableFuture.supplyAsync {
@@ -133,7 +163,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
 
         this.project.rootProject = project.rootProject
         this.project.projects = project.projects
-        initialized = true
+        this.isInitialized = true
 
         notifyBuildSuccess(emptyList())
         return@supplyAsync InitializeResult(true)
@@ -146,7 +176,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun isServerInitialized(): CompletableFuture<Boolean> {
-    return CompletableFuture.supplyAsync { initialized }
+    return CompletableFuture.supplyAsync { isInitialized }
   }
 
   override fun getRootProject(): CompletableFuture<IProject> {
@@ -257,21 +287,38 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
   }
 
   override fun shutdown(): CompletableFuture<Void> {
-    return CompletableFuture.runAsync {
-      connection?.close()
-      connector?.disconnect()
-      Main.future?.cancel(true)
+    log.info("Shutting down Tooling API Server...")
 
-      this.connection = null
-      this.connector = null
-      this.client = null
-      this.buildCancellationToken = null
-      this.lastInitParams = null
-      Main.future = null
-      Main.client = null
+    connection?.close()
+    connector?.disconnect()
+    connection = null
+    connector = null
 
-      this.initialized = false
+    // Stop all daemons
+    log.info("Stopping all Gradle Daemons...")
+    DefaultGradleConnector.close()
+
+    try {
+      // wait for the daemon to be stopped properly
+      Thread.sleep(DELAY_BEFORE_EXIT_MS)
+    } catch (e: Exception) {
+      // ignored
     }
+
+    // update the initialization flag before cancelling future
+    this.isInitialized = false
+
+    Main.future?.cancel(true)
+
+    this.client = null
+    this.buildCancellationToken = null // connector.disconnect() cancels any running builds
+    this.lastInitParams = null
+    Main.future = null
+    Main.client = null
+
+    // no need to return anything
+    // tooling server should be restarted once it has been shutdown
+    exitProcess(0)
   }
 
   private fun getTaskFailureType(error: Throwable): Failure =

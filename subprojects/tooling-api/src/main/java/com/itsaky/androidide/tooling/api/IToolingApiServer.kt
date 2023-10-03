@@ -22,7 +22,6 @@ import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 import java.util.concurrent.*
@@ -36,13 +35,16 @@ import java.util.concurrent.*
 interface IToolingApiServer {
 
   /** Initialize the server with the project directory. */
-  @JsonRequest fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult>
+  @JsonRequest
+  fun initialize(params: InitializeProjectParams): CompletableFuture<InitializeResult>
 
   /** Is the server initialized? */
-  @JsonRequest fun isServerInitialized(): CompletableFuture<Boolean>
+  @JsonRequest
+  fun isServerInitialized(): CompletableFuture<Boolean>
 
   /** Get the root project. */
-  @JsonRequest fun getRootProject(): CompletableFuture<IProject>
+  @JsonRequest
+  fun getRootProject(): CompletableFuture<IProject>
 
   /** Execute the tasks specified in the message. */
   @JsonRequest
@@ -54,12 +56,14 @@ interface IToolingApiServer {
    * @return A [CompletableFuture] which completes when the current build cancellation process
    * finishes (either successfully or with an error).
    */
-  @JsonRequest fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
+  @JsonRequest
+  fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
 
   /**
-   * Shutdown the tooling API server. This will disconnect all the project connection instances.]
+   * Shutdown the tooling API server. This will disconnect all the project connection instances.
    *
    * @return A [CompletableFuture] which completes when the shutdown process is finished.
    */
-  @JsonNotification fun shutdown(): CompletableFuture<Void>
+  @JsonRequest
+  fun shutdown(): CompletableFuture<Void>
 }

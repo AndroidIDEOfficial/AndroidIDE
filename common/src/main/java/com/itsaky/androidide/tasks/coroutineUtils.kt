@@ -21,6 +21,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import java.io.InterruptedIOException
 
 /**
  * Calls [CoroutineScope.cancel] only if a job is active in the scope.
@@ -39,7 +40,22 @@ fun CoroutineScope.cancelIfActive(message: String, cause: Throwable? = null) =
  */
 fun CoroutineScope.cancelIfActive(exception: CancellationException? = null) {
   val job = coroutineContext[Job]
-  if (job?.isActive == true) {
-    cancel(exception)
+  job?.cancel(exception)
+}
+
+/**
+ * Runs the given [action] and re-throws the [Throwable] if this [Throwable] is thrown for
+ * cancellation or interruption purposes.
+ *
+ * @param action The action to run if this [Throwable] was cancelled or interrupted.
+ */
+inline fun Throwable.ifCancelledOrInterrupted(suppress: Boolean = false, action: () -> Unit) {
+  when (this) {
+    is CancellationException,
+    is InterruptedException,
+    is InterruptedIOException -> {
+      action()
+      if (!suppress) { throw this }
+    }
   }
 }
