@@ -19,7 +19,7 @@ package com.itsaky.androidide.interfaces
 
 import com.itsaky.androidide.models.Range
 import com.itsaky.androidide.models.SaveResult
-import com.itsaky.androidide.ui.editor.CodeEditorView
+import com.itsaky.androidide.ui.CodeEditorView
 import java.io.File
 
 /**

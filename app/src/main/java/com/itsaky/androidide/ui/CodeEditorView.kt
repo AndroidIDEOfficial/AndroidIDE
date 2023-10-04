@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.ui.editor
+package com.itsaky.androidide.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity

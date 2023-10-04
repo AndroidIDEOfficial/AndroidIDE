@@ -46,7 +46,7 @@ import com.itsaky.androidide.models.Location;
 import com.itsaky.androidide.models.Range;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.ui.editor.CodeEditorView;
+import com.itsaky.androidide.ui.CodeEditorView;
 import com.itsaky.androidide.utils.FlashbarActivityUtilsKt;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.LSPUtils;
