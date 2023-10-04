@@ -79,7 +79,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
           return
         }
 
-    activity.saveAll()
+    activity.saveAllAsync()
 
     buildService.executeTasks(tasks = tasks).whenComplete { result, err ->
       if (result == null || err != null) {

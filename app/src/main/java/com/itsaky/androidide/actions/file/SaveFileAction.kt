@@ -27,6 +27,7 @@ import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.flashSuccess
+import kotlinx.coroutines.runBlocking
 
 /** @author Akash Yadav */
 class SaveFileAction(context: Context, override val order: Int) : EditorRelatedAction() {
@@ -34,6 +35,8 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
   private val log = ILogger.newInstance("SaveFileAction")
 
   override val id: String = "editor_saveFile"
+
+  override var requiresUIThread: Boolean = false
 
   init {
     label = context.getString(R.string.save)
@@ -60,7 +63,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
     return try {
       // Cannot use context.saveAll() because this.execAction is called on non-UI thread
       // and saveAll call will result in UI actions
-      ResultWrapper(context.saveAllResult())
+      ResultWrapper(runBlocking { context.saveAllResult() })
     } catch (error: Throwable) {
       log.error("Failed to save file", error)
       ResultWrapper()

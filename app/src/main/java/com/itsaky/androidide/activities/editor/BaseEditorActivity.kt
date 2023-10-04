@@ -68,6 +68,7 @@ import com.itsaky.androidide.models.SearchResult
 import com.itsaky.androidide.preferences.internal.launchAppAfterInstall
 import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.ProjectManagerImpl
+import com.itsaky.androidide.tasks.cancelIfActive
 import com.itsaky.androidide.ui.ContentTranslatingDrawerLayout
 import com.itsaky.androidide.ui.editor.CodeEditorView
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
@@ -81,6 +82,8 @@ import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
 import com.itsaky.androidide.xml.versions.ApiVersionsRegistry
 import com.itsaky.androidide.xml.widgets.WidgetTableRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import java.io.File
@@ -103,6 +106,11 @@ abstract class BaseEditorActivity :
   protected var isDestroying = false
 
   protected val log: ILogger = ILogger.newInstance("EditorActivity")
+
+  /**
+   * [CoroutineScope] for executing tasks in the background.
+   */
+  protected val activityBackroundScope = CoroutineScope(Dispatchers.Default)
 
   internal var installationCallback: ApkInstallationSessionCallback? = null
 
@@ -138,8 +146,6 @@ abstract class BaseEditorActivity :
 
   protected abstract fun doOpenFile(file: File, selection: Range?)
 
-  protected abstract fun doSaveAll(): Boolean
-
   protected abstract fun doDismissSearchProgress()
 
   protected abstract fun getOpenedFiles(): List<OpenedFile>
@@ -149,6 +155,10 @@ abstract class BaseEditorActivity :
   protected open fun preDestroy() {
     installationCallback?.destroy()
     installationCallback = null
+
+    if (isDestroying) {
+      activityBackroundScope.cancelIfActive("Activity is being destroyed")
+    }
   }
 
   protected open fun postDestroy() {
@@ -389,11 +399,10 @@ abstract class BaseEditorActivity :
       return
     }
     val view = provideCurrentEditor()
-    if (view?.editor == null) {
+    val text = view?.editor?.text ?: run {
       log.warn("No file opened to append UI designer result")
       return
     }
-    val text = view.editor.text
     val endLine = text.lineCount - 1
     text.replace(0, 0, endLine, text.getColumnCount(endLine), generated)
   }
@@ -424,7 +433,7 @@ abstract class BaseEditorActivity :
     log.debug(
       "onBuildStatusChanged: isInitializing: ${editorViewModel.isInitializing}, isBuildInProgress: ${editorViewModel.isBuildInProgress}")
     val visible = editorViewModel.isBuildInProgress || editorViewModel.isInitializing
-    binding.buildProgressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
+    binding.progressIndicator.visibility = if (visible) View.VISIBLE else View.GONE
     invalidateOptionsMenu()
   }
 
@@ -509,9 +518,7 @@ abstract class BaseEditorActivity :
         override fun onStateChanged(bottomSheet: View, newState: Int) {
           if (newState == BottomSheetBehavior.STATE_EXPANDED) {
             val editor = provideCurrentEditor()
-            if (editor?.editor != null) {
-              editor.editor.ensureWindowsDismissed()
-            }
+            editor?.editor?.ensureWindowsDismissed()
           }
         }
 

@@ -17,10 +17,10 @@
 
 package com.itsaky.androidide.editor.ui
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Debug
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -72,26 +72,24 @@ import com.itsaky.androidide.projects.FileManager.onDocumentOpen
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.cancelIfActive
+import com.itsaky.androidide.tasks.launchAsyncWithProgress
 import com.itsaky.androidide.utils.DocumentUtils
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.flashError
-import com.itsaky.androidide.utils.flashProgress
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher
 import io.github.rosemoe.sora.widget.IDEEditorSearcher
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -201,6 +199,10 @@ open class IDEEditor @JvmOverloads constructor(
    * Set the file for this editor.
    */
   fun setFile(file: File?) {
+    if (isReleased) {
+      return
+    }
+
     this.file = file
     file?.also {
       dispatchDocumentOpenEvent()
@@ -212,10 +214,16 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun setSelection(position: Position) {
+    if (isReleased) {
+      return
+    }
     setSelection(position.line, position.column)
   }
 
   override fun setSelection(start: Position, end: Position) {
+    if (isReleased) {
+      return
+    }
     if (!isValidPosition(start, true) || !isValidPosition(end, true)) {
       log.warn("Invalid selection range: start=$start end=$end")
       return
@@ -238,6 +246,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun validateRange(range: Range) {
+    if (isReleased) {
+      return
+    }
     val start = range.start
     val end = range.end
     val text = text
@@ -251,6 +262,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun isValidRange(range: Range?, allowColumnEqual: Boolean): Boolean {
+    if (isReleased) {
+      return false
+    }
     if (range == null) {
       return false
     }
@@ -262,6 +276,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun isValidPosition(position: Position?, allowColumnEqual: Boolean): Boolean {
+    if (isReleased) {
+      return false
+    }
     return if (position == null) {
       false
     } else isValidLine(position.line) &&
@@ -269,6 +286,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun isValidLine(line: Int): Boolean {
+    if (isReleased) {
+      return false
+    }
     return line >= 0 && line < text.lineCount
   }
 
@@ -278,6 +298,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun append(text: CharSequence?): Int {
+    if (isReleased) {
+      return 0
+    }
     val content = getText()
     if (lineCount <= 0) {
       return 0
@@ -293,17 +316,26 @@ open class IDEEditor @JvmOverloads constructor(
 
   @UiThread
   override fun replaceContent(newContent: CharSequence?) {
+    if (isReleased) {
+      return
+    }
     val lastLine = text.lineCount - 1
     val lastColumn = text.getColumnCount(lastLine)
     text.replace(0, 0, lastLine, lastColumn, newContent ?: "")
   }
 
   override fun goToEnd() {
+    if (isReleased) {
+      return
+    }
     val line = text.lineCount - 1
     setSelection(line, 0)
   }
 
   override fun setLanguageServer(server: ILanguageServer?) {
+    if (isReleased) {
+      return
+    }
     this.languageServer = server
     server?.also {
       this.languageClient = it.client
@@ -315,10 +347,16 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun setLanguageClient(client: ILanguageClient?) {
+    if (isReleased) {
+      return
+    }
     this.languageClient = client
   }
 
   override fun executeCommand(command: Command?) {
+    if (isReleased) {
+      return
+    }
     if (command == null) {
       log.warn("Cannot execute command in editor. Command is null.")
       return
@@ -337,6 +375,9 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun signatureHelp() {
+    if (isReleased) {
+      return
+    }
     val languageServer = this.languageServer ?: return
     val file = this.file ?: return
 
@@ -353,42 +394,52 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   override fun showSignatureHelp(help: SignatureHelp?) {
+    if (isReleased) {
+      return
+    }
     signatureHelpWindow.setupAndDisplay(help)
   }
 
   override fun findDefinition() {
+    if (isReleased) {
+      return
+    }
     val languageServer = this.languageServer ?: return
     val file = file ?: return
 
-    launchAsyncWithProgress(string.msg_finding_definition) { flashbar, cancelChecker ->
+    launchCancellableAsyncWithProgress(string.msg_finding_definition) { _, cancelChecker ->
       val params = DefinitionParams(file.toPath(), cursorLSPPosition)
       val result = languageServer.findDefinition(params, cancelChecker)
-      onFindDefinitionResult(flashbar, result)
+      onFindDefinitionResult(result)
     }
   }
 
   override fun findReferences() {
+    if (isReleased) {
+      return
+    }
     val languageServer = this.languageServer ?: return
     val file = file ?: return
 
-    launchAsyncWithProgress(string.msg_finding_references) { flashbar, cancelChecker ->
-      delay(3000L)
+    launchCancellableAsyncWithProgress(string.msg_finding_references) { _, cancelChecker ->
       val params = ReferenceParams(file.toPath(), cursorLSPPosition, true)
       val result = languageServer.findReferences(params, cancelChecker)
-      onFindReferencesResult(flashbar, result)
+      onFindReferencesResult(result)
     }
   }
 
   override fun expandSelection() {
+    if (isReleased) {
+      return
+    }
     val languageServer = this.languageServer ?: return
     val file = file ?: return
 
-    launchAsyncWithProgress(string.please_wait) { flashbar, _ ->
+    launchCancellableAsyncWithProgress(string.please_wait) { _, _ ->
       val params = ExpandSelectionParams(file.toPath(), cursorLSPRange)
       val result = languageServer.expandSelection(params)
 
       withContext(Dispatchers.Main) {
-        flashbar.dismiss()
         setSelection(result)
       }
     }
@@ -423,6 +474,11 @@ open class IDEEditor @JvmOverloads constructor(
 
   override fun release() {
     ensureWindowsDismissed()
+
+    if (isReleased) {
+      return
+    }
+
     super.release()
 
     snippetController.apply {
@@ -434,9 +490,20 @@ open class IDEEditor @JvmOverloads constructor(
     }
 
     _actionsMenu?.destroy()
+
     _actionsMenu = null
+    _signatureHelpWindow = null
+    _diagnosticWindow = null
+
     languageServer = null
     languageClient = null
+
+    file = null
+    fileVersion = 0
+    markUnmodified()
+
+    selectionChangeRunner?.also { selectionChangeHandler.removeCallbacks(it) }
+    selectionChangeRunner = null
 
     if (EventBus.getDefault().isRegistered(this)) {
       EventBus.getDefault().unregister(this)
@@ -481,6 +548,9 @@ open class IDEEditor @JvmOverloads constructor(
    * Analyze the opened file and publish the diagnostics result.
    */
   open fun analyze() {
+    if (isReleased) {
+      return
+    }
     if (editorLanguage !is IDELanguage) {
       return
     }
@@ -512,6 +582,9 @@ open class IDEEditor @JvmOverloads constructor(
    * Notify the language server that the file in this editor is about to be closed.
    */
   open fun notifyClose() {
+    if (isReleased) {
+      return
+    }
     file ?: run {
       log.info("Cannot notify language server. File is null.")
       return
@@ -533,6 +606,10 @@ open class IDEEditor @JvmOverloads constructor(
    * Called when this editor is selected and visible to the user.
    */
   open fun onEditorSelected() {
+    if (isReleased) {
+      return
+    }
+
     file ?: return
     dispatchDocumentSelectedEvent()
   }
@@ -542,6 +619,9 @@ open class IDEEditor @JvmOverloads constructor(
    */
   open fun dispatchDocumentSaveEvent() {
     markUnmodified()
+    if (isReleased) {
+      return
+    }
     if (getFile() == null) {
       return
     }
@@ -566,6 +646,9 @@ open class IDEEditor @JvmOverloads constructor(
    * This applies a proper [Language] and the color scheme to the editor.
    */
   open fun setupLanguage(file: File?) {
+    if (isReleased) {
+      return
+    }
     if (file == null) {
       return
     }
@@ -595,6 +678,9 @@ open class IDEEditor @JvmOverloads constructor(
     type: String,
     scheme: SchemeAndroidIDE?
   ) {
+    if (isReleased) {
+      return
+    }
     var finalScheme = if (scheme != null) {
       scheme
     } else {
@@ -635,13 +721,6 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   /**
-   * Update the file for this editor. This does not dispatch the [DocumentOpenEvent].
-   */
-  open fun updateFile(file: File?) {
-    this.file = file
-  }
-
-  /**
    * Initialize the editor.
    */
   protected open fun initEditor() {
@@ -662,6 +741,10 @@ open class IDEEditor @JvmOverloads constructor(
     getComponent(EditorTextActionWindow::class.java).isEnabled = false
 
     subscribeEvent(ContentChangeEvent::class.java) { event, _ ->
+      if (isReleased) {
+        return@subscribeEvent
+      }
+
       markModified()
       file ?: return@subscribeEvent
 
@@ -672,6 +755,10 @@ open class IDEEditor @JvmOverloads constructor(
     }
 
     subscribeEvent(SelectionChangeEvent::class.java) { _, _ ->
+      if (isReleased) {
+        return@subscribeEvent
+      }
+
       if (_diagnosticWindow?.isShowing == true) {
         _diagnosticWindow?.dismiss()
       }
@@ -685,36 +772,26 @@ open class IDEEditor @JvmOverloads constructor(
     EventBus.getDefault().register(this)
   }
 
-  protected open fun launchAsyncWithProgress(
-    message: Int,
+  protected open fun launchCancellableAsyncWithProgress(
+    @StringRes message: Int,
     action: suspend CoroutineScope.(flashbar: Flashbar, cancelChecker: ICancelChecker) -> Unit
-  ): Job {
-    val cancelChecker = object : ICancelChecker.Default() {
-      var job: Job? = null
-
-      override fun cancel() {
-        job?.cancel("Cancelled by user")
-        job = null
-        super.cancel()
-      }
+  ): Job? {
+    if (isReleased) {
+      return null
     }
 
-    return (context as Activity).flashProgress({
-      configureFlashbar(this, string.msg_finding_definition, cancelChecker)
-    }) { flashbar ->
-      return@flashProgress editorScope.launch {
-        cancelChecker.job = coroutineContext[Job]
-        action(flashbar, cancelChecker)
-      }
-    }!!
+    return editorScope.launchAsyncWithProgress(configureFlashbar = { builder, cancelChecker ->
+      configureFlashbar(builder, message, cancelChecker)
+    }, action = action)
   }
 
   protected open suspend fun onFindDefinitionResult(
-    flashbar: Flashbar,
     result: DefinitionResult?,
   ) = withContext(Dispatchers.Main) {
 
-    flashbar.dismiss()
+    if (isReleased) {
+      return@withContext
+    }
 
     val languageClient = languageClient ?: run {
       log.error("No language client found to handle the definitions result")
@@ -751,12 +828,12 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open suspend fun onFindReferencesResult(
-    flashbar: Flashbar,
     result: ReferenceResult?
   ) = withContext(Dispatchers.Main) {
-    flashbar.dismiss()
 
-    flashbar.dismiss()
+    if (isReleased) {
+      return@withContext
+    }
 
     val languageClient = languageClient ?: run {
       log.error("No language client found to handle the references result")
@@ -789,6 +866,10 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open fun dispatchDocumentOpenEvent() {
+    if (isReleased) {
+      return
+    }
+
     val file = this.file ?: return
 
     this.fileVersion = 0
@@ -805,6 +886,10 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open fun dispatchDocumentChangeEvent(event: ContentChangeEvent) {
+    if (isReleased) {
+      return
+    }
+
     val file = file?.toPath() ?: return
     var type = ChangeType.INSERT
     if (event.action == ContentChangeEvent.ACTION_DELETE) {
@@ -830,12 +915,18 @@ open class IDEEditor @JvmOverloads constructor(
   }
 
   protected open fun dispatchDocumentSelectedEvent() {
+    if (isReleased) {
+      return
+    }
     val file = file ?: return
     val selectedEvent = DocumentSelectedEvent(file.toPath())
     EventBus.getDefault().post(selectedEvent)
   }
 
   protected open fun dispatchDocumentCloseEvent() {
+    if (isReleased) {
+      return
+    }
     val file = file ?: return
     val closeEvent = DocumentCloseEvent(file.toPath(), cursorLSPRange)
 
@@ -856,6 +947,9 @@ open class IDEEditor @JvmOverloads constructor(
    * @param event The content change event.
    */
   private fun checkForSignatureHelp(event: ContentChangeEvent) {
+    if (isReleased) {
+      return
+    }
     if (languageServer == null) {
       return
     }
@@ -882,11 +976,5 @@ open class IDEEditor @JvmOverloads constructor(
         cancelChecker.cancel()
         bar.dismiss()
       }
-  }
-
-  private suspend fun Flashbar.dismissOnUiThread() {
-    withContext(Dispatchers.Main) {
-      dismiss()
-    }
   }
 }

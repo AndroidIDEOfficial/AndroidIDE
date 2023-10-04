@@ -46,7 +46,8 @@ private const val DEFAUT_ICON_SCALE = 1.0f
 class Flashbar private constructor(private var builder: Builder) {
 
   private lateinit var flashbarContainerView: FlashbarContainerView
-  private lateinit var flashbarView: FlashbarView
+
+  lateinit var flashbarView: FlashbarView
 
   /** Shows a flashbar */
   fun show() {

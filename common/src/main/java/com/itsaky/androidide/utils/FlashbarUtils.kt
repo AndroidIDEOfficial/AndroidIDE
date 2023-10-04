@@ -60,8 +60,11 @@ fun flashInfo(@StringRes msg: Int) {
 }
 
 @JvmOverloads
-fun flashProgress(configure: Consumer<Flashbar.Builder>? = null, action: Consumer<Flashbar>) {
-  withActivity { flashProgress(configure, action) }
+fun <R> flashProgress(
+  configure: (Flashbar.Builder.() -> Unit)? = null,
+  action: (Flashbar) -> R?
+) : R? {
+  return withActivity { flashProgress(configure, action) }
 }
 
 private fun <T> withActivity(action: Activity.() -> T?): T? {

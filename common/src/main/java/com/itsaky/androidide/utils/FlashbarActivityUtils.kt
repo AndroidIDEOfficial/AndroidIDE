@@ -104,10 +104,10 @@ fun Activity.flashInfo(@StringRes msg: Int) {
 }
 
 @JvmOverloads
-fun <R> Activity.flashProgress(
+fun <R : Any?> Activity.flashProgress(
   configure: (Flashbar.Builder.() -> Unit)? = null,
-  action: (Flashbar) -> R?
-) : R? {
+  action: (Flashbar) -> R
+) : R {
   val builder = flashbarBuilder(gravity = TOP, duration = DURATION_INDEFINITE)
     .showProgress(Flashbar.ProgressPosition.LEFT)
 

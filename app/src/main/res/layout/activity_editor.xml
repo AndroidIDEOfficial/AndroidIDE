@@ -28,7 +28,7 @@
         android:elevation="10dp" />
 
       <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/build_progress_indicator"
+        android:id="@+id/progress_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="true" />

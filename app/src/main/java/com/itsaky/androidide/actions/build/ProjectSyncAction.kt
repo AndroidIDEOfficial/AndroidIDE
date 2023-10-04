@@ -24,6 +24,7 @@ import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.utils.flashSuccess
+import kotlinx.coroutines.runBlocking
 
 /**
  * Triggers a project sync request.
@@ -33,7 +34,7 @@ import com.itsaky.androidide.utils.flashSuccess
 class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAction() {
 
   override val id: String = "action_editor_syncProject"
-  override var requiresUIThread = true
+  override var requiresUIThread = false
 
   init {
     label = context.getString(string.title_sync_project)
@@ -41,11 +42,13 @@ class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAc
   }
 
   override fun execAction(data: ActionData): Any {
-    return data.getActivity()!!.apply {
-      saveAllResult()
-      flashSuccess(string.all_saved)
-      
-      initializeProject()
+    return data.requireActivity().apply {
+      runBlocking { saveAll() }
     }
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    val activity = data.requireActivity()
+    activity.initializeProject()
   }
 }

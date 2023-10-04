@@ -31,12 +31,15 @@ import com.itsaky.androidide.activities.editor.EditorHandlerActivity
 import com.itsaky.androidide.editor.ui.IDEEditor
 import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.uidesigner.UIDesignerActivity
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 /** @author Akash Yadav */
 class PreviewLayoutAction(context: Context, override val order: Int) : EditorRelatedAction() {
 
   override val id: String = "editor_previewLayout"
+
+  override var requiresUIThread: Boolean = false
 
   init {
     label = context.getString(R.string.title_preview_layout)
@@ -87,11 +90,16 @@ class PreviewLayoutAction(context: Context, override val order: Int) : EditorRel
     }
   }
 
+  // TODO: Migrate to coroutines
   override fun execAction(data: ActionData): Boolean {
-    val activity = data.getActivity()!!
-    activity.saveAll()
-    activity.previewLayout(data.requireEditor().file!!)
+    val activity = data.requireActivity()
+    runBlocking { activity.saveAll() }
     return true
+  }
+
+  override fun postExec(data: ActionData, result: Any) {
+    val activity = data.requireActivity()
+    activity.previewLayout(data.requireEditor().file!!)
   }
 
   private fun EditorHandlerActivity.previewLayout(file: File) {
