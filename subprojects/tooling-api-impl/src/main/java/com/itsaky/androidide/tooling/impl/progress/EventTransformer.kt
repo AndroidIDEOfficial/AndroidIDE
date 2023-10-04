@@ -68,7 +68,6 @@ import org.gradle.tooling.events.work.WorkItemSuccessResult
 import org.gradle.tooling.model.ProjectIdentifier
 
 /** @author Akash Yadav */
-@Suppress("UnstableApiUsage")
 class EventTransformer {
   companion object {
 
@@ -126,7 +125,7 @@ class EventTransformer {
         pluginApplicationResults =
           result.pluginApplicationResults.map {
             PluginApplicationResult(
-              plugin = PluginIdentifier(it.plugin.displayName),
+              plugin = PluginIdentifier(it.plugin?.displayName ?: "Unknown plugin"),
               it.totalConfigurationTime.toMillis()
             )
           },
@@ -282,7 +281,7 @@ class EventTransformer {
       com.itsaky.androidide.tooling.events.task.TaskOperationDescriptor(
         dependencies =
           descriptor.dependencies.filterNotNull().mapNotNull { operationDescriptor(it) }.toSet(),
-        originPlugin = PluginIdentifier(descriptor.originPlugin.displayName),
+        originPlugin = PluginIdentifier(descriptor.originPlugin?.displayName ?: "Unknown plugin"),
         taskPath = descriptor.taskPath,
         name = descriptor.name,
         displayName = descriptor.displayName

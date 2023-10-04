@@ -75,7 +75,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
     val activity =
       data.getActivity()
         ?: run {
-          resultHandler(TaskExecutionResult(false, UNKNOWN))
+          resultHandler(TaskExecutionResult(false, UNKNOWN, ""))
           return
         }
 

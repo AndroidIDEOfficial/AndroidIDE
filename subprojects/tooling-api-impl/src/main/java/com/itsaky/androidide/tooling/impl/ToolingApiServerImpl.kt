@@ -216,10 +216,10 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         builder.run()
         this.buildCancellationToken = null
         notifyBuildSuccess(message.tasks)
-        return@supplyAsync TaskExecutionResult(true, null)
+        return@supplyAsync TaskExecutionResult.SUCCESS
       } catch (error: Throwable) {
         notifyBuildFailure(message.tasks)
-        return@supplyAsync TaskExecutionResult(false, getTaskFailureType(error))
+        return@supplyAsync TaskExecutionResult(false, getTaskFailureType(error), error.message)
       }
     }
   }
