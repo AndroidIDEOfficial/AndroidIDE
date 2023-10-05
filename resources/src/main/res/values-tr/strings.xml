@@ -526,4 +526,6 @@
   <string name="idepref_launchAppAfterInstall_summary">Eğer etkinse, IDE uygulama yüklendikten sonra uygulamayı açacaktır (izin istemeden).</string>
   <string name="title_run_options">Çalıştırma seçenekleri</string>
   <string name="err_cannot_determine_package">Uygulama çalıştırılamıyor. Paket adı tanınamadı.</string>
+  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
+  <string name="title_launch_app">Launch app</string>
 </resources>
