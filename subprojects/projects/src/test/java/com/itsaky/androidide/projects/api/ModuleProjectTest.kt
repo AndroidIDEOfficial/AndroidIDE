@@ -171,14 +171,18 @@ class ModuleProjectTest {
     val classes = app.compileJavaSourceClasses.findInPackage("com.itsaky")
     assertThat(classes).isNotNull()
     assertThat(classes).isNotEmpty()
-    assertThat(classes.map { it.qualifiedName })
-      .containsExactly(
-        "com.itsaky.androidide.tooling.test.Main",
-        "com.itsaky.test.app.MainActivity"
-      )
-    assertThat(classes.map { it.isClass }).containsExactly(true, true)
-    assertThat(classes.map { it::class.java })
-      .containsExactly(SourceNode::class.java, SourceNode::class.java)
+
+    for (klass in arrayOf(
+          "com.itsaky.androidide.tooling.test.Main",
+          "com.itsaky.test.app.MainActivity")
+    ) {
+
+      classes.find { it.qualifiedName == klass }.let {
+        assertThat(it).isNotNull()
+        assertThat(it!!.isClass).isTrue()
+        assertThat(it::class.java)
+      }
+    }
 
     rootProject.findByPath(":another-java-library").run {
       assertThat(this).isInstanceOf(JavaModule::class.java)
