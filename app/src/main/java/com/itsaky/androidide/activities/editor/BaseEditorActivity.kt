@@ -77,6 +77,7 @@ import com.itsaky.androidide.utils.ApkInstallationSessionCallback
 import com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.InstallationResultHandler.onResult
+import com.itsaky.androidide.utils.IntentUtils
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.viewmodel.EditorViewModel
 import com.itsaky.androidide.xml.resources.ResourceTableRegistry
@@ -190,12 +191,12 @@ abstract class BaseEditorActivity :
     }
 
     if (launchAppAfterInstall) {
-      tryLaunchApp(packageName)
+      IntentUtils.launchApp(this, packageName)
       return
     }
 
     Snackbar.make(binding.realContainer, string.msg_action_open_application, Snackbar.LENGTH_LONG)
-      .setAction(string.yes) { tryLaunchApp(packageName) }
+      .setAction(string.yes) { IntentUtils.launchApp(this, packageName) }
       .show()
   }
 
@@ -368,18 +369,6 @@ abstract class BaseEditorActivity :
   fun doSetStatus(text: CharSequence, @GravityInt gravity: Int) {
     editorViewModel.statusText = text
     editorViewModel.statusGravity = gravity
-  }
-
-  private fun tryLaunchApp(packageName: String) {
-    val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
-    launchIntent?.let {
-      try {
-        startActivity(it)
-      } catch (e: Throwable) {
-        flashError(string.msg_app_launch_failed)
-        log.error("Failed to launch application with package name '$packageName'", e)
-      }
-    }
   }
 
   private fun checkIsDestroying() {

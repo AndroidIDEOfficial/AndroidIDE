@@ -26,10 +26,9 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.actions.getContext
 import com.itsaky.androidide.actions.markInvisible
-import com.itsaky.androidide.actions.requireContext
+import com.itsaky.androidide.actions.openApplicationModuleChooser
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.models.ApkMetadata
-import com.itsaky.androidide.projects.IProjectManager
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.resources.R
@@ -37,7 +36,6 @@ import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.models.BasicAndroidVariantMetadata
 import com.itsaky.androidide.utils.ApkInstaller
-import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
@@ -51,7 +49,8 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-class QuickRunWithCancellationAction(context: Context, override val order: Int) : BaseBuildAction() {
+class QuickRunWithCancellationAction(context: Context, override val order: Int) :
+  BaseBuildAction() {
 
   init {
     label = context.getString(R.string.quick_run_debug)
@@ -102,13 +101,13 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
   }
 
   private fun quickRun(data: ActionData): Boolean {
-    chooseApplication(data) { module ->
+    openApplicationModuleChooser(data) { module ->
       val activity = data.requireActivity()
 
       val variant = module.getSelectedVariant() ?: run {
         activity.flashError(
           activity.getString(R.string.err_selected_variant_not_found))
-        return@chooseApplication
+        return@openApplicationModuleChooser
       }
 
       val taskName = "${module.path}:${variant.mainArtifact.assembleTaskName}"
@@ -193,36 +192,6 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     }
 
     install(data, apkFile)
-  }
-
-  private fun chooseApplication(data: ActionData, callback: (AndroidModule) -> Unit) {
-    val projectManager = IProjectManager.getInstance()
-    val applications = projectManager.getAndroidAppModules()
-    if (applications.isEmpty()) {
-      log.error("Cannot run application. No application modules found in project.")
-      return
-    }
-
-    if (applications.size == 1) {
-      // Only one application module in available in the project.
-      callback(applications.first())
-      return
-    }
-
-    // there are multiple application modules in the project
-    // ask the user to select the application module to build
-    val context = data.requireContext()
-    val builder = DialogUtils.newSingleChoiceDialog(
-      context,
-      context.getString(com.itsaky.androidide.R.string.title_choose_application),
-      applications.map { it.path }.toTypedArray(),
-      0) { selection ->
-      val app = applications[selection]
-      log.info("Selected application: '${app.path}'")
-      callback(app)
-    }
-
-    builder.show()
   }
 
   private fun install(data: ActionData, apk: File) {

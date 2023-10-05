@@ -608,4 +608,6 @@
   <string name="idepref_launchAppAfterInstall_summary">If enabled, the IDE will (without confirmation) launch the application right after it is installed.</string>
   <string name="title_run_options">Run options</string>
   <string name="err_cannot_determine_package">Cannot run app. Unable to determine package name.</string>
+  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
+  <string name="title_launch_app">Launch app</string>
 </resources>
