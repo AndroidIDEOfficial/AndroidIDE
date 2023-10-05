@@ -526,4 +526,6 @@
   <string name="idepref_launchAppAfterInstall_summary">Если включено, IDE запустит приложение (без подтверждения) сразу после его установки.</string>
   <string name="title_run_options">Run options</string>
   <string name="err_cannot_determine_package">Невозможно запустить приложение. Не удалось определить имя пакета.</string>
+  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
+  <string name="title_launch_app">Launch app</string>
 </resources>
