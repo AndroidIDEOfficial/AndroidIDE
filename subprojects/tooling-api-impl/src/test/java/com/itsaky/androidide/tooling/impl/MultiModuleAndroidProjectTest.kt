@@ -59,7 +59,9 @@ class MultiModuleAndroidProjectTest {
     // Issue #1173
 
     val taskPaths = mutableListOf<String>()
-    val client = object : MultiVersionTestClient() {
+
+    // do not add unresolved dependency so that teh configuration cache is properly created
+    val client = object : MultiVersionTestClient(excludeUnresolvedDependency = true) {
 
       override fun getBuildArguments(): CompletableFuture<List<String>> {
         return CompletableFuture.completedFuture(super.getBuildArguments().get().toMutableList()

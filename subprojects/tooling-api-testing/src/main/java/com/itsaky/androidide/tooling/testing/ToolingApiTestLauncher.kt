@@ -128,7 +128,8 @@ class ToolingApiTestLauncher {
     var agpVersion: String = DEFAULT_AGP_VERSION,
     var gradleVersion: String = DEFAULT_GRADLE_VERSION,
     private val log: ILogger = ILogger.newInstance(MultiVersionTestClient::class.simpleName),
-    private val extraArgs : List<String> = emptyList()
+    private val extraArgs : List<String> = emptyList(),
+    private var excludeUnresolvedDependency: Boolean = false
   ) : IToolingApiClient {
 
     val gradleDistParams: GradleDistributionParams
@@ -138,6 +139,9 @@ class ToolingApiTestLauncher {
 
       const val buildFile = "build.gradle"
       const val buildFileIn = "$buildFile.in"
+
+      const val appBuildFile = "app/build.gradle"
+      const val appBuildFileIn = "$appBuildFile.in"
 
       const val DEFAULT_AGP_VERSION = "7.2.0"
       const val DEFAULT_GRADLE_VERSION = "7.3.3"
@@ -163,6 +167,12 @@ class ToolingApiTestLauncher {
       projectDir.resolve(buildFileIn)
         .replaceContents(dest = projectDir.resolve(buildFile),
           candidate = "@@TOOLING_API_TEST_AGP_VERSION@@" to this.agpVersion)
+
+      if (!excludeUnresolvedDependency) {
+        projectDir.resolve(appBuildFileIn)
+          .replaceContents(dest = projectDir.resolve(appBuildFile),
+            candidate = "@@UNRESOLVED_DEPENDENCY@@" to "implementation 'unresolved:unresolved:unresolved'")
+      }
     }
 
     override fun onBuildSuccessful(result: BuildResult) {
@@ -175,6 +185,7 @@ class ToolingApiTestLauncher {
 
     private fun onBuildResult(result: BuildResult) {
       projectDir.resolve(buildFile).deleteIfExists()
+      projectDir.resolve(appBuildFile).deleteIfExists()
     }
 
     override fun onProgressEvent(event: ProgressEvent) {}

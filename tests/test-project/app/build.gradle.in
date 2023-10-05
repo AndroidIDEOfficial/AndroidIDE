@@ -64,9 +64,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.8.0-alpha01'
     
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-    implementation 'unresolved:unresolved:unresolved'
     implementation project (path: ':another-android-library')
     
     implementation platform('com.google.firebase:firebase-bom:30.5.0')
+
+    @@UNRESOLVED_DEPENDENCY@@
 }
 
