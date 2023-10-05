@@ -18,6 +18,7 @@
 package com.itsaky.androidide.projects
 
 import androidx.annotation.RestrictTo
+import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.itsaky.androidide.lookup.Lookup
 import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.api.ModuleProject
@@ -69,6 +70,11 @@ interface IProjectManager {
     get() = File(projectDirPath)
 
   /**
+   * Issues that were encountered during project synchronization.
+   */
+  val projectSyncIssues: ProjectSyncIssues?
+
+  /**
    * Build variant information about Android modules in the project.
    *
    * The entries in this map are the Gradle project paths mapped to the corresponding [BuildVariantInfo]s.
@@ -81,7 +87,7 @@ interface IProjectManager {
    * @param project The project proxy.
    */
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-  fun setupProject(
+  suspend fun setupProject(
     project: IProject = Lookup.getDefault().lookup(BuildService.KEY_PROJECT_PROXY)!!
   )
 

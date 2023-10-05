@@ -17,9 +17,13 @@
 
 package com.itsaky.androidide.tooling.impl.sync
 
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
+import com.itsaky.androidide.builder.model.DefaultSyncIssue
+import com.itsaky.androidide.builder.model.shouldBeIgnored
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.util.AndroidModulePropertyCopier
 import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.tooling.impl.Main.finalizeLauncher
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl
@@ -55,20 +59,48 @@ class RootModelBuilder(initializationParams: InitializeProjectParams) :
 
       val rootProjectVersions = getAndroidVersions(rootModule, controller)
 
+      val syncIssues = hashSetOf<DefaultSyncIssue>()
+      val syncIssueReporter = ISyncIssueReporter {
+        if (it.shouldBeIgnored()) {
+          // this SyncIssue should not be shown to the user
+          return@ISyncIssueReporter
+        }
+
+        val issue = it as? DefaultSyncIssue ?: AndroidModulePropertyCopier.copy(it)
+        syncIssues.add(issue)
+      }
+
       val rootProject = if (rootProjectVersions != null) {
         // Root project is an Android project
-        checkAgpVersion(rootProjectVersions)
-        AndroidProjectModelBuilder(initializationParams).build(Triple(controller, rootModule, rootProjectVersions))
+        checkAgpVersion(rootProjectVersions, syncIssueReporter)
+        AndroidProjectModelBuilder(initializationParams)
+          .build(AndroidProjectModelBuilderParams(
+            controller,
+            rootModule,
+            rootProjectVersions,
+            syncIssueReporter
+          ))
       } else {
         GradleProjectModelBuilder(initializationParams).build(rootModule.gradleProject)
       }
 
       val projects = ideaModules.map { ideaModule ->
         ModuleProjectModelBuilder(initializationParams).build(
-          ModuleProjectModelBuilderParams(controller, ideaProject, ideaModule, modulePaths))
+          ModuleProjectModelBuilderParams(
+            controller,
+            ideaProject,
+            ideaModule,
+            modulePaths,
+            syncIssueReporter
+          ))
       }
 
-      return@action ProjectImpl(rootProject, rootModule.gradleProject.path, projects)
+      return@action ProjectImpl(
+        rootProject,
+        rootModule.gradleProject.path,
+        projects,
+        DefaultProjectSyncIssues(syncIssues)
+      )
     }
 
     finalizeLauncher(executor)

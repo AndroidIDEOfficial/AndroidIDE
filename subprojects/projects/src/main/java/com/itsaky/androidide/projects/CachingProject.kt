@@ -42,7 +42,7 @@ open class CachingProject(val project: IProject) : IProject {
   private val log = ILogger.newInstance(javaClass.simpleName)
 
   private val projects = mutableListOf<BasicProjectMetadata>()
-  private val syncIssues = mutableMapOf<String, DefaultProjectSyncIssues>()
+  private var syncIssues: DefaultProjectSyncIssues? = null
 
   override fun getProjects(): CompletableFuture<List<BasicProjectMetadata>> {
     return if (this.projects.isNotEmpty()) {
@@ -64,23 +64,23 @@ open class CachingProject(val project: IProject) : IProject {
     }
   }
 
-  override fun getProjectSyncIssues(): CompletableFuture<Map<String, DefaultProjectSyncIssues>> {
-    return if (this.syncIssues.isNotEmpty()) {
-      log.info("Using cached sync issues...")
-      CompletableFuture.completedFuture(this.syncIssues)
-    } else this.project.getProjectSyncIssues().whenComplete { syncIssues, err ->
-      if (err != null || syncIssues == null) {
+  override fun getProjectSyncIssues(): CompletableFuture<DefaultProjectSyncIssues> {
+    this.syncIssues?.also {
+      return CompletableFuture.completedFuture(it)
+    }
+
+    return this.project.getProjectSyncIssues().whenComplete { projectSyncIssues, err ->
+      if (err != null || projectSyncIssues == null) {
         log.debug("Unable to fetch project sync issues from tooling server", err)
         return@whenComplete
       }
 
-      if (syncIssues.isEmpty()) {
+      if (projectSyncIssues.syncIssues.isEmpty()) {
         log.debug("No sync issues.")
         return@whenComplete
       }
 
-      this.syncIssues.clear()
-      this.syncIssues.putAll(syncIssues)
+      this.syncIssues = projectSyncIssues
     }
   }
 

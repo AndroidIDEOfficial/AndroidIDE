@@ -61,6 +61,8 @@ import com.itsaky.androidide.utils.resolveAttr
 import com.itsaky.androidide.utils.showOnUiThread
 import com.itsaky.androidide.utils.withIcon
 import com.itsaky.androidide.viewmodel.BuildVariantsViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Pattern
@@ -457,11 +459,13 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
     }
 
     manager.cachedInitResult = result
-    manager.setupProject()
-    manager.notifyProjectUpdate()
-    updateBuildVariants(manager.androidBuildVariants)
+    activityBackroundScope.launch(Dispatchers.IO) {
+      manager.setupProject()
+      manager.notifyProjectUpdate()
+      updateBuildVariants(manager.androidBuildVariants)
 
-    ThreadUtils.runOnUiThread { postProjectInit(true) }
+      com.itsaky.androidide.tasks.runOnUiThread { postProjectInit(true) }
+    }
   }
 
   protected open fun preProjectInit() {

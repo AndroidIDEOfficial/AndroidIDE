@@ -33,11 +33,11 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author Akash Yadav
  */
-@Suppress("JoinDeclarationAndAssignment")
 internal class ProjectImpl(
   var rootProject: IGradleProject? = null,
   var rootProjectPath: String? = null,
-  var projects: List<IGradleProject> = emptyList()
+  var projects: List<IGradleProject> = emptyList(),
+  var projectSyncIssues: DefaultProjectSyncIssues = DefaultProjectSyncIssues(emptyList())
 ) : IProject, Serializable {
 
   private val serialVersionUID = 1L
@@ -57,6 +57,13 @@ internal class ProjectImpl(
     this.selectedProject = ForwardingProject()
   }
 
+  fun setFrom(other: ProjectImpl) {
+    this.rootProject = other.rootProject
+    this.rootProjectPath = other.rootProjectPath
+    this.projects = other.projects
+    this.projectSyncIssues = other.projectSyncIssues
+  }
+
   private fun getProject(path: String): IGradleProject? {
     return if (path.isBlank()) rootProject else projects.find {
       it.getMetadata().get().projectPath == path
@@ -69,8 +76,10 @@ internal class ProjectImpl(
     }
   }
 
-  override fun getProjectSyncIssues(): CompletableFuture<Map<String, DefaultProjectSyncIssues>> {
-    return CompletableFuture.completedFuture(emptyMap())
+  override fun getProjectSyncIssues(): CompletableFuture<DefaultProjectSyncIssues> {
+    return CompletableFuture.completedFuture(
+      this.projectSyncIssues ?: DefaultProjectSyncIssues(emptyList())
+    )
   }
 
   override fun selectProject(param: StringParameter): CompletableFuture<SelectProjectResult> {

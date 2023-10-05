@@ -43,6 +43,7 @@ import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.mockk.every
 import io.mockk.mockkStatic
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -102,7 +103,7 @@ abstract class LSPTest {
 
     val projectManager = ProjectManagerImpl.getInstance()
     projectManager.register()
-    projectManager.setupProject(project)
+    runBlocking { projectManager.setupProject(project) }
 
     // We need to manually setup the language server with the project here
     // ProjectManager.notifyProjectUpdate()

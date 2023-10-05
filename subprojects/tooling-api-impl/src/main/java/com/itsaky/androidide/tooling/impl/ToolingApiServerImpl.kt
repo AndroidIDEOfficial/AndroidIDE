@@ -159,8 +159,7 @@ internal class ToolingApiServerImpl(private val project: ProjectImpl) :
         stopWatch.lapFromLast("Project read successful")
         stopWatch.log()
 
-        this.project.rootProject = project.rootProject
-        this.project.projects = project.projects
+        this.project.setFrom(project)
         this.isInitialized = true
 
         notifyBuildSuccess(emptyList())

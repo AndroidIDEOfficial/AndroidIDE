@@ -17,16 +17,16 @@
 
 package com.itsaky.androidide.builder.model
 
-import com.android.builder.model.v2.ide.SyncIssue
 import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultSyncIssue(
+data class DefaultSyncIssue(
   override val data: String?,
   override val message: String,
   override val multiLineMessage: List<String?>?,
   override val severity: Int,
   override val type: Int
-) : SyncIssue, Serializable {
+) : IDESyncIssue, Serializable {
+
   private val serialVersionUID = 1L
 }

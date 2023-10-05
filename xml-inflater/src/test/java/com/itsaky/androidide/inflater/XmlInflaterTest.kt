@@ -27,6 +27,7 @@ import com.itsaky.androidide.projects.api.AndroidModule
 import com.itsaky.androidide.projects.builder.BuildService
 import com.itsaky.androidide.projects.util.findAppModule
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
+import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.robolectric.Robolectric
 import java.util.concurrent.atomic.AtomicBoolean
@@ -47,7 +48,7 @@ object XmlInflaterTest {
     assertThat(result?.isSuccessful).isTrue()
 
     Lookup.getDefault().register(BuildService.KEY_PROJECT_PROXY, project)
-    IProjectManager.getInstance().setupProject(project)
+    runBlocking { IProjectManager.getInstance().setupProject(project) }
     init.set(true)
   }
 }

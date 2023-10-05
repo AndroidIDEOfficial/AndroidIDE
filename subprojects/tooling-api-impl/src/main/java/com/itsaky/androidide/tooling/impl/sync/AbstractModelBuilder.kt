@@ -16,7 +16,10 @@
  */
 package com.itsaky.androidide.tooling.impl.sync
 
+import com.android.builder.model.v2.ide.SyncIssue
 import com.android.builder.model.v2.models.Versions
+import com.itsaky.androidide.builder.model.DefaultSyncIssue
+import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.AndroidPluginVersion
@@ -54,9 +57,13 @@ abstract class AbstractModelBuilder<P, R>(
      * [AndroidPluginVersion.LATEST_TESTED], warns the user.
      *
      * @param versions The [Versions] model.
+     * @param syncIssueReporter [ISyncIssueReporter] for reporting issues with the Android Gradle Plugin version.
      */
     @JvmStatic
-    protected fun checkAgpVersion(versions: Versions) {
+    protected fun checkAgpVersion(
+      versions: Versions,
+      syncIssueReporter: ISyncIssueReporter
+    ) {
 
       val agpVersion = AndroidPluginVersion.parse(versions.agp)
 
@@ -72,14 +79,14 @@ abstract class AbstractModelBuilder<P, R>(
 
       // Warn the user if the project is using a newer AGP version
       if (!newerAgpWarned.get() && agpVersion > LATEST_TESTED) {
-        log()
-        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        log("You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
-        log("Newer versions may not work properly!")
-        log("Current version : ${agpVersion.toStringSimple()}")
-        log("Latest tested   : ${LATEST_TESTED.toStringSimple()}")
-        log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        log()
+        val syncIssue = DefaultSyncIssue(
+          data = "${agpVersion.toStringSimple()}:${LATEST_TESTED.toStringSimple()}",
+          message = "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.",
+          multiLineMessage = null,
+          severity = SyncIssue.SEVERITY_WARNING,
+          type = IDESyncIssue.TYPE_AGP_VERSION_TOO_NEW
+        )
+        syncIssueReporter.report(syncIssue)
         newerAgpWarned.set(true)
       }
     }

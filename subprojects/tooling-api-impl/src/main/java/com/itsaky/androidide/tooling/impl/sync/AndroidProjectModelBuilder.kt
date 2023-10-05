@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.impl.sync
 import com.android.builder.model.v2.models.AndroidProject
 import com.android.builder.model.v2.models.BasicAndroidProject
 import com.android.builder.model.v2.models.ModelBuilderParameter
+import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.android.builder.model.v2.models.VariantDependencies
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
@@ -33,7 +34,7 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
   AbstractModelBuilder<AndroidProjectModelBuilderParams, IAndroidProject>(initializationParams) {
 
   override fun build(param: AndroidProjectModelBuilderParams): IAndroidProject {
-    val (controller, module, versions) = param
+    val (controller, module, versions, syncIssueReporter) = param
 
     val androidParams = initializationParams.androidParams
     val projectPath = module.gradleProject.path
@@ -47,7 +48,8 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
     var androidVariant = androidParams.variantSelections[projectPath]
 
     if (androidVariant != null && !variantNames.contains(androidVariant)) {
-      log("Configured variant '$androidVariant' not found for project '$projectPath'. Falling back to default variant.")
+      log(
+        "Configured variant '$androidVariant' not found for project '$projectPath'. Falling back to default variant.")
       androidVariant = null
     }
 
@@ -63,6 +65,10 @@ class AndroidProjectModelBuilder(initializationParams: InitializeProjectParams) 
       ModelBuilderParameter::class.java) {
       it.variantName = configurationVariant
       it.dontBuildRuntimeClasspath = false
+    }
+
+    controller.findModel(module, ProjectSyncIssues::class.java)?.also { syncIssues ->
+      syncIssueReporter.reportAll(syncIssues)
     }
 
     return AndroidProjectImpl(

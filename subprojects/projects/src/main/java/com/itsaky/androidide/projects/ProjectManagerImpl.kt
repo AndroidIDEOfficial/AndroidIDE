@@ -18,6 +18,7 @@
 package com.itsaky.androidide.projects
 
 import androidx.annotation.RestrictTo
+import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.google.auto.service.AutoService
 import com.google.common.collect.ImmutableList
 import com.itsaky.androidide.eventbus.events.EventReceiver
@@ -51,6 +52,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -84,6 +86,9 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
   override val projectDirPath: String
     get() = projectPath
 
+  override val projectSyncIssues: ProjectSyncIssues?
+    get() = rootProject?.projectSyncIssues
+
   companion object {
 
     private val log = ILogger.newInstance("ProjectManagerImpl")
@@ -95,14 +100,21 @@ class ProjectManagerImpl : IProjectManager, EventReceiver {
     }
   }
 
-  override fun setupProject(project: IProject) {
-    this.rootProject = ProjectTransformer().transform(CachingProject(project))
+  override suspend fun setupProject(project: IProject) {
+    this.rootProject = withStopWatch("Transform project proxy") {
+      withContext(Dispatchers.IO) {
+        ProjectTransformer().transform(CachingProject(project))
+      }
+    }
+
     val rootProject = this.rootProject ?: return
 
     // build variants must be updated before the sources and classpaths are indexed
     updateBuildVariants { buildVariants ->
       androidBuildVariants = buildVariants
     }
+
+    log.info("Found ${rootProject.projectSyncIssues.syncIssues.size} project sync issues: ${rootProject.projectSyncIssues.syncIssues}")
 
     withStopWatch("Setup project") {
       val indexerScope = CoroutineScope(Dispatchers.Default)

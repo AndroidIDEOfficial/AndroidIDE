@@ -306,5 +306,5 @@ object AndroidModulePropertyCopier {
   }
 
   fun copy(issue: SyncIssue) =
-    DefaultSyncIssue(issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)
+    DefaultSyncIssue(issue.data, issue.message, issue.multiLineMessage?.toTypedArray()?.let { listOf(*it) }, issue.severity, issue.type)
 }

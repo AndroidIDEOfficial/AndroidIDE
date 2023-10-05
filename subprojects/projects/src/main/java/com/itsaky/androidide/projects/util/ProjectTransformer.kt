@@ -57,8 +57,11 @@ class ProjectTransformer {
           "Root project must be either an Android project or a Gradle project")
       }
 
-      return Project(rootProject, CopyOnWriteArrayList(transform(allProjects, project)),
-        project.getProjectSyncIssues().get())
+      return Project(
+        rootProject,
+        CopyOnWriteArrayList(transform(allProjects, project)),
+        project.getProjectSyncIssues().get()
+      )
     } catch (error: Throwable) {
       log.error("Unable to transform project", error)
       return null

@@ -30,6 +30,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.testing.ToolingApiTestLauncher
 import com.itsaky.androidide.utils.FileProvider
 import com.itsaky.androidide.utils.SourceClassTrie.SourceNode
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.pathString
@@ -205,7 +206,7 @@ class ModuleProjectTest {
     }
 
     val projectManager = ProjectManagerImpl.getInstance()
-    projectManager.setupProject()
+    runBlocking { projectManager.setupProject() }
 
     val rootProject = IProjectManager.getInstance().rootProject
     assertThat(rootProject).isNotNull()

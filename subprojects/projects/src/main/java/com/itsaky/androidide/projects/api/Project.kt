@@ -18,7 +18,7 @@
 package com.itsaky.androidide.projects.api
 
 import com.android.builder.model.v2.ide.ProjectType
-import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
+import com.android.builder.model.v2.models.ProjectSyncIssues
 import java.io.File
 import java.nio.file.Path
 
@@ -27,11 +27,14 @@ import java.nio.file.Path
  *
  * @property rootProject The root Gradle project.
  * @property subProjects List of all project that are included the project.
- * @property syncIssues The issues that occurred while syncing the project.
+ * @property projectSyncIssues The issues that occurred while syncing the project.
  * @author Akash Yadav
  */
-data class Project(val rootProject: GradleProject, val subProjects: List<GradleProject>,
-  val syncIssues: Map<String, DefaultProjectSyncIssues>) {
+data class Project(
+  val rootProject: GradleProject,
+  val subProjects: List<GradleProject>,
+  val projectSyncIssues: ProjectSyncIssues
+) {
 
   /**
    * Finds the project by the given path.

@@ -43,7 +43,7 @@ interface IProject : IProjectQueries {
    * Get the project sync issues.
    */
   @JsonRequest
-  fun getProjectSyncIssues(): CompletableFuture<Map<String, DefaultProjectSyncIssues>>
+  fun getProjectSyncIssues(): CompletableFuture<DefaultProjectSyncIssues>
 
   companion object {
 

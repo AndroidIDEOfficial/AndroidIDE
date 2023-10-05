@@ -22,10 +22,28 @@ import org.gradle.tooling.BuildController
 import org.gradle.tooling.model.idea.IdeaModule
 import org.gradle.tooling.model.idea.IdeaProject
 
-typealias AndroidProjectModelBuilderParams = Triple<BuildController, IdeaModule, Versions>
+/**
+ * Parameters for building model for an Android project.
+ *
+ * @property controller The build controller that will be used to fetch project models.
+ * @property module The [IdeaModule] to fetch the models from.
+ * @property versions The Android Gradle Plugin version information.
+ * @property syncIssueReporter [ISyncIssueReporter] to report project synchronization issues.
+ */
+data class AndroidProjectModelBuilderParams(
+  val controller: BuildController,
+  val module: IdeaModule,
+  val versions: Versions,
+  val syncIssueReporter: ISyncIssueReporter
+)
 
-class ModuleProjectModelBuilderParams(val controller: BuildController, project: IdeaProject,
-  module: IdeaModule, modulePaths: Map<String, String>) : JavaProjectModelBuilderParams(
+class ModuleProjectModelBuilderParams(
+  val controller: BuildController,
+  project: IdeaProject,
+  module: IdeaModule,
+  modulePaths: Map<String, String>,
+  val syncIssueReporter: ISyncIssueReporter
+) : JavaProjectModelBuilderParams(
   project, module, modulePaths)
 
 open class JavaProjectModelBuilderParams(val project: IdeaProject, val module: IdeaModule,
