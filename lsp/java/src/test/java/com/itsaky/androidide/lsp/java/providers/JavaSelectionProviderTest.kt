@@ -27,22 +27,27 @@ import io.github.rosemoe.sora.text.Content
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
+@RunWith(RobolectricTestRunner::class)
 class JavaSelectionProviderTest {
 
   @Before
   fun setup() {
     JavaLSPTest.setup()
   }
-  
+
   @Test
   fun testSimpleSelectionExpansion() {
     JavaLSPTest.apply {
       openFile("selection/SimpleSelectionExpansionTest")
       cursor = requireCursor()
       deleteCursorText()
-      dispatchEvent(DocumentChangeEvent(file!!, contents.toString(), contents.toString(),1, NEW_TEXT, 0, Range.NONE))
+      dispatchEvent(
+        DocumentChangeEvent(file!!, contents.toString(), contents.toString(), 1, NEW_TEXT, 0,
+          Range.NONE))
 
       val range = findRange()
       val expanded = runBlocking { server.expandSelection(ExpandSelectionParams(file!!, range)) }
@@ -75,7 +80,7 @@ class JavaSelectionProviderTest {
       val end = Position(8, 9)
       val range = Range(start, end)
 
-      val expanded = runBlocking{ server.expandSelection(ExpandSelectionParams(file!!, range)) }
+      val expanded = runBlocking { server.expandSelection(ExpandSelectionParams(file!!, range)) }
       assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
   }
@@ -90,7 +95,7 @@ class JavaSelectionProviderTest {
       val end = Position(10, 9)
       val range = Range(start, end)
 
-      val expanded = runBlocking{ server.expandSelection(ExpandSelectionParams(file!!, range)) }
+      val expanded = runBlocking { server.expandSelection(ExpandSelectionParams(file!!, range)) }
       assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
   }

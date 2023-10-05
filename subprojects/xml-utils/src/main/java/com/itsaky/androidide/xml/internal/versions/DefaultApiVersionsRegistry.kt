@@ -196,7 +196,7 @@ class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private fun XmlPullParser.readInt(name: String, default: Int = -1): Int {
     return read(this, name) {
-      if (it == null || it.isBlank()) {
+      if (it.isNullOrBlank()) {
         return@read default
       }
 
@@ -206,7 +206,7 @@ class DefaultApiVersionsRegistry : ApiVersionsRegistry {
 
   private fun XmlPullParser.readString(name: String, default: String = ""): String {
     return read(this, name) {
-      if (it == null || it.isBlank()) {
+      if (it.isNullOrBlank()) {
         return@read default
       }
 

@@ -22,8 +22,11 @@ import com.itsaky.androidide.lsp.models.CompletionParams
 import com.itsaky.androidide.progress.ICancelChecker
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 /** @author Akash Yadav */
+@RunWith(RobolectricTestRunner::class)
 class JavaCompletionProviderTest {
 
   @Before
@@ -82,7 +85,8 @@ class JavaCompletionProviderTest {
 
   private fun completionTitles(pos: com.itsaky.androidide.models.Position): List<CharSequence> {
     return JavaLSPTest.server
-      .complete(CompletionParams(pos, JavaLSPTest.file!!).apply { prefix = "" }, ICancelChecker.Default())
+      .complete(CompletionParams(pos, JavaLSPTest.file!!).apply { prefix = "" },
+        ICancelChecker.Default())
       .items
       .map { it.label }
   }
