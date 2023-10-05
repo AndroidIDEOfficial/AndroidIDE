@@ -526,4 +526,6 @@
   <string name="idepref_launchAppAfterInstall_summary">Jika diaktifkan, IDE akan (tanpa konfirmasi) meluncurkan aplikasi segera setelah diinstal.</string>
   <string name="title_run_options">Jalankan opsi</string>
   <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
+  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
+  <string name="title_launch_app">Launch app</string>
 </resources>
