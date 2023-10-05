@@ -20,6 +20,7 @@ package com.itsaky.androidide.tooling.impl
 import com.android.builder.model.v2.ide.LibraryType
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
+import com.itsaky.androidide.builder.model.IDESyncIssue
 import com.itsaky.androidide.buildinfo.BuildInfo
 import com.itsaky.androidide.tooling.api.IAndroidProject
 import com.itsaky.androidide.tooling.api.IJavaProject
@@ -270,7 +271,7 @@ class MultiModuleAndroidProjectTest {
       val log = CollectingLogger()
       val agpVersion = "8.1.1"
       val client = MultiVersionTestClient(agpVersion = agpVersion, gradleVersion = "8.1", log = log)
-      val (_, _, result) = ToolingApiTestLauncher().launchServer(client = client, log = log)
+      val (_, project, result) = ToolingApiTestLauncher().launchServer(client = client, log = log)
       val output = log.toString()
 
       if (result?.isSuccessful != true) {
@@ -279,8 +280,13 @@ class MultiModuleAndroidProjectTest {
       }
 
       assertThat(result?.isSuccessful).isTrue()
-      assertThat(output).contains(
-        "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.")
+
+      val syncIssues = project.getProjectSyncIssues().get()
+      assertThat(syncIssues).isNotNull()
+      assertThat(syncIssues.syncIssues).isNotEmpty()
+      assertThat(
+        syncIssues.syncIssues.find { it.type == IDESyncIssue.TYPE_AGP_VERSION_TOO_NEW }
+      ).isNotNull()
     }
   }
 
