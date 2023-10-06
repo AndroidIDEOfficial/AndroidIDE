@@ -527,5 +527,5 @@
   <string name="title_run_options">运行选项</string>
   <string name="err_cannot_determine_package">无法确定软件包名称，不能运行应用。</string>
   <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
-  <string name="title_launch_app">Launch app</string>
+  <string name="title_launch_app">启动应用</string>
 </resources>
