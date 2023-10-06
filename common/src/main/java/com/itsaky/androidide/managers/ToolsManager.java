@@ -17,6 +17,7 @@
  */
 package com.itsaky.androidide.managers;
 
+import android.os.Build;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Contract;
@@ -37,8 +39,7 @@ import org.jetbrains.annotations.Contract;
 public class ToolsManager {
 
   private static final ILogger LOG = ILogger.newInstance("ToolsManager");
-  public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
-  public static String COMMON_ASSET_DATA_DIR = "data/common";
+  public static String COMMON_ASSET_DATA_DIR = BaseApplication.ASSETS_DATA_DIR + "/common";
 
   public static void init(@NonNull BaseApplication app, Runnable onFinish) {
 
@@ -182,7 +183,19 @@ public class ToolsManager {
   @NonNull
   @Contract(pure = true)
   public static String getArchSpecificAsset(String name) {
-    return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
+    try {
+      List<String> dataDirItems = BaseApplication.listAssetsDataDirectory();
+
+      for (String abi : Build.SUPPORTED_ABIS) {
+        if (dataDirItems.contains(abi)) {
+          return String.format("%s/%s/%s", BaseApplication.ASSETS_DATA_DIR, abi, name);
+        }
+      }
+    } catch (IOException exception) {
+      throw new RuntimeException(exception);
+    }
+
+    throw new RuntimeException("This build doesn't contain any compatible file for " + name);
   }
 
   @NonNull

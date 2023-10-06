@@ -35,7 +35,9 @@ import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import kotlin.collections.ArraysKt;
 
 public class BaseApplication extends Application {
@@ -46,6 +48,7 @@ public class BaseApplication extends Application {
   public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
   public static final String DOCS_URL = BuildInfo.PROJECT_SITE + "/docs";
   public static final String EMAIL = "contact@androidide.com";
+  public static final String ASSETS_DATA_DIR = "data";
   private static final String AARCH64 = "arm64-v8a";
   private static final String ARM = "armeabi-v7a";
   private static BaseApplication instance;
@@ -53,6 +56,10 @@ public class BaseApplication extends Application {
 
   public static BaseApplication getBaseInstance() {
     return instance;
+  }
+
+  public static List<String> listAssetsDataDirectory() throws IOException {
+    return Arrays.asList(getBaseInstance().getAssets().list(ASSETS_DATA_DIR));
   }
 
   public static boolean isAbiSupported() {
