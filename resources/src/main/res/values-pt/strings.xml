@@ -526,6 +526,6 @@
   <string name="idepref_launchAppAfterInstall_summary">Se ativado, a IDE irá iniciar o aplicativo (sem confirmação) logo após a instalação.</string>
   <string name="title_run_options">Opções de execução</string>
   <string name="err_cannot_determine_package">Não foi possível executar o aplicativo. Não foi possível determinar o nome do pacote.</string>
-  <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
-  <string name="title_launch_app">Launch app</string>
+  <string name="msg_launch_failure_no_app_module">Não é possível executar a aplicação. Nenhum módulo de aplicativo encontrado no projeto.</string>
+  <string name="title_launch_app">Iniciar aplicativo</string>
 </resources>
