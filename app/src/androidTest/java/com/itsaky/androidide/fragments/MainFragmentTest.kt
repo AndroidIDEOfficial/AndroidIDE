@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.activities
+package com.itsaky.androidide.fragments
 
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +35,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.R
+import com.itsaky.androidide.activities.MainActivity
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.templates.BooleanParameter
 import com.itsaky.androidide.templates.EnumParameter
