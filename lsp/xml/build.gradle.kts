@@ -49,21 +49,12 @@ dependencies {
     implementation(libs.androidx.ktx)
     implementation(libs.common.kotlin)
     implementation(libs.google.material)
-    
+
+    testImplementation(projects.actions)
     testImplementation(projects.subprojects.projects)
     testImplementation(projects.subprojects.toolingApi)
-    testImplementation(projects.lsp.testing)
-    testImplementation(projects.common)
-    testImplementation(projects.actions)
-    testImplementation(libs.tests.androidx.test.core)
-    testImplementation(libs.tests.junit)
-    testImplementation(libs.tests.google.truth)
-    testImplementation(libs.tests.robolectric)
-    androidTestImplementation(libs.tests.androidx.junit)
-    androidTestImplementation(libs.tests.androidx.espresso)
-    androidTestImplementation(libs.tests.google.truth)
-    
+    testImplementation(projects.testing.lsp)
+
     compileOnly(projects.common)
-    
     compileOnly(libs.common.antlr4)
 }

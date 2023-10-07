@@ -323,7 +323,15 @@ class EnumParameter<T : Enum<*>>(@StringRes name: Int,
   val displayName: ((T) -> String)? = null,
   val filter: ((T) -> Boolean)? = null
 ) : TextFieldParameter<T>(name, description, default, startIcon, endIcon,
-  onStartIconClick, onEndIconClick, constraints)
+  onStartIconClick, onEndIconClick, constraints) {
+
+  /**
+   * Get the display name for this [EnumParameter].
+   */
+  fun getDisplayName(): String? {
+    return this.displayName?.invoke(value)
+  }
+}
 
 class EnumParameterBuilder<T : Enum<*>> : TextFieldParameterBuilder<T>() {
 

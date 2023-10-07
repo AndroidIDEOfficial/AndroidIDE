@@ -15,31 +15,28 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("UnstableApiUsage")
-
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
   id("com.android.library")
-  id("kotlin-android")
-  id("kotlin-parcelize")
-  id("com.google.devtools.ksp") version libs.versions.ksp
+  kotlin("android")
 }
 
-android { namespace = "${BuildConfig.packageName}.inflater" }
+android {
+  namespace = "${BuildConfig.packageName}.testing.android"
+}
 
 dependencies {
-  ksp(projects.annotationProcessorsKsp)
+  api(libs.tests.androidx.test.core)
+  api(libs.tests.androidx.test.runner)
+  api(libs.tests.androidx.test.rules)
+  api(libs.tests.androidx.junit)
+  api(libs.tests.androidx.espresso.core)
+  api(libs.tests.androidx.espresso.contrib)
+  api(libs.tests.androidx.uiautomator)
+  api(libs.tests.junit)
+  api(libs.tests.google.truth)
 
-  implementation(libs.androidx.appcompat)
-  implementation(libs.common.kotlin)
-  implementation(libs.common.utilcode)
-
-  implementation(projects.annotations)
-  implementation(projects.common)
-  implementation(projects.subprojects.aaptcompiler)
-  implementation(projects.subprojects.projects)
-  implementation(projects.subprojects.xmlUtils)
-  implementation(projects.resources)
-
-  testImplementation(projects.subprojects.projects)
-  testImplementation(projects.testing.tooling)
+  api(projects.buildInfo)
+  api(projects.common)
+  api(projects.shared)
 }

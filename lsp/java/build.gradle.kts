@@ -58,15 +58,6 @@ dependencies {
     
     implementation(libs.androidx.ktx)
     implementation(libs.common.kotlin)
-    
-    testImplementation(projects.lsp.testing)
-    testImplementation(projects.common)
-    testImplementation(projects.actions)
-    testImplementation(projects.subprojects.javac)
-    testImplementation(libs.tests.junit)
-    testImplementation(libs.tests.google.truth)
-    testImplementation(libs.tests.robolectric)
-    androidTestImplementation(libs.tests.androidx.junit)
-    androidTestImplementation(libs.tests.androidx.espresso)
-    androidTestImplementation(libs.tests.google.truth)
+
+    testImplementation(projects.testing.lsp)
 }

@@ -15,31 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 plugins {
   id("com.android.library")
-  id("kotlin-android")
-  id("kotlin-parcelize")
-  id("com.google.devtools.ksp") version libs.versions.ksp
+  kotlin("android")
 }
 
-android { namespace = "${BuildConfig.packageName}.inflater" }
+android {
+  namespace = "${BuildConfig.packageName}.testing.unit"
+}
 
 dependencies {
-  ksp(projects.annotationProcessorsKsp)
+  api(libs.tests.androidx.test.core)
+  api(libs.tests.robolectric)
+  api(libs.tests.junit)
+  api(libs.tests.google.truth)
+  api(libs.tests.mockk)
 
-  implementation(libs.androidx.appcompat)
-  implementation(libs.common.kotlin)
-  implementation(libs.common.utilcode)
-
-  implementation(projects.annotations)
-  implementation(projects.common)
-  implementation(projects.subprojects.aaptcompiler)
-  implementation(projects.subprojects.projects)
-  implementation(projects.subprojects.xmlUtils)
-  implementation(projects.resources)
-
-  testImplementation(projects.subprojects.projects)
-  testImplementation(projects.testing.tooling)
+  api(projects.buildInfo)
+  api(projects.common)
+  api(projects.shared)
 }

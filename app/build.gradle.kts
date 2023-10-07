@@ -2,6 +2,7 @@
 
 import androidx.navigation.safe.args.generator.ext.capitalize
 import com.android.build.gradle.BaseExtension
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 import java.util.Base64
 import java.util.Locale
 
@@ -162,13 +163,8 @@ dependencies {
   // So we always copy the latest JAR file to assets
   compileOnly(projects.subprojects.toolingApiImpl)
 
-  testImplementation(libs.common.editor)
-  testImplementation(libs.tests.junit)
-  testImplementation(libs.tests.google.truth)
-  testImplementation(libs.tests.robolectric)
-  androidTestImplementation(libs.tests.androidx.junit)
-  androidTestImplementation(libs.tests.androidx.espresso)
-  androidTestImplementation(libs.tests.google.truth)
+  testImplementation(projects.testing.unit)
+  androidTestImplementation(projects.testing.android)
 }
 
 fun downloadSigningKey() {

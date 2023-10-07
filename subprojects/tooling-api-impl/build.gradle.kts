@@ -55,19 +55,17 @@ project.tasks.getByName("jar") {
 project.tasks.getByName("shadowJar") { finalizedBy("copyJar") }
 
 dependencies {
+  api(projects.subprojects.toolingApi)
+
   implementation(projects.buildInfo)
   implementation(projects.shared)
-  implementation(projects.subprojects.toolingApi)
 
   implementation(libs.common.jkotlin)
   implementation(libs.xml.xercesImpl)
   implementation(libs.xml.apis)
   implementation(libs.tooling.gradleApi)
 
-  testImplementation(projects.subprojects.toolingApiTesting)
-  testImplementation(projects.shared)
-  testImplementation(libs.tests.junit)
-  testImplementation(libs.tests.google.truth)
+  testImplementation(projects.testing.tooling)
 
   runtimeOnly(libs.tooling.slf4j)
 }

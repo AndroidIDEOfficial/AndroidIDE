@@ -116,6 +116,7 @@
       <module name="AndroidIDE.ksp-processor" target="11" />
       <module name="AndroidIDE.ksp-processor.main" target="11" />
       <module name="AndroidIDE.ksp-processor.test" target="11" />
+      <module name="AndroidIDE.lsp.testing" target="17" />
       <module name="AndroidIDE.sdk-info" target="11" />
       <module name="AndroidIDE.subprojects.classfile" target="11" />
       <module name="AndroidIDE.subprojects.classfile.main" target="11" />
@@ -128,12 +129,23 @@
       <module name="AndroidIDE.subprojects.tooling-api-model2" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-model2.main" target="11" />
       <module name="AndroidIDE.subprojects.tooling-api-model2.test" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-testing" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-testing.main" target="11" />
+      <module name="AndroidIDE.subprojects.tooling-api-testing.test" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.main" target="11" />
       <module name="AndroidIDE.subprojects.xml-formatter.test" target="11" />
       <module name="AndroidIDE.templates-testing" target="17" />
       <module name="AndroidIDE.templates-testing.main" target="11" />
       <module name="AndroidIDE.templates-testing.test" target="11" />
       <module name="AndroidIDE.testing-android" target="17" />
+      <module name="AndroidIDE.testing.android.test" target="11" />
+      <module name="AndroidIDE.testing.common" target="11" />
+      <module name="AndroidIDE.testing.common.main" target="11" />
+      <module name="AndroidIDE.testing.common.test" target="11" />
+      <module name="AndroidIDE.testing.tooling-api" target="11" />
+      <module name="AndroidIDE.testing.tooling-api.main" target="11" />
+      <module name="AndroidIDE.testing.tooling-api.test" target="11" />
+      <module name="AndroidIDE.testing.unit.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

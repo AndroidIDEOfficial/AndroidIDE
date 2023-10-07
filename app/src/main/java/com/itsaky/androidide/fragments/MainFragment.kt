@@ -18,7 +18,6 @@ import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.databinding.FragmentMainBinding
 import com.itsaky.androidide.models.MainScreenAction
 import com.itsaky.androidide.preferences.databinding.LayoutDialogTextInputBinding
-import com.itsaky.androidide.resources.R
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.tasks.executeAsyncProvideError
 import com.itsaky.androidide.utils.DialogUtils
@@ -40,7 +39,7 @@ class MainFragment : BaseFragment() {
   private val log = ILogger.newInstance("MainFragment")
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?
+    savedInstanceState: Bundle?
   ): View {
     binding = FragmentMainBinding.inflate(inflater, container, false)
     return binding!!.root
@@ -48,28 +47,26 @@ class MainFragment : BaseFragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val createProject = MainScreenAction(string.create_project,
-      R.drawable.ic_add) { showCreateProject() }
-    val openProject = MainScreenAction(string.msg_open_existing_project,
-      R.drawable.ic_folder) { pickDirectory() }
-    val cloneGitRepository = MainScreenAction(string.git_clone_repo,
-      R.drawable.ic_git) { cloneGitRepo() }
-    val openTerminal =
-      MainScreenAction(string.title_terminal, R.drawable.ic_terminal) {
-        startActivity(Intent(requireActivity(), TerminalActivity::class.java))
+
+    val actions = MainScreenAction.all().also { actions ->
+      val onClick = { action: MainScreenAction, _: View ->
+        when (action.id) {
+          MainScreenAction.ACTION_CREATE_PROJECT -> showCreateProject()
+          MainScreenAction.ACTION_OPEN_PROJECT -> pickDirectory()
+          MainScreenAction.ACTION_CLONE_REPO -> cloneGitRepo()
+          MainScreenAction.ACTION_OPEN_TERMINAL -> startActivity(
+            Intent(requireActivity(), TerminalActivity::class.java))
+
+          MainScreenAction.ACTION_PREFERENCES -> gotoPreferences()
+          MainScreenAction.ACTION_DONATE -> BaseApplication.getBaseInstance().openDonationsPage()
+          MainScreenAction.ACTION_DOCS -> BaseApplication.getBaseInstance().openDocs()
+        }
       }
-    val preferences = MainScreenAction(string.msg_preferences,
-      R.drawable.ic_settings) { gotoPreferences() }
-    val sponsor = MainScreenAction(string.btn_donate, R.drawable.ic_donate) {
-      BaseApplication.getBaseInstance().openSponsors()
-    }
-    val docs = MainScreenAction(string.btn_docs, R.drawable.ic_docs) {
-      BaseApplication.getBaseInstance().openDocs()
+
+      actions.forEach { action -> action.onClick = onClick }
     }
 
-    binding!!.actions.adapter = MainActionsListAdapter(
-      listOf(createProject, openProject, cloneGitRepository, openTerminal,
-        preferences, docs, sponsor))
+    binding!!.actions.adapter = MainActionsListAdapter(actions)
   }
 
   override fun onDestroyView() {
@@ -182,7 +179,7 @@ class MainFragment : BaseFragment() {
 
   // TODO(itsaky) : Improve this implementation
   class GitCloneProgressMonitor(val progress: LinearProgressIndicator,
-                                val message: TextView
+    val message: TextView
   ) : ProgressMonitor {
 
     private var cancelled = false

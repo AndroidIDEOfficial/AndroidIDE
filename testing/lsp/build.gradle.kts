@@ -15,19 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@Suppress("JavaPluginLanguageLevel")
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    id("com.android.library")
+    id("kotlin-android")
+}
+
+android {
+    namespace = "${BuildConfig.packageName}.lsp.testing"
 }
 
 dependencies {
-    api(projects.buildInfo)
-    api(projects.logger)
-    api(projects.subprojects.toolingApiModel)
-    api(projects.subprojects.toolingApiEvents)
+    api(libs.androidx.ktx)
+    api(libs.common.kotlin)
     
-    api(libs.google.gson)
-    api(libs.common.jsonrpc)
-    implementation(libs.common.jkotlin)
+    api(projects.lsp.api)
+    api(projects.actions)
+    api(projects.eventbusAndroid)
+
+    api(libs.common.editor)
+    api(projects.testing.tooling)
+    api(projects.testing.unit)
 }

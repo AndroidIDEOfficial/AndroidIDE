@@ -15,32 +15,24 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@Suppress("JavaPluginLanguageLevel")
 plugins {
-  id("com.android.library")
-  id("org.jetbrains.kotlin.android")
-  id("kotlin-kapt")
-}
-
-android {
-  namespace = "${BuildConfig.packageName}.templates.impl"
+    id("java-library")
+    id("org.jetbrains.kotlin.jvm")
 }
 
 dependencies {
-  kapt(libs.google.auto.service)
+    api(libs.common.jkotlin)
+    api(libs.tests.robolectric)
+    api(libs.tests.junit)
+    api(libs.tests.google.truth)
+    api(libs.tests.mockk)
 
-  api(projects.templatesApi)
+    api(projects.buildInfo)
+    api(projects.logger)
+    api(projects.shared)
+    api(projects.subprojects.toolingApi)
 
-  implementation(projects.shared)
-  implementation(projects.common)
-  implementation(projects.preferences)
-  implementation(projects.subprojects.projects)
-  implementation(libs.androidx.annotation)
-  implementation(libs.androidx.ktx)
-  implementation(libs.google.auto.service.annotations)
-
-  testImplementation(projects.templatesApi)
-  testImplementation(projects.lsp.api)
-  testImplementation(projects.preferences)
-  testImplementation(projects.testing.unit)
-  testImplementation(projects.testing.tooling)
+    // build tooling API before tests
+    compileOnly(projects.subprojects.toolingApiImpl)
 }

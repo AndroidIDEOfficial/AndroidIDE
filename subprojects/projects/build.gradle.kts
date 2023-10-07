@@ -36,12 +36,5 @@ dependencies {
   implementation(libs.google.auto.service.annotations)
   implementation(libs.google.guava)
 
-  testImplementation(projects.subprojects.toolingApiTesting)
-  testImplementation(projects.shared)
-  testImplementation(libs.tests.junit)
-  testImplementation(libs.tests.google.truth)
-  testImplementation(libs.tests.robolectric)
-  androidTestImplementation(libs.tests.androidx.junit)
-  androidTestImplementation(libs.tests.androidx.espresso)
-  androidTestImplementation(libs.tests.google.truth)
+  testImplementation(projects.testing.tooling)
 }

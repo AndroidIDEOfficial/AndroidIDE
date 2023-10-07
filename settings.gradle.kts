@@ -73,7 +73,6 @@ include(
   ":lsp:models",
   ":lsp:java",
   ":lsp:xml",
-  ":lsp:testing",
   ":subprojects:aaptcompiler",
   ":subprojects:builder-model-impl",
   ":subprojects:flashbar",
@@ -94,7 +93,10 @@ include(
   ":subprojects:tooling-api-events",
   ":subprojects:tooling-api-impl",
   ":subprojects:tooling-api-model",
-  ":subprojects:tooling-api-testing",
   ":subprojects:xml-dom",
-  ":subprojects:xml-utils"
+  ":subprojects:xml-utils",
+  ":testing:android",
+  ":testing:lsp",
+  ":testing:tooling",
+  ":testing:unit",
 )

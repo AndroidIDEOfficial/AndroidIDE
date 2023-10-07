@@ -134,7 +134,7 @@ public class BaseApplication extends Application {
     openUrl(BuildInfo.PROJECT_SITE);
   }
 
-  public void openSponsors() {
+  public void openDonationsPage() {
     openUrl(SPONSOR_URL);
   }
 
