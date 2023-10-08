@@ -67,7 +67,7 @@ abstract class FieldBasedAction : BaseJavaCodeAction() {
     enabled = true
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val file = data.requirePath()
     val module = IProjectManager.getInstance().findModuleForFile(file, false) ?: return Any()

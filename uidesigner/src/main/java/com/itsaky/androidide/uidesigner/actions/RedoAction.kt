@@ -41,7 +41,7 @@ class RedoAction(context: Context) : UiDesignerAction() {
     enabled = data.requireWorkspace().undoManager.canRedo()
   }
   
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     data.requireWorkspace().undoManager.redo()
     data.requireActivity().invalidateOptionsMenu()
     return true

@@ -38,7 +38,7 @@ class OpenWithAction(context: Context, override val order: Int) :
 
   override val id: String = "ide.editor.fileTree.openWith"
 
-  override fun execAction(data: ActionData) {
+  override suspend fun execAction(data: ActionData) {
     IntentUtils.startIntent(data.requireActivity(), data.requireFile(), "*/*", Intent.ACTION_VIEW)
   }
 }

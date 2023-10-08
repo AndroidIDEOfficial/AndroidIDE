@@ -49,7 +49,7 @@ class GoToDefinitionAction : BaseJavaCodeAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val editor = data[CodeEditor::class.java]!!
     return (editor as? ILspEditor)?.findDefinition() ?: false
   }

@@ -35,7 +35,7 @@ class OrganizeImportsAction : BaseJavaCodeAction() {
     enabled = true
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val watch = com.itsaky.androidide.utils.StopWatch("Organize imports")
     return try {
       val editor = data.requireEditor()

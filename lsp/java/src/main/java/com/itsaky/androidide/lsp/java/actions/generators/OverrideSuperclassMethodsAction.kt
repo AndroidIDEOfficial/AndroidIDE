@@ -87,7 +87,7 @@ class OverrideSuperclassMethodsAction : BaseJavaCodeAction() {
     enabled = true
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val range = data[com.itsaky.androidide.models.Range::class.java]!!
     val compiler =
       JavaCompilerProvider.get(

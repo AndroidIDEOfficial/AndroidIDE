@@ -59,7 +59,7 @@ class AddImportTest {
       assertThat(action.visible).isTrue()
       assertThat(action.enabled).isTrue()
 
-      val execResult = action.execAction(data)
+      val execResult = runBlocking { action.execAction(data) }
       assertThat(execResult::class.java).isAssignableTo(Pair::class.java)
 
       val result = execResult as Pair<List<String>, *>

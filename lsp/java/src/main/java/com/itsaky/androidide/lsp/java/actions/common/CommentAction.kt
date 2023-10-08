@@ -30,7 +30,7 @@ class CommentAction : BaseJavaCodeAction() {
 
   override var requiresUIThread: Boolean = true
   
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val editor = data.requireEditor()
     val text = editor.text
     val cursor = editor.cursor

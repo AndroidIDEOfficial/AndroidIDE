@@ -44,7 +44,7 @@ class CutAction(context: Context, override val order: Int) : BaseEditorAction() 
   }
 
   override val id: String = "ideEditor_cut"
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data) ?: return false
     editor.cutText()
     return true

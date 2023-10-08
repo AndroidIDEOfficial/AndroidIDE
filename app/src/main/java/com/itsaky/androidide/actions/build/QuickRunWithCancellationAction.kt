@@ -92,7 +92,7 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
     }
   }
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     if (data.isBuildInProgress()) {
       return cancelBuild()
     }

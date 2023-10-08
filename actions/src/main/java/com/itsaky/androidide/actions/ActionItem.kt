@@ -95,7 +95,7 @@ interface ActionItem {
    * @param data The data containing various information about the event.
    * @return `true` if this action was executed successfully, `false` otherwise.
    */
-  fun execAction(data: ActionData): Any
+  suspend fun execAction(data: ActionData): Any
 
   /**
    * Called just after the [execAction] method executes **successfully** (i.e. returns `true`).

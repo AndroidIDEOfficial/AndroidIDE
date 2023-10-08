@@ -58,7 +58,7 @@ class ShowXmlAction(context: Context) : UiDesignerAction() {
     this.enabled = fragment.workspaceView.childCount == 1
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     data.requireActivity().apply {
       val workspace = data.requireWorkspace().workspaceView
       ViewToXml.generateXml(this, workspace, { result ->

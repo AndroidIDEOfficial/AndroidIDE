@@ -87,7 +87,7 @@ class AddImportAction : BaseJavaCodeAction() {
     enabled = found
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     @Suppress("UNCHECKED_CAST")
     val diagnostic =
       JavaDiagnosticUtils.asUnwrapper(

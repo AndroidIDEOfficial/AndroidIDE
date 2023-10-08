@@ -44,7 +44,7 @@ class LongSelectAction(context: Context, override val order: Int) : EditorRelate
     data.getEditor() ?: markInvisible()
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     return data.getEditor()?.beginLongSelect() ?: false
   }
 }

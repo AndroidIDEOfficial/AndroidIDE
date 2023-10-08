@@ -91,7 +91,7 @@ class PreviewLayoutAction(context: Context, override val order: Int) : EditorRel
   }
 
   // TODO: Migrate to coroutines
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val activity = data.requireActivity()
     runBlocking { activity.saveAll() }
     return true

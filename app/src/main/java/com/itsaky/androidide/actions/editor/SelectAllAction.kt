@@ -34,7 +34,7 @@ class SelectAllAction(context: Context, override val order: Int) : BaseEditorAct
 
   override val id: String = "ideEditor_selectAll"
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data) ?: return false
     editor.selectAll()
     return true

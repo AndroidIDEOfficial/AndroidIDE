@@ -44,7 +44,7 @@ class TerminalSidebarAction(context: Context, override val order: Int) : Abstrac
     icon = ContextCompat.getDrawable(context, R.drawable.ic_terminal)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val context = data.requireContext()
     val intent = Intent(context, TerminalActivity::class.java)
     intent.putExtra(

@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.resources)
     implementation(libs.common.editor)
     implementation(libs.common.kotlin)
+    implementation(libs.common.kotlin.coroutines.android)
     implementation(libs.common.utilcode)
     implementation(libs.google.auto.service.annotations)
     

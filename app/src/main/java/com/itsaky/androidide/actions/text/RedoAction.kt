@@ -52,7 +52,7 @@ class RedoAction(context: Context, override val order: Int) : EditorRelatedActio
     enabled = editor.canRedo()
   }
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val editor = data.getEditor() ?: run {
       markInvisible()
       return false

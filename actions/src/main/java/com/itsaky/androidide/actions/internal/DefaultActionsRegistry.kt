@@ -17,11 +17,8 @@
 package com.itsaky.androidide.actions.internal
 
 import android.content.Context
-import android.graphics.PorterDuff.Mode.SRC_ATOP
-import android.graphics.PorterDuffColorFilter
 import android.view.Menu
 import android.view.MenuItem
-import com.blankj.utilcode.util.ThreadUtils
 import com.google.auto.service.AutoService
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
@@ -29,11 +26,16 @@ import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.actions.FillMenuParams
 import com.itsaky.androidide.actions.OnActionClickListener
-import com.itsaky.androidide.actions.R
 import com.itsaky.androidide.actions.locations.CodeActionsMenu
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.resolveAttr
-import java.util.concurrent.CompletableFuture
+import com.itsaky.androidide.utils.withStopWatch
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -47,6 +49,9 @@ class DefaultActionsRegistry : ActionsRegistry() {
   private val log = ILogger.newInstance("DefaultActionsRegistry")
   private val actions = ConcurrentHashMap<String, ConcurrentHashMap<String, ActionItem>>()
   private val listeners = HashSet<ActionExecListener>()
+
+  private val actionsCoroutineScope = CoroutineScope(Dispatchers.Default) +
+      CoroutineName("DefaultActionsRegistry")
 
   init {
     registerAction(CodeActionsMenu)
@@ -130,9 +135,12 @@ class DefaultActionsRegistry : ActionsRegistry() {
     }
   }
 
-  private fun addActionToMenu(menu: Menu, action: ActionItem, data: ActionData,
-    onClickListener: OnActionClickListener) {
-    val context = data[Context::class.java]
+  private fun addActionToMenu(
+    menu: Menu,
+    action: ActionItem,
+    data: ActionData,
+    onClickListener: OnActionClickListener
+  ) {
 
     val item: MenuItem = if (action is ActionMenu) {
       val sub = menu.addSubMenu(Menu.NONE, action.itemId, action.order, action.label)
@@ -187,32 +195,31 @@ class DefaultActionsRegistry : ActionsRegistry() {
   }
 
   /** Executes the given action item with the given */
-  fun executeAction(action: ActionItem, data: ActionData) {
-    if (action.requiresUIThread) {
-      ThreadUtils.runOnUiThread {
-        val result = action.execAction(data)
+  fun executeAction(action: ActionItem, data: ActionData) : Job {
+    val onMainThread = action.requiresUIThread
+    val context = if (onMainThread) Dispatchers.Main else Dispatchers.Default
+    return actionsCoroutineScope.launch(context) {
+      val result = withStopWatch("Action '$action.id'") {
+        action.execAction(data)
+      }
+
+      val post = fun() = run {
         action.postExec(data, result)
         notifyActionExec(action, result)
       }
-    } else {
-      execInBackground(action, data)
-    }
-  }
 
-  private fun execInBackground(action: ActionItem, data: ActionData) {
-    val start = System.currentTimeMillis()
-    CompletableFuture.supplyAsync { action.execAction(data) }.whenComplete { result, error ->
-      if (result == null || (result is Boolean && !result) || error != null) {
-        log.error(
-          "An error occurred when performing action '${action.id}'. Action failed in ${System.currentTimeMillis() - start}ms",
-          error)
+      if (onMainThread) {
+        post()
       } else {
-        log.info("Action '${action.id}' completed in ${System.currentTimeMillis() - start}ms")
+        withContext(Dispatchers.Main) {
+          post()
+        }
       }
-
-      ThreadUtils.runOnUiThread {
-        action.postExec(data, result ?: false)
-        notifyActionExec(action, result ?: false)
+    }.also { job ->
+      job.invokeOnCompletion { error ->
+        if (error != null) {
+          log.error("An error occurred when performing action '${action.id}'", error)
+        }
       }
     }
   }

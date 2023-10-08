@@ -336,12 +336,17 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
   ): Boolean {
     val result = saveAllResult(progressConsumer)
 
-    if (notify) {
-      flashSuccess(string.all_saved)
-    }
+    // don't bother to switch the context if we don't need to
+    if (notify || result.gradleSaved) {
+      withContext(Dispatchers.Main) {
+        if (notify) {
+          flashSuccess(string.all_saved)
+        }
 
-    if (result.gradleSaved) {
-      editorViewModel.isSyncNeeded = true
+        if (result.gradleSaved) {
+          editorViewModel.isSyncNeeded = true
+        }
+      }
     }
 
     if (processResources) {

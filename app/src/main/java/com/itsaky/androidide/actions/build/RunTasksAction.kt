@@ -34,7 +34,7 @@ class RunTasksAction(context: Context, override val order: Int) : BaseBuildActio
     icon = ContextCompat.getDrawable(context, R.drawable.ic_run_tasks)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     dialog?.dismiss()
     dialog = null
     dialog = RunTasksDialogFragment()

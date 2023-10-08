@@ -56,7 +56,7 @@ class FindInProjectAction() : EditorActivityAction() {
     enabled = true
   }
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val context = data.getActivity() ?: return false
     val dialog = context.findInProjectDialog
 

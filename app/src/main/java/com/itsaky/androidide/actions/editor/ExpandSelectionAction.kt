@@ -38,7 +38,7 @@ class ExpandSelectionAction(context: Context, override val order: Int) : EditorR
     icon = ContextCompat.getDrawable(context, R.drawable.ic_expand_selection)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     return data.getEditor()?.expandSelection() ?: false
   }
 }

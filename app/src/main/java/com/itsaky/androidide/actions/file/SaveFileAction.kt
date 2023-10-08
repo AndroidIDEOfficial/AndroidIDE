@@ -57,7 +57,7 @@ class SaveFileAction(context: Context, override val order: Int) : EditorRelatedA
     enabled = context.areFilesModified()
   }
 
-  override fun execAction(data: ActionData): ResultWrapper {
+  override suspend fun execAction(data: ActionData): ResultWrapper {
     val context = data.getActivity() ?: return ResultWrapper()
 
     return try {

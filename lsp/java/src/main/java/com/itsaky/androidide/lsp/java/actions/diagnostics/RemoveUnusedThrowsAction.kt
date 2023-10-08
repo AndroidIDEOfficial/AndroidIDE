@@ -57,7 +57,7 @@ class RemoveUnusedThrowsAction : BaseJavaCodeAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val d = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(

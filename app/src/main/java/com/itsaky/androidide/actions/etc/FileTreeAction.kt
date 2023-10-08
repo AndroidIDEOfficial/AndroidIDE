@@ -41,7 +41,7 @@ class FileTreeAction(context: Context, override val order: Int) : EditorActivity
     enabled = true
   }
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val context = data.getActivity() ?: return false
 
     context.binding.root.apply {

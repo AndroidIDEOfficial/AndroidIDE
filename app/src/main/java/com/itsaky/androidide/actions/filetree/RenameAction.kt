@@ -48,7 +48,7 @@ class RenameAction(context: Context, override val order: Int) :
 
   override val id: String = "ide.editor.fileTree.rename"
 
-  override fun execAction(data: ActionData) {
+  override suspend fun execAction(data: ActionData) {
     val context = data.requireActivity()
     val file = data.requireFile()
     val lastHeld = data.getTreeNode()

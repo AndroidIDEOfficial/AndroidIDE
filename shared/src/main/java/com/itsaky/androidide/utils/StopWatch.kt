@@ -61,7 +61,9 @@ inline fun <R> withStopWatch(
   action: (StopWatch) -> R
 ): R {
   return StopWatch(label, start, lastLap).run {
-    action(this).also {
+    try {
+      action(this)
+    } finally {
       log()
     }
   }

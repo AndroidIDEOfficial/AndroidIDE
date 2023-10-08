@@ -54,7 +54,7 @@ class SuppressUncheckedWarningAction : BaseJavaCodeAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val diagnostic = data[com.itsaky.androidide.lsp.models.DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(

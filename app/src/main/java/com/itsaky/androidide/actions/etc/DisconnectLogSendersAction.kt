@@ -52,7 +52,7 @@ class DisconnectLogSendersAction(context: Context, override val order: Int) : Ed
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val receiverService = lookupLogService()
     receiverService?.disconnectAll()
 

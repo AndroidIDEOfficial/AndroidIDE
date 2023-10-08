@@ -39,7 +39,7 @@ interface ActionMenu : ActionItem {
   }
 
   /** Action menus are not supposed to perform any action */
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     return false
   }
 }

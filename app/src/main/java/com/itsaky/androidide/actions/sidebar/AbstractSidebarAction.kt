@@ -45,7 +45,7 @@ abstract class AbstractSidebarAction : SidebarActionItem {
   override fun prepare(data: ActionData) {
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     return false
   }
 }

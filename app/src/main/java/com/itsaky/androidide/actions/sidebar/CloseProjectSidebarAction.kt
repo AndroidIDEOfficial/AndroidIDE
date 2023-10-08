@@ -42,7 +42,7 @@ class CloseProjectSidebarAction(context: Context, override val order: Int) :
     icon = ContextCompat.getDrawable(context, R.drawable.ic_folder_close)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val context = data.requireContext() as BaseEditorActivity
     context.doConfirmProjectClose()
     return true

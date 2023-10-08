@@ -41,7 +41,7 @@ class ProjectSyncAction(context: Context, override val order: Int) : BaseBuildAc
     icon = ContextCompat.getDrawable(context, R.drawable.ic_sync)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     return data.requireActivity().apply {
       runBlocking { saveAll() }
     }

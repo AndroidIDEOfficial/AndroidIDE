@@ -58,7 +58,7 @@ class LaunchAppAction(context: Context, override val order: Int) : EditorActivit
     enabled = projectManager.getAndroidAppModules().isNotEmpty()
   }
 
-  override fun execAction(data: ActionData) {
+  override suspend fun execAction(data: ActionData) {
     openApplicationModuleChooser(data) { app ->
       val packageName = app.packageName
       if (packageName == UNKNOWN_PACKAGE) {

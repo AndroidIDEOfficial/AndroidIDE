@@ -55,7 +55,7 @@ class AddThrowsAction : BaseJavaCodeAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val diagnostic = data[DiagnosticItem::class.java]!!
     val compiler =
       JavaCompilerProvider.get(

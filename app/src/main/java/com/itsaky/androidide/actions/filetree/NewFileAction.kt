@@ -67,7 +67,7 @@ class NewFileAction(context: Context, override val order: Int) :
     private val log = ILogger.newInstance("NewFileAction")
   }
 
-  override fun execAction(data: ActionData) {
+  override suspend fun execAction(data: ActionData) {
     val context = data.requireActivity()
     val file = data.requireFile()
     val node = data.getTreeNode()

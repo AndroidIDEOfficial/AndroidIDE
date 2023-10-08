@@ -67,7 +67,7 @@ class ImplementAbstractMethodsAction : BaseJavaCodeAction() {
   }
 
   @Suppress("UNCHECKED_CAST")
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val diagnostic =
       JavaDiagnosticUtils.asJCDiagnostic(
         data.get(com.itsaky.androidide.lsp.models.DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>

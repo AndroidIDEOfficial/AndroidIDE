@@ -44,7 +44,7 @@ class UndoAction(context: Context, override val order: Int) : EditorRelatedActio
     enabled = editor.canUndo()
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val editor = data.getEditor()
     return if (editor != null) {
       editor.undo()

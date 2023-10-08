@@ -49,7 +49,7 @@ class ReloadColorSchemesAction(context: Context, override val order: Int) : Edit
     icon = ContextCompat.getDrawable(context, R.drawable.ic_reload)
   }
 
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val context = data.requireActivity()
     context.executeWithProgress { dialog ->
       executeAsyncProvideError(IDEColorSchemeProvider::reload) { _, error ->

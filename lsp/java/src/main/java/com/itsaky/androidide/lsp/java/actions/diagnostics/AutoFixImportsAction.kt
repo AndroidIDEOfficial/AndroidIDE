@@ -48,7 +48,7 @@ class AutoFixImportsAction : BaseJavaCodeAction() {
   override val id: String = "ide.editor.lsp.java.autoFixImports"
   override var label: String = ""
 
-  override fun execAction(data: ActionData): Result {
+  override suspend fun execAction(data: ActionData): Result {
     val path = data.requirePath()
     val compiler = data.requireCompiler()
     return compiler.compile(path).get { task ->

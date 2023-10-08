@@ -34,7 +34,7 @@ class CopyAction(context: Context, override val order: Int) : BaseEditorAction()
   }
 
   override val id: String = "ideEditor_copy"
-  override fun execAction(data: ActionData): Boolean {
+  override suspend fun execAction(data: ActionData): Boolean {
     val editor = getEditor(data) ?: return false
     editor.copyText()
     return true

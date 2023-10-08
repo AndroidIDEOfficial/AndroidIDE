@@ -38,7 +38,7 @@ class FormatCodeAction(context: Context, override val order: Int) : EditorRelate
     icon = ContextCompat.getDrawable(context, R.drawable.ic_format_code)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val editor = data.getEditor()!!
     val cursor = editor.text.cursor
 

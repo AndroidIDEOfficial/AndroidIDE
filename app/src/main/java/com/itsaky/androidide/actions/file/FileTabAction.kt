@@ -52,7 +52,7 @@ abstract class FileTabAction : EditorActivityAction() {
     enabled = visible
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val activity = data.getActivity() ?: return false
     return activity.doAction(data)
   }

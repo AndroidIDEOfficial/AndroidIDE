@@ -44,7 +44,7 @@ class PreferencesSidebarAction(context: Context, override val order: Int) : Abst
     icon = ContextCompat.getDrawable(context, R.drawable.ic_settings)
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val context = data.requireContext()
     return context.startActivity(Intent(context, PreferencesActivity::class.java))
   }

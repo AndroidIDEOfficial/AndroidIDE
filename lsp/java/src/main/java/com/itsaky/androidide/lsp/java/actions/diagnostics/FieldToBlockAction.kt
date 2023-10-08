@@ -60,7 +60,7 @@ class FieldToBlockAction : BaseJavaCodeAction() {
     }
   }
 
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     val compiler =
       JavaCompilerProvider.get(
         IProjectManager.getInstance().findModuleForFile(data.requireFile(), false) ?: return Any())

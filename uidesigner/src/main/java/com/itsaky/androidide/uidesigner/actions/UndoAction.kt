@@ -42,7 +42,7 @@ class UndoAction(context: Context) : UiDesignerAction() {
     enabled = data.requireWorkspace().undoManager.canUndo()
   }
   
-  override fun execAction(data: ActionData): Any {
+  override suspend fun execAction(data: ActionData): Any {
     data.requireWorkspace().undoManager.undo()
     data.requireActivity().invalidateOptionsMenu()
     return true
