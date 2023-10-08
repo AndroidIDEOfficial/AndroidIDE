@@ -528,4 +528,7 @@
   <string name="err_cannot_determine_package">无法确定软件包名称，不能运行应用。</string>
   <string name="msg_launch_failure_no_app_module">项目中未找到应用模块，无法运行应用。</string>
   <string name="title_launch_app">启动应用</string>
+  <string name="msg_64bit_on_32bit_device">You are using 64-bit variant of AndroidIDE on a 32-bit-only device. This configuration is not supported. Please install the 32-bit variant of AndroidIDE.</string>
+  <string name="title_32bit_on_64bit_device">Configuration Warning</string>
+  <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
 </resources>
