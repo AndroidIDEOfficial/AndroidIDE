@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.activities
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
@@ -41,6 +40,7 @@ import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
 import com.itsaky.androidide.preferences.internal.autoOpenProjects
 import com.itsaky.androidide.preferences.internal.confirmProjectOpen
 import com.itsaky.androidide.preferences.internal.lastOpenedProject
+import com.itsaky.androidide.preferences.internal.prefManager
 import com.itsaky.androidide.preferences.internal.statConsentDialogShown
 import com.itsaky.androidide.preferences.internal.statOptIn
 import com.itsaky.androidide.projects.ProjectManagerImpl
@@ -236,7 +236,7 @@ class MainActivity : LimitlessIDEActivity() {
       configProvider.isArm64v8aBuild()
       && !configProvider.isArm64v8aDevice()
       && configProvider.isArmeabiv7aDevice()
-      ) {
+    ) {
       // IDE = 64-bit
       // Device = 32-bit
       // NOT SUPPORTED
@@ -246,11 +246,13 @@ class MainActivity : LimitlessIDEActivity() {
     } else if (
       configProvider.isArmeabiv7aBuild()
       && configProvider.isArm64v8aDevice()
-      ) {
+    ) {
       // IDE = 32-bit
       // Device = 64-bit
       // SUPPORTED, but warn the user
-      DialogUtils.show32bitOn64bit(this)
+      if (!prefManager.getBoolean("ide.archConfigWarn.hasShown", false)) {
+        DialogUtils.show32bitOn64bit(this)
+      }
       true
 
     } else configProvider.supportsBuildFlavor()
