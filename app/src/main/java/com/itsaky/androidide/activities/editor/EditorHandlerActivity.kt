@@ -319,31 +319,33 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
 
   override fun saveAllAsync(
     notify: Boolean,
+    requestSync: Boolean,
     processResources: Boolean,
     progressConsumer: ((Int, Int) -> Unit)?,
     runAfter: (() -> Unit)?
   ) {
     activityBackroundScope.launch {
-      saveAll(notify, processResources, progressConsumer)
+      saveAll(notify, requestSync, processResources, progressConsumer)
       runAfter?.invoke()
     }
   }
 
   override suspend fun saveAll(
     notify: Boolean,
+    requestSync: Boolean,
     processResources: Boolean,
     progressConsumer: ((Int, Int) -> Unit)?
   ): Boolean {
     val result = saveAllResult(progressConsumer)
 
     // don't bother to switch the context if we don't need to
-    if (notify || result.gradleSaved) {
+    if (notify || (result.gradleSaved && requestSync)) {
       withContext(Dispatchers.Main) {
         if (notify) {
           flashSuccess(string.all_saved)
         }
 
-        if (result.gradleSaved) {
+        if (result.gradleSaved && requestSync) {
           editorViewModel.isSyncNeeded = true
         }
       }

@@ -20,6 +20,11 @@ package com.itsaky.androidide.actions
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.itsaky.androidide.activities.editor.EditorHandlerActivity
+import com.itsaky.androidide.tasks.cancelIfActive
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.plus
 
 /** @author Akash Yadav */
 abstract class EditorActivityAction : ActionItem {
@@ -32,16 +37,25 @@ abstract class EditorActivityAction : ActionItem {
 
   override var requiresUIThread: Boolean = false
 
+  protected val actionScope = CoroutineScope(Dispatchers.Default) +
+      CoroutineName("${javaClass.simpleName}Scope")
+
   override fun prepare(data: ActionData) {
     if (!data.hasRequiredData(Context::class.java)) {
       markInvisible()
     }
   }
 
-  fun ActionData.getActivity() : EditorHandlerActivity? {
+  fun ActionData.getActivity(): EditorHandlerActivity? {
     return this[Context::class.java] as? EditorHandlerActivity
   }
-  fun ActionData.requireActivity() : EditorHandlerActivity {
+
+  fun ActionData.requireActivity(): EditorHandlerActivity {
     return getActivity()!!
+  }
+
+  override fun destroy() {
+    super.destroy()
+    actionScope.cancelIfActive("Action is being destroyed")
   }
 }

@@ -21,7 +21,9 @@ import android.content.Context
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.text.TextUtils
 import androidx.core.content.ContextCompat
+import com.itsaky.androidide.R.string
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseBuildAction
 import com.itsaky.androidide.actions.getContext
@@ -39,6 +41,10 @@ import com.itsaky.androidide.utils.ApkInstaller
 import com.itsaky.androidide.utils.InstallationResultHandler
 import com.itsaky.androidide.utils.flashError
 import com.itsaky.androidide.utils.resolveAttr
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -114,19 +120,45 @@ class QuickRunWithCancellationAction(context: Context, override val order: Int) 
       log.info(
         "Running task '$taskName' to assemble variant '${variant.name}' of project '${module.path}'")
 
-      execTasks(
-        data,
-        resultHandler = { result ->
-          executeAsyncProvideError({ handleResult(data, result, module, variant) }) { _, error ->
-            if (error != null) {
-              log.error("Failed to process task execution result", error)
-            }
-          }
-        },
-        taskName
-      )
+      onModuleSelected(data, module, variant, taskName)
     }
     return true
+  }
+
+  private fun onModuleSelected(
+    data: ActionData,
+    module: AndroidModule,
+    variant: BasicAndroidVariantMetadata,
+    taskName: String
+  ) {
+
+    val buildService = this.buildService ?: return
+    if (!buildService.isToolingServerStarted()) {
+      flashError(string.msg_tooling_server_unavailable)
+      return
+    }
+
+    val activity =
+      data.getActivity()
+        ?: run {
+          log.debug("Cannot start build. Activity instance not provided in ActionData.")
+          return
+        }
+
+    actionScope.launch(Dispatchers.Default) {
+      activity.saveAllResult()
+
+      val result = withContext(Dispatchers.IO) {
+        buildService.executeTasks(taskName).get()
+      }
+
+      if (result?.isSuccessful != true) {
+        log.error("Tasks failed to execute: '$taskName'")
+        return@launch
+      }
+
+      handleResult(data, result, module, variant)
+    }
   }
 
   private fun cancelBuild(): Boolean {

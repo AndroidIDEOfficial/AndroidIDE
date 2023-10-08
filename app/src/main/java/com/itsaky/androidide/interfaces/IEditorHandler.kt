@@ -50,6 +50,7 @@ interface IEditorHandler {
    */
   suspend fun saveAll(
     notify: Boolean = true,
+    requestSync: Boolean = true,
     processResources: Boolean = false,
     progressConsumer: ((progress: Int, total: Int) -> Unit)? = null
   ) : Boolean
@@ -62,6 +63,7 @@ interface IEditorHandler {
    */
   fun saveAllAsync(
     notify: Boolean = true,
+    requestSync: Boolean = true,
     processResources: Boolean = false,
     progressConsumer: ((progress: Int, total: Int) -> Unit)? = null,
     runAfter: (() -> Unit)? = null
