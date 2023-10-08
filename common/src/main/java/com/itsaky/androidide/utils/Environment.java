@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.app.IDEBuildConfigProvider;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -218,7 +219,7 @@ public final class Environment {
     ENV_VARS.put("TERMUX_PKG_NO_MIRROR_SELECT", "true");
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-        && BaseApplication.isAarch64()
+        && IDEBuildConfigProvider.getInstance().isArm64v8aBuild()
         && LIB_HOOK.exists()
         && BaseApplication.getBaseInstance().getPrefManager().shouldUseLdPreload()) {
       // Required for JDK 11

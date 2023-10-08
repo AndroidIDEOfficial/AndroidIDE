@@ -22,6 +22,7 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.app.IDEBuildConfigProvider;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import java.io.File;
@@ -37,12 +38,14 @@ import org.jetbrains.annotations.Contract;
 public class ToolsManager {
 
   private static final ILogger LOG = ILogger.newInstance("ToolsManager");
-  public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
+
+  public static String ARCH_SPECIFIC_ASSET_DATA_DIR =
+      "data/" + IDEBuildConfigProvider.getInstance().getBuildFlavor();
   public static String COMMON_ASSET_DATA_DIR = "data/common";
 
   public static void init(@NonNull BaseApplication app, Runnable onFinish) {
 
-    if (BaseApplication.getArch() == null) {
+    if (!IDEBuildConfigProvider.getInstance().supportsBuildFlavor()) {
       LOG.error("Device not supported");
       return;
     }

@@ -22,6 +22,7 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import com.blankj.utilcode.util.DeviceUtils
 import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.buildinfo.BuildInfo
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -58,7 +59,7 @@ object AndroidIDEStats {
   }
 
   val cpuArch by lazy {
-    BaseApplication.getArch()!!
+    IDEBuildConfigProvider.getInstance().buildFlavor
   }
 
   val statData by lazy {

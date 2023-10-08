@@ -24,7 +24,7 @@ import androidx.preference.Preference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.itsaky.androidide.R
-import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.preferences.internal.CUSTOM_GRADLE_INSTALLATION
 import com.itsaky.androidide.preferences.internal.GRADLE_CLEAR_CACHE
 import com.itsaky.androidide.preferences.internal.GRADLE_COMMANDS
@@ -74,7 +74,7 @@ private class GradleOptions(
     addPreference(GradleCommands())
     addPreference(GradleDistrubution())
     addPreference(GradleClearCache())
-    if (BaseApplication.isAarch64() && VERSION.SDK_INT == VERSION_CODES.R) {
+    if (IDEBuildConfigProvider.getInstance().isArm64v8aBuild() && VERSION.SDK_INT == VERSION_CODES.R) {
       addPreference(TagPointersFix())
     }
   }
@@ -218,4 +218,5 @@ private class LaunchAppAfterInstall(
   override val title: Int = R.string.idepref_launchAppAfterInstall_title,
   override val summary: Int? = R.string.idepref_launchAppAfterInstall_summary,
   override val icon: Int? = drawable.ic_open_external
-) : SwitchPreference(setValue = ::launchAppAfterInstall::set, getValue = ::launchAppAfterInstall::get)
+) :
+  SwitchPreference(setValue = ::launchAppAfterInstall::set, getValue = ::launchAppAfterInstall::get)

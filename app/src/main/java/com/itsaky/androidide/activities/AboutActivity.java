@@ -25,6 +25,7 @@ import androidx.core.util.Pair;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.IDEActivity;
+import com.itsaky.androidide.app.IDEBuildConfigProvider;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import java.util.List;
 
 public class AboutActivity extends IDEActivity {
 
-  public static final String JDK_SOURCE = "https://github.com/itsaky/OpenJDK-Android";
   private ActivityAboutBinding binding;
 
   @Override
@@ -109,7 +109,7 @@ public class AboutActivity extends IDEActivity {
   }
 
   private String getFooter() {
-    final String arch = android.os.Build.SUPPORTED_ABIS[0];
+    final String arch = IDEBuildConfigProvider.getInstance().getBuildFlavor();
     try {
       final String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
       return getString(R.string.about_footer, version, arch);

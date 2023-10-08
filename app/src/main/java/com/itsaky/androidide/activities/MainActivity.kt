@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.activities
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
@@ -33,7 +34,7 @@ import androidx.transition.doOnEnd
 import com.blankj.utilcode.util.SizeUtils
 import com.google.android.material.transition.MaterialSharedAxis
 import com.itsaky.androidide.activities.editor.EditorActivityKt
-import com.itsaky.androidide.app.BaseApplication
+import com.itsaky.androidide.app.IDEBuildConfigProvider
 import com.itsaky.androidide.app.LimitlessIDEActivity
 import com.itsaky.androidide.databinding.ActivityMainBinding
 import com.itsaky.androidide.preferences.internal.NO_OPENED_PROJECT
@@ -88,8 +89,7 @@ class MainActivity : LimitlessIDEActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    if (!BaseApplication.isAbiSupported()) {
-      showDeviceNotSupported()
+    if (!checkDeviceSupported()) {
       return
     }
 
@@ -229,13 +229,38 @@ class MainActivity : LimitlessIDEActivity() {
     startActivity(Intent(this, TerminalActivity::class.java))
   }
 
-  private fun showDeviceNotSupported() {
-    val builder = DialogUtils.newMaterialDialogBuilder(this)
-    builder.setTitle(string.title_device_not_supported)
-    builder.setMessage(string.msg_device_not_supported)
-    builder.setCancelable(false)
-    builder.setPositiveButton(android.R.string.ok) { _, _ -> finishAffinity() }
-    builder.create().show()
+  private fun checkDeviceSupported(): Boolean {
+    val configProvider = IDEBuildConfigProvider.getInstance()
+
+    val supported = if (
+      configProvider.isArm64v8aBuild()
+      && !configProvider.isArm64v8aDevice()
+      && configProvider.isArmeabiv7aDevice()
+      ) {
+      // IDE = 64-bit
+      // Device = 32-bit
+      // NOT SUPPORTED
+      DialogUtils.show64bitOn32bit(this)
+      false
+
+    } else if (
+      configProvider.isArmeabiv7aBuild()
+      && configProvider.isArm64v8aDevice()
+      ) {
+      // IDE = 32-bit
+      // Device = 64-bit
+      // SUPPORTED, but warn the user
+      DialogUtils.show32bitOn64bit(this)
+      true
+
+    } else configProvider.supportsBuildFlavor()
+
+    if (!supported) {
+      DialogUtils.showDeviceNotSupported(this)
+    }
+
+
+    return supported
   }
 
   private fun openLastProject() {

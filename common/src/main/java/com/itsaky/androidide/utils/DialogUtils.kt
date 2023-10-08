@@ -16,11 +16,13 @@
  */
 package com.itsaky.androidide.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itsaky.androidide.common.R
 import com.itsaky.androidide.common.databinding.LayoutDialogProgressBinding
 import com.itsaky.androidide.resources.R.string
 import com.itsaky.androidide.resources.R.style
@@ -33,6 +35,36 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author Akash Yadav
  */
 object DialogUtils {
+
+  @JvmStatic
+  fun showDeviceNotSupported(context: Activity) {
+    val builder = newMaterialDialogBuilder(context)
+    builder.setTitle(R.string.title_device_not_supported)
+    builder.setMessage(R.string.title_device_not_supported)
+    builder.setCancelable(false)
+    builder.setPositiveButton(android.R.string.ok) { _, _ -> context.finishAffinity() }
+    builder.create().show()
+  }
+
+  @JvmStatic
+  fun show64bitOn32bit(context: Activity) {
+    val builder = newMaterialDialogBuilder(context)
+    builder.setTitle(R.string.title_device_not_supported)
+    builder.setMessage(R.string.msg_64bit_on_32bit_device)
+    builder.setCancelable(false)
+    builder.setPositiveButton(android.R.string.ok) { _, _ -> context.finishAffinity() }
+    builder.create().show()
+  }
+
+  @JvmStatic
+  fun show32bitOn64bit(context: Activity) {
+    val builder = newMaterialDialogBuilder(context)
+    builder.setTitle(R.string.title_32bit_on_64bit_device)
+    builder.setMessage(R.string.msg_32bit_on_64bit_device)
+    builder.setCancelable(false)
+    builder.setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
+    builder.create().show()
+  }
 
   @JvmStatic
   @JvmOverloads

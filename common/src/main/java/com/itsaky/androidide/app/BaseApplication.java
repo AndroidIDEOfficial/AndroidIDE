@@ -21,8 +21,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.buildinfo.BuildInfo;
@@ -35,8 +33,6 @@ import com.itsaky.androidide.utils.FlashbarUtilsKt;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.VMUtils;
 import java.io.File;
-import java.util.Arrays;
-import kotlin.collections.ArraysKt;
 
 public class BaseApplication extends Application {
 
@@ -46,35 +42,11 @@ public class BaseApplication extends Application {
   public static final String SPONSOR_URL = BuildInfo.PROJECT_SITE + "/donate";
   public static final String DOCS_URL = BuildInfo.PROJECT_SITE + "/docs";
   public static final String EMAIL = "contact@androidide.com";
-  private static final String AARCH64 = "arm64-v8a";
-  private static final String ARM = "armeabi-v7a";
   private static BaseApplication instance;
   private PreferenceManager mPrefsManager;
 
   public static BaseApplication getBaseInstance() {
     return instance;
-  }
-
-  public static boolean isAbiSupported() {
-    return Arrays.asList(Build.SUPPORTED_ABIS).contains(getArch());
-  }
-
-  public static boolean isAarch64() {
-    return ArraysKt.contains(Build.SUPPORTED_64_BIT_ABIS, AARCH64);
-  }
-
-  public static boolean isArmv7a() {
-    return ArraysKt.contains(Build.SUPPORTED_32_BIT_ABIS, ARM);
-  }
-
-  @Nullable
-  public static String getArch() {
-    if (isAarch64()) {
-      return AARCH64;
-    } else if (isArmv7a()) {
-      return ARM;
-    }
-    return null;
   }
 
   @Override
@@ -104,10 +76,6 @@ public class BaseApplication extends Application {
   public void writeException(Throwable th) {
     FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
         ThrowableUtils.getFullStackTrace(th));
-  }
-
-  public final File getTempProjectDir() {
-    return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
   }
 
   public PreferenceManager getPrefManager() {
