@@ -25,6 +25,7 @@ import android.view.LayoutInflater
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.view.isVisible
 import com.blankj.utilcode.util.SizeUtils
+import com.itsaky.androidide.activities.editor.BaseEditorActivity
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.editor.api.IEditor
 import com.itsaky.androidide.editor.databinding.LayoutCodeEditorBinding
@@ -182,7 +183,9 @@ class CodeEditorView(
    * Called when the editor has been selected and is visible to the user.
    */
   fun onEditorSelected() {
-    _binding?.editor?.onEditorSelected()
+    _binding?.editor?.onEditorSelected() ?: run {
+      log.warn("onEditorSelected() called but no editor instance is available")
+    }
   }
 
   /**
@@ -327,6 +330,10 @@ class CodeEditorView(
 
     if (context is Activity) {
       (context as Activity).invalidateOptionsMenu()
+
+      (context as? BaseEditorActivity?)?.apply {
+        binding.bottomSheet.refreshSymbolInput(this@CodeEditorView)
+      }
     }
   }
 
