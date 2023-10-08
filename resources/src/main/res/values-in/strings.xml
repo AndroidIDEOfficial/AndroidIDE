@@ -528,7 +528,7 @@
   <string name="err_cannot_determine_package">Tidak dapat menjalankan aplikasi. Tidak dapat menentukan nama paket.</string>
   <string name="msg_launch_failure_no_app_module">Tidak dapat menjalankan aplikasi. Tidak ada modul aplikasi yang ditemukan di proyek.</string>
   <string name="title_launch_app">Luncurkan aplikasi</string>
-  <string name="msg_64bit_on_32bit_device">You are using 64-bit variant of AndroidIDE on a 32-bit-only device. This configuration is not supported. Please install the 32-bit variant of AndroidIDE.</string>
-  <string name="title_32bit_on_64bit_device">Configuration Warning</string>
-  <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
+  <string name="msg_64bit_on_32bit_device">Anda menggunakan AndroidIDE varian 64-bit pada perangkat 32-bit saja. Konfigurasi ini tidak didukung. Silakan instal AndroidIDE varian 32-bit.</string>
+  <string name="title_32bit_on_64bit_device">Peringatan Konfigurasi</string>
+  <string name="msg_32bit_on_64bit_device">Anda menggunakan AndroidIDE varian 32-bit pada perangkat 64-bit. Konfigurasi ini mungkin berfungsi, namun akan mengakibatkan penurunan kinerja dan kemungkinan kerentanan keamanan. Harap hindari penggunaan konfigurasi ini bila memungkinkan.</string>
 </resources>
