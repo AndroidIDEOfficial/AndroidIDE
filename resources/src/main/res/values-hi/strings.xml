@@ -528,4 +528,7 @@
   <string name="err_cannot_determine_package">Cannot run app. Unable to determine package name.</string>
   <string name="msg_launch_failure_no_app_module">Cannot run application. No application modules found in project.</string>
   <string name="title_launch_app">Launch app</string>
+  <string name="msg_64bit_on_32bit_device">You are using 64-bit variant of AndroidIDE on a 32-bit-only device. This configuration is not supported. Please install the 32-bit variant of AndroidIDE.</string>
+  <string name="title_32bit_on_64bit_device">Configuration Warning</string>
+  <string name="msg_32bit_on_64bit_device">You are using 32-bit variant of AndroidIDE on a 64-bit device. This configuration may work, but it\'ll result in reduced performance and possible security vulnerabilities. Please avoid using this configuration whenever possible.</string>
 </resources>
