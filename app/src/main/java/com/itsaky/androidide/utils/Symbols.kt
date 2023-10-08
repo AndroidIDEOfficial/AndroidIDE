@@ -37,7 +37,7 @@ object Symbols {
     }
   }
 
-  private fun javaSymbols(): Array<Symbol?> {
+  fun javaSymbols(): Array<Symbol?> {
     return arrayOf(
       TabSymbol(),
       Symbol("{", "{}"),
@@ -64,7 +64,7 @@ object Symbols {
     )
   }
 
-  private fun xmlSymbols(): Array<Symbol?> {
+  fun xmlSymbols(): Array<Symbol?> {
     return arrayOf(
       TabSymbol(),
       Symbol("<", "<>"),
@@ -93,7 +93,7 @@ object Symbols {
     )
   }
 
-  private fun plainTextSymbols(): Array<Symbol?> {
+  fun plainTextSymbols(): Array<Symbol?> {
     return arrayOf(
       TabSymbol(),
       Symbol("{", "{}"),

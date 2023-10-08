@@ -38,35 +38,18 @@
     android:layout_height="@dimen/editor_sheet_collapsed_height"
     android:background="?attr/colorSurface">
 
-    <LinearLayout
+    <include
+      layout="@layout/layout_editor_build_status"
+      android:id="@+id/build_status"/>
+
+    <com.itsaky.androidide.ui.SymbolInputView
+      android:id="@+id/symbol_input"
       android:layout_width="match_parent"
-      android:layout_height="56dp"
-      android:orientation="vertical"
-      tools:ignore="UselessParent">
+      android:layout_height="wrap_content"/>
 
-      <TextView
-        android:id="@+id/statusText"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        tools:text="Configure project :app" />
-
-      <TextView
-        android:id="@+id/swipe_hint"
-        android:layout_width="match_parent"
-        android:layout_height="18dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:text="@string/msg_swipe_up"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="11sp" />
-
-    </LinearLayout>
+    <include
+      layout="@layout/layout_editor_bottom_action"
+      android:id="@+id/bottom_action"/>
 
   </ViewFlipper>
 

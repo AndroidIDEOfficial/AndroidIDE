@@ -44,7 +44,6 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.adapters.DiagnosticsAdapter
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter
 import com.itsaky.androidide.adapters.SearchListAdapter
-import com.itsaky.androidide.databinding.LayoutBottomActionBinding
 import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding
 import com.itsaky.androidide.fragments.output.ShareableOutputFragment
 import com.itsaky.androidide.models.LogLine
@@ -78,8 +77,6 @@ constructor(
   defStyleRes: Int = 0,
 ) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-  private var action: LayoutBottomActionBinding
-  private var symbolInput: SymbolInputView
   private val collapsedHeight: Float by lazy {
     val localContext = getContext() ?: return@lazy 0f
     localContext.resources.getDimension(R.dimen.editor_sheet_collapsed_height)
@@ -94,8 +91,8 @@ constructor(
 
   companion object {
 
-    const val CHILD_SYMBOL_INPUT = 0
-    const val CHILD_HEADER = 1
+    const val CHILD_HEADER = 0
+    const val CHILD_SYMBOL_INPUT = 1
     const val CHILD_ACTION = 2
   }
 
@@ -172,12 +169,7 @@ constructor(
 
     val inflater = LayoutInflater.from(context)
     binding = LayoutEditorBottomSheetBinding.inflate(inflater)
-    action = LayoutBottomActionBinding.inflate(inflater)
-    symbolInput = SymbolInputView(context)
     pagerAdapter = EditorBottomSheetTabAdapter(context)
-
-    binding.headerContainer.addView(symbolInput, CHILD_SYMBOL_INPUT, LayoutParams(-1, -2))
-    binding.headerContainer.addView(action.root, CHILD_ACTION, LayoutParams(-1, -2))
     binding.pager.adapter = pagerAdapter
 
     removeAllViews()
@@ -216,11 +208,11 @@ constructor(
   }
 
   fun setActionText(text: CharSequence) {
-    action.actionText.text = text
+    binding.bottomAction.actionText.text = text
   }
 
   fun setActionProgress(progress: Int) {
-    action.progress.setProgressCompat(progress, true)
+    binding.bottomAction.progress.setProgressCompat(progress, true)
   }
 
   fun appendApkLog(line: LogLine) {
@@ -252,8 +244,8 @@ constructor(
   }
 
   fun refreshSymbolInput(editor: CodeEditorView) {
-    symbolInput.bindEditor(editor.editor)
-    symbolInput.setSymbols(*forFile(editor.file))
+    binding.symbolInput.bindEditor(editor.editor)
+    binding.symbolInput.setSymbols(*forFile(editor.file))
   }
 
   fun onSoftInputChanged() {
@@ -279,7 +271,7 @@ constructor(
 
   fun setStatus(text: CharSequence, @GravityInt gravity: Int) {
     runOnUiThread {
-      binding.let {
+      binding.buildStatus.let {
         it.statusText.gravity = gravity
         it.statusText.text = text
       }

@@ -17,16 +17,13 @@
  */
 package com.itsaky.androidide.ui;
 
-import static com.itsaky.androidide.utils.ResourceUtilsKt.resolveAttr;
-
 import android.content.Context;
 import android.util.AttributeSet;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.adapters.SymbolInputAdapter;
 import com.itsaky.androidide.editor.ui.IDEEditor;
+import com.itsaky.androidide.utils.Symbols;
 
 public class SymbolInputView extends RecyclerView {
 
@@ -48,16 +45,20 @@ public class SymbolInputView extends RecyclerView {
   public void bindEditor(IDEEditor editor) {
     adapter = new SymbolInputAdapter(editor);
     setAdapter(adapter);
-    setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
   }
 
   public void setSymbols(Symbol... symbols) {
     if (adapter != null) {
+      if (symbols.length == 0) {
+        symbols = Symbols.INSTANCE.plainTextSymbols();
+      }
+
       adapter.setSymbols(true, symbols);
     }
   }
 
   public static class Symbol {
+
     private final String label;
     private final String commit;
     private final int offset;
