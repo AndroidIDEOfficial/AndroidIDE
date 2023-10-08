@@ -184,11 +184,7 @@ abstract class BaseEditorActivity :
       return
     }
 
-    val packageName = onResult(this, intent)
-    if (packageName == null) {
-      flashError(string.err_cannot_determine_package)
-      return
-    }
+    val packageName = onResult(this, intent) ?: return
 
     if (launchAppAfterInstall) {
       IntentUtils.launchApp(this, packageName)
