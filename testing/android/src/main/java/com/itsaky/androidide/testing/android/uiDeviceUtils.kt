@@ -17,11 +17,17 @@
 
 package com.itsaky.androidide.testing.android
 
+import android.view.KeyCharacterMap
+import android.view.KeyEvent
 import androidx.annotation.StringRes
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import com.itsaky.androidide.buildinfo.BuildInfo
+
+private val keyCharMap by lazy {
+  KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
+}
 
 /**
  * @see UiDevice.waitForWindowUpdate
@@ -52,3 +58,16 @@ fun UiDevice.findObjectWithText(text: String): UiObject2? =
  */
 fun UiDevice.findObjectWithText(@StringRes text: Int): UiObject2? =
   findObject(By.text(stringRes(text)))
+
+/**
+ * Sends key events to this [UiDevice] to type the given [text].
+ */
+fun UiDevice.sendKeyEvents(text: String) {
+  waitForIdle()
+  val keyEvents = keyCharMap.getEvents(text.toCharArray())
+  for (keyEvent in keyEvents) {
+    uiAutomation.injectInputEvent(keyEvent, true)
+//    pressKeyCode(keyEvent.keyCode, keyEvent.metaState)
+    waitForIdle()
+  }
+}

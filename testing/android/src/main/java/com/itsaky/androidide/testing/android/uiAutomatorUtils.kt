@@ -18,6 +18,7 @@
 package com.itsaky.androidide.testing.android
 
 import android.app.Activity
+import android.app.UiAutomation
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.platform.app.InstrumentationRegistry
@@ -25,6 +26,7 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiDeviceAccessor
 import androidx.test.uiautomator.Until
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.app.BaseApplication
@@ -91,3 +93,9 @@ fun <T : Activity> getActivityInStage(stage: Stage): T? {
 
   return activity
 }
+
+/**
+ * @see UiDeviceAccessor.getUiAutomation
+ */
+val UiDevice.uiAutomation: UiAutomation
+  get() = UiDeviceAccessor.getUiAutomation(this)
