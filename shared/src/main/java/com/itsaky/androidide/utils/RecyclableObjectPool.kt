@@ -36,6 +36,9 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
   companion object {
 
     var DEBUG = false
+    var LOG_METRICS_ON_N_ACCESS = 400
+
+    private const val CACHE_HIT_WARNING_THRESHOLD = 50f
 
     private val log by lazy {
       ILogger.newInstance("RecyclableObjectPool")
@@ -89,7 +92,7 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
       accCount.set(IntPair.pack(access, ++cacheHit))
     } ?: objFactory.create()
 
-    if (DEBUG && access % 100 == 0) {
+    if (DEBUG && access % LOG_METRICS_ON_N_ACCESS == 0) {
       logMetrics()
     }
 
@@ -127,16 +130,28 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     val rec = recCount.get()
     val access = IntPair.getFirst(acc)
     val cacheHit = IntPair.getSecond(acc)
+    val cacheHitRate = cacheHitRate()
 
     val simpleName = objName.let { if (it.contains('.')) it.substringAfterLast('.') else it }
     log.debug("${javaClass.simpleName}: $simpleName($objName)")
     log.debug("    Recycle count          : $rec")
     log.debug("    Access count           : $access")
     log.debug("    Cache hit count        : $cacheHit")
-    log.debug("    Cache hit rate         : ${cacheHitRate()}%")
+    log.debug("    Cache hit rate         : $cacheHitRate%")
     log.debug("    Cache miss rate        : ${cacheMissRate()}%")
     log.debug("    Recycle rate           : ${recycleRate()}%")
     log.debug("    Cache utilization rate : ${cacheUtilization()}%")
+    log.debug("    Objects in cache       : ${cache.size}")
+
+    if (cacheHitRate < CACHE_HIT_WARNING_THRESHOLD) {
+      // Cache hit rate is less than threshold
+      // something might be wrong
+      // log an error
+      log.error("!!!!!!!!!!!!!!!!!!!!! CRITICAL ERROR !!!!!!!!!!!!!!!!!!!!!")
+      log.error("Cache-hit rate for '${simpleName}' is less than ${CACHE_HIT_WARNING_THRESHOLD}%!!")
+      log.error("Make sure that instances of $objName are obtained using the object pool")
+      log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    }
   }
 
   /**

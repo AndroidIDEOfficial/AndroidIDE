@@ -26,8 +26,9 @@ import java.util.Objects;
 
 public class LogLine implements Recyclable {
 
-  private static final RecyclableObjectPool<LogLine> logLinePool = new RecyclableObjectPool<>(
-      RecyclableObjectPool.CAPACITY_DEFAULT, LogLine.class, LogLine::new);
+  // do not cache too many LogLine items
+  // LogLines should be recycled as soon as they are appended to the log view
+  private static final RecyclableObjectPool<LogLine> logLinePool = new RecyclableObjectPool<>(16, LogLine.class, LogLine::new);
 
   public String unformatted;
   public String date;
