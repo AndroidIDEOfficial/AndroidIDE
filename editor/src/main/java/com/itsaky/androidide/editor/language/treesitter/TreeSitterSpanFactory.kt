@@ -23,6 +23,7 @@ import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.treesitter.TSQuery
 import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.parseHexColor
 import io.github.rosemoe.sora.editor.ts.spans.DefaultSpanFactory
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.styling.Span
@@ -95,28 +96,12 @@ class TreeSitterSpanFactory(
       }
       e = result.range.last
 
-      var str = ""
       val color = try {
-        str = result.groupValues[1]
-        if (str.length == 3) {
-          // HEX color is in the form of #FFF
-          // convert it to #FFFFFF format (6 character long)
-          val r = str[0]
-          val g = str[1]
-          val b = str[2]
-          str = "$r$r$g$g$b$b"
-        }
-
-        if (str.length == 6) {
-          // Prepend alpha value
-          str = "FF${str}"
-        }
-
-        java.lang.Long.parseLong(str, 16)
+        parseHexColor(result.groupValues[1]).toInt()
       } catch (e: Exception) {
-        log.error("Failed to parse hex color. color=$str text=$text", e)
+        log.error("An error occurred parsing hex color. text=$text", e)
         return@forEach
-      }.toInt()
+      }
 
       val textColor = if (ColorUtils.calculateLuminance(color) > 0.5f) {
         Color.BLACK

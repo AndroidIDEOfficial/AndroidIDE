@@ -21,9 +21,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.SparseArray
 import android.view.Menu
 import android.view.ViewGroup.LayoutParams
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.core.util.forEach
 import androidx.core.view.GravityCompat
 import com.blankj.utilcode.util.ImageUtils
 import com.blankj.utilcode.util.ThreadUtils
@@ -605,7 +607,7 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
     executeAsyncProvideError({
       val files = editorViewModel.getOpenedFiles()
       val dupliCount = mutableMapOf<String, Int>()
-      val names = mutableMapOf<Int, String>()
+      val names = SparseArray<String>()
       val nameBuilder = UniqueNameBuilder<File>("", File.separator)
 
       files.forEach {
@@ -633,7 +635,9 @@ open class EditorHandlerActivity : ProjectHandlerActivity(), IEditorHandler {
       }
 
       ThreadUtils.runOnUiThread {
-        result.forEach { (index, name) -> binding.tabs.getTabAt(index)?.text = name }
+        result.forEach { index, name ->
+          binding.tabs.getTabAt(index)?.text = name
+        }
       }
     }
   }

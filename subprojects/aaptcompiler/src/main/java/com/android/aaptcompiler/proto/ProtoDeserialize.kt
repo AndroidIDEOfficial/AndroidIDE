@@ -42,6 +42,7 @@ import com.android.aaptcompiler.resourceIdFromParts
 import com.android.aaptcompiler.resourceTypeFromTag
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import com.android.utils.ILogger
+import com.android.utils.SparseArray
 
 fun deserializeConfigFromPb(
   config: ConfigurationOuterClass.Configuration, logger: ILogger?): ConfigDescription? {
@@ -638,7 +639,7 @@ fun deserializePackageFromPb(
   val packageId =
     if (original.hasPackageId()) original.getPackageId().getId().toByte() else 0.toByte()
 
-  val idIndex = mutableMapOf<Int, ResourceName>()
+  val idIndex = SparseArray<ResourceName>()
 
   val resourcePackage =
     table.createPackageAllowingDuplicateNames(original.getPackageName(), packageId)
@@ -725,8 +726,7 @@ fun deserializePackageFromPb(
         group.getTypeId().getId().toByte(),
         entry.getEntryId().getId().toShort())
       if (resourceId.isValidId()) {
-        idIndex[resourceId] =
-          ResourceName(resourcePackage.name, resourceGroup.type, resourceEntry.name)
+        idIndex.put(resourceId, ResourceName(resourcePackage.name, resourceGroup.type, resourceEntry.name))
       }
 
       for (configValue in entry.getConfigValueList()) {

@@ -18,6 +18,8 @@
 package com.itsaky.androidide.editor.schemes.internal.parser
 
 import android.graphics.Color
+import android.util.SparseIntArray
+import androidx.core.util.size
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser
@@ -36,11 +38,11 @@ class SchemeParserTest {
     val scheme = parseSyntaxJson()
     assertThat(scheme.isDarkScheme).isFalse()
     assertThat(scheme.definitions).hasSize(12)
-    assertThat(scheme.colorIds[scheme.definitions["black"]]).isEqualTo(Color.BLACK)
-    assertThat(scheme.colorIds[scheme.definitions["white"]]).isEqualTo(Color.WHITE)
-    assertThat(scheme.colorIds[scheme.definitions["9e"]]).isEqualTo(Color.parseColor("#9e9e9e"))
+    assertThat(scheme.colorIds[scheme.definitions["black"] ?: -1]).isEqualTo(Color.BLACK)
+    assertThat(scheme.colorIds[scheme.definitions["white"] ?: -1]).isEqualTo(Color.WHITE)
+    assertThat(scheme.colorIds[scheme.definitions["9e"] ?: -1]).isEqualTo(Color.parseColor("#9e9e9e"))
 
-    assertThat(scheme.editorScheme).hasSize(27)
+    assertThat(scheme.editorScheme.size).isEqualTo(27)
     assertThat(scheme.editorScheme[EditorColorScheme.WHOLE_BACKGROUND])
       .isEqualTo(Color.parseColor("#212121"))
   }
@@ -63,12 +65,12 @@ class SchemeParserTest {
       this.styles["text.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.parseColor("#f5f5f5"))
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"] ?: -1])
       }
       this.styles["priority.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.WHITE)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#9e9d24"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isTrue()
@@ -76,7 +78,7 @@ class SchemeParserTest {
       this.styles["priority.error"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.BLACK)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#f44336"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isFalse()
@@ -114,12 +116,12 @@ class SchemeParserTest {
       this.styles["text.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.parseColor("#f5f5f5"))
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"] ?: -1])
       }
       this.styles["priority.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.WHITE)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#9e9d24"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isTrue()
@@ -127,7 +129,7 @@ class SchemeParserTest {
       this.styles["priority.error"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.BLACK)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#f44336"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isFalse()
@@ -160,12 +162,12 @@ class SchemeParserTest {
       this.styles["text.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.parseColor("#f5f5f5"))
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["f5"] ?: -1])
       }
       this.styles["priority.debug"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.WHITE)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["white"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#9e9d24"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isTrue()
@@ -173,7 +175,7 @@ class SchemeParserTest {
       this.styles["priority.error"].apply {
         assertThat(this).isNotNull()
         assertThat(scheme.colorIds[this!!.fg]).isEqualTo(Color.BLACK)
-        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"]])
+        assertThat(scheme.colorIds[this.fg]).isEqualTo(scheme.colorIds[scheme.definitions["black"] ?: -1])
         assertThat(scheme.colorIds[this.bg]).isEqualTo(Color.parseColor("#f44336"))
         assertThat(this.bold || this.italic || this.strikeThrough).isFalse()
         assertThat(this.completion).isFalse()
@@ -193,11 +195,11 @@ class SchemeParserTest {
     val scheme = parseSyntaxJson("editor-ref.json")
     assertThat(scheme.isDarkScheme).isFalse()
     assertThat(scheme.definitions).hasSize(12)
-    assertThat(scheme.colorIds[scheme.definitions["black"]]).isEqualTo(Color.BLACK)
-    assertThat(scheme.colorIds[scheme.definitions["white"]]).isEqualTo(Color.WHITE)
-    assertThat(scheme.colorIds[scheme.definitions["9e"]]).isEqualTo(Color.parseColor("#9e9e9e"))
+    assertThat(scheme.colorIds[scheme.definitions["black"] ?: -1]).isEqualTo(Color.BLACK)
+    assertThat(scheme.colorIds[scheme.definitions["white"] ?: -1]).isEqualTo(Color.WHITE)
+    assertThat(scheme.colorIds[scheme.definitions["9e"] ?: -1]).isEqualTo(Color.parseColor("#9e9e9e"))
 
-    assertThat(scheme.editorScheme).hasSize(27)
+    assertThat(scheme.editorScheme.size).isEqualTo(27)
     assertThat(scheme.editorScheme[EditorColorScheme.WHOLE_BACKGROUND])
       .isEqualTo(Color.parseColor("#212121"))
   }

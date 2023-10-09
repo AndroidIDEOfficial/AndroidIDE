@@ -23,6 +23,7 @@ import com.google.gson.stream.JsonToken.STRING
 import com.itsaky.androidide.editor.schemes.IDEColorScheme
 import com.itsaky.androidide.editor.schemes.LanguageScheme
 import com.itsaky.androidide.editor.schemes.StyleDef
+import com.itsaky.androidide.utils.parseHexColor
 import java.io.File
 
 /** @author Akash Yadav */
@@ -47,17 +48,16 @@ fun IDEColorScheme.parseColorValue(value: String?, colorId: Boolean = true): Int
     val refName = value.substring(1)
     val refValue =
       definitions[refName] ?: throw ParseException("Referenced color '$value' not found")
-    return if (colorId) refValue else colorIds[refValue]!!
+    return if (colorId) refValue else colorIds.get(refValue)
   }
 
   if (value[0] == '#') {
     val color =
       try {
-        Color.parseColor(value)
+        parseHexColor(value).toInt()
       } catch (err: Throwable) {
-        throw ParseException("Invalid hex color code: '$value'")
+        throw ParseException("Invalid hex color code: '$value'", err)
       }
-
     return if (colorId) putColor(color) else color
   }
 

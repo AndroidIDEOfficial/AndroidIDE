@@ -15,16 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.editor.schemes.internal.parser
+package com.itsaky.androidide.utils
 
-import com.google.gson.JsonParseException
+import android.util.SparseIntArray
 
 /**
- * Thrown when an error occurs while parsing the color scheme for editor.
- *
- * @author Akash Yadav
+ * Get the value associated with the given key or `null`.
  */
-class ParseException @JvmOverloads constructor(
-  msg: String?,
-  cause: Throwable? = null
-) : JsonParseException(msg, cause)
+fun SparseIntArray.getOrNull(key: Int) : Int? {
+  val keyIdx = indexOfKey(key)
+  if (keyIdx >= 0) {
+    return valueAt(keyIdx)
+  }
+
+  return null
+}

@@ -1,5 +1,6 @@
 package com.android.aaptcompiler
 
+import android.util.SparseArray
 import com.android.aapt.Resources
 import com.itsaky.androidide.layoutlib.resources.ResourceVisibility
 import java.io.File
@@ -16,6 +17,7 @@ import java.util.TreeMap
  * resources from libraries and are not validated.
  */
 class ResourceTable(val validateResources: Boolean = false, val logger: BlameLogger? = null) {
+
   /**
    * The string pool used by this resource table. Values that reference strings must use this pool
    * to create their strings.
@@ -29,7 +31,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
    * Set of dynamic packages that this table may reference. Their package names get encoded into the
    * resources.arsc along with their compile-time assigned IDs.
    */
-  private val includedPackages = mutableMapOf<Int, String>()
+  private val includedPackages = SparseArray<String>()
 
   enum class CollisionResult {
     KEEP_ORIGINAL,
@@ -258,6 +260,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
           tablePackage.id = id
           return tablePackage
         }
+
         tablePackage.id != id -> return null
       }
     }
@@ -288,6 +291,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
         packages.add(newPackage)
         newPackage
       }
+
       else -> tablePackage
     }
   }
@@ -320,7 +324,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(source),
         "Resource '$name' has invalid entry name '${name.entry}'. " +
-          "Invalid character '$badCodePoint'."
+            "Invalid character '$badCodePoint'."
       )
       return false
     }
@@ -349,7 +353,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(value.source),
         "Failed to add resource '$name' with ID ${id.toString(16)} because " +
-          "package '${tablePackage.name}' already has ID ${packageId.toString(16)}."
+            "package '${tablePackage.name}' already has ID ${packageId.toString(16)}."
       )
       return false
     }
@@ -364,7 +368,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(value.source),
         "Failed to add resource '$name' with ID ${id.toString(16)} because type " +
-          "'${resourceGroup.type.tagName}' already has ID ${groupId.toString(16)}."
+            "'${resourceGroup.type.tagName}' already has ID ${groupId.toString(16)}."
       )
       return false
     }
@@ -376,7 +380,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(value.source),
         "Failed to add resource '$name' with ID ${id.toString(16)}, because resource already" +
-          " has ID ${resourceIdFromParts(packageId!!, groupId!!, entryId).toString(16)}."
+            " has ID ${resourceIdFromParts(packageId!!, groupId!!, entryId).toString(16)}."
       )
       return false
     }
@@ -395,10 +399,11 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
           logError(
             blameSource(value.source),
             "Duplicate value for resource '$name' with config '$config' and product '$product'. " +
-              "Resource was previously defined here: $previousSource."
+                "Resource was previously defined here: $previousSource."
           )
           return false
         }
+
         CollisionResult.KEEP_ORIGINAL -> {}
       }
     }
@@ -451,7 +456,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(source),
         "Failed to add resource '$name' with ID ${id.toString(16)} because package " +
-          "'${tablePackage.name}' already has ID ${packageId.toString(16)}."
+            "'${tablePackage.name}' already has ID ${packageId.toString(16)}."
       )
       return false
     }
@@ -466,7 +471,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(source),
         "Failed to add resource '$name' with ID ${id.toString(16)} because type " +
-          "'${resourceGroup.type.tagName}' already has ID ${groupId.toString(16)}."
+            "'${resourceGroup.type.tagName}' already has ID ${groupId.toString(16)}."
       )
       return false
     }
@@ -478,7 +483,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(source),
         "Failed to add resource '$name' with ID ${id.toString(16)}, because resource already " +
-          "has ID ${resourceIdFromParts(packageId!!, groupId!!, entryId).toString(16)}."
+            "has ID ${resourceIdFromParts(packageId!!, groupId!!, entryId).toString(16)}."
       )
       return false
     }
@@ -496,27 +501,30 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
 
     when {
       visibility.level == ResourceVisibility.UNDEFINED &&
-        resourceEntry.visibility.level != ResourceVisibility.UNDEFINED -> {
+          resourceEntry.visibility.level != ResourceVisibility.UNDEFINED -> {
         // We can't undefine a symbol. Ignore
       }
+
       visibility.level == ResourceVisibility.PRIVATE &&
-        resourceEntry.visibility.level == ResourceVisibility.PUBLIC -> {
+          resourceEntry.visibility.level == ResourceVisibility.PUBLIC -> {
         logError(
           blameSource(source),
           "Failed to add resource '$name' as private (java-symbol) because it was " +
-            "previously defined as public."
+              "previously defined as public."
         )
         return false
       }
+
       visibility.level == ResourceVisibility.PUBLIC &&
-        resourceEntry.visibility.level == ResourceVisibility.PRIVATE -> {
+          resourceEntry.visibility.level == ResourceVisibility.PRIVATE -> {
         logError(
           blameSource(source),
           "Failed to add resource '$name' as public because it was previously defined as " +
-            "private (java-symbol)."
+              "private (java-symbol)."
         )
         return false
       }
+
       else -> {
         // This symbol definition takes precedence.
         resourceEntry.visibility = visibility
@@ -562,7 +570,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
       logError(
         blameSource(overlayable.source),
         "Failed to add overlayable declaration for resource '$name', because resource already " +
-          "has an overlayable defined here: $previousSource."
+            "has an overlayable defined here: $previousSource."
       )
       return false
     }
@@ -571,6 +579,7 @@ class ResourceTable(val validateResources: Boolean = false, val logger: BlameLog
   }
 
   companion object {
+
     fun resolveValueCollision(existing: Value, incoming: Value): CollisionResult {
       val existingAttr = existing as? AttributeResource
       val incomingAttr = incoming as? AttributeResource
@@ -633,6 +642,7 @@ class Overlayable(val name: String, val actor: String, val source: Source) {
   constructor() : this("", "", Source(""))
 
   companion object {
+
     const val ACTOR_SCHEME = "overlay"
     const val ACTOR_SCHEME_URI = "$ACTOR_SCHEME://"
   }
@@ -661,19 +671,27 @@ class OverlayableItem(
 
   /** Represents the types of overlays that are allowed to overlay the resource. */
   object Policy {
+
     const val NONE = 0
+
     /** The resource can be overlaid by any overlay. */
     const val PUBLIC = 1 shl 0
+
     /** The resource can be overlaid by any overlay on the system partition. */
     const val SYSTEM = 1 shl 1
+
     /** The resource can be overlaid by any overlay on the vendor partition. */
     const val VENDOR = 1 shl 2
+
     /** The resource can be overlaid by any overlay on the product partition. */
     const val PRODUCT = 1 shl 3
+
     /** The resource can be overlaid by any overlay signed with the same signature as its actor. */
     const val SIGNATURE = 1 shl 4
+
     /** The resource can be overlaid by any overlay on the odm partition. */
     const val ODM = 1 shl 5
+
     /** The resource can be overlaid by any overlay on the oem partition. */
     const val OEM = 1 shl 6
   }
@@ -700,6 +718,7 @@ class ResourceTablePackage(var name: String = "", var id: Byte? = null) {
         groups.add(newGroup)
         newGroup
       }
+
       else -> group
     }
   }
@@ -710,6 +729,7 @@ class ResourceTablePackage(var name: String = "", var id: Byte? = null) {
  * etc.).
  */
 class ResourceGroup(val type: AaptResourceType) {
+
   var id: Byte? = null
   var visibility = ResourceVisibility.UNDEFINED
 
@@ -746,6 +766,7 @@ class ResourceGroup(val type: AaptResourceType) {
         entries.getOrPut(name) { TreeMap(nullsFirst()) }[entryId] = newEntry
         newEntry
       }
+
       else -> entry
     }
   }
@@ -753,6 +774,7 @@ class ResourceGroup(val type: AaptResourceType) {
 
 /** Represents a resource entry, which may have varying values for each defined configuration. */
 class ResourceEntry(val name: String) {
+
   var id: Short? = null
   var visibility = Visibility(Source(""), "", ResourceVisibility.UNDEFINED)
 
@@ -773,6 +795,7 @@ class ResourceEntry(val name: String) {
         values.add(newConfigValue)
         newConfigValue
       }
+
       else -> configValue
     }
   }

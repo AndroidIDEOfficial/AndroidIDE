@@ -17,8 +17,12 @@
 
 package com.itsaky.androidide.editor.schemes
 
+import android.util.SparseIntArray
+import androidx.core.util.containsKey
+import androidx.core.util.set
 import com.itsaky.androidide.editor.schemes.internal.parser.SchemeParser
 import com.itsaky.androidide.syntax.colorschemes.DynamicColorScheme
+import com.itsaky.androidide.utils.getOrNull
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
@@ -26,8 +30,8 @@ import java.util.TreeSet
 
 class IDEColorScheme(internal val file: File, val key: String) : DynamicColorScheme() {
 
-  internal val colorIds = mutableMapOf<Int, Int>()
-  internal val editorScheme = mutableMapOf<Int, Int>()
+  internal val colorIds = SparseIntArray()
+  internal val editorScheme = SparseIntArray()
   internal val languages = mutableMapOf<String, LanguageScheme>()
 
   var name: String = ""
@@ -64,7 +68,7 @@ class IDEColorScheme(internal val file: File, val key: String) : DynamicColorSch
   override fun getColor(type: Int): Int {
     // getColor is called in superclass constructor
     // in this case, the below properties will be null
-    return editorScheme?.get(type) ?: colorIds?.get(type) ?: super.getColor(type)
+    return editorScheme?.getOrNull(type) ?: colorIds?.getOrNull(type) ?: super.getColor(type)
   }
 
   override fun isDark(): Boolean {
