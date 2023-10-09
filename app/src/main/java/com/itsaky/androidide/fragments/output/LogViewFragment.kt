@@ -130,6 +130,8 @@ abstract class LogViewFragment :
         line.toString()
       }
 
+    line.recycle()
+
     if (!lineString.endsWith("\n")) {
       lineString += "\n"
     }
@@ -194,7 +196,7 @@ abstract class LogViewFragment :
   abstract fun isSimpleFormattingEnabled(): Boolean
 
   protected open fun logLine(priority: Priority, tag: String, message: String) {
-    val line = LogLine(priority, tag, message)
+    val line = LogLine.obtain(priority, tag, message)
     appendLog(line)
   }
 

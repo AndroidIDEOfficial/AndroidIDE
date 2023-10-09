@@ -128,7 +128,8 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
     val access = IntPair.getFirst(acc)
     val cacheHit = IntPair.getSecond(acc)
 
-    log.debug("${javaClass.simpleName}: $objName")
+    val simpleName = objName.let { if (it.contains('.')) it.substringAfterLast('.') else it }
+    log.debug("${javaClass.simpleName}: $simpleName($objName)")
     log.debug("    Recycle count          : $rec")
     log.debug("    Access count           : $access")
     log.debug("    Cache hit count        : $cacheHit")

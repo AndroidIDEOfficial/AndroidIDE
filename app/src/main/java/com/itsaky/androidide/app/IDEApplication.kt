@@ -54,6 +54,7 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
 import com.itsaky.androidide.utils.flashError
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
@@ -74,6 +75,8 @@ class IDEApplication : BaseApplication() {
     if (!VMUtils.isJvm()) {
       TreeSitter.loadLibrary()
     }
+
+    RecyclableObjectPool.DEBUG = BuildConfig.DEBUG
   }
 
   override fun onCreate() {

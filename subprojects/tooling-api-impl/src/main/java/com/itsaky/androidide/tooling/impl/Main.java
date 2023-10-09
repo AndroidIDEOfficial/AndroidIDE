@@ -25,6 +25,7 @@ import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.internal.ProjectImpl;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.ILogger.Priority;
 import com.itsaky.androidide.utils.JvmLogger;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -123,9 +124,9 @@ public class Main {
     }
   }
 
-  private static void onLog(LogLine line) {
+  private static void onLog(Priority priority, String tag, String message) {
     if (client != null) {
-      client.logMessage(line);
+      client.logMessage(LogLine.obtain(priority, tag, message));
     }
   }
 
