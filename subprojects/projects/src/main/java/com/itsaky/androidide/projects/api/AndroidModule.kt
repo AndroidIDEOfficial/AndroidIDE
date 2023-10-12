@@ -83,7 +83,6 @@ import java.util.concurrent.CompletableFuture
  * [libraryMap].
  * @param libraryMap The map of libraries. Keys are the key field obtained from the GraphItem
  * instance in the Tooling API implementation.
- * @param dynamicFeatures The dynamic features.
  * @param lintCheckJars The lint check jar files.
  * @param modelSyncFiles The model sync files.
  * @author Akash Yadav
@@ -358,7 +357,7 @@ open class AndroidModule( // Class must be open because BaseXMLTest mocks this..
   /** Get the resource tables for external dependencies (not local module project dependencies). */
   fun getDependencyResourceTables(): Set<ResourceTable> {
     return mutableSetOf<ResourceTable>().also {
-      var deps = 0
+      var deps: Int
       it.addAll(
         libraryMap.values
           .filter { library ->

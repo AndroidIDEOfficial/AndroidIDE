@@ -67,7 +67,7 @@ internal class ToolingServerRunner(
   }
 
   fun startAsync() = runnerScope.launch {
-    var process: Process? = null
+    var process: Process?
     try {
       log.info("Starting tooling API server...")
       val command = listOf(

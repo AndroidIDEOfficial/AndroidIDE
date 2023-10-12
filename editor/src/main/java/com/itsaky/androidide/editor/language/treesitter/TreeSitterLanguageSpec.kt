@@ -39,7 +39,7 @@ class TreeSitterLanguageSpec
   // </editor-fold>
 
   val indentsQuery: TSQuery? = TSQuery.create(language, indentsQueryScm)
-    .let { if (it.isValid) it else null }
+    .let { if (it.canAccess()) it else null }
 
   init {
     indentsQuery?.validateOrThrow(name = "indents")
