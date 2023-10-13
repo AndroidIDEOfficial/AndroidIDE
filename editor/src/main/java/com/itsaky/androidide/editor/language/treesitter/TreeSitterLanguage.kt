@@ -118,11 +118,11 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
     decrementBy: Int = 0
   ): Int {
     val indentsQuery = languageSpec.indentsQuery ?: return 0
-    return TSParser().use { parser ->
+    return TSParser.create().use { parser ->
       parser.language = languageSpec.language
       val tree = parser.parseString(content)
 
-      return@use TSQueryCursor().use { cursor ->
+      return@use TSQueryCursor.create().use { cursor ->
         cursor.exec(indentsQuery, tree.rootNode)
 
         var indent = 0

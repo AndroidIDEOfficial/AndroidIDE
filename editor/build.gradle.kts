@@ -26,10 +26,10 @@ dependencies {
     api(libs.androidide.ts.log)
     api(libs.androidide.ts.xml)
     api(libs.common.editor)
-    api(libs.common.editor.ts)
     
     api(projects.editorApi)
-    
+    api(projects.editorTreesitter)
+
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)

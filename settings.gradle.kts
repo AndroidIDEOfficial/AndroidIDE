@@ -49,6 +49,7 @@ include(
   ":common",
   ":editor",
   ":editor-api",
+  ":editor-treesitter",
   ":emulatorview",
   ":eventbus",
   ":eventbus-android",

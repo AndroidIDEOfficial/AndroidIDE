@@ -18,14 +18,14 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.errorprone/error_prone_annotations/2.18.0/89b684257096f548fa39a7df9fdaa409d4d4df91/error_prone_annotations-2.18.0.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/2.8/c85270e307e7b822f1086b93689124b89768e273/j2objc-annotations-2.8.jar" />
         </processorPath>
-        <module name="com.itsaky.androidide.annotations.AndroidIDE.annotation-processors.main" />
+        <module name="ide.AndroidIDE.annotation-processors.main" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.10.4/90f9629eaa123f88551cc26a64bc386967ee24cc/auto-value-1.10.4.jar" />
         </processorPath>
-        <module name="com.itsaky.androidide.AndroidIDE.subprojects.google-java-format.main" />
+        <module name="google-java-format.AndroidIDE.subprojects.google-java-format.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
@@ -147,6 +147,9 @@
       <module name="AndroidIDE.testing.tooling-api.test" target="11" />
       <module name="AndroidIDE.testing.unit.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
+      <module name="composite-builds.plugins" target="17" />
+      <module name="composite-builds.plugins.main" target="17" />
+      <module name="composite-builds.plugins.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

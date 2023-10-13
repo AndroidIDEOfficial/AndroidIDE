@@ -40,7 +40,7 @@ object TSJavaParser : IJavaParser<TSParseResult> {
   private val cache = TSParseCache(15) // cache 15 results at max
 
   private var isClosed = false
-  private val parser = TSParser().also { it.language = TSLanguageJava.getInstance() }
+  private val parser = TSParser.create().also { it.language = TSLanguageJava.getInstance() }
     get() {
       check(!isClosed) { "${javaClass.simpleName} instance has been closed" }
       return field

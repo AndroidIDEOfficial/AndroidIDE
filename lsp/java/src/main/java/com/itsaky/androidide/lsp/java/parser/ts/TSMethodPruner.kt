@@ -36,7 +36,7 @@ object TSMethodPruner {
     val root = tree.rootNode
     TSQuery.create(TSLanguageJava.getInstance(), METHOD_BODIES_QUERY).use { query ->
       check(query.canAccess()) { "Invalid method bodies query" }
-      TSQueryCursor().use { queryCursor ->
+      TSQueryCursor.create().use { queryCursor ->
         queryCursor.exec(query, root)
 
         var match: TSQueryMatch? = queryCursor.nextMatch()

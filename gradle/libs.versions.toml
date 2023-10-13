@@ -5,7 +5,7 @@ gradle-tooling = "8.3"
 junit-jupiter = "5.10.0"
 kotlin = "1.9.10"
 kotlin-coroutines = "1.7.3"
-tree-sitter = "3.4.0"
+tree-sitter = "4.0.0-internal.1+branch.dev.commit.170fe25.timestamp.20231011182804-SNAPSHOT"
 editor = "0.22.1-f7ee449-SNAPSHOT"
 glide = "4.16.0"
 androidx-vectordrawable = "1.1.0"
@@ -29,7 +29,6 @@ androidide-ts-xml = { module = "com.itsaky.androidide:tree-sitter-xml", version.
 
 # Common
 common-editor = { module = "io.github.Rosemoe.sora-editor:editor", version.ref = "editor" }
-common-editor-ts = { module = "io.github.Rosemoe.sora-editor:language-treesitter", version.ref = "editor" }
 common-utilcode = { module = "com.blankj:utilcodex", version = "1.31.1" }
 common-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 common-glide_ap = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }

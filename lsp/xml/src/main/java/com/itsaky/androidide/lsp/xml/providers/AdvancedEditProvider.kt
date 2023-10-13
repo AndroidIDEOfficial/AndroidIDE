@@ -153,7 +153,7 @@ object AdvancedEditProvider {
   }
 
   private fun parseXml(content: String, action: (TSTree) -> Unit) {
-    TSParser().use { parser ->
+    TSParser.create().use { parser ->
       parser.language = TSLanguageXml.getInstance()
       parser.parseString(content).use(action)
     }
@@ -169,7 +169,7 @@ object AdvancedEditProvider {
         throw RuntimeException("Invalid query. Please open an issue on GitHub.")
       }
 
-      TSQueryCursor().use { cursor ->
+      TSQueryCursor.create().use { cursor ->
         cursor.exec(query, tree.rootNode)
         val matches = mutableListOf<TSQueryMatch>()
         var match: TSQueryMatch? = cursor.nextMatch()
