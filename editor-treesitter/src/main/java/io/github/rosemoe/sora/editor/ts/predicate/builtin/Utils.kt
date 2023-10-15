@@ -32,35 +32,35 @@ import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.text.Content
 
 fun parametersMatch(
-    predicate: List<TsClientPredicateStep>,
-    types: Array<Type>
+  predicate: List<TsClientPredicateStep>,
+  types: Array<Type>
 ): Boolean {
-    if (predicate.size == types.size) {
-        for (i in types.indices) {
-            if (predicate[i].predicateType != types[i]) {
-                return false
-            }
-        }
-        return true
+  if (predicate.size == types.size) {
+    for (i in types.indices) {
+      if (predicate[i].predicateType != types[i]) {
+        return false
+      }
     }
-    return false
+    return true
+  }
+  return false
 }
 
 fun getCaptureContent(
-    tsQuery: TSQuery,
-    match: TSQueryMatch,
-    captureName: String,
-    text: CharSequence
+  tsQuery: TSQuery,
+  match: TSQueryMatch,
+  captureName: String,
+  text: CharSequence
 ) = match.captures.filter { tsQuery.getCaptureNameForId(it.index) == captureName }
-    .map {
-        if (text is UTF16String) {
-            val utf16Name = text.subseqChars(it.node.startByte / 2, it.node.endByte / 2)
-            val name = utf16Name.toString()
-            utf16Name.close()
-            name
-        } else if(text is Content) {
-            text.substring(it.node.startByte / 2, it.node.endByte / 2)
-        } else {
-            text.substring(it.node.startByte / 2, it.node.endByte / 2)
-        }
+  .map {
+    if (text is UTF16String) {
+      val utf16Name = text.subseqChars(it.node.startByte / 2, it.node.endByte / 2)
+      val name = utf16Name.toString()
+      utf16Name.close()
+      name
+    } else if (text is Content) {
+      text.substring(it.node.startByte / 2, it.node.endByte / 2)
+    } else {
+      text.substring(it.node.startByte / 2, it.node.endByte / 2)
     }
+  }

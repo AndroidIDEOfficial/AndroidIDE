@@ -27,68 +27,86 @@ package io.github.rosemoe.sora.editor.ts
 import com.itsaky.androidide.treesitter.TSNode
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
+import com.itsaky.androidide.treesitter.api.TreeSitterNode
+import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
+import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
 import io.github.rosemoe.sora.lang.brackets.BracketsProvider
 import io.github.rosemoe.sora.lang.brackets.PairedBracket
 import io.github.rosemoe.sora.text.Content
 import java.lang.Math.max
 
 class TsBracketPairs(
-    private val tree: TSTree,
-    private val languageSpec: TsLanguageSpec
+  private val tree: TSTree,
+  private val languageSpec: TsLanguageSpec
 ) : BracketsProvider {
 
-    companion object {
+  companion object {
 
-        val OPEN_NAME = "editor.brackets.open"
-        val CLOSE_NAME = "editor.brackets.close"
+    val OPEN_NAME = "editor.brackets.open"
+    val CLOSE_NAME = "editor.brackets.close"
 
-    }
+  }
 
-    override fun getPairedBracketAt(text: Content, index: Int): PairedBracket? {
-        if (languageSpec.bracketsQuery.patternCount > 0 && languageSpec.bracketsQuery.canAccess() && tree.canAccess()) {
-            TSQueryCursor.create().use { cursor ->
-                cursor.setByteRange(max(0, index - 1) * 2, index * 2 + 1)
-                cursor.exec(languageSpec.bracketsQuery, tree.rootNode)
-                var match = cursor.nextMatch()
-                var matched = false
-                while (match != null && !matched) {
-                    if (languageSpec.bracketsPredicator.doPredicate(
-                            languageSpec.predicates,
-                            text,
-                            match
-                        )
-                    ) {
-                        var startNode: TSNode? = null
-                        var endNode: TSNode? = null
-                        for (capture in match.captures) {
-                            val captureName =
-                                languageSpec.bracketsQuery.getCaptureNameForId(capture.index)
-                            if (captureName == OPEN_NAME || captureName == CLOSE_NAME) {
-                                val node = capture.node
-                                if (index >= node.startByte / 2 && index <= node.endByte / 2) {
-                                    matched = true
-                                }
-                                if (captureName == OPEN_NAME) {
-                                    startNode = node
-                                } else {
-                                    endNode = node
-                                }
-                            }
-                        }
-                        if (matched && startNode != null && endNode != null) {
-                            return PairedBracket(
-                                startNode.startByte / 2,
-                                (startNode.endByte - startNode.startByte) / 2,
-                                endNode.startByte / 2,
-                                (endNode.endByte - endNode.startByte) / 2
-                            )
-                        }
-                    }
-                    match = cursor.nextMatch()
-                }
-            }
+  override fun getPairedBracketAt(text: Content, index: Int): PairedBracket? {
+    if (languageSpec.bracketsQuery.patternCount > 0 && languageSpec.bracketsQuery.canAccess() && tree.canAccess()) {
+      TSQueryCursor.create().use { cursor ->
+        cursor.setByteRange(max(0, index - 1) * 2, index * 2 + 1)
+        if (!tree.canAccess()) {
+          throw IllegalStateException("Cannot access tree")
         }
-        return null
+        val rootNode = tree.rootNode
+        cursor.exec(languageSpec.bracketsQuery, rootNode)
+        (rootNode as? TreeSitterNode?)?.recycle()
+        var match = cursor.nextMatch()
+        var matched = false
+        while (match != null && !matched) {
+          if (languageSpec.bracketsPredicator.doPredicate(
+              languageSpec.predicates,
+              text,
+              match
+            )
+          ) {
+            var startNode: TSNode? = null
+            var endNode: TSNode? = null
+            for (capture in match.captures) {
+              val captureName =
+                languageSpec.bracketsQuery.getCaptureNameForId(capture.index)
+              if (captureName == OPEN_NAME || captureName == CLOSE_NAME) {
+                val node = capture.node
+                if (index >= node.startByte / 2 && index <= node.endByte / 2) {
+                  matched = true
+                }
+                if (captureName == OPEN_NAME) {
+                  startNode = node
+                } else {
+                  endNode = node
+                }
+              }
+
+              (capture as? TreeSitterQueryCapture?)?.recycle()
+            }
+            if (matched && startNode != null && endNode != null) {
+              return PairedBracket(
+                startNode.startByte / 2,
+                (startNode.endByte - startNode.startByte) / 2,
+                endNode.startByte / 2,
+                (endNode.endByte - endNode.startByte) / 2
+              )
+            }
+          }
+          (match as? TreeSitterQueryMatch?)?.recycle()
+
+          if (!tree.canAccess() || rootNode.hasChanges()) {
+            val hasChanges = rootNode.hasChanges()
+            (rootNode as? TreeSitterNode?)?.recycle()
+            throw IllegalStateException(
+              "Tree closed or edited while querying, rootNode.hasChanges=$hasChanges")
+          }
+          match = cursor.nextMatch()
+        }
+      }
     }
+    return null
+  }
 
 }

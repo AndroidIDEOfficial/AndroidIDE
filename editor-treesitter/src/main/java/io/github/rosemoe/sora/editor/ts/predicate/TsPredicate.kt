@@ -32,17 +32,17 @@ import com.itsaky.androidide.treesitter.TSQueryMatch
  */
 interface TsPredicate {
 
-    /**
-     * Run the predicate on the given [TSQueryMatch]
-     * @see TSQueryMatch
-     * @see PredicateResult
-     */
-    fun doPredicate(
-        tsQuery: TSQuery,
-        text: CharSequence,
-        match: TSQueryMatch,
-        predicateSteps: List<TsClientPredicateStep>,
-        syntheticCaptures: TsSyntheticCaptureContainer
-    ): PredicateResult
+  /**
+   * Run the predicate on the given [TSQueryMatch]
+   * @see TSQueryMatch
+   * @see PredicateResult
+   */
+  fun doPredicate(
+    tsQuery: TSQuery,
+    text: CharSequence,
+    match: TSQueryMatch,
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
+  ): PredicateResult
 
 }

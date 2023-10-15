@@ -147,6 +147,18 @@
       <module name="AndroidIDE.testing.tooling-api.test" target="11" />
       <module name="AndroidIDE.testing.unit.test" target="11" />
       <module name="AndroidIDE.treesitter.test" target="1.7" />
+      <module name="ATS.android-tree-sitter" target="17" />
+      <module name="ATS.app" target="17" />
+      <module name="ATS.tree-sitter-aidl" target="17" />
+      <module name="ATS.tree-sitter-java" target="17" />
+      <module name="ATS.tree-sitter-json" target="17" />
+      <module name="ATS.tree-sitter-kotlin" target="17" />
+      <module name="ATS.tree-sitter-log" target="17" />
+      <module name="ATS.tree-sitter-python" target="17" />
+      <module name="ATS.tree-sitter-xml" target="17" />
+      <module name="build-logic.ats" target="17" />
+      <module name="build-logic.ats.main" target="17" />
+      <module name="build-logic.ats.test" target="17" />
       <module name="composite-builds.plugins" target="17" />
       <module name="composite-builds.plugins.main" target="17" />
       <module name="composite-builds.plugins.test" target="17" />

@@ -28,6 +28,9 @@ import com.itsaky.androidide.treesitter.TSNode
 import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
+import com.itsaky.androidide.treesitter.api.TreeSitterNode
+import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
+import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
 import com.itsaky.androidide.treesitter.string.UTF16String
 import java.util.Stack
 
@@ -42,98 +45,117 @@ import java.util.Stack
  */
 class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpec) {
 
-    private val rootScope: Scope
+  private val rootScope: Scope
 
-    init {
-        rootScope = Scope(0, tree.rootNode.endByte / 2)
-        if (spec.localsDefinitionIndices.isNotEmpty()) {
-            TSQueryCursor.create().use { cursor ->
-                cursor.exec(spec.tsQuery, tree.rootNode)
-                var match = cursor.nextMatch()
-                val captures = mutableListOf<TSQueryCapture>()
-                while (match != null) {
-                    if (spec.queryPredicator.doPredicate(spec.predicates, text, match)) {
-                        captures.addAll(match.captures)
-                    }
-                    match = cursor.nextMatch()
-                }
-                captures.sortBy { it.node.startByte }
-                val scopeStack = Stack<Scope>()
-                var lastAddedVariableNode: TSNode? = null
-                scopeStack.push(rootScope)
-                for (capture in captures) {
-                    val startIndex = capture.node.startByte / 2
-                    val endIndex = capture.node.endByte / 2
-                    while (startIndex >= scopeStack.peek().endIndex) {
-                        scopeStack.pop()
-                    }
-                    val pattern = capture.index
-                    if (pattern in spec.localsScopeIndices) {
-                        val newScope = Scope(startIndex, endIndex)
-                        scopeStack.peek().childScopes.add(newScope)
-                        scopeStack.push(newScope)
-                    } else if (pattern in spec.localsMembersScopeIndices) {
-                        val newScope = Scope(startIndex, endIndex, true)
-                        scopeStack.peek().childScopes.add(newScope)
-                        scopeStack.push(newScope)
-                    } else if (pattern in spec.localsDefinitionIndices) {
-                        val scope = scopeStack.peek()
-                        val utf16Name = text.subseqChars(startIndex, endIndex)
-                        val name = utf16Name.toString()
-                        utf16Name.close()
-                        val scopedVar = ScopedVariable(
-                            name,
-                            if (scope.forMembers) scope.startIndex else startIndex,
-                            scope.endIndex
-                        )
-                        scope.variables.add(scopedVar)
-                        lastAddedVariableNode = capture.node
-                    } else if (pattern !in spec.localsDefinitionValueIndices && pattern !in spec.localsReferenceIndices && lastAddedVariableNode != null) {
-                        val topVariables = scopeStack.peek().variables
-                        if (topVariables.isNotEmpty()) {
-                            val topVariable = topVariables.last()
-                            if (lastAddedVariableNode.startByte / 2 == startIndex && lastAddedVariableNode.endByte / 2 == endIndex && topVariable.matchedHighlightPattern == -1) {
-                                topVariable.matchedHighlightPattern = pattern
-                            }
-                        }
-                    }
-                }
-            }
-        }
+  init {
+    if (!tree.canAccess()) {
+      throw IllegalStateException("Cannot access tree")
     }
 
-    data class Scope(
-        val startIndex: Int,
-        val endIndex: Int,
-        val forMembers: Boolean = false,
-        val variables: MutableList<ScopedVariable> = mutableListOf(),
-        val childScopes: MutableList<Scope> = mutableListOf()
-    )
+    val rootNode = tree.rootNode
+    rootScope = Scope(0, rootNode.endByte / 2)
+    if (spec.localsDefinitionIndices.isNotEmpty()) {
+      TSQueryCursor.create().use { cursor ->
+        cursor.exec(spec.tsQuery, rootNode)
+        var match = cursor.nextMatch()
+        val captures = mutableListOf<TSQueryCapture>()
+        while (match != null) {
+          if (spec.queryPredicator.doPredicate(spec.predicates, text, match)) {
+            captures.addAll(match.captures)
+          }
+          (match as? TreeSitterQueryMatch?)?.recycle()
 
-    data class ScopedVariable(
-        var name: String,
-        var scopeStartIndex: Int,
-        var scopeEndIndex: Int,
-        var matchedHighlightPattern: Int = -1
-    )
+          if (!tree.canAccess()) {
+            val hasChanges = rootNode.hasChanges()
+            (rootNode as? TreeSitterNode?)?.recycle()
+            captures.clear()
+            throw IllegalStateException(
+              "Tree closed while querying, rootNode.hasChanges=$hasChanges")
+          }
 
-    fun findDefinition(startIndex: Int, endIndex: Int, name: String): ScopedVariable? {
-        var definition: ScopedVariable? = null
-        var currentScope: Scope? = rootScope
-        while (currentScope != null) {
-            for (variable in currentScope.variables) {
-                if (variable.scopeStartIndex > startIndex) {
-                    break
-                }
-                if (variable.scopeStartIndex <= startIndex && variable.scopeEndIndex >= endIndex && variable.name == name) {
-                    definition = variable
-                    // Do not break here: name can be shadowed in some languages
-                }
-            }
-            currentScope =
-                currentScope.childScopes.firstOrNull { scope -> scope.startIndex <= startIndex && scope.endIndex >= endIndex }
+          match = cursor.nextMatch()
         }
-        return definition
+        captures.sortBy { it.node.startByte }
+        val scopeStack = Stack<Scope>()
+        var lastAddedVariableNode: TSNode? = null
+        scopeStack.push(rootScope)
+        for (capture in captures) {
+          val startIndex = capture.node.startByte / 2
+          val endIndex = capture.node.endByte / 2
+          while (startIndex >= scopeStack.peek().endIndex) {
+            scopeStack.pop()
+          }
+          val pattern = capture.index
+          if (pattern in spec.localsScopeIndices) {
+            val newScope = Scope(startIndex, endIndex)
+            scopeStack.peek().childScopes.add(newScope)
+            scopeStack.push(newScope)
+          } else if (pattern in spec.localsMembersScopeIndices) {
+            val newScope = Scope(startIndex, endIndex, true)
+            scopeStack.peek().childScopes.add(newScope)
+            scopeStack.push(newScope)
+          } else if (pattern in spec.localsDefinitionIndices) {
+            val scope = scopeStack.peek()
+            val utf16Name = text.subseqChars(startIndex, endIndex)
+            val name = utf16Name.toString()
+            utf16Name.close()
+            val scopedVar = ScopedVariable(
+              name,
+              if (scope.forMembers) scope.startIndex else startIndex,
+              scope.endIndex
+            )
+            scope.variables.add(scopedVar)
+            lastAddedVariableNode = capture.node
+          } else if (pattern !in spec.localsDefinitionValueIndices && pattern !in spec.localsReferenceIndices && lastAddedVariableNode != null) {
+            val topVariables = scopeStack.peek().variables
+            if (topVariables.isNotEmpty()) {
+              val topVariable = topVariables.last()
+              if (lastAddedVariableNode.startByte / 2 == startIndex && lastAddedVariableNode.endByte / 2 == endIndex && topVariable.matchedHighlightPattern == -1) {
+                topVariable.matchedHighlightPattern = pattern
+              }
+            }
+          }
+
+          (capture as? TreeSitterQueryCapture?)?.recycle()
+        }
+      }
     }
+
+    (rootNode as? TreeSitterNode?)?.recycle()
+  }
+
+  data class Scope(
+    val startIndex: Int,
+    val endIndex: Int,
+    val forMembers: Boolean = false,
+    val variables: MutableList<ScopedVariable> = mutableListOf(),
+    val childScopes: MutableList<Scope> = mutableListOf()
+  )
+
+  data class ScopedVariable(
+    var name: String,
+    var scopeStartIndex: Int,
+    var scopeEndIndex: Int,
+    var matchedHighlightPattern: Int = -1
+  )
+
+  fun findDefinition(startIndex: Int, endIndex: Int, name: String): ScopedVariable? {
+    var definition: ScopedVariable? = null
+    var currentScope: Scope? = rootScope
+    while (currentScope != null) {
+      for (variable in currentScope.variables) {
+        if (variable.scopeStartIndex > startIndex) {
+          break
+        }
+        if (variable.scopeStartIndex <= startIndex && variable.scopeEndIndex >= endIndex && variable.name == name) {
+          definition = variable
+          // Do not break here: name can be shadowed in some languages
+        }
+      }
+      currentScope =
+        currentScope.childScopes.firstOrNull { scope -> scope.startIndex <= startIndex && scope.endIndex >= endIndex }
+    }
+    return definition
+  }
 
 }

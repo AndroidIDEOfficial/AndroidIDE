@@ -27,7 +27,7 @@ package io.github.rosemoe.sora.editor.ts.predicate
 import com.itsaky.androidide.treesitter.TSNode
 
 data class TsSyntheticCapture(
-    val captureName: String,
-    val captureText: String? = null,
-    val captureNode: TSNode? = null
+  val captureName: String,
+  val captureText: String? = null,
+  val captureNode: TSNode? = null
 )

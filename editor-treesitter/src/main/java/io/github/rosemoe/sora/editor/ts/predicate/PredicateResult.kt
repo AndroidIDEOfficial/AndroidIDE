@@ -28,19 +28,20 @@ package io.github.rosemoe.sora.editor.ts.predicate
  * Predicate result for [TsPredicate]
  */
 enum class PredicateResult {
-    /**
-     * The given predicate is not handled by this [TsPredicate].
-     * The [com.itsaky.androidide.treesitter.TSQueryMatch] object will be passed to other [TsPredicate].
-     */
-    UNHANDLED,
 
-    /**
-     * The given predicate is accepted by the [TsPredicate]
-     */
-    ACCEPT,
+  /**
+   * The given predicate is not handled by this [TsPredicate].
+   * The [com.itsaky.androidide.treesitter.TSQueryMatch] object will be passed to other [TsPredicate].
+   */
+  UNHANDLED,
 
-    /**
-     * The given predicate is not accepted by the [TsPredicate]
-     */
-    REJECT
+  /**
+   * The given predicate is accepted by the [TsPredicate]
+   */
+  ACCEPT,
+
+  /**
+   * The given predicate is not accepted by the [TsPredicate]
+   */
+  REJECT
 }

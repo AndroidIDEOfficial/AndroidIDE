@@ -36,37 +36,37 @@ import java.util.regex.PatternSyntaxException
 
 object MatchPredicate : TsPredicate {
 
-    private val PARAMETERS = arrayOf(Type.String, Type.Capture, Type.String, Type.Done)
+  private val PARAMETERS = arrayOf(Type.String, Type.Capture, Type.String, Type.Done)
 
-    private val cache = ConcurrentHashMap<String, Regex>()
+  private val cache = ConcurrentHashMap<String, Regex>()
 
-    override fun doPredicate(
-        tsQuery: TSQuery,
-        text: CharSequence,
-        match: TSQueryMatch,
-        predicateSteps: List<TsClientPredicateStep>,
-        syntheticCaptures: TsSyntheticCaptureContainer
-    ): PredicateResult {
-        if (!parametersMatch(predicateSteps, PARAMETERS) || predicateSteps[0].content != "match?") {
-            return PredicateResult.UNHANDLED
-        }
-        val captured = getCaptureContent(tsQuery, match, predicateSteps[1].content, text)
-        try {
-            var regex = cache[predicateSteps[2].content]
-            if (regex == null) {
-                regex = Regex(predicateSteps[2].content)
-                cache[predicateSteps[2].content] = regex
-            }
-            for (str in captured) {
-                if (regex.find(str) == null) {
-                    return PredicateResult.REJECT
-                }
-            }
-            return PredicateResult.ACCEPT
-        } catch (e: PatternSyntaxException) {
-            e.printStackTrace()
-            return PredicateResult.UNHANDLED
-        }
+  override fun doPredicate(
+    tsQuery: TSQuery,
+    text: CharSequence,
+    match: TSQueryMatch,
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
+  ): PredicateResult {
+    if (!parametersMatch(predicateSteps, PARAMETERS) || predicateSteps[0].content != "match?") {
+      return PredicateResult.UNHANDLED
     }
+    val captured = getCaptureContent(tsQuery, match, predicateSteps[1].content, text)
+    try {
+      var regex = cache[predicateSteps[2].content]
+      if (regex == null) {
+        regex = Regex(predicateSteps[2].content)
+        cache[predicateSteps[2].content] = regex
+      }
+      for (str in captured) {
+        if (regex.find(str) == null) {
+          return PredicateResult.REJECT
+        }
+      }
+      return PredicateResult.ACCEPT
+    } catch (e: PatternSyntaxException) {
+      e.printStackTrace()
+      return PredicateResult.UNHANDLED
+    }
+  }
 
 }

@@ -44,47 +44,47 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
  */
 class TsTheme(private val tsQuery: TSQuery) {
 
-    private val styles = mutableMapOf<String, Long>()
-    private val mapping = SparseLongArray()
+  private val styles = mutableMapOf<String, Long>()
+  private val mapping = SparseLongArray()
 
-    /**
-     * The text style for normal texts
-     */
-    var normalTextStyle = TextStyle.makeStyle(EditorColorScheme.TEXT_NORMAL)
+  /**
+   * The text style for normal texts
+   */
+  var normalTextStyle = TextStyle.makeStyle(EditorColorScheme.TEXT_NORMAL)
 
-    /**
-     * Set text style for the given rule string.
-     *
-     * @param rule The rule for locating nodes
-     * @param style The style value for those nodes
-     * @see io.github.rosemoe.sora.lang.styling.TextStyle
-     */
-    fun putStyleRule(rule: String, style: Long) {
-        styles[rule] = style
-        mapping.clear()
+  /**
+   * Set text style for the given rule string.
+   *
+   * @param rule The rule for locating nodes
+   * @param style The style value for those nodes
+   * @see io.github.rosemoe.sora.lang.styling.TextStyle
+   */
+  fun putStyleRule(rule: String, style: Long) {
+    styles[rule] = style
+    mapping.clear()
+  }
+
+  /**
+   * Remove rule
+   * @param rule The rule for locating nodes
+   */
+  fun eraseStyleRule(rule: String) = putStyleRule(rule, 0L)
+
+  fun resolveStyleForPattern(pattern: Int): Long {
+    val index = mapping.indexOfKey(pattern)
+    return if (index >= 0) {
+      mapping.valueAt(index)
+    } else {
+      var mappedName = tsQuery.getCaptureNameForId(pattern)
+      var style = styles[mappedName] ?: 0L
+      while (style == 0L && mappedName.isNotEmpty()) {
+        mappedName = mappedName.substringBeforeLast('.', "")
+        style = styles[mappedName] ?: 0L
+      }
+      mapping.put(pattern, style)
+      style
     }
-
-    /**
-     * Remove rule
-     * @param rule The rule for locating nodes
-     */
-    fun eraseStyleRule(rule: String) = putStyleRule(rule, 0L)
-
-    fun resolveStyleForPattern(pattern: Int): Long {
-        val index = mapping.indexOfKey(pattern)
-        return if (index >= 0) {
-            mapping.valueAt(index)
-        } else {
-            var mappedName = tsQuery.getCaptureNameForId(pattern)
-            var style = styles[mappedName] ?: 0L
-            while (style == 0L && mappedName.isNotEmpty()) {
-                mappedName = mappedName.substringBeforeLast('.', "")
-                style = styles[mappedName] ?: 0L
-            }
-            mapping.put(pattern, style)
-            style
-        }
-    }
+  }
 
 }
 
@@ -93,17 +93,17 @@ class TsTheme(private val tsQuery: TSQuery) {
  */
 class TsThemeBuilder(tsQuery: TSQuery) {
 
-    internal val theme = TsTheme(tsQuery)
+  internal val theme = TsTheme(tsQuery)
 
-    infix fun Long.applyTo(targetRule: String) {
-        theme.putStyleRule(targetRule, this)
-    }
+  infix fun Long.applyTo(targetRule: String) {
+    theme.putStyleRule(targetRule, this)
+  }
 
-    infix fun Long.applyTo(targetRules: Array<String>) {
-        targetRules.forEach {
-            applyTo(it)
-        }
+  infix fun Long.applyTo(targetRules: Array<String>) {
+    targetRules.forEach {
+      applyTo(it)
     }
+  }
 
 }
 
@@ -111,4 +111,4 @@ class TsThemeBuilder(tsQuery: TSQuery) {
  * Build tree-sitter theme
  */
 fun tsTheme(tsQuery: TSQuery, description: TsThemeBuilder.() -> Unit) =
-    TsThemeBuilder(tsQuery).also { it.description() }.theme
+  TsThemeBuilder(tsQuery).also { it.description() }.theme

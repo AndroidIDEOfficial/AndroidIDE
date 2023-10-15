@@ -47,66 +47,66 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch
  * @author Rosemoe
  */
 open class TsLanguage(
-    val languageSpec: TsLanguageSpec,
-    val tab: Boolean = false,
-    themeDescription: TsThemeBuilder.() -> Unit
+  val languageSpec: TsLanguageSpec,
+  val tab: Boolean = false,
+  themeDescription: TsThemeBuilder.() -> Unit
 ) : Language {
 
-    init {
-        if (languageSpec.closed) {
-            throw IllegalStateException("spec is closed")
-        }
+  init {
+    if (languageSpec.closed) {
+      throw IllegalStateException("spec is closed")
     }
+  }
 
-    protected var tsTheme = TsThemeBuilder(languageSpec.tsQuery).apply { themeDescription() }.theme
+  protected var tsTheme = TsThemeBuilder(languageSpec.tsQuery).apply { themeDescription() }.theme
 
-    open val analyzer by lazy {
-        TsAnalyzeManager(languageSpec, tsTheme)
+  open val analyzer by lazy {
+    TsAnalyzeManager(languageSpec, tsTheme)
+  }
+
+  /**
+   * Update tree-sitter colorizing theme with the given description
+   */
+  fun updateTheme(themeDescription: TsThemeBuilder.() -> Unit) = languageSpec.let {
+    if (it.closed) {
+      throw IllegalStateException("spec is closed")
     }
+    updateTheme(TsThemeBuilder(languageSpec.tsQuery).apply { themeDescription() }.theme)
+  }
 
-    /**
-     * Update tree-sitter colorizing theme with the given description
-     */
-    fun updateTheme(themeDescription: TsThemeBuilder.() -> Unit) = languageSpec.let {
-        if (it.closed) {
-            throw IllegalStateException("spec is closed")
-        }
-        updateTheme(TsThemeBuilder(languageSpec.tsQuery).apply { themeDescription() }.theme)
-    }
+  /**
+   * Update tree-sitter colorizing theme
+   */
+  fun updateTheme(theme: TsTheme) {
+    this.tsTheme = theme
+    analyzer.updateTheme(theme)
+  }
 
-    /**
-     * Update tree-sitter colorizing theme
-     */
-    fun updateTheme(theme: TsTheme) {
-        this.tsTheme = theme
-        analyzer.updateTheme(theme)
-    }
+  override fun getAnalyzeManager() = analyzer
 
-    override fun getAnalyzeManager() = analyzer
+  override fun getInterruptionLevel() = Language.INTERRUPTION_LEVEL_STRONG
 
-    override fun getInterruptionLevel() = Language.INTERRUPTION_LEVEL_STRONG
+  override fun requireAutoComplete(
+    content: ContentReference,
+    position: CharPosition,
+    publisher: CompletionPublisher,
+    extraArguments: Bundle
+  ) {
+    // Nothing
+  }
 
-    override fun requireAutoComplete(
-        content: ContentReference,
-        position: CharPosition,
-        publisher: CompletionPublisher,
-        extraArguments: Bundle
-    ) {
-        // Nothing
-    }
+  override fun getIndentAdvance(content: ContentReference, line: Int, column: Int) = 0
 
-    override fun getIndentAdvance(content: ContentReference, line: Int, column: Int) = 0
+  override fun useTab() = tab
 
-    override fun useTab() = tab
+  override fun getFormatter(): Formatter = EmptyLanguage.EmptyFormatter.INSTANCE
 
-    override fun getFormatter(): Formatter = EmptyLanguage.EmptyFormatter.INSTANCE
+  override fun getSymbolPairs(): SymbolPairMatch = EmptyLanguage.EMPTY_SYMBOL_PAIRS
 
-    override fun getSymbolPairs(): SymbolPairMatch = EmptyLanguage.EMPTY_SYMBOL_PAIRS
+  override fun getNewlineHandlers() = emptyArray<NewlineHandler>()
 
-    override fun getNewlineHandlers() = emptyArray<NewlineHandler>()
-
-    override fun destroy() {
-        languageSpec.close()
-    }
+  override fun destroy() {
+    languageSpec.close()
+  }
 
 }

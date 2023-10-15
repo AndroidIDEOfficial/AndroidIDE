@@ -33,5 +33,10 @@ android {
 
 dependencies {
     api(libs.common.editor)
+    api(libs.common.kotlin.coroutines.android)
     api(libs.androidide.ts)
+
+    api(projects.common)
+    api(projects.editorApi)
+    api(projects.logger)
 }

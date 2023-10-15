@@ -35,60 +35,61 @@ import com.itsaky.androidide.treesitter.TSQueryPredicateStep
  */
 class Predicator(private val query: TSQuery) {
 
-    /**
-     * Predicates for patterns
-     */
-    private val patternPredicates = mutableListOf<List<TsClientPredicateStep>>()
+  /**
+   * Predicates for patterns
+   */
+  private val patternPredicates = mutableListOf<List<TsClientPredicateStep>>()
 
-    init {
-        for (i in 0 until query.patternCount) {
-            patternPredicates.add(query.getPredicatesForPattern(i).map {
-                when (it.type) {
-                    TSQueryPredicateStep.Type.String -> TsClientPredicateStep(
-                        it.type,
-                        query.getStringValueForId(it.valueId)
-                    )
+  init {
+    for (i in 0 until query.patternCount) {
+      patternPredicates.add(query.getPredicatesForPattern(i).map {
+        when (it.type) {
+          TSQueryPredicateStep.Type.String -> TsClientPredicateStep(
+            it.type,
+            query.getStringValueForId(it.valueId)
+          )
 
-                    TSQueryPredicateStep.Type.Capture -> TsClientPredicateStep(
-                        it.type,
-                        query.getCaptureNameForId(it.valueId)
-                    )
+          TSQueryPredicateStep.Type.Capture -> TsClientPredicateStep(
+            it.type,
+            query.getCaptureNameForId(it.valueId)
+          )
 
-                    else -> TsClientPredicateStep(it.type, "")
-                }
-            })
+          else -> TsClientPredicateStep(it.type, "")
         }
+      })
+    }
+  }
+
+  fun doPredicate(
+    predicates: List<TsPredicate>,
+    text: CharSequence,
+    match: TSQueryMatch,
+    syntheticCaptureContainer: TsSyntheticCaptureContainer = TsSyntheticCaptureContainer.EMPTY_IMMUTABLE_CONTAINER
+  ): Boolean {
+    val description = patternPredicates[match.patternIndex]
+    var tail = 0
+    for (i in description.indices) {
+      if (description[i].predicateType == TSQueryPredicateStep.Type.Done) {
+        // Avoid allocating sublist if possible
+        val subPredicateStep =
+          if (tail == 0 && i + 1 == description.size) description else description.subList(
+            tail,
+            i + 1
+          )
+        for (j in predicates.indices) {
+          val predicate = predicates[j]
+          when (predicate.doPredicate(query, text, match, subPredicateStep,
+            syntheticCaptureContainer)) {
+            PredicateResult.ACCEPT -> break
+            PredicateResult.REJECT -> return false
+            else -> {}
+          }
+        }
+        tail = i + 1
+      }
     }
 
-    fun doPredicate(
-        predicates: List<TsPredicate>,
-        text: CharSequence,
-        match: TSQueryMatch,
-        syntheticCaptureContainer: TsSyntheticCaptureContainer = TsSyntheticCaptureContainer.EMPTY_IMMUTABLE_CONTAINER
-    ): Boolean {
-        val description = patternPredicates[match.patternIndex]
-        var tail = 0
-        for (i in description.indices) {
-            if (description[i].predicateType == TSQueryPredicateStep.Type.Done) {
-                // Avoid allocating sublist if possible
-                val subPredicateStep =
-                    if (tail == 0 && i + 1 == description.size) description else description.subList(
-                        tail,
-                        i + 1
-                    )
-                for (j in predicates.indices) {
-                    val predicate = predicates[j]
-                    when (predicate.doPredicate(query, text, match, subPredicateStep, syntheticCaptureContainer)) {
-                        PredicateResult.ACCEPT -> break
-                        PredicateResult.REJECT -> return false
-                        else -> {}
-                    }
-                }
-                tail = i + 1
-            }
-        }
-
-        return true
-    }
+    return true
+  }
 
 }

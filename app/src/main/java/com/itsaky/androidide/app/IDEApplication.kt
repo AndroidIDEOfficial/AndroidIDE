@@ -53,6 +53,8 @@ import com.itsaky.androidide.stats.StatUploadWorker
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.tasks.executeAsync
 import com.itsaky.androidide.treesitter.TreeSitter
+import com.itsaky.androidide.treesitter.api.TreeSitterObjectFactory
+import com.itsaky.androidide.treesitter.util.TSObjectFactoryProvider
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.RecyclableObjectPool
 import com.itsaky.androidide.utils.VMUtils
@@ -115,6 +117,8 @@ class IDEApplication : BaseApplication() {
     EditorColorScheme.setDefault(SchemeAndroidIDE.newInstance(null))
 
     executeAsync { IDEColorSchemeProvider.init() }
+
+    TSObjectFactoryProvider.setFactory(TreeSitterObjectFactory())
   }
 
   private fun handleCrash(thread: Thread, th: Throwable) {

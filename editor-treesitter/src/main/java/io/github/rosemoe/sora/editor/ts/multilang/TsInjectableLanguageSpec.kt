@@ -32,25 +32,26 @@ import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate
 import io.github.rosemoe.sora.editor.ts.predicate.builtin.MatchPredicate
 
 class TsInjectableLanguageSpec(
-    language: TSLanguage,
-    highlightScmSource: String,
-    themeDescription: TsThemeBuilder.() -> Unit,
-    val languageName: LanguagePriorityCheck,
-    val indentHelper: TsIndentHelper? = null,
-    codeBlocksScmSource: String = "",
-    bracketsScmSource: String = "",
-    localsScmSource: String = "",
-    localsCaptureSpec: LocalsCaptureSpec = LocalsCaptureSpec.DEFAULT,
-    predicates: List<TsPredicate> = listOf(MatchPredicate)
-) : TsLanguageSpec(language, highlightScmSource, codeBlocksScmSource, bracketsScmSource, localsScmSource, localsCaptureSpec, predicates) {
+  language: TSLanguage,
+  highlightScmSource: String,
+  themeDescription: TsThemeBuilder.() -> Unit,
+  val languageName: LanguagePriorityCheck,
+  val indentHelper: TsIndentHelper? = null,
+  codeBlocksScmSource: String = "",
+  bracketsScmSource: String = "",
+  localsScmSource: String = "",
+  localsCaptureSpec: LocalsCaptureSpec = LocalsCaptureSpec.DEFAULT,
+  predicates: List<TsPredicate> = listOf(MatchPredicate)
+) : TsLanguageSpec(language, highlightScmSource, codeBlocksScmSource, bracketsScmSource,
+  localsScmSource, localsCaptureSpec, predicates) {
 
-    var theme = TsThemeBuilder(tsQuery).apply { themeDescription() }.theme
+  var theme = TsThemeBuilder(tsQuery).apply { themeDescription() }.theme
 
-    fun updateTheme(themeDescription: TsThemeBuilder.() -> Unit) = run {
-        if (closed) {
-            throw IllegalStateException("spec is closed")
-        }
-        theme = TsThemeBuilder(tsQuery).apply { themeDescription() }.theme
+  fun updateTheme(themeDescription: TsThemeBuilder.() -> Unit) = run {
+    if (closed) {
+      throw IllegalStateException("spec is closed")
     }
+    theme = TsThemeBuilder(tsQuery).apply { themeDescription() }.theme
+  }
 
 }

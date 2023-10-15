@@ -53,6 +53,9 @@ android {
   buildTypes { release { isShrinkResources = true } }
 
   packaging {
+    jniLibs {
+      keepDebugSymbols += "**.so"
+    }
     resources.excludes.addAll(
       arrayOf(
         "META-INF/eclipse.inf",

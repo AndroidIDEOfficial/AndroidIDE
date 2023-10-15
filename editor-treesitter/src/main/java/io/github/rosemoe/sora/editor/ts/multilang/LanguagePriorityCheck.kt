@@ -26,12 +26,13 @@ package io.github.rosemoe.sora.editor.ts.multilang
 
 interface LanguagePriorityCheck {
 
-    companion object {
-        val PRIORITY_NEVER = 0
-        val PRIORITY_AS_FALLBACK = 1
-        val PRIORITY_ALWAYS = 1000
-    }
+  companion object {
 
-    fun getPriorityByName(name: String) : Int
+    val PRIORITY_NEVER = 0
+    val PRIORITY_AS_FALLBACK = 1
+    val PRIORITY_ALWAYS = 1000
+  }
+
+  fun getPriorityByName(name: String): Int
 
 }

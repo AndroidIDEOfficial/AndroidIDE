@@ -35,48 +35,48 @@ import io.github.rosemoe.sora.editor.ts.predicate.TsSyntheticCaptureContainer
 
 object SetCapturePredicate : TsPredicate {
 
-    private val PARAMETERS_1 = arrayOf(
-        TSQueryPredicateStep.Type.String,
-        TSQueryPredicateStep.Type.Capture,
-        TSQueryPredicateStep.Type.String,
-        TSQueryPredicateStep.Type.Done
-    )
-    private val PARAMETERS_2 = arrayOf(
-        TSQueryPredicateStep.Type.String,
-        TSQueryPredicateStep.Type.Capture,
-        TSQueryPredicateStep.Type.Capture,
-        TSQueryPredicateStep.Type.Done
-    )
+  private val PARAMETERS_1 = arrayOf(
+    TSQueryPredicateStep.Type.String,
+    TSQueryPredicateStep.Type.Capture,
+    TSQueryPredicateStep.Type.String,
+    TSQueryPredicateStep.Type.Done
+  )
+  private val PARAMETERS_2 = arrayOf(
+    TSQueryPredicateStep.Type.String,
+    TSQueryPredicateStep.Type.Capture,
+    TSQueryPredicateStep.Type.Capture,
+    TSQueryPredicateStep.Type.Done
+  )
 
-    override fun doPredicate(
-        tsQuery: TSQuery,
-        text: CharSequence,
-        match: TSQueryMatch,
-        predicateSteps: List<TsClientPredicateStep>,
-        syntheticCaptures: TsSyntheticCaptureContainer
-    ): PredicateResult {
-        if (predicateSteps[0].content == "set!") {
-            if (parametersMatch(predicateSteps, PARAMETERS_1)) {
-                syntheticCaptures.addSyntheticCapture(
-                    TsSyntheticCapture(
-                        predicateSteps[1].content,
-                        predicateSteps[2].content
-                    )
-                )
-            } else if (parametersMatch(predicateSteps, PARAMETERS_2)) {
-                val captureTexts = getCaptureContent(tsQuery, match, predicateSteps[2].content, text)
-                if (captureTexts.size == 1) {
-                    syntheticCaptures.addSyntheticCapture(
-                        TsSyntheticCapture(
-                            predicateSteps[1].content,
-                            captureTexts[0]
-                        )
-                    )
-                }
-            }
+  override fun doPredicate(
+    tsQuery: TSQuery,
+    text: CharSequence,
+    match: TSQueryMatch,
+    predicateSteps: List<TsClientPredicateStep>,
+    syntheticCaptures: TsSyntheticCaptureContainer
+  ): PredicateResult {
+    if (predicateSteps[0].content == "set!") {
+      if (parametersMatch(predicateSteps, PARAMETERS_1)) {
+        syntheticCaptures.addSyntheticCapture(
+          TsSyntheticCapture(
+            predicateSteps[1].content,
+            predicateSteps[2].content
+          )
+        )
+      } else if (parametersMatch(predicateSteps, PARAMETERS_2)) {
+        val captureTexts = getCaptureContent(tsQuery, match, predicateSteps[2].content, text)
+        if (captureTexts.size == 1) {
+          syntheticCaptures.addSyntheticCapture(
+            TsSyntheticCapture(
+              predicateSteps[1].content,
+              captureTexts[0]
+            )
+          )
         }
-        // As this does not affect whether the match is actually valid, we always return UNHANDLED
-        return PredicateResult.UNHANDLED
+      }
     }
+    // As this does not affect whether the match is actually valid, we always return UNHANDLED
+    return PredicateResult.UNHANDLED
+  }
 
 }

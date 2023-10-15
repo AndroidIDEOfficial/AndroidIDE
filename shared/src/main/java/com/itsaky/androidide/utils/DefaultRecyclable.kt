@@ -15,19 +15,23 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-  id("com.android.library")
-  id("kotlin-android")
-}
+package com.itsaky.androidide.utils
 
-android {
-  namespace = "${BuildConfig.packageName}.editor.api"
-}
+import java.util.concurrent.atomic.AtomicBoolean
 
-dependencies {
-  api(libs.androidide.ts)
-  api(projects.lsp.api)
-  api(projects.lsp.models)
-  
-  implementation(projects.common)
+/**
+ * @author Akash Yadav
+ */
+open class DefaultRecyclable : RecyclableObjectPool.Recyclable {
+
+  private val _isRecycled = AtomicBoolean(false)
+
+  override var isRecycled: Boolean
+    get() = _isRecycled.get()
+    set(value) {
+      _isRecycled.set(value)
+    }
+
+  override fun recycle() {
+  }
 }

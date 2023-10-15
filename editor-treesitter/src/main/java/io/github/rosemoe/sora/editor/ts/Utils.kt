@@ -35,7 +35,8 @@ import io.github.rosemoe.sora.text.CharPosition
 fun CharPosition.toTSPoint() = TSPoint.create(line, column * 2)
 
 fun TSQuery.validateOrThrow(name: String = "unknown") {
-    if (errorType != TSQueryError.None) {
-        throw IllegalArgumentException("query(name:$name) parsing failed: ${errorType.name} at text offset $errorOffset")
-    }
+  if (errorType != TSQueryError.None) {
+    throw IllegalArgumentException(
+      "query(name:$name) parsing failed: ${errorType.name} at text offset $errorOffset")
+  }
 }
