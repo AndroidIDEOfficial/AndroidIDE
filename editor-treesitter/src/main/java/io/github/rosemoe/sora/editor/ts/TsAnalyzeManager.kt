@@ -37,6 +37,7 @@ import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
 import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.data.ObjectAllocator
 import io.github.rosemoe.sora.editor.ts.spans.DefaultSpanFactory
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
@@ -158,6 +159,8 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
 
     @Synchronized
     fun nextThreadId() = ++threadId
+
+    private val log = ILogger.newInstance("TsAnalyzeManager")
   }
 
   inner class TsLooperThread : Thread() {
@@ -219,14 +222,15 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
     }
 
     fun updateCodeBlocks() {
-      if (languageSpec.blocksQuery.patternCount == 0 || !languageSpec.blocksQuery.canAccess()) {
+      if (languageSpec.blocksQuery.patternCount == 0
+        || !languageSpec.blocksQuery.canAccess()
+        || tree?.canAccess() != true
+      ) {
         return
       }
+
       val blocks = mutableListOf<CodeBlock>()
       TSQueryCursor.create().use {
-        if (tree?.canAccess() != true) {
-          throw IllegalStateException("Cannot access tree")
-        }
 
         val rootNode = tree!!.rootNode
         it.exec(languageSpec.blocksQuery, rootNode)
@@ -274,8 +278,9 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
             val hasChanges = rootNode.hasChanges()
             (rootNode as? TreeSitterNode?)?.recycle()
             blocks.clear()
-            throw IllegalStateException(
-              "Tree closed while querying, rootNode.hasChanges=$hasChanges")
+            log.info(
+              "TsLooperThread.updateCodeBlock: Tree closed or edited while querying for code blocks. rootNode.hasChanges=$hasChanges")
+            break
           }
 
           match = it.nextMatch()

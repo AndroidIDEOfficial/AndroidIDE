@@ -32,6 +32,7 @@ import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
 import com.itsaky.androidide.treesitter.string.UTF16String
+import com.itsaky.androidide.utils.ILogger
 import java.util.Stack
 
 /**
@@ -46,6 +47,10 @@ import java.util.Stack
 class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpec) {
 
   private val rootScope: Scope
+
+  companion object {
+    private val log = ILogger.newInstance("TsScopedVariables")
+  }
 
   init {
     if (!tree.canAccess()) {
@@ -69,8 +74,8 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
             val hasChanges = rootNode.hasChanges()
             (rootNode as? TreeSitterNode?)?.recycle()
             captures.clear()
-            throw IllegalStateException(
-              "Tree closed while querying, rootNode.hasChanges=$hasChanges")
+            log.info("Tree editor or closed while querying, rootNode.hasChanges=$hasChanges")
+            break
           }
 
           match = cursor.nextMatch()

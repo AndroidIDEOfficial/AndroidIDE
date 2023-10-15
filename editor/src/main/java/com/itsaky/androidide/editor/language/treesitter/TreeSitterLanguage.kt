@@ -74,7 +74,6 @@ abstract class TreeSitterLanguage(context: Context, lang: TSLanguage, type: Stri
       langScheme.styles.forEach { tsTheme.putStyleRule(it.key, it.value.makeStyle()) }
 
       analyzer.langScheme = languageScheme
-      analyzer.rerun()
     }
   }
 
