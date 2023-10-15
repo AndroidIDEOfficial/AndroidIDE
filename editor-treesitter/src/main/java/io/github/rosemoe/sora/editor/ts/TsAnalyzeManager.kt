@@ -35,6 +35,7 @@ import com.itsaky.androidide.treesitter.api.TreeSitterInputEdit
 import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
+import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.treesitter.string.UTF16StringFactory
 import com.itsaky.androidide.utils.ILogger
@@ -230,60 +231,53 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
       }
 
       val blocks = mutableListOf<CodeBlock>()
-      TSQueryCursor.create().use {
+      TSQueryCursor.create().use { cursor ->
 
-        val rootNode = tree!!.rootNode
-        it.exec(languageSpec.blocksQuery, rootNode)
-        (rootNode as? TreeSitterNode?)?.recycle()
-
-        var match = it.nextMatch()
-        while (match != null) {
-          if (languageSpec.blocksPredicator.doPredicate(
+        cursor.safeExecQueryCursor(
+          query = languageSpec.blocksQuery,
+          tree = tree,
+          recycleNodeAfterUse = true,
+          matchCondition = null,
+          whileTrue = null,
+          onClosedOrEdited = { blocks.clear() },
+          debugName = "TsAnalyzeManager.updateCodeBlocks()"
+        ) { match ->
+          if (!languageSpec.blocksPredicator.doPredicate(
               languageSpec.predicates,
               localText,
               match
             )
           ) {
-            match.captures.forEach { capture ->
-              val block = ObjectAllocator.obtainBlockLine().also { block ->
-                var node = capture.node
-                val start = node.startPoint
-                block.startLine = start.row
-                block.startColumn = start.column / 2
-                val end = if (languageSpec.blocksQuery.getCaptureNameForId(capture.index)
-                    .endsWith(".marked")
-                ) {
-                  // Goto last terminal element
-                  while (node.childCount > 0) {
-                    node = node.getChild(node.childCount - 1)
-                  }
-                  node.startPoint
-                } else {
-                  node.endPoint
-                }
-                block.endLine = end.row
-                block.endColumn = end.column / 2
-              }
-              if (block.endLine - block.startLine > 1) {
-                blocks.add(block)
-              }
+            return@safeExecQueryCursor
+          }
 
-              (capture as? TreeSitterQueryCapture?)?.recycle()
+          match.captures.forEach { capture ->
+            val block = ObjectAllocator.obtainBlockLine()
+            var node = capture.node
+            val start = node.startPoint
+
+            block.startLine = start.row
+            block.startColumn = start.column / 2
+
+            val end = if (languageSpec.blocksQuery.getCaptureNameForId(capture.index)
+                .endsWith(".marked")
+            ) {
+              // Goto last terminal element
+              while (node.childCount > 0) {
+                node = node.getChild(node.childCount - 1)
+              }
+              node.startPoint
+            } else {
+              node.endPoint
             }
+            block.endLine = end.row
+            block.endColumn = end.column / 2
+            if (block.endLine - block.startLine > 1) {
+              blocks.add(block)
+            }
+
+            (capture as? TreeSitterQueryCapture?)?.recycle()
           }
-
-          (match as? TreeSitterQueryMatch?)?.recycle()
-
-          if (tree?.canAccess() != true || rootNode.hasChanges()) {
-            val hasChanges = rootNode.hasChanges()
-            (rootNode as? TreeSitterNode?)?.recycle()
-            blocks.clear()
-            log.info(
-              "TsLooperThread.updateCodeBlock: Tree closed or edited while querying for code blocks. rootNode.hasChanges=$hasChanges")
-            break
-          }
-
-          match = it.nextMatch()
         }
       }
       val distinct = blocks.distinct().toMutableList()

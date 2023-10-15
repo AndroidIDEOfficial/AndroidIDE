@@ -30,7 +30,7 @@ import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
-import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
+import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.treesitter.string.UTF16String
 import com.itsaky.androidide.utils.ILogger
 import java.util.Stack
@@ -49,37 +49,38 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
   private val rootScope: Scope
 
   companion object {
+
     private val log = ILogger.newInstance("TsScopedVariables")
   }
 
   init {
-    if (!tree.canAccess()) {
-      throw IllegalStateException("Cannot access tree")
+    val rootNode = tree.rootNode
+    var needsWalk = true
+    rootScope = if (rootNode.canAccess()) {
+      Scope(0, rootNode.endByte / 2)
+    } else {
+      needsWalk = false
+      Scope(0, 0)
     }
 
-    val rootNode = tree.rootNode
-    rootScope = Scope(0, rootNode.endByte / 2)
-    if (spec.localsDefinitionIndices.isNotEmpty()) {
+    if (needsWalk && spec.localsDefinitionIndices.isNotEmpty()) {
       TSQueryCursor.create().use { cursor ->
-        cursor.exec(spec.tsQuery, rootNode)
-        var match = cursor.nextMatch()
+
         val captures = mutableListOf<TSQueryCapture>()
-        while (match != null) {
+        cursor.safeExecQueryCursor(
+          query = spec.tsQuery,
+          tree = tree,
+          recycleNodeAfterUse = true,
+          matchCondition = null,
+          onClosedOrEdited = { captures.clear() },
+          debugName = "TsScopedVariables.init()"
+        ) { match ->
+
           if (spec.queryPredicator.doPredicate(spec.predicates, text, match)) {
             captures.addAll(match.captures)
           }
-          (match as? TreeSitterQueryMatch?)?.recycle()
-
-          if (!tree.canAccess()) {
-            val hasChanges = rootNode.hasChanges()
-            (rootNode as? TreeSitterNode?)?.recycle()
-            captures.clear()
-            log.info("Tree editor or closed while querying, rootNode.hasChanges=$hasChanges")
-            break
-          }
-
-          match = cursor.nextMatch()
         }
+
         captures.sortBy { it.node.startByte }
         val scopeStack = Stack<Scope>()
         var lastAddedVariableNode: TSNode? = null

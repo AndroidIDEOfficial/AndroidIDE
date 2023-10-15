@@ -27,9 +27,8 @@ package io.github.rosemoe.sora.editor.ts
 import com.itsaky.androidide.treesitter.TSNode
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
-import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
+import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.brackets.BracketsProvider
 import io.github.rosemoe.sora.lang.brackets.PairedBracket
@@ -40,6 +39,7 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
   BracketsProvider {
 
   companion object {
+
     private val log = ILogger.newInstance("TsBracketPairs")
 
     val OPEN_NAME = "editor.brackets.open"
@@ -55,52 +55,53 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
       return null
     }
 
-    TSQueryCursor.create().use { cursor ->
+    return TSQueryCursor.create().use { cursor ->
       cursor.setByteRange(max(0, index - 1) * 2, index * 2 + 1)
-      val rootNode = tree.rootNode
-      cursor.exec(languageSpec.bracketsQuery, rootNode)
-      (rootNode as? TreeSitterNode?)?.recycle()
-      var match = cursor.nextMatch()
+
       var matched = false
-      while (match != null && !matched) {
-        if (languageSpec.bracketsPredicator.doPredicate(languageSpec.predicates, text, match)) {
-          var startNode: TSNode? = null
-          var endNode: TSNode? = null
 
-          for (capture in match.captures) {
-            val captureName = languageSpec.bracketsQuery.getCaptureNameForId(capture.index)
-            if (captureName == OPEN_NAME || captureName == CLOSE_NAME) {
-              val node = capture.node
-              if (index >= node.startByte / 2 && index <= node.endByte / 2) {
-                matched = true
-              }
-              if (captureName == OPEN_NAME) {
-                startNode = node
-              } else {
-                endNode = node
-              }
+      return@use cursor.safeExecQueryCursor(
+        query = languageSpec.bracketsQuery,
+        tree = tree,
+        recycleNodeAfterUse = true,
+        matchCondition = null,
+        whileTrue = { !matched },
+        onClosedOrEdited = null,
+        debugName = "TsBracketPairs.getPairedBracketAt()"
+      ) { match ->
+        if (!languageSpec.bracketsPredicator.doPredicate(languageSpec.predicates, text, match)) {
+          return@safeExecQueryCursor null
+        }
+
+        var startNode: TSNode? = null
+        var endNode: TSNode? = null
+
+        for (capture in match.captures) {
+          val captureName = languageSpec.bracketsQuery.getCaptureNameForId(capture.index)
+          if (captureName == OPEN_NAME || captureName == CLOSE_NAME) {
+            val node = capture.node
+            if (index >= node.startByte / 2 && index <= node.endByte / 2) {
+              matched = true
             }
-
-            (capture as? TreeSitterQueryCapture?)?.recycle()
+            if (captureName == OPEN_NAME) {
+              startNode = node
+            } else {
+              endNode = node
+            }
           }
-          if (matched && startNode != null && endNode != null) {
-            return PairedBracket(startNode.startByte / 2,
-              (startNode.endByte - startNode.startByte) / 2, endNode.startByte / 2,
-              (endNode.endByte - endNode.startByte) / 2)
-          }
-        }
-        (match as? TreeSitterQueryMatch?)?.recycle()
 
-        if (!tree.canAccess() || rootNode.hasChanges()) {
-          val hasChanges = rootNode.hasChanges()
-          (rootNode as? TreeSitterNode?)?.recycle()
-          log.info("Tree closed or edited while querying, rootNode.hasChanges=$hasChanges")
-          return null
+          (capture as? TreeSitterQueryCapture?)?.recycle()
         }
-        match = cursor.nextMatch()
+
+        if (matched && startNode != null && endNode != null) {
+          return@safeExecQueryCursor PairedBracket(startNode.startByte / 2,
+            (startNode.endByte - startNode.startByte) / 2, endNode.startByte / 2,
+            (endNode.endByte - endNode.startByte) / 2)
+        }
+
+        return@safeExecQueryCursor null
       }
     }
-    return null
   }
 
 }

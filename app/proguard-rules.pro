@@ -7,6 +7,7 @@
 -keepattributes Signature
 -keepattributes Exceptions
 -keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
 
 -keep class javax.** { *; }
 -keep class jdkx.** { *; }
@@ -89,6 +90,7 @@
 -keepclasseswithmembers class ** {
     native <methods>;
 }
+
 -keep class com.itsaky.androidide.treesitter.** { *; }
 
 # Retrofit 2

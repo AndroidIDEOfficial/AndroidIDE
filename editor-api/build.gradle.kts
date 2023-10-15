@@ -30,4 +30,5 @@ dependencies {
   api(projects.lsp.models)
   
   implementation(projects.common)
+  implementation(projects.logger)
 }

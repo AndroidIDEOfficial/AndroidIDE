@@ -28,9 +28,9 @@ import com.itsaky.androidide.treesitter.TSInputEdit
 import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.treesitter.api.TreeSitterNode
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
-import com.itsaky.androidide.treesitter.api.TreeSitterQueryMatch
+import com.itsaky.androidide.treesitter.api.safeExecQueryCursor
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.Spans
@@ -59,6 +59,7 @@ class LineSpansGenerator(
   companion object {
 
     const val CACHE_THRESHOLD = 60
+    private val log = ILogger.newInstance("LineSpansGenerator")
   }
 
   private val caches = mutableListOf<SpanCache>()
@@ -94,26 +95,27 @@ class LineSpansGenerator(
   fun captureRegion(startIndex: Int, endIndex: Int): MutableList<Span> {
     val list = mutableListOf<Span>()
 
-    if (!isValid.get()) {
+    if (!isValid.get() || !tree.canAccess()) {
       list.add(emptySpan(0))
       return list
     }
 
     val captures = mutableListOf<TSQueryCapture>()
+
     TSQueryCursor.create().use { cursor ->
       cursor.setByteRange(startIndex * 2, endIndex * 2)
 
-      if (!tree.canAccess()) {
-        throw IllegalStateException("Cannot access tree")
-      }
-
-      // TSTree.getRootNode() always returns a new TSNode instance
-      // make sure to recycle the instance
-      val rootNode = tree.rootNode
-      cursor.exec(languageSpec.tsQuery, rootNode)
-
-      var match = cursor.nextMatch()
-      while (match != null && isValid.get() && tree.canAccess()) {
+      cursor.safeExecQueryCursor(
+        query = languageSpec.tsQuery,
+        tree = tree,
+        recycleNodeAfterUse = true,
+        matchCondition = { isValid.get() },
+        onClosedOrEdited = {
+          captures.clear()
+          log.debug("Tree closed or edited while in captureRegion")
+                           },
+        debugName = "LineSpansGenerator.captureRegion"
+      ) { match ->
         if (languageSpec.queryPredicator.doPredicate(
             languageSpec.predicates,
             content,
@@ -122,35 +124,12 @@ class LineSpansGenerator(
         ) {
           captures.addAll(match.captures)
         }
-
-        (match as? TreeSitterQueryMatch?)?.recycle()
-
-        if (!isValid.get()) {
-          captures.clear()
-          break
-        }
-
-        if (!tree.canAccess() || rootNode.hasChanges()) {
-          val hasChanges = rootNode.hasChanges()
-          (rootNode as? TreeSitterNode?)?.recycle()
-          throw IllegalStateException(
-            "Tree closed while querying, rootNode.hasChanges=$hasChanges, start=$startIndex, end=$endIndex")
-        }
-
-        match = cursor.nextMatch()
       }
-
-      (rootNode as? TreeSitterNode?)?.recycle()
 
       captures.sortBy { it.node.startByte }
       var lastIndex = 0
 
       for (capture in captures) {
-        if (!isValid.get()) {
-          list.clear()
-          break
-        }
-
         val startByte = capture.node.startByte
         val endByte = capture.node.endByte
         val start = (startByte / 2 - startIndex).coerceAtLeast(0)
