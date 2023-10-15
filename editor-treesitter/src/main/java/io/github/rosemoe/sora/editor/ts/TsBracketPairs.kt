@@ -24,7 +24,6 @@
 
 package io.github.rosemoe.sora.editor.ts
 
-import com.itsaky.androidide.treesitter.TSNode
 import com.itsaky.androidide.treesitter.TSQueryCursor
 import com.itsaky.androidide.treesitter.TSTree
 import com.itsaky.androidide.treesitter.api.TreeSitterQueryCapture
@@ -73,8 +72,9 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
           return@safeExecQueryCursor null
         }
 
-        var startNode: TSNode? = null
-        var endNode: TSNode? = null
+        // do not store TSNode instances from the capture
+        // this is because the nodes are also recycled with the TSQueryCapture instances
+        val positions = IntArray(4) { -1 }
 
         for (capture in match.captures) {
           val captureName = languageSpec.bracketsQuery.getCaptureNameForId(capture.index)
@@ -84,19 +84,26 @@ class TsBracketPairs(private val tree: TSTree, private val languageSpec: TsLangu
               matched = true
             }
             if (captureName == OPEN_NAME) {
-              startNode = node
+              positions[0] = node.startByte
+              positions[1] = node.endByte
             } else {
-              endNode = node
+              positions[2] = node.startByte
+              positions[3] = node.endByte
             }
           }
 
           (capture as? TreeSitterQueryCapture?)?.recycle()
         }
 
-        if (matched && startNode != null && endNode != null) {
-          return@safeExecQueryCursor PairedBracket(startNode.startByte / 2,
-            (startNode.endByte - startNode.startByte) / 2, endNode.startByte / 2,
-            (endNode.endByte - endNode.startByte) / 2)
+        val startStartByte = positions[0]
+        val startEndByte = positions[1]
+        val endStartByte = positions[2]
+        val endEndByte = positions[3]
+
+        if (matched && positions.find { it == -1 } == null) {
+          return@safeExecQueryCursor PairedBracket(startStartByte / 2,
+            (startEndByte - startStartByte) / 2, endStartByte / 2,
+            (endEndByte - endStartByte) / 2)
         }
 
         return@safeExecQueryCursor null
