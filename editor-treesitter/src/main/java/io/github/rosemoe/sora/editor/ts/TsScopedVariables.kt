@@ -122,7 +122,11 @@ class TsScopedVariables(tree: TSTree, text: UTF16String, val spec: TsLanguageSpe
             }
           }
 
-          (capture as? TreeSitterQueryCapture?)?.recycle()
+          (capture as? TreeSitterQueryCapture?)?.apply {
+            if (!isRecycled) {
+              recycle()
+            }
+          }
         }
       }
     }

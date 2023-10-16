@@ -95,7 +95,10 @@ class RecyclableObjectPool<RecyclableT : RecyclableObjectPool.Recyclable> @JvmOv
    * Recycle the given object.
    */
   fun recycle(obj: RecyclableT): Boolean {
-    check(!obj.isRecycled) { "Object is already recycled" }
+    if (obj.isRecycled) {
+      log.warn("Trying to recyle already recycled object: $obj")
+      return false
+    }
 
     return cache.offer(obj).also { inserted ->
       if (inserted) {

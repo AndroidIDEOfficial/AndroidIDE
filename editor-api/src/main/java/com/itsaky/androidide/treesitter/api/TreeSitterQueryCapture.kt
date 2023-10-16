@@ -42,7 +42,11 @@ class TreeSitterQueryCapture @JvmOverloads internal constructor(
   }
 
   override fun recycle() {
-    (this.node as? TreeSitterNode?)?.recycle()
+    (this.node as? TreeSitterNode?)?.apply {
+      if (!isRecycled) {
+        recycle()
+      }
+    }
     this.index = 0
     this.node = null
     returnToPool()

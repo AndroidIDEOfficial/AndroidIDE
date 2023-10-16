@@ -26,6 +26,8 @@ open class DefaultRecyclable : RecyclableObjectPool.Recyclable {
 
   private val _isRecycled = AtomicBoolean(false)
 
+  @set:Synchronized
+  @get:Synchronized
   override var isRecycled: Boolean
     get() = _isRecycled.get()
     set(value) {

@@ -236,19 +236,23 @@ class LineSpansGenerator(
     private var spans = mutableListOf<Span>()
 
     override fun moveToLine(line: Int) {
-      if (line < 0 || line >= lineCount) {
-        spans = mutableListOf()
-        return
+      try {
+        if (line < 0 || line >= lineCount) {
+          spans = mutableListOf()
+          return
+        }
+        val cached = queryCache(line)
+        if (cached != null) {
+          spans = cached
+          return
+        }
+        val start = content.indexer.getCharPosition(line, 0).index
+        val end = start + content.getColumnCount(line)
+        spans = captureRegion(start, end)
+        pushCache(line, spans)
+      } catch (err: Throwable) {
+        err.printStackTrace()
       }
-      val cached = queryCache(line)
-      if (cached != null) {
-        spans = cached
-        return
-      }
-      val start = content.indexer.getCharPosition(line, 0).index
-      val end = start + content.getColumnCount(line)
-      spans = captureRegion(start, end)
-      pushCache(line, spans)
     }
 
     override fun getSpanCount() = spans.size
@@ -256,13 +260,18 @@ class LineSpansGenerator(
     override fun getSpanAt(index: Int) = spans[index]
 
     override fun getSpansOnLine(line: Int): MutableList<Span> {
-      val cached = queryCache(line)
-      if (cached != null) {
-        return ArrayList(cached)
+      try {
+        val cached = queryCache(line)
+        if (cached != null) {
+          return ArrayList(cached)
+        }
+        val start = content.indexer.getCharPosition(line, 0).index
+        val end = start + content.getColumnCount(line)
+        return captureRegion(start, end)
+      } catch (err: Throwable) {
+        err.printStackTrace()
+        throw err
       }
-      val start = content.indexer.getCharPosition(line, 0).index
-      val end = start + content.getColumnCount(line)
-      return captureRegion(start, end)
     }
 
   }
