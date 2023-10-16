@@ -190,11 +190,11 @@ open class TsAnalyzeManager(val languageSpec: TsLanguageSpec, var theme: TsTheme
     }
 
     fun updateStyles() {
-      val scopedVariables = TsScopedVariables(tree!!, localText, languageSpec)
       if (thread != this || !messageQueue.isEmpty()) {
         return
       }
-
+      
+      val scopedVariables = TsScopedVariables(tree!!, localText, languageSpec)
       val oldTree = (styles.spans as LineSpansGenerator?)?.tree
       val copied = tree!!.copy()
       styles.spans = LineSpansGenerator(
