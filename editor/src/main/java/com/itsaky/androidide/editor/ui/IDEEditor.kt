@@ -954,7 +954,8 @@ open class IDEEditor @JvmOverloads constructor(
       return
     }
     val changeLength = event.changedText.length
-    if (event.action != ContentChangeEvent.ACTION_INSERT || changeLength in 1..2) {
+    if (event.action != ContentChangeEvent.ACTION_INSERT || changeLength < 1 || changeLength > 2) {
+      // change length will be 1 if ',' is inserted
       // changeLength will be 2 as '(' and ')' are inserted at the same time
       return
     }
