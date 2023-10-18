@@ -199,7 +199,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
     val onMainThread = action.requiresUIThread
     val context = if (onMainThread) Dispatchers.Main else Dispatchers.Default
     return actionsCoroutineScope.launch(context) {
-      val result = withStopWatch("Action '$action.id'") {
+      val result = withStopWatch("Action '${action.id}'") {
         action.execAction(data)
       }
 
