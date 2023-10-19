@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">Copiere</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="text_to_search"></string>
   <string name="title_open_source_licenses">Licențe open source</string>
   <string name="msg_about_licensed_under">Licențiat:</string>
   <string name="about_option_email">Email</string>
