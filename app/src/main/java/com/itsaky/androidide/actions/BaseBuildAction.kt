@@ -40,5 +40,8 @@ abstract class BaseBuildAction : EditorActivityAction() {
     } else {
       visible = true
     }
+
+    val buildService = Lookup.getDefault().lookup(BuildService::class.java)
+    enabled = !(buildService == null || buildService.isBuildInProgress)
   }
 }
