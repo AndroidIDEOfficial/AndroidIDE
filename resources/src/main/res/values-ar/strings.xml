@@ -496,7 +496,7 @@
   <string name="title_country">البلد</string>
   <string name="title_cpu_arch">بناء CPU</string>
   <string name="title_preview_data">معاينة البيانات</string>
-  <string name="title_android_version">Android version</string>
+  <string name="title_android_version"></string>
   <string name="btn_opt_in">الاشتراك</string>
   <string name="btn_no_thanks">لا، شكراً</string>
   <string name="title_developer_options">خيارات المطور</string>
@@ -504,7 +504,7 @@
   <string name="idepref_group_debugging">تصحيح الأخطاء</string>
   <string name="idepref_devOptions_dumpLogs_title">تفريغ السجلات</string>
   <string name="idepref_devOptions_dumpLogs_summary">تفريغ سجلات AndroidIDE إلى $HOME/.androidide/logs</string>
-  <string name="msg_emptyview_applogs">Run the debug variant of your application to view its logs here.</string>
+  <string name="msg_emptyview_applogs">.</string>
   <string name="msg_logsender_disabled">LogSender is disabled. You can enable it in preferences.</string>
   <string name="msg_emptyview_idelogs">Logs from the IDE are shown here.</string>
   <string name="msg_emptyview_diagnostics">Open a file to show its diagnostic results</string>
