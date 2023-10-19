@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <!-- AndroidIDE -->
   <string name="copy" tools:override="true">نسخ</string>
-  <string name="text_to_search">Text to search</string>
+  <string name="text_to_search"></string>
   <string name="title_open_source_licenses">تراخيص البرامج مفتوحة المصدر</string>
   <string name="msg_about_licensed_under">مرخص له تحت:</string>
   <string name="about_option_email">البريد الإلكتروني</string>
@@ -19,7 +19,7 @@
   <string name="ide_preferences">إعدادات IDE</string>
   <string name="discussions_on_telegram">المناقشات على التيليغرام</string>
   <string name="official_tg_channel">قناة التيليغرام الرسمية</string>
-  <string name="msg_empty_view">No data</string>
+  <string name="msg_empty_view"></string>
   <string name="title_terminal">التيرمنال</string>
   <string name="reset">إعادة تعيين</string>
   <string name="app_logs">سجلات التطبيق</string>
