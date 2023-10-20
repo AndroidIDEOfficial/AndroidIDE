@@ -27,7 +27,7 @@ dependencies {
     
     implementation(libs.common.jsoup)
     implementation(libs.common.jsonrpc)
-    implementation(libs.google.guava.jre)
+    implementation(libs.google.guava)
     implementation(libs.google.gson)
     implementation(libs.xml.remark)
     implementation(libs.xml.resolver)

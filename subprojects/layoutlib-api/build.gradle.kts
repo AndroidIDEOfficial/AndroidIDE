@@ -35,7 +35,7 @@ dependencies {
     implementation(libs.aapt2.annotations)
     implementation(libs.aapt2.jb.annotations)
     
-    implementation(libs.google.guava.jre)
+    implementation(libs.google.guava)
     
     testImplementation(libs.tests.junit)
     testImplementation(libs.tests.google.truth)

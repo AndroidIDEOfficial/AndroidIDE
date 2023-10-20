@@ -40,7 +40,7 @@ dependencies {
     implementation(libs.common.javaparser)
     implementation(libs.common.utilcode)
     implementation(libs.androidx.annotation)
-    implementation(libs.google.guava.jre)
+    implementation(libs.google.guava)
     implementation(libs.google.gson)
     
     compileOnly(libs.androidx.appcompat)

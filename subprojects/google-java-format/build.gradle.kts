@@ -21,7 +21,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.google.guava.jre)
+    implementation(libs.google.guava)
     implementation(libs.google.auto.value.annotations)
     implementation(projects.subprojects.javac)
     
